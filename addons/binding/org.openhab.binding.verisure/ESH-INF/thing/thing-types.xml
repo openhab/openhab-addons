@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="verisure"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<bridge-type id="bridge">
+		<label>Verisure Bridge</label>
+		<description>This bridge represents the http://mypages.verisure.com web page connector.</description>
+
+		<channels>
+			<channel id="status" typeId="status" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Verisure</property>
+		</properties>
+
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>The username used to connect to mypage.verisure.com</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<context>password</context>
+				<description>The password used to connect mypage.verisure.com</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>600</default>
+			</parameter>
+			<parameter name="pin" type="integer">
+				<label>Pin Code</label>
+				<description>The username's pin code to arm/lock alarm/door.</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="numberOfInstallations" type="integer">
+				<label>Number of Verisure Installations</label>
+				<description>Number of Verisure installations.</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+	<thing-type id="alarm">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Verisure Alarm</label>
+		<description>A Verisure Alarm.</description>
+
+		<channels>
+			<channel id="status" typeId="status" />
+			<channel id="numericStatus" typeId="numericStatus" />
+			<channel id="alarmStatus" typeId="alarmStatus" />
+			<channel id="lastUpdate" typeId="lastUpdate" />
+			<channel id="changedByUser" typeId="changedByUser" />
+			<channel id="siteName" typeId="siteName" />
+			<channel id="siteId" typeId="siteId" />
+			<channel id="setAlarmStatus" typeId="setAlarmStatus" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Verisure</property>
+		</properties>
+	</thing-type>
+
+	<thing-type id="smokeDetector">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Verisure Smoke Detector</label>
+		<description>A climate device in a Smoke detector.</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="lastUpdate" typeId="lastUpdate" />
+			<channel id="location" typeId="location" />
+			<channel id="siteName" typeId="siteName" />
+			<channel id="siteId" typeId="siteId" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Verisure</property>
+		</properties>
+	</thing-type>
+
+	<thing-type id="waterDetector">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Verisure Water Detector</label>
+		<description>A climate device in a Water detector.</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="lastUpdate" typeId="lastUpdate" />
+			<channel id="location" typeId="location" />
+			<channel id="siteName" typeId="siteName" />
+			<channel id="siteId" typeId="siteId" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Verisure</property>
+		</properties>
+	</thing-type>
+
+	<thing-type id="siren">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Verisure Siren</label>
+		<description>A climate device in a Siren.</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="lastUpdate" typeId="lastUpdate" />
+			<channel id="location" typeId="location" />
+			<channel id="siteName" typeId="siteName" />
+			<channel id="siteId" typeId="siteId" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Verisure</property>
+		</properties>
+	</thing-type>
+
+	<thing-type id="nightControl">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Verisure Night Control</label>
+		<description>A climate device in a Night Control.</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="lastUpdate" typeId="lastUpdate" />
+			<channel id="location" typeId="location" />
+			<channel id="siteName" typeId="siteName" />
+			<channel id="siteId" typeId="siteId" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Verisure</property>
+		</properties>
+	</thing-type>
+
+	<thing-type id="smartLock">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Yale Doorman SmartLock</label>
+		<description>Integrated Yale Doorman SmartLock.</description>
+
+		<channels>
+			<channel id="status" typeId="status" />
+			<channel id="numericStatus" typeId="numericStatus" />
+			<channel id="smartLockStatus" typeId="smartLockStatus" />
+			<channel id="lastUpdate" typeId="lastUpdate" />
+			<channel id="changedByUser" typeId="changedByUser" />
+			<channel id="autoRelockEnabled" typeId="autoRelockEnabled" />
+			<channel id="smartLockVolume" typeId="smartLockVolume" />
+			<channel id="smartLockVoiceLevel" typeId="smartLockVoiceLevel" />
+			<channel id="location" typeId="location" />
+			<channel id="siteName" typeId="siteName" />
+			<channel id="siteId" typeId="siteId" />
+			<channel id="setSmartLockStatus" typeId="setSmartLockStatus" />
+			<channel id="setAutoRelock" typeId="setAutoRelock" />
+			<channel id="setSmartLockVolume" typeId="setSmartLockVolume" />
+			<channel id="setSmartLockVoiceLevel" typeId="setSmartLockVoiceLevel" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Verisure</property>
+		</properties>
+	</thing-type>
+
+	<thing-type id="smartPlug">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Verisure SmartPlug</label>
+		<description>A Verisure SmartPlug in your system.</description>
+
+		<channels>
+			<channel id="status" typeId="status" />
+			<channel id="hazardous" typeId="hazardous" />
+			<channel id="smartPlugStatus" typeId="smartPlugStatus" />
+			<channel id="location" typeId="location" />
+			<channel id="siteName" typeId="siteName" />
+			<channel id="siteId" typeId="siteId" />
+			<channel id="setSmartPlugStatus" typeId="setSmartPlugStatus" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Verisure</property>
+		</properties>
+	</thing-type>
+
+	<thing-type id="doorWindowSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Verisure Door or Window Sensor</label>
+		<description>A Verisure door or window sensor in your system.</description>
+
+		<channels>
+			<channel id="state" typeId="state" />
+			<channel id="location" typeId="location" />
+			<channel id="siteName" typeId="siteName" />
+			<channel id="siteId" typeId="siteId" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Verisure</property>
+		</properties>
+	</thing-type>
+
+	<thing-type id="userPresence">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Verisure User Presence</label>
+		<description>Verisure Presence information about your configured Verisure users.</description>
+
+		<channels>
+			<channel id="webAccount" typeId="webAccount" />
+			<channel id="userLocationStatus" typeId="userLocationStatus" />
+			<channel id="userLocationName" typeId="userLocationName" />
+			<channel id="siteName" typeId="siteName" />
+			<channel id="siteId" typeId="siteId" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Verisure</property>
+		</properties>
+	</thing-type>
+
+	<thing-type id="broadbandConnection">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Verisure Broadband Connection</label>
+		<description>Status of the Verisure broadband connection.</description>
+
+		<channels>
+			<channel id="timestamp" typeId="timestamp" />
+			<channel id="hasWifi" typeId="hasWifi" />
+			<channel id="status" typeId="status" />
+			<channel id="siteName" typeId="siteName" />
+			<channel id="siteId" typeId="siteId" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Verisure</property>
+		</properties>
+	</thing-type>
+
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Current Status</label>
+		<description>Information on current status.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="webAccount">
+		<item-type>String</item-type>
+		<label>User Email</label>
+		<description>The User's Email address.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="userLocationStatus">
+		<item-type>String</item-type>
+		<label>User Location Status</label>
+		<description>Information on user location status.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="userLocationName">
+		<item-type>String</item-type>
+		<label>User Location Name</label>
+		<description>Information on user location name.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="numericStatus">
+		<item-type>Number</item-type>
+		<label>Current Numeric Status</label>
+		<description>Information about current numeric status.</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="alarmStatus">
+		<item-type>String</item-type>
+		<label>Current Alarm Status</label>
+		<description>Information about current alarm status.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>DateTime Last Check</label>
+		<description>Date and time of last updated check.</description>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
+	</channel-type>
+
+	<channel-type id="changedByUser">
+		<item-type>String</item-type>
+		<label>Operated By</label>
+		<description>User who did the last change.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="setAlarmStatus">
+		<item-type>Number</item-type>
+		<label>Alarm Status</label>
+		<description>Method to change alarm status.</description>
+		<state>
+			<options>
+				<option value="0">DISARMED</option>
+				<option value="1">ARMED_HOME</option>
+				<option value="2">ARMED_AWAY</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setSmartLockStatus">
+		<item-type>Switch</item-type>
+		<label>SmartLock Status</label>
+		<description>Channel to control smart lock status.</description>
+	</channel-type>
+
+	<channel-type id="setAutoRelock">
+		<item-type>Switch</item-type>
+		<label>SmartLock Auto Re-lock setting</label>
+		<description>Method to change smart lock auto re-lock setting.</description>
+	</channel-type>
+
+	<channel-type id="setSmartLockVolume">
+		<item-type>String</item-type>
+		<label>SmartLock Volume Setting</label>
+		<description>Method to change smart lock volume setting.</description>
+		<state>
+			<options>
+				<option value="SILENCE">SILENCE</option>
+				<option value="LOW">LOW</option>
+				<option value="HIGH">HIGH</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setSmartLockVoiceLevel">
+		<item-type>String</item-type>
+		<label>SmartLock Voice Level Setting</label>
+		<description>Method to change smart lock voice level setting.</description>
+		<state>
+			<options>
+				<option value="ESSENTIAL">ESSENTIAL</option>
+				<option value="NORMAL">NORMAL</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setSmartPlugStatus">
+		<item-type>Switch</item-type>
+		<label>SmartPlug Status</label>
+		<description>Method to change smart plug status.</description>
+	</channel-type>
+
+	<channel-type id="state">
+		<item-type>Contact</item-type>
+		<label>Door/Window State</label>
+		<description>Is door/window opened or closed. (OPEN/CLOSED)</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f °C" />
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>Current humidity in %.</description>
+		<category>Humidity</category>
+		<state readOnly="true" min="0" max="100" pattern="%d %%" />
+	</channel-type>
+
+	<channel-type id="lastUpdate">
+		<item-type>String</item-type>
+		<label>Last Updated</label>
+		<description>Last updated at this day and time.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="label">
+		<item-type>String</item-type>
+		<label>Label</label>
+		<description>The name of the door/window.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="alarmStatus">
+		<item-type>String</item-type>
+		<label>Alarm Status</label>
+		<description>The status of the alarm.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="smartLockStatus">
+		<item-type>String</item-type>
+		<label>SmartLock Status</label>
+		<description>The status of the smart lock.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="location">
+		<item-type>String</item-type>
+		<label>Location</label>
+		<description>The location of the device.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="hasWifi">
+		<item-type>String</item-type>
+		<label>Wifi Connection</label>
+		<description>Is Verisure connected via wifi.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="hazardous">
+		<item-type>String</item-type>
+		<label>Hazardous</label>
+		<description>Is Verisure smart plug configured as hazardous.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="smartPlugStatus">
+		<item-type>String</item-type>
+		<label>SmartPlug Status</label>
+		<description>Is Verisure smart plug On or Off.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="siteName">
+		<item-type>String</item-type>
+		<label>Installation Site Name</label>
+		<description>Name of the installation site.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="siteId">
+		<item-type>Number</item-type>
+		<label>Installation Site Id</label>
+		<description>ID of the installation site.</description>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="autoRelockEnabled">
+		<item-type>String</item-type>
+		<label>Auto Re-Lock Enabled</label>
+		<description>Is automatic re-lock enabled.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="smartLockVolume">
+		<item-type>String</item-type>
+		<label>SmartLock Volume Setting</label>
+		<description>Verisure smart lock volume setting.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="smartLockVoiceLevel">
+		<item-type>String</item-type>
+		<label>SmartLock Voice Level Setting</label>
+		<description>Verisure smart lock voice level setting.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+
+</thing:thing-descriptions>
