@@ -27,11 +27,11 @@ public class ClimateState {
     public boolean is_front_defroster_on;
     public boolean is_preconditioning;
     public boolean is_rear_defroster_on;
-    public boolean seat_heater_left;
-    public boolean seat_heater_rear_center;
-    public boolean seat_heater_rear_left;
-    public boolean seat_heater_rear_right;
-    public boolean seat_heater_right;
+    public int seat_heater_left;
+    public int seat_heater_rear_center;
+    public int seat_heater_rear_left;
+    public int seat_heater_rear_right;
+    public int seat_heater_right;
     public boolean side_mirror_heaters;
     public boolean smart_preconditioning;
     public boolean steering_wheel_heater;
