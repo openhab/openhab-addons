@@ -17,6 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link JsonActivity} encapsulate the GSON data of the push command for push activity
@@ -61,11 +62,15 @@ public class JsonActivities {
 
         public Description ParseDescription() {
             String description = this.description;
-            if (StringUtils.isEmpty(description)) {
+            if (StringUtils.isEmpty(description) || !description.startsWith("{") || !description.endsWith("}")) {
                 return new Description();
             }
             Gson gson = new Gson();
-            return gson.fromJson(description, Description.class);
+            try {
+                return gson.fromJson(description, Description.class);
+            } catch (JsonSyntaxException e) {
+                return new Description();
+            }
         }
     }
 }
