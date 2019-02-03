@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Hans-Jörg Merk - Initial contribution
+ * @author Mihir Patil - Added standby switch
  */
 public class WemoBindingConstants {
 
@@ -56,6 +57,8 @@ public class WemoBindingConstants {
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_RELAY = "relay";
     public static final String CHANNEL_SENSOR = "sensor";
+    public static final String CHANNEL_ONSTANDBY = "onStandBy";
+
 
     public static final String CHANNEL_COFFEEMODE = "coffeeMode";
     public static final String CHANNEL_MODETIME = "modeTime";

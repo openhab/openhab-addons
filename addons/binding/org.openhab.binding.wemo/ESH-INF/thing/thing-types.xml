@@ -37,6 +37,8 @@
 			<channel id="energyToday" typeId="energyToday" />
 			<channel id="energyTotal" typeId="energyTotal" />
 			<channel id="standByLimit" typeId="standByLimit" />
+			<channel id="onStandBy" typeId="onStandBy" />
+
 		</channels>
 
 		<config-description>
@@ -253,6 +255,15 @@
 		<description>Total power consumption</description>
 		<category>Energy</category>
 		<state pattern="%.1f W" />
+	</channel-type>
+
+	<channel-type id="onStandBy" advanced="true">
+		<item-type>Switch</item-type>
+		<label>On Standby</label>
+		<description>Appliance on standby</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+
 	</channel-type>
 
 	<!-- Brightness Channel -->
