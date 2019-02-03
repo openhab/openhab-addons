@@ -8,9 +8,9 @@ To use this binding, you first need to [register and get your API key](https://a
 
 The binding supports the following binding:
 
-| Thing type               | Name          
-|--------------------------|---------------
-| bridge                   | Foobot Account
+| Thing type                | Name
+|---------------------------|---------------
+| bridge                    | Foobot Account
 
 
 ## Discovery
@@ -26,11 +26,11 @@ The binding has no configuration options, all configuration is done at Bridge le
 
 Bridge has the following configuration parameters:
 
-| Parameter                 | Description                                          | Required
-|---------------------------|------------------------------------------------------|---------
-| apikey                    | API Key from https://api.foobot.io/apidoc/index.html | Mandatory
-| username                  | Your UserName for the foobot App.                    | Mandatory
-| refreshIntervalInMinutes  | Refresh interval in minutes.                         | Optional, the default value is 7 minutes.
+| Parameter                 | Description                                           | Required
+|---------------------------|-------------------------------------------------------|---------
+| apikey                    | API Key from https://api.foobot.io/apidoc/index.html  | Mandatory
+| username                  | Your UserName for the foobot App                      | Mandatory
+| refreshIntervalInMinutes  | Refresh interval in minutes                           | Optional, the default value is 7 minutes.
 
 
 
@@ -38,14 +38,14 @@ Bridge has the following configuration parameters:
 
 The AirQuality information that is retrieved is available as these channels:
 
-| Channel ID      | Item Type | Description                                  
-|-----------------|-----------|---------------------------------------
-| pm              | Number    | Fine particles pollution level (ug/m3)
-| co2             | Number    | Carbon diOxide level (ppm)
-| humidity        | Number    | Humidity level (pc)
-| voc             | Number    | Volatile Organic Compounds level (ppb)
-| gpi             | Number    | Global Pollution Index
-| temperature     | Number    | Temperature in Celsius degrees
+| Channel ID        | Item Type | Description
+|-------------------|-----------|---------------------------------------
+| pm                | Number    | Fine particles pollution level (ug/m3)
+| co2               | Number    | Carbon diOxide level (ppm)
+| humidity          | Number    | Humidity level (pc)
+| voc               | Number    | Volatile Organic Compounds level (ppb)
+| gpi               | Number    | Global Pollution Index
+| temperature       | Number    | Temperature in Celsius degrees
 
 
 ## Full Example
