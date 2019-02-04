@@ -5,21 +5,10 @@
 		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="io:homekit">
-		<parameter name="port" type="integer" required="true">
-			<label>Port</label>
-			<description>Defines the port the HomeKit integration listens on.</description>
-			<default>9124</default>
-		</parameter>
-		<parameter name="pin" type="text" pattern="\d{3}-\d{2}-\d{3}" required="true">
-			<label>Pin</label>
-			<description>Defines the pin, used for pairing, in the form ###-##-###.</description>
-			<default>031-45-154</default>
-		</parameter>
-		<parameter name="networkInterface" type="text" required="false">
-			<label>Network Interface</label>
-			<description>Defines the IP address of the network interface to expose the HomeKit integration on.</description>
-		</parameter>
 
+		<parameter-group name="core">
+			<label>Core configuration</label>
+		</parameter-group>
 		<parameter-group name="thermostat">
 			<label>Thermostat settings</label>
 			<description>General thermostat settings</description>
@@ -32,6 +21,21 @@
 			<label>Thermostat currentHeatingCooling mapping</label>
 			<description>String values used by your thermostat to set different targetHeatingCooling modes</description>
 		</parameter-group>
+
+		<parameter name="port" type="integer" required="true" groupName="core">
+			<label>Port</label>
+			<description>Defines the port the HomeKit integration listens on.</description>
+			<default>9124</default>
+		</parameter>
+		<parameter name="pin" type="text" pattern="\d{3}-\d{2}-\d{3}" required="true" groupName="core">
+			<label>Pin</label>
+			<description>Defines the pin, used for pairing, in the form ###-##-###.</description>
+			<default>031-45-154</default>
+		</parameter>
+		<parameter name="networkInterface" type="text" required="false" groupName="core">
+			<label>Network Interface</label>
+			<description>Defines the IP address of the network interface to expose the HomeKit integration on.</description>
+		</parameter>
 
 		<parameter name="useFahrenheitTemperature" type="boolean" required="true" groupName="thermostat">
 			<label>Use Fahrenheit Temperature</label>
