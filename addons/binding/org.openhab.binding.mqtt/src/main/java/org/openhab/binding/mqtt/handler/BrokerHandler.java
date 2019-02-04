@@ -129,7 +129,6 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
     protected void assignSSLContextProvider(BrokerHandlerConfig config, MqttBrokerConnection connection,
             PinnedCallback callback) throws IllegalArgumentException {
         final PinTrustManager trustManager = new PinTrustManager();
-
         connection.setSSLContextProvider(new PinningSSLContextProvider(trustManager));
         trustManager.setCallback(callback);
 
@@ -179,40 +178,40 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
      */
     protected MqttBrokerConnection createBrokerConnection() throws IllegalArgumentException {
         String host = config.host;
-        if (StringUtils.isBlank(host) || host == null) {
+        if ((host == null) || StringUtils.isBlank(host)) {
             throw new IllegalArgumentException("Host is empty!");
         }
 
-        final MqttBrokerConnection connection = new MqttBrokerConnection(host, config.port, config.secure,
-                config.clientID);
-
-        final String username = config.username;
-        final String password = config.password;
-        if (StringUtils.isNotBlank(username) && password != null) {
-            connection.setCredentials(username, password); // Empty passwords are allowed
-        }
-
-        final String topic = config.lwtTopic;
-        if (topic != null) {
-            final String msg = config.lwtMessage;
-            MqttWillAndTestament will = new MqttWillAndTestament(topic, msg != null ? msg.getBytes() : null,
-                    config.lwtQos, config.lwtRetain);
-            connection.setLastWill(will);
-        }
-
+        MqttBrokerConnection connection = new MqttBrokerConnection(host, config.port, config.secure, config.clientID);
         connection.setQos(config.qos);
-        if (config.reconnectTime != null) {
-            connection.setReconnectStrategy(new PeriodicReconnectStrategy(config.reconnectTime, 10000));
+        connection.setRetain(config.retainMessages);
+
+        if (StringUtils.isNotBlank(config.username) && (config.password != null)) {
+            connection.setCredentials(config.username, config.password); // Empty passwords are allowed
         }
-        final Integer keepAlive = config.keepAlive;
+
+        String topic = config.lwtTopic;
+        if (topic != null) {
+            String message = config.lwtMessage;
+            byte[] payload = message != null ? message.getBytes() : null;
+            connection.setLastWill(new MqttWillAndTestament(topic, payload, config.lwtQos, config.lwtRetain));
+        }
+
+        Integer reconnectTime = config.reconnectTime;
+        if (reconnectTime != null) {
+            connection.setReconnectStrategy(new PeriodicReconnectStrategy(reconnectTime, 10000));
+        }
+
+        Integer keepAlive = config.keepAlive;
         if (keepAlive != null) {
             connection.setKeepAliveInterval(keepAlive);
         }
-        if (config.timeoutInMs != null) {
-            connection.setTimeoutExecutor(scheduler, TIMEOUT_DEFAULT);
-        }
 
-        connection.setRetain(config.retainMessages);
+        Integer timeoutInMs = config.timeoutInMs;
+        if (timeoutInMs == null) {
+            timeoutInMs = TIMEOUT_DEFAULT;
+        }
+        connection.setTimeoutExecutor(scheduler, timeoutInMs);
 
         return connection;
     }

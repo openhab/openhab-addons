@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mqtt.internal.ssl;
 
-import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
@@ -22,20 +21,19 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.X509ExtendedTrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * This is a custom {@link X509ExtendedTrustManager}. {@link Pin} objects can be added and will
+ * This is a custom {@link X509TrustManager}. {@link Pin} objects can be added and will
  * be used in the checkServerTrusted() method to determine if a connection can be trusted.
  *
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class PinTrustManager extends X509ExtendedTrustManager {
+public class PinTrustManager implements X509TrustManager {
     List<Pin> pins = new ArrayList<>();
     protected @Nullable PinnedCallback callback;
 
@@ -54,52 +52,33 @@ public class PinTrustManager extends X509ExtendedTrustManager {
     }
 
     @Override
-    public void checkClientTrusted(X509Certificate @Nullable [] chain, @Nullable String authType)
-            throws CertificateException {
-        throw new UnsupportedOperationException();
-    }
-
-    protected byte[] getEncoded(PinType type, X509Certificate cert) throws CertificateEncodingException {
-        switch (type) {
-            case CERTIFICATE_TYPE:
-                return cert.getEncoded();
-            case PUBLIC_KEY_TYPE:
-                return cert.getPublicKey().getEncoded();
-        }
-        throw new CertificateEncodingException("Type unknown");
-    }
-
-    /**
-     * A signature name depends on the security provider but usually follows
-     * https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#Signature.
-     * E.g.: "SHA256withRSA". We need "SHA" and "256" to initialize a {@link PinMessageDigest}.
-     */
-    PinMessageDigest getMessageDigestForSigAlg(String sigAlg) throws CertificateException {
-        final Matcher matcher = Pattern.compile("(\\D*)(\\d+)").matcher(sigAlg);
-        matcher.find();
-        final String sigAlgName = matcher.group(1);
-        final String sigAlgBits = matcher.group(2);
-        try {
-            return new PinMessageDigest(sigAlgName + "-" + sigAlgBits);
-        } catch (NoSuchAlgorithmException e) {
-            throw new CertificateException(e);
-        }
+    public X509Certificate[] getAcceptedIssuers() {
+        return new X509Certificate[0];
     }
 
     @Override
-    public void checkServerTrusted(X509Certificate @Nullable [] chainN, @Nullable String authType)
+    public void checkClientTrusted(X509Certificate @Nullable [] certs, @Nullable String authType)
             throws CertificateException {
-        X509Certificate[] chain = chainN;
-        if (chain == null) {
-            return;
+        if ((certs == null) || (certs.length == 0)) {
+            throw new IllegalArgumentException();
         }
 
-        final PinMessageDigest digestForSigAlg = getMessageDigestForSigAlg(chain[0].getSigAlgName());
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void checkServerTrusted(X509Certificate @Nullable [] certs, @Nullable String authType)
+            throws CertificateException {
+        if ((certs == null) || (certs.length == 0)) {
+            throw new IllegalArgumentException();
+        }
+
+        final PinMessageDigest digestForSigAlg = getMessageDigestForSigAlg(certs[0].getSigAlgName());
         final PinnedCallback callback = this.callback;
 
         // All pins have to accept the connection
         for (Pin pin : pins) {
-            byte[] origData = getEncoded(pin.getType(), chain[0]);
+            byte[] origData = getEncoded(pin.getType(), certs[0]);
 
             // If in learning mode: Learn new signature algorithm and hash and notify listeners
             if (pin.isLearning()) {
@@ -133,32 +112,29 @@ public class PinTrustManager extends X509ExtendedTrustManager {
         }
     }
 
-    @Override
-    public X509Certificate[] getAcceptedIssuers() {
-        return new X509Certificate[0];
+    protected byte[] getEncoded(PinType type, X509Certificate cert) throws CertificateEncodingException {
+        switch (type) {
+            case CERTIFICATE_TYPE:
+                return cert.getEncoded();
+            case PUBLIC_KEY_TYPE:
+                return cert.getPublicKey().getEncoded();
+        }
+        throw new CertificateEncodingException("Type unknown");
     }
 
-    @Override
-    public void checkClientTrusted(X509Certificate @Nullable [] chain, @Nullable String authType,
-            @Nullable Socket socket) throws CertificateException {
-        checkClientTrusted(chain, authType);
+    /**
+     * A signature name depends on the security provider but usually follows
+     * https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#Signature.
+     * E.g.: "SHA256withRSA". We need "SHA" and "256" to initialize a {@link PinMessageDigest}.
+     */
+    PinMessageDigest getMessageDigestForSigAlg(String sigAlg) throws CertificateException {
+        final Matcher matcher = Pattern.compile("(\\D*)(\\d+)").matcher(sigAlg);
+        matcher.find();
+        try {
+            return new PinMessageDigest(matcher.group(1) + "-" + matcher.group(2));
+        } catch (NoSuchAlgorithmException e) {
+            throw new CertificateException(e);
+        }
     }
 
-    @Override
-    public void checkClientTrusted(X509Certificate @Nullable [] chain, @Nullable String authType,
-            @Nullable SSLEngine sslEngine) throws CertificateException {
-        checkClientTrusted(chain, authType);
-    }
-
-    @Override
-    public void checkServerTrusted(X509Certificate @Nullable [] chain, @Nullable String authType,
-            @Nullable Socket socket) throws CertificateException {
-        checkServerTrusted(chain, authType);
-    }
-
-    @Override
-    public void checkServerTrusted(X509Certificate @Nullable [] chain, @Nullable String authType,
-            @Nullable SSLEngine sslEngine) throws CertificateException {
-        checkServerTrusted(chain, authType);
-    }
 }

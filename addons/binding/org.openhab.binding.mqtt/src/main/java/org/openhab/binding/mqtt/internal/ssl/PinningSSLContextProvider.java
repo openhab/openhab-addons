@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PinningSSLContextProvider implements SSLContextProvider {
     private final Logger logger = LoggerFactory.getLogger(PinningSSLContextProvider.class);
-    final PinTrustManager trustManager;
+    private final PinTrustManager trustManager;
 
     public PinningSSLContextProvider(PinTrustManager pinTrustManager) {
         this.trustManager = pinTrustManager;
@@ -42,7 +42,7 @@ public class PinningSSLContextProvider implements SSLContextProvider {
     @Override
     public SSLContext getContext() throws ConfigurationException {
         try {
-            SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+            SSLContext sslContext = SSLContext.getInstance("TLSv1");
             sslContext.init(null, new TrustManager[] { trustManager }, new java.security.SecureRandom());
             return sslContext;
         } catch (KeyManagementException | NoSuchAlgorithmException e) {
