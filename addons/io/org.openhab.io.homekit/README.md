@@ -22,10 +22,16 @@ Other settings, such as using Fahrenheit temperatures, customizing the thermosta
 org.openhab.homekit:port=9124
 org.openhab.homekit:pin=031-45-154
 org.openhab.homekit:useFahrenheitTemperature=true
-org.openhab.homekit:thermostatCoolMode=CoolOn
-org.openhab.homekit:thermostatHeatMode=HeatOn
-org.openhab.homekit:thermostatAutoMode=Auto
-org.openhab.homekit:thermostatOffMode=Off
+
+org.openhab.homekit:thermostatTargetModeCool=CoolOn
+org.openhab.homekit:thermostatTargetModeHeat=HeatOn
+org.openhab.homekit:thermostatTargetModeAuto=Auto
+org.openhab.homekit:thermostatTargetModeOff=Off
+
+org.openhab.homekit:thermostatCurrentModeHeating=Heating
+org.openhab.homekit:thermostatCurrentModeCooling=Cooling
+org.openhab.homekit:thermostatCurrentModeOff=Off
+
 org.openhab.homekit:networkInterface=192.168.0.6
 ```
 

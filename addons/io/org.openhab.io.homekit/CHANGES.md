@@ -4,7 +4,21 @@
 
 ### Breaking changes
 
-You will need to reconfigure the homekit thermostat mapping values when upgrading to this plugin, in order to set the defaults for the currentHeatingCoolingMode value mappings.
+The following config options have been renamed:
+
+* `org.openhab.homekit:thermostatCoolMode` to `org.openhab.homekit:thermostatTargetModeCool`
+* `org.openhab.homekit:thermostatHeatMode` to `org.openhab.homekit:thermostatTargetModeHeat`
+* `org.openhab.homekit:thermostatAutoMode` to `org.openhab.homekit:thermostatTargetModeAuto`
+* `org.openhab.homekit:thermostatOffMode` to `org.openhab.homekit:thermostatTargetModeOff`
+
+Further, the following required config options have been specified:
+
+* `org.openhab.homekit:thermostatCurrenModeCooling`
+* `org.openhab.homekit:thermostatCurrenModeHeating`
+* `org.openhab.homekit:thermostatCurrenModeOff`
+
+
+You will need to update your homekit configuration accordingly, either by editing your homekit config file, or by editing the configuration for the IO service using the paper UI.
 
 ### Thermostat fixes
 
