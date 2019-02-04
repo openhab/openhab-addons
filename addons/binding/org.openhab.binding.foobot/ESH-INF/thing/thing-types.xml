@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Foobot Account -->
-	<bridge-type id="foobotaccount">
+	<bridge-type id="account">
 		<label>Foobot Account</label>
 		<description>Retrieves your Foobot account and all the devices associated with.</description>
 		<config-description>
