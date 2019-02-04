@@ -90,7 +90,7 @@ public class BaseChannels extends AbstractChannels {
     public static final Channel CH_40067 = INSTANCE.addChannel(
             new QuantityChannel("40067", "BT1 Average", ChannelGroup.BASE, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final Channel CH_43005 = INSTANCE.addChannel(new ScaledChannel("43005", "Degree Minutes (16 bit)",
-            ChannelGroup.BASE, ScaleFactor.DIV_10, "/Manage/4.9.3", "[0-9]+"));
+            ChannelGroup.BASE, ScaleFactor.DIV_10, "/Manage/4.9.3", "-?[0-9]+"));
     public static final Channel CH_43009 = INSTANCE.addChannel(
             new QuantityChannel("43009", "Calc. Supply S1", ChannelGroup.BASE, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final Channel CH_40071 = INSTANCE.addChannel(
