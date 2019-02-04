@@ -215,8 +215,14 @@ public class DS2438 extends AbstractOwDevice {
             }
 
             if (enabledChannels.contains(CHANNEL_VOLTAGE)) {
-                State voltage = new QuantityType<ElectricPotential>(
-                        (DecimalType) bridgeHandler.readDecimalType(sensorId, voltageParameter), SmartHomeUnits.VOLT);
+                double measured = ((DecimalType) bridgeHandler.readDecimalType(sensorId, voltageParameter))
+                        .doubleValue();
+                if (measured < 0 || measured > 10.0) {
+                    // workaround bug in DS2438
+                    measured = 0.0;
+                }
+                State voltage = new QuantityType<ElectricPotential>(measured, SmartHomeUnits.VOLT);
+
                 logger.trace("read voltage {} from {}", voltage, sensorId);
                 callback.postUpdate(CHANNEL_VOLTAGE, voltage);
             }
@@ -270,13 +276,16 @@ public class DS2438 extends AbstractOwDevice {
                         }
                         break;
                     case IBUTTONLINK:
-                        light = bridgeHandler.readDecimalType(sensorId, voltageParameter);
-                        if (light instanceof DecimalType) {
+                        double measured = ((DecimalType) bridgeHandler.readDecimalType(sensorId, voltageParameter))
+                                .doubleValue();
+                        if (measured <= 0 || measured > 10.0) {
+                            // workaround bug in DS2438
+                            light = new QuantityType<Illuminance>(0, SmartHomeUnits.LUX);
+                        } else {
                             light = new QuantityType<Illuminance>(
-                                    Math.pow(10, (65 / 7.5) - (47 / 7.5) * (Vcc / ((DecimalType) light).doubleValue())),
-                                    SmartHomeUnits.LUX);
-                            callback.postUpdate(CHANNEL_LIGHT, light);
+                                    Math.pow(10, (65 / 7.5) - (47 / 7.5) * (Vcc / measured)), SmartHomeUnits.LUX);
                         }
+                        callback.postUpdate(CHANNEL_LIGHT, light);
                 }
             }
         }
