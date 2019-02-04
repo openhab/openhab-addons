@@ -89,6 +89,7 @@ A full list of supported accessory types can be found in the table below.
 |                       | homekit:CurrentHeatingCoolingMode | String                    | (Optional) Item used to read the current state of the device: OFF, HEATING, COOLING. The string's value must match those defined in the `thermostat*State` properties. |
 | LeakSensor            |                                   | Switch, ContactSensor     | Leak sensor. ON / OPEN state means flood detected. |
 | MotionSensor          |                                   | Switch, ContactSensor     | Motion sensor. ON / OPEN state means motion detected. |
+| OccupancySensor       |                                   | Switch, ContactSensor     | Occupancy sensor. ON / OPEN state means occupancy detected. |
 | Valve                 |                                   | Switch                    | Simple open/close valve. Assumes liquid is flowing when valve is open. |
 | WindowCovering        |                                   | Rollershutter             | Simple window covering with support for setting target position / current position support. |
 
@@ -107,6 +108,7 @@ String DownstairsThermostatHeatingCoolingMode "Downstairs Thermostat Heating/Coo
 String DownstairsThermostatCurrentHeatingCoolingMode "Downstairs Thermostat Current Heating/Cooling Mode" (gDownstairsThermostat) [ "homekit:CurrentHeatingCoolingMode" ]
 
 Switch Hallway_MotionSensor "Hallway Motion Sensor" [ "MotionSensor" ]
+Switch Bathroom_OccupancySensor "Bathroom Occupancy Sensor" [ "OccupancySensor" ]
 Switch MasterBath_Toilet_LeakSensor "Master Bath Toilet Flood" ["LeakSensor"]
 Switch WaterMain_Valve "Water Main Valve" ["Valve"]
 Rollershutter MasterWindow_Blinds "Master Window Blinds" [ "WindowCovering" ]
@@ -118,6 +120,7 @@ The following devices support report low battery status:
 
 * LeakSensor
 * MotionSensor
+* OccupancySensor
 
 Battery status can be reported via a Number item (0 - 100) tagged as `homekit:BatteryLevel`, or via a Switch item (where ON == battery is low) tagged as `homekit:BatteryLowStatus`. The battery status item must be grouped in with the sensor in question so it can be associated as a composite device. Here's what it looks like to configure a leak sensor with a BatteryLevel:
 
