@@ -163,6 +163,7 @@ public class EchoHandler extends BaseThingHandler {
         ScheduledFuture<?> updateStateJob = this.updateStateJob;
         this.updateStateJob = null;
         if (updateStateJob != null) {
+            this.disableUpdate = false;
             updateStateJob.cancel(false);
         }
         stopProgressTimer();
@@ -227,6 +228,7 @@ public class EchoHandler extends BaseThingHandler {
             ScheduledFuture<?> updateStateJob = this.updateStateJob;
             this.updateStateJob = null;
             if (updateStateJob != null) {
+                this.disableUpdate = false;
                 updateStateJob.cancel(false);
             }
             AccountHandler account = this.account;
@@ -624,14 +626,14 @@ public class EchoHandler extends BaseThingHandler {
             this.disableUpdate = true;
             final boolean bluetoothRefresh = needBluetoothRefresh;
             Runnable doRefresh = () -> {
+                this.disableUpdate = false;
                 BluetoothState state = null;
                 if (bluetoothRefresh) {
                     JsonBluetoothStates states;
                     states = connection.getBluetoothConnectionStates();
                     state = states.findStateByDevice(device);
-
                 }
-                this.disableUpdate = false;
+
                 updateState(account, device, state, null, null, null, null, null);
             };
             if (command instanceof RefreshType) {
@@ -722,6 +724,8 @@ public class EchoHandler extends BaseThingHandler {
             @Nullable JsonNotificationSound @Nullable [] alarmSounds,
             @Nullable List<JsonMusicProvider> musicProviders) {
         try {
+            this.logger.debug("Handle updateState {}", this.getThing().getUID().getAsString());
+
             if (deviceNotificationState != null) {
                 noticationVolumeLevel = deviceNotificationState.volumeLevel;
             }
@@ -738,13 +742,16 @@ public class EchoHandler extends BaseThingHandler {
                 this.musicProviders = musicProviders;
             }
             if (!setDeviceAndUpdateThingState(accountHandler, device, null)) {
+                this.logger.debug("Handle updateState {} aborted: Not online", this.getThing().getUID().getAsString());
                 return;
             }
             if (device == null) {
+                this.logger.debug("Handle updateState {} aborted: No device", this.getThing().getUID().getAsString());
                 return;
             }
 
             if (this.disableUpdate) {
+                this.logger.debug("Handle updateState {} aborted: Disabled", this.getThing().getUID().getAsString());
                 return;
             }
             Connection connection = this.findConnection();
@@ -1045,6 +1052,8 @@ public class EchoHandler extends BaseThingHandler {
             }
 
         } catch (Exception e) {
+            this.logger.debug("Handle updateState {} failed: {}", this.getThing().getUID().getAsString(), e);
+
             disableUpdate = false;
             throw e; // Rethrow same exception
         }
@@ -1112,6 +1121,7 @@ public class EchoHandler extends BaseThingHandler {
     }
 
     public void handlePushCommand(String command, String payload) {
+        this.logger.debug("Handle push command {}", command);
         switch (command) {
             case "PUSH_VOLUME_CHANGE":
                 JsonCommandPayloadPushVolumeChange volumeChange = gson.fromJson(payload,
@@ -1137,6 +1147,7 @@ public class EchoHandler extends BaseThingHandler {
                 AccountHandler account = this.account;
                 Device device = this.device;
                 if (account != null && device != null) {
+                    this.disableUpdate = false;
                     updateState(account, device, null, null, null, null, null, null);
                 }
         }
