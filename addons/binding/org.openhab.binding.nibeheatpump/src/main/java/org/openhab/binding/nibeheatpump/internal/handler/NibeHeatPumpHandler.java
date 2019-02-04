@@ -277,7 +277,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
                 if (pollingJob == null || pollingJob.isCancelled()) {
                     logger.debug("Start refresh task, interval={}sec", 1);
-                    pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, 1, TimeUnit.SECONDS);
+                    pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, 1, TimeUnit.SECONDS);
                 }
             } catch (NibeHeatPumpException e) {
                 logger.debug("Error occurred when connecting to heat pump, exception {}", e.getMessage());
