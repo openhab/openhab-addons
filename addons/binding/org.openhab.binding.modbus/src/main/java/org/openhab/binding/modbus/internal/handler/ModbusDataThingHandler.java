@@ -870,6 +870,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     private void tryUpdateState(ChannelUID uid, State state) {
         try {
             updateState(uid, state);
+            channelLastUpdated.put(uid, now);
         } catch (IllegalArgumentException e) {
             logger.warn("Error updating state '{}' (type {}) to channel {}: {} {}", state,
                     Optional.ofNullable(state).map(s -> s.getClass().getName()).orElse("null"), uid,
