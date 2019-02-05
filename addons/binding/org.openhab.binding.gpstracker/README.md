@@ -19,7 +19,7 @@ The binding can process two message types received from trackers:
 
 ### OwnTracks
 
-Install [OwnTracks for Android](https://play.google.com/store/apps/details?id=org.openhab.habdroid) or [OwnTracks for iOS](https://itunes.apple.com/us/app/owntracks/id692424691) on your device.
+Install [OwnTracks for Android](https://play.google.com/store/apps/details?id=org.owntracks.android) or [OwnTracks for iOS](https://itunes.apple.com/us/app/owntracks/id692424691) on your device.
 
 Go to Preferences/Connection and set:
 
