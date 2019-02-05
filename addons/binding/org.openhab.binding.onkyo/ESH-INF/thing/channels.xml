@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="onkyo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="onkyo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -54,7 +55,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Volume of your device</description>
-		<state min="0" max="100" step="1" pattern="%d %%">
+		<state min="0" max="100" pattern="%d %%">
 		</state>
 	</channel-type>
 	<channel-type id="control" advanced="true">
