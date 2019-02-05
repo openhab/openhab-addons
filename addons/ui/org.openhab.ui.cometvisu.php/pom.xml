@@ -20,29 +20,29 @@
       <version>4.0.45</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.core</groupId>
+      <groupId>org.openhab.core.bundles</groupId>
       <artifactId>org.openhab.core</artifactId>
       <version>${ohc.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.core</groupId>
-      <artifactId>org.openhab.ui.dashboard</artifactId>
+      <groupId>org.openhab.core.bundles</groupId>
+      <artifactId>org.openhab.core.ui.dashboard</artifactId>
       <version>${ohc.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.smarthome.model</groupId>
-      <artifactId>org.eclipse.smarthome.model.sitemap</artifactId>
-      <version>${esh.version}</version>
+      <groupId>org.openhab.core.bundles</groupId>
+      <artifactId>org.openhab.core.model.sitemap</artifactId>
+      <version>${ohc.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.smarthome.ui</groupId>
-      <artifactId>org.eclipse.smarthome.ui</artifactId>
-      <version>${esh.version}</version>
+      <groupId>org.openhab.core.bundles</groupId>
+      <artifactId>org.openhab.core.ui</artifactId>
+      <version>${ohc.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.smarthome.ui</groupId>
-      <artifactId>org.eclipse.smarthome.ui.icon</artifactId>
-      <version>${esh.version}</version>
+      <groupId>org.openhab.core.bundles</groupId>
+      <artifactId>org.openhab.core.ui.icon</artifactId>
+      <version>${ohc.version}</version>
     </dependency>
   </dependencies>
 
