@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
@@ -231,7 +230,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
      * In case of JSON as transformation output, the output processed using {@link processJsonTransform}.
      *
      * @param channelUID channel UID corresponding to received command
-     * @param command command to be transformed
+     * @param command    command to be transformed
      * @return transformed command. Null is returned with JSON transformation outputs and configuration errors
      *
      * @see processJsonTransform
@@ -792,7 +791,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
      * Update linked channels
      *
      * @param numericState numeric state corresponding to polled data
-     * @param boolValue boolean value corresponding to polled data
+     * @param boolValue    boolean value corresponding to polled data
      * @return updated channel data
      */
     private Map<ChannelUID, State> processUpdatedValue(DecimalType numericState, boolean boolValue) {
