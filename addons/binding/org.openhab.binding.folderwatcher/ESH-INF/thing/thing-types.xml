@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="folderwatcher"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="ftpfolder">
+		<label>FTP Folder</label>
+		<description>FTP folder to be watched</description>
+
+		<channels>
+			<channel id="newfile" typeId="newfile-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="ftpAddress" type="text" required="true">
+				<label>FTP server</label>
+				<description>IP address of FTP server</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="ftpUsername" type="text" required="true">
+			    <label>Username</label>
+                <description>User name</description>
+			</parameter>
+			<parameter name="ftpPassword" type="text" required="true">
+                <label>Password</label>
+                <description>FTP server password</description>
+                <context>password</context>
+            </parameter>
+            <parameter name="ftpDir" type="text" required="true">
+                <label>RootDir</label>
+                <description>Root directory to be watched</description>
+            </parameter>
+            <parameter name="listHidden" type="boolean" required="false">
+                <label>List Hidden</label>
+                 <default>false</default>
+                <description>Allow listing of hidden files</description>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="connectionTimeout" type="integer" required="false" min="1">
+                <label>Connection timeout, s</label>
+                <description>Connection timeout for FTP request</description>
+                <default>30</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="pollInterval" type="integer" required="false" min="1">
+                <label>Polling interval, s</label>
+                <description>Interval for polling folder changes</description>
+                <default>60</default>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="diffHours" type="integer" required="true" min="1">
+                <label>Time stamp difference, h</label>
+                <description>How many hours back to analyze</description>
+                <default>24</default>
+                <advanced>true</advanced>
+            </parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="newfile-channel">
+		<item-type>String</item-type>
+		<label>New file names(s)</label>
+		<description>A new file name or a list of names semicolon separated</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>
