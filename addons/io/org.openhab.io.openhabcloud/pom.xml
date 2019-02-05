@@ -15,7 +15,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.openhab.core</groupId>
+      <groupId>org.openhab.core.bundles</groupId>
       <artifactId>org.openhab.core</artifactId>
       <version>${ohc.version}</version>
     </dependency>

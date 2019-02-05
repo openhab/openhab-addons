@@ -32,17 +32,17 @@
             </dependency>
             <dependency>
               <type>eclipse-plugin</type>
-              <artifactId>org.eclipse.smarthome.config.xml</artifactId>
+              <artifactId>org.openhab.core.config.xml</artifactId>
               <version>0.0.0</version>
             </dependency>
             <dependency>
               <type>eclipse-plugin</type>
-              <artifactId>org.eclipse.smarthome.core.thing.xml</artifactId>
+              <artifactId>org.openhab.core.thing.xml</artifactId>
               <version>0.0.0</version>
             </dependency>
             <dependency>
               <type>eclipse-plugin</type>
-              <artifactId>org.eclipse.smarthome.core.binding.xml</artifactId>
+              <artifactId>org.openhab.core.binding.xml</artifactId>
               <version>0.0.0</version>
             </dependency>
           </dependencies>

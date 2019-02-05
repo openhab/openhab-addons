@@ -12,8 +12,8 @@ Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  org.apache.commons.io,
  org.eclipse.jdt.annotation;resolution:=optional,
- org.eclipse.smarthome.automation.parser,
- org.eclipse.smarthome.automation.template,
+ org.openhab.core.automation.parser,
+ org.openhab.core.automation.template,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.extension,

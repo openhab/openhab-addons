@@ -63,22 +63,22 @@
               </requirement>
               <requirement>
                 <type>eclipse-plugin</type>
-                <id>org.eclipse.smarthome.config.core</id>
+                <id>org.openhab.core.config.core</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
               <requirement>
                 <type>eclipse-plugin</type>
-                <id>org.eclipse.smarthome.core</id>
+                <id>org.openhab.core</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
               <requirement>
                 <type>eclipse-plugin</type>
-                <id>org.eclipse.smarthome.core.thing</id>
+                <id>org.openhab.core.thing</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
               <requirement>
                 <type>eclipse-plugin</type>
-                <id>org.eclipse.smarthome.core.thing.xml</id>
+                <id>org.openhab.core.thing.xml</id>
                 <versionRange>0.0.0</versionRange>
               </requirement>
             </extraRequirements>
@@ -131,22 +131,22 @@
               <autoStart>true</autoStart>
             </bundle>
             <bundle>
-              <id>org.eclipse.smarthome.config.core</id>
+              <id>org.openhab.core.config.core</id>
               <level>4</level>
               <autoStart>true</autoStart>
             </bundle>
             <bundle>
-              <id>org.eclipse.smarthome.core</id>
+              <id>org.openhab.core</id>
               <level>4</level>
               <autoStart>true</autoStart>
             </bundle>
             <bundle>
-              <id>org.eclipse.smarthome.core.thing</id>
+              <id>org.openhab.core.thing</id>
               <level>4</level>
               <autoStart>true</autoStart>
             </bundle>
             <bundle>
-              <id>org.eclipse.smarthome.core.thing.xml</id>
+              <id>org.openhab.core.thing.xml</id>
               <level>4</level>
               <autoStart>true</autoStart>
             </bundle>

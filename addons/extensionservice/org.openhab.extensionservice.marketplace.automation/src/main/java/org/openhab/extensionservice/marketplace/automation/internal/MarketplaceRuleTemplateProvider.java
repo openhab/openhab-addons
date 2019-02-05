@@ -19,12 +19,12 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
-import org.eclipse.smarthome.automation.parser.Parser;
-import org.eclipse.smarthome.automation.parser.ParsingException;
-import org.eclipse.smarthome.automation.template.RuleTemplate;
-import org.eclipse.smarthome.automation.template.RuleTemplateProvider;
 import org.eclipse.smarthome.core.common.registry.DefaultAbstractManagedProvider;
 import org.eclipse.smarthome.core.storage.StorageService;
+import org.openhab.core.automation.parser.Parser;
+import org.openhab.core.automation.parser.ParsingException;
+import org.openhab.core.automation.template.RuleTemplate;
+import org.openhab.core.automation.template.RuleTemplateProvider;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferencePolicy;

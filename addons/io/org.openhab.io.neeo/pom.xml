@@ -15,13 +15,13 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>org.openhab.core</groupId>
+			<groupId>org.openhab.core.bundles</groupId>
 			<artifactId>org.openhab.core</artifactId>
 			<version>${ohc.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.openhab.core</groupId>
-			<artifactId>org.openhab.ui.dashboard</artifactId>
+			<groupId>org.openhab.core.bundles</groupId>
+			<artifactId>org.openhab.core.ui.dashboard</artifactId>
 			<version>${ohc.version}</version>
 		</dependency>
 	</dependencies>
