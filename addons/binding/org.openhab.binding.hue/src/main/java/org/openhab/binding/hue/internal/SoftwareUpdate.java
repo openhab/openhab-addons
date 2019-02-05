@@ -15,7 +15,7 @@ package org.openhab.binding.hue.internal;
 /**
  * Details of a bridge firmware update.
  *
- * @author Q42, standalone Jue library (https://github.com/Q42/Jue)
+ * @author Q42 - Initial contribution
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
  */
 public class SoftwareUpdate {
@@ -26,7 +26,7 @@ public class SoftwareUpdate {
 
     /**
      * Returns the state of the update.
-     * 
+     *
      * <p>
      * Actual meaning currently undocumented
      *

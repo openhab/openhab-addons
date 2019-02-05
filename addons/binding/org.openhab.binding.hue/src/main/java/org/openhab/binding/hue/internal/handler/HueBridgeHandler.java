@@ -67,7 +67,7 @@ import org.slf4j.LoggerFactory;
  * the framework. All {@link HueLightHandler}s use the {@link HueBridgeHandler} to execute the actual commands.
  *
  * @author Dennis Nobel - Initial contribution
- * @author Oliver Libutzki
+ * @author Oliver Libutzki - Adjustments
  * @author Kai Kreuzer - improved state handling
  * @author Andre Fuechsel - implemented getFullLights(), startSearch()
  * @author Thomas Höfer - added thing properties
@@ -90,38 +90,34 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         public void run() {
             try {
                 pollingLock.lock();
-                try {
-                    if (!lastBridgeConnectionState) {
-                        // if user is not set in configuration try to create a new user on Hue bridge
-                        if (hueBridgeConfig.getUserName() == null) {
-                            hueBridge.getFullConfig();
-                        }
-                        lastBridgeConnectionState = tryResumeBridgeConnection();
+                if (!lastBridgeConnectionState) {
+                    // if user is not set in configuration try to create a new user on Hue bridge
+                    if (hueBridgeConfig.getUserName() == null) {
+                        hueBridge.getFullConfig();
                     }
-                    if (lastBridgeConnectionState) {
-                        doConnectedRun();
-                    }
-                } catch (UnauthorizedException | IllegalStateException e) {
-                    if (isReachable(hueBridge.getIPAddress())) {
+                    lastBridgeConnectionState = tryResumeBridgeConnection();
+                }
+                if (lastBridgeConnectionState) {
+                    doConnectedRun();
+                }
+            } catch (UnauthorizedException | IllegalStateException e) {
+                if (isReachable(hueBridge.getIPAddress())) {
+                    lastBridgeConnectionState = false;
+                    onNotAuthenticated();
+                } else {
+                    if (lastBridgeConnectionState || thing.getStatus() == ThingStatus.INITIALIZING) {
                         lastBridgeConnectionState = false;
-                        onNotAuthenticated();
-                    } else {
-                        if (lastBridgeConnectionState || thing.getStatus() == ThingStatus.INITIALIZING) {
-                            lastBridgeConnectionState = false;
-                            onConnectionLost();
-                        }
-                    }
-                } catch (Exception e) {
-                    if (hueBridge != null) {
-                        if (lastBridgeConnectionState) {
-                            logger.debug("Connection to Hue Bridge {} lost.", hueBridge.getIPAddress());
-                            lastBridgeConnectionState = false;
-                            onConnectionLost();
-                        }
+                        onConnectionLost();
                     }
                 }
-            } catch (Throwable t) {
-                logger.error("An unexpected error occurred: {}", t.getMessage(), t);
+            } catch (ApiException | IOException e) {
+                if (hueBridge != null) {
+                    if (lastBridgeConnectionState) {
+                        logger.debug("Connection to Hue Bridge {} lost.", hueBridge.getIPAddress());
+                        lastBridgeConnectionState = false;
+                        onConnectionLost();
+                    }
+                }
             } finally {
                 pollingLock.unlock();
             }

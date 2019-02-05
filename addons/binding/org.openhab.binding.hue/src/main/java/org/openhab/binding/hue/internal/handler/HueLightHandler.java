@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * command.
  *
  * @author Dennis Nobel - Initial contribution
- * @author Oliver Libutzki
+ * @author Oliver Libutzki - Adjustments
  * @author Kai Kreuzer - stabilized code
  * @author Andre Fuechsel - implemented switch off when brightness == 0, changed to support generic thing types, changed
  *         the initialization of properties
