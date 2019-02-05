@@ -13,8 +13,10 @@
 			<channel typeId="rawCommand" id="RawCommand"></channel>
 		</channels>
 		<properties>
-			<property name="vendor">Denon</property>
+			<property name="Vendor">Denon</property>
+			<property name="Type">HEOS Bridge</property>
 		</properties>
+		<representation-property>heosBridge</representation-property>
 		<config-description>
 			<parameter name="name" type="text">
 				<label>Player Type</label>
