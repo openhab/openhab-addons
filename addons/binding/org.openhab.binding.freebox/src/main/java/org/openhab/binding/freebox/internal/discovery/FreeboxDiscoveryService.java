@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.freebox.internal.discovery;
 
@@ -21,13 +25,12 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.matmaul.freeboxos.FreeboxException;
-import org.matmaul.freeboxos.airmedia.AirMediaReceiver;
-import org.matmaul.freeboxos.lan.LanHostConfig;
-import org.matmaul.freeboxos.lan.LanHostL3Connectivity;
-import org.matmaul.freeboxos.lan.LanHostsConfig;
 import org.openhab.binding.freebox.internal.FreeboxBindingConstants;
 import org.openhab.binding.freebox.internal.FreeboxDataListener;
+import org.openhab.binding.freebox.internal.api.FreeboxException;
+import org.openhab.binding.freebox.internal.api.model.FreeboxAirMediaReceiver;
+import org.openhab.binding.freebox.internal.api.model.FreeboxLanHost;
+import org.openhab.binding.freebox.internal.api.model.FreeboxLanHostL3Connectivity;
 import org.openhab.binding.freebox.internal.config.FreeboxAirPlayDeviceConfiguration;
 import org.openhab.binding.freebox.internal.config.FreeboxNetDeviceConfiguration;
 import org.openhab.binding.freebox.internal.config.FreeboxNetInterfaceConfiguration;
@@ -42,6 +45,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Garnier - Initial contribution
  * @author Laurent Garnier - add discovery settings
+ * @author Laurent Garnier - use new internal API manager
  */
 public class FreeboxDiscoveryService extends AbstractDiscoveryService implements FreeboxDataListener {
 
@@ -113,10 +117,9 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
         logger.debug("Starting Freebox discovery scan");
         if (bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
-                LanHostsConfig lanHostsConfiguration = bridgeHandler.getFbClient().getLanManager()
-                        .getAllLanHostsConfig();
-                List<AirMediaReceiver> airPlayDevices = bridgeHandler.getFbClient().getAirMediaManager().getReceivers();
-                onDataFetched(bridgeHandler.getThing().getUID(), lanHostsConfiguration, airPlayDevices);
+                List<FreeboxLanHost> lanHosts = bridgeHandler.getApiManager().getLanHosts();
+                List<FreeboxAirMediaReceiver> airPlayDevices = bridgeHandler.getApiManager().getAirMediaReceivers();
+                onDataFetched(bridgeHandler.getThing().getUID(), lanHosts, airPlayDevices);
             } catch (FreeboxException e) {
                 logger.warn("Error while requesting data for things discovery", e);
             }
@@ -124,7 +127,8 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
     }
 
     @Override
-    public void onDataFetched(ThingUID bridge, LanHostsConfig hostsConfig, List<AirMediaReceiver> airPlayDevices) {
+    public void onDataFetched(ThingUID bridge, List<FreeboxLanHost> lanHosts,
+            List<FreeboxAirMediaReceiver> airPlayDevices) {
         if (bridge == null) {
             return;
         }
@@ -141,21 +145,20 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
             thingDiscovered(discoveryResult);
         }
 
-        if (hostsConfig != null && (discoverNetDevice || discoverNetInterface)) {
+        if (lanHosts != null && (discoverNetDevice || discoverNetInterface)) {
             // Network devices
-            for (LanHostConfig hostConfig : hostsConfig.getConfig()) {
-                String mac = hostConfig.getMAC();
+            for (FreeboxLanHost host : lanHosts) {
+                String mac = host.getMAC();
                 if (StringUtils.isNotEmpty(mac)) {
                     if (discoverNetDevice) {
                         String uid = mac.replaceAll("[^A-Za-z0-9_]", "_");
                         thingUID = new ThingUID(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE, bridge, uid);
-                        String name = StringUtils.isEmpty(hostConfig.getPrimaryName())
-                                ? ("Freebox Network Device " + mac)
-                                : hostConfig.getPrimaryName();
+                        String name = StringUtils.isEmpty(host.getPrimaryName()) ? ("Freebox Network Device " + mac)
+                                : host.getPrimaryName();
                         logger.trace("Adding new Freebox Network Device {} to inbox", thingUID);
                         Map<String, Object> properties = new HashMap<>(1);
-                        if (StringUtils.isNotEmpty(hostConfig.getVendorName())) {
-                            properties.put(Thing.PROPERTY_VENDOR, hostConfig.getVendorName());
+                        if (StringUtils.isNotEmpty(host.getVendorName())) {
+                            properties.put(Thing.PROPERTY_VENDOR, host.getVendorName());
                         }
                         properties.put(FreeboxNetDeviceConfiguration.MAC_ADDRESS, mac);
                         discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
@@ -164,21 +167,21 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
                     }
 
                     // Network interfaces
-                    if (hostConfig.getL3connectivities() != null && discoverNetInterface) {
-                        for (LanHostL3Connectivity l3 : hostConfig.getL3connectivities()) {
+                    if (host.getL3Connectivities() != null && discoverNetInterface) {
+                        for (FreeboxLanHostL3Connectivity l3 : host.getL3Connectivities()) {
                             String addr = l3.getAddr();
                             if (StringUtils.isNotEmpty(addr)) {
                                 String uid = addr.replaceAll("[^A-Za-z0-9_]", "_");
                                 thingUID = new ThingUID(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE,
                                         bridge, uid);
                                 String name = addr;
-                                if (StringUtils.isNotEmpty(hostConfig.getPrimaryName())) {
-                                    name += " (" + (hostConfig.getPrimaryName() + ")");
+                                if (StringUtils.isNotEmpty(host.getPrimaryName())) {
+                                    name += " (" + (host.getPrimaryName() + ")");
                                 }
                                 logger.trace("Adding new Freebox Network Interface {} to inbox", thingUID);
                                 Map<String, Object> properties = new HashMap<>(1);
-                                if (StringUtils.isNotEmpty(hostConfig.getVendorName())) {
-                                    properties.put(Thing.PROPERTY_VENDOR, hostConfig.getVendorName());
+                                if (StringUtils.isNotEmpty(host.getVendorName())) {
+                                    properties.put(Thing.PROPERTY_VENDOR, host.getVendorName());
                                 }
                                 properties.put(FreeboxNetInterfaceConfiguration.IP_ADDRESS, addr);
                                 discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
@@ -193,14 +196,14 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
 
         if (airPlayDevices != null && discoverAirPlayReceiver) {
             // AirPlay devices
-            for (AirMediaReceiver device : airPlayDevices) {
+            for (FreeboxAirMediaReceiver device : airPlayDevices) {
                 String name = device.getName();
-                Boolean videoCapable = device.isVideoCapable();
+                boolean videoCapable = device.isVideoCapable();
                 logger.debug("AirPlay Device name {} video capable {}", name, videoCapable);
                 // The Freebox API allows pushing media only to receivers with photo or video capabilities
                 // but not to receivers with only audio capability; so receivers without video capability
                 // are ignored by the discovery
-                if (StringUtils.isNotEmpty(name) && Boolean.TRUE.equals(videoCapable)) {
+                if (StringUtils.isNotEmpty(name) && videoCapable) {
                     String uid = name.replaceAll("[^A-Za-z0-9_]", "_");
                     thingUID = new ThingUID(FreeboxBindingConstants.FREEBOX_THING_TYPE_AIRPLAY, bridge, uid);
                     logger.trace("Adding new Freebox AirPlay Device {} to inbox", thingUID);

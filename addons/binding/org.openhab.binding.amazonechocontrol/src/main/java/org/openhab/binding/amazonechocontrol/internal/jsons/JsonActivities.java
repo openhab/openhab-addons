@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
@@ -13,6 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link JsonActivity} encapsulate the GSON data of the push command for push activity
@@ -57,11 +62,15 @@ public class JsonActivities {
 
         public Description ParseDescription() {
             String description = this.description;
-            if (StringUtils.isEmpty(description)) {
+            if (StringUtils.isEmpty(description) || !description.startsWith("{") || !description.endsWith("}")) {
                 return new Description();
             }
             Gson gson = new Gson();
-            return gson.fromJson(description, Description.class);
+            try {
+                return gson.fromJson(description, Description.class);
+            } catch (JsonSyntaxException e) {
+                return new Description();
+            }
         }
     }
 }

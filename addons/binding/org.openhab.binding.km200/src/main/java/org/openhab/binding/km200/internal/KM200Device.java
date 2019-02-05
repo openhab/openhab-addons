@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.km200.internal;
 
@@ -16,6 +20,7 @@ import java.util.Map;
 import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jetty.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +39,11 @@ public class KM200Device {
     private final JsonParser jsonParser = new JsonParser();
     private final KM200Cryption comCryption;
     private final KM200Comm<KM200Device> deviceCommunicator;
+
+    /**
+     * shared instance of HTTP client for asynchronous calls
+     */
+    private HttpClient httpClient;
 
     /* valid IPv4 address of the KMxxx. */
     protected String ip4Address;
@@ -65,13 +75,14 @@ public class KM200Device {
     /* Is the first INIT done */
     protected boolean isIited;
 
-    public KM200Device() {
+    public KM200Device(HttpClient httpClient) {
+        this.httpClient = httpClient;
         serviceTreeMap = new HashMap<String, KM200ServiceObject>();
         setBlacklistMap(new ArrayList<String>());
         getBlacklistMap().add("/gateway/firmware");
         virtualList = new ArrayList<KM200ServiceObject>();
         comCryption = new KM200Cryption(this);
-        deviceCommunicator = new KM200Comm<KM200Device>(this);
+        deviceCommunicator = new KM200Comm<KM200Device>(this, httpClient);
     }
 
     public Boolean isConfigured() {

@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.smartmeter.connectors;
 
@@ -139,21 +143,27 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
 
     /**
      * Emitting of values shall happen here. If there is a event based emitting, this can be overriden.
-     * 
+     *
      * @param initMessage The message which shall be written before reading the values.
      * @param emitter The {@link FlowableEmitter} to emit the values to.
      * @throws IOException thrown if any reading error occurs.
      */
     protected void emitValues(byte @Nullable [] initMessage, FlowableEmitter<@Nullable T> emitter) throws IOException {
         if (!emitter.isCancelled()) {
-            emitter.onNext(readNext(initMessage));
-            emitter.onComplete();
+            try {
+                emitter.onNext(readNext(initMessage));
+                emitter.onComplete();
+            } catch (IOException e) {
+                if (!emitter.isCancelled()) {
+                    throw e;
+                }
+            }
         }
     }
 
     /**
      * Gets the name of the serial port.
-     * 
+     *
      * @return The actual name of the serial port.
      */
     public String getPortName() {

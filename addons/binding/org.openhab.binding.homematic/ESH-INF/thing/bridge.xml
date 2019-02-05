@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="homematic"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Homematic Bridge -->
+	<bridge-type id="bridge">
+		<label>Homematic Bridge</label>
+		<description>The Homematic bridge represents a Homematic gateway</description>
+
+		<channels>
+			<channel typeId="DUTY_CYCLE_RATIO" id="DUTY_CYCLE_RATIO" />
+		</channels>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="gatewayAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>Gateway Address</label>
+				<description>Network address of the Homematic gateway</description>
+			</parameter>
+			<parameter name="gatewayType" type="text">
+				<label>Gateway Type</label>
+				<description>Hint for the binding to identify the gateway type</description>
+				<limitToOptions>true</limitToOptions>
+				<default>auto</default>
+				<options>
+					<option value="auto">Auto</option>
+					<option value="ccu">CCU</option>
+					<option value="noccu">NoCCU</option>
+				</options>
+			</parameter>
+			<parameter name="callbackHost" type="text">
+				<context>network-address</context>
+				<label>Callback Network Address</label>
+				<description>Callback network address of the ESH runtime, default is auto-discovery</description>
+			</parameter>
+			<parameter name="bindAddress" type="text">
+				<context>network-address</context>
+				<label>Bind Address</label>
+				<description>The address the XML-/BINRPC server binds to, default is callbackHost</description>
+			</parameter>
+			<parameter name="xmlCallbackPort" type="integer">
+				<label>XML-RPC Callback Port</label>
+				<description>Callback port of the binding's XML-RPC server. If no value is specified, xmlCallbackPort starts with 9125 and counts up</description>
+			</parameter>
+			<parameter name="binCallbackPort" type="integer">
+				<label>BIN-RPC Callback Port</label>
+				<description>Callback port of the binding's BIN-RPC server. If no value is specified, xmlCallbackPort starts with 9126 and counts up</description>
+			</parameter>
+			<parameter name="timeout" type="integer">
+				<label>Timeout</label>
+				<description>The timeout in seconds for connections to a Homematic gateway</description>
+				<advanced>true</advanced>
+				<default>15</default>
+			</parameter>
+			<parameter name="discoveryTimeToLive" type="integer">
+				<label>Discovery Time To Live</label>
+				<description>The time to live for discovery results of a Homematic gateway in seconds. (default = -1 -> infinite)</description>
+				<advanced>true</advanced>
+				<default>-1</default>
+			</parameter>
+			<parameter name="socketMaxAlive" type="integer">
+				<label>Socket maxAlive</label>
+				<description>The maximum lifetime of a socket connection to and from a Homematic gateway in seconds (default = 900)</description>
+				<advanced>true</advanced>
+				<default>900</default>
+			</parameter>
+			<parameter name="rfPort" type="integer">
+				<label>RF port</label>
+				<description>The port number of the RF daemon</description>
+				<advanced>true</advanced>
+				<default>2001</default>
+			</parameter>
+			<parameter name="wiredPort" type="integer">
+				<label>Wired port</label>
+				<description>The port number of the HS485 daemon</description>
+				<advanced>true</advanced>
+				<default>2000</default>
+			</parameter>
+			<parameter name="hmIpPort" type="integer">
+				<label>HMIP port</label>
+				<description>The port number of the Homematic IP daemon</description>
+				<advanced>true</advanced>
+				<default>2010</default>
+			</parameter>
+			<parameter name="cuxdPort" type="integer">
+				<label>CUxD port</label>
+				<description>The port number of the CUxD daemon</description>
+				<advanced>true</advanced>
+				<default>8701</default>
+			</parameter>
+			<parameter name="groupPort" type="integer">
+				<label>Group port</label>
+				<description>The port number of the Group daemon</description>
+				<advanced>true</advanced>
+				<default>9292</default>
+			</parameter>
+			<parameter name="installModeDuration" type="integer" min="10" max="300" unit="s">
+				<label>Install mode duration</label>
+				<description>Time in seconds that the controller will be in install mode when a device discovery is initiated</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="unpairOnDeletion" type="boolean">
+				<label>Unpair Devices on Deletion</label>
+				<description>If set to true, devices are unpaired from the gateway when their corresponding things are removed. The option "factoryResetOnDeletion" also unpairs a device, so in order to avoid unpairing on deletion, both options need to be set to false!</description>
+				<advanced>true</advanced>
+				<default>false</default>
+			</parameter>
+			<parameter name="factoryResetOnDeletion" type="boolean">
+				<label>Factory Reset Devices on Deletion</label>
+				<description>If set to true, devices are factory reset when their corresponding things are removed. Due to the factory reset, the device will also be unpaired from the gateway, even if "unpairOnDeletion" is set to false!</description>
+				<advanced>true</advanced>
+				<default>false</default>
+			</parameter>
+
+		</config-description>
+	</bridge-type>
+
+	<channel-type id="DUTY_CYCLE_RATIO">
+		<item-type>Number</item-type>
+		<label>Duty Cycle</label>
+		<description>Current duty cycle usage</description>
+		<state readOnly="true" min="0" max="100" pattern="%d %%" />
+	</channel-type>
+</thing:thing-descriptions>

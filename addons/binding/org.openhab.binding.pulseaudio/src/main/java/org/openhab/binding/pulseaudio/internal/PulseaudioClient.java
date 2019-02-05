@@ -1,12 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.pulseaudio.internal;
+
+import static org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -137,21 +143,19 @@ public class PulseaudioClient {
         modules.addAll(Parser.parseModules(listModules()));
 
         items.clear();
-        if (PulseaudioBindingConstants.TYPE_FILTERS.get(PulseaudioBindingConstants.SINK_THING_TYPE.getId()) == true) {
+        if (TYPE_FILTERS.get(SINK_THING_TYPE.getId())) {
             logger.debug("reading sinks");
             items.addAll(Parser.parseSinks(listSinks(), this));
         }
-        if (PulseaudioBindingConstants.TYPE_FILTERS.get(PulseaudioBindingConstants.SOURCE_THING_TYPE.getId()) == true) {
+        if (TYPE_FILTERS.get(SOURCE_THING_TYPE.getId())) {
             logger.debug("reading sources");
             items.addAll(Parser.parseSources(listSources(), this));
         }
-        if (PulseaudioBindingConstants.TYPE_FILTERS
-                .get(PulseaudioBindingConstants.SINK_INPUT_THING_TYPE.getId()) == true) {
+        if (TYPE_FILTERS.get(SINK_INPUT_THING_TYPE.getId())) {
             logger.debug("reading sink-inputs");
             items.addAll(Parser.parseSinkInputs(listSinkInputs(), this));
         }
-        if (PulseaudioBindingConstants.TYPE_FILTERS
-                .get(PulseaudioBindingConstants.SOURCE_OUTPUT_THING_TYPE.getId()) == true) {
+        if (TYPE_FILTERS.get(SOURCE_OUTPUT_THING_TYPE.getId())) {
             logger.debug("reading source-outputs");
             items.addAll(Parser.parseSourceOutputs(listSourceOutputs(), this));
         }

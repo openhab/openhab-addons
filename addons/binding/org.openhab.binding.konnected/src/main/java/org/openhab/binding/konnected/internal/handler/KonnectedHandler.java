@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.konnected.internal.handler;
 
@@ -175,10 +179,12 @@ public class KonnectedHandler extends BaseThingHandler {
     }
 
     private void checkConfiguration() throws ConfigValidationException {
-        KonnectedConfiguration testConfig = getConfigAs(KonnectedConfiguration.class);
+        logger.debug("Checking configuration on thing {}", this.getThing().getUID().getAsString());
+        Configuration testConfig = this.getConfig();
         String testRetryCount = testConfig.get(RETRY_COUNT).toString();
         String testRequestTimeout = testConfig.get(REQUEST_TIMEOUT).toString();
-
+        logger.debug("The RequestTimeout Parameter is Configured as: {}", testRequestTimeout);
+        logger.debug("The Retry Count Parameter is Configured as: {}", testRetryCount);
         try {
             this.retryCount = Integer.parseInt(testRetryCount);
         } catch (NumberFormatException e) {
@@ -188,6 +194,7 @@ public class KonnectedHandler extends BaseThingHandler {
             this.retryCount = 2;
         }
         try {
+
             this.http.setRequestTimeout(Integer.parseInt(testRequestTimeout));
         } catch (NumberFormatException e) {
             logger.debug(
@@ -201,7 +208,7 @@ public class KonnectedHandler extends BaseThingHandler {
         }
 
         else {
-            this.config = testConfig;
+            this.config = getConfigAs(KonnectedConfiguration.class);
         }
     }
 
@@ -399,6 +406,7 @@ public class KonnectedHandler extends BaseThingHandler {
      * Prepares and sends the {@link KonnectedModulePayload} via the {@link KonnectedHttpUtils}
      *
      * @return response obtained from sending the settings payload to Konnected module defined by the thing
+     *
      * @throws KonnectedHttpRetryExceeded if unable to communicate with the Konnected module defined by the Thing
      */
     private String updateKonnectedModule() throws KonnectedHttpRetryExceeded {

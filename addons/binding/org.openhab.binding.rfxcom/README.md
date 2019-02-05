@@ -67,16 +67,12 @@ If you have any problems with JD2XX or you don't want to disable FTDI driver on 
 
 To do that via the PaperUI, manually add the generic RFXCOM device named `RFXCOM USB Transceiver`, with the description "This is universal RFXCOM transceiver bridge for manual configuration purposes".
 You will need to specify at least the serial port which has been assigned to the RFXCOM (see notes above).
-You may also need to change permissions on the serial port to allow openhab to access it and you may need to tell the java libraries about it by adding a line to &lt;openhab root&gt;/conf/environment such as:
-
-```
-EXTRA\_JAVA\_OPTS="-Dgnu.io.rxtx.SerialPorts=/dev/&lt;device&gt;
-```
+To configure the serial port within openHAB see the [general documentation about serial port configuration](/docs/administration/serial.html).
 
 Alternatively you can add the RFXCOM using a thing file such as:
 
 ```
-Bridge rfxcom:bridge:usb0 [ serialPort="/dev/&lt;device&gt;" ] {
+Bridge rfxcom:bridge:usb0 [ serialPort="/dev/<device>" ] {
     _thing definitions_...
 }
 ```
@@ -202,7 +198,7 @@ Sensors/actuators are easy to configure through the PaperUI.
 However, if you used a thing file for your RFXCOM you can also configure them manually there as well, for example:
 
 ```
-Bridge rfxcom:bridge:usb0 [ serialPort="/dev/&lt;device&gt;" ] {
+Bridge rfxcom:bridge:usb0 [ serialPort="/dev/<device>" ] {
     Thing lighting2 100001_1 [ deviceId="100001.1", subType="AC" ]
 }
 ```

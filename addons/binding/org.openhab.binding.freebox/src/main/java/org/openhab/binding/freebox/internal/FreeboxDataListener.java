@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.freebox.internal;
 
@@ -12,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.matmaul.freeboxos.airmedia.AirMediaReceiver;
-import org.matmaul.freeboxos.lan.LanHostsConfig;
+import org.openhab.binding.freebox.internal.api.model.FreeboxAirMediaReceiver;
+import org.openhab.binding.freebox.internal.api.model.FreeboxLanHost;
 
 /**
  * The {@link FreeboxDataListener} is notified by the bridge thing handler
@@ -21,6 +25,7 @@ import org.matmaul.freeboxos.lan.LanHostsConfig;
  *
  * @author Laurent Garnier - Initial contribution
  * @author Laurent Garnier - add discovery configuration
+ * @author Laurent Garnier - use new internal classes
  */
 public interface FreeboxDataListener {
 
@@ -36,8 +41,9 @@ public interface FreeboxDataListener {
      * from the Freebox server.
      *
      * @param bridge the Freebox server bridge.
-     * @param hostsConfig the LAN data received from the Freebox server.
+     * @param lanHosts the LAN data received from the Freebox server.
      * @param airPlayDevices the list of AirPlay devices received from the Freebox server.
      */
-    public void onDataFetched(ThingUID bridge, LanHostsConfig hostsConfig, List<AirMediaReceiver> airPlayDevices);
+    public void onDataFetched(ThingUID bridge, List<FreeboxLanHost> lanHosts,
+            List<FreeboxAirMediaReceiver> airPlayDevices);
 }

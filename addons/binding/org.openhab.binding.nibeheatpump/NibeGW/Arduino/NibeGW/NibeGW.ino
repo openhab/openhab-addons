@@ -1,22 +1,26 @@
-/*
-   Copyright (c) 2014-2018 by the respective copyright holders.
-
-   All rights reserved. This program and the accompanying materials
-   are made available under the terms of the Eclipse Public License v1.0
-   which accompanies this distribution, and is available at
-   http://www.eclipse.org/legal/epl-v10.html
-
-   ----------------------------------------------------------------------------
-
-    Author: pauli.anttila@gmail.com
-
-
-    2.11.2013   v1.00   Initial version.
-    3.11.2013   v1.01
-    27.6.2014   v1.02   Fixed compile error and added Ethernet initialization delay.
-    29.6.2015   v2.00   Bidirectional support.
-    18.2.2017   v3.00   Redesigned.
-*/
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * ----------------------------------------------------------------------------
+ *
+ *  Author: pauli.anttila@gmail.com
+ *
+ *
+ *  2.11.2013   v1.00   Initial version.
+ *  3.11.2013   v1.01
+ *  27.6.2014   v1.02   Fixed compile error and added Ethernet initialization delay.
+ *  29.6.2015   v2.00   Bidirectional support.
+ *  18.2.2017   v3.00   Redesigned.
+ */
 
 // ######### CONFIGURATION #######################
 

@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.avmfritz.internal.ahamodel;
 
@@ -24,7 +28,7 @@ public class DeviceModel extends AVMFritzBaseModel {
     private TemperatureModel temperature;
     private AlertModel alert;
     private ButtonModel button;
-    private ETSUnitInfo etsiunitinfo;
+    private ETSUnitInfoModel etsiunitinfo;
 
     public TemperatureModel getTemperature() {
         return temperature;
@@ -50,11 +54,11 @@ public class DeviceModel extends AVMFritzBaseModel {
         this.button = buttonModel;
     }
 
-    public ETSUnitInfo getEtsiunitinfo() {
+    public ETSUnitInfoModel getEtsiunitinfo() {
         return etsiunitinfo;
     }
 
-    public void setEtsiunitinfo(ETSUnitInfo etsiunitinfo) {
+    public void setEtsiunitinfo(ETSUnitInfoModel etsiunitinfo) {
         this.etsiunitinfo = etsiunitinfo;
     }
 
@@ -65,7 +69,7 @@ public class DeviceModel extends AVMFritzBaseModel {
     }
 
     @XmlType(propOrder = { "etsideviceid", "unittype", "interfaces" })
-    public static class ETSUnitInfo {
+    public static class ETSUnitInfoModel {
         public static final String HAN_FUN_UNITTYPE_SIMPLE_BUTTON = "273";
         public static final String HAN_FUN_UNITTYPE_SIMPLE_DETECTOR = "512";
         public static final String HAN_FUN_UNITTYPE_MAGNETIC_CONTACT = "513";

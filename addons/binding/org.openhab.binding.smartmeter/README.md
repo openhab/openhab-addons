@@ -1,6 +1,6 @@
 # SmartMeter Binding
 
-The Smartreader binding is able to read SML messages (PUSH) and supports IEC 62056-21 modes A,B,C (PULL) and D (PUSH).
+This binding retrieves and reads SML messages (PUSH) and supports IEC 62056-21 modes A,B,C (PULL) and D (PUSH).
 
 
 ## Supported Things
@@ -20,11 +20,9 @@ The smartmeter thing requires the serial port where the meter device is connecte
 |-----------|------|-------------|----------|---------|
 | `port` | The serial port to connect to| URL to use for playing notification sounds, e.g. `/dev/ttyUSB0` | yes | |
 | `refresh` | The refresh interval in seconds | Defines at which interval the values of the meter device shall be read | no | 20 |
-| `mode` | The protocol mode to use | Can be 'SML' (PUSH mode), 'ABC' (PULL)or D (PUSH) | no | SML |
+| `mode` | The protocol mode to use | Can be `SML` (PUSH mode), `ABC` (PULL) or `D` (PUSH) | no | `SML` |
 | `baudrateChangeDelay` | Delay of baudrate change in ms | USB to serial converters often require a delay of up to 250ms after the ACK before changing baudrate (only relevant for 'C' mode) | no | 0 |
-| `baudrate` | (initial) Baudrate | The baudrate of the serial port. If set to 'auto', it will be negotiated with the meter. The default is 300 baud for modes A, B, and C and 2400 baud for mode D, and 9600 baud for SML. | no | AUTO |
-
-The default is 300 baud for modes A, B, and C and 2400 baud for mode D
+| `baudrate` | (initial) Baudrate | The baudrate of the serial port. If set to `AUTO`, it will be negotiated with the meter. The default is `300` baud for modes A, B, and C and `2400` baud for mode D, and `9600` baud for SML. | no | `AUTO` |
 
 ## Channels
 
@@ -107,17 +105,18 @@ Any help/contribution is appreciated!
 
 The binding has been successfully tested with below hardware configuration:
 
-SML PUSH mode:
+### SML PUSH mode
 
 - EMH EDL300 meter connected the IR-Reader USB from open hardware project in volkszaehler
 - EMH eHZ-IW8E2A
 - ISKRA MT681
 - EMH eHZ-K
 
-IEC 62056-21 Mode C:
+### IEC 62056-21 Mode C
 
 - Apator EC3 with IR-Reader from volkszaehler
+- Landis+Gyr E650 with IR-Reader from volkszaehler
 
-IEC 62056-21 Mode D:
+### IEC 62056-21 Mode D
 
 - Hager EHZ 361Z5 and EHZ 161L5

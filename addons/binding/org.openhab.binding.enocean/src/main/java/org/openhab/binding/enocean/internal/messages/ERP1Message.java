@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.enocean.internal.messages;
 
@@ -76,11 +80,16 @@ public class ERP1Message extends ESP3Packet {
             rorg = RORG.getRORG(payload[0]);
 
             switch (rorg) {
-                case RPS: // treat each RPS message as a teach in message
+                case RPS:
+                    if (dataLength >= 6) {
+                        senderId = Arrays.copyOfRange(payload, 2, 6);
+                        teachIn = false;
+                    }
+                    break;
                 case _1BS:
                     if (dataLength >= 6) {
                         senderId = Arrays.copyOfRange(payload, 2, 6);
-                        teachIn = rorg == RORG.RPS || ((_1BSMessage.TeachInBit & payload[1]) == 0);
+                        teachIn = ((_1BSMessage.TeachInBit & payload[1]) == 0);
                     }
                     break;
                 case _4BS:

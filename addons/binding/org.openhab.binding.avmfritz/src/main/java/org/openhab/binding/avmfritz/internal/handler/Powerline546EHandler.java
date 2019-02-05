@@ -1,22 +1,27 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.avmfritz.internal.handler;
 
 import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -28,6 +33,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.BindingConstants;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
@@ -59,12 +67,13 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
      *
      * @param bridge Bridge object representing a FRITZ!Powerline 546E
      */
-    public Powerline546EHandler(Bridge bridge, HttpClient httpClient) {
-        super(bridge, httpClient);
+    public Powerline546EHandler(Bridge bridge, HttpClient httpClient,
+            AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider) {
+        super(bridge, httpClient, stateDescriptionProvider);
     }
 
     @Override
-    public void addDeviceList(ArrayList<AVMFritzBaseModel> devicelist) {
+    public void addDeviceList(List<AVMFritzBaseModel> devicelist) {
         Optional<AVMFritzBaseModel> optionalDevice = devicelist.stream()
                 .filter(it -> it.getIdentifier().equals(getIdentifier())).findFirst();
         if (optionalDevice.isPresent()) {
@@ -127,6 +136,10 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getIdWithoutGroup();
         logger.debug("Handle command '{}' for channel {}", command, channelId);
+        if (command == RefreshType.REFRESH) {
+            handleRefreshCommand();
+            return;
+        }
         FritzAhaWebInterface fritzBox = getWebInterface();
         if (fritzBox == null) {
             logger.debug("Cannot handle command '{}' because connection is missing", command);
@@ -145,6 +158,12 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler {
             case CHANNEL_POWER:
             case CHANNEL_VOLTAGE:
                 logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
+                break;
+            case CHANNEL_APPLY_TEMPLATE:
+                if (command instanceof StringType) {
+                    fritzBox.applyTemplate(command.toString());
+                }
+                updateState(CHANNEL_APPLY_TEMPLATE, UnDefType.UNDEF);
                 break;
             case CHANNEL_OUTLET:
                 if (command instanceof OnOffType) {

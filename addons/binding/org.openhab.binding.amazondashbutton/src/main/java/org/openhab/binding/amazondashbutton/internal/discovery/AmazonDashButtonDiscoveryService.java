@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.amazondashbutton.internal.discovery;
 
@@ -15,6 +19,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -31,8 +37,6 @@ import org.pcap4j.core.PcapNetworkInterface;
 import org.pcap4j.util.MacAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Sets;
 
 /**
  * The {@link AmazonDashButtonDiscoveryService} is responsible for discovering Amazon Dash Buttons. It does so by
@@ -59,7 +63,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
      * The Amazon Dash button vendor prefixes
      */
     // @formatter:off
-    private static final Set<String> VENDOR_PREFIXES = Sets.newHashSet(
+    private static final Set<String> VENDOR_PREFIXES = Collections.unmodifiableSet(Stream.of(
             "F0:D2:F1",
             "88:71:E5",
             "FC:A1:83",
@@ -85,7 +89,7 @@ public class AmazonDashButtonDiscoveryService extends AbstractDiscoveryService i
             "84:D6:D0",
             "34:D2:70",
             "B4:7C:9C"
-        );
+        ).collect(Collectors.toSet()));
     // @formatter:on
 
     /**

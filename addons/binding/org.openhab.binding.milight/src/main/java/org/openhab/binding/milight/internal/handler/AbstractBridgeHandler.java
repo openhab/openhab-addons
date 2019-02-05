@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.milight.internal.handler;
 
@@ -36,12 +40,12 @@ public abstract class AbstractBridgeHandler extends BaseBridgeHandler {
     protected volatile boolean preventReinit = false;
     protected BridgeHandlerConfig config = new BridgeHandlerConfig();
     protected @Nullable InetAddress address;
-    @NonNullByDefault({})
-    protected DatagramSocket socket;
-    protected int port;
+    protected @NonNullByDefault({}) DatagramSocket socket;
+    protected int bridgeOffset;
 
-    public AbstractBridgeHandler(Bridge bridge) {
+    public AbstractBridgeHandler(Bridge bridge, int bridgeOffset) {
         super(bridge);
+        this.bridgeOffset = bridgeOffset;
     }
 
     @Override
@@ -73,19 +77,14 @@ public abstract class AbstractBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         config = getConfigAs(BridgeHandlerConfig.class);
 
-        try {
-            address = InetAddress.getByName(config.host);
-        } catch (UnknownHostException ignored) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No address known!");
-            return;
-        }
-
-        port = config.port;
-
-        // Version 1/2 do not support response messages / detection. We therefore directly call bridgeDetected(addr).
-        if (config.bridgeid.length() != 12) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridgeID of length 12!");
-            return;
+        if (!config.host.isEmpty()) {
+            try {
+                address = InetAddress.getByName(config.host);
+            } catch (UnknownHostException ignored) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Address set, but is invalid!");
+                return;
+            }
         }
 
         startConnectAndKeepAlive();

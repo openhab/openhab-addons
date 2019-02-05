@@ -1,0 +1,93 @@
+<section>
+	<div class="item-edit white-bg" ng-if="advancedMode" ng-controller="ItemConfigController">
+		<div class="header-toolbar" ng-if="!linking">
+			<md-button ng-click="refresh()" aria-label="Refresh"> <i class="material-icons">refresh</i></md-button>
+		</div>
+		<div class="section-header" ng-show="!linking">
+			<div class="container">
+				<div class="toolbar">
+					<md-button class="md-fab" ng-if="configMode=='edit'" class="md-primary" ng-click="update(item)"> <i class="material-icons">check</i></md-button>
+					<md-button class="md-fab" ng-disabled="form.itemForm.$invalid" ng-if="configMode=='create'" class="md-primary" ng-click="create(item,true)"> <i class="material-icons">add</i></md-button>
+				</div>
+			</div>
+		</div>
+		<div class="container content itemConfig">
+			<div aria-label="Configure item">
+				<form name="form.itemForm">
+					<div class="row" ng-if="configMode=='create'">
+						<div class="parameter col-xs-12">
+							<label for="itemaName" class="config-textInput" style="vertical-align: super; margin-bottom: 0px;">Name</label>
+							<md-input-container class="col-xs-12 noPadding noMargin"> <input ng-disabled="!item.editable" ng-init="focus=false" required itemname name="itemName" ng-model="item.name" ng-focus="focus=true" ng-pattern="/^[a-z0-9_]+$/i" ng-trim="false" />
+							<div ng-messages="form.itemForm.itemName.$error" ng-show="(form.itemForm.itemName.$error && focus) || (form.itemForm.itemName.$dirty && focus)">
+								<div ng-message="nameValidator">Item name already exists</div>
+								<div ng-message="required">Field is required</div>
+								<div ng-message="pattern">Item name can contain alphanumeric characters and underscore</div>
+							</div>
+							</md-input-container>
+						</div>
+					</div>
+					<div class="row">
+						<div class="parameter col-sm-6 col-xs-12">
+							<label for="itemLabel" class="config-textInput" style="vertical-align: super; margin-bottom: 0px;">Label</label>
+							<md-input-container class="col-xs-12 noPadding noMargin"> <input ng-disabled="!item.editable" name="itemLabel" ng-model="item.label"> </md-input-container>
+						</div>
+						<div class="row parameter col-sm-6 col-xs-12">
+							<div class="col-xs-10">
+								<label for="itemCategory" class="config-textInput" style="vertical-align: super; margin-bottom: 0px;">Category</label>
+								<md-input-container class="col-xs-12 noPadding noMargin"> <input ng-disabled="!item.editable" ng-blur="renderIcon()" name="itemCategory" ng-model="item.category"> </md-input-container>
+							</div>
+							<div class="col-xs-2">
+								<img width="48" onload="this.className=''" ng-src="{{srcURL}}" onerror="this.className='itemIcon-text'" />
+							</div>
+						</div>
+					</div>
+					<div class="row itemSet">
+						<div class="parameter col-sm-6 col-xs-12">
+							<label for="itemType" class="config-textInput" style="vertical-align: super; margin-bottom: 0px;">Type</label>
+							<md-input-container class="col-xs-12 noPadding noMargin"> <md-select ng-disabled="!item.editable" placeholder="select" isrequired="true" required name="itemType" ng-model="item.type"> <md-option ng-value="option" ng-repeat="option in types"> <span style="display: inline-block;"> {{option}} </span> </md-option> </md-select>
+							<div ng-messages="form.itemForm.itemType.$error">
+								<div ng-message="required">Field is required</div>
+							</div>
+							</md-input-container>
+						</div>
+						<div class="parameter col-sm-6 col-xs-12" ng-if="item.type=='Group'">
+							<label for="itemBaseType" class="config-textInput" style="vertical-align: super; margin-bottom: 0px;">Base type</label>
+							<md-input-container class="col-xs-12 noPadding noMargin"> <md-select ng-disabled="!item.editable" placeholder="select" isrequired="true" required name="itemBaseType" ng-model="item.groupType"> <md-option ng-value="option" ng-repeat="option in groupTypes"> <span style="display: inline-block;"> {{option}} </span> </md-option> </md-select>
+							<div ng-messages="form.itemForm.itemBaseType.$error">
+								<div ng-message="required">Field is required</div>
+							</div>
+							</md-input-container>
+						</div>
+						<div class="parameter col-sm-6 col-xs-12" ng-if="item.type=='Number'">
+							<label for="itemDimension" class="config-textInput" style="vertical-align: super; margin-bottom: 0px;">Dimension</label>
+							<md-input-container class="col-xs-12 noPadding noMargin"> <md-select ng-disabled="!item.editable" placeholder="select" isrequired="false" name="itemDimension" ng-model="item.dimension"> <md-option ng-value="option" ng-repeat="option in dimensions"> <span style="display: inline-block;"> {{option}} </span> </md-option> </md-select>
+							</md-input-container>
+						</div>
+					</div>
+					<div class="row" ng-if="item.type=='Group' && item.groupType && item.groupType!='None'">
+						<div class="parameter col-sm-6 col-xs-12">
+							<label for="groupFunction" class="config-textInput" style="vertical-align: super; margin-bottom: 0px;">Function</label>
+							<md-input-container class="col-xs-12 noPadding noMargin"> <md-select ng-disabled="!item.editable" placeholder="select" isrequired="true" required name="groupFunction" ng-model="item.function.name"> <md-option ng-value="option.name" ng-repeat="option in functions"> <span style="display: inline-block;"> {{option.value}} </span> </md-option> </md-select>
+								<div ng-messages="form.itemForm.groupFunction.$error">
+									<div ng-message="required">Field is required</div>
+								</div>
+							</md-input-container>
+						</div>
+					</div>
+					<div class="row includeConfig">
+						<fieldset>
+							<legend>Parent groups</legend>
+							<div class="itemSet">
+								<md-chips class="col-xs-12 col-sm-10" md-on-add="createChip($chip,'childItems')" md-on-remove="removeChip($index)" name="itemGroups" md-require-match="true" md-autocomplete-snap ng-show="items && items.length>0" md-on-select="setParentItem($chip)" ng-model="item.groupNames" placeholder="Assign to a group"> <md-autocomplete ng-disabled="!item.editable" md-search-text="searchText" md-items="child in searchItem(searchText,true)" md-item-text="child" md-min-length="0"> <span md-highlight-text="searchText">{{child}}</span> </md-autocomplete> <md-chip-template> <span>{{$chip}}</span> </md-chip-template> </md-chips>
+								<div class="col-xs-12 col-sm-2">
+									<button ng-disabled="!selectedParent" class="md-button" ng-click="openItem()">Open item</button>
+								</div>
+							</div>
+						</fieldset>
+					</div>
+					<metadata-list item="item"></metadata-list>
+				</form>
+			</div>
+		</div>
+	</div>
+</section>

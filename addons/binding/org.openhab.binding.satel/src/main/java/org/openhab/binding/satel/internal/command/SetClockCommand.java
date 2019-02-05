@@ -1,16 +1,19 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.satel.internal.command;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -23,27 +26,22 @@ public class SetClockCommand extends ControlCommand {
 
     public static final byte COMMAND_CODE = (byte) 0x8e;
 
-    private static final ThreadLocal<DateFormat> DATETIME_FORMAT = new ThreadLocal<DateFormat>() {
-        @Override
-        protected DateFormat initialValue() {
-            return new SimpleDateFormat("yyyyMMddHHmmss");
-        }
-    };
+    private static final DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     /**
      * Creates new command class instance.
      *
      * @param dateTime
-     *            date and time to set
+     *                     date and time to set
      * @param userCode
-     *            code of the user on behalf the control is made
+     *                     code of the user on behalf the control is made
      */
-    public SetClockCommand(Calendar dateTime, String userCode) {
+    public SetClockCommand(LocalDateTime dateTime, String userCode) {
         super(COMMAND_CODE, ArrayUtils.addAll(userCodeToBytes(userCode), getDateTimeBytes(dateTime)));
     }
 
-    private static byte[] getDateTimeBytes(Calendar dateTime) {
-        return DATETIME_FORMAT.get().format(dateTime.getTime()).getBytes();
+    private static byte[] getDateTimeBytes(LocalDateTime dateTime) {
+        return DATETIME_FORMAT.format(dateTime).getBytes();
     }
 
 }

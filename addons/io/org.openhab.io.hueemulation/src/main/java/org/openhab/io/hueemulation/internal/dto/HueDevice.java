@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.io.hueemulation.internal.dto;
 
@@ -27,6 +31,7 @@ import org.openhab.io.hueemulation.internal.dto.HueStateColorBulb.ColorMode;
  *
  * @author Dan Cunningham - Initial contribution
  * @author David Graeff - Color lights and plugs
+ * @author Florian Lentz - XY Support
  */
 @NonNullByDefault
 public class HueDevice {
@@ -208,10 +213,8 @@ public class HueDevice {
         Command command = null;
         if (newState.on != null) {
             try {
-                if (as(HueStatePlug.class).on != newState.on) {
-                    as(HueStatePlug.class).on = newState.on;
-                    command = OnOffType.from(newState.on);
-                }
+                as(HueStatePlug.class).on = newState.on;
+                command = OnOffType.from(newState.on);
                 successApplied.put("on", newState.on);
             } catch (ClassCastException e) {
                 errorApplied.add("on");
@@ -220,10 +223,8 @@ public class HueDevice {
 
         if (newState.bri != null) {
             try {
-                if (as(HueStateBulb.class).bri != newState.bri) {
-                    as(HueStateBulb.class).bri = newState.bri;
-                    command = new PercentType(newState.bri * 100 / HueStateBulb.MAX_BRI);
-                }
+                as(HueStateBulb.class).bri = newState.bri;
+                command = new PercentType((int) (newState.bri * 100.0 / HueStateBulb.MAX_BRI + 0.5));
                 successApplied.put("bri", newState.bri);
             } catch (ClassCastException e) {
                 errorApplied.add("bri");
@@ -234,11 +235,13 @@ public class HueDevice {
             try {
                 int newBri = as(HueStateBulb.class).bri + newState.bri_inc;
                 if (newBri < 0 || newBri > HueStateBulb.MAX_BRI) {
-                    throw new ClassCastException();
+                    throw new IllegalArgumentException();
                 }
-                command = new PercentType(newBri * 100 / HueStateBulb.MAX_BRI);
+                command = new PercentType((int) (newBri * 100.0 / HueStateBulb.MAX_BRI + 0.5));
                 successApplied.put("bri", newState.bri);
             } catch (ClassCastException e) {
+                errorApplied.add("bri_inc");
+            } catch (IllegalArgumentException e) {
                 errorApplied.add("bri_inc");
             }
         }
@@ -261,13 +264,15 @@ public class HueDevice {
                 HueStateColorBulb c = as(HueStateColorBulb.class);
                 int newV = c.sat + newState.sat_inc;
                 if (newV < 0 || newV > HueStateColorBulb.MAX_SAT) {
-                    throw new ClassCastException();
+                    throw new IllegalArgumentException();
                 }
                 c.colormode = ColorMode.hs;
                 c.sat = newV;
                 command = c.toHSBType();
                 successApplied.put("sat", newState.sat);
             } catch (ClassCastException e) {
+                errorApplied.add("sat_inc");
+            } catch (IllegalArgumentException e) {
                 errorApplied.add("sat_inc");
             }
         }
@@ -289,13 +294,15 @@ public class HueDevice {
                 HueStateColorBulb c = as(HueStateColorBulb.class);
                 int newV = c.hue + newState.hue_inc;
                 if (newV < 0 || newV > HueStateColorBulb.MAX_HUE) {
-                    throw new ClassCastException();
+                    throw new IllegalArgumentException();
                 }
                 c.colormode = ColorMode.hs;
                 c.hue = newV;
                 command = c.toHSBType();
                 successApplied.put("hue", newState.hue);
             } catch (ClassCastException e) {
+                errorApplied.add("hue_inc");
+            } catch (IllegalArgumentException e) {
                 errorApplied.add("hue_inc");
             }
         }
@@ -308,11 +315,9 @@ public class HueDevice {
                 // Adjusting the color temperature implies setting the mode to ct
                 if (state instanceof HueStateColorBulb) {
                     HueStateColorBulb c = as(HueStateColorBulb.class);
-                    if (c.colormode != ColorMode.ct || c.sat > 0) {
-                        c.sat = 0;
-                        c.colormode = ColorMode.ct;
-                        command = c.toHSBType();
-                    }
+                    c.sat = 0;
+                    c.colormode = ColorMode.ct;
+                    command = c.toHSBType();
                 }
                 successApplied.put("colormode", ColorMode.ct);
                 successApplied.put("sat", 0);
@@ -352,10 +357,37 @@ public class HueDevice {
             successApplied.put("effect", newState.effect); // Pretend that worked
         }
         if (newState.xy != null) {
-            errorApplied.add("xy");
+            try {
+                HueStateColorBulb c = as(HueStateColorBulb.class);
+                c.colormode = ColorMode.xy;
+                c.bri = as(HueStateBulb.class).bri;
+                c.xy[0] = newState.xy.get(0);
+                c.xy[1] = newState.xy.get(1);
+                command = c.toHSBType();
+                successApplied.put("xy", newState.xy);
+            } catch (ClassCastException e) {
+                errorApplied.add("xy");
+            }
         }
         if (newState.xy_inc != null) {
-            errorApplied.add("xy_inc");
+            try {
+                HueStateColorBulb c = as(HueStateColorBulb.class);
+                double newX = c.xy[0] + newState.xy_inc.get(0);
+                double newY = c.xy[1] + newState.xy_inc.get(1);
+                if (newX < 0 || newX > 1 || newY < 0 || newY > 1) {
+                    throw new IllegalArgumentException();
+                }
+                c.colormode = ColorMode.xy;
+                c.bri = as(HueStateBulb.class).bri;
+                c.xy[0] = newX;
+                c.xy[1] = newY;
+                command = c.toHSBType();
+                successApplied.put("xy", newState.xy_inc);
+            } catch (ClassCastException e) {
+                errorApplied.add("xy_inc");
+            } catch (IllegalArgumentException e) {
+                errorApplied.add("xy_inc");
+            }
         }
 
         return command;

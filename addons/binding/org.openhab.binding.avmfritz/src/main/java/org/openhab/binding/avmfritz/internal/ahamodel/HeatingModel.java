@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.avmfritz.internal.ahamodel;
 
@@ -19,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * See {@link DevicelistModel}.
+ * See {@link DeviceListModel}.
  *
  * @author Christoph Weitkamp - Initial contribution
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
@@ -51,7 +55,7 @@ public class HeatingModel {
     private BigDecimal batterylow;
     private BigDecimal windowopenactiv;
     private BigDecimal battery;
-    private Nextchange nextchange;
+    private NextChangeModel nextchange;
     private BigDecimal summeractive;
     private BigDecimal holidayactive;
 
@@ -165,11 +169,11 @@ public class HeatingModel {
         this.battery = battery;
     }
 
-    public Nextchange getNextchange() {
+    public NextChangeModel getNextchange() {
         return nextchange;
     }
 
-    public void setNextchange(Nextchange nextchange) {
+    public void setNextchange(NextChangeModel nextchange) {
         this.nextchange = nextchange;
     }
 
@@ -250,7 +254,7 @@ public class HeatingModel {
     }
 
     @XmlType(propOrder = { "endperiod", "tchange" })
-    public static class Nextchange {
+    public static class NextChangeModel {
         private int endperiod;
         private BigDecimal tchange;
 

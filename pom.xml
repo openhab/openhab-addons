@@ -1,17 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab</groupId>
     <artifactId>pom-tycho</artifactId>
-    <version>2.4.0-SNAPSHOT</version>
-    <relativePath></relativePath>
+    <version>2.5.0-SNAPSHOT</version>
+    <relativePath/>
   </parent>
 
   <groupId>org.openhab</groupId>
   <artifactId>pom-addons2</artifactId>
-  <version>2.4.0-SNAPSHOT</version>
+  <version>2.5.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>openHAB 2 Add-ons</name>
 
@@ -24,8 +23,8 @@
 
   <licenses>
     <license>
-      <name>Eclipse Public License</name>
-      <url>http://www.eclipse.org/legal/epl-v10.html</url>
+      <name>Eclipse Public License 2.0</name>
+      <url>https://www.eclipse.org/legal/epl-2.0/</url>
     </license>
   </licenses>
 
@@ -58,7 +57,7 @@
   </distributionManagement>
 
   <properties>
-    <ohc.version>2.4.0-SNAPSHOT</ohc.version>
+    <ohc.version>2.5.0-SNAPSHOT</ohc.version>
   </properties>
 
   <repositories>
@@ -162,4 +161,17 @@
     </plugins>
   </build>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.openhab.core</groupId>
+      <artifactId>org.openhab.core</artifactId>
+      <version>${project.version}</version>
+    </dependency>    
+    <dependency>
+      <groupId>org.openhab.core</groupId>
+      <artifactId>org.openhab.ui.dashboard</artifactId>
+      <version>${project.version}</version>
+    </dependency>    
+  </dependencies>
+  
 </project>

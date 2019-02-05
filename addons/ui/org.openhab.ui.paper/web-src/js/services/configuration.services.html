@@ -1,0 +1,27 @@
+<section class="fill-height">
+    <div class="services fill-height" ng-controller="ServicesController">
+        <md-tabs md-stretch-tabs="always" class="section-tabs" md-selected="selectedTabIndex"> <md-tab ng-repeat="tab in tabs track by tab.category" label="{{tab.category}}" layout-fill md-on-select="onSelectedTab(tab)"> <md-tab-content layout-fill="">
+
+        <div class="container">
+            <div class="services row">
+                <div class="col-md-4 col-sm-6 col-xs-12" ng-repeat="service in tab.services | orderBy:'label'">
+                    <div class="card text-left" data-service-id="{{service.id}}">
+                        <div class="clabel">
+                            <h3 class="md-title">{{service.label}}</h3>
+
+                            <p class="text-left">{{service.id}}</p>
+                            <div class="text-right">
+                                <md-button ng-if="!service.multiple" aria-label="Configure" ng-click="configure(service.id, service.configDescriptionURI, $event)">Configure</md-button>
+                                <md-button ng-if="service.multiple" aria-label="Manage" ng-click="navigateTo(service.id)">Manage</md-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center" ng-show="services.length === 0">
+                <span>No configurable service active yet. You can bootstrap a service by adding a configuration.</span>
+            </p>
+        </div>
+        </md-tab-content></md-tab></md-tabs>
+    </div>
+</section>

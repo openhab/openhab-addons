@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.knx.internal.handler;
 
-import static org.openhab.binding.knx.KNXBindingConstants.*;
+import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -34,14 +38,13 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.knx.KNXBindingConstants;
-import org.openhab.binding.knx.KNXTypeMapper;
-import org.openhab.binding.knx.client.InboundSpec;
-import org.openhab.binding.knx.client.OutboundSpec;
-import org.openhab.binding.knx.handler.AbstractKNXThingHandler;
+import org.openhab.binding.knx.internal.KNXBindingConstants;
+import org.openhab.binding.knx.internal.KNXTypeMapper;
 import org.openhab.binding.knx.internal.channel.KNXChannelType;
 import org.openhab.binding.knx.internal.channel.KNXChannelTypes;
 import org.openhab.binding.knx.internal.client.AbstractKNXClient;
+import org.openhab.binding.knx.internal.client.InboundSpec;
+import org.openhab.binding.knx.internal.client.OutboundSpec;
 import org.openhab.binding.knx.internal.config.DeviceConfig;
 import org.openhab.binding.knx.internal.dpt.KNXCoreTypeMapper;
 import org.slf4j.Logger;
@@ -341,26 +344,11 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
                         if (type != null) {
                             OutboundSpec commandSpec = selector.getCommandSpec(configuration, typeHelper, type);
                             if (commandSpec != null) {
-                                // Only process Control Channel, if it is not blocked after a GroupValueResponse was
-                                // sent to KNX by openHAB (set from: onGroupRead "Send REFRESH...").
-                                if (!groupAddressesWriteBlockedOnce.remove(commandSpec.getGroupAddress())) {
-                                    GroupAddress mainGa = getKNXChannelMainGA(channel);
-                                    // If destination is mainGA, for mainGA expose next expected GroupValueWrite from
-                                    // openHAB to KNX. Simulates openHAB to handle this GA like a Hardware-DTP where
-                                    // T-flag (german:Ü) is not set.
-                                    if (destination.equals(mainGa)) {
-                                        logger.trace("onGroupWrite mainGA groupAddressesWriteExposeOnce: '{}'",
-                                                destination);
-                                        groupAddressesWriteBlockedOnce.add(destination);
-                                    }
-                                    processDataReceived(destination, asdu, listenSpec, channel.getUID());
-                                }
                                 rememberRespondingSpec(commandSpec, true);
                             }
                         }
-                    } else {
-                        processDataReceived(destination, asdu, listenSpec, channel.getUID());
                     }
+                    processDataReceived(destination, asdu, listenSpec, channel.getUID());
                 }
             });
         }
@@ -426,21 +414,4 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
         return KNXChannelTypes.getType(channel.getChannelTypeUID());
     }
 
-    private GroupAddress getKNXChannelMainGA(Channel channel) {
-        return getKNXChannelType(channel).getWriteAddresses(channel.getConfiguration()).stream().findFirst().get();
-    }
-
-    private @Nullable Type getRespondingSpecValue(GroupAddress destination) {
-        Optional<OutboundSpec> os = groupAddressesRespondingSpec.stream().filter(spec -> {
-            GroupAddress groupAddress = spec.getGroupAddress();
-            if (groupAddress != null) {
-                return groupAddress.equals(destination);
-            }
-            return false;
-        }).findFirst();
-        if (os.isPresent()) {
-            return os.get().getType();
-        }
-        return null;
-    }
 }

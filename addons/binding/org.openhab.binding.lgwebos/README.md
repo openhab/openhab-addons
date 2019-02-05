@@ -15,7 +15,8 @@ The TV must be connected to the same network as openHAB.
 Under network settings allow "LG CONNECT APPS" to connect.
 
 Note: Under general settings allow mobile applications to turn on the TV, if this option is available.
-In combination with the wake on LAN binding this will allow you to start the TV via openHAB.
+On newer models this setting may also be called "Mobile TV On > Turn On Via WiFi".
+In combination with the wake on LAN binding this will allow you to start the TV via openHAB. Please see demo.items and demo.rules example below.
 
 ## Binding Configuration
 
@@ -23,14 +24,16 @@ The binding has only one configuration parameter, which is only required if the 
 
 | Name    | Description                                                          |
 |---------|----------------------------------------------------------------------|
-| LocalIP | This is the local IP of your openHAB host on the network. (Optional) |
+| localIP | This is the local IP of your openHAB host on the network. (Optional) |
 
 If LocalIP is not set, the binding will use openHAB's primary IP address, which may be configured under network settings.
 
 ## Discovery
 
 TVs are auto discovered through SSDP in the local network.
-The binding broadcasts a search message via UDP on the network.
+The binding broadcasts a search message via UDP on the network in order to discover and monitor availability of the TV.
+
+Please note, that if you are running openHAB in a docker container you need to use macvlan or host networking for this binding to work.
 
 ## Thing Configuration
 
@@ -44,8 +47,8 @@ Please note that at least one channel must be bound to an item before the bindin
 | power           | Switch    | Current power setting. TV can only be powered off, not on.                                                                                                                                                              | RW         |
 | mute            | Switch    | Current mute setting.                                                                                                                                                                                                   | RW         |
 | volume          | Dimmer    | Current volume setting. Setting and reporting absolute percent values only works when using internal speakers. When connected to an external amp, the volume should be controlled using increase and decrease commands. | RW         |
-| channel         | Number    | Current channel number. Supports increase and decrease commands as well for relative channel up and down.                                                                                                               | RW         |
-| channelName     | String    | Current channel name                                                                                                                                                                                                    | R          |
+| channel         | Number    | Current channel number.                                                                                                               | RW         |
+| channelName     | String    | Current channel name.                                                                                                                                                                                                    | R          |
 | toast           | String    | Displays a short message on the TV screen. See also rules section.                                                                                                                                                      | W          |
 | mediaPlayer     | Player    | Media control player                                                                                                                                                                                                    | W          |
 | mediaStop       | Switch    | Media control stop                                                                                                                                                                                                      | W          |
@@ -157,4 +160,182 @@ Example of a toast message.
 
 ```
 LG_TV0_Toast.sendCommand("Hello World")
+```
+
+## Rule Actions
+
+Multiple actions are supported by this binding. In classic rules these are accessible as shown in this example (adjust getActions with your ThingId):
+
+Example
+
+```
+ val actions = getActions("lgwebos","lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46")
+ if(null === actions) {
+        logInfo("actions", "Actions not found, check thing ID")
+        return
+ }
+ ```
+
+### showToast(text)
+
+Sends a toast message to a WebOS device with openHab icon.
+
+Parameters:
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| text    | The text to display                                                  |
+
+Example:
+
+```
+actions.showToast("Hello World")
+```
+
+### showToast(icon, text)
+
+Sends a toast message to a WebOS device with custom icon.
+
+Parameters:
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| icon    | The URL to the icon to display                                       |
+| text    | The text to display                                                  |
+
+Example:
+
+```
+actions.showToast("http://localhost:8080/icon/energy?format=png","Hello World")
+```
+
+### launchBrowser(url)
+
+Opens the given URL in the TV's browser application.
+
+Parameters:
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| url     | The URL to open                                                      |
+
+Example:
+
+```
+actions.launchBrowser("https://www.openhab.org")
+```
+
+### List<Application> getApplications()
+
+Returns a list of Applications supported by this TV.
+
+Application Properties
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| id      | The Application ID, which serves as parameter appId in other methods.|
+| name    | Human readable name                                                  |
+
+Example:
+
+```
+val apps = actions.getApplications
+apps.forEach[a| logInfo("action",a.toString)]
+```
+
+### launchApplication(appId)
+
+Opens the application with given Application ID.
+
+Parameters:
+| Name    | Description                                                                    |
+|---------|--------------------------------------------------------------------------------|
+| appId   | The Application ID. getApplications provides available apps and their appIds.  |
+
+Examples:
+
+```
+actions.launchApplication("com.webos.app.tvguide") // TV Guide
+actions.launchApplication("com.webos.app.livetv") // TV
+actions.launchApplication("com.webos.app.hdmi1") // HDMI1
+actions.launchApplication("com.webos.app.hdmi2") // HDMI2
+actions.launchApplication("com.webos.app.hdmi3") // HDMI3
+```
+
+### launchApplication(appId, params)
+
+Opens the application with given Application ID and passes an additional parameter.
+
+Parameters:
+| Name    | Description                                                                   |
+|---------|-------------------------------------------------------------------------------|
+| appId   | The Application ID. getApplications provides available apps and their appIds. |
+| params  | The parameters to hand over to the application in JSON format                 |
+
+Examples:
+
+```
+actions.launchApplication("appId","{\"key\":\"value\"}")
+```
+
+(Unfortunately, there is currently no information on supported parameters per application available.)
+
+### sendText(text)
+
+Sends a text input to a WebOS device.
+
+Parameters:
+| Name    | Description                                                          |
+|---------|----------------------------------------------------------------------|
+| text    | The text to input  |
+
+Example:
+
+```
+actions.sendText("Some text")
+```
+
+### sendButton(button)
+
+Sends a button press event to a WebOS device.
+
+Parameters:
+| Name    | Description                                                            |
+|---------|------------------------------------------------------------------------|
+| button  | Can be one of UP, DOWN, LEFT, RIGHT, BACK, DELETE, ENTER, HOME, or OK  |
+
+Example:
+
+```
+actions.sendButton("OK")
+```
+
+### increaseChannel()
+
+TV will switch one channel up in the current channel list.
+
+Example:
+
+```
+actions.increaseChannel
+```
+
+### decreaseChannel()
+
+TV will switch one channel down in the current channel list.
+
+Example:
+
+```
+actions.decreaseChannel
+```
+
+## Troubleshooting
+
+In case of issues you may find it helpful to enable debug level logging and check you log file. Log into openHAB console and enable debug logging for this binding:
+
+```
+log:set debug org.openhab.binding.lgwebos
+```
+
+Additional logs are available from the underlying library:
+
+```
+log:set debug com.connectsdk
 ```

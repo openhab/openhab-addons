@@ -350,8 +350,8 @@
 			<options>
 				<option value="0">Horizontal</option>
 				<option value="90">Turned left</option>
-				<option value="180">Turned right</option>
-				<option value="270">Reversed</option>
+				<option value="180">Reversed</option>
+				<option value="270">Turned right</option>
 			</options>
 		</state>
 	</channel-type>

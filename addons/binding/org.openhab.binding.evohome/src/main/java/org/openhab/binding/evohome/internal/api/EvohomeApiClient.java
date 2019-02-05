@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.evohome.internal.api;
 
@@ -40,6 +44,8 @@ import org.slf4j.LoggerFactory;
 public class EvohomeApiClient {
 
     private static final String APPLICATION_ID = "b013aa26-9724-4dbd-8897-048b9aada249";
+    private static final String CLIENT_ID = "4a231089-d2b6-41bd-a5eb-16a0a422b999";
+    private static final String CLIENT_SECRET = "1a15cdb8-42de-407b-add0-059f92c530cb";
 
     private final Logger logger = LoggerFactory.getLogger(EvohomeApiClient.class);
     private final HttpClient httpClient;
@@ -191,7 +197,7 @@ public class EvohomeApiClient {
                 + "Connection=Keep-Alive";
 
         Map<String, String> headers = new HashMap<>();
-        String basicAuth = Base64.getEncoder().encodeToString((APPLICATION_ID + ":test").getBytes());
+        String basicAuth = Base64.getEncoder().encodeToString((CLIENT_ID + ":" + CLIENT_SECRET).getBytes());
         headers.put("Authorization", "Basic " + basicAuth);
         headers.put("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
 

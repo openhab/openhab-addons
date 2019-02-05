@@ -13,14 +13,19 @@ which makes the lights and plugs available.
 There is one bridge (`deconz`) that manages the connection to the deCONZ software instance.
 These things are supported:
 
-| Thing name            | Description                     | Channels                    |
-| :-------------------- |:--------------------------------|:---------------------------:|
-| `presencesensor`    | Any presence sensor             | `presence`                 |
-| `powersensor`       | Any power sensor                | `power`                    |
-| `switch`             | Any switch                      | `buttonevent`             |
-| `lightsensor`       | A light sensor                  | `lightlux`                 |
-| `temperaturesensor`| A temperature sensor            | `temperature`              |
-| `daylightsensor`    | The deCONZ artificial daylight sensor | `value`,`light`     |
+| Device type                       | Resource Type                     | Thing type           |
+|-----------------------------------|-----------------------------------|----------------------|
+| Presence Sensor                   | ZHAPresence, CLIPPrensence        | `presencesensor`     |
+| Power Sensor                      | ZHAPower, CLIPPower               | `powersensor`        |
+| Consumption Sensor                | ZHAConsumption                    | `consumptionsensor`  |
+| Switch                            | ZHASwitch                         | `switch`             |
+| Light Sensor                      | ZHALightLevel                     | `lightsensor`        |
+| Temperature Sensor                | ZHATemperature                    | `temperaturesensor`  |
+| Humidity Sensor                   | ZHAHumidity                       | `humiditysensor`     |
+| Pressure Sensor                   | ZHAPressure                       | `pressuresensor`     |
+| Open/Close Sensor                 | ZHAOpenClose                      | `openclosesensor`    |
+| Water Leakage Sensor              | ZHAWater                          | `waterleakagesensor` |
+| deCONZ Artificial Daylight Sensor | deCONZ specific: simulated sensor | `daylightsensor`     |
 
 ## Discovery
 
@@ -29,71 +34,111 @@ Sensors, switches are discovered as soon as a `deconz` bridge Thing comes online
 
 ## Thing Configuration
 
-Important: You need to authorize 3rd party applications in deCONZ for the bridge Thing to successfully connect.
-The Online/Offline status of the bridge Thing will tell you, when to enable the authorization process.
+These configuration parameters are available:
 
-These configuration values need to be provided:
+| Parameter | Description                                                   | Type      | Default   |
+| :-------- | :------------------------------------------------------------ | :-------: | :-------: |
+| host      | Host address (hostname/ip:port) of deCONZ interface           | string    | n/a       |
+| apikey    | Authorization API key (optional, can be filled automatically) | string    | n/a       |
 
+The deCONZ bridge requires the IP address or hostname as a configuration value in order for the binding to know where to access it.
 
-| Config                | Description                                           | Type  | Default |
-| :-------------------- |:------------------------------------------------------|:-----:|:-------:|
-| host                  | Host address (hostname/ip:port) of deCONZ interface   |string | n/a     |
-| apikey                | Authorization API key (optional, can be filled automatically) |string | n/a     |
+The API key is an optional value. If a deCONZ API key is available because it has already been created manually, it can also be entered as a configuration value. Otherwise the field can be left empty and the binding will generate the key automatically. For this process the deCONZ bridge must be unlocked in the deCONZ software so that third party applications can register. [See deCONZ documentation](http://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#unlock-the-gateway)
+
+### Textual Thing Configuration - Retrieving an API Key
+
+If you use the textual configuration, the thing file without an API key will look like this, for example:
+
+```
+Bridge deconz:deconz:homeserver [ host="192.168.0.10" ]
+```
+
+In this case, the API key is generated automatically as described above (the deCONZ bridge has to be unlocked). Please note that the generated key cannot be written automatically to the `.thing` file, and has to be set manually.
+The generated key can be queried from the configuration using the openHAB console. To do this log into the [console](https://www.openhab.org/docs/administration/console.html) and use the command `things show` to display the configuration parameters, e.g:
+
+```
+things show deconz:deconz:homeserver
+```
+
+Afterwards the displayed API key has to be inserted in the `.thing` file as `apikey` configuration value, e.g.:
+
+```
+Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ]
+```
 
 ## Channels
 
-Overview of provided channels for `presencesensor`:
+The devices support some of the following channels:
 
-| Channel ID                |  Description                       | Read/Write | Values               |
-| :------------------------ | :----------------------------------|:----------:|:--------------------:|
-| presence                  | Switch type                        |r           | ON/OFF for presence/no-presence |
+| Channel Type ID | Item Type                | Access Mode | Description                                                                               | Thing types                                  |
+|-----------------|--------------------------|:-----------:|-------------------------------------------------------------------------------------------|----------------------------------------------|
+| presence        | Switch                   |      R      | Status of presence: `ON` = presence; `OFF` = no-presence                                  | presencesensor                               |
+| last_updated    | DateTime                 |      R      | Timestamp when the sensor was last updated                                                | all, except daylightsensor                   |
+| power           | Number:Power             |      R      | Current power usage in Watts                                                              | powersensor, sometimes for consumptionsensor |
+| consumption     | Number:Energy            |      R      | Current power usage in Watts/Hour                                                         | consumptionsensor                            |
+| voltage         | Number:ElectricPotential |      R      | Current voltage in V                                                                      | some powersensors                            |
+| current         | Number:ElectricCurrent   |      R      | Current current in mA                                                                     | some powersensors                            |
+| button          | Number                   |      R      | Last pressed button id on a switch                                                        | switch                                       |
+| lightlux        | Number:Illuminance       |      R      | Current light illuminance in Lux                                                          | lightsensor                                  |
+| light_level     | Number                   |      R      | Current light level                                                                       | lightsensor                                  |
+| dark            | Switch                   |      R      | Light level is below the darkness threshold.                                              | lightsensor, sometimes for presencesensor    |
+| daylight        | Switch                   |      R      | Light level is above the daylight threshold.                                              | lightsensor                                  |
+| temperature     | Number:Temperature       |      R      | Current temperature in ˚C                                                                 | temperaturesensor, some Xiaomi sensors       |
+| humidity        | Number:Dimensionless     |      R      | Current humidity in %                                                                     | humiditysensor                               |
+| pressure        | Number:Pressure          |      R      | Current pressure in hPa                                                                   | pressuresensor                               |
+| open            | Contact                  |      R      | Status of contacts: `OPEN`; `CLOSED`                                                      | openclosesensor                              |
+| waterleakage    | Switch                   |      R      | Status of water leakage: `ON` = water leakage detected; `OFF` = no water leakage detected | waterleakagesensor                           |
+| light           | String                   |      R      | Light level: `Daylight`,`Sunset`,`Dark`                                                   | daylightsensor                               |
+| value           | Number                   |      R      | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk                 | daylightsensor                               |
+| battery_level   | Number                   |      R      | Battery level (in %)                                                                      | any battery-powered sensor                   |
+| battery_low     | Switch                   |      R      | Battery level low: `ON`; `OFF`                                                            | any battery-powered sensor                   |
 
-Overview of provided channels for `powersensor`:
+**NOTE:** Beside other non mandatory channels, the `battery_level` and `battery_low` channels will be added to the Thing during runtime if the sensor is battery-powered.
+The specification of your sensor depends on the deCONZ capabilities.
+Have a detailed look for [supported devices](https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices).
 
-| Channel ID                |  Description                       | Read/Write | Values               |
-| :------------------------ | :----------------------------------|:----------:|:--------------------:|
-| power                     | Current power usage in Watts       |r           | Number value         |
+### Trigger Channels
 
-Overview of provided channels for `switch`:
+The dimmer switch additionally supports a trigger channel.
 
-| Channel ID                |  Description                       | Payload | Values               |
-| :------------------------ | :----------------------------------|:----------:|:--------------------:|
-| buttonevent | This channel is triggered on a button event. | The button event number | Number value         |
-
-Overview of provided channels for `lightsensor`:
-
-| Channel ID                |  Description                       | Read/Write | Values               |
-| :------------------------ | :----------------------------------|:----------:|:--------------------:|
-| lightlux                  | Current light illuminance in Lux   |r           | Number value         |
-
-Overview of provided channels for `temperaturesensor`:
-
-| Channel ID                |  Description                       | Read/Write | Values               |
-| :------------------------ | :----------------------------------|:----------:|:--------------------:|
-| temperature               | Current temperature                |r           | Number value         |
-
-Overview of provided channels for `daylightsensor`:
-
-| Channel ID                |  Description                       | Read/Write | Values               |
-| :------------------------ | :----------------------------------|:----------:|:--------------------:|
-| value                     |A number that represents the sun position: Dawn is around 130, sunrise at 140, sunset at 190, and dusk at 210   |r| Number value             |
-| light                     |A light level                       |r           | Daylight,Sunset,Dark |
+| Channel Type ID | Description               | Thing types |
+|-----------------|---------------------------|-------------|
+| buttonevent     | Event for switch pressed. | switch      |
 
 ## Full Example
 
 ### Things file ###
 
 ```
-Bridge deconz:deconz:homeserver [ host="192.168.1.3", apikey="ABCDEFGHIJ" ] {
-    presencesensor livingroom-presence          [ id="1" ]
-    temperaturesensor livingroom-temperature    [ id="2" ]
+Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
+    presencesensor      livingroom-presence     "Livingroom Presence"       [ id="1" ]
+    temperaturesensor   livingroom-temperature  "Livingroom Temperature"    [ id="2" ]
+    humiditysensor      livingroom-humidity     "Livingroom Humidity"       [ id="3" ]
+    pressuresensor      livingroom-pressure     "Livingroom Pressure"       [ id="4" ]
+    openclosesensor     livingroom-window       "Livingroom Window"         [ id="5" ]
+    switch              livingroom-hue-tap      "Livingroom Hue Tap"        [ id="6" ]
+    waterleakagesensor  basement-water-leakage  "Basement Water Leakage"    [ id="7" ]
 }
 ```
 
 ### Items file ###
 
 ```
-Switch  Livingroom_Presence     "Presence: [%s]"          {channel="deconz:presencesensor:homeserver:livingroom-presence:presence"}
-Number  Livingroom_Temperature  "Temperature: [%.1f °C]"  {channel="deconz:temperaturesensor:homeserver:livingroom-temperature:temperature"}
+Switch                  Livingroom_Presence     "Presence Livingroom [%s]"          <motion>        { channel="deconz:presencesensor:homeserver:livingroom-presence:presence" }
+Number:Temperature      Livingroom_Temperature  "Temperature Livingroom [%.1f °C]"  <temperature>   { channel="deconz:temperaturesensor:homeserver:livingroom-temperature:temperature" }
+Number:Dimensionless    Livingroom_Humidity     "Humidity Livingroom [%.1f %%]"     <humidity>      { channel="deconz:humiditysensor:homeserver:livingroom-humidity:humidity" }
+Number:Pressure         Livingroom_Pressure     "Pressure Livingroom [%.1f hPa]"    <pressure>      { channel="deconz:pressuresensor:homeserver:livingroom-pressure:pressure" }
+Contact                 Livingroom_Window       "Window Livingroom [%s]"            <door>          { channel="deconz:openclosesensor:homeserver:livingroom-window:open" }
+Switch                  Basement_Water_Leakage  "Basement Water Leakage [%s]"                       { channel="deconz:waterleakagesensor:homeserver:basement-water-leakage:waterleakage" }
 ```
 
+### Events
+
+```php
+rule "example trigger rule"
+when
+    Channel "deconz:switch:livingroom-hue-tap:buttonevent" triggered 34   // Hue Tap Button 1 pressed
+then
+    ...
+end
+```

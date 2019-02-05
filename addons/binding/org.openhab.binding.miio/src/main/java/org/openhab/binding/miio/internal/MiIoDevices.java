@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.miio.internal;
 
-import static org.openhab.binding.miio.MiIoBindingConstants.*;
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -78,6 +82,7 @@ public enum MiIoDevices {
     POWERPLUG1("chuangmi.plug.v1", "Mi Power-plug v1", THING_TYPE_BASIC),
     POWERPLUG2("chuangmi.plug.v2", "Mi Power-plug v2", THING_TYPE_BASIC),
     POWERPLUG3("chuangmi.plug.v3", "Mi Power-plug v3", THING_TYPE_BASIC),
+    POWERPLUGM3("chuangmi.plug.m3", "Mi Power-plug", THING_TYPE_BASIC),
     POWERPLUG_HMI205("chuangmi.plug.hmi205", "Mi Smart Plug", THING_TYPE_BASIC),
     POWERSTRIP("qmi.powerstrip.v1", "Qing Mi Smart Power Strip v1", THING_TYPE_BASIC),
     POWERSTRIP2("zimi.powerstrip.v2", "Mi Power-strip v2", THING_TYPE_BASIC),

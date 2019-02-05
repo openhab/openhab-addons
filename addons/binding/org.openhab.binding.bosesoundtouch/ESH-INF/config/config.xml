@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd"
+>
+	<config-description uri="thing-type:bosesoundtouch:config">
+		<parameter name="host" type="text" required="true">
+			<label>Host Address</label>
+			<description>The Host / IP Address used for communication to this device.
+			</description>
+		</parameter>
+		<parameter name="macAddress" type="text" required="true">
+			<label>MAC Address</label>
+			<description>The MAC Address used for communication to this device.
+			</description>
+		</parameter>
+		<parameter name="appKey" type="text" required="false">
+			<label>Authorization Key</label>
+			<description>An authorization key used to identify the client application.
+						Should be requested from the developer portal.
+			</description>
+		</parameter>
+	</config-description>
+	
+	<config-description uri="channel-type:bosesoundtouch:notificationSound">
+		<parameter name="notificationVolume" type="integer" min="10" max="70" step="1" unit="%" required="false">
+			<label>Notification Sound Volume</label>
+			<description>This indicates the desired volume level while playing the notification. 
+						The value represents a percentage (0 to 100) of the full audible range of the speaker device. 
+						A value less than 10 or greater than 70 will result in an error and not play the notification. 
+						Upon completion of the notification, the speaker volume will return to its original value. 
+						If not present, the notification will play at the existing volume level.
+			</description>
+		</parameter>
+		<parameter name="notificationService" type="text" required="true">
+			<label>Notification Service</label>
+			<description>This indicates the service providing the notification. 
+						This text will appear on the device display (when available) and the SoundTouch application screen.
+			</description>
+			<default>Notification</default>
+		</parameter>
+		<parameter name="notificationReason" type="text" required="false">
+			<label>Notification Reason</label>
+			<description>This indicates the reason for the notification. 
+						This text will appear on the device display (when available) and the SoundTouch application screen. 
+						If a reason string is not provided, the field with be blank.
+			</description>
+		</parameter>
+		<parameter name="notificationMessage" type="text" required="false">
+			<label>Notification Message</label>
+			<description>This indicates further details about the notification. 
+						This text will appear on the device display (when available) and the SoundTouch application screen. 
+						If a message string is not provided, the field with be blank.
+			</description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

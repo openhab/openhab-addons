@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64">
+  <defs>
+    <linearGradient id="0" gradientUnits="userSpaceOnUse" x1="31" x2="33">
+      <stop style="stop-color:#82828c"/>
+      <stop offset=".5" style="stop-color:#ccd3e7"/>
+      <stop offset="1" style="stop-color:#82828c"/>
+    </linearGradient>
+    <linearGradient id="1" gradientUnits="userSpaceOnUse" x1="24" x2="40" xlink:href="#0"/>
+  </defs>
+  <path d="m20.92 50.47v-1h-13.55v1.51h11.44c.68-.23 1.41-.39 2.11-.51" style="fill:#f9aa43"/>
+  <path d="m17.5 40.5h29v2h-29z" style="fill:#fff"/>
+  <path d="m46 41v1h-28v-1h28m1-1h-30v3h30v-3z" style="fill:#ccc"/>
+  <g style="fill:url(#0)">
+    <path d="m31 43h2v16h-2z"/>
+    <path d="m33 40h-2v-35.16c0-.55.45-1 1-1 .55 0 1 .45 1 1v35.16"/>
+  </g>
+  <path d="m24 59h16v1h-16z" style="fill:url(#1)"/>
+  <path d="m1 19.42c-.24 0-.44-.17-.49-.4s.08-.47.3-.56l31-12.92c.06-.03.12-.04.19-.04s.13.01.19.04l31 13c.22.09.34.33.3.56s-.25.4-.49.4l-62-.08" style="fill:#ffd45a"/>
+  <g style="fill:#f9aa43">
+    <path d="m32 6l31 13-62-.08 31-12.92m0-1c-.13 0-.26.03-.38.08l-31 12.92c-.44.18-.69.65-.6 1.12.09.47.5.8.98.8l62 .08c0 0 0 0 0 0 .48 0 .89-.34.98-.8.09-.47-.15-.94-.59-1.12l-31-13c-.13-.05-.26-.08-.39-.08z"/>
+    <path d="m2.69 31.5c0 0 .97.06 5.87 18.92v1.49l-4.14-7.73c0-.01-2.1-7.35-1.73-12.68"/>
+  </g>
+  <g style="fill:none;stroke-miterlimit:10;stroke:#663014;stroke-linecap:round;stroke-linejoin:round">
+    <path d="m3.66 47.03c0 0 12.85-6.4 18.12 3.29-3.58.28-6.07 1.79-10.16 4.94s-10.12 4.24-10.12 4.24"/>
+    <path d="m2.39 31.88c0 0 .42 25.93 19.39 27.62"/>
+  </g>
+  <g style="fill:#f9aa43">
+    <path d="m43.08 50.47v-1h13.55v1.51h-11.44c-.68-.23-1.41-.39-2.11-.51"/>
+    <path d="m61.31 31.5c0 0-.97.06-5.87 18.92v1.49l4.14-7.73c0-.01 2.1-7.35 1.73-12.68"/>
+  </g>
+  <g style="fill:none;stroke-miterlimit:10;stroke:#663014;stroke-linecap:round;stroke-linejoin:round">
+    <path d="m60.34 47.03c0 0-12.85-6.4-18.12 3.29 3.58.28 6.07 1.79 10.16 4.94s10.12 4.24 10.12 4.24"/>
+    <path d="m61.61 31.88c0 0-.42 25.93-19.39 27.62"/>
+  </g>
+  <g style="fill:#f9aa43">
+    <path d="m32 5l6 14h12z" style="opacity:.5"/>
+    <path d="m14 19h12l6-14z" style="opacity:.5"/>
+  </g>
+</svg>

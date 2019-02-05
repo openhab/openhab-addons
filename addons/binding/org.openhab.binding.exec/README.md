@@ -19,16 +19,17 @@ It is advised to test the correct operation of the command in the scope of the `
 ```shell
 sudo -u openhab <YOUR COMMAND>
 ```
+
 It is not advised to run the virtual machine as superuser/root.
 
 ## Thing Configuration
-.
+
 The "command" Thing requires the command to execute on the shell.
 Optionally one can specify:
 
 
 - `transform` - A [transformation](https://www.openhab.org/docs/configuration/transformations.html) to apply on the execution result,
-- `interval` - An interval, in seconds, the command will be repeatedly executed,
+- `interval` - An interval, in seconds, the command will be repeatedly executed. Default is 60 seconds, set to 0 to avoid repetition.
 - `timeout` - A time-out, in seconds, the execution of the command will time out, and lastly,
 - `autorun` - A boolean parameter to make the command execute immediately every time the state of the input channel has changed.
 
@@ -95,7 +96,7 @@ Thing exec:command:yourcommand [ command="<YOUR COMMAND> %2$s", interval=0, auto
 
 ```java
 Switch YourTrigger
-Number YourNumber "Your Number [%.1f °C]"
+Number YourNumber "Your Number [%.1f Â°C]"
 
 // state of the execution, is running or finished
 Switch yourcommand {channel="exec:command:yourcommand:run"}

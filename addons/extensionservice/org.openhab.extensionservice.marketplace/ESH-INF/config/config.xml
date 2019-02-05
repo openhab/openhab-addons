@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="system:marketplace">
+		<parameter name="bindings" type="boolean" required="false">
+			<label>Include Bindings</label>
+			<description>Whether to make bindings from the marketplace available or not.</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="ruletemplates" type="boolean" required="false">
+			<label>Include Rule Templates</label>
+			<description>Whether to make rule templates from the marketplace available or not.</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="voice" type="boolean" required="false">
+			<label>Include Voice Extensions</label>
+			<description>Whether to make voice extensions from the marketplace available or not.</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="maturity" type="integer" required="false">
+			<label>Maturity Level</label>
+			<description>Only show entries that have a certain maturity.</description>
+			<default>1</default>
+			<options>
+				<option value="3">Mature</option>
+				<option value="2">Production/Stable</option>
+				<option value="1">Beta</option>
+				<option value="0">Alpha</option>
+			</options>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

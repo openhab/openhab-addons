@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.satel.internal.command;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
 
 import org.openhab.binding.satel.internal.event.EventDispatcher;
 import org.openhab.binding.satel.internal.event.IntegraStatusEvent;
@@ -37,17 +41,11 @@ public class IntegraStatusCommand extends SatelCommandBase {
     /**
      * @return date and time
      */
-    public Calendar getIntegraTime() {
+    public LocalDateTime getIntegraTime() {
         // parse current date and time
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.YEAR, bcdToInt(response.getPayload(), 0, 2));
-        c.set(Calendar.MONTH, bcdToInt(response.getPayload(), 2, 1) - 1);
-        c.set(Calendar.DAY_OF_MONTH, bcdToInt(response.getPayload(), 3, 1));
-        c.set(Calendar.HOUR_OF_DAY, bcdToInt(response.getPayload(), 4, 1));
-        c.set(Calendar.MINUTE, bcdToInt(response.getPayload(), 5, 1));
-        c.set(Calendar.SECOND, bcdToInt(response.getPayload(), 6, 1));
-        c.set(Calendar.MILLISECOND, 0);
-        return c;
+        return LocalDateTime.of(bcdToInt(response.getPayload(), 0, 2), bcdToInt(response.getPayload(), 2, 1),
+                bcdToInt(response.getPayload(), 3, 1), bcdToInt(response.getPayload(), 4, 1),
+                bcdToInt(response.getPayload(), 5, 1), bcdToInt(response.getPayload(), 6, 1));
     }
 
     /**

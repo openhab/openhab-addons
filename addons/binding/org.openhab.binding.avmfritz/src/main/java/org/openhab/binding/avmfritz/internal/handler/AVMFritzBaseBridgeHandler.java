@@ -1,17 +1,22 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.avmfritz.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
+import static org.eclipse.smarthome.core.thing.CommonTriggerEvents.PRESSED;
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
-import static org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel.ETSUnitInfo.*;
+import static org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel.ETSUnitInfoModel.*;
 import static org.openhab.binding.avmfritz.internal.ahamodel.HeatingModel.*;
 
 import java.math.BigDecimal;
@@ -49,16 +54,21 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.BindingConstants;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.AlertModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.GroupModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.SwitchModel;
+import org.openhab.binding.avmfritz.internal.ahamodel.templates.TemplateModel;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzConfiguration;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
-import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateXmlCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateTemplatesCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,14 +105,25 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      */
     private final HttpClient httpClient;
 
+    private final AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider;
+
+    /**
+     * keeps track of the {@link ChannelUID} for the 'apply_tamplate' {@link Channel}
+     */
+    private final ChannelUID applyTemplateChannelUID;
+
     /**
      * Constructor
      *
      * @param bridge Bridge object representing a FRITZ!Box
      */
-    public AVMFritzBaseBridgeHandler(Bridge bridge, HttpClient httpClient) {
+    public AVMFritzBaseBridgeHandler(Bridge bridge, HttpClient httpClient,
+            AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider) {
         super(bridge);
         this.httpClient = httpClient;
+        this.stateDescriptionProvider = stateDescriptionProvider;
+
+        applyTemplateChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_APPLY_TEMPLATE);
     }
 
     /**
@@ -118,7 +139,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         this.refreshInterval = config.getPollingInterval();
         this.connection = new FritzAhaWebInterface(config, this, httpClient);
         if (config.getPassword() != null) {
-            onUpdate();
+            stopPolling();
+            startPolling();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no password set");
         }
@@ -130,22 +152,27 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         logger.debug("Handler disposed.");
-        if (pollingJob != null && !pollingJob.isCancelled()) {
-            logger.debug("stop polling job");
-            pollingJob.cancel(true);
-            pollingJob = null;
-        }
+        stopPolling();
     }
 
     /**
      * Start the polling.
      */
-    private synchronized void onUpdate() {
+    private void startPolling() {
         if (pollingJob == null || pollingJob.isCancelled()) {
             logger.debug("start polling job at interval {}s", refreshInterval);
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, INITIAL_DELAY, refreshInterval, TimeUnit.SECONDS);
-        } else {
-            logger.debug("pollingJob active");
+        }
+    }
+
+    /**
+     * Stops the polling.
+     */
+    private void stopPolling() {
+        if (pollingJob != null && !pollingJob.isCancelled()) {
+            logger.debug("stop polling job");
+            pollingJob.cancel(true);
+            pollingJob = null;
         }
     }
 
@@ -155,9 +182,15 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     private void poll() {
         FritzAhaWebInterface webInterface = getWebInterface();
         if (webInterface != null) {
-            logger.debug("polling FRITZ!Box {}", getThing().getUID());
-            FritzAhaUpdateXmlCallback callback = new FritzAhaUpdateXmlCallback(webInterface, this);
-            webInterface.asyncGet(callback);
+            logger.debug("Poll FRITZ!Box for updates {}", getThing().getUID());
+            FritzAhaUpdateCallback updateCallback = new FritzAhaUpdateCallback(webInterface, this);
+            webInterface.asyncGet(updateCallback);
+            if (isLinked(applyTemplateChannelUID)) {
+                logger.debug("Poll FRITZ!Box for templates {}", getThing().getUID());
+                FritzAhaUpdateTemplatesCallback templateCallback = new FritzAhaUpdateTemplatesCallback(webInterface,
+                        this);
+                webInterface.asyncGet(templateCallback);
+            }
         }
     }
 
@@ -174,16 +207,29 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Called from {@link FritzAhaUpdateXmlCallback} to provide new values for
-     * things.
+     * Called from {@link FritzAhaApplyTemplateCallback} to provide new templates for things.
      *
-     * @param model Device model with updated data.
+     * @param templateList list of template models
      */
-    public void addDeviceList(ArrayList<AVMFritzBaseModel> devicelist) {
+    public void addTemplateList(List<TemplateModel> templateList) {
+        List<StateOption> options = new ArrayList<>();
+        for (TemplateModel template : templateList) {
+            logger.debug("Process template model: {}", template);
+            options.add(new StateOption(template.getIdentifier(), template.getName()));
+        }
+        stateDescriptionProvider.setStateOptions(applyTemplateChannelUID, options);
+    }
+
+    /**
+     * Called from {@link FritzAhaUpdateCallback} to provide new values for things.
+     *
+     * @param deviceList list of device models
+     */
+    public void addDeviceList(List<AVMFritzBaseModel> deviceList) {
         for (Thing thing : getThing().getThings()) {
             AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
             if (handler != null) {
-                Optional<AVMFritzBaseModel> optionalDevice = devicelist.stream()
+                Optional<AVMFritzBaseModel> optionalDevice = deviceList.stream()
                         .filter(it -> it.getIdentifier().equals(handler.getIdentifier())).findFirst();
                 if (optionalDevice.isPresent()) {
                     AVMFritzBaseModel device = optionalDevice.get();
@@ -305,7 +351,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                 ZonedDateTime now = ZonedDateTime.now(zoneId);
                 Instant someSecondsEarlier = now.minusSeconds(refreshInterval).toInstant();
                 if (then.isAfter(someSecondsEarlier) && then.isBefore(now.toInstant())) {
-                    triggerThingChannel(thing, CHANNEL_PRESS);
+                    triggerThingChannel(thing, CHANNEL_PRESS, PRESSED);
                 }
                 updateThingChannelState(thing, CHANNEL_LAST_CHANGE, new DateTimeType(timestamp));
             }
@@ -337,11 +383,12 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      *
      * @param thing Thing which channels should be triggered.
      * @param channelId ID of the channel to be triggered.
+     * @param event Event to emit
      */
-    private void triggerThingChannel(Thing thing, String channelId) {
+    private void triggerThingChannel(Thing thing, String channelId, String event) {
         Channel channel = thing.getChannel(channelId);
         if (channel != null) {
-            triggerChannel(channel.getUID());
+            triggerChannel(channel.getUID(), event);
         } else {
             logger.debug("Channel '{}' in thing '{}' does not exist.", channelId, thing.getUID());
         }
@@ -435,9 +482,21 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Handle command '{}' for channel {}", command, channelUID);
-        if (command instanceof RefreshType) {
+        String channelId = channelUID.getIdWithoutGroup();
+        logger.debug("Handle command '{}' for channel {}", command, channelId);
+        if (command == RefreshType.REFRESH) {
             handleRefreshCommand();
+        }
+        FritzAhaWebInterface fritzBox = getWebInterface();
+        if (fritzBox == null) {
+            logger.debug("Cannot handle command '{}' because connection is missing", command);
+            return;
+        }
+        if (CHANNEL_APPLY_TEMPLATE.equals(channelId)) {
+            if (command instanceof StringType) {
+                fritzBox.applyTemplate(command.toString());
+            }
+            updateState(CHANNEL_APPLY_TEMPLATE, UnDefType.UNDEF);
         }
     }
 

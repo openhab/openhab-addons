@@ -6,7 +6,7 @@ Bundle-Name: SqueezeBox Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.squeezebox;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  com.google.gson,
  org.apache.commons.lang,
@@ -18,6 +18,7 @@ Import-Package:
  org.eclipse.jetty.util.component,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.upnp,
  org.eclipse.smarthome.core.audio,
  org.eclipse.smarthome.core.audio.utils,
  org.eclipse.smarthome.core.cache,

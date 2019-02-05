@@ -1,0 +1,1537 @@
+/**
+ * Material Angular Overrides 
+ */
+.md-button .material-icons {
+	line-height: inherit;
+}
+
+/* Button */
+.md-button[class*="material-icons"]:before {
+	font-size: 24px;
+}
+
+.md-button[class*="material-icons"] {
+	margin: 0px;
+	min-width: 0px;
+}
+
+.md-button[class*="material-icons"]:before, .md-button[class*="material-icons"] *
+	{
+	vertical-align: middle;
+}
+
+.md-button span[class*="material-icons"] {
+	margin-right: 5px;
+}
+
+.md-button.green {
+	background-color: green;
+	color: white;
+}
+
+.md-button.white {
+	background-color: white;
+}
+
+.md-button:not ([disabled] ), .md-button.md-raised:not ([disabled] ) {
+	box-shadow: none;
+	-webkit-box-shadow: none;
+}
+
+.md-button:hover {
+	box-shadow: 0 0px 6px 0 rgba(0, 0, 0, .4);
+}
+
+.md-button:not ([disabled] ).md-fab:focus, .md-button:not ([disabled] ).md-fab:hover,
+	.md-button:not ([disabled] ).md-raised:focus, .md-button:not ([disabled]
+	).md-raised:hover {
+	box-shadow: 0 0px 6px 0 rgba(0, 0, 0, .4);
+	transform: none;
+}
+
+.md-button.md-default-theme.md-fab:not ([disabled] ):focus, .md-button.md-default-theme.md-fab:not
+	([disabled] ):hover, .md-button.md-default-theme.md-raised:not ([disabled]
+	):focus, .md-button.md-default-theme.md-raised:not ([disabled] ):hover
+	{
+	background-color: inherit;
+}
+
+.md-button.md-default-theme.md-primary {
+	color: #01324D;
+}
+
+.md-button.highlighted {
+	background-color: #4CAF50;
+	color: white;
+}
+
+/* Fab */
+.md-button.md-fab:not ([disabled] ) {
+	box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .26);
+	-webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .26);
+}
+
+.md-fab {
+	font-size: 24px;
+}
+
+.md-fab, .md-fab:active, .md-fab:focus, .md-fab:hover {
+	background-color: #4CAF50 !important;
+	color: white !important;
+}
+
+/* Tabs */
+md-tabs {
+	border-radius: 0px;
+}
+
+md-tabs md-tabs-wrapper {
+	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
+	background-color: #01324D;
+	z-index: 1;
+}
+
+md-tabs section {
+	padding: 0px;
+}
+
+md-tabs md-tab {
+	background-color: #01324D;
+}
+
+md-tabs md-ink-bar {
+	color: #ffff85;
+	background: white;
+}
+
+md-tabs .md-tab.md-active {
+	color: white;
+}
+
+md-tabs .md-tab {
+	color: #DDD;
+	outline: 0;
+}
+
+md-tabs.md-default-theme md-tab[disabled] {
+	color: rgba(0, 0, 0, 0.12);
+}
+
+md-tabs.md-default-theme md-tab:focus {
+	border-color: transparent;
+}
+
+md-tabs.md-default-theme md-tab .md-ripple-container {
+	color: white;
+}
+
+md-tabs.md-default-theme .md-header {
+	background-color: #01324D;
+}
+
+/* Radio Button */
+md-radio-group.md-default-theme:focus {
+	border-color: transparent;
+}
+
+md-radio-button.md-default-theme .md-off, md-switch.md-default .md-switch-thumb .md-off
+	{
+	border-color: #CCC;
+}
+
+md-radio-button.md-default-theme .md-on, md-switch.md-default .md-switch-thumb .md-on
+	{
+	background-color: #01324D;
+}
+
+md-radio-button.md-default-theme.md-checked .md-off, md-switch.md-default .md-switch-thumb.md-checked .md-off
+	{
+	border-color: #CCC;
+}
+
+md-radio-button.md-default-theme.md-checked .md-ink-ripple, md-switch.md-default .md-switch-thumb.md-checked .md-ink-ripple
+	{
+	color: #01324D;
+}
+
+/* Checkbox */
+md-checkbox.md-default-theme.md-checked .md-icon, md-checkbox.md-default-theme.md-checked .material-icons {
+	background-color: #4CAF50;
+}
+
+md-checkbox.inline {
+	display: inline;
+	margin: 0px 15px 0px 0px;
+}
+
+/* Switch */
+md-switch.md-default-theme.md-checked .md-thumb {
+	background-color: #01324D;
+}
+
+md-switch.md-default-theme.md-checked .md-bar {
+	background-color: rgb(158, 158, 158);
+}
+
+/* Slider */
+md-slider.md-default-theme .md-track.md-track-fill {
+	background-color: #01324D;
+}
+
+md-slider.md-default-theme .md-thumb:after {
+	border-color: #01324D;
+	background-color: #01324D;
+}
+
+md-slider.md-default-theme .md-sign {
+	background-color: #01324D;
+}
+
+md-slider.md-default-theme .md-sign:after {
+	border-top-color: #01324D;
+}
+
+/* Color Slider */
+md-slider.md-default-theme.hue .md-track {
+	background: -webkit-linear-gradient(left, hsla(0, 100%, 50%, 1),
+		hsla(10, 100%, 50%, 1), hsla(20, 100%, 50%, 1), hsla(30, 100%, 50%, 1),
+		hsla(40, 100%, 50%, 1), hsla(50, 100%, 50%, 1), hsla(60, 100%, 50%, 1),
+		hsla(70, 100%, 50%, 1), hsla(80, 100%, 50%, 1), hsla(90, 100%, 50%, 1),
+		hsla(100, 100%, 50%, 1), hsla(110, 100%, 50%, 1),
+		hsla(120, 100%, 50%, 1), hsla(130, 100%, 50%, 1),
+		hsla(140, 100%, 50%, 1), hsla(150, 100%, 50%, 1),
+		hsla(160, 100%, 50%, 1), hsla(170, 100%, 50%, 1),
+		hsla(180, 100%, 50%, 1), hsla(190, 100%, 50%, 1),
+		hsla(200, 100%, 50%, 1), hsla(210, 100%, 50%, 1),
+		hsla(220, 100%, 50%, 1), hsla(230, 100%, 50%, 1),
+		hsla(240, 100%, 50%, 1), hsla(250, 100%, 50%, 1),
+		hsla(260, 100%, 50%, 1), hsla(270, 100%, 50%, 1),
+		hsla(280, 100%, 50%, 1), hsla(290, 100%, 50%, 1),
+		hsla(300, 100%, 50%, 1), hsla(310, 100%, 50%, 1),
+		hsla(320, 100%, 50%, 1), hsla(330, 100%, 50%, 1),
+		hsla(340, 100%, 50%, 1), hsla(350, 100%, 50%, 1),
+		hsla(360, 100%, 50%, 1));
+}
+
+md-slider.md-default-theme.hue .md-track-fill {
+	background: transparent;
+}
+
+md-slider.md-default-theme.hue .md-thumb {
+	/*border: 2px solid #01324D;*/
+	
+}
+
+md-slider.md-default-theme.hue .md-thumb:after {
+	/* display: none; */
+	left: -1px;
+	top: -1px;
+	height: 40px;
+	width: 40px;
+	border-color: #01324D;
+	background: transparent;
+}
+
+/* Card */
+.card {
+	background: white;
+	position: relative;
+	border-radius: 2px;
+	margin-bottom: 10px;
+	box-shadow: 0px 2px 5px 0 rgba(0, 0, 0, 0.26);
+}
+
+.card .clabel {
+    padding: 8px 8px 8px 15px;
+}
+
+.card.text-left .clabel {
+	text-align: left;
+}
+
+.card span.clabel {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	line-height: 120%;
+	font-size: 20px
+}
+
+.card .cbody {
+	padding: 0px 10px 10px 10px;
+	text-align: center;
+	/*border-bottom: 3px solid #01314D;*/
+}
+
+.card.text-left .cbody {
+	text-align: left;
+}
+
+.card .cbody small {
+	color: #777;
+}
+
+/* Card Container (TODO: not used yet) */
+.card-container {
+	background: white;
+	position: relative;
+	border: 1px solid #DDD;
+	border-radius: 2px;
+	margin-bottom: 10px;
+	margin-top: -80px;
+}
+
+.card .extension-label {
+	max-width: 90%;
+}
+
+/* Fab Item / List Item */
+.list-item {
+	position: relative;
+}
+
+.fab-item {
+	margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.fab-item h3, .list-item h3 {
+	font-size: 18px;
+	font-weight: 500;
+	margin: 15px 0px 5px;
+}
+
+.fab-item p, .list-item p {
+	margin-bottom: 5px;
+}
+
+.fab-item hr, .list-item hr {
+	margin: 15px 0px;
+}
+
+.fab-item button.md-fab {
+	float: left;
+	margin: 0;
+}
+
+.fab-item .item-content {
+	min-height: 60px;
+    padding-left: 20px;
+    display: flex;
+}
+
+.list-item .actions
+	{
+	position: absolute;
+	top: 7px;
+	right: 0px;
+	background: white;
+}
+
+.fab-item .item-content .actions {
+	flex-wrap: nowrap;
+	display: flex;
+}
+
+.fab-item .item-content .actions i:last-child {
+	float: right;
+}
+
+.item-label-container {
+	display: flex;
+	align-items: center;
+}
+
+.extensions .card .item-content {
+	padding-top: 5px;
+}
+
+.extensions .card.item {
+	padding: 7px 7px 0px 7px;
+}
+
+.extensions .card .description {
+    padding: 2px;
+}
+
+.extensions .header-toolbar button {
+	margin:8px 0px 8px 0px;
+}
+
+.extensions .container.showCards {
+	margin-top: 10px;
+}
+
+.item-content .description {
+	width: 100%;
+}
+
+.item-content .description h3 {
+    width: 100%;
+}
+
+.showCards .fab-item .item-content {
+    margin-left: 100px;
+    min-height: 60px;
+}
+
+.showCards .fab-item .actions {
+	text-align: right;
+	text-align: -webkit-right;
+	text-align: -moz-right;
+}
+
+.showCards .verticalAlign {
+	display: inline-block;
+	height: 100%;
+	vertical-align: middle;
+}
+
+.showCards .imageAlign {
+	width: 83px;
+	height: 56px;
+	float: left;
+	text-align: center
+}
+
+.fab-item .circle {
+	border-radius: 50%;
+	width: 56px;
+	height: 56px;
+	background-color: #CCC;
+	text-align: center;
+	font-size: 30px;
+	line-height: 54px;
+	float: left;
+}
+
+.fab-item .rectangle {
+    max-width: 83px;
+    max-height: 56px;
+    background-color: transparent;
+    text-align: center;
+    font-size: 30px;
+    line-height: 54px;
+}
+
+.fab-item .circle.green {
+	background-color: #4CAF50;
+	color: white;
+}
+
+.fab-item .circle.small {
+	width: 28px;
+	height: 28px;
+	line-height: 28px;
+	font-size: 15px;
+}
+
+/* Input */
+md-input-group.md-default-theme input, md-input-group.md-default-theme textarea
+	{
+	display: block;
+	width: 100%;
+	color: inherit;
+	font-size: 18px;
+	line-height: 40px;
+}
+
+md-input-container.md-default-theme:not (.md-input-invalid ).md-input-focused .md-input
+	{
+	border-color: #4CAF50;
+}
+
+md-input-group.md-default-theme.md-input-focused input, md-input-group.md-default-theme.md-input-focused textarea
+	{
+	border-color: #4CAF50;
+}
+
+md-input-container.md-default-theme:not (.md-input-invalid ).md-input-focused label
+	{
+	color: #4CAF50;
+}
+
+md-input-container textarea.mono {
+	font-family: monospace;
+	line-height: 150%;
+}
+
+md-select.md-default-theme:not ([disabled] ):focus .md-select-label {
+	border-bottom-color: #4CAF50;
+}
+
+p.hint {
+	color: #777;
+	-webkit-flex: 1;
+	-ms-flex: 1;
+	flex: 1;
+	-webkit-order: 3;
+	-ms-flex-order: 3;
+	order: 3;
+	margin-top: 5px;
+}
+
+.form-group label {
+	font-weight: normal;
+	font-size: 18px;
+	margin-bottom: 0px;
+	text-transform: uppercase;
+	color: #AAA;
+}
+
+.form-group label.control-label {
+	transform: translate3d(-6px, 4px, 0) scale(0.75);
+	color: #999;
+}
+
+.md-input-group label, md-input-group label {
+	-webkit-transform: translate3d(0, 36px, 0);
+	transform: translate3d(0, 36px, 0);
+}
+
+.form-group .md-input-focused label, .form-group .md-input-has-value label
+	{
+	color: #999 !important;
+}
+
+select.form-control {
+	border-width: 1px;
+	border-radius: 0px;
+	-webkit-appearance: none;
+	margin: 5px 0px 10px;
+}
+
+md-input-container:not (.md-input-invalid ).md-input-focused material-icons
+	{
+	color: #4CAF50;
+}
+
+/* Dialog */
+.md-dialog-container.md-active {
+	z-index: 21;
+}
+
+md-backdrop.md-opaque.md-default-theme {
+	z-index: 21;
+}
+
+/* Progress Indicator */
+md-progress-circular.md-default-theme .md-inner .md-right .md-half-circle
+	{
+	border-right-color: #4CAF50;
+}
+
+md-progress-circular.md-default-theme .md-inner .md-left .md-half-circle,
+	md-progress-circular.md-default-theme .md-inner .md-right .md-half-circle
+	{
+	border-top-color: #4CAF50;
+}
+
+md-progress-circular.md-default-theme .md-inner .md-left .md-half-circle
+	{
+	border-left-color: #4CAF50;
+}
+
+/* Selection List */
+.selection-list>div {
+	position: relative;
+}
+
+.selection-list>div:hover, .pointer {
+	cursor: pointer;
+}
+
+.selection-list h3 {
+	margin: 10px 0px;
+}
+
+.selection-list .material-icons {
+	font-size: 30px;
+	color: #999;
+}
+
+.selection-list hr {
+	margin: 5px 0px;
+}
+
+/* Override option list on item control */
+.container.options {
+	padding: 0;
+}
+
+.container .md-select-value {
+	padding: 16px 2px 1px;
+	border-bottom-style: none;
+	font-size: 18px;
+}
+
+/* List */
+.md-subheader .md-subheader-inner {
+	padding-left: 0px;
+}
+
+/* Search */
+.search {
+	padding: 20px;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+@media only screen and (max-width: 1120px) {
+	.search {
+		padding: 10px;
+	}
+	md-select.config-select {
+		margin-bottom: 0px;
+		margin-top: 0px;
+	}
+}
+
+.search md-input-container {
+	padding: 0px;
+	margin: 0px 20px;
+}
+
+.search md-input-container input {
+	border-bottom: 1px solid #FFF;
+}
+
+.search md-input-container.md-default-theme:not (.md-input-invalid ).md-input-focused .md-input
+	{
+	border-color: #FFF;
+}
+
+.vcard {
+	min-height: 0 !important;
+}
+
+.rules-dialog {
+	min-width: 40%;
+}
+
+.md-custom-plus {
+	min-height: 33px !important;
+	width: 33px !important;
+	font-size: 22px !important;
+	font-weight: 300 !important;
+	height: 33px !important;
+	line-height: normal !important;
+}
+
+.md-custom-plus>span {
+	padding-left: 1px;
+}
+
+.md-title-nospace {
+	margin: 0px !important;
+}
+
+.border-invalid, .border-invalid.border-invalid {
+	border-bottom: 1px solid rgb(244, 67, 54);
+}
+
+.config-select {
+	margin-bottom: 0px;
+	margin-top: 0px;
+}
+
+.parameter {
+    min-height: 110px;
+}
+
+.parameter md-switch {
+	margin-bottom: 9px;
+}
+
+.parameter>div md-select-value>span:first-child, .parameter>div md-select-value .md-text>span:first-child{
+    max-width: 100%;
+}
+
+.parameter md-input-container {
+	padding-bottom: 5px;
+}
+
+.includeConfig legend {
+	display: initial;
+	width: initial;
+	padding: initial;
+	margin-bottom: initial;
+	font-size: small;
+	line-height: initial;
+	color: initial;
+	border: initial;
+	border-bottom: initial;
+	margin-left: 12px;
+	color: #757575;
+}
+
+.includeConfig fieldset {
+	border: 1px solid #e5e5e5;
+	margin: 5px;
+}
+
+.includeConfig .legendSub {
+	margin-left: 12px;
+	color: #757575;
+	font-weight: 400;
+}
+
+.includeConfig .borderhidden, .linkedItems>div.borderhidden {
+	border: 0px;
+}
+
+.includeConfig .advButton {
+    margin-left: 15px;
+}
+
+.channel-group-name {
+	margin-bottom: 5px;
+    margin-top: 10px;
+    font-weight: bolder;
+}
+
+.channels>div>div>.channel {
+	margin-left: 20px;
+}
+
+.channels {
+	margin-top: 5px;
+}
+
+.channels .channelGroup {
+	margin-top: 20px;
+}
+
+.showmore {
+	float: right;
+	margin-top: 0px
+}
+
+.inline {
+	display: inline;
+}
+
+.thingName {
+    margin-top:10px;
+}
+
+.config-textInput {
+    font-size: 10.5px;
+    color: rgba(0,0,0,0.54);
+    margin-left: 2px;
+}
+
+.icontrol .md-button, .thing .md-button, .item-content .actions .md-button, .header-toolbar .md-button,
+.rule .actions .md-button {
+    min-width: 42px;
+    min-height: 42px;
+}
+
+.vcard .actions {
+	margin: 10px;
+}
+
+.vcard .actions span {
+	font-size: 24px;
+}
+
+.md-icon-reorder:hover {
+	text-decorations: none;
+}
+
+.vcard .actions span:focus {
+	outline: none;
+}
+
+@media all and (max-width: 720px) {
+	md-dialog-content {
+		max-height: 420px;
+	}
+	.draggable .md-icon-reorder {
+		display: block;
+	}
+	.itemSearch .searchControl {
+		max-width: 70%;
+	}
+	.itemSearch .controls {
+		max-width: 30%;
+	}
+	.itemSearch button {
+		min-width: 60px;
+		margin-left: 0px;
+	}
+	.itemSearch .searchBox {
+		margin-right: 0px;
+		margin-left: 0px;
+	}
+}
+
+@media all and (min-width: 720px) {
+	.draggable .md-icon-reorder {
+		display: none;
+	}
+}
+
+.rules-input {
+	padding: 0 0 12px 0px;
+	margin-right: 3%;
+}
+
+.drag-handle {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	color: grey;
+}
+
+.cursor-pointer {
+	cursor: pointer;
+	outline: none;
+}
+
+textarea.scriptArea {
+    max-width: 550px;
+    width:100%;
+    max-height: 250px;
+    overflow: scroll;
+    border: 1px solid #ccc;
+    padding-left: 5px;
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 1.2;
+    outline: none;
+}
+
+.configContainer {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+}
+
+.ruleNameDesc {
+    margin-top: 1%;
+    margin-left: 10px;
+}
+
+.ruleNameDesc md-input-container:first-child{
+    margin-bottom: 0px
+}
+
+.ruleNameDesc md-input-container {
+	margin-top: 9px;
+	margin-bottom: 9px;
+}
+
+.ruleNameDesc md-input-container.rules-input input {
+	font-size: 20px;
+	font-weight: 500;
+	color: rgba(0, 0, 0, .87);
+}
+
+.ruleNameDesc md-input-container.rules-input textarea {
+	font-weight: 500;
+}
+
+.ruleNameDesc md-input-container.rules-input.md-input-has-value textarea {
+    font-weight: 300;
+}
+
+.moduleLabel {
+	font-size: 16px;
+}
+
+.customMessage {
+    color: rgb(221, 44, 0);
+    font-size: 12px;
+    line-height: 14px;
+    margin-top: 5px;
+}
+
+.hint.noMargin, .noMargin {
+	margin-top: 0px;
+}
+
+.noPadding {
+	padding: 0px;
+}
+
+md-input-container .md-errors-spacer {
+	min-height: 0px;
+}
+
+.controlSelect .md-select-value :first-child {
+	flex: auto;
+}
+
+.no-margin {
+	margin: 0px;
+}
+
+.itemChannel {
+	padding: 15px;
+	padding-bottom: 0px;
+}
+
+.italic {
+	font-style:italic;
+}
+
+.item-edit {
+	margin-top: 20px;
+}
+
+.itemIcon-text {
+	display: none;
+}
+
+.itemIcon+.itemIcon-text {
+	display: block;
+}
+
+.thing-properties {
+	margin-left: 20px;
+	padding-left: 5px;
+}
+
+.thing-properties-table {
+    border-bottom: solid 1px #ddd;
+}
+
+.thing-properties-table td:nth-child(1) {
+    white-space: nowrap;
+	width: 25%;
+}
+
+.thing-properties-table td:nth-child(2) {
+    width: 75%;
+}
+
+.current-firmware {
+	margin-left: 5px;
+}
+
+.firmware-status {
+    margin-left: 10px;
+}
+
+.firmware-progressbar {
+	margin-bottom: 10px;
+	margin-top: 10px;
+}
+
+.firmware-table {
+    border-bottom: solid 1px #ddd;
+}
+
+.firmware-table td:nth-child(1) {
+    white-space: nowrap;
+    width: 12%;
+}
+
+.firmware-table td:nth-child(2) {
+    width: 15%;
+}
+
+.firmware-table .firmware-detail-data {
+	vertical-align: middle;
+}
+
+.firmware-table .firmware-detail-button {
+    width: 100px;
+}
+
+button.extensible-thing {
+	margin-top: 0;
+}
+
+md-chips .md-chip-remove-container {
+	display: none;
+}
+
+.md-chips:not(.md-readonly) .md-chip:not(.md-readonly) {
+	padding-right: 4px;
+	margin-right: 3px;
+}
+
+md-chips strong {
+	font-weight: normal;
+}
+
+.scriptChips .md-chip {
+	font-size: 13px;
+	line-height: 19px;
+	height: 19px;
+	padding: 0 4px 0px 8px;
+}
+
+.scriptChips md-chips-wrap {
+	padding-bottom: 0px;
+	margin-right: 15px;
+}
+
+.scriptChips .md-chip-input-container, .scriptChips .md-chip-input-container:not(:first-child) {
+	height: 20px;
+	margin-top: 0px;
+}
+
+.scriptChips .md-chips .md-chip {
+	margin: 0 0 4px 0;
+}
+
+.scriptfield {
+	border: 1px solid #e5e5e5;
+}
+
+
+.datePicker > div {
+    width:77%;
+}
+.noerror>div{
+	border-bottom-color: rgb(224,224,224) !important;
+}
+
+.thingContainer {
+	padding-left: 0px;
+}
+
+.things .thing {
+	padding-left: 15px
+}
+
+.things>.new {
+	border-top: 1px solid #e6ffe6;
+	background-color: #e6ffe6;
+	box-shadow: 0 0 10px #e6e6e6;
+}
+
+.things>.new.lastThing {
+    padding-bottom: 1px;
+}
+
+.things .actions.new {
+	background-color: #e6ffe6;
+}
+
+.thing.fab-item:focus {
+	outline: 0;
+}
+
+.thing.disabled .description {
+    color: grey;
+}
+
+.material-icons.color-remove {
+	font-size: 12px;
+	margin-top: 10px;
+	cursor: pointer;
+	color: grey;
+}
+
+.configContainer.dayOfWeek {
+	padding-right: 0px;
+}
+
+.md-button.dow-button, .md-button.dow-button:hover {
+	width: 35px;
+	height: 35px;
+	line-height: 35px;
+	margin-left: 5px;
+	margin-right: 5px;
+	background-color: #bfbfbf;
+	font-size: 14px;
+	z-index: 20;
+	min-width: 0;
+	vertical-align: middle;
+	box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .26);
+	border-radius: 50%;
+	background-clip: padding-box;
+	overflow: hidden;
+	transition: all .3s cubic-bezier(.55, 0, .55, .2);
+	transition-property: background-color, box-shadow, -webkit-transform;
+	transition-property: background-color, box-shadow, transform;
+}
+
+.md-button.dow-button.dow-selected {
+	background-color: #4CAF50;
+}
+
+@media all and (min-width: 1200px) {
+	.md-button.dow-button, .md-button.dow-button:hover {
+		margin-left: 8px;
+		margin-right: 8px;
+	}
+	.dayParameter {
+		padding-right: 30px;
+	}}
+
+@media all and (max-width: 768px) {
+	.dayParameter {
+		padding-right: 32px;
+	}
+}
+
+md-dialog-content .dayParameter {
+	width: 100%
+}
+
+.dayParameter>div {
+	min-height: 48px;
+}
+
+.item-container {
+    padding-left: 0px;
+}
+
+.container.itemConfig .md-select-value, .container .includeConfig .md-select-value {
+	padding: 2px 2px 1px 2px;
+}
+
+.container.itemConfig md-select {
+	max-height: 30px;
+}
+
+.container .itemSet {
+	margin-top: 10px;
+}
+
+.itemSet md-chips {
+	padding-bottom: 10px;
+}
+
+.includeConfig .parameter .hint h1 {
+    font-size:15px;
+}
+
+.includeConfig .parameter .hint h2 {
+    font-size:14px;
+}
+
+.includeConfig .parameter .hint h3 {
+    font-size:13px;
+}
+
+.includeConfig .parameter .hint h4 {
+    font-size:12px;
+}
+
+.includeConfig .parameter .hint h5 {
+    font-size:11px;
+}
+
+.includeConfig .parameter .hint h6 {
+    font-size:10px;
+}
+
+.icontrol {
+	margin-bottom: 15px;
+}
+
+.icontrol .control-button {
+	min-height: 35px;
+	min-width: 35px;
+}
+
+.item-content .actions i, .linkedItems .action i {
+	margin: 5px 12px 5px 12px;
+	transition: box-shadow .4s;
+	border-radius: 100%;
+	border: 5px solid transparent;
+	width: 34px;
+	height: 34px;
+	outline: 0;
+}
+
+.item-content .actions i:hover, .rules .actions span:hover, .linkedItems .action i:hover, .search i.clickable:hover {
+	cursor: pointer;
+	box-shadow: 0px 0px 4px 2px #dedede;
+}
+
+.rules .actions span, .search i.clickable {
+	transition: box-shadow .4s;
+	border-radius: 100%;
+	border: 5px solid transparent;
+	width: 34px;
+	height: 34px;
+	outline: 0;
+}
+
+.rules .disabled .description {
+	color: grey;
+}
+
+.rules .disabled .run-rule {
+	color: grey;
+}
+
+.rules .disabled .run-rule:hover {
+	color: grey;
+	box-shadow: none;
+	cursor: default;
+}
+
+.rules .enabled .description {
+	color: black;
+}
+
+.rules .uninitialized {
+background-color: #777;
+}
+
+.rules .idle {
+background-color: #ebdd25;
+}
+
+.rules .running {
+background-color: green;
+}
+
+.ruleStatus {
+	padding-bottom: 10px;
+}
+
+.configAdvance {
+	margin-top: 48px;
+	float: right;
+}
+
+@media all and (max-width: 600px) {
+    .rule .actions i,.item-content .actions i{
+        margin:1px;
+    }
+}
+
+.item-content p, .item-content h3 {
+    word-wrap: normal;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    margin-top: 0px;
+}
+
+.item-content p {
+	margin: 0;
+	width: 100%;
+}
+
+.item-content h3:focus {
+	outline: none;
+}
+
+.fill-height {
+	height: 100%;
+}
+
+.rules-container {
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+.linkedItems.item-content {
+	margin-left: 56px;
+	display: block;
+}
+
+.linkedItems>div{
+    margin: 5px;
+}
+
+.linkedItems .circle {
+	width:34px;
+	height:34px;
+	line-height:34px;
+	font-size:15px;
+}
+
+.linkedItems button.md-fab {
+	float: none;
+	margin: 0 0 4px 6px;
+}
+
+.linkedItems>.row {
+	margin-top: 10px;
+}
+
+.linkedItems>.row>.action  {
+	text-align: right;
+	margin-top: 2px;
+}
+
+.linkedItems>.row>.action>i {
+	text-align: center;
+	width: 32px;
+	height: 32px;
+	margin: 0px;
+	font-size: 20px;
+}
+
+.linkedItems>.row>.name {
+	margin-top: 7px;
+	color: rgba(0, 0, 0, .87);
+	padding-left: 0px;
+}
+
+.linkedItems>.row>.name small {
+    color: #777;
+}
+
+.dropdown dt a {
+	display: block;
+	padding: 8px 20px 5px 10px;
+	min-height: 25px;
+	line-height: 24px;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+	padding: 2px;
+}
+
+.dropdown dt input {
+	width: 90%;
+	outline: none;
+	border: 0px;
+	font-weight: 300;
+    font-size: 15px;
+    color: rgba(0,0,0,0.72);
+}
+
+md-dialog-content .dropdown dt input {
+	width: 85%;
+}
+
+input[type=number].multiSel::-webkit-inner-spin-button, 
+input[type=number].multiSel::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0; 
+}
+
+.multiSel {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.multiSel::-webkit-input-placeholder {
+	color: rgba(0,0,0,0.72);
+}
+
+.multiSel::-moz-placeholder {
+	color: rgba(0,0,0,0.72);
+}
+
+.multiSel:-ms-input-placeholder {
+	color: rgba(0,0,0,0.72);
+}
+
+.multiSel:-moz-placeholder { 
+	color: rgba(0,0,0,0.72);
+}
+
+.dropdown dt i.enableColor {
+	color: #4CAF50;
+}
+
+.dropdown dd ul {
+	background-color: #fff;
+	border: 0;
+	color: black;
+	display: none;
+	left: 0px;
+	padding: 2px 15px 2px 5px;
+	position: absolute;
+	top: 1px;
+	list-style: none;
+	max-height: 150px;
+	overflow: auto;
+	z-index: 100;
+	border: 1px solid #ccc;
+	border-top: 0px;
+	box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .2), 0 1px 1px 0
+		rgba(0, 0, 0, .14), 0 2px 1px -1px rgba(0, 0, 0, .12);
+	font-size: 14px;
+	width:97%;
+}
+
+.dropdown dd ul li a {
+	padding: 5px;
+	display: block;
+}
+
+.dropdown dd ul li {
+	height: 32px;
+	margin-top: 8px;
+}
+
+.dropdown dd ul li input {
+	float: right;
+}
+
+.dropdown dd ul li a:hover {
+	background-color: #fff;
+}
+
+.dropdown a, .dropdown a:visited, .dropdown a:hover {
+	color: #ccc;
+	cursor: pointer;
+	text-decoration: none;
+	outline: none;
+	font-size: 12px;
+}
+
+.dropdown dd, .dropdown dt {
+	margin: 0px;
+	padding-left: 0px;
+	padding-top: 2px;
+}
+
+.material-icons.copy-clipboard {
+	font-size:13px;
+	margin-left: 10px;
+	cursor:pointer;
+}
+
+.text-control {
+	height: 100%;
+}
+
+.text-control .minDimension {
+	min-height: 40px;
+	min-width: 140px;
+}
+
+.searchBox {
+	transition:all linear 0.2s;
+}
+.searchBox.ng-hide {
+  opacity: 0;
+}
+
+@media all and (min-width: 768px) {
+    .typeSearch {
+        padding-right: 0px;
+    }
+    .groupSearch {
+        padding-left: 0px;
+    }
+}
+.search.itemSearch {
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.multiSelect ul li {
+	outline: none;
+	cursor: pointer;
+}
+
+.material-icons.launch-icon {
+	color: black;
+	background-color: transparent;
+	font-size: 16px;
+}
+
+.extensions .card .description.rule-ext-desc {
+	padding-bottom: 10px;
+	padding-top:4px;
+}
+
+.backdrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	background: #a8a8a8;
+	opacity: 0.8;
+	z-index: 998;
+	height: 100%;
+	width: 100%;
+}
+
+.progressbar {
+	 position:fixed;
+	 top: 50%;
+	 left: 50%;
+     z-index:999;
+}
+.inboxSearch {
+	margin-bottom: 10px;
+}
+
+md-progress-circular.firmware {
+    margin: 5px 12px 5px 12px;
+    display: inline-block;
+}
+
+.middle-aligned.table-bordered>tbody>tr>td{
+	vertical-align: middle;
+}
+.no-animation * {
+   -webkit-transition: none !important;
+   transition: none !important;
+}
+
+.bindings.white-bg {
+    padding-top: 30px;
+}
+
+.bindings.white-bg.has-section-header {
+    padding-top: 80px;
+}
+
+.binding.white-bg {
+    padding-top: 30px;
+}
+
+.binding .item-content .actions {
+	width: 60px;
+}
+
+.binding.white-bg.has-section-header {
+    padding-top: 80px;
+}
+
+.fab-item hr.border-line {
+	margin: 10px 0 0 76px;
+}
+
+.binding :not(md-expansion-panel) .md-title {
+	padding-bottom: 10px;
+	flex-grow: 2;
+	max-width: none;
+}
+.binding .things .search {
+	padding: 0 0 10px 0;
+}
+
+.binding .things md-expansion-panel .md-title.ng-binding {
+    padding-bottom: 0;
+}
+
+.multi-services.white-bg {
+    padding-top: 80px;
+}
+
+search-field {
+	display: flex;
+	width: 100%;
+}
+
+search-field i {
+	margin-top: 4px;
+}
+
+md-input-container .md-input.location-input {
+	float: none;
+}
+
+.items .item form[name=locationForm] md-input-container {
+    margin: -25px 0 0 0;
+}
+
+.location-edit {
+	margin-top: 10px;
+}
+
+.map-container {
+	margin-top: 10px;
+}
+
+.map-container > .map {
+	height: 300px; 
+	width: 100%;
+}

@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.dsmr.internal.discovery;
 
@@ -15,6 +19,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.junit.Test;
@@ -23,6 +29,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
+import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
+import org.openhab.binding.dsmr.internal.device.cosem.CosemObjectType;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterDescriptor;
@@ -40,6 +48,7 @@ public class DSMRMeterDetectorTest {
     @Parameters(name = "{0}")
     public static final List<Object[]> data() {
         return Arrays.asList(new Object[][] {
+            { "ace4000", EnumSet.of( ELECTRICITY_ACE4000, GAS_ACE4000)},
             { "dsmr_40", EnumSet.of( DEVICE_V4, ELECTRICITY_V4_2, M3_V5_0)},
             { "dsmr_42", EnumSet.of( DEVICE_V4, ELECTRICITY_V4_2, M3_V5_0)},
             { "dsmr_50", EnumSet.of( DEVICE_V5, ELECTRICITY_V5_0, M3_V5_0)},
@@ -61,13 +70,16 @@ public class DSMRMeterDetectorTest {
     public void testDetectMeters() {
         P1Telegram telegram = TelegramReaderUtil.readTelegram(telegramName, TelegramState.OK);
         DSMRMeterDetector detector = new DSMRMeterDetector();
-        Collection<DSMRMeterDescriptor> detectMeters = detector.detectMeters(telegram).getKey();
+        Entry<Collection<DSMRMeterDescriptor>, Map<CosemObjectType, CosemObject>> entry = detector
+            .detectMeters(telegram);
+        Collection<DSMRMeterDescriptor> detectMeters = entry.getKey();
         assertEquals("Should detect correct number of meters", expectedMeters.size(), detectMeters.size());
+        assertEquals("Should not have any undetected cosem objects", 0, entry.getValue().size());
         for (DSMRMeterType meter : expectedMeters) {
             assertEquals(
-                    String.format("Meter '%s' not found: %s", meter,
-                            Arrays.toString(detectMeters.toArray(new DSMRMeterDescriptor[0]))),
-                    1, detectMeters.stream().filter(e -> e.getMeterType() == meter).count());
+                String.format("Meter '%s' not found: %s", meter,
+                    Arrays.toString(detectMeters.toArray(new DSMRMeterDescriptor[0]))),
+                1, detectMeters.stream().filter(e -> e.getMeterType() == meter).count());
         }
     }
 
