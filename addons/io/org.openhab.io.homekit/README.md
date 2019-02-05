@@ -9,14 +9,14 @@ Some accessory types require a specific set of characteristics.
 
 ## Global Configuration
 
-Your first step will be to create the homekit.cfg in your conf/services folder.
+Your first step will be to create the homekit.cfg in your `$OPENHAB_CONF/services` folder.
 At the very least, you will need to define a pin number for the bridge.
 This will be used in iOS when pairing. The pin code is in the form "###-##-###".
 Requirements beyond this are not clear, and Apple enforces limitations on eligible pins within iOS.
 At the very least, you cannot use repeating (111-11-111) or sequential (123-45-678) pin codes.
 If your home network is secure, a good starting point is the pin code used in most sample applications: 031-45-154.
 
-Other settings, such as using Fahrenheit temperatures, customizing the thermostat heat/cool/auto modes, and specifying the interface to advertise the Homekit bridge (which can be edited in PaperUI standard mode) are also illustrated in the following sample:
+Other settings, such as using Fahrenheit temperatures, customizing the thermostat heat/cool/auto modes, and specifying the interface to advertise the HomeKit bridge (which can be edited in Paper UI standard mode) are also illustrated in the following sample:
 
 ```
 org.openhab.homekit:port=9124
@@ -29,7 +29,7 @@ org.openhab.homekit:thermostatOffMode=Off
 org.openhab.homekit:networkInterface=192.168.0.6
 ```
 
-The following additional settings can be added or edited in PaperUI after switching to expert mode:
+The following additional settings can be added or edited in Paper UI after switching to expert mode:
 
 ```
 org.openhab.homekit:name=openHAB
@@ -48,10 +48,10 @@ org.openhab.homekit:maximumTemperature=100
 | thermostatCoolMode        | Word used for activating the cooling mode of the device (if applicable).                                                                                                                                                                  | CoolOn            |
 | thermostatHeatMode        | Word used for activating the heating mode of the device (if applicable).                                                                                                                                                                  | HeatOn            |
 | thermostatAutoMode        | Word used for activating the automatic mode of the device (if applicable).                                                                                                                                                                | Auto              |
-| thermostatOffMode         | Word used to set the thermostat mode of the device to off (if applicable).                                                                                                                                                               | Off               |
+| thermostatOffMode         | Word used to set the thermostat mode of the device to off (if applicable).                                                                                                                                                                | Off               |
 | minimumTemperature        | Lower bound of possible temperatures, used in the user interface of the iOS device to display the allowed temperature range. Note that this setting applies to all devices in HomeKit.                                                    | -100              |
 | maximumTemperature        | Upper bound of possible temperatures, used in the user interface of the iOS device to display the allowed temperature range. Note that this setting applies to all devices in HomeKit.                                                    | 100               |
-| name                      | Name under which this HomeKit bridge is announced on the network. This is also the name displayed on the iOS device when searching for available bridges.                                                                                           | openHAB           |
+| name                      | Name under which this HomeKit bridge is announced on the network. This is also the name displayed on the iOS device when searching for available bridges.                                                                                 | openHAB           |
 
 ## Item Configuration
 
@@ -68,12 +68,12 @@ A full list of supported accessory types can be found in the table below.
 |--------------------   |----------------------------   |-----------------------    |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------  |
 | Lighting              |                               | Switch, Dimmer, Color     | A lightbulb, switchable, dimmable or rgb                                                                                                                                                                                                      |
 | Switchable            |                               | Switch, Dimmer, Color     | An accessory that can be turned off and on. While similar to a lightbulb, this will be presented differently in the Siri grammar and iOS apps                                                                                                 |
-| ContactSensor         |                               | Contact                   | An accessory with on/off state that can be viewed in homekit but not changed such as a contact sensor for a door or window                                                                                                                    |
+| ContactSensor         |                               | Contact                   | An accessory with on/off state that can be viewed in HomeKit but not changed such as a contact sensor for a door or window                                                                                                                    |
 | CurrentTemperature    |                               | Number                    | An accessory that provides a single read-only temperature value. The units default to celsius but can be overridden globally using the useFahrenheitTemperature global property                                                               |
 | CurrentHumidity       |                               | Number                    | An accessory that provides a single read-only value indicating the relative humidity.                                                                                                                                                         |
 | Thermostat            |                               | Group                     | A thermostat requires all child tags defined below                                                                                                                                                                                            |
 |                       | CurrentTemperature            | Number                    | The current temperature, same as above                                                                                                                                                                                                        |
-|                       | homekit:HeatingCoolingMode    | String                    | Indicates the current mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties. This is a homekit-specific term and therefore the tags needs to be prefixed with "homekit:"   |
+|                       | homekit:HeatingCoolingMode    | String                    | Indicates the current mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"   |
 |                       | TargetTemperature             | Number                    | A target temperature that will engage the thermostat's heating and cooling actions as necessary, depending on the heatingCoolingMode                                                                                                          |
 
 See the sample below for example items:
@@ -88,19 +88,31 @@ Number DownstairsThermostatTargetTemperature "Downstairs Thermostat Target Tempe
 String DownstairsThermostatHeatingCoolingMode "Downstairs Thermostat Heating/Cooling Mode" (gDownstairsThermostat) [ "homekit:HeatingCoolingMode" ]
 ```
 
+## Common Problems
+
+**openHAB HomeKit hub shows up when I manually scan for devices, but Home app reports "can't connect to device"**
+
+If you see this error in the Home app, and don't see any log messages, it could be because your IP address in the `networkInterface` setting is misconfigured.
+The openHAB HomeKit hub is advertised via mDNS.
+If you register an IP address that isn't reachable from your phone (such as `localhost`, `0.0.0.0`, `127.0.0.1`, etc.), then Home will be unable to reach openHAB.
+
 ## Additional Notes
 
 HomeKit allows only a single pairing to be established with the bridge.
 This pairing is normally shared across devices via iCloud.
 If you need to establish a new pairing, you'll need to clear the existing pairings.
-To do this, you can issue the command ```smarthome:homekit clearPairings``` from the OSGi console.
+To do this, you can issue the command `smarthome:homekit clearPairings` from the OSGi console.
+After doing this, you may need to remove the file `$OPENHAB_USERDATA/jsondb/homekit.json` and restart openHAB.
 
 HomeKit requires a unique identifier for each accessory advertised by the bridge.
 This unique identifier is hashed from the Item's name.
 For that reason, it is important that the name of your Items exposed to HomeKit remain consistent.
 
 If you encounter any issues with the add-on and need support, it may be important to get detailed logs of your device's communication with openHAB.
-In order to get logs from the underlying library used to implement the HomeKit protocol, enable trace logging using the following command:
+In order to get logs from the underlying library used to implement the HomeKit protocol, enable trace logging using the following commands at [the console](https://www.openhab.org/docs/administration/console.html):
 
-```openhab> log:set TRACE com.beowulfe.hap```
+```
+openhab> log:set TRACE com.beowulfe.hap
+openhab> log:tail com.beowulfe.hap
+```
 
