@@ -21,7 +21,7 @@ Import-Package:
  org.apache.http.message,
  org.apache.http.protocol,
  org.eclipse.jdt.annotation;resolution:=optional,
- org.eclipse.smarthome.automation.annotation;resolution:=optional,
+ org.openhab.core.automation.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,

@@ -14,12 +14,12 @@ package org.openhab.binding.dmx.action;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.automation.annotation.ActionInput;
-import org.eclipse.smarthome.automation.annotation.RuleAction;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
 import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.dmx.internal.DmxBridgeHandler;
+import org.openhab.core.automation.annotation.ActionInput;
+import org.openhab.core.automation.annotation.RuleAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
