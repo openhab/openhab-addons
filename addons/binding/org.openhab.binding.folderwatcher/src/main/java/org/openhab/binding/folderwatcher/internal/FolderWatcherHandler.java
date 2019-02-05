@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.folderwatcher.internal;
 
@@ -13,9 +17,6 @@ import static org.openhab.binding.folderwatcher.internal.FolderWatcherBindingCon
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-//import java.io.PrintWriter;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ import java.util.Calendar;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
 import org.apache.commons.net.ftp.FTPFile;
@@ -62,7 +62,6 @@ public class FolderWatcherHandler extends BaseThingHandler {
     // private ArrayList<FTPFile> currentFtpListing = new ArrayList<FTPFile>();
     private ArrayList<String> currentFtpListing = new ArrayList<String>();
     private ArrayList<String> previousFtpListing = new ArrayList<String>();
-    private int hoursBack;
 
     public FolderWatcherHandler(Thing thing) {
         super(thing);
@@ -120,7 +119,7 @@ public class FolderWatcherHandler extends BaseThingHandler {
         // logger.debug("Start initializing!");
         config = getConfigAs(FolderWatcherConfiguration.class);
 
-        hoursBack = ((BigDecimal) getConfig().get("diffHours")).intValue();
+        // hoursBack = ((BigDecimal) getConfig().get("diffHours")).intValue();
 
         // TODO: Initialize the handler.
         // The framework requires you to return from this method quickly. Also, before leaving this method a thing
@@ -136,32 +135,26 @@ public class FolderWatcherHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         // Example for background initialization:
-        scheduler.execute(() -> {
+        if (config.pollInterval > 0 && config.pollInterval != null) {
 
-            int polling_interval = ((BigDecimal) getConfig().get("pollInterval")).intValue();
-            if (polling_interval > 0) {
+            scheduler.execute(() -> {
 
-                initJob = scheduler.scheduleWithFixedDelay(periodicConnectRunnable, 0, polling_interval,
+                // int polling_interval = ((BigDecimal) getConfig().get("pollInterval")).intValue();
+
+                initJob = scheduler.scheduleWithFixedDelay(periodicConnectRunnable, 0, config.pollInterval,
                         TimeUnit.SECONDS);
 
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            }
+            });
 
-        });
+            scheduler.execute(() -> {
 
-        scheduler.execute(() -> {
-
-            int polling_interval = ((BigDecimal) getConfig().get("pollInterval")).intValue();
-            if (polling_interval > 0) {
-
-                executionJob = scheduler.scheduleWithFixedDelay(periodicExecutionRunnable, 0, polling_interval + 5,
+                executionJob = scheduler.scheduleWithFixedDelay(periodicExecutionRunnable, 0, config.pollInterval + 5,
                         TimeUnit.SECONDS);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            }
 
-        });
+            });
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        }
 
         // logger.debug("Finished initializing!");
 
@@ -223,7 +216,7 @@ public class FolderWatcherHandler extends BaseThingHandler {
 
                     long diff = ChronoUnit.HOURS.between(fileTimestamp.toInstant(), cal.toInstant());
 
-                    if (diff < hoursBack) {
+                    if (diff < config.diffHours) {
                         aFile.setName(dirToList + "/" + currentFileName);
                         currentFtpListing.add(aFile.getName());
 
@@ -234,17 +227,50 @@ public class FolderWatcherHandler extends BaseThingHandler {
         }
     }
 
-    private void listnewfiles() throws IOException {
+    private void listNewFiles() throws IOException {
+
+        ArrayList<String> diffFtpListing = new ArrayList<String>();
+
+        if (!currentFtpListing.isEmpty()) {
+            FileWriter fileWriter = new FileWriter(currentFtpListingFile);
+
+            for (String newFtpFile : currentFtpListing) {
+                fileWriter.write(newFtpFile + "\n");
+            }
+            fileWriter.close();
+
+            diffFtpListing = (ArrayList<String>) currentFtpListing.clone();
+
+            diffFtpListing.removeAll(previousFtpListing);
+
+            // filelist = "Test files " + Integer.toString(rand.nextInt(100)) + " " +
+            // Integer.toString(currentFtpListing.size());
+
+            for (String newFtpFile : diffFtpListing) {
+
+                updateState(CHANNEL_1, new StringType(newFtpFile));
+
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    // e.printStackTrace();
+                }
+
+            }
+
+            previousFtpListing = (ArrayList<String>) currentFtpListing.clone();
+        }
 
     }
 
     protected Runnable periodicConnectRunnable = new Runnable() {
 
-        String server = getConfig().get("ftpAddress").toString();
-        String username = getConfig().get("ftpUsername").toString();
-        String password = getConfig().get("ftpPassword").toString();
-        int timeout = ((BigDecimal) getConfig().get("connectionTimeout")).intValue();
-        boolean showHidden = (boolean) getConfig().get("listHidden");
+        // String server = getConfig().get("ftpAddress").toString();
+        // String username = getConfig().get("ftpUsername").toString();
+        // String password = getConfig().get("ftpPassword").toString();
+        // int timeout = ((BigDecimal) getConfig().get("connectionTimeout")).intValue();
+        // boolean showHidden = (boolean) getConfig().get("listHidden");
         int reply;
 
         @Override
@@ -252,7 +278,7 @@ public class FolderWatcherHandler extends BaseThingHandler {
 
             if (ftp == null || ftp.isConnected() == false) {
 
-                if (timeout <= 0) {
+                if (config.connectionTimeout <= 0) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
                     return;
                 }
@@ -261,14 +287,14 @@ public class FolderWatcherHandler extends BaseThingHandler {
                 ftp = new FTPClient();
                 reply = 0;
 
-                ftp.setListHiddenFiles(showHidden);
-                ftp.setConnectTimeout(timeout * 1000);
-                ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out), true));
+                ftp.setListHiddenFiles(config.listHidden);
+                ftp.setConnectTimeout(config.connectionTimeout * 1000);
+                // ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out), true));
 
                 // final FTPClientConfig config;
                 // config = new FTPClientConfig();
                 try {
-                    ftp.connect(server);
+                    ftp.connect(config.ftpAddress);
                     reply = ftp.getReplyCode();
 
                     if (!FTPReply.isPositiveCompletion(reply)) {
@@ -291,7 +317,7 @@ public class FolderWatcherHandler extends BaseThingHandler {
                     return;
                 }
                 __main: try {
-                    if (!ftp.login(username, password)) {
+                    if (!ftp.login(config.ftpUsername, config.ftpPassword)) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ftp.getReplyString());
                         ftp.logout();
                         break __main;
@@ -320,7 +346,6 @@ public class FolderWatcherHandler extends BaseThingHandler {
         // String fileList = "";
         // Random rand = new Random();
         // Calendar modDate = null;
-        private ArrayList<String> diffFtpListing = new ArrayList<String>();
 
         @Override
         public void run() {
@@ -331,7 +356,7 @@ public class FolderWatcherHandler extends BaseThingHandler {
 
                 try {
 
-                    String ftpRootDir = getConfig().get("ftpDir").toString();
+                    String ftpRootDir = config.ftpDir;
 
                     if (ftpRootDir.endsWith("/")) {
                         ftpRootDir = ftpRootDir.substring(0, ftpRootDir.length() - 1);
@@ -343,37 +368,7 @@ public class FolderWatcherHandler extends BaseThingHandler {
 
                     currentFtpListing.clear();
                     listDirectory(ftp, ftpRootDir, "", 0);
-
-                    if (!currentFtpListing.isEmpty()) {
-                        FileWriter fileWriter = new FileWriter(currentFtpListingFile);
-
-                        for (String newFtpFile : currentFtpListing) {
-                            fileWriter.write(newFtpFile + "\n");
-                        }
-                        fileWriter.close();
-
-                        diffFtpListing = (ArrayList<String>) currentFtpListing.clone();
-
-                        diffFtpListing.removeAll(previousFtpListing);
-
-                        // filelist = "Test files " + Integer.toString(rand.nextInt(100)) + " " +
-                        // Integer.toString(currentFtpListing.size());
-
-                        for (String newFtpFile : diffFtpListing) {
-
-                            updateState(CHANNEL_1, new StringType(newFtpFile));
-
-                            try {
-                                Thread.sleep(3000);
-                            } catch (InterruptedException e) {
-                                // TODO Auto-generated catch block
-                                // e.printStackTrace();
-                            }
-
-                        }
-
-                        previousFtpListing = (ArrayList<String>) currentFtpListing.clone();
-                    }
+                    listNewFiles();
 
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
