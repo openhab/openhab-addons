@@ -862,30 +862,30 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             updateStatusIfChanged(ThingStatus.ONLINE);
             long now = System.currentTimeMillis();
             // Update channels that have not been updated in a while, or when their values has changed
-            states.forEach((uid, state) -> whenExpired(now, uid, state, this::tryUpdateState));
+            states.forEach((uid, state) -> updateExpiredChannel(now, uid, state));
             channelLastState = states;
         }
     }
 
-    private void tryUpdateState(ChannelUID uid, State state) {
-        try {
-            updateState(uid, state);
-            channelLastUpdated.put(uid, now);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Error updating state '{}' (type {}) to channel {}: {} {}", state,
-                    Optional.ofNullable(state).map(s -> s.getClass().getName()).orElse("null"), uid,
-                    e.getClass().getName(), e.getMessage());
-        }
-    }
-
-    private void whenExpired(long now, ChannelUID uid, State state, BiConsumer<ChannelUID, State> action) {
+    private void updateExpiredChannel(long now, ChannelUID uid, State state) {
         @Nullable
         State lastState = channelLastState.get(uid);
         long lastUpdatedMillis = channelLastUpdated.getOrDefault(uid, 0L);
         long millisSinceLastUpdate = now - lastUpdatedMillis;
         if (lastUpdatedMillis <= 0L || lastState == null || updateUnchangedValuesEveryMillis <= 0L
                 || millisSinceLastUpdate > updateUnchangedValuesEveryMillis || !lastState.equals(state)) {
-            action.accept(uid, state);
+            tryUpdateState(uid, state);
+            channelLastUpdated.put(uid, now);
+        }
+    }
+
+    private void tryUpdateState(ChannelUID uid, State state) {
+        try {
+            updateState(uid, state);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Error updating state '{}' (type {}) to channel {}: {} {}", state,
+                    Optional.ofNullable(state).map(s -> s.getClass().getName()).orElse("null"), uid,
+                    e.getClass().getName(), e.getMessage());
         }
     }
 
