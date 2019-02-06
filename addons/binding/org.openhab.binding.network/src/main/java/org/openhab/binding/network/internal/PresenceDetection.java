@@ -186,11 +186,29 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             arpPingMethod = ArpPingUtilEnum.UNKNOWN_TOOL;
             return;
         } else if (destinationAddress == null || !(destinationAddress instanceof Inet4Address)) {
-            arpPingState = "Destination is not IPv4";
+            arpPingState = "Destination is not a valid IPv4 address";
             arpPingMethod = ArpPingUtilEnum.UNKNOWN_TOOL;
             return;
         }
         arpPingMethod = networkUtils.determineNativeARPpingMethod(arpPingUtilPath);
+        switch (arpPingMethod) {
+            case UNKNOWN_TOOL: {
+                arpPingState = "Unknown arping tool";
+                break;
+            }
+            case THOMAS_HABERT_ARPING: {
+                arpPingState = "Arping tool by Thomas Habets";
+                break;
+            }
+            case THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT: {
+                arpPingState = "Arping tool by Thomas Habets (old version)";
+                break;
+            }
+            case IPUTILS_ARPING: {
+                arpPingState = "Ipuitls Arping";
+                break;
+            }
+        }
     }
 
     /**
