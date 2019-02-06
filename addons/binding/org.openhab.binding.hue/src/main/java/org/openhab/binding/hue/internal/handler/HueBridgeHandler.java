@@ -104,19 +104,15 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 if (isReachable(hueBridge.getIPAddress())) {
                     lastBridgeConnectionState = false;
                     onNotAuthenticated();
-                } else {
-                    if (lastBridgeConnectionState || thing.getStatus() == ThingStatus.INITIALIZING) {
-                        lastBridgeConnectionState = false;
-                        onConnectionLost();
-                    }
+                } else if (lastBridgeConnectionState || thing.getStatus() == ThingStatus.INITIALIZING) {
+                    lastBridgeConnectionState = false;
+                    onConnectionLost();
                 }
-            } catch (ApiException | IOException e) {
-                if (hueBridge != null) {
-                    if (lastBridgeConnectionState) {
-                        logger.debug("Connection to Hue Bridge {} lost.", hueBridge.getIPAddress());
-                        lastBridgeConnectionState = false;
-                        onConnectionLost();
-                    }
+            } catch (ApiException | IOException | RuntimeException e) {
+                if (hueBridge != null && lastBridgeConnectionState) {
+                    logger.debug("Connection to Hue Bridge {} lost.", hueBridge.getIPAddress());
+                    lastBridgeConnectionState = false;
+                    onConnectionLost();
                 }
             } finally {
                 pollingLock.unlock();

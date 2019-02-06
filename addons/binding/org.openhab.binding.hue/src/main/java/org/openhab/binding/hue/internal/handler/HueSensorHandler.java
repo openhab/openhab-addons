@@ -268,14 +268,14 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
     @Override
     public void onSensorRemoved(@Nullable HueBridge bridge, FullSensor sensor) {
         if (sensor.getId().equals(sensorId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "offline.sensor-not-reachable");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.sensor-not-reachable");
         }
     }
 
     @Override
     public void onSensorGone(@Nullable HueBridge bridge, FullSensor sensor) {
         if (sensor.getId().equals(sensorId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "offline.conf-error-wrong-sensor-id");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.conf-error-wrong-sensor-id");
         }
     }
 
