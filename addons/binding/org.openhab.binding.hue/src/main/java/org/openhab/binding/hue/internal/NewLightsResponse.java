@@ -14,7 +14,7 @@ package org.openhab.binding.hue.internal;
 
 /**
  *
- * @author Q42, standalone Jue library (https://github.com/Q42/Jue)
+ * @author Q42 - Initial contribution
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
  */
 class NewLightsResponse {

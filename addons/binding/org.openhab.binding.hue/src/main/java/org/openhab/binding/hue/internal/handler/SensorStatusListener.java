@@ -44,6 +44,14 @@ public interface SensorStatusListener {
     void onSensorRemoved(@Nullable HueBridge bridge, FullSensor sensor);
 
     /**
+     * This method is called whenever a sensor is reported as gone.
+     *
+     * @param bridge The bridge the reported sensor was connected to.
+     * @param sensor The sensor which is reported as gone.
+     */
+    void onSensorGone(@Nullable HueBridge bridge, FullSensor sensor);
+
+    /**
      * This method is called whenever a sensor is added.
      *
      * @param bridge The bridge the added sensor was connected to.

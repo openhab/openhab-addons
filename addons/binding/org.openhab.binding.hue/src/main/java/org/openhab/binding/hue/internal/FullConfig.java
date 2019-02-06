@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * Container for all data on a bridge.
  *
- * @author Q42, standalone Jue library (https://github.com/Q42/Jue)
+ * @author Q42 - Initial contribution
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
  */
 public class FullConfig {
