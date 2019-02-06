@@ -15,7 +15,6 @@ package org.openhab.io.homekit.internal.accessories;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
@@ -114,6 +113,22 @@ public class HomekitAccessoryFactory {
             case BLINDS:
             case WINDOW_COVERING:
                 return new HomekitWindowCoveringImpl(taggedItem, itemRegistry, updater);
+            case SMOKE_SENSOR:
+                HomekitTaggedItem smokeSensorAccessory = getPrimaryAccessory(taggedItem,
+                        HomekitAccessoryType.SMOKE_SENSOR, itemRegistry).orElseThrow(
+                                () -> new Exception("Smoke accessory group should have a smoke sensor in it"));
+
+                return new HomekitSmokeSensorImpl(smokeSensorAccessory, itemRegistry, updater,
+                        BatteryStatus.getFromCharacteristics(characteristicItems));
+            case CARBON_MONOXIDE_SENSOR:
+                HomekitTaggedItem carbonMonoxideSensorAccessory = getPrimaryAccessory(taggedItem,
+                        HomekitAccessoryType.CARBON_MONOXIDE_SENSOR, itemRegistry)
+                                .orElseThrow(() -> new Exception(
+                                        "Carbon monoxide accessory group should have a carbon monoxide sensor in it"));
+
+                return new HomekitSmokeSensorImpl(carbonMonoxideSensorAccessory, itemRegistry, updater,
+                        BatteryStatus.getFromCharacteristics(characteristicItems));
+
         }
 
         throw new Exception("Unknown homekit type: " + taggedItem.getAccessoryType());
@@ -122,7 +137,7 @@ public class HomekitAccessoryFactory {
     /**
      * Given an accessory group, return the item in the group tagged as an accessory.
      *
-     * @param taggedItem    The group item containing our item, or, the accessory item.
+     * @param taggedItem The group item containing our item, or, the accessory item.
      * @param accessoryType The accessory type for which we're looking
      * @return
      */

@@ -92,6 +92,8 @@ A full list of supported accessory types can be found in the table below.
 | OccupancySensor       |                                   | Switch, ContactSensor     | Occupancy sensor. ON / OPEN state means occupancy detected. |
 | Valve                 |                                   | Switch                    | Simple open/close valve. Assumes liquid is flowing when valve is open. |
 | WindowCovering        |                                   | Rollershutter             | Simple window covering with support for setting target position / current position support. |
+| SmokeSensor           |                                   | Switch, ContactSensor     | Smoke detector. ON / OPEN state means smokes detected. |
+| CarbonMonoxideSensor  |                                   | Switch, ContactSensor     | CO detector. ON / OPEN state means smoke detected (it currently appears that Home.app on iOS doesn't distinguish between a smoke and CO detector). |
 
 
 See the sample below for example items:
@@ -120,6 +122,8 @@ The following devices support report low battery status:
 
 * LeakSensor
 * MotionSensor
+* SmokeSensor
+* CarbonMonoxideSensor
 * OccupancySensor
 
 Battery status can be reported via a Number item (0 - 100) tagged as `homekit:BatteryLevel`, or via a Switch item (where ON == battery is low) tagged as `homekit:BatteryLowStatus`. The battery status item must be grouped in with the sensor in question so it can be associated as a composite device. Here's what it looks like to configure a leak sensor with a BatteryLevel:
