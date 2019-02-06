@@ -68,6 +68,12 @@ public interface NhcControllerEvent {
     public void controllerOffline();
 
     /**
+     * Called to indicate the connection with the Niko Home Control Controller is online.
+     *
+     */
+    public void controllerOnline();
+
+    /**
      * This method is called when an alarm event is received from the Niko Home Control controller.
      *
      * @param alarmText

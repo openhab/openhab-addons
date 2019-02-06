@@ -134,7 +134,8 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      * @param port        Port for MQTT communication with the Niko Connected Controller
      * @throws MqttException
      */
-    void startPublicConnection(MqttMessageSubscriber subscriber, String cocoAddress, int port) throws MqttException {
+    synchronized void startPublicConnection(MqttMessageSubscriber subscriber, String cocoAddress, int port)
+            throws MqttException {
         if (publicStoppedFuture != null) {
             try {
                 publicStoppedFuture.get(5000, TimeUnit.MILLISECONDS);
@@ -183,7 +184,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      * @param password   Password for the touch profile
      * @throws MqttException
      */
-    void startProfileConnection(MqttMessageSubscriber subscriber, String username, String password)
+    synchronized void startProfileConnection(MqttMessageSubscriber subscriber, String username, String password)
             throws MqttException {
         if (profileStoppedFuture != null) {
             try {
@@ -193,6 +194,11 @@ public class NhcMqttConnection2 implements MqttActionCallback {
                 logger.debug("Niko Home Control: error stopping profile connection");
             }
             profileStoppedFuture = null;
+        }
+
+        if (isProfileConnected()) {
+            logger.debug("Niko Home Control: profile already connected, no need to connect again");
+            return;
         }
 
         logger.debug("Niko Home Control: starting profile connection...");
@@ -229,6 +235,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
         connection.setPersistencePath(persistencePath);
         connection.setSSLContextProvider(sslContextProvider);
         connection.setCredentials(username, password);
+        connection.setQos(1);
         return connection;
     }
 

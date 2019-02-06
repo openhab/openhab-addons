@@ -100,7 +100,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         }
         NikoHomeControlCommunication nhcComm = nhcBridgeHandler.getCommunication();
 
-        if (nhcComm == null) {
+        if (nhcComm == null || !nhcComm.communicationActive()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     "Niko Home Control: bridge communication not initialized when trying to execute action "
                             + actionId);

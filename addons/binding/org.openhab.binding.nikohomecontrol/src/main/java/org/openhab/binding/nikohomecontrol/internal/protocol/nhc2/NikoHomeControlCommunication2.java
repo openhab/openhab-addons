@@ -98,6 +98,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
     @Override
     public synchronized void startCommunication() {
         communicationStarted = new CompletableFuture<>();
+
         startPublicCommunication();
     }
 
@@ -375,7 +376,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
                 }
 
                 if (!this.actions.containsKey(device.uuid)) {
-                    logger.debug("Niko Home Control: adding action device {}", device.name);
+                    logger.debug("Niko Home Control: adding action device {}, {}", device.uuid, device.name);
 
                     NhcAction2 nhcAction = new NhcAction2(device.uuid, device.name, device.model, device.technology,
                             actionType, location);
@@ -387,7 +388,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
             } else if ("thermostat".equals(device.type)) {
 
                 if (!this.thermostats.containsKey(device.uuid)) {
-                    logger.debug("Niko Home Control: adding thermostatdevice {}", device.name);
+                    logger.debug("Niko Home Control: adding thermostatdevice {}, {}", device.uuid, device.name);
 
                     NhcThermostat2 nhcThermostat = new NhcThermostat2(device.uuid, device.name, location);
                     nhcThermostat.setNhcComm(this);
@@ -396,12 +397,14 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
 
                 updateThermostatState((NhcThermostat2) this.thermostats.get(device.uuid), device);
             } else {
-                logger.debug("Niko Home Control: device type {} not supported", device.type);
+                logger.debug("Niko Home Control: device type {} not supported for {}, {}", device.type, device.uuid,
+                        device.name);
             }
         }
 
         // Once a devices list response is received, we know the communication is fully started.
         logger.debug("Niko Home Control: Communication start complete.");
+        handler.controllerOnline();
         communicationStarted.complete(true);
     }
 

@@ -159,6 +159,16 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
     }
 
+    @Override
+    public void controllerOnline() {
+        bridgeOnline();
+
+        Integer refreshInterval = ((Number) this.getConfig().get(CONFIG_REFRESH)).intValue();
+        if (this.refreshTimer == null) {
+            setupRefreshTimer(refreshInterval);
+        }
+    }
+
     /**
      * Update bridge properties with properties returned from Niko Home Control Controller, so they can be made visible
      * in PaperUI.
