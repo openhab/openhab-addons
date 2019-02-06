@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hdl"   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		
+	<thing-type id="ML01">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Logic</label>
+		<description>Device type for this Logic Panel</description>
+		<channels>
+			<channel id="time" typeId="time"></channel>
+			<channel id="UVSwitch200" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch201" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch202" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch203" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch204" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch205" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch206" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch207" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch208" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch209" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch210" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch211" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch212" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch213" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch214" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch215" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch216" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch217" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch218" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch219" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch220" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch221" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch222" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch223" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch224" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch225" typeId="UVSwitch"></channel>			
+			<channel id="UVSwitch226" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch227" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch228" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch229" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch230" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch231" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch232" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch233" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch234" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch235" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch236" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch237" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch238" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch239" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch240" typeId="UVSwitch"></channel>
+		</channels>
+		<config-description>
+		<parameter name="Subnet" type="integer" min="1" required="true">
+			<label>Subnet</label>
+			<description>What Sub net the DLP is on.</description>
+		</parameter>
+		<parameter name="DeviceID" type="integer" min="1" required="true">
+			<label>Device ID</label>
+			<description>What device id the DLP has.</description>
+		</parameter>
+	</config-description>
+	</thing-type>		
+		
+	<thing-type id="MDT0601_233">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>HDL Dimmer 6x1A </label>
+		<description>Dimmer 6x1A - Universell</description>
+		<channels>
+			<channel id="DimChannel1" typeId="dimmer"></channel>
+			<channel id="DimChannel2" typeId="dimmer"></channel>
+			<channel id="DimChannel3" typeId="dimmer"></channel>
+			<channel id="DimChannel4" typeId="dimmer"></channel>
+			<channel id="DimChannel5" typeId="dimmer"></channel>
+			<channel id="DimChannel6" typeId="dimmer"></channel>
+		</channels>
+		<config-description>
+		<parameter name="Subnet" type="integer" min="1" required="true">
+			<label>Subnet</label>
+			<description>What Sub net the Dimmer is on.</description>
+		</parameter>
+		<parameter name="DeviceID" type="integer" min="1" required="true">
+			<label>Device ID</label>
+			<description>What device id the Dimmer has.</description>
+		</parameter>
+	</config-description>
+	</thing-type>
+	
+	<thing-type id="MPL8_48_FH">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>DLP Panel</label>
+		<description>DLP Panel with AC, Music, Clock and FloorHeating</description>
+		<channels>
+			<channel id="temperature" typeId="temperature"></channel>
+			<channel id="UVSwitch1" typeId="UVSwitch"></channel>			
+			<channel id="UVSwitch2" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch3" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch4" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch5" typeId="UVSwitch"></channel>
+			<channel id="UVSwitch6" typeId="UVSwitch"></channel>
+			<channel id="FHNormalTempSet" typeId="set_temp"></channel>
+			<channel id="FHTempSet" typeId="set_temp"></channel>
+			<channel id="FHNightTempSet" typeId="set_temp"></channel>
+			<channel id="FHAwayTempSet" typeId="set_temp"></channel>
+			<channel id="FHCurrentTempSet" typeId="temperature"></channel>
+			<channel id="FHMode" typeId="fhmode" />
+			<channel id="ACCoolingTempSet" typeId="set_temp"></channel>
+			<channel id="ACHeatTempSet" typeId="set_temp"></channel>
+			<channel id="ACAutoTempSet" typeId="set_temp"></channel>
+			<channel id="ACDryTempSet" typeId="set_temp"></channel>
+			<channel id="ACCurrentTempSet" typeId="temperature"></channel>
+			<channel id="ACMode" typeId="acmode" />
+			<channel id="ACFanSpeed" typeId="acfanspeed" />
+		</channels>
+		<config-description>
+			<parameter name="Subnet" type="integer" min="1" required="true">
+				<label>Subnet</label>
+				<description>What Sub net the DLP is on.</description>
+			</parameter>
+			<parameter name="DeviceID" type="integer" min="1" required="true">
+				<label>Device ID</label>
+				<description>What device id the DLP has.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0" required="false">
+				<label>Refresh Rate</label>
+				<description>How often the things status should be requested.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<thing-type id="MPT04_48">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Digital Panel</label>
+		<description>Digital touch switch with 4 buttons</description>
+		<channels>
+			<channel id="Button1" typeId="switch"></channel>
+			<channel id="Button2" typeId="switch"></channel>
+			<channel id="Button3" typeId="switch"></channel>
+			<channel id="Button4" typeId="switch"></channel>
+		</channels>
+		<config-description>
+		<parameter name="Subnet" type="integer" min="1" required="true">
+			<label>Subnet</label>
+			<description>What Sub net the Touch Switch is on.</description>
+		</parameter>
+		<parameter name="DeviceID" type="integer" min="1" required="true">
+			<label>Device ID</label>
+			<description>What device id the Touch Switch has.</description>
+		</parameter>
+	</config-description>
+	</thing-type>
+	
+	<thing-type id="MR1216_233">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Relay 12 Channel </label>
+		<description>Relay 12x16A</description>
+		<channels>
+			<channel id="RelayCh1" typeId="switch"></channel>
+			<channel id="RelayCh2" typeId="switch"></channel>
+			<channel id="RelayCh3" typeId="switch"></channel>
+			<channel id="RelayCh4" typeId="switch"></channel>
+			<channel id="RelayCh5" typeId="switch"></channel>
+			<channel id="RelayCh6" typeId="switch"></channel>
+			<channel id="RelayCh7" typeId="switch"></channel>
+			<channel id="RelayCh8" typeId="switch"></channel>
+			<channel id="RelayCh9" typeId="switch"></channel>
+			<channel id="RelayCh10" typeId="switch"></channel>
+			<channel id="RelayCh11" typeId="switch"></channel>
+			<channel id="RelayCh12" typeId="switch"></channel>
+		</channels>
+		<config-description>
+		<parameter name="Subnet" type="integer" min="1" required="true">
+			<label>Subnet</label>
+			<description>What Sub net the Relay is on.</description>
+		</parameter>
+		<parameter name="DeviceID" type="integer" min="1" required="true">
+			<label>Device ID</label>
+			<description>What device id the Relay has.</description>
+		</parameter>
+	</config-description>
+	</thing-type>
+	
+	<thing-type id="MRDA06">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>HDL Dimmer 6x1A </label>
+		<description>Ballast Controler, 6 Channels, 0-10V</description>
+		<channels>
+			<channel id="DimChannel1" typeId="dimmer"></channel>
+			<channel id="DimChannel2" typeId="dimmer"></channel>
+			<channel id="DimChannel3" typeId="dimmer"></channel>
+			<channel id="DimChannel4" typeId="dimmer"></channel>
+			<channel id="DimChannel5" typeId="dimmer"></channel>
+			<channel id="DimChannel6" typeId="dimmer"></channel>
+		</channels>
+		<config-description>
+		<parameter name="Subnet" type="integer" min="1" required="true">
+			<label>Subnet</label>
+			<description>What Sub net the Dimmer is on.</description>
+		</parameter>
+		<parameter name="DeviceID" type="integer" min="1" required="true">
+			<label>Device ID</label>
+			<description>What device id the Dimmer has.</description>
+		</parameter>
+	</config-description>
+	</thing-type>
+	
+	<thing-type id="MW02_231">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Curtain Controls</label>
+		<description>Curtain Controls fore controlling of 3. parts curtains</description>
+		<channels>
+			<channel id="Shutter1Control" typeId="control"></channel>
+			<channel id="Shutter2Control" typeId="control"></channel>							
+		</channels>
+		<config-description>
+		<parameter name="Subnet" type="integer" min="1" required="true">
+			<label>Subnet</label>
+			<description>What Sub net the Curtain Controller is on.</description>
+		</parameter>
+		<parameter name="DeviceID" type="integer" min="1" required="true">
+			<label>Device ID</label>
+			<description>What device id the Curtain Controler has.</description>
+		</parameter>
+	</config-description>
+	</thing-type>
+	
+	<thing-type id="MS12_2C">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Sensor with 12 functions</label>
+		<description>Sensor with 12 functions</description>
+		<channels>
+			<channel id="temperature" typeId="temperature"></channel>
+			<channel id="Brightness" typeId="Brightness"></channel>
+			<channel id="MotionSensor" typeId="MotionSensor"></channel>
+			<channel id="Sonic" typeId="Sonic"></channel>
+			<channel id="DryContact1Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact2Status" typeId="DryContactStatus"></channel>
+			<channel id="RelayCh1" typeId="switch"></channel>
+			<channel id="RelayCh2" typeId="switch"></channel>
+		</channels>
+		<config-description>
+			<parameter name="Subnet" type="integer" min="1" required="true">
+				<label>Subnet</label>
+				<description>What Sub net the 12in1 Sensor is on.</description>
+			</parameter>
+			<parameter name="DeviceID" type="integer" min="1" required="true">
+				<label>Device ID</label>
+				<description>What device id the 12in1 Sensor has.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0" required="false">
+				<label>Refresh Rate</label>
+				<description>How often the things status should be requested.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<thing-type id="MS08Mn_2C">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Sensor with 8 functions</label>
+		<description>Sensor with 8 functions</description>
+		<channels>
+			<channel id="temperature" typeId="temperature"></channel>			
+			<channel id="Brightness" typeId="Brightness"></channel>
+			<channel id="MotionSensor" typeId="MotionSensor"></channel>
+			<channel id="DryContact1Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact2Status" typeId="DryContactStatus"></channel>
+		</channels>
+		<config-description>
+			<parameter name="Subnet" type="integer" min="1" required="true">
+				<label>Subnet</label>
+				<description>What Sub net the 8in1 Sensor is on.</description>
+			</parameter>
+			<parameter name="DeviceID" type="integer" min="1" required="true">
+				<label>Device ID</label>
+				<description>What device id the 8in1 Sensor has.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0" required="false">
+				<label>Refresh Rate</label>
+				<description>How often the things status should be requested.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<thing-type id="MS24">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Sensor Input Module</label>
+		<description>Sensor Input Module with 25 Dry Contanct channels</description>
+		<channels>
+			<channel id="DryContact1Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact2Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact3Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact4Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact5Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact6Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact7Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact8Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact9Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact10Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact11Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact12Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact13Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact14Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact15Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact16Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact17Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact18Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact19Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact20Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact21Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact22Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact23Status" typeId="DryContactStatus"></channel>
+			<channel id="DryContact24Status" typeId="DryContactStatus"></channel>
+		</channels>
+		<config-description>
+			<parameter name="Subnet" type="integer" min="1" required="true">
+				<label>Subnet</label>
+				<description>What Sub net the Sensor Input Module is on.</description>
+			</parameter>
+			<parameter name="DeviceID" type="integer" min="1" required="true">
+				<label>Device ID</label>
+				<description>What device id the Sensor Input Module has.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="control">
+		<item-type>Rollershutter</item-type>
+		<label>Control</label>
+		<description>Device control (UP, DOWN, MOVE/STOP, closure 0-100%)</description>
+	</channel-type>
+
+	<channel-type id="fhmode">
+		<item-type>String</item-type>
+		<label>Floor Heating Mode</label>
+		<description>DLP Floor Heating Mode Setting</description>
+		<tags>
+			<tag>heating</tag>
+		</tags>
+		<state pattern="%s" readOnly="false">
+			<options>
+				<option value="Normal">Normal</option>
+				<option value="Day">Day</option>
+				<option value="Night">Night</option>
+				<option value="Away">Away</option>
+				<option value="Timer">Timer</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="acmode">
+		<item-type>String</item-type>
+		<label>AC Mode</label>
+		<description>DLP AC Mode Setting</description>
+		<tags>
+			<tag>heating</tag>
+		</tags>
+		<state pattern="%s" readOnly="false">
+			<options>
+				<option value="COOLING">COOLING</option>
+				<option value="HEATING">HEATING</option>
+				<option value="FAN">FAN</option>
+				<option value="AUTO">AUTO</option>
+				<option value="DEHUMIDFY">DEHUMIDFY</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="acfanspeed">
+		<item-type>String</item-type>
+		<label>AC Fan Speed</label>
+		<description>DLP AC Fan Speed Setting</description>
+		<tags>
+			<tag>heating</tag>
+		</tags>
+		<state pattern="%s" readOnly="false">
+			<options>
+				<option value="AUTO">AUTO</option>
+				<option value="HIGH">HIGH</option>
+				<option value="MEDIUM">MEDIUM</option>
+				<option value="LOW">LOW</option>                
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="set_temp">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint Temperature</label>
+		<description>Thermostat Setpoint temperature</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>heating</tag>
+		</tags>
+		<state pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="Brightness">
+		<item-type>Number</item-type>
+		<label>Brightness</label>
+		<description>Current Brightness</description>
+		<category>Number</category>
+		<state pattern="%d %%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="time">
+		<item-type>Number</item-type>
+		<label>time</label>
+		<description>Current time</description>
+		<category>Number</category>
+		<state pattern="%d %%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="MotionSensor">
+		<item-type>Switch</item-type>
+		<label>Motion Sensor</label>
+		<description>Motion Sensor</description>
+		<category>Motion</category>
+		<state pattern="%d %%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="UVSwitch">
+		<item-type>Switch</item-type>
+		<label>UV Switch</label>
+		<description>UV Switch</description>
+		<category>Switch</category>
+		<state pattern="%d %%" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="Sonic">
+		<item-type>Switch</item-type>
+		<label>Sonic Sensor</label>
+		<description>Sonic Sensor</description>
+		<category>Motion</category>
+		<state pattern="%d %%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="DryContactStatus">
+		<item-type>Contact</item-type>
+		<label>Dry Contact Status</label>
+		<description>Dry Contact Status</description>
+		<category>Contact</category>
+		<state pattern="%d %%" readOnly="true"></state>
+	</channel-type>	
+
+	<channel-type id="temperature">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>Current Temperature</description>
+		<category>Temperature</category>
+		<state pattern="%.1f °C" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>DimmerCh</label>
+		<description>Dim the Channel </description>
+		<category>DimmableLight</category>
+		<state min="0" max="100" step="1" pattern="%d"></state>
+	</channel-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch Relay</description>
+	</channel-type>	
+</thing:thing-descriptions>
