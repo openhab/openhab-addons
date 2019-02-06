@@ -57,6 +57,9 @@ public class TPLinkSmartHomeHandlerFactoryTest {
             { "lb120", BulbDevice.class },
             { "lb130", BulbDevice.class },
             { "lb230", BulbDevice.class },
+            { "kl110", BulbDevice.class },
+            { "kl120", BulbDevice.class },
+            { "kl130", BulbDevice.class },
             { "re270", RangeExtenderDevice.class },
             { "unknown", null },
     });
