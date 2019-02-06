@@ -61,8 +61,8 @@
 /addons/binding/org.openhab.binding.helios/ @kgoderis
 /addons/binding/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
 /addons/binding/org.openhab.binding.homematic.test/ @FStolte @gerrieg @mdicke2s
-/addons/binding/org.openhab.binding.hue/ @cweitkamp @lolodomo
-/addons/binding/org.openhab.binding.hue.test/ @cweitkamp @lolodomo
+/addons/binding/org.openhab.binding.hue/ @cweitkamp
+/addons/binding/org.openhab.binding.hue.test/ @cweitkamp
 /addons/binding/org.openhab.binding.hyperion/ @tavalin
 /addons/binding/org.openhab.binding.icloud/ @pgfeller
 /addons/binding/org.openhab.binding.innogysmarthome/ @ollie-dev
