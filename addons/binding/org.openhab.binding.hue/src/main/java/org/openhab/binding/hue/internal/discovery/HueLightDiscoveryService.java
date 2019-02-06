@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.hue.internal.discovery;
 
-import java.util.AbstractMap.SimpleEntry;
-
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -171,7 +170,16 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
+    public void onLightGone(@Nullable HueBridge bridge, FullLight light) {
+        onLightRemovedInternal(light);
+    }
+
+    @Override
     public void onLightRemoved(@Nullable HueBridge bridge, FullLight light) {
+        onLightRemovedInternal(light);
+    }
+
+    private void onLightRemovedInternal(FullLight light) {
         ThingUID thingUID = getThingUID(light);
 
         if (thingUID != null) {
@@ -237,13 +245,21 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
+    public void onSensorGone(@Nullable HueBridge bridge, FullSensor sensor) {
+        onSensorRemovedInternal(sensor);
+    }
+
+    @Override
     public void onSensorRemoved(@Nullable HueBridge bridge, FullSensor sensor) {
+        onSensorRemovedInternal(sensor);
+    }
+
+    public void onSensorRemovedInternal(FullSensor sensor) {
         ThingUID thingUID = getThingUID(sensor);
 
         if (thingUID != null) {
             thingRemoved(thingUID);
         }
-
     }
 
     @Override

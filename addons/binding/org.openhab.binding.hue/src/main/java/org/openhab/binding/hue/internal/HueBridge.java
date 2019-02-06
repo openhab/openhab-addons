@@ -46,7 +46,7 @@ import com.google.gson.JsonParser;
 /**
  * Representation of a connection with a Hue bridge.
  *
- * @author Q42, standalone Jue library (https://github.com/Q42/Jue)
+ * @author Q42 - Initial contribution
  * @author Andre Fuechsel - search for lights with given serial number added
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding, minor code cleanup
  * @author Samuel Leisering - added cached config and API-Version
