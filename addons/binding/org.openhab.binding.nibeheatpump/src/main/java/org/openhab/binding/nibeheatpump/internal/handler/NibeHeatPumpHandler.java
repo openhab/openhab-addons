@@ -144,7 +144,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
         if (connector != null) {
             VariableInformation variableInfo = VariableInformation.getVariableInfo(pumpModel, coilAddress);
-            logger.debug("Usig variable information for register {}: {}", coilAddress, variableInfo);
+            logger.debug("Using variable information for register {}: {}", coilAddress, variableInfo);
 
             if (variableInfo != null && variableInfo.type == VariableInformation.Type.SETTING) {
                 int value = convertStateToNibeValue(command);

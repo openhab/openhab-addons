@@ -23,8 +23,7 @@ import java.util.Map;
  * Class which holds all data variables of F1x55 heat pumps.
  *
  *
- * @author Pauli Anttila - Initial contribution
- * @author Jevgeni Kiski - Adding model F1x55
+ * @author Jevgeni Kiski - Initial contribution
  */
 public class F1X55 {
 
