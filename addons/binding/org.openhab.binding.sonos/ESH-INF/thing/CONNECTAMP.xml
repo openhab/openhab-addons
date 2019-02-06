@@ -31,6 +31,7 @@
 			<channel id="notificationsound" typeId="notificationsound" />
 			<channel id="playlist" typeId="playlist" />
 			<channel id="clearqueue" typeId="clearqueue" />
+			<channel id="playlinein" typeId="playlinein" />
 			<channel id="playqueue" typeId="playqueue" />
 			<channel id="playtrack" typeId="playtrack" />
 			<channel id="playuri" typeId="playuri" />
@@ -55,7 +56,6 @@
 			<channel id="currenttrackuri" typeId="currenttrackuri" />
 			<!-- Extended SONOS channels -->
 			<channel id="linein" typeId="linein" />
-			<channel id="playlinein" typeId="playlinein" />
 		</channels>
 
 		<properties>
