@@ -56,6 +56,7 @@ import org.openhab.binding.hue.internal.StateUpdate;
 import org.openhab.binding.hue.internal.config.HueBridgeConfig;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.DeviceOffException;
+import org.openhab.binding.hue.internal.exceptions.EntityNotAvailableException;
 import org.openhab.binding.hue.internal.exceptions.LinkButtonException;
 import org.openhab.binding.hue.internal.exceptions.UnauthorizedException;
 import org.slf4j.Logger;
@@ -66,7 +67,7 @@ import org.slf4j.LoggerFactory;
  * the framework. All {@link HueLightHandler}s use the {@link HueBridgeHandler} to execute the actual commands.
  *
  * @author Dennis Nobel - Initial contribution
- * @author Oliver Libutzki
+ * @author Oliver Libutzki - Adjustments
  * @author Kai Kreuzer - improved state handling
  * @author Andre Fuechsel - implemented getFullLights(), startSearch()
  * @author Thomas Höfer - added thing properties
@@ -89,38 +90,34 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         public void run() {
             try {
                 pollingLock.lock();
-                try {
-                    if (!lastBridgeConnectionState) {
-                        // if user is not set in configuration try to create a new user on Hue bridge
-                        if (hueBridgeConfig.getUserName() == null) {
-                            hueBridge.getFullConfig();
-                        }
-                        lastBridgeConnectionState = tryResumeBridgeConnection();
+                if (!lastBridgeConnectionState) {
+                    // if user is not set in configuration try to create a new user on Hue bridge
+                    if (hueBridgeConfig.getUserName() == null) {
+                        hueBridge.getFullConfig();
                     }
-                    if (lastBridgeConnectionState) {
-                        doConnectedRun();
-                    }
-                } catch (UnauthorizedException | IllegalStateException e) {
-                    if (isReachable(hueBridge.getIPAddress())) {
-                        lastBridgeConnectionState = false;
-                        onNotAuthenticated();
-                    } else {
-                        if (lastBridgeConnectionState || thing.getStatus() == ThingStatus.INITIALIZING) {
-                            lastBridgeConnectionState = false;
-                            onConnectionLost();
-                        }
-                    }
-                } catch (Exception e) {
-                    if (hueBridge != null) {
-                        if (lastBridgeConnectionState) {
-                            logger.debug("Connection to Hue Bridge {} lost.", hueBridge.getIPAddress());
-                            lastBridgeConnectionState = false;
-                            onConnectionLost();
-                        }
-                    }
+                    lastBridgeConnectionState = tryResumeBridgeConnection();
                 }
-            } catch (Throwable t) {
-                logger.error("An unexpected error occurred: {}", t.getMessage(), t);
+                if (lastBridgeConnectionState) {
+                    doConnectedRun();
+                }
+            } catch (UnauthorizedException | IllegalStateException e) {
+                if (isReachable(hueBridge.getIPAddress())) {
+                    lastBridgeConnectionState = false;
+                    onNotAuthenticated();
+                } else if (lastBridgeConnectionState || thing.getStatus() == ThingStatus.INITIALIZING) {
+                    lastBridgeConnectionState = false;
+                    onConnectionLost();
+                }
+            } catch (ApiException | IOException e) {
+                if (hueBridge != null && lastBridgeConnectionState) {
+                    logger.debug("Connection to Hue Bridge {} lost.", hueBridge.getIPAddress());
+                    lastBridgeConnectionState = false;
+                    onConnectionLost();
+                }
+            } catch (RuntimeException e) {
+                logger.warn("An unexpected error occurred: {}", e.getMessage(), e);
+                lastBridgeConnectionState = false;
+                onConnectionLost();
             } finally {
                 pollingLock.unlock();
             }
@@ -153,6 +150,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     }
 
     private static final String STATE_ADDED = "added";
+    private static final String STATE_GONE = "gone";
     private static final String STATE_CHANGED = "changed";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
@@ -316,6 +314,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             }
         } else if (e instanceof IOException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } else if (e instanceof EntityNotAvailableException) {
+            logger.debug("Error while accessing light: {}", e.getMessage(), e);
+            notifyLightStatusListeners(light, STATE_GONE);
         } else if (e instanceof ApiException) {
             // This should not happen - if it does, it is most likely some bug that should be reported.
             logger.warn("Error while accessing light: {}", e.getMessage(), e);
@@ -327,6 +328,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private void handleConfigUpdateException(FullSensor sensor, ConfigUpdate configUpdate, Throwable e) {
         if (e instanceof IOException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } else if (e instanceof EntityNotAvailableException) {
+            logger.debug("Error while accessing sensor: {}", e.getMessage(), e);
+            notifySensorStatusListeners(sensor, STATE_GONE);
         } else if (e instanceof ApiException) {
             // This should not happen - if it does, it is most likely some bug that should be reported.
             logger.warn("Error while accessing sensor: {}", e.getMessage(), e);
@@ -679,6 +683,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                         logger.debug("Sending lightAdded for light '{}'", fullLight.getId());
                         lightStatusListener.onLightAdded(hueBridge, fullLight);
                         break;
+                    case STATE_GONE:
+                        lightStatusListener.onLightGone(hueBridge, fullLight);
+                        break;
                     case STATE_CHANGED:
                         logger.debug("Sending lightStateChanged for light '{}'", fullLight.getId());
                         lightStatusListener.onLightStateChanged(hueBridge, fullLight);
@@ -705,6 +712,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     case STATE_ADDED:
                         logger.debug("Sending sensorAdded for sensor '{}'", fullSensor.getId());
                         sensorStatusListener.onSensorAdded(hueBridge, fullSensor);
+                        break;
+                    case STATE_GONE:
+                        sensorStatusListener.onSensorGone(hueBridge, fullSensor);
                         break;
                     case STATE_CHANGED:
                         logger.debug("Sending sensorStateChanged for sensor '{}'", fullSensor.getId());
