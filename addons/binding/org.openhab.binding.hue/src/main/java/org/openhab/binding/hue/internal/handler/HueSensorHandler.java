@@ -169,13 +169,20 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
 
         if (!configUpdate.isEmpty()) {
             HueClient hueBridge = getHueClient();
-            FullSensor sensor = getSensor();
-            if (hueBridge != null && sensor != null) {
-                hueBridge.updateSensorConfig(sensor, configUpdate);
-            } else {
-                logger.debug(
-                        "hue bridge handler not found or sensor not known on bridge. Cannot handle configuration update.");
+            if (hueBridge == null) {
+                logger.warn("hue bridge handler not found. Cannot handle configuration update without bridge.");
+                return;
             }
+
+            FullSensor sensor = getSensor();
+            if (sensor == null) {
+                logger.debug("hue sensor not known on bridge. Cannot handle command.");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.conf-error-wrong-sensor-id");
+                return;
+            }
+
+            hueBridge.updateSensorConfig(sensor, configUpdate);
         }
 
         super.handleConfigurationUpdate(configurationParameters);
@@ -261,7 +268,14 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
     @Override
     public void onSensorRemoved(@Nullable HueBridge bridge, FullSensor sensor) {
         if (sensor.getId().equals(sensorId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "offline.sensor-removed");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.sensor-not-reachable");
+        }
+    }
+
+    @Override
+    public void onSensorGone(@Nullable HueBridge bridge, FullSensor sensor) {
+        if (sensor.getId().equals(sensorId)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.conf-error-wrong-sensor-id");
         }
     }
 

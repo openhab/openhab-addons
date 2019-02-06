@@ -115,9 +115,11 @@ or
 ```
 0107 motion-sensor "Motion Sensor" @ "Entrance" [ sensorId="4" ]
 ```
+
 You can freely choose the thing identifier (such as motion-sensor), its name (such as "Motion Sensor") and the location (such as "Entrance"). The name will then be used e.g. by Paper UI to show the item.
 
 The following device types also have an optional configuration value to specify the fade time in milliseconds for the transition to a new state:
+
 * Dimmable Light
 * Dimmable Plug-in Unit
 * Colour Light

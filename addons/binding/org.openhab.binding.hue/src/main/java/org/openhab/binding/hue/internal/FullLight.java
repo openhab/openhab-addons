@@ -21,7 +21,7 @@ import com.google.gson.reflect.TypeToken;
 /**
  * Detailed light information.
  *
- * @author Q42, standalone Jue library (https://github.com/Q42/Jue)
+ * @author Q42 - Initial contribution
  * @author Thomas Höfer - added unique id and changed range check for brightness and saturation
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
  * @author Samuel Leisering - added GSon Type to FullLight, refactored content to {@link FullHueObject}
