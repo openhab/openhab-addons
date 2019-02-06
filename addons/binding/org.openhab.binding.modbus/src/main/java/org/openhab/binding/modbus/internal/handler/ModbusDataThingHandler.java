@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
@@ -231,7 +230,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
      * In case of JSON as transformation output, the output processed using {@link processJsonTransform}.
      *
      * @param channelUID channel UID corresponding to received command
-     * @param command command to be transformed
+     * @param command    command to be transformed
      * @return transformed command. Null is returned with JSON transformation outputs and configuration errors
      *
      * @see processJsonTransform
@@ -792,7 +791,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
      * Update linked channels
      *
      * @param numericState numeric state corresponding to polled data
-     * @param boolValue boolean value corresponding to polled data
+     * @param boolValue    boolean value corresponding to polled data
      * @return updated channel data
      */
     private Map<ChannelUID, State> processUpdatedValue(DecimalType numericState, boolean boolValue) {
@@ -862,8 +861,20 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             updateStatusIfChanged(ThingStatus.ONLINE);
             long now = System.currentTimeMillis();
             // Update channels that have not been updated in a while, or when their values has changed
-            states.forEach((uid, state) -> whenExpired(now, uid, state, this::tryUpdateState));
+            states.forEach((uid, state) -> updateExpiredChannel(now, uid, state));
             channelLastState = states;
+        }
+    }
+
+    private void updateExpiredChannel(long now, ChannelUID uid, State state) {
+        @Nullable
+        State lastState = channelLastState.get(uid);
+        long lastUpdatedMillis = channelLastUpdated.getOrDefault(uid, 0L);
+        long millisSinceLastUpdate = now - lastUpdatedMillis;
+        if (lastUpdatedMillis <= 0L || lastState == null || updateUnchangedValuesEveryMillis <= 0L
+                || millisSinceLastUpdate > updateUnchangedValuesEveryMillis || !lastState.equals(state)) {
+            tryUpdateState(uid, state);
+            channelLastUpdated.put(uid, now);
         }
     }
 
@@ -874,17 +885,6 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             logger.warn("Error updating state '{}' (type {}) to channel {}: {} {}", state,
                     Optional.ofNullable(state).map(s -> s.getClass().getName()).orElse("null"), uid,
                     e.getClass().getName(), e.getMessage());
-        }
-    }
-
-    private void whenExpired(long now, ChannelUID uid, State state, BiConsumer<ChannelUID, State> action) {
-        @Nullable
-        State lastState = channelLastState.get(uid);
-        long lastUpdatedMillis = channelLastUpdated.getOrDefault(uid, 0L);
-        long millisSinceLastUpdate = now - lastUpdatedMillis;
-        if (lastUpdatedMillis <= 0L || lastState == null || updateUnchangedValuesEveryMillis <= 0L
-                || millisSinceLastUpdate > updateUnchangedValuesEveryMillis || !lastState.equals(state)) {
-            action.accept(uid, state);
         }
     }
 
