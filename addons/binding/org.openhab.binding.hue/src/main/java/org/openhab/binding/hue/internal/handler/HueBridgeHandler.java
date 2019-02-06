@@ -108,12 +108,16 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     lastBridgeConnectionState = false;
                     onConnectionLost();
                 }
-            } catch (ApiException | IOException | RuntimeException e) {
+            } catch (ApiException | IOException e) {
                 if (hueBridge != null && lastBridgeConnectionState) {
                     logger.debug("Connection to Hue Bridge {} lost.", hueBridge.getIPAddress());
                     lastBridgeConnectionState = false;
                     onConnectionLost();
                 }
+            } catch (RuntimeException e) {
+                logger.warn("An unexpected error occurred: {}", e.getMessage(), e);
+                lastBridgeConnectionState = false;
+                onConnectionLost();
             } finally {
                 pollingLock.unlock();
             }
