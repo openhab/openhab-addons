@@ -43,7 +43,7 @@ Useful tools
 
 ## Supported Things
 
-This binding support 6 different things types
+This binding supports 4 different things types
 
 | Thing    | Type   | Description                                                                                                                                                                                                                               |
 | -------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -135,7 +135,7 @@ Advanced parameters
 | `reconnectAfterMillis`          |          | integer | `0`                | The connection is kept open at least the time specified here. Value of zero means that connection is disconnected after every MODBUS transaction. In milliseconds. |
 | `connectTimeoutMillis`          |          | integer | `10000`            | The maximum time that is waited when establishing the connection. Value of zero means that system/OS default is respected. In milliseconds.                        |
 
-**Note:** Advanced parameters must be equal to all `tcp` things sharing the same `host` and `port`.
+**Note:** Advanced parameters must be equal for all `tcp` things sharing the same `host` and `port`.
 
 The advanced parameters have conservative defaults, meaning that they should work for most users.
 In some cases when extreme performance is required (e.g. poll period below 10 ms), one might want to decrease the delay parameters, especially `timeBetweenTransactionsMillis`. Similarly, with some slower devices on might need to increase the values.
@@ -168,7 +168,7 @@ Advanced parameters
 | `connectMaxTries`               |          | integer | `1`                | How many times we try to establish the connection. Should be at least 1.                                                                   |
 | `connectTimeoutMillis`          |          | integer | `10000`            | The maximum time that is waited when establishing the connection. Value of zero means thatsystem/OS default is respected. In milliseconds. |
 
-With the exception of `id` parameters should be equal to all `serial` things sharing the same `port`.
+With the exception of `id` parameters should be equal for all `serial` things sharing the same `port`.
 
 These parameters have conservative defaults, meaning that they should work for most users.
 In some cases when extreme performance is required (e.g. poll period below 10ms), one might want to decrease the delay parameters, especially `timeBetweenTransactionsMillis`.
@@ -257,8 +257,6 @@ Make sure you bind item to a channel that is compatible, or use transformations 
 
 ### `autoupdate` parameter with items
 
-Please note that Modbus protocol is polling, and commands in openHAB might take some time to propagate. This might produce some transient effects with item values when parameters are changed.
-
 By default, openHAB has `autoupdate` enabled. This means that item _state_ is updated according to received commands. In some situations this might have unexpected side effects with polling bindings such as Modbus - see example below.
 
 Typically, you see something like this
@@ -285,7 +283,7 @@ Let's go through it step by step
 4 [vent.ItemStateChangedEvent] - Kitchen_Bar_Table_Light changed from OFF to ON
 ```
 
-To prevent this "state fluctuation" (`OFF` -> `ON` -> `OFF` -> `ON`), some people prefer like to disable `autoupdate` with polling bindings. With `autoupdate` disabled, one would get
+To prevent this "state fluctuation" (`OFF` -> `ON` -> `OFF` -> `ON`), some people prefer to disable `autoupdate` on Items used with polling bindings. With `autoupdate` disabled, one would get
 
 ```java
 // openHAB UI switch changed command is sent
@@ -299,9 +297,8 @@ To prevent this "state fluctuation" (`OFF` -> `ON` -> `OFF` -> `ON`), some peopl
 Item state has no "fluctuation", it updates from `OFF` to `ON`.
 
 To summarize (credits to [rossko57's community post](https://community.openhab.org/t/rule-to-postupdate-an-item-works-but-item-falls-back-after-some-seconds/19986/2?u=ssalonen)):
-
-* `autoupdate=false`: monitor the _actual_ state of device
-* `autoupdate=true`: allows more faster display of the _expected_ state in a sitemap
+* `autoupdate="false"`: monitor the _actual_ state of device
+* `autoupdate="true"`: (or defaulted) allows faster display of the _expected_ state in a sitemap
 
 You can disable `autoupdate` as follows:
 
@@ -320,21 +317,23 @@ Main documentation on `autoupdate` in [Items section of openHAB docs](https://ww
 
 > In the traditional standard, [entity] numbers for those entities start with a digit, followed by a number of four digits in range 1–9,999:
 
-> * coils numbers start with a zero and then span from 00001 to 09999
-> * discrete input numbers start with a one and then span from 10001 to 19999
-> * input register numbers start with a three and then span from 30001 to 39999
-> * holding register numbers start with a four and then span from 40001 to 49999
+> * coils numbers start at 1, with a leading zero and then span from 00001 to 09999
+> * discrete input numbers start with a leading one and then span from 10001 to 19999
+> * input register numbers start with a leading three and then span from 30001 to 39999
+> * holding register numbers start with a leading four and then span from 40001 to 49999
 >
 > This translates into [entity] addresses between 0 and 9,998 in data frames.
+> Note that entity starts counting at 1, data frame address at 0.
 
 The openHAB modbus binding uses data frame entity addresses when referring to modbus entities.
 That is, the entity address configured in modbus binding is passed to modbus protocol frame as-is.
 For example, Modbus `poller` thing with `start=3`, `length=2` and `type=holding` will read modbus entities with the following numbers 40004 and 40005.
+The manufacturer of any modbus device may choose to use either notation, you may have to infer which, or use trial and error.
 
 ### Value Types On Read And Write
 
 This section explains the detailed descriptions of different value types on read and write.
-Note that value types less than 16 bits are not supported on write (see [poller thing](#poller-thing) documentation for details).
+Note that value types less than 16 bits are not supported on write to holding registers (see [poller thing](#poller-thing) documentation for details).
 
 See [Full examples](#full-examples) section for practical examples.
 
@@ -524,7 +523,7 @@ Note that transformation is only one part of the overall process how polled data
 Consult [Read steps](#read-steps) and [Write steps](#write-steps) for more details.
 Specifically, note that you might not need transformations at all in some uses cases.
 
-Please also note that you should install relevant transformations, as necessary. For example, `openhab-transformation-javascript` feature provides the javascript (`JS`) transformation.
+Please also note that you should install relevant transformations in openHAB as necessary. For example, `openhab-transformation-javascript` feature provides the javascript (`JS`) transformation.
 
 #### Transform On Read
 
@@ -590,9 +589,9 @@ In this case, boolean input is considered to be either number `0`/`1`, `ON`/`OFF
 // function to invert Modbus binary states
 // variable "input" contains data passed by OpenHAB binding
 (function(inputData) {
-    var out = inputData ;      // allow Undefined to pass through
+    var out = inputData ;      // allow UNDEF to pass through
     if (inputData == '1' || inputData == 'ON' || inputData == 'OPEN') {
-        out = '0' ;
+        out = '0' ;  // change to OFF or OPEN depending on your Item type
     } else if (inputData == '0' || inputData == 'OFF' || inputData == 'CLOSED') {
         out = '1' ;
     }
@@ -752,7 +751,7 @@ sitemap modbus_ex2 label="modbus_ex2"
 
 ### Scaling Example
 
-This example divides value on read, and multiplies them on write.
+This example divides value on read, and multiplies them on write, using JS transforms.
 
 `things/modbus_ex_scaling.things`:
 
@@ -1028,9 +1027,9 @@ Old binding had converted the input based on item type.
 The old binding had `trigger` parameter in item configuration to react only to some openHAB commands, or to some polled states.
 There is no trigger anymore but one can use transformations to accomplish the same thing. See [Transformations](#transformations) for examples.
 
-### Support For 32 Bit Value Types In Writing
+### Support For 32, 64 Bit Value Types In Writing
 
-The new binding supports 32 bit values types when writing.
+The new binding supports 32 and 64 bit values types when writing.
 
 ### How to manually migrate
 
