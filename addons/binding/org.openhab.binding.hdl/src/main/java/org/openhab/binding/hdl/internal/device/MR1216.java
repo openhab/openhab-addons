@@ -23,7 +23,7 @@ import org.openhab.binding.hdl.internal.handler.HdlPacket;
  * @author stigla - Initial contribution
  */
 
-public class MR1216233 extends Device {
+public class MR1216 extends Device {
 
     /** Device type for this Relay 12x16A **/
     private DeviceType deviceType = DeviceType.MR1216_233;
@@ -41,7 +41,7 @@ public class MR1216233 extends Device {
     private OnOffType relayCh11 = null;
     private OnOffType relayCh12 = null;
 
-    public MR1216233(DeviceConfiguration c) {
+    public MR1216(DeviceConfiguration c) {
         super(c);
     }
 

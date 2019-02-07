@@ -23,7 +23,7 @@ import org.openhab.binding.hdl.internal.handler.HdlPacket;
  * @author stigla - Initial contribution
  */
 
-public class MDT0601233 extends Device {
+public class MDT0601 extends Device {
     // Dimmer 6x1A - Universal
     private PercentType dimChannel1 = null;
     private PercentType dimChannel2 = null;
@@ -32,7 +32,7 @@ public class MDT0601233 extends Device {
     private PercentType dimChannel5 = null;
     private PercentType dimChannel6 = null;
 
-    public MDT0601233(DeviceConfiguration c) {
+    public MDT0601(DeviceConfiguration c) {
         super(c);
     }
 

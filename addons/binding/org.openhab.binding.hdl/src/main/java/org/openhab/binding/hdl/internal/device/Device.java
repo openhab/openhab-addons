@@ -67,7 +67,7 @@ public abstract class Device {
     public static Device create(DeviceConfiguration c) {
         switch (c.getDeviceType()) {
             case MDT0601_233:
-                return new MDT0601233(c);
+                return new MDT0601(c);
             case ML01:
                 return new ML01(c);
             case MPL8_48_FH:
@@ -75,7 +75,7 @@ public abstract class Device {
             case MPT04_48:
                 return new MPT0448(c);
             case MR1216_233:
-                return new MR1216233(c);
+                return new MR1216(c);
             case MRDA06:
                 return new MRDA06(c);
             case MS08Mn_2C:
@@ -94,7 +94,7 @@ public abstract class Device {
     public static Device update(HdlPacket p, List<DeviceConfiguration> configurations, Device device) {
         switch (device.getType()) {
             case MDT0601_233:
-                MDT0601233 mdt0601233 = (MDT0601233) device;
+                MDT0601 mdt0601233 = (MDT0601) device;
                 mdt0601233.treatHDLPacketForDevice(p);
                 break;
             case ML01:
@@ -110,7 +110,7 @@ public abstract class Device {
                 mpt0448.treatHDLPacketForDevice(p);
                 break;
             case MR1216_233:
-                MR1216233 mr1216233 = (MR1216233) device;
+                MR1216 mr1216233 = (MR1216) device;
                 mr1216233.treatHDLPacketForDevice(p);
                 break;
             case MRDA06:
