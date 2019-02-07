@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Einig - Initial contribution
  */
 public class HeosPlayerDiscovery extends AbstractDiscoveryService implements HeosPlayerDiscoveryListener {
-    private static final int SEARCH_TIME = 20;
+    private static final int SEARCH_TIME = 5;
     private static final int INITIAL_DELAY = 5;
     private static final int SCAN_INTERVAL = 20;
 
@@ -108,20 +108,13 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
 
                 for (String groupGID : groupMap.keySet()) {
                     HeosGroup group = groupMap.get(groupGID);
-
-                    // uses an unsigned hashCode from the group name to identify the group and generates the Thing UID.
-                    // Only the name does not work because it can consists non allowed characters. This also makes it
-                    // possible to add player to a group. Keeping the Name lets the binding still identifying the group
-                    // as known
-
+                    // Using an unsigned hashCode from the group members to identify
+                    // the group and generates the Thing UID.
+                    // This allows identifying the group even if the sorting within the group has changed
                     ThingUID uid = new ThingUID(THING_TYPE_GROUP, group.getGroupMemberHash());
                     Map<String, Object> properties = new HashMap<>();
                     properties.put(NAME, group.getName());
-                    properties.put(GID, group.getGid());
-                    properties.put(LEADER, group.getLeader());
-                    properties.put(NAME_HASH, group.getNameHash());
-                    properties.put(GROUP_MEMBER_HASH, group.getGroupMemberHash());
-                    properties.put(GROUP_MEMBER_PID_LIST, group.getGroupMemberPidList());
+                    properties.put(GROUP_MEMBER_PID_LIST, group.getGroupMembersAsString());
                     DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(group.getName())
                             .withProperties(properties).withBridge(bridgeUID).build();
                     thingDiscovered(result);
@@ -197,6 +190,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
     public class PlayerScan implements Runnable {
         @Override
         public void run() {
+            removeOlderResults(getTimestampOfLastScan());
             startScan();
         }
     }

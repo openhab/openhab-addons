@@ -31,24 +31,24 @@
 			<channel id="Playlists" typeId="playlists" />
 		</channels>
 		<config-description>
-			<parameter name="gid" type="text" readOnly="false">
-				<label>Group ID</label>
-				<description>The internal group ID</description>
-				<required>true</required>
-			</parameter>
 			<parameter name="name" type="text" readOnly="false">
 				<label>Group Name</label>
 				<description>The name of the group</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="groupMemberPidList" type="text" readOnly="false">
+                <label>The group member player IDs</label>
+                <description>Shows the single player IDs of the members of this group</description>
+                <required>true</required>
+            </parameter>
+			<parameter name="gid" type="text" readOnly="true">
+				<label>Group ID</label>
+				<description>The internal group ID</description>
 				<required>false</required>
 			</parameter>
-			<parameter name="leader" type="text" readOnly="false">
+			<parameter name="leader" type="text" readOnly="true">
 				<label>Leading HEOS PID</label>
 				<description>The PID of the group leading HEOS player</description>
-				<required>false</required>
-			</parameter>
-			<parameter name="nameHash" type="text" readOnly="true">
-				<label>Group name Hash Value</label>
-				<description> The Hash value calculated by the Group Name</description>
 				<required>false</required>
 			</parameter>
 			<parameter name="groupMemberHash" type="text" readOnly="true">

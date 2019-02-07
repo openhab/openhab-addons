@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.heos.internal.resources;
 
+import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -25,8 +28,8 @@ import java.util.Map;
  * @author Johannes Einig - Initial contribution
  */
 public class HeosGroup extends HeosMediaObject {
-    private final String[] supportedGroupInfo = { "name", "gip", "leader" };
-    private final String[] supportedGroupStates = { "state", "level", "mute" };
+    private final String[] supportedGroupInfo = { NAME, GID, LEADER };
+    private final String[] supportedGroupStates = { STATE, LEVEL, MUTE };
 
     private Map<String, String> groupInfo;
     private Map<String, String> groupState;
@@ -50,16 +53,25 @@ public class HeosGroup extends HeosMediaObject {
     private String level;
     private String mute;
 
-    private static final String PID = "pid";
-    private static final String GID = "gid";
-    private static final String NAME = "name";
-    private static final String LEADER = "leader";
-    private static final String STATE = "state";
-    private static final String LEVEL = "level";
-    private static final String MUTE = "mute";
-
     public HeosGroup() {
         initGroup();
+    }
+
+    private void initGroup() {
+        groupInfo = new HashMap<>(8);
+        groupState = new HashMap<>(5);
+        playerList = new ArrayList<>(5);
+
+        for (String key : supportedGroupInfo) {
+            groupInfo.put(key, null);
+        }
+
+        for (String key : supportedGroupStates) {
+            groupState.put(key, null);
+        }
+
+        updateGroupInfo(groupInfo);
+        updateGroupState(groupState);
     }
 
     public void updateGroupInfo(Map<String, String> values) {
@@ -98,25 +110,57 @@ public class HeosGroup extends HeosMediaObject {
     }
 
     /**
-     * Updates the group members.
-     *
+     * Updates the group members. *
      * Generates the {@code groupMembersHash} from the group member PIDs
      *
      * @param playerList The List of the Player (player as: HashMap<String,String>)
      */
-
     public void updateGroupPlayers(List<Map<String, String>> playerList) {
         this.playerList = playerList;
         groupMemberPidList = new ArrayList<String>(playerList.size());
-        for (int i = 0; i < this.playerList.size(); i++) {
-            Map<String, String> player = playerList.get(i);
-            groupMemberPidList.add(player.get(PID));
-        }
-        // Generating a dedicated sorted and un-sorted list for different purposes
+        // Defining the leader and groupID (gid) and placing the leader at the
+        // first position of the groupMemberPidList
+        playerList.forEach(player -> {
+            if (player.containsValue(LEADER)) {
+                gid = player.get(PID);
+                leader = gid;
+                groupMemberPidList.add(0, player.get(PID));
+            } else {
+                groupMemberPidList.add(player.get(PID));
+            }
+            ;
+        });
+        generateGroupMemberHash();
+    }
+
+    /**
+     * Updated the group members by a string. Members have to be separated by ";"
+     * Also the group leader has to be at first position.
+     *
+     * @param players the group members as string
+     */
+    public void updateGroupPlayers(String players) {
+        String[] playerArray = players.split(";");
+        groupMemberPidList = Arrays.asList(playerArray);
+        gid = groupMemberPidList.get(0);
+        leader = gid;
+        generateGroupMemberHash();
+    }
+
+    /**
+     * Generates the hash value out of the group members from an sorted list
+     * to get the same has value regardless if the sorting within the HEOS
+     * system has changed
+     */
+    private void generateGroupMemberHash() {
         groupMemberPidListSorted = new ArrayList<String>(playerList.size());
         groupMemberPidListSorted.addAll(groupMemberPidList);
         Collections.sort(groupMemberPidListSorted);
         groupMembersHash = Integer.toUnsignedString(groupMemberPidListSorted.hashCode());
+    }
+
+    public String getGroupMembersAsString() {
+        return String.join(";", groupMemberPidList);
     }
 
     public String generateGroupUID() {
@@ -128,23 +172,6 @@ public class HeosGroup extends HeosMediaObject {
         groupUIDHash = Integer.toUnsignedString(groupUIDHashList.hashCode());
 
         return groupUIDHash;
-    }
-
-    private void initGroup() {
-        groupInfo = new HashMap<>(8);
-        groupState = new HashMap<>(5);
-        playerList = new ArrayList<>(5);
-
-        for (String key : supportedGroupInfo) {
-            groupInfo.put(key, null);
-        }
-
-        for (String key : supportedGroupStates) {
-            groupState.put(key, null);
-        }
-
-        updateGroupInfo(groupInfo);
-        updateGroupState(groupState);
     }
 
     public Map<String, String> getGroupInfo() {
@@ -273,6 +300,7 @@ public class HeosGroup extends HeosMediaObject {
         return groupMemberPidList;
     }
 
+    // DEBUG to be deleted if no used anymore. Can lead to wrong sorting!
     public void setGroupMemberPidList(List<String> groupMemberPidList) {
         this.groupMemberPidList = groupMemberPidList;
     }

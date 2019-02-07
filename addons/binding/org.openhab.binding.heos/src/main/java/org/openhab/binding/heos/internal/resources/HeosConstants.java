@@ -93,6 +93,7 @@ public class HeosConstants {
 
     public static final String ROLE = "role";
     public static final String LEADER = "leader";
+    public static final String NAME = "name";
 
     // Player commands
     public static final String GET_NOW_PLAYING_MEDIA = "get_now_playing_media";

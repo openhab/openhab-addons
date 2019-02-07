@@ -35,9 +35,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.heos.internal.HeosChannelManager;
 import org.openhab.binding.heos.internal.HeosChannelHandlerFactory;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.api.HeosSystem;
@@ -61,6 +61,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     private List<HeosPlayerDiscoveryListener> playerDiscoveryList = new ArrayList<>();
     private Map<String, String> selectedPlayer = new HashMap<>();
     private List<String[]> selectedPlayerList = new ArrayList<>();
+    private HeosChannelManager channelManager = new HeosChannelManager(this);
     private HeosChannelHandlerFactory channelHandlerFactory;
 
     private ScheduledFuture<?> poolExecuter;
@@ -171,13 +172,12 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
                                             // disposal process.
             return;
         } else if (HeosPlayerHandler.class.equals(childHandler.getClass())) {
-            String channelIdentifyer = "P" + childThing.getConfiguration().get(PID).toString();
-            this.removeChannel(CH_TYPE_PLAYER, channelIdentifyer);
+            String channelIdentifyer = "P" + childThing.getUID().getId();
+            updateThingChannels(channelManager.removeSingelChannel(channelIdentifyer));
         } else {
-            String channelIdentifyer = "G" + childThing.getConfiguration().get(GID).toString();
-            this.removeChannel(CH_TYPE_PLAYER, channelIdentifyer);
+            String channelIdentifyer = "G" + childThing.getUID().getId();
+            updateThingChannels(channelManager.removeSingelChannel(channelIdentifyer));
         }
-
         logger.debug("Dispose child handler for: {}.", childThing.getUID().getId());
         return;
     }
@@ -205,6 +205,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
         if (this.getThingByUID(uid) != null) {
             HeosThingBaseHandler childHandler = (HeosThingBaseHandler) this.getThingByUID(uid).getHandler();
             childHandler.setStatusOnline();
+            // Updating the channel. Needed if leader of a group has changed
+            addPlayerChannel(this.getThingByUID(uid));
         }
     }
 
@@ -263,34 +265,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
     public void addFavorites() {
         if (loggedIn) {
             logger.debug("Adding HEOS Favorite Channels");
-            removeChannels(CH_TYPE_FAVORITE);
-            logger.debug("Old Favorite Channels removed");
-
-            List<Map<String, String>> favList = new ArrayList<>();
-            Map<String, String> favorites = new HashMap<>(4);
-            favList = heos.getFavorites();
-            int favCount = favList.size();
-            List<Channel> favoriteChannels = new ArrayList<>(favCount);
-
-            if (favCount != 0) {
-                for (int i = 0; i < favCount; i++) {
-                    for (String key : favList.get(i).keySet()) {
-                        if (key.equals(MID)) {
-                            favorites.put(key, favList.get(i).get(key));
-                        }
-                        if (key.equals(NAME)) {
-                            favorites.put(key, favList.get(i).get(key));
-                        }
-                        if (key.equals("null")) {
-                            return;
-                        }
-                    }
-                    logger.debug("Add Favorite Channel: {}", favorites.get(NAME));
-
-                    favoriteChannels.add(createFavoriteChannel(favorites));
-                }
-            }
-            addChannel(favoriteChannels);
+            updateThingChannels(channelManager.addFavoriteChannels(heos.getFavorites()));
         }
     }
 
@@ -300,90 +275,33 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
      *
      * @param childThing the thing the channel is created for
      */
+    @SuppressWarnings("null")
     private void addPlayerChannel(Thing childThing) {
         String channelIdentifyer = "";
         String pid = "";
         if (HeosPlayerHandler.class.equals(childThing.getHandler().getClass())) {
-            channelIdentifyer = "P" + childThing.getConfiguration().get(PID).toString();
+            channelIdentifyer = "P" + childThing.getUID().getId();
             pid = childThing.getConfiguration().get(PID).toString();
         } else if (HeosGroupHandler.class.equals(childThing.getHandler().getClass())) {
-            channelIdentifyer = "G" + childThing.getConfiguration().get(GID).toString();
-            pid = childThing.getConfiguration().get(GID).toString();
+            channelIdentifyer = "G" + childThing.getUID().getId();
+            HeosGroupHandler handler = (HeosGroupHandler) childThing.getHandler();
+            pid = handler.getGroupID();
         }
-
-        @NonNull
+        Map<String, String> properties = new HashMap<>(2);
         String playerName = childThing.getConfiguration().get(NAME).toString();
-
         ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), channelIdentifyer);
-        if (!hasChannel(channelUID)) {
-            Map<String, String> properties = new HashMap<>(2);
-            properties.put(NAME, childThing.getConfiguration().get(NAME).toString());
-            properties.put(PID, pid);
+        properties.put(NAME, playerName);
+        properties.put(PID, pid);
 
-            Channel channel = ChannelBuilder.create(channelUID, "Switch").withLabel(playerName).withType(CH_TYPE_PLAYER)
-                    .withProperties(properties).build();
-
-            List<Channel> newChannelList = new ArrayList<>(1);
-            newChannelList.add(channel);
-            addChannel(newChannelList);
-        }
+        Channel channel = ChannelBuilder.create(channelUID, "Switch").withLabel(playerName).withType(CH_TYPE_PLAYER)
+                .withProperties(properties).build();
+        updateThingChannels(channelManager.addSingleChannel(channel));
     }
 
-    private void addChannel(List<Channel> newChannelList) {
-        List<Channel> existingChannelList = thing.getChannels();
-        List<Channel> mutableChannelList = new ArrayList<>();
-        mutableChannelList.addAll(existingChannelList);
-        mutableChannelList.addAll(newChannelList);
+    private void updateThingChannels(List<Channel> channelList) {
         ThingBuilder thingBuilder = editThing();
-        thingBuilder.withChannels(mutableChannelList);
+        thingBuilder.withChannels(channelList);
         updateThing(thingBuilder.build());
-    }
-
-    private Channel createFavoriteChannel(Map<String, String> properties) {
-        String favoriteName = properties.get(NAME);
-        Channel channel = ChannelBuilder.create(new ChannelUID(this.getThing().getUID(), properties.get(MID)), "Switch")
-                .withLabel(favoriteName).withType(CH_TYPE_FAVORITE).withProperties(properties).build();
-        return channel;
-    }
-
-    private void removeChannels(ChannelTypeUID channelType) {
-        List<Channel> channelList = thing.getChannels();
-        List<Channel> mutableChannelList = new ArrayList<>();
-        mutableChannelList.addAll(channelList);
-        for (int i = 0; i < mutableChannelList.size(); i++) {
-            if (mutableChannelList.get(i).getChannelTypeUID().equals(channelType)) {
-                mutableChannelList.remove(i);
-                i = 0;
-            }
-        }
-        ThingBuilder thingBuilder = editThing();
-        thingBuilder.withChannels(mutableChannelList);
-        updateThing(thingBuilder.build());
-    }
-
-    private void removeChannel(ChannelTypeUID channelType, String channelIdentifyer) {
-        ChannelUID channelUID = new ChannelUID(this.thing.getUID(), channelIdentifyer);
-        List<Channel> channelList = thing.getChannels();
-        List<Channel> mutableChannelList = new ArrayList<>();
-        mutableChannelList.addAll(channelList);
-        for (int i = 0; i < mutableChannelList.size(); i++) {
-            if (mutableChannelList.get(i).getUID().equals(channelUID)) {
-                mutableChannelList.remove(i);
-            }
-        }
-        ThingBuilder thingBuilder = editThing();
-        thingBuilder.withChannels(mutableChannelList);
-        updateThing(thingBuilder.build());
-    }
-
-    private boolean hasChannel(ChannelUID channelUID) {
-        List<Channel> channelList = thing.getChannels();
-        for (int i = 0; i < channelList.size(); i++) {
-            if (channelList.get(i).getUID().equals(channelUID)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public Map<String, HeosPlayer> getNewPlayer() {
@@ -483,7 +401,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
                 logger.info("Can not log in. Username and Password not set");
             }
             updateStatus(ThingStatus.ONLINE);
-            logger.debug("HEOS bridge Online");
+            logger.debug("HEOS Bridge Online");
         }, 10, TimeUnit.SECONDS);
     }
 }

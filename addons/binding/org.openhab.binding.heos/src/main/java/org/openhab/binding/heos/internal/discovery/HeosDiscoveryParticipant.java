@@ -13,6 +13,7 @@
 package org.openhab.binding.heos.internal.discovery;
 
 import static org.openhab.binding.heos.HeosBindingConstants.*;
+import static org.openhab.binding.heos.internal.resources.HeosConstants.NAME;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,12 +57,13 @@ public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         ThingUID uid = getThingUID(device);
         if (uid != null) {
-            Map<String, Object> properties = new HashMap<>(2);
+            Map<String, Object> properties = new HashMap<>(3);
             properties.put(HOST, device.getIdentity().getDescriptorURL().getHost());
             properties.put(NAME, device.getDetails().getModelDetails().getModelName());
+            properties.put("Device", "HEOS Bridge"); // Used to hide other bridges if one is already used
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withLabel(" Bridge - " + device.getDetails().getFriendlyName())
-                    .withRepresentationProperty(PLAYER_TYPE).build();
+                    .withRepresentationProperty("Device").build();
             logger.debug("Found HEOS device with UID: {}", uid.getAsString());
             return result;
         }

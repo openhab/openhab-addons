@@ -392,25 +392,7 @@ public class HeosSystem {
             heosGroup.updateGroupPlayers(heosDecoder.getPlayerList().get(groupCounter));
             logger.debug("Found: Group {} with {} Players", heosGroup.getName(),
                     heosDecoder.getPlayerList().get(groupCounter).size());
-
-            int playerCount = heosDecoder.getPlayerList().get(groupCounter).size();
-
-            // Defining the Group leader
-            for (int i = 0; i < playerCount; i++) {
-                Map<String, String> playerMap = new HashMap<>();
-                playerMap = heosDecoder.getPlayerList().get(groupCounter).get(i);
-                for (String key : playerMap.keySet()) {
-                    if (key.equals(ROLE)) {
-                        if (playerMap.get(key).equals(LEADER)) {
-                            String leader = playerMap.get(PID);
-                            heosGroup.setLeader(leader);
-                        }
-                    }
-                }
-            }
-            // Switched to NameHash value
-            heosGroup.generateGroupUID();
-            groupMapNew.put(heosGroup.getNameHash(), heosGroup);
+            groupMapNew.put(heosGroup.getGroupMemberHash(), heosGroup);
             removedGroupMap = compareGroupMaps(groupMapNew, groupMapOld);
             groupMapOld.clear(); // clear the old map so that only the currently available groups are added in the next
                                  // step.
