@@ -20,6 +20,7 @@ package org.openhab.binding.nibeheatpump.internal.models;
  */
 public enum PumpModel {
     F1X45("F1X45"),
+    F1X55("F1X55"),
     F750("F750"),
     F470("F470");
 
