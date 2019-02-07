@@ -163,8 +163,6 @@ public class NetworkUtils {
                 try {
                     // gets every ip which can be assigned on the given network
                     SubnetUtils utils = new SubnetUtils(string);
-                    // TODO: remove logging
-                    logger.info("resolved to network: {}", utils.getInfo());
                     String[] addresses = utils.getInfo().getAllAddresses();
                     int len = addresses.length;
                     if (maximumPerInterface != 0 && maximumPerInterface < len) {
