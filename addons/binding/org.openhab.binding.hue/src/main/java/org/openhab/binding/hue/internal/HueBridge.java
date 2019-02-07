@@ -39,6 +39,8 @@ import org.openhab.binding.hue.internal.exceptions.GroupTableFullException;
 import org.openhab.binding.hue.internal.exceptions.InvalidCommandException;
 import org.openhab.binding.hue.internal.exceptions.LinkButtonException;
 import org.openhab.binding.hue.internal.exceptions.UnauthorizedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -56,11 +58,13 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class HueBridge {
+
+    private final Logger logger = LoggerFactory.getLogger(HueBridge.class);
+
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
     private final String ip;
-    private final int port;
-    private final String protocol;
+    private final String baseUrl;
     private @Nullable String username;
 
     private final Gson gson = new GsonBuilder().setDateFormat(DATE_FORMAT).create();
@@ -74,11 +78,20 @@ public class HueBridge {
      * Connect with a bridge as a new user.
      *
      * @param ip ip address of bridge
+     * @param port port of bridge
+     * @param protocol protocol to connect to the bridge
      */
     public HueBridge(String ip, int port, String protocol, ScheduledExecutorService scheduler) {
         this.ip = ip;
-        this.port = port;
-        this.protocol = protocol;
+        String baseUrl;
+        try {
+            URI uri = new URI(protocol, null, ip, port, "/api", null, null);
+            baseUrl = uri.toString();
+        } catch (URISyntaxException e) {
+            logger.error("exception during constructing URI protocol={}, host={}, port={}", protocol, ip, port, e);
+            baseUrl = protocol + "://" + ip + ":" + port + "/api";
+        }
+        this.baseUrl = baseUrl;
         this.scheduler = scheduler;
     }
 
@@ -90,6 +103,8 @@ public class HueBridge {
      * you don't want to connect right now.
      *
      * @param ip ip address of bridge
+     * @param port port of bridge
+     * @param protocol protocol to connect to the bridge
      * @param username username to authenticate with
      */
     public HueBridge(String ip, int port, String protocol, String username, ScheduledExecutorService scheduler)
@@ -1003,27 +1018,22 @@ public class HueBridge {
 
     // UTF-8 URL encode
     private String enc(@Nullable String str) {
-        try {
-            if (str != null) {
+        if (str != null) {
+            try {
                 return URLEncoder.encode(str, StandardCharsets.UTF_8.name());
-            } else {
-                return "";
+            } catch (UnsupportedEncodingException e) {
+                throw new UnsupportedOperationException("UTF-8 not supported");
             }
-        } catch (UnsupportedEncodingException e) {
-            throw new UnsupportedOperationException("UTF-8 not supported");
+        } else {
+            return "";
         }
     }
 
     private String getRelativeURL(String path) {
-        String basePath = "/api";
+        String relativeUrl = baseUrl;
         if (username != null) {
-            basePath += "/" + enc(username);
+            relativeUrl += "/" + enc(username);
         }
-        try {
-            URI uri = new URI(protocol, null, ip, port, path.isEmpty() ? basePath : basePath + "/" + path, null, null);
-            return uri.toString();
-        } catch (URISyntaxException e) {
-            return protocol + "://" + ip + ":" + port + (path.isEmpty() ? basePath : basePath + "/" + path);
-        }
+        return path.isEmpty() ? relativeUrl : relativeUrl + "/" + path;
     }
 }
