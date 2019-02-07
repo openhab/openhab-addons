@@ -12,7 +12,7 @@
  *
  * ----------------------------------------------------------------------------
  *
- *	This application listening data from Nibe F1145/F1245 heat pumps (RS485 bus)
+ *	This application listening data from Nibe F1145/F1245/F1155/F1255 heat pumps (RS485 bus)
  *	and send valid frames to configurable IP/port address by UDP packets.
  *	Application also acknowledge the valid packets to heat pump.
  *
