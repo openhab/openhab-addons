@@ -71,10 +71,10 @@ public class HeosBindingConstants extends HeosConstants {
 
     public static final String HOST = "ipAddress";
     public static final String PLAYER_TYPE = "model";
-    public static final String NAME = "name";
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
     public static final String HEARTBEAT = "heartbeat";
+    public static final String TYPE_BRIDGE = "heosBridge";
 
     public static final String PLAYER = "Player";
     public static final String GROUP = "Group";
