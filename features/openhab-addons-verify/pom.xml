@@ -57,9 +57,6 @@
                   <descriptors>
                     <descriptor>mvn:org.apache.karaf.features/framework/${karaf.version}/xml/features</descriptor>
                     <descriptor>mvn:org.apache.karaf.features/standard/${karaf.version}/xml/features</descriptor>
-                    <descriptor>mvn:org.eclipse.smarthome/esh-core/${esh.version}/xml/features</descriptor>
-                    <descriptor>mvn:org.eclipse.smarthome/esh-tp/${esh.version}/xml/features</descriptor>
-                    <descriptor>mvn:org.eclipse.smarthome/esh-ext/${esh.version}/xml/features</descriptor>
                     <descriptor>mvn:org.openhab.core/openhab-core/${ohc.version}/xml/features</descriptor>
                     <descriptor>mvn:org.openhab.addons/openhab2-addons/${project.version}/xml/features</descriptor>
                   </descriptors>
