@@ -17,8 +17,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -93,21 +93,14 @@ public class CachedPollyTTSCloudImpl extends PollyTTSCloudImpl {
      * Sample: "Robert_00a2653ac5f77063bc4ea2fee87318d3"
      */
     private String getUniqueFilenameForText(String text, String label) {
-        byte[] bytesOfMessage;
         MessageDigest md;
-        try {
-            bytesOfMessage = text.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException ex) {
-            logger.error("Could not create MD5 hash for '{}'", text, ex);
-            return null;
-        }
         try {
             md = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException ex) {
             logger.error("Could not create MD5 hash for '{}'", text, ex);
             return null;
         }
-        byte[] md5Hash = md.digest(bytesOfMessage);
+        byte[] md5Hash = md.digest(text.getBytes(StandardCharsets.UTF_8));
         BigInteger bigInt = new BigInteger(1, md5Hash);
         String hashtext = bigInt.toString(16);
         // Now we need to zero pad it if you actually want the full 32
@@ -132,7 +125,7 @@ public class CachedPollyTTSCloudImpl extends PollyTTSCloudImpl {
 
     private void writeText(File file, String text) throws IOException {
         try (OutputStream outputStream = new FileOutputStream(file)) {
-            outputStream.write(text.getBytes("UTF-8"));
+            outputStream.write(text.getBytes(StandardCharsets.UTF_8));
         }
     }
 

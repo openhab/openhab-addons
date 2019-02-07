@@ -13,6 +13,7 @@
 package org.openhab.voice.pollytts.internal.cloudapi;
 
 import static java.util.stream.Collectors.*;
+import static org.eclipse.smarthome.core.audio.AudioFormat.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,7 +50,7 @@ import com.amazonaws.services.polly.model.Voice;
 public class PollyTTSCloudImpl {
 
     private static final Set<String> SUPPORTED_AUDIO_FORMATS = Collections
-            .unmodifiableSet(Stream.of("MP3", "OGG").collect(toSet()));
+            .unmodifiableSet(Stream.of(CODEC_MP3, CONTAINER_OGG).collect(toSet()));
 
     protected final PollyTTSConfig config;
 

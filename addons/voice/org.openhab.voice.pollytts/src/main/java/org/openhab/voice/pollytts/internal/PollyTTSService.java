@@ -18,6 +18,7 @@ import static org.openhab.voice.pollytts.internal.PollyTTSService.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -107,8 +108,7 @@ public class PollyTTSService implements TTSService {
             logger.debug("Using configuration {}", config);
 
             // create cache folder
-            File userData = new File(ConfigConstants.getUserDataFolder());
-            File cacheFolder = new File(new File(userData, CACHE_FOLDER_NAME), SERVICE_PID);
+            File cacheFolder = new File(new File(ConfigConstants.getUserDataFolder(), CACHE_FOLDER_NAME), SERVICE_PID);
             if (!cacheFolder.exists()) {
                 cacheFolder.mkdirs();
             }
@@ -132,12 +132,12 @@ public class PollyTTSService implements TTSService {
 
     @Override
     public Set<Voice> getAvailableVoices() {
-        return voices;
+        return Collections.unmodifiableSet(voices);
     }
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return audioFormats;
+        return Collections.unmodifiableSet(audioFormats);
     }
 
     /**
@@ -202,10 +202,10 @@ public class PollyTTSService implements TTSService {
     }
 
     private AudioFormat getAudioFormat(String apiFormat) {
-        if ("MP3".equals(apiFormat)) {
+        if (CODEC_MP3.equals(apiFormat)) {
             // use by default: MP3, 22khz_16bit_mono with bitrate 64 kbps
             return new AudioFormat(CONTAINER_NONE, CODEC_MP3, null, 16, 64000, 22050L);
-        } else if ("OGG".equals(apiFormat)) {
+        } else if (CONTAINER_OGG.equals(apiFormat)) {
             // use by default: OGG, 22khz_16bit_mono
             return new AudioFormat(CONTAINER_OGG, CODEC_VORBIS, null, 16, null, 22050L);
         } else {
@@ -219,9 +219,9 @@ public class PollyTTSService implements TTSService {
             return pollyTTSConfig.getAudioFormat();
         }
         if (CODEC_MP3.equals(format.getCodec())) {
-            return "MP3";
+            return CODEC_MP3;
         } else if (CODEC_VORBIS.equals(format.getCodec())) {
-            return "OGG";
+            return CONTAINER_OGG;
         } else {
             throw new IllegalArgumentException("Audio format " + format.getCodec() + " not yet supported");
         }
