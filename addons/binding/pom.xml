@@ -66,6 +66,7 @@
     <module>org.openhab.binding.knx</module>
     <module>org.openhab.binding.knx.test</module>
     <module>org.openhab.binding.kodi</module>
+    <module>org.openhab.binding.kodi.test</module>
     <module>org.openhab.binding.konnected</module>
     <module>org.openhab.binding.kostalinverter</module>
     <module>org.openhab.binding.lametrictime</module>
