@@ -7,9 +7,9 @@ It furthermore keeps track of redstone power going below signs and links them to
 
 ## Youtube Videos
 
-[![Minecraft Binding 1](http://img.youtube.com/vi/TdvkTorzkXU/0.jpg)](https://youtu.be/TdvkTorzkXU)
+[![Minecraft Binding 1](https://img.youtube.com/vi/TdvkTorzkXU/0.jpg)](https://youtu.be/TdvkTorzkXU)
 
-[![Minecraft Binding 2](http://img.youtube.com/vi/zAyNWmr7byE/0.jpg)](https://youtu.be/zAyNWmr7byE)
+[![Minecraft Binding 2](https://img.youtube.com/vi/zAyNWmr7byE/0.jpg)](https://youtu.be/zAyNWmr7byE)
 
 ## Discovery
 

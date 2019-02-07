@@ -2,7 +2,7 @@
 
 This binding is for using your Milight, Easybulb or LimitlessLed bulbs and the iBox.
 
-[![openHAB Milight](http://img.youtube.com/vi/zNe9AkQbfmc/0.jpg)](http://www.youtube.com/watch?v=zNe9AkQbfmc)
+[![openHAB Milight](https://img.youtube.com/vi/zNe9AkQbfmc/0.jpg)](https://www.youtube.com/watch?v=zNe9AkQbfmc)
 
 ## Supported Things
 
