@@ -22,10 +22,10 @@ public class DhcpStatus {
     private String status;
     @SerializedName("LeaseStartTime")
     @Expose
-    private Integer leaseStartTime;
+    private Long leaseStartTime;
     @SerializedName("LeaseTime")
     @Expose
-    private Integer leaseTime;
+    private Long leaseTime;
     @SerializedName("IPv4Address")
     @Expose
     private String iPv4Address;
@@ -46,11 +46,11 @@ public class DhcpStatus {
         return status;
     }
 
-    public Integer getLeaseStartTime() {
+    public Long getLeaseStartTime() {
         return leaseStartTime;
     }
 
-    public Integer getLeaseTime() {
+    public Long getLeaseTime() {
         return leaseTime;
     }
 

@@ -30,7 +30,7 @@ public class Station {
     private String securityMode;
     @SerializedName("ScanSlotTime")
     @Expose
-    private Integer scanSlotTime;
+    private Long scanSlotTime;
     @SerializedName("ScanSlots")
     @Expose
     private Integer scanSlots;
@@ -89,11 +89,11 @@ public class Station {
         this.securityMode = securityMode;
     }
 
-    public Integer getScanSlotTime() {
+    public Long getScanSlotTime() {
         return scanSlotTime;
     }
 
-    public void setScanSlotTime(Integer scanSlotTime) {
+    public void setScanSlotTime(Long scanSlotTime) {
         this.scanSlotTime = scanSlotTime;
     }
 

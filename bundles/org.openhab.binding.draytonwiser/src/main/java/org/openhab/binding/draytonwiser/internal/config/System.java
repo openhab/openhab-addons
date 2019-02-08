@@ -49,7 +49,7 @@ public class System {
     private BoilerSettings boilerSettings;
     @SerializedName("UnixTime")
     @Expose
-    private Integer unixTime;
+    private Long unixTime;
     @SerializedName("CloudConnectionStatus")
     @Expose
     private String cloudConnectionStatus;
@@ -141,11 +141,11 @@ public class System {
         this.boilerSettings = boilerSettings;
     }
 
-    public Integer getUnixTime() {
+    public Long getUnixTime() {
         return unixTime;
     }
 
-    public void setUnixTime(Integer unixTime) {
+    public void setUnixTime(Long unixTime) {
         this.unixTime = unixTime;
     }
 
