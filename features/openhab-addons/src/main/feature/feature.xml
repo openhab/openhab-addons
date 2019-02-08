@@ -261,16 +261,6 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.hue/${project.version}</bundle>
     </feature>
 
-    <feature name="openhab-binding-neato" description="Neato Binding" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.neato/${project.version}</bundle>
-    </feature>
-    
-    <feature name="openhab-binding-netatmo" description="Netatmo Binding" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.netatmo/${project.version}</bundle>
-    </feature>
-
     <feature name="openhab-binding-hdanywhere" description="HDAnywhere Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.hdanywhere/${project.version}</bundle>
@@ -471,6 +461,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.mqtt.generic/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-neato" description="Neato Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.neato/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-neeo" description="NEEO Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.neeo/${project.version}</bundle>
@@ -479,6 +474,11 @@
     <feature name="openhab-binding-nest" description="Nest Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.nest/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-netatmo" description="Netatmo Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.netatmo/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-network" description="Network Binding" version="${project.version}">
@@ -903,8 +903,6 @@
     <feature name="openhab-misc-mqttbroker" description="Embedded MQTT Broker" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mqtt</feature>
-        <requirement>esh.tp;filter:="(feature=commons-net)"</requirement>
-        <feature dependency="true">esh.tp-commons-net</feature>
         <bundle>mvn:org.openhab.io/org.openhab.io.mqttembeddedbroker/${project.version}</bundle>
     </feature>
 
@@ -915,7 +913,7 @@
 
     <feature name="openhab-misc-restdocs" description="REST Documentation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>esh.tp-swagger-jax-rs-provider</feature>
+        <feature>openhab.tp-swagger-jax-rs-provider</feature>
         <bundle>mvn:org.openhab.io/org.openhab.io.rest.docs/${project.version}</bundle>
     </feature>
 
