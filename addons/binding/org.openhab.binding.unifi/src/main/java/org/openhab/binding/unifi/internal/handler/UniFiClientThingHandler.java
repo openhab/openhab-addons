@@ -217,10 +217,6 @@ public class UniFiClientThingHandler extends BaseThingHandler {
         return online;
     }
 
-    private void blockClient(@Nullable UniFiClient client, ChannelUID channelUID) {
-
-    }
-
     private void refreshChannel(@Nullable UniFiClient client, ChannelUID channelUID) {
         // mgb: only refresh if we're ONLINE
         // if (getThing().getStatus() == ONLINE) {

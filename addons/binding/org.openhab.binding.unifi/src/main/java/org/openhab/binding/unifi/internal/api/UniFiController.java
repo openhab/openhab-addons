@@ -13,6 +13,7 @@
 package org.openhab.binding.unifi.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.unifi.internal.api.model.UniFiClient;
 import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
@@ -105,24 +106,40 @@ public class UniFiController {
         executeRequest(req);
     }
 
-    public void blockStation(UniFiClient client) throws UniFiException {
-        UniFiControllerRequest<Void> req = newRequest(Void.class);
+    public UniFiClient[] blockStation(UniFiClient client) throws UniFiException {
+        UniFiControllerRequest<UniFiClient[]> req = newRequest(UniFiClient[].class);
 
         String url = "/api/s/" + client.getDevice().getSite().getName() + "/cmd/stamgr";
         req.setPath(url);
         req.setBodyParameter("cmd", "block-sta");
         req.setBodyParameter("mac", client.getMac());
-        executeRequest(req);
+        return executeRequest(req);
     }
 
-    public void unblockStation(UniFiClient client) throws UniFiException {
-        // {'cmd':'unblock-sta', 'mac':'${mac}'}
-        UniFiControllerRequest<Void> req = newRequest(Void.class);
-        String url = "/api/s/" + client.getDevice().getSite().getName() + "/cmd/stamgr";
+    public UniFiClient @Nullable [] unblockStation(UniFiClient client) throws UniFiException {
+        UniFiControllerRequest<UniFiClient[]> req = newRequest(UniFiClient[].class);
+
+        String siteName = "";
+        if (client.getDevice() == null) {
+            UniFiSite[] sites = getSites();
+            for (UniFiSite site : sites) {
+                if (site.getId().equalsIgnoreCase(client.getSiteId())) {
+                    siteName = site.getName();
+                }
+            }
+        } else {
+            siteName = client.getDevice().getSite().getName();
+        }
+
+        if (siteName.equalsIgnoreCase("")) {
+            return null;
+        }
+
+        String url = "/api/s/" + siteName + "/cmd/stamgr";
         req.setPath(url);
         req.setBodyParameter("cmd", "unblock-sta");
         req.setBodyParameter("mac", client.getMac());
-        executeRequest(req);
+        return executeRequest(req);
     }
 
     // Private API

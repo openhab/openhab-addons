@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,7 +52,6 @@ import org.openhab.binding.unifi.internal.api.UniFiSSLException;
 import org.openhab.binding.unifi.internal.api.model.UniFiClient;
 import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
 import org.openhab.binding.unifi.internal.api.model.UniFiSite;
-import org.openhab.binding.unifi.internal.api.model.UniFiWirelessClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -235,23 +233,27 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
         }
 
         // mgb: short circuit
-        if (client == null || BooleanUtils.isNotTrue(client.isWireless()) || !belongsToSite(client, site)) {
+        if (client == null || !belongsToSite(client, site)) {
             return null;
         }
 
         // mgb: instanceof check just for type / cast safety
-        return (client instanceof UniFiWirelessClient ? (UniFiWirelessClient) client : null);
+        return client;
     }
 
-    public void setClientBlock(UniFiClient client) throws UniFiException {
+    public UniFiClient @Nullable [] setClientBlock(UniFiClient client) throws UniFiException {
         if (controller != null) {
-            controller.blockStation(client);
+            return controller.blockStation(client);
+        } else {
+            return null;
         }
     }
 
-    public void setClientUnblock(UniFiClient client) throws UniFiException {
+    public UniFiClient @Nullable [] setClientUnblock(UniFiClient client) throws UniFiException {
         if (controller != null) {
-            controller.unblockStation(client);
+            return controller.unblockStation(client);
+        } else {
+            return null;
         }
     }
 

@@ -57,11 +57,11 @@
 			<channel id="ipAddress" typeId="ipAddress" />
 			<channel id="uptime" typeId="uptime" />
 			<channel id="lastSeen" typeId="lastSeen" />
-			<!-- additional wireless client channels -->
+            <channel id="blocked" typeId="blocked" />
+            <!-- additional wireless client channels -->
 			<channel id="ap" typeId="ap" />
 			<channel id="essid" typeId="essid" />
 			<channel id="rssi" typeId="rssi" />
-			<channel id="blocked" typeId="blocked" />
 		</channels>
 
 		<representation-property>cid</representation-property>
