@@ -37,7 +37,7 @@ public class YeelightBindingConstants {
 
     // List of thing Parameters names
     public static final String PARAMETER_DEVICE_ID = "deviceId";
-    public static final String PARAMETER_Duration = "duration";
+    public static final String PARAMETER_DURATION = "duration";
 
     // List of all Channel ids
     public static final String CHANNEL_BRIGHTNESS = "brightness";

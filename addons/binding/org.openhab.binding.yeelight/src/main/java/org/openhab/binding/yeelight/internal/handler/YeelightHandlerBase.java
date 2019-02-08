@@ -241,17 +241,17 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     }
 
     void handleHSBCommand(HSBType color) {
-        DeviceAction caction = DeviceAction.color;
-        caction.putValue(color.getRGB() & 0xFFFFFF);
-        caction.putDuration(getDuration());
-        DeviceManager.getInstance().doAction(deviceId, caction);
+        DeviceAction cAction = DeviceAction.color;
+        cAction.putValue(color.getRGB() & 0xFFFFFF);
+        cAction.putDuration(getDuration());
+        DeviceManager.getInstance().doAction(deviceId, cAction);
     }
 
     void handleColorTemperatureCommand(PercentType ct) {
-        DeviceAction ctaction = DeviceAction.colortemperature;
-        ctaction.putValue(COLOR_TEMPERATURE_STEP * ct.intValue() + COLOR_TEMPERATURE_MINIMUM);
-        ctaction.putDuration(getDuration());
-        DeviceManager.getInstance().doAction(deviceId, ctaction);
+        DeviceAction ctAcation = DeviceAction.colortemperature;
+        ctAcation.putValue(COLOR_TEMPERATURE_STEP * ct.intValue() + COLOR_TEMPERATURE_MINIMUM);
+        ctAcation.putDuration(getDuration());
+        DeviceManager.getInstance().doAction(deviceId, ctAcation);
     }
 
     @Override
@@ -283,8 +283,8 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     int getDuration() {
         // Duration should not be null, but just in case do a null check.
         try {
-            return getThing().getConfiguration().get(YeelightBindingConstants.PARAMETER_Duration) == null ? 500
-                    : ((Number) getThing().getConfiguration().get(YeelightBindingConstants.PARAMETER_Duration))
+            return getThing().getConfiguration().get(YeelightBindingConstants.PARAMETER_DURATION) == null ? 500
+                    : ((Number) getThing().getConfiguration().get(YeelightBindingConstants.PARAMETER_DURATION))
                             .intValue();
         } catch (Exception e) {
             logger.error("Unable to get Thing duration, default to 500. Device ID: {}", deviceId);

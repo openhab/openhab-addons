@@ -13,6 +13,5 @@
 		</channels>
 
 		<config-description-ref uri="thing-type:device:base" />
-		
 	</thing-type>
 </thing:thing-descriptions>

@@ -13,7 +13,6 @@
 			<channel id="colorTemperature" typeId="colorTemperature" />
 		</channels>
 
-        <config-description-ref uri="thing-type:device:base" />
-        
+        <config-description-ref uri="thing-type:device:base" />     
 	</thing-type>
 </thing:thing-descriptions>
