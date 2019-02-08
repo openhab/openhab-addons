@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * command.
  *
  * @author Dennis Nobel - Initial contribution
- * @author Oliver Libutzki - Adjustments
+ * @author Oliver Libutzki
  * @author Kai Kreuzer - stabilized code
  * @author Andre Fuechsel - implemented switch off when brightness == 0, changed to support generic thing types, changed
  *         the initialization of properties
@@ -224,8 +224,6 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         FullLight light = getLight();
         if (light == null) {
             logger.debug("hue light not known on bridge. Cannot handle command.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-wrong-light-id");
             return;
         }
 
@@ -501,14 +499,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     @Override
     public void onLightRemoved(@Nullable HueBridge bridge, FullLight light) {
         if (light.getId().equals(lightId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.light-removed");
-        }
-    }
-
-    @Override
-    public void onLightGone(@Nullable HueBridge bridge, FullLight light) {
-        if (light.getId().equals(lightId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.light-not-reachable");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "offline.light-removed");
         }
     }
 

@@ -22,6 +22,7 @@ import org.openhab.binding.hue.internal.HueBridge;
  *
  * @author Oliver Libutzki - Initial contribution
  * @author Denis Dudnik - switched to internally integrated source of Jue library, minor code cleanup
+ *
  */
 @NonNullByDefault
 public interface LightStatusListener {
@@ -42,14 +43,6 @@ public interface LightStatusListener {
      * @param light The light which is removed.
      */
     void onLightRemoved(@Nullable HueBridge bridge, FullLight light);
-
-    /**
-     * This method is called whenever a light is reported as gone.
-     *
-     * @param bridge The bridge the reported light was connected to.
-     * @param light The light which is reported as gone.
-     */
-    void onLightGone(@Nullable HueBridge bridge, FullLight light);
 
     /**
      * This method is called whenever a light is added.

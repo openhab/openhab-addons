@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * Detailed bridge info available if authenticated.
  *
- * @author Q42 - Initial contribution
+ * @author Q42, standalone Jue library (https://github.com/Q42/Jue)
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding, minor code cleanup
  * @author Samuel Leisering - added API-Version
  */
