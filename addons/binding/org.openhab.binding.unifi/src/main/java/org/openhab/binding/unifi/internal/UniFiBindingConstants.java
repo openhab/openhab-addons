@@ -36,6 +36,7 @@ public class UniFiBindingConstants {
     public static final String CHANNEL_IP_ADDRESS = "ipAddress";
     public static final String CHANNEL_UPTIME = "uptime";
     public static final String CHANNEL_LAST_SEEN = "lastSeen";
+    public static final String CHANNEL_BLOCKED = "blocked";
 
     // List of additional wired client channels
     // ..coming soon..

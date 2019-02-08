@@ -61,6 +61,7 @@
 			<channel id="ap" typeId="ap" />
 			<channel id="essid" typeId="essid" />
 			<channel id="rssi" typeId="rssi" />
+			<channel id="blocked" typeId="blocked" />
 		</channels>
 
 		<representation-property>cid</representation-property>
@@ -144,6 +145,13 @@
 		<label>Received Signal Strength Indicator</label>
 		<description>Received Signal Strength Indicator (RSSI) of the wireless client</description>
 		<state readOnly="true"></state>
+	</channel-type>
+	
+	<channel-type id="blocked">
+		<item-type>Switch</item-type>
+		<label>Blocked</label>
+		<description>Is device blocked</description>
+		<state readOnly="false"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

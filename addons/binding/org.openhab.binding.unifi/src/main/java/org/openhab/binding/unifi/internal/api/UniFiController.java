@@ -69,7 +69,7 @@ public class UniFiController {
         req.setPath("/api/login");
         req.setBodyParameter("username", username);
         req.setBodyParameter("password", password);
-        req.setBodyParameter("strict", true);
+        req.setBodyParameter("strict", false);
         req.setBodyParameter("remember", false);
         executeRequest(req);
     }
@@ -102,6 +102,26 @@ public class UniFiController {
     public void logout() throws UniFiException {
         UniFiControllerRequest<Void> req = newRequest(Void.class);
         req.setPath("/logout");
+        executeRequest(req);
+    }
+
+    public void blockStation(UniFiClient client) throws UniFiException {
+        UniFiControllerRequest<Void> req = newRequest(Void.class);
+
+        String url = "/api/s/" + client.getDevice().getSite().getName() + "/cmd/stamgr";
+        req.setPath(url);
+        req.setBodyParameter("cmd", "block-sta");
+        req.setBodyParameter("mac", client.getMac());
+        executeRequest(req);
+    }
+
+    public void unblockStation(UniFiClient client) throws UniFiException {
+        // {'cmd':'unblock-sta', 'mac':'${mac}'}
+        UniFiControllerRequest<Void> req = newRequest(Void.class);
+        String url = "/api/s/" + client.getDevice().getSite().getName() + "/cmd/stamgr";
+        req.setPath(url);
+        req.setBodyParameter("cmd", "unblock-sta");
+        req.setBodyParameter("mac", client.getMac());
         executeRequest(req);
     }
 

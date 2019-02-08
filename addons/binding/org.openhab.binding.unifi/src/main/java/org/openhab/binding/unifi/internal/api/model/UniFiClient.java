@@ -50,6 +50,16 @@ public abstract class UniFiClient {
     @JsonAdapter(UniFiTimestampDeserializer.class)
     protected Calendar lastSeen;
 
+    protected boolean blocked;
+
+    public boolean getBlocked() {
+        return this.blocked;
+    }
+
+    public void setBlocked(boolean value) {
+        this.blocked = value;
+    }
+
     protected UniFiDevice device;
 
     public String getId() {
