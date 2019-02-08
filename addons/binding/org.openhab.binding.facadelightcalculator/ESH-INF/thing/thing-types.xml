@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="facadelightcalculator"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="facade">
+        <label>Facade</label>
+        <description>Provides lighting data for the facade</description>
+
+		<channels>
+			<channel id="sunAzimuth" typeId="azimuth" />
+            <channel id="facingSun" typeId="facingSun"/>
+            <channel id="facadeEvent" typeId="facadeEvent" />
+            <channel id="bearing" typeId="bearing" />
+            <channel id="side" typeId="side" />
+		</channels>
+
+		<config-description>
+	        <parameter name="orientation" type="integer" min="0" max="359" required="true">
+	            <label>Orientation</label>
+	            <description>Perpendicular bearing of the facade to geographical north.</description>
+	        </parameter>
+	        <parameter name="noffset" type="integer" min="0" max="90">
+	            <label>Negative Offset</label>
+	            <description>Anti-clockwise offset from orientation to determine if the sun is reaching the facade.</description>
+	            <default>90</default>
+	        </parameter>
+	        <parameter name="poffset" type="integer" min="0" max="90">
+	            <label>Positive Offset</label>
+	            <description>Clockwise offset from orientation to determine the sun is reaching the facade.</description>
+	            <default>90</default>
+	        </parameter>
+	        <parameter name="margin" type="integer" min="0" max="5">
+	            <label>Margin</label>
+	            <description>Calculation margin for front position.</description>
+	            <default>2</default>
+	        </parameter>
+		</config-description>
+
+	</thing-type>
+
+    <channel-type id="azimuth">
+        <item-type>Number:Angle</item-type>
+        <label>Azimuth</label>
+        <description>The azimuth of the sun</description>
+        <state pattern="%.2f %unit%" />
+    </channel-type>
+    
+    <channel-type id="facadeEvent">
+        <kind>trigger</kind>
+        <label>Facade Event</label>
+        <description>Sun in Facade event</description>
+        <event>
+            <options>
+                <option value="SUN_ENTER">Enters</option>
+                <option value="SUN_LEAVE">Leaves</option>
+                <option value="SUN_FRONT">In Front</option>
+            </options>
+        </event>
+    </channel-type>
+    
+    <channel-type id="facingSun">
+        <item-type>Switch</item-type>
+        <label>Facing Sun</label>
+        <description>Indicates whether the sun is facing facade</description>
+        <state readOnly="true" />
+    </channel-type>
+    
+    <channel-type id="bearing">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Bearing</label>
+        <description>Sun bearing percentage (100% when the sun is in facade orientation)</description>
+        <state readOnly="true" pattern="%.0f %unit%" />
+    </channel-type>
+    
+    <channel-type id="side">
+        <item-type>String</item-type>
+        <label>Side</label>
+        <description>The side of the facade where shines the sun</description>
+        <state readOnly="true">
+            <options>
+                <option value="LEFT">Left</option>
+                <option value="RIGHT">Right</option>
+                <option value="FRONT">Front</option>
+                <option value="OUT_RIGHT">Out Right</option>
+                <option value="OUT_LEFT">Out Left</option>
+            </options>
+        </state>
+    </channel-type>
+
+</thing:thing-descriptions>
