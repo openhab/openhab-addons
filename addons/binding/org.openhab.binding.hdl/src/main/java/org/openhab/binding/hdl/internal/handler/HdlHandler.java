@@ -1062,6 +1062,12 @@ public class HdlHandler extends BaseThingHandler implements DeviceStatusListener
                                     ((MS24) device).getDryContact24Value());
                         }
                         break;
+                    // case MW02_231:
+                    // if (((MW02) device).getStopMoveShutter1Status() != null) {
+                    // updateState(new ChannelUID(getThing().getUID(), HdlBindingConstants.CHANNEL_SHUTTER1CONTROL),
+                    // ((MW02) device).getStopMoveShutter1Status());
+                    // }
+                    // break;
                     default:
                         logger.debug("Device Type: {} unhandled", device.getType());
                         break;

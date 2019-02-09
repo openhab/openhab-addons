@@ -127,6 +127,10 @@
 				<label>Device ID</label>
 				<description>What device id the DLP has.</description>
 			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0" required="false">
+				<label>Refresh Rate</label>
+				<description>How often the things status should be requested.</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 	
@@ -251,19 +255,19 @@
 			<channel id="RelayCh2" typeId="switch"></channel>
 		</channels>
 		<config-description>
-		<parameter name="Subnet" type="integer" min="1" required="true">
-			<label>Subnet</label>
-			<description>What Sub net the 12in1 Sensor is on.</description>
-		</parameter>
-		<parameter name="DeviceID" type="integer" min="1" required="true">
-			<label>Device ID</label>
-			<description>What device id the 12in1 Sensor has.</description>
-		</parameter>
-		<parameter name="refreshInterval" type="integer" min="0" required="false">
-			<label>Refresh Rate</label>
-			<description>How often the things status should be requested.</description>
-		</parameter>
-	</config-description>
+			<parameter name="Subnet" type="integer" min="1" required="true">
+				<label>Subnet</label>
+				<description>What Sub net the 12in1 Sensor is on.</description>
+			</parameter>
+			<parameter name="DeviceID" type="integer" min="1" required="true">
+				<label>Device ID</label>
+				<description>What device id the 12in1 Sensor has.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0" required="false">
+				<label>Refresh Rate</label>
+				<description>How often the things status should be requested.</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 	
 	<thing-type id="MS08Mn_2C">
@@ -280,15 +284,19 @@
 			<channel id="DryContact2Status" typeId="DryContactStatus"></channel>
 		</channels>
 		<config-description>
-		<parameter name="Subnet" type="integer" min="1" required="true">
-			<label>Subnet</label>
-			<description>What Sub net the 8in1 Sensor is on.</description>
-		</parameter>
-		<parameter name="DeviceID" type="integer" min="1" required="true">
-			<label>Device ID</label>
-			<description>What device id the 8in1 Sensor has.</description>
-		</parameter>
-	</config-description>
+			<parameter name="Subnet" type="integer" min="1" required="true">
+				<label>Subnet</label>
+				<description>What Sub net the 8in1 Sensor is on.</description>
+			</parameter>
+			<parameter name="DeviceID" type="integer" min="1" required="true">
+				<label>Device ID</label>
+				<description>What device id the 8in1 Sensor has.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0" required="false">
+				<label>Refresh Rate</label>
+				<description>How often the things status should be requested.</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 	
 	<thing-type id="MS24">

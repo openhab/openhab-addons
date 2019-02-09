@@ -28,7 +28,6 @@ import org.openhab.binding.hdl.internal.handler.HdlPacket;
  */
 
 public class MPL848FH extends Device {
-
     private double temperatureValue;
     private OnOffType uvSwitch1 = null; // Status On/OFf
     private OnOffType uvSwitch2 = null; // Normal Mode
@@ -67,7 +66,13 @@ public class MPL848FH extends Device {
     public void treatHDLPacketForDevice(HdlPacket p) {
         switch (p.commandType) {
             case Broadcast_Temperature:
-                setTemperatureValue(p.data[1]);
+                if (p.data[1] >= 0) {
+                    setTemperatureValue(p.data[1]);
+                } else {
+                    LOGGER.debug(
+                            "Temperatur is below 0, not possible?, existing value is: {}, data 1 is: {}, data 2 is: {} , data 3 is: {} , data 4 is: {}",
+                            getTemperatureValue(), p.data[1], p.data[2], p.data[3], p.data[4]);
+                }
                 break;
             case Response_Panel_Control:
                 switch (p.data[0]) {
@@ -292,6 +297,7 @@ public class MPL848FH extends Device {
      *
      * @param value the actual temperature value as provided
      */
+
     public void setTemperatureValue(double value) {
         if (this.temperatureValue != value) {
             setUpdated(true);

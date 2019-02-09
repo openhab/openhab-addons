@@ -124,7 +124,13 @@ public class MS122C extends Device {
                 }
                 break;
             case Broadcast_Temperature:
-                setTemperatureValue(p.data[1]);
+                if (p.data[1] >= 0) {
+                    setTemperatureValue(p.data[1]);
+                } else {
+                    LOGGER.debug(
+                            "Temperatur is below 0, not possible?, existing value is: {}, data 1 is: {}, data 2 is: {} , data 3 is: {} , data 4 is: {}",
+                            getTemperatureValue(), p.data[1], p.data[2], p.data[3], p.data[4]);
+                }
                 break;
             case Response_Single_Channel_Control:
                 if ((p.data[0]) == 1) {
