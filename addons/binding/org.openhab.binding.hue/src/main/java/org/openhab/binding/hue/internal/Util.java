@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.hue.internal;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -33,11 +33,7 @@ class Util {
 
     // This is used to check what byte size strings have, because the bridge doesn't natively support UTF-8
     public static int stringSize(String str) {
-        try {
-            return str.getBytes("utf-8").length;
-        } catch (UnsupportedEncodingException e) {
-            throw new UnsupportedOperationException("UTF-8 not supported");
-        }
+        return str.getBytes(StandardCharsets.UTF_8).length;
     }
 
     public static List<HueObject> idsToLights(List<String> ids) {
