@@ -70,6 +70,7 @@ public class UniFiController {
         req.setPath("/api/login");
         req.setBodyParameter("username", username);
         req.setBodyParameter("password", password);
+        // scurb: Changed to make blocking feature work.
         req.setBodyParameter("strict", false);
         req.setBodyParameter("remember", false);
         executeRequest(req);
