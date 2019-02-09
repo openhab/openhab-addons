@@ -129,7 +129,7 @@ public class UniFiClientThingHandler extends BaseThingHandler {
                             controllerHandler.setClientUnblock(client);
                         }
                     } catch (UniFiException e) {
-                        logger.debug("Exception when trying to set blocking state. Exception{}", e.getMessage());
+                        logger.debug("Exception when trying to set blocking state. Exception: {}", e.getMessage());
                     }
                 }
             }
