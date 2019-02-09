@@ -52,8 +52,10 @@ public class HueBridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         ThingUID uid = getThingUID(device);
         if (uid != null) {
-            Map<String, Object> properties = new HashMap<>(2);
+            Map<String, Object> properties = new HashMap<>();
             properties.put(HOST, device.getDetails().getBaseURL().getHost());
+            properties.put(PORT, device.getDetails().getBaseURL().getPort());
+            properties.put(PROTOCOL, device.getDetails().getBaseURL().getProtocol());
             properties.put(PROPERTY_SERIAL_NUMBER, device.getDetails().getSerialNumber());
 
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)

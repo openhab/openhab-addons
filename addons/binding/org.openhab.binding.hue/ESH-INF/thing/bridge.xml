@@ -20,6 +20,10 @@
 				<description>Network address of the Hue bridge.</description>
 				<required>true</required>
 			</parameter>
+			<parameter name="port" type="integer" required="false" min="0" max="65335">
+				<label>Port</label>
+				<description>Port of the Hue bridge.</description>
+			</parameter>
 			<parameter name="userName" type="text">
 				<context>password</context>
 				<label>Username</label>
