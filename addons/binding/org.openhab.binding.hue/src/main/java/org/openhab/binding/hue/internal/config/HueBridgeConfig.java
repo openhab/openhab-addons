@@ -23,7 +23,12 @@ import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
  */
 @NonNullByDefault
 public class HueBridgeConfig {
+    public static final String HTTP = "http";
+    public static final String HTTPS = "https";
+
     private @NonNullByDefault({}) String ipAddress;
+    private @Nullable Integer port;
+    private String protocol = HTTP;
     private @Nullable String userName;
     private int pollingInterval = 10;
     private int sensorPollingInterval = 500;
@@ -34,6 +39,22 @@ public class HueBridgeConfig {
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    public int getPort() {
+        return (port != null) ? port.intValue() : HTTPS.equals(protocol) ? 443 : 80;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
     }
 
     public @Nullable String getUserName() {
