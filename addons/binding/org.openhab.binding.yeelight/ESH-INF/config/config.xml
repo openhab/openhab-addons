@@ -10,7 +10,7 @@
 		    <label>Device ID</label>
 		    <description>Id of the Yeelight device to connect with.</description>
 		</parameter>
-		        <parameter name="duration" type="integer" required="true" min="50" max="5000">
+        <parameter name="duration" type="integer" required="true" min="50" max="5000">
             <label>Duration</label>
             <description>Duration of transition of events such as on/off, change of brightness and change of color , in milliseconds.</description>
             <unitLabel>milliseconds</unitLabel>
