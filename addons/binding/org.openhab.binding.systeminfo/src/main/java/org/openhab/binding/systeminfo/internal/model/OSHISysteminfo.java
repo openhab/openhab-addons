@@ -482,7 +482,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     private long getSizeInMB(long sizeInBytes) {
-        return sizeInBytes / 1048576; // 1024 * 1024
+        return Math.round(sizeInBytes / (1024D * 1024));
     }
 
     private BigDecimal getPercentsValue(double decimalFraction) {
