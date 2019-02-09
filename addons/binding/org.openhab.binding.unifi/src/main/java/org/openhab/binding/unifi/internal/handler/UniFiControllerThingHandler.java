@@ -85,8 +85,10 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
 
     private static final String CACHE_KEY_PREFIX_ALIAS = "alias";
 
+    private static final String CACHE_KEY_PREFIX_BLOCKED = "blocked";
+
     private static final List<String> CACHE_KEY_PREFIXES = Arrays.asList(CACHE_KEY_PREFIX_MAC, CACHE_KEY_PREFIX_IP,
-            CACHE_KEY_PREFIX_HOSTNAME, CACHE_KEY_PREFIX_ALIAS);
+            CACHE_KEY_PREFIX_HOSTNAME, CACHE_KEY_PREFIX_ALIAS, CACHE_KEY_PREFIX_BLOCKED);
 
     private static final String CACHE_KEY_SEPARATOR = ":";
 
@@ -192,6 +194,9 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
                     case CACHE_KEY_PREFIX_HOSTNAME:
                         suffix = client.getHostname();
                         break;
+                    case CACHE_KEY_PREFIX_BLOCKED:
+                        suffix = Boolean.toString(client.getBlocked());
+                        break;
                     case CACHE_KEY_PREFIX_ALIAS:
                         suffix = client.getAlias();
                         break;
@@ -230,12 +235,28 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
         }
 
         // mgb: short circuit
-        if (client == null || BooleanUtils.isNotTrue(client.isWireless()) || !belongsToSite(client, site)) {
+        if (client == null || !belongsToSite(client, site)) {
             return null;
         }
 
         // mgb: instanceof check just for type / cast safety
-        return (client instanceof UniFiWirelessClient ? (UniFiWirelessClient) client : null);
+        return client;
+    }
+
+    public UniFiClient @Nullable [] setClientBlock(UniFiClient client) throws UniFiException {
+        if (controller != null) {
+            return controller.blockStation(client);
+        } else {
+            return null;
+        }
+    }
+
+    public UniFiClient @Nullable [] setClientUnblock(UniFiClient client) throws UniFiException {
+        if (controller != null) {
+            return controller.unblockStation(client);
+        } else {
+            return null;
+        }
     }
 
     // Private API
