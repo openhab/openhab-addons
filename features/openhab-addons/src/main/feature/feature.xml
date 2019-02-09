@@ -456,7 +456,6 @@
     <feature name="openhab-binding-mqtt" description="MQTT Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mqtt</feature>
-        <feature>openhab-core-automation-api</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.mqtt/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.mqtt.generic/${project.version}</bundle>
     </feature>
@@ -895,9 +894,8 @@
 
     <feature name="openhab-misc-market" description="Eclipse IoT Market" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>openhab-core-automation-api</feature>
         <bundle>mvn:org.openhab.extensionservice/org.openhab.extensionservice.marketplace/${project.version}</bundle>
-        <bundle>mvn:org.openhab.extensionservice/org.openhab.extensionservice.marketplace.automation/${project.version}</bundle>
+<!--        <bundle>mvn:org.openhab.extensionservice/org.openhab.extensionservice.marketplace.automation/${project.version}</bundle>-->
     </feature>
 
     <feature name="openhab-misc-mqttbroker" description="Embedded MQTT Broker" version="${project.version}">
@@ -919,17 +917,10 @@
 
     <feature name="openhab-misc-ruleengine" description="Rule Engine (Experimental)" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>openhab-core-automation-api</feature>
-        <feature>openhab-core-automation-commands</feature>
-        <feature>openhab-core-automation-core</feature>
-        <feature>openhab-core-automation-module-core</feature>
+        <feature>openhab-core-automation</feature>
         <feature>openhab-core-automation-module-media</feature>
         <feature>openhab-core-automation-module-script</feature>
-        <feature>openhab-core-automation-module-script-defaultscope</feature>
         <feature>openhab-core-automation-module-script-rulesupport</feature>
-        <feature>openhab-core-automation-module-timer</feature>
-        <feature>openhab-core-automation-parser-gson</feature>
-        <feature>openhab-core-automation-providers</feature>
         <feature>openhab-core-automation-rest</feature>
         <feature>openhab-io-javasound</feature>
     </feature>
