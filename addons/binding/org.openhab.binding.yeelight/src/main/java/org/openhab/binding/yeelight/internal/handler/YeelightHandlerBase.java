@@ -248,10 +248,10 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     }
 
     void handleColorTemperatureCommand(PercentType ct) {
-        DeviceAction ctAcation = DeviceAction.colortemperature;
-        ctAcation.putValue(COLOR_TEMPERATURE_STEP * ct.intValue() + COLOR_TEMPERATURE_MINIMUM);
-        ctAcation.putDuration(getDuration());
-        DeviceManager.getInstance().doAction(deviceId, ctAcation);
+        DeviceAction ctAction = DeviceAction.colortemperature;
+        ctAction.putValue(COLOR_TEMPERATURE_STEP * ct.intValue() + COLOR_TEMPERATURE_MINIMUM);
+        ctAction.putDuration(getDuration());
+        DeviceManager.getInstance().doAction(deviceId, ctAction);
     }
 
     @Override
