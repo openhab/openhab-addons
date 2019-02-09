@@ -97,7 +97,7 @@ public class UniFiController {
     public UniFiClient[] getInsights(UniFiSite site) throws UniFiException {
         UniFiControllerRequest<UniFiClient[]> req = newRequest(UniFiClient[].class);
         req.setPath("/api/s/" + site.getName() + "/stat/alluser");
-        req.setQueryParameter("within", 24);
+        req.setQueryParameter("within", 168); // scurb: Changed to 7 days.
         return executeRequest(req);
     }
 
@@ -110,7 +110,19 @@ public class UniFiController {
     public UniFiClient[] blockStation(UniFiClient client) throws UniFiException {
         UniFiControllerRequest<UniFiClient[]> req = newRequest(UniFiClient[].class);
 
-        String url = "/api/s/" + client.getDevice().getSite().getName() + "/cmd/stamgr";
+        String siteName = "";
+        if (client.getDevice() == null) {
+            UniFiSite[] sites = getSites();
+            for (UniFiSite site : sites) {
+                if (site.getId().equalsIgnoreCase(client.getSiteId())) {
+                    siteName = site.getName();
+                }
+            }
+        } else {
+            siteName = client.getDevice().getSite().getName();
+        }
+
+        String url = "/api/s/" + siteName + "/cmd/stamgr";
         req.setPath(url);
         req.setBodyParameter("cmd", "block-sta");
         req.setBodyParameter("mac", client.getMac());
