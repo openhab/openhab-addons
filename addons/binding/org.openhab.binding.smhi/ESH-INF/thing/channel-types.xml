@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smhi"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="weather">
+		<label>Current Weather</label>
+		<channels>
+			<channel id="time-stamp" typeId="time-stamp" />
+			<channel id="condition" typeId="condition" />
+			<channel id="condition-id" typeId="Wsymb2" />
+			<channel id="temperature" typeId="system.outdoor-temperature" />
+			<channel id="temperature-min" typeId="temperature-min" />
+			<channel id="temperature-max" typeId="temperature-max" />
+			<channel id="pressure" typeId="msl" />
+			<channel id="humidity" typeId="system.atmospheric-humidity" />
+			<channel id="wind-speed" typeId="ws" />
+			<channel id="wind-direction" typeId="wd" />
+			<channel id="wind-gust" typeId="gust" />
+			<channel id="thunderstorm" typeId="tstm" />
+			<channel id="cloud-cover" typeId="tcc_mean" />
+			<channel id="cloud-cover-low" typeId="lcc_mean" />
+			<channel id="cloud-cover-medium" typeId="mcc_mean" />
+			<channel id="cloud-cover-high" typeId="hcc_mean" />
+			<channel id="visibility" typeId="vis" />
+			<channel id="precipitation-cat" typeId="pcat" />
+			<channel id="precipitation-cat-id" typeId="pcat-id" />
+			<channel id="precipitation-mean" typeId="pmean" />
+			<channel id="precipitation-median" typeId="pmedian" />
+			<channel id="precipitation-min" typeId="pmin" />
+			<channel id="precipitation-max" typeId="pmax" />
+			<channel id="precipitation-frozen" typeId="spp" />
+			
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="dailyForecast">
+		<label>Daily Forecast</label>
+		<description>This is the 3 day / daily weather forecast.</description>
+		<channels>
+			<channel id="time-stamp" typeId="daily-forecast-time-stamp" />
+			<channel id="condition" typeId="forecasted-condition" />
+			<channel id="condition-id" typeId="Wsymb2" />
+			<channel id="temperature" typeId="forecasted-t" />
+			<channel id="temperature-min" typeId="forecasted-temperature-min" />
+			<channel id="temperature-max" typeId="forecasted-temperature-max" />
+			<channel id="pressure" typeId="forecasted-msl" />
+			<channel id="humidity" typeId="forecasted-r" />
+			<channel id="wind-speed" typeId="forecasted-ws" />
+			<channel id="wind-direction" typeId="forecasted-wd" />
+			<channel id="wind-gust" typeId="forecasted-gust" />
+			<channel id="thunderstorm" typeId="forecasted-tstm" />
+			<channel id="cloud-cover" typeId="forecasted-tcc_mean" />
+			<channel id="cloud-cover-low" typeId="forecasted-lcc_mean" />
+			<channel id="cloud-cover-medium" typeId="forecasted-mcc_mean" />
+			<channel id="cloud-cover-high" typeId="forecasted-hcc_mean" />
+			<channel id="visibility" typeId="forecasted-vis" />
+			<channel id="precipitation-cat" typeId="forecasted-pcat" />
+			<channel id="precipitation-cat-id" typeId="forecasted-pcat-id" />
+			<channel id="precipitation-mean" typeId="forecasted-pmean" />
+			<channel id="precipitation-median" typeId="forecasted-pmedian" />
+			<channel id="precipitation-min" typeId="forecasted-pmin" />
+			<channel id="precipitation-max" typeId="forecasted-pmax" />
+			<channel id="precipitation-frozen" typeId="forecasted-spp" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="time-stamp">
+		<item-type>DateTime</item-type>
+		<label>Observation Time</label>
+		<description>Time of data observation.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+	</channel-type>
+
+	<channel-type id="daily-forecast-time-stamp">
+		<item-type>DateTime</item-type>
+		<label>Forecast Date</label>
+		<description>Date of data forecasted.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td" />
+	</channel-type>
+	
+	<channel-type id="condition">
+		<item-type>String</item-type>
+		<label>Weather Condition</label>
+		<description>Current weather condition.</description>
+		<category>Sun_Clouds</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="forecasted-condition">
+		<item-type>String</item-type>
+		<label>Forecasted Weather Condition</label>
+		<description>Forecasted weather condition.</description>
+		<category>Sun_Clouds</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="Wsymb2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Weather Condition Id</label>
+		<description>Id of the weather condition.</description>
+		<state readOnly="true" />
+	</channel-type>
+	
+	<channel-type id="forecasted-t">
+		<item-type>Number:Temperature</item-type>
+		<label>Forecasted Temperature</label>
+		<description>Forecasted outdoor temperature.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="temperature-min">
+		<item-type>Number:Temperature</item-type>
+		<label>Min Temperature</label>
+		<description>Min outdoor temperature rest of day.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="temperature-max">
+		<item-type>Number:Temperature</item-type>
+		<label>Max Temperature</label>
+		<description>Max outdoor temperature rest of day.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecasted-temperature-min">
+		<item-type>Number:Temperature</item-type>
+		<label>Forecasted Min Temperature</label>
+		<description>Forecasted min outdoor temperature.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecasted-temperature-max">
+		<item-type>Number:Temperature</item-type>
+		<label>Forecasted Max Temperature</label>
+		<description>Forecasted max outdoor temperature.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="msl">
+		<item-type>Number:Pressure</item-type>
+		<label>Forecasted Pressure</label>
+		<description>Barometric pressure.</description>
+		<category>Pressure</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecasted-msl">
+		<item-type>Number:Pressure</item-type>
+		<label>Forecasted Pressure</label>
+		<description>Forecasted barometric pressure.</description>
+		<category>Pressure</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecasted-r">
+		<item-type>Number</item-type>
+		<label>Forecasted Humidity</label>
+		<description>Forecasted atmospheric relative humidity.</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%.0f %%" />
+	</channel-type>
+
+	<channel-type id="ws">
+		<item-type>Number:Speed</item-type>
+		<label>Forecasted Wind Speed</label>
+		<description>Forecasted wind speed.</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f m/s" />
+	</channel-type>
+
+	<channel-type id="forecasted-ws">
+		<item-type>Number:Speed</item-type>
+		<label>Forecasted Wind Speed</label>
+		<description>Forecasted wind speed.</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f m/s" />
+	</channel-type>
+
+	<channel-type id="wd">
+		<item-type>Number:Angle</item-type>
+		<label>Forecasted Wind Direction</label>
+		<description>Forecasted wind direction expressed as an angle.</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.0f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecasted-wd">
+		<item-type>Number:Angle</item-type>
+		<label>Forecasted Wind Direction</label>
+		<description>Forecasted wind direction expressed as an angle.</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.0f %unit%" />
+	</channel-type>
+
+	<channel-type id="gust" advanced="true">
+		<item-type>Number:Speed</item-type>
+		<label>Gust Speed</label>
+		<description>Current gust speed.</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f m/s" />
+	</channel-type>
+
+	<channel-type id="forecasted-gust" advanced="true">
+		<item-type>Number:Speed</item-type>
+		<label>Forecasted Gust Speed</label>
+		<description>Forecasted gust speed.</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f m/s" />
+	</channel-type>
+
+	<channel-type id="tstm" advanced="true">
+		<item-type>Number</item-type>
+		<label>Thunder probability</label>
+		<description>Thunder probability.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %%" />
+	</channel-type>
+
+	<channel-type id="forecasted-tstm" advanced="true">
+		<item-type>Number</item-type>
+		<label>Forecasted Thunder probability</label>
+		<description>Forecasted thunder probability.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %%" />
+	</channel-type>
+
+	<channel-type id="tcc_mean">
+		<item-type>Number</item-type>
+		<label>Cloud Cover</label>
+		<description>The total cloud cover. How big part of the sky is covered by clouds.</description>
+		<category>Clouds</category>
+		<state readOnly="true" min="0" max="100" pattern="%.1f %%" />
+	</channel-type>
+
+	<channel-type id="forecasted-tcc_mean">
+		<item-type>Number</item-type>
+		<label>Forecasted Cloud Cover</label>
+		<description>Forecasted value of total cloud cover.</description>
+		<category>Clouds</category>
+		<state readOnly="true" min="0" max="100" pattern="%.1f %%" />
+	</channel-type>
+
+	<channel-type id="lcc_mean" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cloud Cover Low</label>
+		<description>Low cloud cover. Clouds between 0 and 2500 meters.</description>
+		<category>Clouds</category>
+		<state readOnly="true" min="0" max="100" pattern="%.1f %%" />
+	</channel-type>
+
+	<channel-type id="forecasted-lcc_mean" advanced="true">
+		<item-type>Number</item-type>
+		<label>Forecasted Cloud Cover Low</label>
+		<description>Forecasted low cloud cover. Clouds between 0 and 2500 meters.</description>
+		<category>Clouds</category>
+		<state readOnly="true" min="0" max="100" pattern="%.1f %%" />
+	</channel-type>
+
+	<channel-type id="mcc_mean" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cloud Cover Medium</label>
+		<description>Medium cloud cover. Clouds between 2500 and 6000 meters.</description>
+		<category>Clouds</category>
+		<state readOnly="true" min="0" max="100" pattern="%.1f %%" />
+	</channel-type>
+
+	<channel-type id="forecasted-mcc_mean" advanced="true">
+		<item-type>Number</item-type>
+		<label>Forecasted Cloud Cover Medium</label>
+		<description>Forecasted medium cloud cover. Clouds between 2500 and 6000 meters.</description>
+		<category>Clouds</category>
+		<state readOnly="true" min="0" max="100" pattern="%.1f %%" />
+	</channel-type>
+
+	<channel-type id="hcc_mean" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cloud Cover High</label>
+		<description>High cloud cover. Clouds above 6000 meters.</description>
+		<category>Clouds</category>
+		<state readOnly="true" min="0" max="100" pattern="%.1f %%" />
+	</channel-type>
+
+	<channel-type id="forecasted-hcc_mean" advanced="true">
+		<item-type>Number</item-type>
+		<label>Forecasted Cloud Cover High</label>
+		<description>Forecasted high cloud cover. Clouds above 6000 meters.</description>
+		<category>Clouds</category>
+		<state readOnly="true" min="0" max="100" pattern="%.1f %%" />
+	</channel-type>
+
+	<channel-type id="vis" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Visibility</label>
+		<description>Horizontal visibility.</description>
+		<category>Clouds</category>
+		<state readOnly="true" pattern="%d km" />
+	</channel-type>
+
+	<channel-type id="forecasted-vis" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Forecasted Visibility</label>
+		<description>Forecasted horizontal visibility.</description>
+		<category>Clouds</category>
+		<state readOnly="true" pattern="%d km" />
+	</channel-type>
+
+	<channel-type id="pcat">
+		<item-type>String</item-type>
+		<label>Precipitation Category</label>
+		<description>Precipitation category.</description>
+		<category>Rain</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="forecasted-pcat">
+		<item-type>String</item-type>
+		<label>Forecasted Precipitation Category</label>
+		<description>Forecasted precipitation category.</description>
+		<category>Rain</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="pcat-id" advanced="true">
+		<item-type>Number</item-type>
+		<label>Precipitation Category Id</label>
+		<description>Id of the precipitation category.</description>
+		<category>Rain</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="forecasted-pcat-id" advanced="true">
+		<item-type>Number</item-type>
+		<label>Forecasted Precipitation Category Id</label>
+		<description>Forcasted id of the precipitation category.</description>
+		<category>Rain</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="pmean">
+		<item-type>Number:Length</item-type>
+		<label>Precipitation Mean</label>
+		<description>Mean precipitation intensity.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f mm/h" />
+	</channel-type>
+
+	<channel-type id="forecasted-pmean">
+		<item-type>Number:Length</item-type>
+		<label>Forecasted Precipitation Mean</label>
+		<description>Forecasted mean precipitation intensity.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f mm/h" />
+	</channel-type>
+
+	<channel-type id="pmedian" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Precipitation Median</label>
+		<description>Median precipitation intensity.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f mm/h" />
+	</channel-type>
+
+	<channel-type id="forecasted-pmedian" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Forecasted Precipitation Median</label>
+		<description>Forecasted median precipitation intensity.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f mm/h" />
+	</channel-type>
+	
+	<channel-type id="pmin" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Precipitation Min</label>
+		<description>Min precipitation intensity.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f mm/h" />
+	</channel-type>
+
+	<channel-type id="forecasted-pmin" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Forecasted Precipitation Min</label>
+		<description>Forecasted min precipitation intensity.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f mm/h" />
+	</channel-type>
+
+	<channel-type id="pmax" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Precipitation Max</label>
+		<description>Max precipitation intensity.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f mm/h" />
+	</channel-type>
+
+	<channel-type id="forecasted-pmax" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>Forecasted Precipitation Max</label>
+		<description>Forecasted max precipitation intensity.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f mm/h" />
+	</channel-type>
+
+	<channel-type id="spp" advanced="true">
+		<item-type>Number</item-type>
+		<label>Precipitation in frozen form</label>
+		<description>Percent of precipitation in frozen form.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %%" />
+	</channel-type>
+
+	<channel-type id="forecasted-spp" advanced="true">
+		<item-type>Number</item-type>
+		<label>Forecasted Precipitation in frozen form</label>
+		<description>Forecasted percent of precipitation in frozen form.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %%" />
+	</channel-type>
+	
+</thing:thing-descriptions>	
