@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-Activator: org.openhab.ui.basic.internal.WebAppActivator
-Bundle-ClassPath: patch/,.
+Bundle-ClassPath: .
 Bundle-License: https://www.eclipse.org/legal/epl-2.0/
 Bundle-ManifestVersion: 2
 Bundle-Name: Basic UI
