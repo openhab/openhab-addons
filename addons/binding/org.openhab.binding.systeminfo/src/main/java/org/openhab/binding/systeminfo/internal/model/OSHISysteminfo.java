@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
+import oshi.hardware.ComputerSystem;
 import oshi.hardware.Display;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.HWDiskStore;
@@ -42,16 +43,17 @@ import oshi.util.EdidUtil;
  * @author Svilen Valkanov - Initial contribution
  * @author Lyubomir Papazov - Move the initialization logic that could potentially take long time to the
  *         initializeSysteminfo method
+ * @author Christoph Weitkamp - Update to OSHI 3.13.0 - Replaced deprecated method
+ *         CentralProcessor#getSystemSerialNumber()
  *
  * @see <a href="https://github.com/oshi/oshi">OSHI github repository</a>
- *
  */
 @Component(service = SysteminfoInterface.class)
-public class OshiSysteminfo implements SysteminfoInterface {
+public class OSHISysteminfo implements SysteminfoInterface {
 
     HardwareAbstractionLayer hal;
 
-    private Logger logger = LoggerFactory.getLogger(OshiSysteminfo.class);
+    private Logger logger = LoggerFactory.getLogger(OSHISysteminfo.class);
 
     // Dynamic objects (may be queried repeatedly)
     private GlobalMemory memory;
@@ -59,6 +61,7 @@ public class OshiSysteminfo implements SysteminfoInterface {
     private Sensors sensors;
 
     // Static objects, should be recreated on each request
+    private ComputerSystem computerSystem;
     private OperatingSystem operatingSystem;
     private NetworkIF[] networks;
     private Display[] displays;
@@ -72,13 +75,13 @@ public class OshiSysteminfo implements SysteminfoInterface {
      * Some of the methods used in this constructor execute native code and require execute permissions
      *
      */
-    public OshiSysteminfo() {
-        logger.debug("OshiSysteminfo service is created");
+    public OSHISysteminfo() {
+        logger.debug("OSHISysteminfo service is created");
     }
 
     @Override
     public void initializeSysteminfo() {
-        logger.debug("OshiSysteminfo service starts initializing");
+        logger.debug("OSHISysteminfo service starts initializing");
 
         SystemInfo systemInfo = new SystemInfo();
         hal = systemInfo.getHardware();
@@ -91,6 +94,7 @@ public class OshiSysteminfo implements SysteminfoInterface {
         // Static objects, should be recreated on each request. In OSHI 4.0.0. it is planned to change this mechanism -
         // see https://github.com/oshi/oshi/issues/310
         // TODO: Once the issue is resolved in OSHI , remove unnecessary object recreations from the public get methods
+        computerSystem = hal.getComputerSystem();
         operatingSystem = systemInfo.getOperatingSystem();
         networks = hal.getNetworkIFs();
         displays = hal.getDisplays();
@@ -143,7 +147,7 @@ public class OshiSysteminfo implements SysteminfoInterface {
     public StringType getCpuDescription() {
         String model = cpu.getModel();
         String family = cpu.getFamily();
-        String serialNumber = cpu.getSystemSerialNumber();
+        String serialNumber = computerSystem.getSerialNumber();
         String identifier = cpu.getIdentifier();
         String vendor = cpu.getVendor();
         String architecture = cpu.isCpu64bit() ? "64 bit" : "32 bit";
@@ -478,7 +482,7 @@ public class OshiSysteminfo implements SysteminfoInterface {
     }
 
     private long getSizeInMB(long sizeInBytes) {
-        return sizeInBytes /= 1024 * 1024;
+        return Math.round(sizeInBytes / (1024D * 1024));
     }
 
     private BigDecimal getPercentsValue(double decimalFraction) {
@@ -527,7 +531,7 @@ public class OshiSysteminfo implements SysteminfoInterface {
     }
 
     private BigDecimal getAvarageCpuLoad(int timeInMunutes) {
-        // This paramater is specified in OSHI Javadoc
+        // This parameter is specified in OSHI Javadoc
         int index;
         switch (timeInMunutes) {
             case 1:
