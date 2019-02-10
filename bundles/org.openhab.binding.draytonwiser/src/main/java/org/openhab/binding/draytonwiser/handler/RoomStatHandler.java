@@ -124,7 +124,7 @@ public class RoomStatHandler extends DraytonWiserThingHandler {
 
     private State getHumidity() {
         if (roomStat != null) {
-            return new DecimalType(roomStat.getMeasuredHumidity());
+            return new QuantityType<>(roomStat.getMeasuredHumidity(), SmartHomeUnits.PERCENT);
         }
         return UnDefType.UNDEF;
     }

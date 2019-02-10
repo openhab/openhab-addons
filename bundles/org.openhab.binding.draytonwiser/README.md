@@ -232,7 +232,7 @@ Number BoostDuration_GF_Living      "Boost For[]"    <text>   (GF_Living)    ["B
 Number BoostRemaining_GF_Living      "Boost Remaining"    <text>   (GF_Living)    ["Boost Remaining"] { channel="draytonwiser:room:HeatHub:livingroom:roomBoostRemaining" }
 
 /* Humidity */
-Number livingroom_humidity  "Humidity [%.0f %%]" <humidity> (GF_Living) ["Humidity"] {channel="draytonwiser:room:HeatHub:livingroom:currentHumidity"}
+Number:Humidity livingroom_humidity  "Humidity [%.0f %%]" <humidity> (GF_Living) ["Humidity"] {channel="draytonwiser:room:HeatHub:livingroom:currentHumidity"}
 
 
 ```

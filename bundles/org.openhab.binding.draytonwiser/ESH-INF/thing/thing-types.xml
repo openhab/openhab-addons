@@ -251,11 +251,11 @@
 	</channel-type>
 	
     <channel-type id="atmospheric-humidity-channel">
-        <item-type>Number</item-type>
+        <item-type>Number:Humidity</item-type>
         <label>Humidity</label>
-        <description>Current humidity in percent</description>
+        <description>Current relative humidity</description>
         <category>Humidity</category>
-        <state readOnly="true" pattern="%.0f %"></state>
+        <state readOnly="true" pattern="%.0f %unit%"></state>
     </channel-type>
 
 	<channel-type id="currentSetPoint-channel">
