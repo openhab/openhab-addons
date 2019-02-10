@@ -14,37 +14,19 @@ package org.openhab.binding.nanoleaf.internal.model;
 
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Represents write command to set solid color effect
  *
  * @author Martin Raepple - Initial contribution
  */
-
 public class Write {
 
-    @SerializedName("command")
-    @Expose
     private String command;
-    @SerializedName("animType")
-    @Expose
     private String animType;
-    @SerializedName("animName")
-    @Expose
     private String animName;
-    @SerializedName("palette")
-    @Expose
     private List<Palette> palette = null;
-    @SerializedName("colorType")
-    @Expose
     private String colorType;
-    @SerializedName("animData")
-    @Expose
     private String animData;
-    @SerializedName("loop")
-    @Expose
     private Boolean loop;
 
     public String getCommand() {

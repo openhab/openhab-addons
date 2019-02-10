@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Represents panel layout of the light panels
  *
@@ -22,11 +19,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class PanelLayout {
 
-    @SerializedName("layout")
-    @Expose
     private Layout layout;
-    @SerializedName("globalOrientation")
-    @Expose
     private GlobalOrientation globalOrientation;
 
     public Layout getLayout() {

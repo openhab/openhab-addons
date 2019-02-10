@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Represents the light panels controller information
  *
@@ -22,32 +19,14 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ControllerInfo {
 
-    @SerializedName("name")
-    @Expose
     private String name;
-    @SerializedName("serialNo")
-    @Expose
     private String serialNo;
-    @SerializedName("manufacturer")
-    @Expose
     private String manufacturer;
-    @SerializedName("firmwareVersion")
-    @Expose
     private String firmwareVersion;
-    @SerializedName("model")
-    @Expose
     private String model;
-    @SerializedName("state")
-    @Expose
     private State state;
-    @SerializedName("effects")
-    @Expose
     private Effects effects;
-    @SerializedName("panelLayout")
-    @Expose
     private PanelLayout panelLayout;
-    @SerializedName("rhythm")
-    @Expose
     private Rhythm rhythm;
 
     public String getName() {

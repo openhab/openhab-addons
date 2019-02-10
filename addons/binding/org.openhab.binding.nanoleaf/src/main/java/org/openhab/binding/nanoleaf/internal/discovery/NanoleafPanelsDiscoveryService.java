@@ -18,8 +18,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -27,7 +25,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants;
 import org.openhab.binding.nanoleaf.internal.NanoleafControllerListener;
 import org.openhab.binding.nanoleaf.internal.NanoleafHandlerFactory;
-import org.openhab.binding.nanoleaf.internal.config.NanoleafControllerConfig;
 import org.openhab.binding.nanoleaf.internal.handler.NanoleafControllerHandler;
 import org.openhab.binding.nanoleaf.internal.model.ControllerInfo;
 import org.openhab.binding.nanoleaf.internal.model.PositionDatum;
@@ -41,29 +38,33 @@ import org.slf4j.LoggerFactory;
  * @author Martin Raepple - Initial contribution
  */
 public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService implements NanoleafControllerListener {
+
     private final Logger logger = LoggerFactory.getLogger(NanoleafPanelsDiscoveryService.class);
-    private static final int SEARCH_TIMEOUT = 10;
+    private static final int SEARCH_TIMEOUT = 60;
 
     private NanoleafControllerHandler bridgeHandler;
-    private boolean discoverPanels;
 
     /**
-     * Creates a NanoleafPanelsDiscoveryService with background discovery disabled.
+     * Constructs a new {@link NanoleafPanelsDiscoveryService} attached to the given bridge handler.
+     *
+     * @param nanoleafControllerHandler The bridge handler this discovery service is attached to
      */
     public NanoleafPanelsDiscoveryService(NanoleafControllerHandler nanoleafControllerHandler) {
         super(NanoleafHandlerFactory.SUPPORTED_THING_TYPES_UIDS, SEARCH_TIMEOUT, false);
         this.bridgeHandler = nanoleafControllerHandler;
     }
 
-    /**
-     * Applies the configuration from the controller configuration to enable/disable panel discovery
-     */
     @Override
-    public void applyConfig(Map<String, Object> configProperties) {
-        if (configProperties != null) {
-            this.discoverPanels = (boolean) configProperties.get(NanoleafControllerConfig.DISCOVER_PANELS);
-            logger.debug("Panel discovery is {}", this.discoverPanels ? "enabled" : "disabled");
-        }
+    protected void startScan() {
+        logger.debug("Starting Nanoleaf panel discovery");
+        bridgeHandler.registerControllerListener(this);
+    }
+
+    @Override
+    protected synchronized void stopScan() {
+        logger.debug("Stopping Nanoleaf panel discovery");
+        super.stopScan();
+        bridgeHandler.unregisterControllerListener(this);
     }
 
     /**
@@ -74,53 +75,30 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService imp
      */
     @Override
     public void onControllerInfoFetched(ThingUID bridge, ControllerInfo controllerInfo) {
-        if (discoverPanels) {
-            logger.debug("Start adding panels connected to controller with id {} to inbox", bridge.getAsString());
-            if (controllerInfo != null && controllerInfo.getPanelLayout() != null) {
-                if (controllerInfo.getPanelLayout().getLayout().getNumPanels() > 0) {
-                    Iterator<PositionDatum> iterator = controllerInfo.getPanelLayout().getLayout().getPositionData()
-                            .iterator();
-                    while (iterator.hasNext()) {
-                        PositionDatum panel = iterator.next();
-                        panel.getPanelId();
-                        ThingUID newPanelThingUID = new ThingUID(NanoleafBindingConstants.THING_TYPE_LIGHT_PANEL,
-                                bridge, panel.getPanelId().toString());
+        logger.debug("Start adding panels connected to controller with id {} to inbox", bridge.getAsString());
+        if (controllerInfo.getPanelLayout() != null) {
+            if (controllerInfo.getPanelLayout().getLayout().getNumPanels() > 0) {
+                Iterator<PositionDatum> iterator = controllerInfo.getPanelLayout().getLayout().getPositionData()
+                        .iterator();
+                while (iterator.hasNext()) {
+                    PositionDatum panel = iterator.next();
+                    panel.getPanelId();
+                    ThingUID newPanelThingUID = new ThingUID(NanoleafBindingConstants.THING_TYPE_LIGHT_PANEL, bridge,
+                            panel.getPanelId().toString());
 
-                        final Map<String, Object> properties = new HashMap<>(1);
-                        properties.put(CONFIG_PANEL_ID, panel.getPanelId());
+                    final Map<String, Object> properties = new HashMap<>(1);
+                    properties.put(CONFIG_PANEL_ID, panel.getPanelId());
 
-                        DiscoveryResult newPanel = DiscoveryResultBuilder.create(newPanelThingUID).withBridge(bridge)
-                                .withProperties(properties).withLabel("Nanoleaf Light Panel").build();
+                    DiscoveryResult newPanel = DiscoveryResultBuilder.create(newPanelThingUID).withBridge(bridge)
+                            .withProperties(properties).withLabel("Light Panel")
+                            .withRepresentationProperty(CONFIG_PANEL_ID).build();
 
-                        logger.debug("Adding panel with id {} to inbox", panel.getPanelId());
-                        thingDiscovered(newPanel);
-                    }
+                    logger.debug("Adding panel with id {} to inbox", panel.getPanelId());
+                    thingDiscovered(newPanel);
                 }
-            } else {
-                logger.info("Panel discovery enabled, but no panels found or connected to controller");
             }
         } else {
-            logger.debug("Discovery of panels disabled in controller configuration");
+            logger.info("No panels found or connected to controller");
         }
-    }
-
-    @Override
-    public void activate(@Nullable Map<@NonNull String, @Nullable Object> configProperties) {
-        super.activate(configProperties);
-        applyConfig(configProperties);
-        bridgeHandler.registerControllerListener(this);
-        logger.debug("Panel discovery service activated");
-    }
-
-    @Override
-    public void deactivate() {
-        bridgeHandler.unregisterControllerListener(this);
-        super.deactivate();
-        logger.debug("Panel discovery service deactivated");
-    }
-
-    @Override
-    protected void startScan() {
-        // nothing to do
     }
 }

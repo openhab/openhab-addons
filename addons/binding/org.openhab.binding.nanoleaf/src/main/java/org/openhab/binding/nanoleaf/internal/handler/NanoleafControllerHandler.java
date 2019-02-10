@@ -15,7 +15,6 @@ package org.openhab.binding.nanoleaf.internal.handler;
 import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -47,6 +46,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants;
 import org.openhab.binding.nanoleaf.internal.NanoleafControllerListener;
 import org.openhab.binding.nanoleaf.internal.NanoleafException;
 import org.openhab.binding.nanoleaf.internal.NanoleafUnauthorizedException;
@@ -85,15 +85,25 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     private HttpClient httpClient;
     private List<NanoleafControllerListener> controllerListeners = new CopyOnWriteArrayList<>();
 
-    // Pairing interval
+    // Pairing interval in seconds
     private final static int PAIRING_INTERVAL = 25;
 
-    // Pairing and channel update jobs
-    private @Nullable ScheduledFuture<?> pairingJob;
-    private @Nullable ScheduledFuture<?> updateJob;
+    // Panel discovery interval in seconds
+    private final static int PANEL_DISCOVERY_INTERVAL = 30;
+
+    // Pairing, update and panel discovery jobs
+    private @NonNullByDefault({}) ScheduledFuture<?> pairingJob;
+    private @NonNullByDefault({}) ScheduledFuture<?> updateJob;
+    private @NonNullByDefault({}) ScheduledFuture<?> panelDiscoveryJob;
 
     // JSON parser for API responses
     private final Gson gson = new Gson();
+
+    // Controller configuration settings
+    private @Nullable String address;
+    private int port;
+    private int refreshIntervall;
+    private @Nullable String authToken;
 
     public NanoleafControllerHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
@@ -105,34 +115,58 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         logger.debug("Initializing the controller (bridge)");
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         NanoleafControllerConfig config = getConfigAs(NanoleafControllerConfig.class);
+        setAddress(config.address);
+        setPort(config.port);
+        setRefreshIntervall(config.refreshInterval);
+        setAuthToken(config.authToken);
 
-        if (StringUtils.isEmpty(config.address) || StringUtils.isEmpty(String.valueOf(config.port))) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "IP address and/or port are not configured for the light panels.");
-            logger.warn("No IP address and port configured for the Nanoleaf controller");
-        } else if (StringUtils.isEmpty(config.authToken)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "No authorization token found.");
-            startPairingJob();
-        } else {
-            updateStatus(ThingStatus.ONLINE);
-            // controller is now online - stop pairing
-            stopPairingJob();
-            // ... and start update job
-            startUpdateJob();
-            // Update the discovery configuration
-            Map<String, Object> configDiscovery = new HashMap<String, Object>();
-            configDiscovery.put(NanoleafControllerConfig.DISCOVER_PANELS, config.discoverPanels);
-
-            // Trigger a new discovery of connected panels
-            for (NanoleafControllerListener controllerListener : controllerListeners) {
-                controllerListener.applyConfig(configDiscovery);
+        try {
+            if (StringUtils.isEmpty(getAddress()) || StringUtils.isEmpty(String.valueOf(getPort()))) {
+                logger.warn("No IP address and port configured for the Nanoleaf controller");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                        "@text/error.nanoleaf.controller.noIp");
+                stopAllJobs();
+                return;
+            } else if (!StringUtils.isEmpty(getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION))
+                    && !OpenAPIUtils
+                            .checkRequiredFirmware(getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION))) {
+                logger.warn("Nanoleaf controller firmware is too old: {}. Must be equal or higher than {}",
+                        getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION),
+                        NanoleafBindingConstants.API_MIN_FW_VER);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/error.nanoleaf.controller.incompatibleFirmware");
+                stopAllJobs();
+                return;
+            } else if (StringUtils.isEmpty(getAuthToken())) {
+                logger.debug("No token found. Start pairing background job");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                        "@text/error.nanoleaf.controller.noToken");
+                startPairingJob();
+                stopUpdateJob();
+                stopPanelDiscoveryJob();
+                return;
+            } else {
+                logger.debug("Controlle is online. Stop pairing job, start update & panel discovery jobs");
+                updateStatus(ThingStatus.ONLINE);
+                stopPairingJob();
+                startUpdateJob();
+                startPanelDiscoveryJob();
             }
+        } catch (IllegalArgumentException iae) {
+            logger.warn("Nanoleaf controller firmware version not in format x.y.z: {}",
+                    getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/error.nanoleaf.controller.incompatibleFirmware");
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
+        if (!ThingStatus.ONLINE.equals(getThing().getStatusInfo().getStatus())) {
+            logger.debug("Cannot handle command. Bridge is not online.");
+            return;
+        }
         try {
             if (command instanceof RefreshType) {
                 updateFromControllerInfo();
@@ -181,20 +215,42 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             logger.warn("Authorization for command {} to channelUID {} failed: {}", command, channelUID,
                     nae.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Invalid token. Replace with valid token or start pairing again.");
+                    "@text/error.nanoleaf.controller.invalidToken");
         } catch (NanoleafException ne) {
             logger.warn("Handling command {} to channelUID {} failed: {}", command, channelUID, ne.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication failed. Please check configuration");
+                    "@text/error.nanoleaf.controller.communication");
         }
     }
 
     @Override
     public void handleRemoval() {
+        // delete token for openHAB
+        ContentResponse deleteTokenResponse;
+        try {
+            Request deleteTokenRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(), API_DELETE_USER,
+                    HttpMethod.DELETE);
+            deleteTokenResponse = OpenAPIUtils.sendOpenAPIRequest(deleteTokenRequest);
+            if (deleteTokenResponse.getStatus() != HttpStatus.NO_CONTENT_204) {
+                logger.warn("Failed to delete token for openHAB. Response code is {}", deleteTokenResponse.getStatus());
+                return;
+            }
+            logger.debug("Successfully deleted token for openHAB from controller");
+        } catch (NanoleafUnauthorizedException e) {
+            logger.warn("Attempt to delete token for openHAB failed. Token unauthorized.");
+        } catch (NanoleafException ne) {
+            logger.warn("Attempt to delete token for openHAB failed : {}", ne.getMessage());
+        }
+        stopAllJobs();
         super.handleRemoval();
-        stopPairingJob();
-        stopUpdateJob();
         logger.debug("Nanoleaf controller removed");
+    }
+
+    @Override
+    public void dispose() {
+        stopAllJobs();
+        super.dispose();
+        logger.debug("Disposing handler for Nanoleaf controller {}", getThing().getUID());
     }
 
     public boolean registerControllerListener(NanoleafControllerListener controllerListener) {
@@ -205,10 +261,19 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         return controllerListeners.remove(controllerListener);
     }
 
+    public NanoleafControllerConfig getControllerConfig() {
+        NanoleafControllerConfig config = new NanoleafControllerConfig();
+        config.address = this.getAddress();
+        config.port = this.getPort();
+        config.refreshInterval = this.getRefreshIntervall();
+        config.authToken = this.getAuthToken();
+        return config;
+    }
+
     public synchronized void startPairingJob() {
         if ((pairingJob == null || pairingJob.isCancelled())) {
             logger.debug("Start pairing job, interval={} sec", PAIRING_INTERVAL);
-            pairingJob = scheduler.scheduleWithFixedDelay(pairingRunnable, 0, PAIRING_INTERVAL, TimeUnit.SECONDS);
+            pairingJob = scheduler.scheduleWithFixedDelay(this::runPairing, 0, PAIRING_INTERVAL, TimeUnit.SECONDS);
         }
     }
 
@@ -221,16 +286,15 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     }
 
     private synchronized void startUpdateJob() {
-        NanoleafControllerConfig controllerConfig = getConfigAs(NanoleafControllerConfig.class);
-        if (StringUtils.isNotEmpty(controllerConfig.authToken)) {
+        if (StringUtils.isNotEmpty(getAuthToken())) {
             if ((updateJob == null || updateJob.isCancelled())) {
-                logger.debug("Start controller status job, interval={} sec", controllerConfig.refreshInterval);
-                updateJob = scheduler.scheduleWithFixedDelay(updateRunnable, 0, controllerConfig.refreshInterval,
+                logger.debug("Start controller status job, repeat every {} sec", getRefreshIntervall());
+                updateJob = scheduler.scheduleWithFixedDelay(this::runUpdate, 0, getRefreshIntervall(),
                         TimeUnit.SECONDS);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "No authorization token found. To start pairing, press the on-off button of the controller for 5-7 seconds until the LED starts flashing in a pattern.");
+                    "@text/error.nanoleaf.controller.noToken");
         }
     }
 
@@ -242,93 +306,126 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         }
     }
 
-    private final Runnable updateRunnable = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                updateFromControllerInfo();
-            } catch (NanoleafUnauthorizedException nae) {
-                logger.warn("Status update unauthorized: {}", nae.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Invalid token. Replace with valid token or start pairing again.");
-                NanoleafControllerConfig controllerConfig = getConfigAs(NanoleafControllerConfig.class);
-                if (StringUtils.isEmpty(controllerConfig.authToken)) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "Invalid token. Replace with valid token or start pairing again by pressing the on-off button of the controller for 5-7 seconds until the LED starts flashing in a pattern.");
-                }
-            } catch (NanoleafException ne) {
-                logger.warn("Status update failed: {}", ne.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Communication failed. Please check configuration");
-            }
+    public synchronized void startPanelDiscoveryJob() {
+        if ((panelDiscoveryJob == null || panelDiscoveryJob.isCancelled())) {
+            logger.debug("Start panel discovery job, interval={} sec", PANEL_DISCOVERY_INTERVAL);
+            panelDiscoveryJob = scheduler.scheduleWithFixedDelay(this::runPanelDiscovery, 0, PANEL_DISCOVERY_INTERVAL,
+                    TimeUnit.SECONDS);
         }
-    };
+    }
 
-    private final Runnable pairingRunnable = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                NanoleafControllerConfig panelsConfig = getConfigAs(NanoleafControllerConfig.class);
-                if (StringUtils.isNotEmpty(panelsConfig.authToken)) {
-                    if (pairingJob != null) {
-                        pairingJob.cancel(false);
-                    }
-                    logger.debug("Authentication token found. Canceling pairing job");
-                    return;
-                }
-                if (httpClient.isStarted()) {
-                    httpClient.stop();
-                }
-                httpClient.start();
-                ContentResponse authTokenResponse = OpenAPIUtils
-                        .requestBuilder(httpClient, getConfig(), API_ADD_USER, HttpMethod.POST).send();
-                logger.trace("Auth token response {}", authTokenResponse.getContentAsString());
+    private synchronized void stopPanelDiscoveryJob() {
+        if (panelDiscoveryJob != null && !panelDiscoveryJob.isCancelled()) {
+            logger.debug("Stop panel discovery job");
+            panelDiscoveryJob.cancel(true);
+            this.panelDiscoveryJob = null;
+        }
+    }
 
-                if (authTokenResponse.getStatus() != HttpStatus.OK_200) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Pairing failed. Press the on-off button for 5-7 seconds until the LED starts flashing in a pattern.");
-                    logger.debug("Pairing failed with OpenAPI status code {}", authTokenResponse.getStatus());
-                    return;
+    private void runUpdate() {
+        try {
+            updateFromControllerInfo();
+        } catch (NanoleafUnauthorizedException nae) {
+            logger.warn("Status update unauthorized: {}", nae.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/error.nanoleaf.controller.invalidToken");
+            if (StringUtils.isEmpty(getAuthToken())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                        "@text/error.nanoleaf.controller.noToken");
+            }
+        } catch (NanoleafException ne) {
+            logger.warn("Status update failed: {}", ne.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/error.nanoleaf.controller.communication");
+        } catch (RuntimeException e) {
+            logger.warn("Update job failed", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/error.nanoleaf.controller.runtime");
+        }
+    }
+
+    private void runPairing() {
+        try {
+            if (StringUtils.isNotEmpty(getAuthToken())) {
+                if (pairingJob != null) {
+                    pairingJob.cancel(false);
+                }
+                logger.debug("Authentication token found. Canceling pairing job");
+                return;
+            }
+            if (httpClient.isStarted()) {
+                httpClient.stop();
+            }
+            httpClient.start();
+            ContentResponse authTokenResponse = OpenAPIUtils
+                    .requestBuilder(httpClient, getControllerConfig(), API_ADD_USER, HttpMethod.POST).send();
+            if (logger.isTraceEnabled()) {
+                logger.trace("Auth token response: {}", authTokenResponse.getContentAsString());
+            }
+
+            if (authTokenResponse.getStatus() != HttpStatus.OK_200) {
+                logger.debug("Pairing pending. Controller returns status code {}", authTokenResponse.getStatus());
+                return;
+            } else {
+                // get auth token from response
+                AuthToken authToken = gson.fromJson(authTokenResponse.getContentAsString(), AuthToken.class);
+
+                if (StringUtils.isNotEmpty(authToken.getAuthToken())) {
+                    logger.debug("Pairing succeeded.");
+
+                    // Update and save the auth token in the thing configuration
+                    Configuration config = editConfiguration();
+                    config.put(NanoleafControllerConfig.AUTH_TOKEN, authToken.getAuthToken());
+                    updateConfiguration(config);
+                    updateStatus(ThingStatus.ONLINE);
+                    // Update local field
+                    setAuthToken(authToken.getAuthToken());
+
+                    stopPairingJob();
+                    startUpdateJob();
+                    startPanelDiscoveryJob();
                 } else {
-                    // get auth token from response
-                    AuthToken authToken = gson.fromJson(authTokenResponse.getContentAsString(), AuthToken.class);
-
-                    if (StringUtils.isNotEmpty(authToken.getAuthToken())) {
-                        logger.debug("Pairing succeeded.");
-
-                        // Update and save the auth token in the thing configuration
-                        Configuration config = editConfiguration();
-                        config.put(NanoleafControllerConfig.AUTH_TOKEN, authToken.getAuthToken());
-                        updateConfiguration(config);
-                        updateStatus(ThingStatus.ONLINE);
-
-                        startUpdateJob();
-                        stopPairingJob();
-                    } else {
-                        logger.debug("No auth token found in response: {}", authTokenResponse.getContentAsString());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Pairing failed. Retry by holding the on-off button down for 5-7 seconds until the LED starts flashing in a pattern.");
-                        throw new NanoleafException(authTokenResponse.getContentAsString());
-                    }
+                    logger.debug("No auth token found in response: {}", authTokenResponse.getContentAsString());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/error.nanoleaf.controller.pairingFailed");
+                    throw new NanoleafException(authTokenResponse.getContentAsString());
                 }
-            } catch (JsonSyntaxException e) {
-                logger.warn("Received invalid data", e);
+            }
+        } catch (JsonSyntaxException e) {
+            logger.warn("Received invalid data", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/error.nanoleaf.controller.invalidData");
+        } catch (NanoleafException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/error.nanoleaf.controller.noTokenReceived");
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            logger.warn("Cannot send authorization request to controller: ", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/error.nanoleaf.controller.authRequest");
+        } catch (RuntimeException e) {
+            logger.warn("Pairing job failed", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/error.nanoleaf.controller.runtime");
+        } catch (Exception e) {
+            logger.warn("Cannot start http client", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/error.nanoleaf.controller.noClient");
+        }
+    }
+
+    private void runPanelDiscovery() {
+        // Trigger a new discovery of connected panels
+        for (NanoleafControllerListener controllerListener : controllerListeners) {
+            try {
+                controllerListener.onControllerInfoFetched(getThing().getUID(), getControllerInfo());
+            } catch (NanoleafException ne) {
+                logger.warn("Failed to discover panels", ne);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Pairing failed: Received invalid data");
-            } catch (NanoleafException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Pairing failed. No authorization token in response.");
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                logger.warn("Cannot send authorization request to controller: ", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
-                        .format("Pairing failed. Cannot send authorization request: %s", e.getCause().getMessage()));
-            } catch (Exception e) {
-                logger.warn("Cannot start http client", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Pairing failed. Cannot start HTTP client");
+                        "@text/error.nanoleaf.controller.communication");
+            } catch (RuntimeException e) {
+                logger.warn("Panel discovery job failed", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/error.nanoleaf.controller.runtime");
             }
         }
-    };
+    }
 
     private void updateFromControllerInfo() throws NanoleafException, NanoleafUnauthorizedException {
         ControllerInfo controllerInfo = getControllerInfo();
@@ -337,9 +434,10 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         updateState(CHANNEL_BRIGHTNESS,
                 new PercentType(controllerInfo.getState().getBrightness().getValue().intValue()));
         updateState(CHANNEL_COLOR_TEMPERATURE,
-                new DecimalType(controllerInfo.getState().getCt().getValue().intValue()));
+                new DecimalType(controllerInfo.getState().getColorTemperature().getValue().intValue()));
         updateState(CHANNEL_HUE, new DecimalType(controllerInfo.getState().getHue().getValue().intValue()));
-        updateState(CHANNEL_SATURATION, new PercentType(controllerInfo.getState().getSat().getValue().intValue()));
+        updateState(CHANNEL_SATURATION,
+                new PercentType(controllerInfo.getState().getSaturation().getValue().intValue()));
         updateState(CHANNEL_EFFECT, new StringType(controllerInfo.getEffects().getSelect()));
         updateState(CHANNEL_COLOR_MODE, new StringType(controllerInfo.getState().getColorMode()));
         updateState(CHANNEL_RHYTHM_ACTIVE,
@@ -349,23 +447,16 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                 controllerInfo.getRhythm().getRhythmConnected().booleanValue() ? OnOffType.ON : OnOffType.OFF);
         logger.debug("Update channels for controller {}", thing.getUID());
 
-        // update properties
+        // update properties which may have changed, or are not present during discovery
         Map<String, String> properties = editProperties();
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, controllerInfo.getSerialNo());
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, controllerInfo.getFirmwareVersion());
-        properties.put(Thing.PROPERTY_VENDOR, controllerInfo.getManufacturer());
-        properties.put(Thing.PROPERTY_MODEL_ID, controllerInfo.getModel());
         updateProperties(properties);
-
-        // Trigger a new discovery of connected panels
-        for (NanoleafControllerListener controllerListener : controllerListeners) {
-            controllerListener.onControllerInfoFetched(getThing().getUID(), controllerInfo);
-        }
     }
 
-    private ControllerInfo getControllerInfo() throws NanoleafException, JsonSyntaxException {
-        ContentResponse controllerInfoJSON = OpenAPIUtils.sendOpenAPIRequest(
-                OpenAPIUtils.requestBuilder(httpClient, this.getConfig(), API_GET_CONTROLLER_INFO, HttpMethod.GET));
+    private ControllerInfo getControllerInfo() throws NanoleafException, NanoleafUnauthorizedException {
+        ContentResponse controllerInfoJSON = OpenAPIUtils.sendOpenAPIRequest(OpenAPIUtils.requestBuilder(httpClient,
+                getControllerConfig(), API_GET_CONTROLLER_INFO, HttpMethod.GET));
         ControllerInfo controllerInfo = gson.fromJson(controllerInfoJSON.getContentAsString(), ControllerInfo.class);
         return controllerInfo;
     }
@@ -385,7 +476,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                 logger.warn("Unhandled command type: {}", command.getClass().getName());
                 return;
             }
-            Request setNewStateRequest = OpenAPIUtils.requestBuilder(httpClient, this.getConfig(), API_SET_VALUE,
+            Request setNewStateRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(), API_SET_VALUE,
                     HttpMethod.PUT);
             setNewStateRequest.content(new StringContentProvider(gson.toJson(stateObject)), "application/json");
             OpenAPIUtils.sendOpenAPIRequest(setNewStateRequest);
@@ -420,7 +511,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             logger.warn("Unhandled command type: {}", command.getClass().getName());
             return;
         }
-        Request setNewEffectRequest = OpenAPIUtils.requestBuilder(httpClient, this.getConfig(), API_SELECT_EFFECT,
+        Request setNewEffectRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(), API_SELECT_EFFECT,
                 HttpMethod.PUT);
         setNewEffectRequest.content(new StringContentProvider(gson.toJson(effects)), "application/json");
         OpenAPIUtils.sendOpenAPIRequest(setNewEffectRequest);
@@ -434,9 +525,47 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             logger.warn("Unhandled command type: {}", command.getClass().getName());
             return;
         }
-        Request setNewRhythmRequest = OpenAPIUtils.requestBuilder(httpClient, this.getConfig(), API_RHYTHM_MODE,
+        Request setNewRhythmRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(), API_RHYTHM_MODE,
                 HttpMethod.PUT);
         setNewRhythmRequest.content(new StringContentProvider(gson.toJson(rhythm)), "application/json");
         OpenAPIUtils.sendOpenAPIRequest(setNewRhythmRequest);
+    }
+
+    private String getAddress() {
+        return StringUtils.defaultString(this.address);
+    }
+
+    private void setAddress(String address) {
+        this.address = address;
+    }
+
+    private int getPort() {
+        return port;
+    }
+
+    private void setPort(int port) {
+        this.port = port;
+    }
+
+    private int getRefreshIntervall() {
+        return refreshIntervall;
+    }
+
+    private void setRefreshIntervall(int refreshIntervall) {
+        this.refreshIntervall = refreshIntervall;
+    }
+
+    private String getAuthToken() {
+        return StringUtils.defaultString(authToken);
+    }
+
+    private void setAuthToken(String authToken) {
+        this.authToken = authToken;
+    }
+
+    private void stopAllJobs() {
+        stopPairingJob();
+        stopUpdateJob();
+        stopPanelDiscoveryJob();
     }
 }

@@ -59,9 +59,13 @@ public class NanoleafBindingConstants {
     public static final String API_V1_BASE_URL = "/api/v1";
     public static final String API_GET_CONTROLLER_INFO = "/";
     public static final String API_ADD_USER = "/new";
+    public static final String API_DELETE_USER = "";
     public static final String API_SET_VALUE = "/state";
     public static final String API_SELECT_EFFECT = "/effects";
     public static final String API_RHYTHM_MODE = "/rhythm/rhythmMode";
     public static final String API_MIN_FW_VER = "1.5.0";
 
+    // mDNS discovery service type
+    // see http://forum.nanoleaf.me/docs/openapi#_gf9l5guxt8r0
+    public static final String SERVICE_TYPE = "_nanoleafapi._tcp.local.";
 }

@@ -14,6 +14,7 @@ package org.openhab.binding.nanoleaf.internal.handler;
 
 import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
@@ -22,7 +23,6 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -33,7 +33,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants;
@@ -41,7 +40,6 @@ import org.openhab.binding.nanoleaf.internal.NanoleafException;
 import org.openhab.binding.nanoleaf.internal.NanoleafUnauthorizedException;
 import org.openhab.binding.nanoleaf.internal.OpenAPIUtils;
 import org.openhab.binding.nanoleaf.internal.config.NanoleafControllerConfig;
-import org.openhab.binding.nanoleaf.internal.config.NanoleafPanelConfig;
 import org.openhab.binding.nanoleaf.internal.model.Effects;
 import org.openhab.binding.nanoleaf.internal.model.Write;
 import org.slf4j.Logger;
@@ -69,24 +67,25 @@ public class NanoleafPanelHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("initializing handler for panel {}", getThing().getUID());
+        logger.debug("Initializing handler for panel {}", getThing().getUID());
         updateStatus(ThingStatus.OFFLINE);
         Bridge controller = getBridge();
         if (controller == null) {
-            initializePanel(null, null);
+            initializePanel(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, ""));
+        } else if (controller.getStatus().equals(ThingStatus.OFFLINE)) {
+            initializePanel(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, ""));
         } else {
-            initializePanel(controller.getHandler(), controller.getStatus());
+            initializePanel(controller.getStatusInfo());
         }
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo controllerStatusInfo) {
         logger.debug("Controller status changed to {}", controllerStatusInfo);
-        Bridge controller = getBridge();
-        if (controller == null) {
-            initializePanel(null, controllerStatusInfo.getStatus());
+        if (controllerStatusInfo.getStatus().equals(ThingStatus.OFFLINE)) {
+            initializePanel(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, ""));
         } else {
-            initializePanel(controller.getHandler(), controllerStatusInfo.getStatus());
+            initializePanel(controllerStatusInfo);
         }
     }
 
@@ -109,7 +108,7 @@ public class NanoleafPanelHandler extends BaseThingHandler {
             logger.warn("Authorization for command {} for channelUID {} failed: {}", command, channelUID,
                     nae.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Invalid token. Replace with valid token or start pairing again.");
+                    "@text/error.nanoleaf.controller.invalidToken");
             NanoleafControllerConfig controllerConfig = getConfigAs(NanoleafControllerConfig.class);
             if (StringUtils.isEmpty(controllerConfig.authToken)) {
                 Bridge bridge = getBridge();
@@ -120,64 +119,82 @@ public class NanoleafPanelHandler extends BaseThingHandler {
         } catch (NanoleafException ne) {
             logger.warn("Handling command {} for channelUID {} failed: {}", command, channelUID, ne.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication failed. Please check configuration");
+                    "@text/error.nanoleaf.controller.communication");
         }
     }
 
-    private void initializePanel(ThingHandler controllerHandler, ThingStatus controllerStatus) {
-        if (controllerHandler != null && controllerStatus != null) {
-            updateStatus(controllerStatus);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-        }
-        logger.debug("Panel {} status changed to {}", this.getThing().getUID(), controllerStatus);
+    @Override
+    public void handleRemoval() {
+        logger.debug("Nanoleaf panel {} removed", getThing().getUID());
+        super.handleRemoval();
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("Disposing handler for Nanoleaf panel {}", getThing().getUID());
+        super.dispose();
+    }
+
+    private void initializePanel(ThingStatusInfo panelStatus) {
+        updateStatus(panelStatus.getStatus(), panelStatus.getStatusDetail());
+        logger.debug("Panel {} status changed to {}-{}", this.getThing().getUID(), panelStatus.getStatus(),
+                panelStatus.getStatusDetail());
     }
 
     private void sendRenderedEffectCommand(Command command) throws NanoleafException {
-        Effects effects = new Effects();
-        Write write = new Write();
-        write.setCommand("display");
-        write.setAnimType("static");
-        int red = 0;
-        int green = 0;
-        int blue = 0;
+        PercentType[] rgbPercent = new PercentType[3];
         if (command instanceof HSBType) {
-            red = ((HSBType) command).getRed().intValue();
-            green = ((HSBType) command).getGreen().intValue();
-            blue = ((HSBType) command).getBlue().intValue();
+            rgbPercent = ((HSBType) command).toRGB();
         } else if (command instanceof OnOffType) {
             if (OnOffType.ON.equals(command)) {
-                red = 255;
-                green = 255;
-                blue = 255;
+                rgbPercent[0] = new PercentType(100);
+                rgbPercent[1] = new PercentType(100);
+                rgbPercent[2] = new PercentType(100);
+            } else {
+                rgbPercent[0] = new PercentType(0);
+                rgbPercent[1] = new PercentType(0);
+                rgbPercent[2] = new PercentType(0);
             }
         } else if (command instanceof PercentType) {
-            // handle brightness command - either via color or brightness channel
+            // handle brightness of color channel
             HSBType currentValue = getPanelData(
                     getThing().getConfiguration().get(NanoleafBindingConstants.CONFIG_PANEL_ID).toString());
             if (currentValue != null) {
-                HSBType newValue = new HSBType(currentValue.getHue(), currentValue.getSaturation(),
-                        (PercentType) command);
-                red = newValue.getRed().intValue();
-                green = newValue.getGreen().intValue();
-                blue = newValue.getBlue().intValue();
+                // don't turn off - panel will be white afterwards
+                PercentType brightness = ((PercentType) command).intValue() > 0 ? (PercentType) command
+                        : new PercentType(1);
+                HSBType newValue = new HSBType(currentValue.getHue(), currentValue.getSaturation(), brightness);
+                rgbPercent = newValue.toRGB();
             } else {
                 // do nothing
                 return;
             }
         } else if (command instanceof RefreshType) {
             logger.debug("Refresh command received");
+            return;
         } else {
             logger.warn("Unhandled command type: {}", command.getClass().getName());
             return;
         }
-        String panelID = this.thing.getConfiguration().get(NanoleafPanelConfig.ID).toString();
+
+        int red = rgbPercent[0].toBigDecimal().divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP)
+                .multiply(new BigDecimal(255)).intValue();
+        int green = rgbPercent[1].toBigDecimal().divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP)
+                .multiply(new BigDecimal(255)).intValue();
+        int blue = rgbPercent[2].toBigDecimal().divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP)
+                .multiply(new BigDecimal(255)).intValue();
+
+        Effects effects = new Effects();
+        Write write = new Write();
+        write.setCommand("display");
+        write.setAnimType("static");
+        String panelID = this.thing.getConfiguration().get(NanoleafBindingConstants.CONFIG_PANEL_ID).toString();
         write.setAnimData(String.format("1 %s 1 %d %d %d 0 10", panelID, red, green, blue));
         write.setLoop(false);
         effects.setWrite(write);
         Bridge bridge = getBridge();
         if (bridge != null) {
-            Configuration config = bridge.getConfiguration();
+            NanoleafControllerConfig config = ((NanoleafControllerHandler) bridge.getHandler()).getControllerConfig();
             Request setNewRenderedEffectRequest = OpenAPIUtils.requestBuilder(httpClient, config, API_SELECT_EFFECT,
                     HttpMethod.PUT);
             setNewRenderedEffectRequest.content(new StringContentProvider(gson.toJson(effects)), "application/json");
@@ -194,7 +211,8 @@ public class NanoleafPanelHandler extends BaseThingHandler {
             effects.setWrite(write);
             Bridge bridge = getBridge();
             if (bridge != null) {
-                Configuration config = bridge.getConfiguration();
+                NanoleafControllerConfig config = ((NanoleafControllerHandler) bridge.getHandler())
+                        .getControllerConfig();
                 Request setPanelUpdateRequest = OpenAPIUtils.requestBuilder(httpClient, config, API_SELECT_EFFECT,
                         HttpMethod.PUT);
                 setPanelUpdateRequest.content(new StringContentProvider(gson.toJson(effects)), "application/json");
@@ -218,7 +236,9 @@ public class NanoleafPanelHandler extends BaseThingHandler {
                 }
             }
         } catch (NanoleafException nue) {
-            logger.warn("Panel data could not be retrieved: " + nue.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/error.nanoleaf.panel.communication");
+            logger.warn("Panel data could not be retrieved: {}", nue.getMessage());
         }
         return null;
     }

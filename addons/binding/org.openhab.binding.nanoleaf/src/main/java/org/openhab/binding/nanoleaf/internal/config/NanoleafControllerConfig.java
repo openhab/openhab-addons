@@ -31,7 +31,4 @@ public class NanoleafControllerConfig {
     /** Light panels status refresh interval */
     public static final String REFRESH_INTERVAL = "refreshInterval";
     public int refreshInterval;
-    /** Enable or disable individual panel discovery */
-    public static final String DISCOVER_PANELS = "discoverPanels";
-    public Boolean discoverPanels;
 }

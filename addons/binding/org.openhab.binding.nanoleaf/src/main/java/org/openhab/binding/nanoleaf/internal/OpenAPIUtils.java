@@ -28,7 +28,6 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.openhab.binding.nanoleaf.internal.config.NanoleafControllerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,20 +41,25 @@ public class OpenAPIUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(OpenAPIUtils.class);
 
-    public static Request requestBuilder(HttpClient httpClient, Configuration controllerConfig, String apiOperation,
-            HttpMethod method) throws NanoleafException, NanoleafUnauthorizedException {
+    // Regular expression for firmware version
+    private static final Pattern FIRMWARE_VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)");
+
+    private static final int[] requiredVer = getFirmwareVersionNumbers(NanoleafBindingConstants.API_MIN_FW_VER);
+
+    public static Request requestBuilder(HttpClient httpClient, NanoleafControllerConfig controllerConfig,
+            String apiOperation, HttpMethod method) throws NanoleafException, NanoleafUnauthorizedException {
         String path;
 
         // get network settings from configuration
-        String address = controllerConfig.get(NanoleafControllerConfig.ADDRESS).toString();
-        int port = Integer.parseInt(controllerConfig.get(NanoleafControllerConfig.PORT).toString());
+        String address = controllerConfig.address;
+        int port = controllerConfig.port;
 
         if (apiOperation.equals(API_ADD_USER)) {
             path = String.format("%s%s", API_V1_BASE_URL, apiOperation);
         } else {
-            Object authToken = controllerConfig.get(NanoleafControllerConfig.AUTH_TOKEN);
+            String authToken = controllerConfig.authToken;
             if (authToken != null) {
-                path = String.format("%s/%s%s", API_V1_BASE_URL, authToken.toString(), apiOperation);
+                path = String.format("%s/%s%s", API_V1_BASE_URL, authToken, apiOperation);
             } else {
                 throw new NanoleafUnauthorizedException("No authentication token found in configuration");
             }
@@ -74,7 +78,9 @@ public class OpenAPIUtils {
             throws NanoleafException, NanoleafUnauthorizedException {
         try {
             ContentResponse openAPIResponse = request.send();
-            logger.trace("API response from Nanoleaf controller: {}", openAPIResponse.getContentAsString());
+            if (logger.isTraceEnabled()) {
+                logger.trace("API response from Nanoleaf controller: {}", openAPIResponse.getContentAsString());
+            }
             logger.debug("API response code: {}", openAPIResponse.getStatus());
             int responseStatus = openAPIResponse.getStatus();
             if (responseStatus == HttpStatus.OK_200 || responseStatus == HttpStatus.NO_CONTENT_204) {
@@ -102,7 +108,6 @@ public class OpenAPIUtils {
 
     public static boolean checkRequiredFirmware(String currentFirmwareVersion) {
         int[] currentVer = getFirmwareVersionNumbers(currentFirmwareVersion);
-        int[] requiredVer = getFirmwareVersionNumbers(NanoleafBindingConstants.API_MIN_FW_VER);
 
         for (int i = 0; i < currentVer.length; i++) {
             if (currentVer[i] != requiredVer[i]) {
@@ -113,7 +118,7 @@ public class OpenAPIUtils {
     }
 
     private static int[] getFirmwareVersionNumbers(String firmwareVersion) throws IllegalArgumentException {
-        Matcher m = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)?").matcher(firmwareVersion);
+        Matcher m = FIRMWARE_VERSION_PATTERN.matcher(firmwareVersion);
         if (!m.matches()) {
             throw new IllegalArgumentException("Malformed controller firmware version");
         }

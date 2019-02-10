@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Represents color temperature of the light panels
  *
@@ -22,14 +19,8 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Ct implements IntegerState {
 
-    @SerializedName("value")
-    @Expose
     private Integer value;
-    @SerializedName("max")
-    @Expose
     private Integer max;
-    @SerializedName("min")
-    @Expose
     private Integer min;
 
     @Override

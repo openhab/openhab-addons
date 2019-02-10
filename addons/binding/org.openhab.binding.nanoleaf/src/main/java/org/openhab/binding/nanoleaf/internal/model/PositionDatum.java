@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -22,18 +21,13 @@ import com.google.gson.annotations.SerializedName;
  */
 public class PositionDatum {
 
-    @SerializedName("panelId")
-    @Expose
     private Integer panelId;
     @SerializedName("x")
-    @Expose
-    private Integer x;
+    private Integer posX;
     @SerializedName("y")
-    @Expose
-    private Integer y;
+    private Integer posY;
     @SerializedName("o")
-    @Expose
-    private Integer o;
+    private Integer orientation;
 
     public Integer getPanelId() {
         return panelId;
@@ -43,28 +37,28 @@ public class PositionDatum {
         this.panelId = panelId;
     }
 
-    public Integer getX() {
-        return x;
+    public Integer getPosX() {
+        return posX;
     }
 
-    public void setX(Integer x) {
-        this.x = x;
+    public void setPosX(Integer x) {
+        this.posX = x;
     }
 
-    public Integer getY() {
-        return y;
+    public Integer getPosY() {
+        return posY;
     }
 
-    public void setY(Integer y) {
-        this.y = y;
+    public void setPosY(Integer y) {
+        this.posY = y;
     }
 
-    public Integer getO() {
-        return o;
+    public Integer getOrientation() {
+        return orientation;
     }
 
-    public void setO(Integer o) {
-        this.o = o;
+    public void setOrientation(Integer o) {
+        this.orientation = o;
     }
 
 }

@@ -25,11 +25,6 @@
 				<description>@text/thing-type.config.nanoleaf.controller.refreshInterval.description</description>
 				<default>60</default>
 			</parameter>
-			<parameter name="discoverPanels" type="boolean">
-				<label>@text/thing-type.config.nanoleaf.controller.discoverPanels.label</label>
-				<description>@text/thing-type.config.nanoleaf.controller.discoverPanels.description</description>
-				<default>false</default>
-			</parameter>
 	</config-description>
 	
 	<config-description uri="thing-type:nanoleaf:lightpanel">

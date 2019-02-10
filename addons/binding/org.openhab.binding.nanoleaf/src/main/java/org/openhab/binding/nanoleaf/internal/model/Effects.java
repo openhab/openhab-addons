@@ -14,9 +14,6 @@ package org.openhab.binding.nanoleaf.internal.model;
 
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Represents effect commands for select and write
  *
@@ -24,14 +21,8 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Effects {
 
-    @SerializedName("select")
-    @Expose
     private String select;
-    @SerializedName("effectsList")
-    @Expose
     private List<String> effectsList = null;
-    @SerializedName("write")
-    @Expose
     private Write write;
 
     public String getSelect() {

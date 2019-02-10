@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Represents color palette in the write command
  *
@@ -22,14 +19,8 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Palette {
 
-    @SerializedName("hue")
-    @Expose
     private Integer hue;
-    @SerializedName("saturation")
-    @Expose
     private Integer saturation;
-    @SerializedName("brightness")
-    @Expose
     private Integer brightness;
 
     public Integer getHue() {

@@ -63,21 +63,21 @@
 		<label>@text/channel-type.nanoleaf.brightness.label</label>		
 		<description>@text/channel-type.nanoleaf.brightness.description</description>
 		<category>Light</category>
-		<state min="0" max="100" step="1" readOnly="false" />
+		<state min="0" max="100" step="1" />
 	</channel-type>
 	
 	<channel-type id="hue">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.nanoleaf.hue.label</label>
 		<description>@text/channel-type.nanoleaf.hue.description</description>
-		<state min="0" max="360" step="1" readOnly="false" />
+		<state min="0" max="360" step="1" />
 	</channel-type>
 
 	<channel-type id="saturation">
 		<item-type>Dimmer</item-type>
 		<label>@text/channel-type.nanoleaf.saturation.label</label>
 		<description>@text/channel-type.nanoleaf.saturation.description</description>
-		<state min="0" max="100" step="1" readOnly="false" />
+		<state min="0" max="100" step="1" />
 	</channel-type>
 	
 	<channel-type id="colorTemperature">
@@ -85,7 +85,7 @@
 		<label>@text/channel-type.nanoleaf.colorTemperature.label</label>
 		<description>@text/channel-type.nanoleaf.colorTemperature.description</description>
 		<category>ColorLight</category>
-		<state min="1200" max="6500" step="100" readOnly="false" />
+		<state min="1200" max="6500" step="100" />
 	</channel-type>	
 	
 	<channel-type id="colorMode">
@@ -94,9 +94,9 @@
 		<description>@text/channel-type.nanoleaf.colorMode.description</description>
 		<state readOnly="true" >
 			<options>
-					<option value="effect">Effect mode</option>
-					<option value="hs">Hue/Saturation</option>
-					<option value="ct">Color temperature</option>
+				<option value="effect">Effect mode</option>
+				<option value="hs">Hue/Saturation</option>
+				<option value="ct">Color temperature</option>
 			</options>
 		</state>
 	</channel-type>  
@@ -105,14 +105,12 @@
 		<item-type>Color</item-type>
 		<label>@text/channel-type.nanoleaf.color.label</label>
 		<description>@text/Color of the Light Panels</description>
-		<state readOnly="false"/>
 	</channel-type>
 	
 	<channel-type id="effect">
 		<item-type>String</item-type>
 		<label>@text/channel-type.nanoleaf.effect.label</label>
 		<description>@text/channel-type.nanoleaf.effect.description</description>
-		<state readOnly="false" />
 	</channel-type>
 	
 	<channel-type id="rhythmState">
@@ -133,7 +131,7 @@
 		<item-type>Number</item-type>
 		<label>@text/channel-type.nanoleaf.rhythmMode.label</label>
 		<description>@text/channel-type.nanoleaf.rhythmMode.description</description>
-		<state min="0" max="1" readOnly="false">
+		<state min="0" max="1">
 			<options>
 				<option value="0">Microphone</option>
 				<option value="1">Aux cable</option>

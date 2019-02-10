@@ -14,9 +14,6 @@ package org.openhab.binding.nanoleaf.internal.model;
 
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Represents layout of the light panels
  *
@@ -24,14 +21,8 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Layout {
 
-    @SerializedName("numPanels")
-    @Expose
     private Integer numPanels;
-    @SerializedName("sideLength")
-    @Expose
     private Integer sideLength;
-    @SerializedName("positionData")
-    @Expose
     private List<PositionDatum> positionData = null;
 
     public Integer getNumPanels() {

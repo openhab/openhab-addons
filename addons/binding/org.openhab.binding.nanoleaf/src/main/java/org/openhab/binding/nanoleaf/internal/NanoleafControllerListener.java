@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.nanoleaf.internal;
 
-import java.util.Map;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.nanoleaf.internal.model.ControllerInfo;
 
@@ -23,14 +22,8 @@ import org.openhab.binding.nanoleaf.internal.model.ControllerInfo;
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public interface NanoleafControllerListener {
-
-    /**
-     * Controller configuration.
-     *
-     * @param controllerInfo the light panels configuration
-     */
-    public void applyConfig(Map<String, Object> configProperties);
 
     /**
      * This method is called after the bridge thing handler fetched the controller info
@@ -38,5 +31,5 @@ public interface NanoleafControllerListener {
      * @param bridge         the Nanoleaf controller.
      * @param controllerInfo the controller data with panel information
      */
-    public void onControllerInfoFetched(ThingUID bridge, ControllerInfo controllerInfo);
+    void onControllerInfoFetched(ThingUID bridge, ControllerInfo controllerInfo);
 }

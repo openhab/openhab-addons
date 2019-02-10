@@ -79,8 +79,6 @@ public class NanoleafHandlerFactory extends BaseThingHandlerFactory {
             NanoleafPanelHandler handler = new NanoleafPanelHandler(thing, httpClient);
             logger.debug("Nanoleaf panel handler created.");
             return handler;
-        } else {
-            logger.error("ThingHandler not found for {}", thingTypeUID);
         }
         return null;
     }
@@ -104,7 +102,6 @@ public class NanoleafHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void registerDiscoveryService(NanoleafControllerHandler bridgeHandler) {
         NanoleafPanelsDiscoveryService discoveryService = new NanoleafPanelsDiscoveryService(bridgeHandler);
-        discoveryService.activate(null);
         discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
         logger.debug("Discovery service for panels registered.");
@@ -113,13 +110,7 @@ public class NanoleafHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void unregisterDiscoveryService(Thing thing) {
         ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thing.getUID());
         if (serviceReg != null) {
-            // remove discovery service, if bridge handler is removed
-            NanoleafPanelsDiscoveryService service = (NanoleafPanelsDiscoveryService) bundleContext
-                    .getService(serviceReg.getReference());
             serviceReg.unregister();
-            if (service != null) {
-                service.deactivate();
-            }
             logger.debug("Discovery service for panels removed.");
         }
     }

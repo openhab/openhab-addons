@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Represents rhythm module settings
  *
@@ -22,29 +19,13 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Rhythm {
 
-    @SerializedName("rhythmConnected")
-    @Expose
     private Boolean rhythmConnected;
-    @SerializedName("rhythmActive")
-    @Expose
     private Boolean rhythmActive;
-    @SerializedName("rhythmId")
-    @Expose
     private Integer rhythmId;
-    @SerializedName("hardwareVersion")
-    @Expose
     private String hardwareVersion;
-    @SerializedName("firmwareVersion")
-    @Expose
     private String firmwareVersion;
-    @SerializedName("auxAvailable")
-    @Expose
     private Boolean auxAvailable;
-    @SerializedName("rhythmMode")
-    @Expose
     private Integer rhythmMode;
-    @SerializedName("rhythmPos")
-    @Expose
     private RhythmPos rhythmPos;
 
     public Boolean getRhythmConnected() {

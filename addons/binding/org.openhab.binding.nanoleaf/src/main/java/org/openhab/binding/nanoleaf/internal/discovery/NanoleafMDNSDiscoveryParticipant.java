@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants;
@@ -39,13 +40,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin Raepple - Initial contribution
  */
-
 @Component(immediate = true, configurationPid = "discovery.nanoleaf")
 @NonNullByDefault
 public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
-
-    // see http://forum.nanoleaf.me/docs/openapi#_gf9l5guxt8r0
-    private static final String SERVICE_TYPE = "_nanoleafapi._tcp.local.";
 
     private final Logger logger = LoggerFactory.getLogger(NanoleafMDNSDiscoveryParticipant.class);
 
@@ -71,19 +68,20 @@ public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
         int port = service.getPort();
         properties.put(CONFIG_PORT, port);
         String firmwareVersion = service.getPropertyString("srcvers");
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
+        properties.put(Thing.PROPERTY_MODEL_ID, service.getPropertyString("md"));
+        properties.put(Thing.PROPERTY_VENDOR, "Nanoleaf");
 
-        logger.debug("Nanoleaf controller with FW version {} found at {} {}", firmwareVersion, host, port);
-
-        if (OpenAPIUtils.checkRequiredFirmware(firmwareVersion)) {
-            final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withThingType(getThingType(service))
-                    .withProperties(properties).withLabel("Nanoleaf Controller").build();
-            logger.debug("Nanoleaf controller added to inbox: {} at {}", uid.getId(), host);
-            return result;
-        } else {
-            logger.error("Nanoleaf controller firmware is too old: {}. Must be equal or higher than {}",
-                    firmwareVersion, NanoleafBindingConstants.API_MIN_FW_VER);
-            return null;
+        logger.debug("Adding Nanoleaf controller with FW version {} found at {} {} to inbox", firmwareVersion, host,
+                port);
+        if (!OpenAPIUtils.checkRequiredFirmware(firmwareVersion)) {
+            logger.warn("Nanoleaf controller firmware is too old. Must be {} or higher",
+                    NanoleafBindingConstants.API_MIN_FW_VER);
         }
+        final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withThingType(getThingType(service))
+                .withProperties(properties).withLabel(service.getName()).withRepresentationProperty(CONFIG_ADDRESS)
+                .build();
+        return result;
     }
 
     @Override

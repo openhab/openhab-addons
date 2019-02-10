@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -22,23 +21,13 @@ import com.google.gson.annotations.SerializedName;
  */
 public class State {
 
-    @SerializedName("on")
-    @Expose
     private On on;
-    @SerializedName("brightness")
-    @Expose
     private Brightness brightness;
-    @SerializedName("hue")
-    @Expose
     private Hue hue;
     @SerializedName("sat")
-    @Expose
-    private Sat sat;
+    private Sat saturation;
     @SerializedName("ct")
-    @Expose
-    private Ct ct;
-    @SerializedName("colorMode")
-    @Expose
+    private Ct colorTemperature;
     private String colorMode;
 
     public On getOn() {
@@ -65,20 +54,20 @@ public class State {
         this.hue = hue;
     }
 
-    public Sat getSat() {
-        return sat;
+    public Sat getSaturation() {
+        return saturation;
     }
 
-    public void setSat(Sat sat) {
-        this.sat = sat;
+    public void setSaturation(Sat sat) {
+        this.saturation = sat;
     }
 
-    public Ct getCt() {
-        return ct;
+    public Ct getColorTemperature() {
+        return colorTemperature;
     }
 
-    public void setCt(Ct ct) {
-        this.ct = ct;
+    public void setColorTemperature(Ct ct) {
+        this.colorTemperature = ct;
     }
 
     public String getColorMode() {
@@ -95,9 +84,9 @@ public class State {
         } else if (value instanceof Hue) {
             this.setHue((Hue) value);
         } else if (value instanceof Sat) {
-            this.setSat((Sat) value);
+            this.setSaturation((Sat) value);
         } else if (value instanceof Ct) {
-            this.setCt((Ct) value);
+            this.setColorTemperature((Ct) value);
         }
     }
 
