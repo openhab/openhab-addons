@@ -103,29 +103,32 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Michael Helm (bernd.helm at helmundwalter.de) - Exclusive mode
  */
 public class MaxCubeBridgeHandler extends BaseBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(MaxCubeBridgeHandler.class);
+
+    private enum BackupState {
+        NO_BACKUP,
+        REQUESTED,
+        IN_PROGRESS
+    }
 
     /** timeout on network connection **/
     private static final int NETWORK_TIMEOUT = 10000;
+    /** MAX! Thermostat default off temperature */
+    private static final double DEFAULT_OFF_TEMPERATURE = 4.5;
+    /** MAX! Thermostat default on temperature */
+    private static final double DEFAULT_ON_TEMPERATURE = 30.5;
+    /** maximum queue size that we're allowing */
+    private static final int MAX_COMMANDS = 50;
+    private static final int MAX_DUTY_CYCLE = 80;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmm");
 
+    private final Logger logger = LoggerFactory.getLogger(MaxCubeBridgeHandler.class);
     private final List<Device> devices = new ArrayList<>();
     private List<RoomInformation> rooms;
     private final Set<String> lastActiveDevices = new HashSet<>();
-
-    /** MAX! Thermostat default off temperature */
-    private static final double DEFAULT_OFF_TEMPERATURE = 4.5;
-
-    /** MAX! Thermostat default on temperature */
-    private static final double DEFAULT_ON_TEMPERATURE = 30.5;
-
     private final List<DeviceConfiguration> configurations = new ArrayList<>();
-
-    /** maximum queue size that we're allowing */
-    private static final int MAX_COMMANDS = 50;
     private final BlockingQueue<SendCommand> commandQueue = new ArrayBlockingQueue<>(MAX_COMMANDS);
 
     private SendCommand lastCommandId;
-
     private long refreshInterval = 30;
     private String ipAddress;
     private int port;
@@ -138,8 +141,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     private boolean roomPropertiesSet;
 
     private final MessageProcessor messageProcessor = new MessageProcessor();
-
-    private static final int MAX_DUTY_CYCLE = 80;
     private final ReentrantLock dutyCycleLock = new ReentrantLock();
     private final Condition excessDutyCycle = dutyCycleLock.newCondition();
 
@@ -165,16 +166,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     private final Set<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArraySet<>();
 
     private ScheduledFuture<?> pollingJob;
-
     private Thread queueConsumerThread;
-
-    private enum backupState {
-        NO_BACKUP,
-        REQUESTED,
-        INPROGRESS
-    }
-
-    private backupState backup = backupState.REQUESTED;
+    private BackupState backup = BackupState.REQUESTED;
     private MaxBackupUtils backupUtil;
 
     public MaxCubeBridgeHandler(Bridge br) {
@@ -627,7 +620,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         while (cont) {
             String raw = reader.readLine();
             if (raw != null) {
-                if (!backup.equals(backupState.NO_BACKUP)) {
+                if (backup != BackupState.NO_BACKUP) {
                     backupUtil.buildBackup(raw);
                 }
                 logger.trace("message block: '{}'", raw);
@@ -685,15 +678,15 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 break;
             case H:
                 processHMessage((HMessage) message);
-                if (backup.equals(backupState.REQUESTED)) {
-                    backup = backupState.INPROGRESS;
+                if (backup == BackupState.REQUESTED) {
+                    backup = BackupState.IN_PROGRESS;
                 }
                 break;
             case L:
                 ((LMessage) message).updateDevices(devices, configurations);
                 logger.trace("{} devices found.", devices.size());
-                if (backup.equals(backupState.INPROGRESS)) {
-                    backup = backupState.NO_BACKUP;
+                if (backup == BackupState.IN_PROGRESS) {
+                    backup = BackupState.NO_BACKUP;
                 }
                 break;
             case M:
@@ -1016,10 +1009,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     }
 
     public void backup() {
-            this.backup = backupState.REQUESTED;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmm");
-            this.backupUtil = new MaxBackupUtils(
-                    new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(formatter));
-            socketClose();
+        this.backup = BackupState.REQUESTED;
+        this.backupUtil = new MaxBackupUtils(
+                new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(formatter));
+        socketClose();
     }
 }
