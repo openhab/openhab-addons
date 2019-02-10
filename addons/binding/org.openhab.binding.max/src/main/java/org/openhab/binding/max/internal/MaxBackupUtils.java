@@ -32,11 +32,11 @@ public class MaxBackupUtils {
     private final Logger logger = LoggerFactory.getLogger(MaxBackupUtils.class);
     private static final String BACKUP_PATH = "max";
 
-    private String dbFolderName = "";
+    private final String dbFolderName;
+    private final String backupId;
     private boolean inProgress = false;
     private StringBuilder msg;
     private String cube;
-    private String backupId = "";
 
     public MaxBackupUtils(String backupId) {
         this.backupId = backupId;
@@ -69,10 +69,10 @@ public class MaxBackupUtils {
     }
 
     private void saveMsg(String data, String cube) {
-        File dataFile = new File(dbFolderName + File.separator + backupId + "-backup-" + cube + ".txt");
+        File dataFile = new File(dbFolderName + File.separator + "backup-" + backupId + "-" + cube + ".txt");
         try (FileWriter writer = new FileWriter(dataFile)) {
             writer.write(data);
-            logger.debug("MAX! backup saved to " + dataFile.getAbsolutePath());
+            logger.debug("MAX! backup saved to {}", dataFile.getAbsolutePath());
         } catch (IOException e) {
             logger.warn("MAX! Failed to write backup file '{}': {}", dataFile.getName(), e.getMessage());
         }

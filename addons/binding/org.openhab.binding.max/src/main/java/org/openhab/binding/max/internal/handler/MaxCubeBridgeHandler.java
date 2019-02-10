@@ -168,8 +168,14 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     private Thread queueConsumerThread;
 
-    private int backup = 1;
-    private MaxBackupUtils bk;
+    private enum backupState {
+        NO_BACKUP,
+        REQUESTED,
+        INPROGRESS
+    }
+
+    private backupState backup = backupState.REQUESTED;
+    private MaxBackupUtils backupUtil;
 
     public MaxCubeBridgeHandler(Bridge br) {
         super(br);
@@ -219,7 +225,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         logger.debug("Max Requests    {}.", maxRequestsPerConnection);
 
         previousOnline = true; // To trigger offline in case no connection @ startup
-        bk = new MaxBackupUtils();
+        backupUtil = new MaxBackupUtils();
         startAutomaticRefresh();
     }
 
@@ -292,9 +298,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     public void cubeReboot() {
         logger.info("Rebooting MAX! Cube {}", getThing().getUID());
         MaxCubeBridgeConfiguration maxConfiguration = getConfigAs(MaxCubeBridgeConfiguration.class);
-        UdpCubeCommand reset = new UdpCubeCommand(UdpCubeCommand.UdpCommandType.REBOOT, maxConfiguration.serialNumber);
-        reset.setIpAddress(maxConfiguration.ipAddress);
-        reset.send();
+        UdpCubeCommand reboot = new UdpCubeCommand(UdpCubeCommand.UdpCommandType.REBOOT, maxConfiguration.serialNumber);
+        reboot.setIpAddress(maxConfiguration.ipAddress);
+        reboot.send();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Rebooting");
     }
 
@@ -621,8 +627,8 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         while (cont) {
             String raw = reader.readLine();
             if (raw != null) {
-                if (backup > 0) {
-                    bk.buildMsg(raw);
+                if (!backup.equals(backupState.NO_BACKUP)) {
+                    backupUtil.buildMsg(raw);
                 }
                 logger.trace("message block: '{}'", raw);
                 try {
@@ -679,14 +685,16 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 break;
             case H:
                 processHMessage((HMessage) message);
-                if (backup == 1) {
-                    backup++;
+                if (backup.equals(backupState.REQUESTED)) {
+                    backup = backupState.INPROGRESS;
                 }
                 break;
             case L:
                 ((LMessage) message).updateDevices(devices, configurations);
                 logger.trace("{} devices found.", devices.size());
-                backup = (backup == 2) ? 0 : backup; // backup = finished
+                if (backup.equals(backupState.INPROGRESS)) {
+                    backup = backupState.NO_BACKUP;
+                }
                 break;
             case M:
                 processMMessage((MMessage) message);
@@ -1008,14 +1016,10 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     }
 
     public void backup() {
-        if (this.backup != 2) {
-            this.backup = 1;
+            this.backup = backupState.REQUESTED;
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmm");
-            this.bk = new MaxBackupUtils(
+            this.backupUtil = new MaxBackupUtils(
                     new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(formatter));
             socketClose();
-        } else {
-            logger.info("MAX backup for {} already in progress..", getThing().getUID().toString());
-        }
     }
 }

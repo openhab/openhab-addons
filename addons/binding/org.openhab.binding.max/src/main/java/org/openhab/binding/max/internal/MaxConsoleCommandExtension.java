@@ -52,30 +52,13 @@ public class MaxConsoleCommandExtension extends AbstractConsoleCommandExtension 
         if (args.length > 0) {
             switch (args[0]) {
                 case SUBCMD_BACKUP:
-                    for (Thing thing : findDevices(CUBEBRIDGE_THING_TYPE)) {
-                        MaxCubeBridgeHandler handler = getHandler(thing.getUID().toString());
-                        if (handler != null) {
-                            handler.backup();
-                            console.println("Creating backup for " + thing.getUID().toString());
-                        }
-                    }
+                    handleBackup(console);
                     break;
                 case SUBCMD_REBOOT:
-                    if (args.length > 1) {
-                        MaxCubeBridgeHandler handler = getHandler(args[1]);
-                        if (handler != null) {
-                            handler.cubeReboot();
-                        } else {
-                            console.println("Could not find cube " + args[1]);
-                            printMaxDevices(console, SUPPORTED_BRIDGE_THING_TYPES_UIDS);
-                        }
-                    } else {
-                        console.println("Specify cube to reboot.");
-                        printMaxDevices(console, SUPPORTED_BRIDGE_THING_TYPES_UIDS);
-                    }
+                    handleReboot(args, console);
                     break;
                 default:
-                    console.println("Unknown MAX! sub command '" + args[1] + "'");
+                    console.println(String.format("Unknown MAX! sub command '%s'", args[0]));
                     printUsage(console);
                     break;
             }
@@ -85,10 +68,35 @@ public class MaxConsoleCommandExtension extends AbstractConsoleCommandExtension 
         }
     }
 
-    private List<Thing> findDevices(ThingTypeUID type) {
+    private void handleBackup(Console console) {
+        for (Thing thing : findDevices(SUPPORTED_BRIDGE_THING_TYPES_UIDS)) {
+            MaxCubeBridgeHandler handler = getHandler(thing.getUID().toString());
+            if (handler != null) {
+                handler.backup();
+                console.println(String.format("Creating backup for %s", thing.getUID().toString()));
+            }
+        }
+    }
+
+    private void handleReboot(String[] args, Console console) {
+        if (args.length > 1) {
+            MaxCubeBridgeHandler handler = getHandler(args[1]);
+            if (handler != null) {
+                handler.cubeReboot();
+            } else {
+                console.println(String.format("Could not find cube %s", args[1]));
+                printMaxDevices(console, SUPPORTED_BRIDGE_THING_TYPES_UIDS);
+            }
+        } else {
+            console.println("Specify cube to reboot.");
+            printMaxDevices(console, SUPPORTED_BRIDGE_THING_TYPES_UIDS);
+        }
+    }
+
+    private List<Thing> findDevices(Set<ThingTypeUID> deviceTypes) {
         List<Thing> devs = new ArrayList<Thing>();
         for (Thing thing : thingRegistry.getAll()) {
-            if (thing.getThingTypeUID().equals(type)) {
+            if (deviceTypes.contains(thing.getThingTypeUID())) {
                 devs.add(thing);
             }
         }
@@ -112,11 +120,9 @@ public class MaxConsoleCommandExtension extends AbstractConsoleCommandExtension 
 
     private void printMaxDevices(Console console, Set<ThingTypeUID> deviceTypes) {
         console.println("Known MAX! devices: ");
-        for (ThingTypeUID type : deviceTypes) {
-            for (Thing thing : findDevices(type)) {
-                console.println("MAX! " + thing.getThingTypeUID().getId() + " device: " + thing.getUID().toString()
-                        + ((thing.getHandler() != null) ? "" : " (without handler)"));
-            }
+        for (Thing thing : findDevices(deviceTypes)) {
+            console.println(String.format("MAX! %s device: %s%s", thing.getThingTypeUID().getId(),
+                    thing.getUID().toString(), ((thing.getHandler() != null) ? "" : " (without handler)")));
         }
     }
 
