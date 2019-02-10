@@ -15,7 +15,7 @@ https://github.com/openhab/openhab2-addons
 == Third-party Content
 
 oshi-core
-* License: EPL 1.0 License
+* License: MIT License
 * Project: https://github.com/oshi/oshi
 * Source:  https://github.com/oshi/oshi
 
@@ -23,8 +23,3 @@ jna
 * License: Apache 2.0 License
 * Project: https://github.com/java-native-access/jna
 * Source:  https://github.com/java-native-access/jna
-
-threetenbp
-* License: BSD 3-clause License
-* Project: http://www.threeten.org/threetenbp
-* Source:  https://github.com/ThreeTen/threetenbp
