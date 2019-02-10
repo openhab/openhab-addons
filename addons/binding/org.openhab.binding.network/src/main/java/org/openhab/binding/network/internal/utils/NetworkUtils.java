@@ -32,7 +32,6 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -54,8 +53,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NetworkUtils {
     private final Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
-    private static final Pattern IP4_ADDRESS = Pattern
-            .compile("^(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})\\/(\\d+)$");
 
     /**
      * Gets every IPv4 Address on each Interface except the loopback
