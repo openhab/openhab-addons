@@ -34,17 +34,12 @@ import org.openhab.binding.satel.internal.types.ZoneState;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
-public class SatelZoneHandler extends SatelStateThingHandler {
+public class SatelZoneHandler extends WirelessChannelsHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ZONE);
 
     public SatelZoneHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    protected StateType getStateType(String channelId) {
-        return ZoneState.valueOf(channelId.toUpperCase());
     }
 
     @Override
@@ -73,6 +68,15 @@ public class SatelZoneHandler extends SatelStateThingHandler {
         }
 
         return null;
+    }
+
+    @Override
+    protected StateType getStateType(String channelId) {
+        StateType result = super.getStateType(channelId);
+        if (result == null) {
+            result = ZoneState.valueOf(channelId.toUpperCase());
+        }
+        return result;
     }
 
 }

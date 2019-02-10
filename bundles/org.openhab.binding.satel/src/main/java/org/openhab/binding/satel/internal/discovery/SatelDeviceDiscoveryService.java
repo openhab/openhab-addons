@@ -74,6 +74,12 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
             }
         }
         if (!scanStopped) {
+            scanForDevices(DeviceType.KEYPAD, 8);
+        }
+        if (!scanStopped) {
+            scanForDevices(DeviceType.EXPANDER, 64);
+        }
+        if (!scanStopped) {
             scanForDevices(DeviceType.PARTITION_WITH_OBJECT, bridgeHandler.getIntegraType().getPartitions());
         }
         if (!scanStopped) {
@@ -98,8 +104,9 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
             if (bridgeHandler.sendCommand(cmd, false)) {
                 String name = cmd.getName(bridgeHandler.getEncoding());
                 int deviceKind = cmd.getDeviceKind();
-                logger.debug("Found device: type={}, id={}, name={}, kind/function={}", deviceType.name(), i, name,
-                        deviceKind);
+                int info = cmd.getAdditionalInfo();
+                logger.debug("Found device: type={}, id={}, name={}, kind/function={}, info={}", deviceType.name(), i,
+                        name, deviceKind, info);
                 if (isDeviceAvailable(deviceType, deviceKind)) {
                     addDevice(deviceType, deviceKind, i, name);
                 }

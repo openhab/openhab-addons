@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link SatelBindingConstants} class defines common constants, which are
@@ -51,6 +52,10 @@ public class SatelBindingConstants {
     // Virtual devices
     public static final Set<ThingTypeUID> VIRTUAL_THING_TYPES_UIDS = Stream.of(THING_TYPE_SYSTEM, THING_TYPE_EVENTLOG)
             .collect(Collectors.toSet());
+
+    // Channel types
+    public static final ChannelTypeUID CHANNEL_TYPE_LOBATT = new ChannelTypeUID("system", "low-battery");
+    public static final ChannelTypeUID CHANNEL_TYPE_NOCOMM = new ChannelTypeUID(BINDING_ID, "device_nocomm");
 
     // List of all Channel ids except those covered by state enums
     public static final String CHANNEL_SHUTTER_STATE = "shutter_state";

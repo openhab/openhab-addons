@@ -86,14 +86,20 @@ public abstract class SatelStateThingHandler extends SatelThingHandler {
             }
             for (Channel channel : getThing().getChannels()) {
                 ChannelUID channelUID = channel.getUID();
-                StateType stateType = getStateType(channelUID.getId());
-                if (stateType != null && stateEvent.hasDataForState(stateType)) {
-                    int bitNbr = thingConfig.getId() - 1;
-                    boolean invertState = thingConfig.isStateInverted();
-                    updateSwitch(channelUID, stateEvent.isSet(stateType, bitNbr) ^ invertState);
+                if (isLinked(channel.getUID())) {
+                    StateType stateType = getStateType(channelUID.getId());
+                    if (stateType != null && stateEvent.hasDataForState(stateType)) {
+                        int bitNbr = getStateBitNbr(stateType);
+                        boolean invertState = thingConfig.isStateInverted();
+                        updateSwitch(channelUID, stateEvent.isSet(stateType, bitNbr) ^ invertState);
+                    }
                 }
             }
         }
+    }
+
+    protected int getStateBitNbr(StateType stateType) {
+        return thingConfig.getId() - 1;
     }
 
     protected abstract SatelCommand convertCommand(ChannelUID channel, Command command);
@@ -113,8 +119,8 @@ public abstract class SatelStateThingHandler extends SatelThingHandler {
         Collection<SatelCommand> result = new LinkedList<>();
         boolean forceRefresh = requiresRefresh();
         for (Channel channel : getThing().getChannels()) {
-            if (isLinked(channel.getUID().getId())) {
-                StateType stateType = getStateType(channel.getUID().getId());
+            StateType stateType = getStateType(channel.getUID().getId());
+            if (stateType != null && isLinked(channel.getUID())) {
                 if (forceRefresh || event.isNew(stateType.getRefreshCommand())) {
                     result.add(new IntegraStateCommand(stateType, bridgeHandler.getIntegraType().hasExtPayload()));
                 }

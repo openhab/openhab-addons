@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="satel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="satel"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -39,6 +40,10 @@
 			<parameter name="invertState" type="boolean" required="false">
 				<label>Invert state</label>
 				<description>Changes active (ON) state to 0</description>
+			</parameter>
+			<parameter name="wireless" type="boolean" required="false">
+				<label>Wireless zone</label>
+				<description>This zone is monitored by a wireless detector like APD-100, AFD-100, etc</description>
 			</parameter>
 		</config-description>
 
