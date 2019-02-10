@@ -58,7 +58,7 @@ public class UdpCubeCommand {
 
     /**
      * UDP command types
-     * RESET - R Reboot
+     * REBOOT - R Reboot
      * DISCOVERY - I Identify
      * NETWORK - N Get network address
      * URL - h get URL information

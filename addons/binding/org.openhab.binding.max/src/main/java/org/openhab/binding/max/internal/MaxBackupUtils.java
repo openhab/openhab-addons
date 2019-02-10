@@ -51,7 +51,7 @@ public class MaxBackupUtils {
         this("auto" + new SimpleDateFormat("MM").format(Calendar.getInstance().getTime()));
     }
 
-    public void buildMsg(String msgLine) {
+    public void buildBackup(String msgLine) {
         if (msgLine.startsWith("H:")) {
             msg = new StringBuilder();
             cube = msgLine.substring(2).split(",")[0];

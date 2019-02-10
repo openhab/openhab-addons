@@ -628,7 +628,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             String raw = reader.readLine();
             if (raw != null) {
                 if (!backup.equals(backupState.NO_BACKUP)) {
-                    backupUtil.buildMsg(raw);
+                    backupUtil.buildBackup(raw);
                 }
                 logger.trace("message block: '{}'", raw);
                 try {
