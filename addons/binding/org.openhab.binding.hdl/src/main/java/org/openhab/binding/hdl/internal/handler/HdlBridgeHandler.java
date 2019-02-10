@@ -94,7 +94,7 @@ public class HdlBridgeHandler extends BaseBridgeHandler {
         try {
             selector = Selector.open();
         } catch (IOException e) {
-            logger.error("An exception occurred while registering the selector: '{}'", e.getMessage());
+            logger.warn("An exception occurred while registering the selector: '{}'", e.getMessage());
         }
         if (listenerChannel == null) {
             configureListener(portNr);
@@ -140,7 +140,7 @@ public class HdlBridgeHandler extends BaseBridgeHandler {
                             try {
                                 deviceStatusListener.onDeviceStateChanged(getThing().getUID(), dev);
                             } catch (Exception e) {
-                                logger.error(
+                                logger.warn(
                                         "An exception occurred while calling the DeviceStatusListener , Exception msg {}",
                                         e.getMessage());
                                 unregisterDeviceStatusListener(deviceStatusListener);
@@ -169,7 +169,7 @@ public class HdlBridgeHandler extends BaseBridgeHandler {
                                 // tempDevice.setUpdated(true);
                                 deviceStatusListener.onDeviceStateChanged(getThing().getUID(), tempDevice);
                             } catch (Exception e) {
-                                logger.error(
+                                logger.warn(
                                         "An exception occurred while calling the DeviceStatusListener , Exception msg {}",
                                         e.getMessage());
                             }
@@ -181,7 +181,7 @@ public class HdlBridgeHandler extends BaseBridgeHandler {
                         p.sourceDeviceID, p.sourceDevice);
             }
         } catch (Exception e) {
-            logger.error(
+            logger.warn(
                     "An exception Accured when trying to set info, Subnet: {} DeviceID: {} DeviceType: {}, Exception msg {}",
                     p.sourceSubnetID, p.sourceDeviceID, p.sourcedeviceType, e.getMessage());
         }
@@ -205,7 +205,7 @@ public class HdlBridgeHandler extends BaseBridgeHandler {
         try {
             selector.close();
         } catch (IOException e) {
-            logger.error("An exception occurred while closing the selector: '{}'", e.getMessage());
+            logger.warn("An exception occurred while closing the selector: '{}'", e.getMessage());
         }
 
         try {
@@ -217,7 +217,7 @@ public class HdlBridgeHandler extends BaseBridgeHandler {
         try {
             listenerChannel.close();
         } catch (IOException e) {
-            logger.error("An exception occurred while closing the listener channel on port number {} ({})", portNr,
+            logger.warn("An exception occurred while closing the listener channel on port number {} ({})", portNr,
                     e.getMessage());
         }
 
@@ -243,11 +243,11 @@ public class HdlBridgeHandler extends BaseBridgeHandler {
                 try {
                     listenerKey = listenerChannel.register(selector, listenerChannel.validOps());
                 } catch (ClosedChannelException e1) {
-                    logger.error("An exception occurred while registering a selector: {}", e1.getMessage());
+                    logger.warn("An exception occurred while registering a selector: {}", e1.getMessage());
                 }
             }
         } catch (Exception e2) {
-            logger.error("An exception occurred while creating the Listener Channel on port number {} ({})",
+            logger.warn("An exception occurred while creating the Listener Channel on port number {} ({})",
                     listenerPort, e2.getMessage());
         }
     }
@@ -262,7 +262,7 @@ public class HdlBridgeHandler extends BaseBridgeHandler {
                     try {
                         selector.selectNow();
                     } catch (IOException e) {
-                        logger.error("An exception occurred while selecting: {}", e.getMessage());
+                        logger.warn("An exception occurred while selecting: {}", e.getMessage());
                     }
                 }
 
@@ -289,7 +289,7 @@ public class HdlBridgeHandler extends BaseBridgeHandler {
                                     return null;
                                 }
                             } catch (Exception e) {
-                                logger.error("An exception occurred while receiving data on the listener port: '{}'",
+                                logger.warn("An exception occurred while receiving data on the listener port: '{}'",
                                         e.getMessage());
                                 error = true;
                             }
@@ -321,8 +321,8 @@ public class HdlBridgeHandler extends BaseBridgeHandler {
                             try {
                                 theChannel.close();
                             } catch (IOException e) {
-                                logger.error("An exception occurred while closing the channel '{}': {}",
-                                        datagramChannel, e.getMessage());
+                                logger.warn("An exception occurred while closing the channel '{}': {}", datagramChannel,
+                                        e.getMessage());
                             }
                             onConnectionLost();
                         } else {
@@ -348,7 +348,7 @@ public class HdlBridgeHandler extends BaseBridgeHandler {
                     try {
                         selector.selectNow();
                     } catch (IOException e) {
-                        logger.error("An exception occurred while selecting: {}", e.getMessage());
+                        logger.warn("An exception occurred while selecting: {}", e.getMessage());
                     }
                 }
 
@@ -442,7 +442,7 @@ public class HdlBridgeHandler extends BaseBridgeHandler {
                         datagramChannel.connect(remoteAddress);
                         // onConnectionResumed();
                     } catch (Exception e) {
-                        logger.error("An exception occurred while connecting connecting to '{}:{}' : {}",
+                        logger.warn("An exception occurred while connecting connecting to '{}:{}' : {}",
                                 new Object[] { ipAddress, portNr, e.getMessage() });
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "An exception occurred while connecting");

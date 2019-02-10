@@ -174,7 +174,7 @@ public class HdlHandler extends BaseThingHandler implements DeviceStatusListener
             try {
                 bridgeHandler.sendPacket(p);
             } catch (IOException e) {
-                logger.error("Could not send msg to bridge, got error msg: {}", e.getMessage());
+                logger.warn("Could not send msg to bridge, got error msg: {}", e.getMessage());
             }
         } catch (Exception e) {
             logger.debug("An exception occurred while refreshing the hdl item: '{}'", e.getMessage());
@@ -277,7 +277,7 @@ public class HdlHandler extends BaseThingHandler implements DeviceStatusListener
                 hdlBridge.sendPacket(item);
             }
         } catch (IOException e) {
-            logger.error("Could not send msg to bridge, got error msg: {}", e.getMessage());
+            logger.warn("Could not send msg to bridge, got error msg: {}", e.getMessage());
         }
     }
 
@@ -515,7 +515,7 @@ public class HdlHandler extends BaseThingHandler implements DeviceStatusListener
                     }
                     break;
                 default:
-                    logger.error("For Channel: {} Command: {} Not supported.", channelUID, command);
+                    logger.warn("For Channel: {} Command: {} Not supported.", channelUID, command);
                     return;
             }
         }
@@ -527,7 +527,7 @@ public class HdlHandler extends BaseThingHandler implements DeviceStatusListener
             try {
                 hdlBridge.sendPacket(p);
             } catch (IOException e) {
-                logger.error("Could not send msg to bridge, got error msg: {}", e.getMessage());
+                logger.warn("Could not send msg to bridge, got error msg: {}", e.getMessage());
             }
         }
     }

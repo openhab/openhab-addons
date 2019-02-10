@@ -4,8 +4,9 @@
 		<label>HDL server</label>
 		<description>This bridge represents a HDL server.</description>
 		<config-description>
-			<parameter name="Ip" type="text">
-				<label>Ip</label>
+			<parameter name="ipAddress" type="text">
+				<label>Network Address</label>
+				<context>network-address</context>
 				<description>IP address of the HDL server</description>
 				<default>localhost</default>
 				<required>true</required>
