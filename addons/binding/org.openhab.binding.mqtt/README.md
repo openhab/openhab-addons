@@ -56,7 +56,7 @@ For more security, the following optional parameters can be altered:
 
 You can extend your broker connection bridges with a channel:
 
-* __publishTrigger__: This channel is triggered when a value is published to the configured MQTT topic on this broker connection. The event payload will be the received MQTT topic value.
+* __publishTrigger__: This channel is triggered when a value is published to the configured MQTT topic on this broker connection. The event payload (in `receivedEvent`) will be the received MQTT topic and its value, separated by the hash character (`#`).
 
 Configuration parameters are:
 
