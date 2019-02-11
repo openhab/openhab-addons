@@ -498,7 +498,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          * 20.1003: RF Filter Select, enumeration [0..3]
          * 20.1200: M-Bus Breaker/Valve State, enumeration [0..255]
          * 20.1202: Gas Measurement Condition, enumeration [0..3]
-
+         *
          */
         dptMainTypeMap.put(20, StringType.class);
         /** Exceptions Datapoint Types, Main number 20 */
@@ -604,6 +604,14 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                             case 1: // * 5.001: Scaling, values: 0...100 %
                             default:
                                 return ((HSBType) type).getBrightness().toString();
+                        }
+                    case 232:
+                        switch (subNumber) {
+                            case 600: // 232.600
+                                HSBType hc = ((HSBType) type);
+                                return "r:" + convertPercentToByte(hc.getRed()) + " g:"
+                                        + convertPercentToByte(hc.getGreen()) + " b:"
+                                        + convertPercentToByte(hc.getBlue());
                         }
                     default:
                         HSBType hc = ((HSBType) type);
@@ -1001,5 +1009,16 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             }
         }
         return result;
+    }
+
+    /**
+     * convert 0...100% to 1 byte 0..255
+     *
+     * @param percent
+     * @return int 0..255
+     */
+    private int convertPercentToByte(PercentType percent) {
+        return percent.toBigDecimal().multiply(BigDecimal.valueOf(255))
+                .divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP).intValue();
     }
 }
