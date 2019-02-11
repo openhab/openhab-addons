@@ -21,7 +21,6 @@ import org.openhab.binding.heos.internal.api.HeosFacade;
  * coming from the implementing thing
  *
  * @author Johannes Einig - Initial contribution
- *
  */
 public class HeosChannelHandlerArtist extends HeosChannelHandler {
 
@@ -47,7 +46,6 @@ public class HeosChannelHandlerArtist extends HeosChannelHandler {
     private void handleCommand() {
         if (command instanceof RefreshType) {
             api.getNowPlayingMediaArtist(id);
-            return;
         }
     }
 }

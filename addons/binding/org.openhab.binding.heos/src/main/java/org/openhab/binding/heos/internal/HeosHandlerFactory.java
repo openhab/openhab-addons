@@ -19,7 +19,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
@@ -41,6 +40,7 @@ import org.openhab.binding.heos.internal.api.HeosSystem;
 import org.openhab.binding.heos.internal.discovery.HeosPlayerDiscovery;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -54,9 +54,10 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.heos")
 public class HeosHandlerFactory extends BaseThingHandlerFactory {
-    private Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-
     private final Logger logger = LoggerFactory.getLogger(HeosHandlerFactory.class);
+
+    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+
     private HeosSystem heos = new HeosSystem();
     private HeosFacade api = heos.getAPI();
 
@@ -64,7 +65,7 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
     private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
     private NetworkAddressService networkAddressService;
 
-    private String callbackUrl = null;
+    private String callbackUrl;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -72,9 +73,10 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
+    @Activate
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
-    };
+    }
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
@@ -83,8 +85,8 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             HeosBridgeHandler bridgeHandler = new HeosBridgeHandler((Bridge) thing, heos, api);
             HeosPlayerDiscovery playerDiscovery = new HeosPlayerDiscovery(bridgeHandler);
-            discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext.registerService(
-                    DiscoveryService.class.getName(), playerDiscovery, new Hashtable<String, Object>()));
+            discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
+                    .registerService(DiscoveryService.class.getName(), playerDiscovery, new Hashtable<>()));
             logger.debug("Register discovery service for HEOS player and HEOS groups by bridge '{}'",
                     bridgeHandler.getThing().getUID().getId());
             return bridgeHandler;
@@ -95,7 +97,7 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
             HeosAudioSink audioSink = new HeosAudioSink(playerHandler, audioHTTPServer, createCallbackUrl());
             @SuppressWarnings("unchecked")
             ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
+                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<>());
             audioSinkRegistrations.put(thing.getUID().toString(), reg);
             return playerHandler;
         }
@@ -105,7 +107,7 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
             HeosAudioSink audioSink = new HeosAudioSink(groupHandler, audioHTTPServer, createCallbackUrl());
             @SuppressWarnings("unchecked")
             ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
+                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<>());
             audioSinkRegistrations.put(thing.getUID().toString(), reg);
             return groupHandler;
         }
@@ -116,7 +118,7 @@ public class HeosHandlerFactory extends BaseThingHandlerFactory {
     public void unregisterHandler(Thing thing) {
         if (thing.getThingTypeUID().equals(THING_TYPE_BRIDGE)) {
             super.unregisterHandler(thing);
-            ServiceRegistration<?> serviceRegistration = this.discoveryServiceRegs.get(thing.getUID());
+            ServiceRegistration<?> serviceRegistration = discoveryServiceRegs.get(thing.getUID());
             if (serviceRegistration != null) {
                 serviceRegistration.unregister();
                 discoveryServiceRegs.remove(thing.getUID());

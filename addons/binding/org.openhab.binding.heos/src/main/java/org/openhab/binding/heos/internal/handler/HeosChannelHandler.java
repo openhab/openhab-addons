@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Einig - Initial contribution
  */
 public abstract class HeosChannelHandler {
+    protected final Logger logger = LoggerFactory.getLogger(HeosChannelHandler.class);
 
     protected Object handler;
     protected HeosBridgeHandler bridge;
@@ -36,7 +37,6 @@ public abstract class HeosChannelHandler {
     protected String id;
     protected Command command;
     protected ChannelUID channelUID;
-    protected final Logger logger = LoggerFactory.getLogger(HeosChannelHandler.class);
 
     /**
      *

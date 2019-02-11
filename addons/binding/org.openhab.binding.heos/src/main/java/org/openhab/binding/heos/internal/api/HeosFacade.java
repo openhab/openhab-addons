@@ -108,11 +108,9 @@ public class HeosFacade {
     /**
      * Set the play mode of the player or group
      *
-     *
      * @param pid  The PID of the dedicated player or group
      * @param mode The shuffle mode: Allowed commands: on; off
      */
-
     public void setShuffleMode(String pid, String mode) {
         controller.send(controller.command().setShuffleMode(pid, mode));
     }
@@ -120,10 +118,9 @@ public class HeosFacade {
     /**
      * Sets the repeat mode of the player or group
      *
-     * @param pid  The PID of the dedicated player or group
+     * @param pid  The ID of the dedicated player or group
      * @param mode The repeat mode. Allowed commands: on_all; on_one; off
      */
-
     public void setRepeatMode(String pid, String mode) {
         controller.send(controller.command().setRepeatMode(pid, mode));
     }
@@ -132,7 +129,7 @@ public class HeosFacade {
      * Set the HEOS player to a dedicated volume
      *
      * @param vol The volume the player shall be set to (value between 0 -100)
-     * @param pid
+     * @param pid The ID of the dedicated player or group
      */
     public void setVolume(String vol, String pid) {
         controller.send(controller.command().setVolume(vol, pid));
@@ -141,7 +138,7 @@ public class HeosFacade {
     /**
      * Increases the HEOS player volume 1 Step
      *
-     * @param pid
+     * @param pid The ID of the dedicated player or group
      */
     public void increaseVolume(String pid) {
         controller.send(controller.command().volumeUp(pid));
@@ -150,7 +147,7 @@ public class HeosFacade {
     /**
      * Decreases the HEOS player volume 1 Step
      *
-     * @param pid
+     * @param pid The ID of the dedicated player or group
      */
     public void decreaseVolume(String pid) {
         controller.send(controller.command().volumeDown(pid));
@@ -196,7 +193,7 @@ public class HeosFacade {
     /**
      * Increases the HEOS group volume 1 Step
      *
-     * @param pid
+     * @param pid The ID of the dedicated player or group
      */
     public void increaseGroupVolume(String gid) {
         controller.send(controller.command().setGroupVolumeUp(gid));
@@ -205,7 +202,7 @@ public class HeosFacade {
     /**
      * Decreases the HEOS group volume 1 Step
      *
-     * @param pid
+     * @param pid The ID of the dedicated player or group
      */
     public void decreaseGroupVolume(String gid) {
         controller.send(controller.command().setGroupVolumeDown(gid));
@@ -224,7 +221,7 @@ public class HeosFacade {
     /**
      * Builds a group from single players
      *
-     * @param pids The single pid of the player which shall be grouped
+     * @param pids The single player IDs of the player which shall be grouped
      */
     public void groupPlayer(String[] pids) {
         controller.send(controller.command().setGroup(pids));
@@ -302,7 +299,7 @@ public class HeosFacade {
      * @param mid The media ID of the media
      */
     public void playStation(String pid, String sid, String mid) {
-        controller.send(controller.command().playStation(pid));
+        controller.send(controller.command().playStation(pid, sid, mid));
     }
 
     /**
@@ -487,10 +484,10 @@ public class HeosFacade {
 
     /**
      *
-     * @param playerID
+     * @param pid The ID of the dedicated player or group
      */
-    public void setActivePlayer(String playerID) {
-        controller.command().setPlayerID(playerID);
+    public void setActivePlayer(String pid) {
+        controller.command().setPlayerID(pid);
     }
 
     /**
@@ -504,7 +501,7 @@ public class HeosFacade {
     }
 
     /**
-     * Register an {@linkHeosEventListener} to get notification of system events
+     * Register an {@link HeosEventListener} to get notification of system events
      *
      * @param listener The HeosEventListener
      */
@@ -513,7 +510,7 @@ public class HeosFacade {
     }
 
     /**
-     * Unregister an {@linkHeosEventListener} to get notification of system events
+     * Unregister an {@link HeosEventListener} to get notification of system events
      *
      * @param listener The HeosEventListener
      */

@@ -10,26 +10,16 @@
 		<channels>
 			<channel typeId="reboot" id="Reboot"></channel>			
 			<channel typeId="buildGroup" id="BuildGroup"></channel>	
-			<channel typeId="rawCommand" id="RawCommand"></channel>
 		</channels>
-		<properties>
-			<property name="Vendor">Denon</property>
-		</properties>
-		<representation-property>Device</representation-property>
+		<representation-property>Role</representation-property>
 		<config-description>
-			<parameter name="name" type="text">
-				<label>Player Type</label>
-				<description>Player Type of the Bridge.</description>
-				<required>false</required>
-			</parameter>
 			<parameter name="ipAddress" type="text">
-				<context>network_address</context>
+				<context>network-address</context>
 				<label>Network Address</label>
 				<description>Network address of the HEOS bridge.</description>
 				<required>true</required>
 			</parameter>
 			<parameter name="username" type="text">
-				<context>String</context>
 				<label>Username</label>
 				<description>Username for login to the HEOS account.</description>
 				<required>false</required>
@@ -46,6 +36,7 @@
 				<label>Heartbeat</label>
 				<description>The time in seconds for the HEOS Heartbeat (default = 60s)</description>
 				<default>60</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>

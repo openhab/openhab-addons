@@ -21,7 +21,6 @@ import org.openhab.binding.heos.internal.api.HeosFacade;
  * coming from the implementing thing
  *
  * @author Johannes Einig - Initial contribution
- *
  */
 public class HeosChannelHandlerCover extends HeosChannelHandler {
 
@@ -47,7 +46,6 @@ public class HeosChannelHandlerCover extends HeosChannelHandler {
     private void handleCommand() {
         if (command instanceof RefreshType) {
             api.getNowPlayingMediaImageUrl(id);
-            return;
         }
     }
 }

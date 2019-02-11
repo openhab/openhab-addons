@@ -36,6 +36,8 @@ public class HeosDeserializerPayload implements JsonDeserializer<HeosResponsePay
 
     private HeosResponsePayload responsePayload = new HeosResponsePayload();
 
+    private static final String PAYLOAD = "payload";
+
     @Override
     public HeosResponsePayload deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
@@ -46,13 +48,13 @@ public class HeosDeserializerPayload implements JsonDeserializer<HeosResponsePay
 
         JsonObject jsonObject = json.getAsJsonObject();
 
-        if (jsonObject.has("payload")) {
-            if (jsonObject.get("payload").isJsonArray()) {
+        if (jsonObject.has(PAYLOAD)) {
+            if (jsonObject.get(PAYLOAD).isJsonArray()) {
                 arrayTrue = true;
             }
         }
-        if (jsonObject.has("payload") && arrayTrue) {
-            JsonArray jsonArray = jsonObject.get("payload").getAsJsonArray();
+        if (jsonObject.has(PAYLOAD) && arrayTrue) {
+            JsonArray jsonArray = jsonObject.get(PAYLOAD).getAsJsonArray();
             for (int i = 0; i < jsonArray.size(); i++) {
                 Map<String, String> payload = new HashMap<>();
                 JsonObject object = jsonArray.get(i).getAsJsonObject();
@@ -74,9 +76,9 @@ public class HeosDeserializerPayload implements JsonDeserializer<HeosResponsePay
                 mapList.add(payload);
                 overallPlayerList.add(groupPlayerList);
             }
-        } else if (jsonObject.has("payload") && !arrayTrue) {
+        } else if (jsonObject.has(PAYLOAD) && !arrayTrue) {
             Map<String, String> payload = new HashMap<>();
-            JsonObject jsonPayload = jsonObject.get("payload").getAsJsonObject();
+            JsonObject jsonPayload = jsonObject.get(PAYLOAD).getAsJsonObject();
             for (Entry<String, JsonElement> entry : jsonPayload.entrySet()) {
                 if (entry.getValue().isJsonArray()) {
                     JsonArray playerArray = entry.getValue().getAsJsonArray();
@@ -105,8 +107,5 @@ public class HeosDeserializerPayload implements JsonDeserializer<HeosResponsePay
         responsePayload.setPlayerList(overallPlayerList);
         responsePayload.setPayload(mapList);
         return responsePayload;
-    }
-
-    public void itterateValues() {
     }
 }

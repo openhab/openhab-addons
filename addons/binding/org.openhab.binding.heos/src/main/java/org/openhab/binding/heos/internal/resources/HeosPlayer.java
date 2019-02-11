@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.heos.internal.resources;
 
+import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,8 +25,9 @@ import java.util.Map;
  */
 public class HeosPlayer extends HeosMediaObject {
 
-    private final String[] supportedPlayerInfo = { "name", "pid", "gip", "ip", "model", "version", "lineout, network" };
-    private final String[] supportedPlayerStates = { "state", "level", "mute", "duration", "cur_pos" };
+    private static final String[] SUPPORTED_PLAYER_INFO = { NAME, PID, GID, IP, MODEL, VERSION, LINE_OUT, NETWORK,
+            CONTROL, SERIAL };
+    private static final String[] SUPPORTED_PLAYER_STATE = { STATE, LEVEL, MUTE, DURATION, CUR_POS };
 
     private Map<String, String> playerInfo;
     private Map<String, String> playerState;
@@ -38,6 +41,8 @@ public class HeosPlayer extends HeosMediaObject {
     private String network;
     private String lineout;
     private String gid;
+    private String control;
+    private String serial;
     private boolean online;
 
     // Player State Variables
@@ -57,29 +62,35 @@ public class HeosPlayer extends HeosMediaObject {
     public void updatePlayerInfo(Map<String, String> values) {
         playerInfo = values;
         for (String key : values.keySet()) {
-            if (key.equals("name")) {
+            if (key.equals(NAME)) {
                 name = values.get(key);
             }
-            if (key.equals("pid")) {
+            if (key.equals(PID)) {
                 pid = values.get(key);
             }
-            if (key.equals("ip")) {
+            if (key.equals(IP)) {
                 ip = values.get(key);
             }
-            if (key.equals("model")) {
+            if (key.equals(MODEL)) {
                 model = values.get(key);
             }
-            if (key.equals("version")) {
+            if (key.equals(VERSION)) {
                 version = values.get(key);
             }
-            if (key.equals("lineout")) {
+            if (key.equals(LINE_OUT)) {
                 lineout = values.get(key);
             }
-            if (key.equals("network")) {
+            if (key.equals(NETWORK)) {
                 network = values.get(key);
             }
-            if (key.equals("gid")) {
+            if (key.equals(GID)) {
                 gid = values.get(key);
+            }
+            if (key.equals(CONTROL)) {
+                control = values.get(key);
+            }
+            if (key.equals(SERIAL)) {
+                serial = values.get(key);
             }
         }
     }
@@ -87,32 +98,32 @@ public class HeosPlayer extends HeosMediaObject {
     public void updatePlayerState(Map<String, String> values) {
         playerState = values;
         for (String key : values.keySet()) {
-            if (key.equals("state")) {
+            if (key.equals(STATE)) {
                 state = values.get(key);
             }
-            if (key.equals("level")) {
+            if (key.equals(LEVEL)) {
                 level = values.get(key);
             }
-            if (key.equals("mute")) {
+            if (key.equals(MUTE)) {
                 mute = values.get(key);
             }
-            if (key.equals("duration")) {
+            if (key.equals(DURATION)) {
                 duration = values.get(key);
             }
-            if (key.equals("cur_pos")) {
+            if (key.equals(CUR_POS)) {
                 curPos = values.get(key);
             }
         }
     }
 
     private void initPlayer() {
-        playerInfo = new HashMap<>(8);
+        playerInfo = new HashMap<>(10);
         playerState = new HashMap<>(5);
 
-        for (String key : supportedPlayerInfo) {
+        for (String key : SUPPORTED_PLAYER_INFO) {
             playerInfo.put(key, null);
         }
-        for (String key : supportedPlayerStates) {
+        for (String key : SUPPORTED_PLAYER_STATE) {
             playerState.put(key, null);
         }
         updatePlayerInfo(playerInfo);
@@ -129,7 +140,7 @@ public class HeosPlayer extends HeosMediaObject {
 
     public void setPid(String pid) {
         this.pid = pid;
-        playerInfo.put("pid", pid);
+        playerInfo.put(PID, pid);
     }
 
     public String getGid() {
@@ -138,7 +149,7 @@ public class HeosPlayer extends HeosMediaObject {
 
     public void setGid(String gid) {
         this.gid = gid;
-        playerInfo.put("gid", gid);
+        playerInfo.put(GID, gid);
     }
 
     public String getName() {
@@ -147,7 +158,7 @@ public class HeosPlayer extends HeosMediaObject {
 
     public void setName(String name) {
         this.name = name;
-        playerInfo.put("name", name);
+        playerInfo.put(NAME, name);
     }
 
     public String getModel() {
@@ -156,7 +167,7 @@ public class HeosPlayer extends HeosMediaObject {
 
     public void setModel(String model) {
         this.model = model;
-        playerInfo.put("model", model);
+        playerInfo.put(MODEL, model);
     }
 
     public String getIp() {
@@ -165,7 +176,7 @@ public class HeosPlayer extends HeosMediaObject {
 
     public void setIp(String ip) {
         this.ip = ip;
-        playerInfo.put("ip", ip);
+        playerInfo.put(IP, ip);
     }
 
     public String getVersion() {
@@ -174,7 +185,7 @@ public class HeosPlayer extends HeosMediaObject {
 
     public void setVersion(String version) {
         this.version = version;
-        playerInfo.put("version", version);
+        playerInfo.put(VERSION, version);
     }
 
     public String getNetwork() {
@@ -183,7 +194,7 @@ public class HeosPlayer extends HeosMediaObject {
 
     public void setNetwork(String network) {
         this.network = network;
-        playerInfo.put("network", network);
+        playerInfo.put(NETWORK, network);
     }
 
     public String getLineout() {
@@ -192,11 +203,29 @@ public class HeosPlayer extends HeosMediaObject {
 
     public void setLineout(String lineout) {
         this.lineout = lineout;
-        playerInfo.put("lineout", lineout);
+        playerInfo.put(LINE_OUT, lineout);
+    }
+
+    public String getControl() {
+        return control;
+    }
+
+    public void setControl(String control) {
+        this.control = control;
+        playerInfo.put(CONTROL, control);
+    }
+
+    public String getSerial() {
+        return serial;
+    }
+
+    public void setSerial(String serial) {
+        this.serial = serial;
+        playerInfo.put(SERIAL, serial);
     }
 
     public String[] getSupportedPlayerInfo() {
-        return supportedPlayerInfo;
+        return SUPPORTED_PLAYER_INFO;
     }
 
     // Player States
@@ -207,7 +236,7 @@ public class HeosPlayer extends HeosMediaObject {
 
     public void setState(String state) {
         this.state = state;
-        playerState.put("state", state);
+        playerState.put(STATE, state);
     }
 
     public String getLevel() {
@@ -216,7 +245,7 @@ public class HeosPlayer extends HeosMediaObject {
 
     public void setLevel(String level) {
         this.level = level;
-        playerState.put("level", level);
+        playerState.put(LEVEL, level);
     }
 
     public String getMute() {
@@ -225,7 +254,7 @@ public class HeosPlayer extends HeosMediaObject {
 
     public void setMute(String mute) {
         this.mute = mute;
-        playerState.put("mute", mute);
+        playerState.put(MUTE, mute);
     }
 
     public String getDuration() {
@@ -234,7 +263,7 @@ public class HeosPlayer extends HeosMediaObject {
 
     public void setDuration(String duration) {
         this.duration = duration;
-        playerState.put("duration", duration);
+        playerState.put(DURATION, duration);
     }
 
     public String getCurPos() {
@@ -243,11 +272,11 @@ public class HeosPlayer extends HeosMediaObject {
 
     public void setCurPos(String curPos) {
         this.curPos = curPos;
-        playerState.put("cur_pos", curPos);
+        playerState.put(CUR_POS, curPos);
     }
 
     public String[] getSupportedPlayerStates() {
-        return supportedPlayerStates;
+        return SUPPORTED_PLAYER_STATE;
     }
 
     public Map<String, String> getPlayerState() {

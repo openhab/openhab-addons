@@ -27,7 +27,6 @@ import org.openhab.binding.heos.internal.api.HeosFacade;
  * from the implementing thing.
  *
  * @author Johannes Einig - Initial contribution
- *
  */
 public class HeosChannelHandlerPlayerSelect extends HeosChannelHandler {
 
@@ -62,18 +61,16 @@ public class HeosChannelHandlerPlayerSelect extends HeosChannelHandler {
             selectedPlayerInfo[0] = channel.getProperties().get(PID);
             selectedPlayerInfo[1] = channelUID.getId();
             selectedPlayerList.add(selectedPlayerInfo);
-        } else {
-            if (!selectedPlayerList.isEmpty()) {
-                int indexPlayerChannel = -1;
-                for (int i = 0; i < selectedPlayerList.size(); i++) {
-                    String localPID = selectedPlayerList.get(i)[0];
-                    if (localPID == channel.getProperties().get(PID)) {
-                        indexPlayerChannel = i;
-                    }
+        } else if (!selectedPlayerList.isEmpty()) {
+            int indexPlayerChannel = -1;
+            for (int i = 0; i < selectedPlayerList.size(); i++) {
+                String localPID = selectedPlayerList.get(i)[0];
+                if (localPID == channel.getProperties().get(PID)) {
+                    indexPlayerChannel = i;
                 }
-                selectedPlayerList.remove(indexPlayerChannel);
-                bridge.setSelectedPlayerList(selectedPlayerList);
             }
+            selectedPlayerList.remove(indexPlayerChannel);
+            bridge.setSelectedPlayerList(selectedPlayerList);
         }
     }
 }

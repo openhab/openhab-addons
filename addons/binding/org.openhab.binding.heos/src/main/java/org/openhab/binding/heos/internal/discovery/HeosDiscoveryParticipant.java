@@ -60,7 +60,7 @@ public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
             Map<String, Object> properties = new HashMap<>(3);
             properties.put(HOST, device.getIdentity().getDescriptorURL().getHost());
             properties.put(NAME, device.getDetails().getModelDetails().getModelName());
-            properties.put("Device", "HEOS Bridge"); // Used to hide other bridges if one is already used
+            properties.put(PROP_ROLE, PROP_BRIDGE); // Used to hide other bridges if one is already used
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withLabel(" Bridge - " + device.getDetails().getFriendlyName())
                     .withRepresentationProperty("Device").build();

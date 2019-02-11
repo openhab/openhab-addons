@@ -17,24 +17,27 @@ import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.heos.internal.HeosChannelHandlerFactory;
+import org.openhab.binding.heos.internal.HeosChannelManager;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.api.HeosSystem;
 import org.openhab.binding.heos.internal.handler.HeosChannelHandler;
@@ -51,13 +54,14 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class HeosThingBaseHandler extends BaseThingHandler implements HeosEventListener {
 
+    private final Logger logger = LoggerFactory.getLogger(HeosThingBaseHandler.class);
+
     protected String id;
     protected HeosSystem heos;
     protected HeosFacade api;
     protected HeosChannelHandlerFactory channelHandlerFactory;
     protected HeosBridgeHandler bridge;
-
-    private final Logger logger = LoggerFactory.getLogger(HeosThingBaseHandler.class);
+    protected HeosChannelManager channelManager = new HeosChannelManager(this);
 
     public HeosThingBaseHandler(Thing thing, HeosSystem heos, HeosFacade api) {
         super(thing);
@@ -65,13 +69,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
         this.api = api;
         setId();
     }
-
-    /**
-     * To be implemented by extending class by the command
-     * for updating the HEOS thing via the {@link HeosSystem}. As example
-     * for a player the command would be {@link HeosSystem#getPlayerState(String)}
-     */
-    protected abstract void updateHeosThingState();
 
     /**
      * The channels which has to be updated during the refresh command
@@ -87,7 +84,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     public abstract void setNotificationSoundVolume(PercentType volume);
 
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         HeosChannelHandler channelHandler = channelHandlerFactory.getChannelHandler(channelUID);
         if (channelHandler != null) {
             channelHandler.handleCommand(command, id, this, channelUID);
@@ -107,21 +104,28 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
 
     private void setId() {
         if (thing.getConfiguration().containsKey(GID)) {
-            this.id = thing.getConfiguration().get(GID).toString();
+            id = thing.getConfiguration().get(GID).toString();
         }
-        if (thing.getConfiguration().containsKey(PID)) {
-            this.id = thing.getConfiguration().get(PID).toString();
+        if (thing.getConfiguration().containsKey(PROP_PID)) {
+            id = thing.getConfiguration().get(PROP_PID).toString();
         }
+    }
+
+    protected void updateThingChannels(List<Channel> channelList) {
+        ThingBuilder thingBuilder = editThing();
+        thingBuilder.withChannels(channelList);
+        updateThing(thingBuilder.build());
     }
 
     /**
      * Has to be called by the player or group handler to initialize
-     * {@link HeosChannelHandlerFactory} and bridge
+     * {@link HeosChannelHandlerFactory}
      */
+    @SuppressWarnings("null")
     protected void initChannelHandlerFactory() {
         if (getBridge() != null) {
-            this.bridge = (HeosBridgeHandler) getBridge().getHandler();
-            this.channelHandlerFactory = bridge.getChannelHandlerFactory();
+            bridge = (HeosBridgeHandler) getBridge().getHandler();
+            channelHandlerFactory = bridge.getChannelHandlerFactory();
         } else {
             logger.warn("No Bridge set within child handler");
         }
@@ -162,7 +166,8 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      * @param event
      * @param command
      */
-    protected void handleThingStateUpdate(@NonNull String event, @NonNull String command) {
+    @SuppressWarnings("null")
+    protected void handleThingStateUpdate(String event, String command) {
         if (event.equals(STATE)) {
             switch (command) {
                 case PLAY:
@@ -192,30 +197,30 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
             }
         }
         if (event.equals(CUR_POS)) {
-            this.updateState(CH_ID_CUR_POS, DecimalType.valueOf(command));
+            updateState(CH_ID_CUR_POS, DecimalType.valueOf(command.toString()));
         }
         if (event.equals(DURATION)) {
-            this.updateState(CH_ID_DURATION, DecimalType.valueOf(command));
+            updateState(CH_ID_DURATION, DecimalType.valueOf(command.toString()));
         }
         if (event.equals(SHUFFLE_MODE_CHANGED)) {
-            if (command.equals(ON)) {
-                this.updateState(CH_ID_SHUFFLE_MODE, OnOffType.ON);
+            if (ON.equals(command)) {
+                updateState(CH_ID_SHUFFLE_MODE, OnOffType.ON);
             } else {
-                this.updateState(CH_ID_SHUFFLE_MODE, OnOffType.OFF);
+                updateState(CH_ID_SHUFFLE_MODE, OnOffType.OFF);
             }
         }
         if (event.equals(REPEAT_MODE_CHANGED)) {
-            if (command.toString().equals(REPEAT_ALL)) {
-                this.updateState(CH_ID_REPEAT_MODE, StringType.valueOf(HEOS_UI_ALL));
-            } else if (command.toString().equals(REPEAT_ONE)) {
-                this.updateState(CH_ID_REPEAT_MODE, StringType.valueOf(HEOS_UI_ONE));
-            } else if (command.toString().equals(OFF)) {
-                this.updateState(CH_ID_REPEAT_MODE, StringType.valueOf(HEOS_UI_OFF));
+            if (REPEAT_ALL.equals(command)) {
+                updateState(CH_ID_REPEAT_MODE, StringType.valueOf(HEOS_UI_ALL));
+            } else if (REPEAT_MODE.equals(command)) {
+                updateState(CH_ID_REPEAT_MODE, StringType.valueOf(HEOS_UI_ONE));
+            } else if (OFF.equals(command)) {
+                updateState(CH_ID_REPEAT_MODE, StringType.valueOf(HEOS_UI_OFF));
             }
         }
     }
 
-    protected void handleThingMediaUpdate(@NonNull Map<String, String> info) {
+    protected void handleThingMediaUpdate(Map<String, String> info) {
         for (String key : info.keySet()) {
             switch (key) {
                 case SONG:

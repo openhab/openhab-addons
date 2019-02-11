@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.heos.internal.resources;
 
+import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,8 +25,8 @@ import java.util.Map;
  */
 public class HeosMediaObject {
 
-    private final String[] supportedMediaItems = { "type", "station", "song", "album", "artist", "image_url", "qid",
-            "mid", "albumId" };
+    private static final String[] SUPPORTED_MEDIA_ITEM_STRINGS = { TYPE, STATION, SONG, ALBUM, ARTIST, IMAGE_URL, QID, MID,
+            ALBUM_ID };
 
     private Map<String, String> mediaInfo;
 
@@ -47,31 +49,31 @@ public class HeosMediaObject {
 
         for (String key : this.mediaInfo.keySet()) {
             switch (key) {
-                case "song":
+                case SONG:
                     this.song = this.mediaInfo.get(key);
                     break;
-                case "album":
+                case ALBUM:
                     this.album = this.mediaInfo.get(key);
                     break;
-                case "artist":
+                case ARTIST:
                     this.artist = this.mediaInfo.get(key);
                     break;
-                case "image_url":
+                case IMAGE_URL:
                     this.imageUrl = this.mediaInfo.get(key);
                     break;
-                case "qid":
+                case QID:
                     this.qid = this.mediaInfo.get(key);
                     break;
-                case "mid":
+                case MID:
                     this.mid = this.mediaInfo.get(key);
                     break;
-                case "album_id":
+                case ALBUM_ID:
                     this.albumId = this.mediaInfo.get(key);
                     break;
-                case "type":
+                case TYPE:
                     this.type = this.getMediaInfo().get(key);
-                    if (type.equals("station")) {
-                        this.station = this.getMediaInfo().get("station");
+                    if (type.equals(STATION)) {
+                        this.station = this.getMediaInfo().get(STATION);
                     } else {
                         this.station = "No Station";
                     }
@@ -83,7 +85,7 @@ public class HeosMediaObject {
     private void initObject() {
         mediaInfo = new HashMap<String, String>(9);
 
-        for (String key : supportedMediaItems) {
+        for (String key : SUPPORTED_MEDIA_ITEM_STRINGS) {
             mediaInfo.put(key, null);
         }
     }
@@ -114,7 +116,7 @@ public class HeosMediaObject {
 
     public void setSong(String song) {
         this.song = song;
-        mediaInfo.put("song", song);
+        mediaInfo.put(SONG, song);
     }
 
     public String getAlbum() {
@@ -123,7 +125,7 @@ public class HeosMediaObject {
 
     public void setAlbum(String album) {
         this.album = album;
-        mediaInfo.put("album", album);
+        mediaInfo.put(ALBUM, album);
     }
 
     public String getArtist() {
@@ -132,7 +134,7 @@ public class HeosMediaObject {
 
     public void setArtist(String artist) {
         this.artist = artist;
-        mediaInfo.put("artis", artist);
+        mediaInfo.put(ARTIST, artist);
     }
 
     public String getImageUrl() {
@@ -141,7 +143,7 @@ public class HeosMediaObject {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-        mediaInfo.put("image_url", imageUrl);
+        mediaInfo.put(IMAGE_URL, imageUrl);
     }
 
     public String getQid() {
@@ -150,7 +152,7 @@ public class HeosMediaObject {
 
     public void setQid(String qid) {
         this.qid = qid;
-        mediaInfo.put("qid", qid);
+        mediaInfo.put(QID, qid);
     }
 
     public String getMid() {
@@ -159,7 +161,7 @@ public class HeosMediaObject {
 
     public void setMid(String mid) {
         this.mid = mid;
-        mediaInfo.put("mid", mid);
+        mediaInfo.put(MID, mid);
     }
 
     public String getAlbumId() {
@@ -168,10 +170,10 @@ public class HeosMediaObject {
 
     public void setAlbumId(String albumId) {
         this.albumId = albumId;
-        mediaInfo.put("album_id", albumId);
+        mediaInfo.put(ALBUM_ID, albumId);
     }
 
     public String[] getSupportedMediaItems() {
-        return supportedMediaItems;
+        return SUPPORTED_MEDIA_ITEM_STRINGS;
     }
 }

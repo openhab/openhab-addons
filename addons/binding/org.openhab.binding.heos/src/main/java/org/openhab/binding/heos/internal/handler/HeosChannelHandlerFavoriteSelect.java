@@ -36,12 +36,12 @@ public class HeosChannelHandlerFavoriteSelect extends HeosChannelHandler {
 
     @Override
     protected void handleCommandPlayer() {
-        // not used on player
+        handleCommand();
     }
 
     @Override
     protected void handleCommandGroup() {
-        // not used on group
+        handleCommand();
     }
 
     @Override
@@ -56,10 +56,16 @@ public class HeosChannelHandlerFavoriteSelect extends HeosChannelHandler {
                 for (int i = 0; i < selectedPlayerList.size(); i++) {
                     String pid = selectedPlayerList.get(i)[0];
                     String mid = channelUID.getId(); // the channel ID represents the MID of the favorite
-                    api.playStation(pid, FAVORIT_SID, null, mid, null);
+                    api.playStation(pid, FAVORIT_SID, mid);
                 }
             }
             bridge.resetPlayerList(channelUID);
+        }
+    }
+
+    private void handleCommand() {
+        if (OnOffType.ON.equals(command)) {
+            api.playStation(id, FAVORIT_SID, channelUID.getId());
         }
     }
 }

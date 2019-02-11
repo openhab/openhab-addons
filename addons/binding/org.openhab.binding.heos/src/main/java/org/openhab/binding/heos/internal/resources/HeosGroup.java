@@ -28,8 +28,8 @@ import java.util.Map;
  * @author Johannes Einig - Initial contribution
  */
 public class HeosGroup extends HeosMediaObject {
-    private final String[] supportedGroupInfo = { NAME, GID, LEADER };
-    private final String[] supportedGroupStates = { STATE, LEVEL, MUTE };
+    private static final String[] SUPPORTED_GROUP_INFO = { NAME, GID, LEADER };
+    private static final String[] SUPPORTED_GRIOUP_STATE_STRINGS = { STATE, LEVEL, MUTE };
 
     private Map<String, String> groupInfo;
     private Map<String, String> groupState;
@@ -62,11 +62,11 @@ public class HeosGroup extends HeosMediaObject {
         groupState = new HashMap<>(5);
         playerList = new ArrayList<>(5);
 
-        for (String key : supportedGroupInfo) {
+        for (String key : SUPPORTED_GROUP_INFO) {
             groupInfo.put(key, null);
         }
 
-        for (String key : supportedGroupStates) {
+        for (String key : SUPPORTED_GRIOUP_STATE_STRINGS) {
             groupState.put(key, null);
         }
 
@@ -117,7 +117,7 @@ public class HeosGroup extends HeosMediaObject {
      */
     public void updateGroupPlayers(List<Map<String, String>> playerList) {
         this.playerList = playerList;
-        groupMemberPidList = new ArrayList<String>(playerList.size());
+        groupMemberPidList = new ArrayList<>(playerList.size());
         // Defining the leader and groupID (gid) and placing the leader at the
         // first position of the groupMemberPidList
         playerList.forEach(player -> {
@@ -153,7 +153,7 @@ public class HeosGroup extends HeosMediaObject {
      * system has changed
      */
     private void generateGroupMemberHash() {
-        groupMemberPidListSorted = new ArrayList<String>(playerList.size());
+        groupMemberPidListSorted = new ArrayList<>(playerList.size());
         groupMemberPidListSorted.addAll(groupMemberPidList);
         Collections.sort(groupMemberPidListSorted);
         groupMembersHash = Integer.toUnsignedString(groupMemberPidListSorted.hashCode());
@@ -164,7 +164,7 @@ public class HeosGroup extends HeosMediaObject {
     }
 
     public String generateGroupUID() {
-        List<String> groupUIDHashList = new ArrayList<String>();
+        List<String> groupUIDHashList = new ArrayList<>();
         groupUIDHashList.add(name);
         groupUIDHashList.add(gid);
         groupUIDHashList.add(leader);
@@ -205,7 +205,7 @@ public class HeosGroup extends HeosMediaObject {
 
     public void setGid(String gid) {
         this.gid = gid;
-        groupInfo.put("gid", gid);
+        groupInfo.put(GID, gid);
     }
 
     public String getLeader() {
@@ -214,7 +214,7 @@ public class HeosGroup extends HeosMediaObject {
 
     public void setLeader(String leader) {
         this.leader = leader;
-        groupInfo.put("leader", leader);
+        groupInfo.put(LEADER, leader);
     }
 
     public String getState() {
@@ -223,7 +223,7 @@ public class HeosGroup extends HeosMediaObject {
 
     public void setState(String state) {
         this.state = state;
-        groupInfo.put("state", state);
+        groupInfo.put(STATE, state);
     }
 
     public String getLevel() {
@@ -248,7 +248,7 @@ public class HeosGroup extends HeosMediaObject {
 
     public void setLevel(String level) {
         this.level = level;
-        groupInfo.put("level", level);
+        groupInfo.put(LEVEL, level);
     }
 
     public String getMute() {
@@ -257,15 +257,15 @@ public class HeosGroup extends HeosMediaObject {
 
     public void setMute(String mute) {
         this.mute = mute;
-        groupInfo.put("mute", mute);
+        groupInfo.put(MUTE, mute);
     }
 
     public String[] getSupportedGroupInfo() {
-        return supportedGroupInfo;
+        return SUPPORTED_GROUP_INFO;
     }
 
     public String[] getSupportedGroupStates() {
-        return supportedGroupStates;
+        return SUPPORTED_GRIOUP_STATE_STRINGS;
     }
 
     public String getNameHash() {
@@ -298,10 +298,5 @@ public class HeosGroup extends HeosMediaObject {
 
     public List<String> getGroupMemberPidList() {
         return groupMemberPidList;
-    }
-
-    // DEBUG to be deleted if no used anymore. Can lead to wrong sorting!
-    public void setGroupMemberPidList(List<String> groupMemberPidList) {
-        this.groupMemberPidList = groupMemberPidList;
     }
 }

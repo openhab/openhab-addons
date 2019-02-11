@@ -23,16 +23,15 @@ import java.beans.PropertyChangeSupport;
  */
 public class HeosStringPropertyChangeListener {
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    private String value;
 
     public void addPropertyChangeListener(PropertyChangeListener propertyChangeListener) {
-        this.pcs.addPropertyChangeListener(propertyChangeListener);
+        pcs.addPropertyChangeListener(propertyChangeListener);
     }
 
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-        this.pcs.removePropertyChangeListener(listener);
+        pcs.removePropertyChangeListener(listener);
     }
-
-    private String value;
 
     public String getValue() {
         return value;
@@ -40,8 +39,8 @@ public class HeosStringPropertyChangeListener {
 
     public void setValue(String newValue) {
         String oldValue = this.value;
-        this.value = newValue;
-        this.pcs.firePropertyChange("value", oldValue, newValue);
+        value = newValue;
+        pcs.firePropertyChange("value", oldValue, newValue);
         value = null;
     }
 }

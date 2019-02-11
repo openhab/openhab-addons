@@ -34,11 +34,10 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Einig - Initial contribution
  */
 public class Telnet {
+    private final Logger logger = LoggerFactory.getLogger(Telnet.class);
 
     private static final int READ_TIMEOUT = 3000;
     private static final int IS_ALIVE_TIMEOUT = 10000;
-
-    private final Logger logger = LoggerFactory.getLogger(Telnet.class);
 
     private String ip;
     private int port;
@@ -83,6 +82,7 @@ public class Telnet {
     }
 
     private boolean openConnection() throws SocketException, IOException {
+        client.setConnectTimeout(5000);
         client.connect(ip, port);
         outStream = new DataOutputStream(client.getOutputStream());
         inputStream = client.getInputStream();
@@ -152,9 +152,9 @@ public class Telnet {
     /**
      * Read all commands till an End Of Line is detected
      * I more than one line is read every line is an
-     * element in the returned {@code ArrayList<String>}
+     * element in the returned {@code ArrayList<>}
      * Reading timed out after 3000 milliseconds. For an other
-     * timing @see readLine(int timeOut). *
+     * timing @see readLine(int timeOut).
      *
      * @return A list with all read commands
      * @throws ReadException
@@ -167,7 +167,7 @@ public class Telnet {
     /**
      * Read all commands till an End Of Line is detected
      * I more than one line is read every line is an
-     * element in the returned {@code ArrayList<String>}
+     * element in the returned {@code ArrayList<>}
      * Reading time out is defined by parameter in
      * milliseconds.
      *
@@ -196,11 +196,10 @@ public class Telnet {
                     throw new ReadException();
                 }
             }
-            return readResultList;
         } else {
             readResultList.add(null);
-            return readResultList;
         }
+        return readResultList;
     }
 
     /*

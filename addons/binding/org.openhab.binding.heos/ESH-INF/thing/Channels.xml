@@ -4,11 +4,6 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="control">
-		<item-type>Player</item-type>
-		<label>Control</label>
-		<description>Heos Control</description>
-	</channel-type>
 	<channel-type id="volume">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
@@ -20,16 +15,6 @@
 	<channel-type id="ungroup">
 		<item-type>Switch</item-type>
 		<label>Group</label>
-	</channel-type>
-	<channel-type id="title">
-		<item-type>String</item-type>
-		<label>Song</label>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="artist">
-		<item-type>String</item-type>
-		<label>Artist</label>
-		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="album">
 		<item-type>String</item-type>
@@ -62,14 +47,14 @@
 		<label>Track position</label>
 		<description>The current track position</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%ds"></state>
+		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 	<channel-type id="duration" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Track duration</label>
 		<description>The overall duration of the track</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%ds"></state>
+		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 	<channel-type id="rawCommand" advanced="true">
 		<item-type>String</item-type>

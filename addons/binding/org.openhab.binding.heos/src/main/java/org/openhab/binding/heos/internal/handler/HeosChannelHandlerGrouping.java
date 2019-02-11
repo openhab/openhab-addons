@@ -24,7 +24,6 @@ import org.openhab.binding.heos.internal.resources.HeosGroup;
  * from the implementing thing.
  *
  * @author Johannes Einig - Initial contribution
- *
  */
 public class HeosChannelHandlerGrouping extends HeosChannelHandler {
 
@@ -40,14 +39,14 @@ public class HeosChannelHandlerGrouping extends HeosChannelHandler {
     @Override
     protected void handleCommandGroup() {
         if (command instanceof RefreshType) {
-            HeosGroupHandler heosGroupHandler = HeosGroupHandler.class.cast(handler);
+            HeosGroupHandler heosGroupHandler = (HeosGroupHandler) handler;
             heosGroupHandler.initialize();
             return;
         }
         if (command.equals(OnOffType.OFF)) {
             api.ungroupGroup(id);
         } else if (command.equals(OnOffType.ON)) {
-            HeosGroupHandler heosGroupHandler = HeosGroupHandler.class.cast(handler);
+            HeosGroupHandler heosGroupHandler = (HeosGroupHandler) handler;
             HeosGroup heosGroup = heosGroupHandler.getHeosGroup();
             String[] playerArray = heosGroup.getGroupMemberPidList().toArray(new String[0]);
             api.groupPlayer(playerArray);

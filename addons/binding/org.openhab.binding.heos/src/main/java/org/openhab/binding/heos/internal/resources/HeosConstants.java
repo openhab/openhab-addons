@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.heos.internal.resources;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link HeosConstants} provides the constants used within the HEOS
  * network
  *
  * @author Johannes Einig - Initial contribution
  */
+@NonNullByDefault
 public class HeosConstants {
 
     public static final String HEOS = "heos";
@@ -32,6 +35,13 @@ public class HeosConstants {
     public static final String PID = "pid";
     public static final String GID = "gid";
     public static final String EID = "eid";
+    public static final String IP = "ip";
+    public static final String MODEL = "model";
+    public static final String VERSION = "version";
+    public static final String NETWORK = "network";
+    public static final String LINE_OUT = "lineout";
+    public static final String CONTROL = "control";
+    public static final String SERIAL = "serial";
 
     public static final String BROWSE = "browse";
     public static final String GET_MUSIC_SOURCES = "get_music_sources";
@@ -116,6 +126,7 @@ public class HeosConstants {
     public static final String RAW_COMMAND = "rawCommand";
     public static final String PLAY_URL = "play_stream";
     public static final String ALBUM_ID = "album_id";
+    public static final String TYPE = "type";
 
     // UI Commands
 

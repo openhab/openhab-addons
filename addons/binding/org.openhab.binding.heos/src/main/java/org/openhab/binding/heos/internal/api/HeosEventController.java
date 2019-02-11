@@ -27,13 +27,13 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Einig - Initial contribution
  */
 public class HeosEventController extends HeosSystemEventListener {
+    private final Logger logger = LoggerFactory.getLogger(HeosEventController.class);
+
     private HeosResponseDecoder heosDecoder;
     private HeosSystem system;
     private HeosCommands command;
     private String eventType;
     private String eventCommand;
-
-    private final Logger logger = LoggerFactory.getLogger(HeosEventController.class);
 
     public HeosEventController(HeosResponseDecoder heosDecoder, HeosCommands command, HeosSystem system) {
         this.heosDecoder = heosDecoder;
@@ -53,8 +53,6 @@ public class HeosEventController extends HeosSystemEventListener {
             String errorMessage = heosDecoder.getErrorMessage();
 
             logger.debug("HEOS System response failure with error code '{}' and message '{}'", errorCode, errorMessage);
-
-            return;
         } else {
             this.eventType = heosDecoder.getEventType();
             this.eventCommand = heosDecoder.getCommandType();
@@ -112,7 +110,6 @@ public class HeosEventController extends HeosSystemEventListener {
             case REPEAT_MODE_CHANGED:
                 repeatModeChanged();
                 break;
-
         }
     }
 

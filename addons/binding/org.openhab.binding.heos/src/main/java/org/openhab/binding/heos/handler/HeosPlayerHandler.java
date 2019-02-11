@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.heos.handler;
 
-import static org.openhab.binding.heos.internal.resources.HeosConstants.PID;
+import static org.openhab.binding.heos.HeosBindingConstants.PROP_PID;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.api.HeosSystem;
+import org.openhab.binding.heos.internal.resources.HeosConstants;
 import org.openhab.binding.heos.internal.resources.HeosPlayer;
 
 /**
@@ -34,12 +35,12 @@ import org.openhab.binding.heos.internal.resources.HeosPlayer;
  */
 public class HeosPlayerHandler extends HeosThingBaseHandler {
 
-    private String pid;
+    private final String pid;
     private HeosPlayer player = new HeosPlayer();
 
     public HeosPlayerHandler(Thing thing, HeosSystem heos, HeosFacade api) {
         super(thing, heos, api);
-        pid = thing.getConfiguration().get(PID).toString();
+        pid = thing.getConfiguration().get(PROP_PID).toString();
     }
 
     @Override
@@ -59,13 +60,16 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
                 bridge.setThingStatusOffline(thing.getUID());
                 return;
             }
+            // Adding the favorite channel to the player
+            if (bridge.isLoggedin()) {
+                updateThingChannels(channelManager.addFavoriteChannels(heos.getFavorites()));
+            }
             updateStatus(ThingStatus.ONLINE);
         }, 3, TimeUnit.SECONDS);
     }
 
     @Override
     public PercentType getNotificationSoundVolume() {
-        //updateHeosThingState();
         return PercentType.valueOf(player.getLevel());
     }
 
@@ -76,26 +80,27 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
 
     @Override
     public void playerStateChangeEvent(String pid, String event, String command) {
-        if (pid.equals(this.pid)) {
+        if (this.pid.equals(pid)) {
             handleThingStateUpdate(event, command);
         }
     }
 
     @Override
     public void playerMediaChangeEvent(String pid, Map<String, String> info) {
-        if (pid.equals(this.pid)) {
-            this.player.updateMediaInfo(info);
+        if (this.pid.equals(pid)) {
+            player.updateMediaInfo(info);
             handleThingMediaUpdate(info);
         }
     }
 
     @Override
     public void bridgeChangeEvent(String event, String result, String command) {
-        // Do nothing
+        if (HeosConstants.USER_CHANGED.equals(command)) {
+            updateThingChannels(channelManager.addFavoriteChannels(heos.getFavorites()));
+        }
     }
 
     @Override
-    @SuppressWarnings("null")
     public void setStatusOffline() {
         api.unregisterforChangeEvents(this);
         updateStatus(ThingStatus.OFFLINE);
@@ -105,10 +110,4 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
     public void setStatusOnline() {
         this.initialize();
     }
-
-    @Override
-    protected void updateHeosThingState() {
-        player = heos.getPlayerState(pid);
-    }
-
 }

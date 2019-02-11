@@ -13,13 +13,11 @@
 package org.openhab.binding.heos.handler;
 
 import static org.openhab.binding.heos.HeosBindingConstants.*;
-import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -30,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.heos.internal.api.HeosFacade;
 import org.openhab.binding.heos.internal.api.HeosSystem;
+import org.openhab.binding.heos.internal.resources.HeosConstants;
 import org.openhab.binding.heos.internal.resources.HeosGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,9 +41,12 @@ import org.slf4j.LoggerFactory;
  */
 public class HeosGroupHandler extends HeosThingBaseHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(HeosThingBaseHandler.class);
+
     private String gid;
     private HeosGroup heosGroup;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private boolean blockInitialization;
 
     public HeosGroupHandler(Thing thing, HeosSystem heos, HeosFacade api) {
         super(thing, heos, api);
@@ -52,8 +54,13 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, @NonNull Command command) {
-        super.handleCommand(channelUID, command);
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        // The GID is null if there is no group online with the groubMemberHash
+        // Only commands from the UNGROUP channel are passed through
+        // to activate the group if it is offline
+        if (gid != null || CH_ID_UNGROUP.equals(channelUID.getId())) {
+            super.handleCommand(channelUID, command);
+        }
     }
 
     /**
@@ -62,12 +69,20 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
      * than 5 seconds which can throw an error within the OpenHab system.
      */
     @Override
-    public void initialize() {
+    public synchronized void initialize() {
+        // Prevents that initialize() is called multiple times if group goes online
+        blockInitialization = true;
+        if (thing.getStatus().equals(ThingStatus.ONLINE)) {
+            return;
+        }
         // Generates the groupMember from the properties. Is needed to generate group after restart of OpenHab.
-        heosGroup.updateGroupPlayers(thing.getConfiguration().get(GROUP_MEMBER_PID_LIST).toString());
-        gid = heosGroup.getGid();
+        heosGroup.updateGroupPlayers(thing.getConfiguration().get(PROP_GROUP_MEMBERS).toString());
         api.registerforChangeEvents(this);
         scheduledStartUp();
+    }
+
+    public String getGroupMemberHash() {
+        return heosGroup.getGroupMemberHash();
     }
 
     @Override
@@ -82,26 +97,28 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
 
     @Override
     public void playerStateChangeEvent(String pid, String event, String command) {
-        if (this.getThing().getStatus().equals(ThingStatus.UNINITIALIZED)) {
-            logger.debug("Can't Handle Event. Group {} not initialized. Status is: {}", this.getConfig().get(NAME),
-                    this.getThing().getStatus().toString());
+        if (getThing().getStatus().equals(ThingStatus.UNINITIALIZED)) {
+            logger.debug("Can't Handle Event. Group {} not initialized. Status is: {}", getConfig().get(PROP_NAME),
+                    getThing().getStatus().toString());
             return;
         }
-        if (pid.equals(this.gid)) {
+        if (pid.equals(gid)) {
             handleThingStateUpdate(event, command);
         }
     }
 
     @Override
     public void playerMediaChangeEvent(String pid, Map<String, String> info) {
-        if (pid.equals(this.gid)) {
+        if (pid.equals(gid)) {
             handleThingMediaUpdate(info);
         }
     }
 
     @Override
     public void bridgeChangeEvent(String event, String result, String command) {
-        // Do nothing
+        if (HeosConstants.USER_CHANGED.equals(command)) {
+            updateThingChannels(channelManager.addFavoriteChannels(heos.getFavorites()));
+        }
     }
 
     /**
@@ -119,7 +136,9 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
 
     @Override
     public void setStatusOnline() {
-        this.initialize();
+        if (thing.getStatus().equals(ThingStatus.OFFLINE) && !blockInitialization) {
+            initialize();
+        }
     }
 
     public HeosGroup getHeosGroup() {
@@ -130,43 +149,39 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
         return gid;
     }
 
-    @Override
-    protected void updateHeosThingState() {
-        heosGroup = heos.getGroupState(heosGroup);
-    }
-
     private void updateConfiguration() {
         Map<String, Object> prop = new HashMap<>();
-        prop.put(NAME, heosGroup.getName());
-        prop.put(GROUP_MEMBER_PID_LIST, heosGroup.getGroupMembersAsString());
-        prop.put(LEADER, heosGroup.getLeader());
-        prop.put(GROUP_MEMBER_HASH, heosGroup.getGroupMemberHash());
-        prop.put(GID, gid);
+        prop.put(PROP_NAME, heosGroup.getName());
+        prop.put(PROP_GROUP_MEMBERS, heosGroup.getGroupMembersAsString());
+        prop.put(PROP_GROUP_LEADER, heosGroup.getLeader());
+        prop.put(PROP_GROUP_HASH, heosGroup.getGroupMemberHash());
+        prop.put(PROP_GID, gid);
         Configuration conf = editConfiguration();
         conf.setProperties(prop);
-        this.updateConfiguration(conf);
+        updateConfiguration(conf);
     }
 
     private void scheduledStartUp() {
         scheduler.schedule(() -> {
             initChannelHandlerFactory();
-            HeosGroup group = new HeosGroup();
-            group.setGid(gid);
-            group = heos.getGroupState(group);
-            if (!group.isOnline() || !group.getGroupMemberHash().equals(heosGroup.getGroupMemberHash())) {
-                bridge.setThingStatusOffline(thing.getUID());
+            bridge.addGroupHandlerInformation(this);
+            // Checks if there is a group online with the same group member hash.
+            // If not setting the group offline.
+            id = gid = bridge.getActualGID(heosGroup.getGroupMemberHash());
+            if (gid == null) {
                 setStatusOffline();
-                return;
+            } else {
+                heosGroup.setGid(gid);
+                heosGroup = heos.getGroupState(heosGroup);
+                heos.addHeosGroupToOldGroupMap(heosGroup.getGroupMemberHash(), heosGroup);
+                if (bridge.isLoggedin()) {
+                    updateThingChannels(channelManager.addFavoriteChannels(heos.getFavorites()));
+                }
+                updateConfiguration();
+                updateStatus(ThingStatus.ONLINE);
+                updateState(CH_ID_UNGROUP, OnOffType.ON);
+                blockInitialization = false;
             }
-            this.heosGroup = group;
-            updateStatus(ThingStatus.ONLINE);
-            HashMap<String, HeosGroup> usedToFillOldGroupMap = new HashMap<>();
-            usedToFillOldGroupMap.put(heosGroup.getGroupMemberHash(), heosGroup);
-            heos.addHeosGroupToOldGroupMap(usedToFillOldGroupMap);
-            updateState(CH_ID_UNGROUP, OnOffType.ON);
-            id = heosGroup.getGid(); // Updates the id of the group. Needed if group leader has changed
-            gid = id;
-            updateConfiguration();
         }, 4, TimeUnit.SECONDS);
     }
 }

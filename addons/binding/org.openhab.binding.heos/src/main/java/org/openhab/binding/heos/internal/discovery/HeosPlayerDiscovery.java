@@ -13,7 +13,6 @@
 package org.openhab.binding.heos.internal.discovery;
 
 import static org.openhab.binding.heos.HeosBindingConstants.*;
-import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,29 +40,25 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Einig - Initial contribution
  */
 public class HeosPlayerDiscovery extends AbstractDiscoveryService implements HeosPlayerDiscoveryListener {
+    private final Logger logger = LoggerFactory.getLogger(HeosPlayerDiscovery.class);
+
     private static final int SEARCH_TIME = 5;
     private static final int INITIAL_DELAY = 5;
     private static final int SCAN_INTERVAL = 20;
 
-    private final Logger logger = LoggerFactory.getLogger(HeosPlayerDiscovery.class);
-
     private HeosBridgeHandler bridge;
-
-    private PlayerScan scanningRunnable;
 
     private ScheduledFuture<?> scanningJob;
 
     public HeosPlayerDiscovery(HeosBridgeHandler bridge) throws IllegalArgumentException {
         super(SEARCH_TIME);
         this.bridge = bridge;
-        this.scanningRunnable = new PlayerScan();
         bridge.registerPlayerDiscoverListener(this);
     }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        Set<ThingTypeUID> supportedThings = Stream.of(THING_TYPE_GROUP, THING_TYPE_PLAYER).collect(Collectors.toSet());
-        return supportedThings;
+        return Stream.of(THING_TYPE_GROUP, THING_TYPE_PLAYER).collect(Collectors.toSet());
     }
 
     @Override
@@ -83,10 +78,12 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
                 HeosPlayer player = playerMap.get(playerPID);
                 ThingUID uid = new ThingUID(THING_TYPE_PLAYER, playerMap.get(playerPID).getPid());
                 Map<String, Object> properties = new HashMap<>();
-                properties.put(NAME, player.getName());
-                properties.put(PID, player.getPid());
-                properties.put(PLAYER_TYPE, player.getModel());
-                properties.put(HOST, player.getIp());
+                properties.put(PROP_NAME, player.getName());
+                properties.put(PROP_PID, player.getPid());
+                properties.put(PROP_MODEL, player.getModel());
+                properties.put(PROP_VERSION, player.getVersion());
+                properties.put(PROP_NETOWRK, player.getNetwork());
+                properties.put(PROP_IP, player.getIp());
                 DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(player.getName())
                         .withProperties(properties).withBridge(bridgeUID).build();
                 thingDiscovered(result);
@@ -108,17 +105,21 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
 
                 for (String groupGID : groupMap.keySet()) {
                     HeosGroup group = groupMap.get(groupGID);
+                    String groupMemberHash = group.getGroupMemberHash();
                     // Using an unsigned hashCode from the group members to identify
                     // the group and generates the Thing UID.
                     // This allows identifying the group even if the sorting within the group has changed
-                    ThingUID uid = new ThingUID(THING_TYPE_GROUP, group.getGroupMemberHash());
+                    ThingUID uid = new ThingUID(THING_TYPE_GROUP, groupMemberHash);
                     Map<String, Object> properties = new HashMap<>();
-                    properties.put(NAME, group.getName());
-                    properties.put(GROUP_MEMBER_PID_LIST, group.getGroupMembersAsString());
+                    properties.put(PROP_NAME, group.getName());
+                    properties.put(PROP_GID, group.getGid());
+                    properties.put(PROP_GROUP_MEMBERS, group.getGroupMembersAsString());
+                    properties.put(PROP_GROUP_LEADER, group.getLeader());
+                    properties.put(PROP_GROUP_HASH, group.getGroupMemberHash());
                     DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(group.getName())
                             .withProperties(properties).withBridge(bridgeUID).build();
                     thingDiscovered(result);
-                    bridge.setThingStatusOnline(uid);
+                    bridge.setGroupOnline(group, uid);
                 }
             } else {
                 logger.debug("No HEOS Groups found");
@@ -138,7 +139,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
                 ThingUID uid = new ThingUID(THING_TYPE_GROUP, removedGroupMap.get(key).getGroupMemberHash());
                 logger.debug("Removed HEOS Group: {}", uid);
                 thingRemoved(uid);
-                bridge.setThingStatusOffline(uid);
+                bridge.setGroupOffline(removedGroupMap.get(key).getGroupMemberHash());
             }
         }
     }
@@ -161,7 +162,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
     protected void startBackgroundDiscovery() {
         logger.trace("Start HEOS Player background discovery");
         if (scanningJob == null || scanningJob.isCancelled()) {
-            this.scanningJob = scheduler.scheduleWithFixedDelay(this.scanningRunnable, INITIAL_DELAY, SCAN_INTERVAL,
+            this.scanningJob = scheduler.scheduleWithFixedDelay(this::startScan, INITIAL_DELAY, SCAN_INTERVAL,
                     TimeUnit.SECONDS);
         }
         logger.trace("scanningJob active");
@@ -170,7 +171,6 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stop HEOS Player background discovery");
-
         if (scanningJob != null && !scanningJob.isCancelled()) {
             scanningJob.cancel(true);
             scanningJob = null;
@@ -184,15 +184,8 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
     }
 
     public void scanForNewPlayers() {
-        scanningRunnable.run();
-    }
-
-    public class PlayerScan implements Runnable {
-        @Override
-        public void run() {
-            removeOlderResults(getTimestampOfLastScan());
-            startScan();
-        }
+        removeOlderResults(getTimestampOfLastScan());
+        startScan();
     }
 
     @Override
