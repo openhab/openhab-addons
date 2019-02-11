@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.jmdns.ServiceInfo;
 
@@ -28,6 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.draytonwiser.DraytonWiserBindingConstants;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

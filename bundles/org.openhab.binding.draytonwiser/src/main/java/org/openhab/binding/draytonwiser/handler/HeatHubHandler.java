@@ -20,7 +20,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Logger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,6 +46,7 @@ import org.openhab.binding.draytonwiser.internal.config.Schedule;
 import org.openhab.binding.draytonwiser.internal.config.SmartPlug;
 import org.openhab.binding.draytonwiser.internal.config.SmartValve;
 import org.openhab.binding.draytonwiser.internal.config.Station;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
