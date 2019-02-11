@@ -145,7 +145,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
             s.setTimeout(PING_TIMEOUT_IN_MS);
             // Ping devices
             s.setUseIcmpPing(true);
-            s.setUseArpPing(true, configuration.arpPingToolPath);
+            s.setUseArpPing(true, configuration.arpPingToolPath, configuration.arpPingUtilMethod);
             // TCP devices
             s.setServicePorts(tcpServicePorts);
 
