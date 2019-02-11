@@ -151,7 +151,6 @@
 		<item-type>Switch</item-type>
 		<label>Blocked</label>
 		<description>Is device blocked</description>
-		<state readOnly="false"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

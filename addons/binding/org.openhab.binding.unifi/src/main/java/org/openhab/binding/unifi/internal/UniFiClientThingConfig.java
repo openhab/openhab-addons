@@ -29,8 +29,6 @@ public class UniFiClientThingConfig {
 
     private int considerHome = 180;
 
-    private boolean blocked = false;
-
     public String getClientID() {
         return cid;
     }
@@ -41,10 +39,6 @@ public class UniFiClientThingConfig {
 
     public int getConsiderHome() {
         return considerHome;
-    }
-
-    public boolean getBlocked() {
-        return blocked;
     }
 
     public UniFiClientThingConfig tidy() {
@@ -60,7 +54,7 @@ public class UniFiClientThingConfig {
     @Override
     public String toString() {
         return String.format("UniFiClientConfig{cid: '%s', site: '%s', considerHome: %d, blocked: %s}", cid, site,
-                considerHome, blocked);
+                considerHome);
     }
 
 }

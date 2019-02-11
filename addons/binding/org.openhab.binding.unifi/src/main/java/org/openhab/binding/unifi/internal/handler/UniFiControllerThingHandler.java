@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,7 +52,6 @@ import org.openhab.binding.unifi.internal.api.UniFiSSLException;
 import org.openhab.binding.unifi.internal.api.model.UniFiClient;
 import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
 import org.openhab.binding.unifi.internal.api.model.UniFiSite;
-import org.openhab.binding.unifi.internal.api.model.UniFiWirelessClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,6 +174,10 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
         logger.debug("Ignoring command = {} for channel = {} - the UniFi binding is read-only!", command, channelUID);
     }
 
+    public @Nullable UniFiController getController() {
+        return controller;
+    }
+
     public int getRefreshInterval() {
         return config.getRefresh();
     }
@@ -195,7 +197,7 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
                         suffix = client.getHostname();
                         break;
                     case CACHE_KEY_PREFIX_BLOCKED:
-                        suffix = Boolean.toString(client.getBlocked());
+                        suffix = Boolean.toString(client.isBlocked());
                         break;
                     case CACHE_KEY_PREFIX_ALIAS:
                         suffix = client.getAlias();
@@ -243,20 +245,9 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
         return client;
     }
 
-    public UniFiClient @Nullable [] setClientBlock(UniFiClient client) throws UniFiException {
-        if (controller != null) {
-            return controller.blockStation(client);
-        } else {
-            return null;
-        }
-    }
-
-    public UniFiClient @Nullable [] setClientUnblock(UniFiClient client) throws UniFiException {
-        if (controller != null) {
-            return controller.unblockStation(client);
-        } else {
-            return null;
-        }
+    public String getSiteNameForClient(UniFiClient client) {
+        UniFiSite site = sitesCache.get(client.getSiteId());
+        return site.getName();
     }
 
     // Private API
