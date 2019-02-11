@@ -15,6 +15,8 @@ package org.openhab.binding.network.internal;
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.network.internal.utils.NetworkUtils;
+import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
 
 /**
  * Contains the binding configuration and default values. The field names represent the configuration names,
@@ -28,11 +30,15 @@ public class NetworkBindingConfiguration {
     public Boolean allowDHCPlisten = true;
     public BigDecimal cacheDeviceStateTimeInMS = BigDecimal.valueOf(2000);
     public String arpPingToolPath = "arping";
+    public @NonNullByDefault({}) ArpPingUtilEnum arpPingUtilMethod;
 
     public void update(NetworkBindingConfiguration newConfiguration) {
         this.allowSystemPings = newConfiguration.allowSystemPings;
         this.allowDHCPlisten = newConfiguration.allowDHCPlisten;
         this.cacheDeviceStateTimeInMS = newConfiguration.cacheDeviceStateTimeInMS;
         this.arpPingToolPath = newConfiguration.arpPingToolPath;
+
+        NetworkUtils networkUtils = new NetworkUtils();
+        this.arpPingUtilMethod = networkUtils.determineNativeARPpingMethod(arpPingToolPath);
     }
 }
