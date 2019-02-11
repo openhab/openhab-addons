@@ -26,7 +26,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
@@ -58,8 +57,8 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     private boolean useDHCPsniffing = false;
     private String arpPingState = "Disabled";
     private String ipPingState = "Disabled";
+    protected String arpPingUtilPath = "";
     protected ArpPingUtilEnum arpPingMethod = ArpPingUtilEnum.UNKNOWN_TOOL;
-    private String arpPingUtilPath = "arping";
     protected @Nullable IpPingMethodEnum pingMethod = null;
     private boolean iosDevice;
     private Set<Integer> tcpPorts = new HashSet<>();
@@ -112,7 +111,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                 InetAddress destinationAddress = InetAddress.getByName(hostname);
                 if (!destinationAddress.equals(cachedDestination)) {
                     logger.trace("host name resolved to other address, (re-)setup presence detection");
-                    setUseArpPing(true, arpPingUtilPath, destinationAddress);
+                    setUseArpPing(true, destinationAddress);
                     if (useDHCPsniffing) {
                         if (cachedDestination != null) {
                             disableDHCPListen(cachedDestination);
@@ -179,9 +178,8 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      * @param enable Enable or disable ARP ping
      * @param arpPingUtilPath c
      */
-    public void setUseArpPing(boolean enable, String arpPingUtilPath, @Nullable InetAddress destinationAddress) {
-        this.arpPingUtilPath = arpPingUtilPath;
-        if (!enable || StringUtils.isBlank(arpPingUtilPath)) {
+    private void setUseArpPing(boolean enable, @Nullable InetAddress destinationAddress) {
+        if (!enable || arpPingUtilPath.isEmpty()) {
             arpPingState = "Disabled";
             arpPingMethod = ArpPingUtilEnum.UNKNOWN_TOOL;
             return;
@@ -190,7 +188,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             arpPingMethod = ArpPingUtilEnum.UNKNOWN_TOOL;
             return;
         }
-        arpPingMethod = networkUtils.determineNativeARPpingMethod(arpPingUtilPath);
+
         switch (arpPingMethod) {
             case UNKNOWN_TOOL: {
                 arpPingState = "Unknown arping tool";
@@ -217,8 +215,10 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      * @param enable Enable or disable ARP ping
      * @param arpPingUtilPath enableDHCPListen(useDHCPsniffing);
      */
-    public void setUseArpPing(boolean enable, String arpPingUtilPath) {
-        setUseArpPing(enable, arpPingUtilPath, destination.getValue());
+    public void setUseArpPing(boolean enable, String arpPingUtilPath, ArpPingUtilEnum arpPingUtilMethod) {
+        setUseArpPing(enable, destination.getValue());
+        this.arpPingUtilPath = arpPingUtilPath;
+        this.arpPingMethod = arpPingUtilMethod;
     }
 
     public String getArpPingState() {
