@@ -2,7 +2,15 @@
 
 Visonic produces the Powermax alarm panel series (PowerMax, PowerMax+, PowerMaxExpress, PowerMaxPro and PowerMaxComplete) and the Powermaster alarm series (PowerMaster 10 and PowerMaster 30). This binding allows you to control the alarm panel (arm/disarm) and allows you to use the Visonic sensors (movement, door contact, ...) within openHAB.
 
-The PowerMax provides support for a serial interface that can be connected to the machine running openHAB. The serial interface is not installed by default but can be ordered from any PowerMax vendor (called the Visonic RS-232 Adaptor Kit).
+The PowerMax provides support for a serial interface. This serial interface is not installed by default but can be ordered from any PowerMax vendor (called the Visonic RS-232 Adaptor Kit).
+
+In case your alarm panel is directly connected to a serial port of your openHAB server (or to an USB port through a serial to USB converter), you must setup a serial connection thing type in openHAB.
+
+But you even don't need to have your alarm panel directly connected to your openHAB server. You can connect it for example to a Raspberry PI and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP). In this case, you must setup an IP connection thing type in openHAB. Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444:
+
+```
+4444:raw:0:/dev/ttyUSB0:9600 8DATABITS NONE 1STOPBIT
+```
 
 Visonic does not provide a specification of the RS232 protocol and, thus, the binding uses the available protocol specification given at the [​domoticaforum](http://www.domoticaforum.eu/viewtopic.php?f=68&t=6581).
 
