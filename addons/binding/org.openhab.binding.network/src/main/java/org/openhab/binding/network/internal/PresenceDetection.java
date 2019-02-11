@@ -178,7 +178,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      * @param enable Enable or disable ARP ping
      * @param arpPingUtilPath c
      */
-    public void setUseArpPing(boolean enable, @Nullable InetAddress destinationAddress) {
+    private void setUseArpPing(boolean enable, @Nullable InetAddress destinationAddress) {
         if (!enable || arpPingUtilPath.isEmpty()) {
             arpPingState = "Disabled";
             arpPingMethod = ArpPingUtilEnum.UNKNOWN_TOOL;
@@ -189,7 +189,6 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             return;
         }
 
-        arpPingMethod = networkUtils.determineNativeARPpingMethod(arpPingUtilPath);
         switch (arpPingMethod) {
             case UNKNOWN_TOOL: {
                 arpPingState = "Unknown arping tool";

@@ -15,7 +15,6 @@ package org.openhab.binding.network.internal;
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.network.internal.utils.NetworkUtils;
 import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
 
@@ -31,29 +30,15 @@ public class NetworkBindingConfiguration {
     public Boolean allowDHCPlisten = true;
     public BigDecimal cacheDeviceStateTimeInMS = BigDecimal.valueOf(2000);
     public String arpPingToolPath = "arping";
-
-    private @Nullable ArpPingUtilEnum arpPingUtilType = null;
+    public @NonNullByDefault({}) ArpPingUtilEnum arpPingUtilMethod;
 
     public void update(NetworkBindingConfiguration newConfiguration) {
         this.allowSystemPings = newConfiguration.allowSystemPings;
         this.allowDHCPlisten = newConfiguration.allowDHCPlisten;
         this.cacheDeviceStateTimeInMS = newConfiguration.cacheDeviceStateTimeInMS;
         this.arpPingToolPath = newConfiguration.arpPingToolPath;
-        arpPingUtilType = null;
-    }
 
-    /**
-     * get (or detect) the type of the arpping util
-     *
-     * @return the type of the arpping util
-     */
-    public ArpPingUtilEnum getArpPingUtilMethod() {
-        if (arpPingUtilType != null) {
-            return arpPingUtilType;
-        } else {
-            NetworkUtils networkUtils = new NetworkUtils();
-            arpPingUtilType = networkUtils.determineNativeARPpingMethod(arpPingToolPath);
-            return arpPingUtilType;
-        }
+        NetworkUtils networkUtils = new NetworkUtils();
+        this.arpPingUtilMethod = networkUtils.determineNativeARPpingMethod(arpPingToolPath);
     }
 }
