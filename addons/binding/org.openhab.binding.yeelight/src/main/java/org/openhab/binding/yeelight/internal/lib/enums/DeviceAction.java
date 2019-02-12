@@ -14,6 +14,7 @@ package org.openhab.binding.yeelight.internal.lib.enums;
 
 /**
  * @author Coaster Li - Initial contribution
+ * @author Joe Ho - Added duration
  */
 public enum DeviceAction {
     open,
@@ -28,6 +29,7 @@ public enum DeviceAction {
 
     private String mStrValue;
     private int mIntValue;
+    private int mIntDuration;
 
     public void putValue(String value) {
         this.mStrValue = value;
@@ -37,11 +39,19 @@ public enum DeviceAction {
         this.mIntValue = value;
     }
 
+    public void putDuration(int duration) {
+        this.mIntDuration = duration;
+    }
+
     public String strValue() {
         return mStrValue;
     }
 
     public int intValue() {
         return mIntValue;
+    }
+
+    public int intDuration() {
+        return mIntDuration;
     }
 }
