@@ -36,7 +36,7 @@ All devices support some of the following channels:
 |--------|------|------|
 |`brightness` | `Dimmer` | This channel supports adjusting the brightness value, it is available on `dolphin` and `ceiling`.|
 |`color` | `Color` | This channel supports color control, it is available on `wonder` and `stripe`.|
-|`colorTemperature` | `Dimmer` | This channel supports adjusting the color temperature, it is available on `wonder` and `stripe` and `ceiling.|
+|`colorTemperature` | `Dimmer` | This channel supports adjusting the color temperature, it is available on `wonder` and `stripe` and `ceiling`.|
 
 ## Full Example
 
@@ -50,4 +50,5 @@ Items:
 
 ```
 Color YeelightLEDColor { channel="yeelight:stripe:1:color" }
+Switch YeelightLEDSwitch { channel="yeelight:stripe:1:color" }
 ```
