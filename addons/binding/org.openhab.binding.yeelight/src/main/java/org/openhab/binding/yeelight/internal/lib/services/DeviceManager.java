@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * The {@link DeviceManager} is a class for managing all devices.
  *
  * @author Coaster Li - Initial contribution
+ * @author Joe Ho - Added duration
  */
 public class DeviceManager {
     private final Logger logger = LoggerFactory.getLogger(DeviceManager.class);
@@ -207,31 +208,31 @@ public class DeviceManager {
         if (device != null) {
             switch (action) {
                 case open:
-                    device.open();
+                    device.open(action.intDuration());
                     break;
                 case close:
-                    device.close();
+                    device.close(action.intDuration());
                     break;
                 case brightness:
-                    device.setBrightness(action.intValue());
+                    device.setBrightness(action.intValue(), action.intDuration());
                     break;
                 case color:
-                    device.setColor(action.intValue());
+                    device.setColor(action.intValue(), action.intDuration());
                     break;
                 case colortemperature:
-                    device.setCT(action.intValue());
+                    device.setCT(action.intValue(), action.intDuration());
                     break;
                 case increase_bright:
-                    device.increaseBrightness();
+                    device.increaseBrightness(action.intDuration());
                     break;
                 case decrease_bright:
-                    device.decreaseBrightness();
+                    device.decreaseBrightness(action.intDuration());
                     break;
                 case increase_ct:
-                    device.increaseCt();
+                    device.increaseCt(action.intDuration());
                     break;
                 case decrease_ct:
-                    device.decreaseCt();
+                    device.decreaseCt(action.intDuration());
                     break;
                 default:
                     break;
