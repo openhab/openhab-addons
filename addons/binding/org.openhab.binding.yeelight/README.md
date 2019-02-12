@@ -22,11 +22,12 @@ Yeelight smart LED devices announce themselves on the network through UPnP, so t
 
 ## Thing Configuration
 
-All Yeelight things require the `deviceId` from the device as a configuration parameter:
+All Yeelight things require the `deviceId` from the device as a configuration parameter. This table shows all available parameters:
 
-| Parameter           | Values                                    | Mandatory |
-|---------------------|-------------------------------------------|-----------|
-| deviceId            | ID of the Yeelight device                 | Yes       |
+| Parameter           | Values                                         | Mandatory |
+|---------------------|------------------------------------------------|-----------|
+| deviceId            | ID of the Yeelight device                      | Yes       |
+| duration            | Duration for changing between different states | No        |
 
 ## Channels
 
@@ -43,7 +44,7 @@ All devices support some of the following channels:
 Things:
 
 ```
-Thing yeelight:stripe:1 [ deviceId="0x000000000321a1bc" ]
+Thing yeelight:stripe:1 [ deviceId="0x000000000321a1bc", duration=1000 ]
 ```
 
 Items:
