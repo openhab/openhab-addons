@@ -38,6 +38,7 @@ import com.google.gson.JsonParser;
  *
  * @author Coaster Li - Initial contribution
  * @author Daniel Walters - Correct handling of brightness
+ * @author Joe Ho - Added duration to some commands
  */
 public abstract class DeviceBase {
     private final Logger logger = LoggerFactory.getLogger(DeviceBase.class);
@@ -194,57 +195,59 @@ public abstract class DeviceBase {
         }
     }
 
-    public void open() {
-        mConnection.invoke(new DeviceMethod(MethodAction.SWITCH, new Object[] { "on", "smooth", 500 }));
+    public void open(int duration) {
+        mConnection.invoke(
+                new DeviceMethod(MethodAction.SWITCH, new Object[] { "on", DeviceMethod.EFFECT_SMOOTH, duration }));
     }
 
-    public void close() {
-        mConnection.invoke(new DeviceMethod(MethodAction.SWITCH, new Object[] { "off", "smooth", 500 }));
+    public void close(int duration) {
+        mConnection.invoke(
+                new DeviceMethod(MethodAction.SWITCH, new Object[] { "off", DeviceMethod.EFFECT_SMOOTH, duration }));
     }
 
-    public void decreaseBrightness() {
+    public void decreaseBrightness(int duration) {
         int bright = getDeviceStatus().getBrightness() - 10;
         if (bright <= 0) {
-            close();
+            close(duration);
         } else {
-            setBrightness(bright);
+            setBrightness(bright, duration);
         }
     }
 
-    public void increaseBrightness() {
+    public void increaseBrightness(int duration) {
         int bright = getDeviceStatus().getBrightness() + 10;
         if (bright > 100) {
             bright = 100;
         }
-        setBrightness(bright);
+        setBrightness(bright, duration);
     }
 
-    public void setBrightness(int brightness) {
-        mConnection.invoke(MethodFactory.buildBrightnessMethd(brightness, DeviceMethod.EFFECT_SMOOTH, 500));
+    public void setBrightness(int brightness, int duration) {
+        mConnection.invoke(MethodFactory.buildBrightnessMethd(brightness, DeviceMethod.EFFECT_SMOOTH, duration));
     }
 
-    public void setColor(int color) {
-        mConnection.invoke(MethodFactory.buildRgbMethod(color, DeviceMethod.EFFECT_SMOOTH, 500));
+    public void setColor(int color, int duration) {
+        mConnection.invoke(MethodFactory.buildRgbMethod(color, DeviceMethod.EFFECT_SMOOTH, duration));
     }
 
-    public void increaseCt() {
+    public void increaseCt(int duration) {
         int ct = getDeviceStatus().getCt() - ((mMaxCt - mMinCt) / 10);
         if (ct < mMinCt) {
             ct = mMinCt;
         }
-        setCT(ct);
+        setCT(ct, duration);
     }
 
-    public void decreaseCt() {
+    public void decreaseCt(int duration) {
         int ct = getDeviceStatus().getCt() + ((mMaxCt - mMinCt) / 10);
         if (ct > mMaxCt) {
             ct = mMaxCt;
         }
-        setCT(ct);
+        setCT(ct, duration);
     }
 
-    public void setCT(int ct) {
-        mConnection.invoke(MethodFactory.buildCTMethod(ct, DeviceMethod.EFFECT_SMOOTH, 500));
+    public void setCT(int ct, int duration) {
+        mConnection.invoke(MethodFactory.buildCTMethod(ct, DeviceMethod.EFFECT_SMOOTH, duration));
     }
 
     public void connect() {
