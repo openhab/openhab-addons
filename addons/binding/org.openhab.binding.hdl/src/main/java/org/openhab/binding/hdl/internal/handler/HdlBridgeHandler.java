@@ -67,11 +67,11 @@ public class HdlBridgeHandler extends BaseBridgeHandler {
 
     private ScheduledFuture<?> listeningJob;
 
-    public static final int CONNECTION_REFRESH_INTERVAL = 100;
+    public static final int CONNECTION_REFRESH_INTERVAL_MILLISECONDS = 100;
     public static final int MAX_PACKET_SIZE = 512;
     public static final int BUFFER_SIZE = 512;
-    public static final int POLLING_REFRESH_INTERVAL = 5;
-    public static final int REPORT_INTERVAL = 2000;
+    // public static final int POLLING_REFRESH_INTERVAL = 5;
+    // public static final int REPORT_INTERVAL = 2000;
 
     public static String ipAddress;
     public static int portNr;
@@ -107,8 +107,8 @@ public class HdlBridgeHandler extends BaseBridgeHandler {
 
             if (listeningJob == null || listeningJob.isCancelled()) {
                 try {
-                    listeningJob = scheduler.scheduleWithFixedDelay(listeningRunnable, 0, CONNECTION_REFRESH_INTERVAL,
-                            TimeUnit.MILLISECONDS);
+                    listeningJob = scheduler.scheduleWithFixedDelay(listeningRunnable, 0,
+                            CONNECTION_REFRESH_INTERVAL_MILLISECONDS, TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                             "An exception occurred while scheduling the connection job");

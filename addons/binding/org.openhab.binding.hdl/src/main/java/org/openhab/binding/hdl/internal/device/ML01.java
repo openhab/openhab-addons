@@ -27,7 +27,7 @@ import org.openhab.binding.hdl.internal.handler.HdlPacket;
 
 public class ML01 extends Device {
 
-    private Date time = null;
+    private Date dateTime = null;
     private OnOffType uvSwitch200 = null;
     private OnOffType uvSwitch201 = null;
     private OnOffType uvSwitch202 = null;
@@ -77,6 +77,7 @@ public class ML01 extends Device {
         super(c);
     }
 
+    @SuppressWarnings("deprecation")
     public void treatHDLPacketForDevice(HdlPacket p) {
         switch (p.commandType) {
             case Broadcast_System_Date_and_Time_Every_Minute:
@@ -832,11 +833,11 @@ public class ML01 extends Device {
     }
 
     public void setDateSetpoint(Date date) {
-        this.time = date;
+        this.dateTime = date;
     }
 
     public Date getDateSetpoint() {
-        return time;
+        return dateTime;
     }
 
     @Override

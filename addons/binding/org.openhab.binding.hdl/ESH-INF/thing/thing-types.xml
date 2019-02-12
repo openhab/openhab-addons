@@ -9,7 +9,7 @@
 		<label>Logic</label>
 		<description>Device type for this Logic Panel</description>
 		<channels>
-			<channel id="time" typeId="time"></channel>
+			<channel id="time" typeId="dateTime"></channel>
 			<channel id="UVSwitch200" typeId="UVSwitch"></channel>
 			<channel id="UVSwitch201" typeId="UVSwitch"></channel>
 			<channel id="UVSwitch202" typeId="UVSwitch"></channel>
@@ -421,12 +421,12 @@
 		<state pattern="%d %%" readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="time">
-		<item-type>Number</item-type>
-		<label>time</label>
+	<channel-type id="DateTime">
+		<item-type>DateTime</item-type>
+		<label>DateTime</label>
 		<description>Current time</description>
-		<category>Number</category>
-		<state pattern="%d %%" readOnly="true"></state>
+		<category>Date</category>
+		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="MotionSensor">
