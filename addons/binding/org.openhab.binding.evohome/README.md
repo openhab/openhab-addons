@@ -74,42 +74,46 @@ None
 
 ### demo.things
 
-    Bridge evohome:account:your_account_alias [ username="your_user_name", password="your_password" ]
-    {
-        display your_display_alias  [ id="1234" ]
-        heatingzone your_zone_alias [ id="5678" ]
-    }
-    
-    
+```
+Bridge evohome:account:your_account_alias [ username="your_user_name", password="your_password" ]
+{
+    display your_display_alias  [ id="1234" ]
+    heatingzone your_zone_alias [ id="5678" ]
+}
+```
+
 ### demo.items  
 
-    // evohome Display
-    String DemoMode                 { channel="evohome:display:your_account_alias:your_display_alias:SystemMode" }
+```
+// evohome Display
+String DemoMode                 { channel="evohome:display:your_account_alias:your_display_alias:SystemMode" }
 
-    // evohome Heatingzone
-    Number DemoZoneTemperature    { channel="evohome:heatingzone:your_account_alias:your_zone_alias:Temperature" }
-    String DemoZoneSetPointStatus { channel="evohome:heatingzone:your_account_alias:your_zone_alias:SetPointStatus" }
-    Number DemoZoneSetPoint       { channel="evohome:heatingzone:your_account_alias:your_zone_alias:SetPoint" }
-    
+// evohome Heatingzone
+Number DemoZoneTemperature    { channel="evohome:heatingzone:your_account_alias:your_zone_alias:Temperature" }
+String DemoZoneSetPointStatus { channel="evohome:heatingzone:your_account_alias:your_zone_alias:SetPointStatus" }
+Number DemoZoneSetPoint       { channel="evohome:heatingzone:your_account_alias:your_zone_alias:SetPoint" }
+```
+
 ### demo.sitemap
-    
-    sitemap evohome label="evohome Menu"
-    {
-        Frame label="evohome display" {
-            Selection label="[%s]" item=DemoMode mappings=[
-              "Auto"="Normal",
-              "AutoWithEco"="Eco",
-              "Away"="Away",
-              "DayOff"="Day Off",
-              "HeatingOff"="Off",
-              "Custom"="Custom"
-            ]
-        }
-        
-        Frame label="evohome heating zone" {
-            Text     label="Temperature"      item=DemoZoneTemperature      
-            Text     label="Status"           item=DemoZoneSetPointStatus   
-            Setpoint label="Zone set point"   item=DemoZoneSetPoint minValue=5 maxValue=35 step=0.5
-        }
+
+```
+sitemap evohome label="evohome Menu"
+{
+    Frame label="evohome display" {
+        Selection label="[%s]" item=DemoMode mappings=[
+          "Auto"="Normal",
+          "AutoWithEco"="Eco",
+          "Away"="Away",
+          "DayOff"="Day Off",
+          "HeatingOff"="Off",
+          "Custom"="Custom"
+        ]
     }
 
+    Frame label="evohome heating zone" {
+        Text     label="Temperature"      item=DemoZoneTemperature      
+        Text     label="Status"           item=DemoZoneSetPointStatus   
+        Setpoint label="Zone set point"   item=DemoZoneSetPoint minValue=5 maxValue=35 step=0.5
+    }
+}
+```
