@@ -107,7 +107,7 @@ public class UniFiController {
     }
 
     public void blockStation(UniFiClient client, boolean block, String siteName) throws UniFiException {
-        UniFiControllerRequest<UniFiClient[]> req = newRequest(UniFiClient[].class);
+        UniFiControllerRequest<Void> req = newRequest(Void.class);
 
         String url = "/api/s/" + siteName + "/cmd/stamgr";
         req.setPath(url);
