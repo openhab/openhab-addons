@@ -120,56 +120,59 @@ Pentair things support a variety of channels as seen below in the following tabl
 
 The following is an example of an item file (pentair.items):
 
-    Group gPool          "Pool"
-    
-    Number Pool_Temp               "Pool Temp [%.1f °F]"          <temperature>   (gPool)   { channel = "pentair:easytouch:1:main:pooltemp" }
-    Number Spa_Temp                "Spa Temp [%.1f °F]"           <temperature>   (gPool)   { channel = "pentair:easytouch:1:main:spatemp" }
-    Number Air_Temp                "Air Temp [%.1f °F]"           <temperature>   (gPool)   { channel = "pentair:easytouch:1:main:airtemp" }
-    Number Solar_Temp              "Solar Temp [%.1f °F]"         <temperature>   (gPool)   { channel = "pentair:easytouch:1:main:solartemp" }
-    
-    Number PoolHeatMode            "Pool Heat Mode [%d]"                          (gPool)   { channel="pentair:easytouch:1:main:poolheatmode" }
-    String PoolHeatModeStr         "Pool Heat Mode [%s]"                          (gPool)   { channel="pentair:easytouch:1:main:poolheatmodestr" }
-    Number SpaHeatMode             "Spa Heat Mode [%d]"                           (gPool)   { channel="pentair:easytouch:1:main:spaheatmode" }
-    String SpaHeatModeStr          "Spa Heat Mode [%s]"                           (gPool)   { channel="pentair:easytouch:1:main:spaheatmodestr" }
-    PoolSetPoint                   "Pool Set Point [%.1f °F]"                     (gPool)   { channel="pentair:easytouch:1:main:poolsetpoint" }
-    Number SpaSetPoint             "Spa Set Point [%.1f °F]"                      (gPool)   { channel="pentair:easytouch:1:main:spasetpoint" }    
-    Number HeatActive              "Heat Active [%d]"                             (gPool)  { channel="pentair:easytouch:1:main:heatactive" }
-    
-    Switch Mode_Spa                 "Spa Mode"                                    (gPool)  { channel = "pentair:easytouch:1:main:spa" }
-    Switch Mode_Pool                "Pool Mode"                                   (gPool)  { channel = "pentair:easytouch:1:main:pool" }
-    Switch Mode_PoolLight           "Pool Light"                                  (gPool)  { channel = "pentair:easytouch:1:main:aux1" }
-    Switch Mode_SpaLight            "Spa Light"                                   (gPool)  { channel = "pentair:easytouch:1:main:aux2" }
-    Switch Mode_Jets                "Jets"                                        (gPool)  { channel = "pentair:easytouch:1:main:aux3" }
-    Switch Mode_Boost               "Boost Mode"                                  (gPool)  { channel = "pentair:easytouch:1:main:aux4" }
-    Switch Mode_Aux5                "Aux5 Mode"                                   (gPool)  { channel = "pentair:easytouch:1:main:aux5" }
-    Switch Mode_Aux6                "Aux6 Mode"                                   (gPool)  { channel = "pentair:easytouch:1:main:aux6" }
-    Switch Mode_Aux7                "Aux7 Mode"                                   (gPool)  { channel = "pentair:easytouch:1:main:aux7" }
-    Switch Mode_Spillway            "Spillway Mode"                               (gPool)  { channel = "pentair:easytouch:1:main:feature1" }
-    
-    Number SaltOutput               "Salt Output [%d%%]"                          (gPool)  { channel = "pentair:intellichlor:1:ic40:saltoutput" }
-    Number Salinity                 "Salinity [%d ppm]"                           (gPool)  { channel = "pentair:intellichlor:1:ic40:salinity" }
-    
-    Switch Pump_Run                 "Pump running [%d]"                           (gPool) { channel = "pentair:intelliflo:1:pump1:run" }
-    Number Pump_DriveState          "Pump drivestate [%d]"                        (gPool) { channel = "pentair:intelliflo:1:pump1:drivestate" }
-    Number Pump_Mode                "Pump Mode [%d]"                              (gPool) { channel = "pentair:intelliflo:1:pump1:mode" }
-    Number Pump_RPM                 "Pump RPM [%d]"                               (gPool) { channel = "pentair:intelliflo:1:pump1:rpm" }
-    Number Pump_Power               "Pump Power [%d W]"                           (gPool) { channel = "pentair:intelliflo:1:pump1:power" }
-    Number Pump_Error               "Pump Error [%d]"                             (gPool) { channel = "pentair:intelliflo:1:pump1:error" }
-    Number Pump_PPC                 "Pump PPC [%d]"                               (gPool) { channel = "pentair:intelliflo:1:pump1:ppc" }
+```
+Group gPool          "Pool"
+
+Number Pool_Temp               "Pool Temp [%.1f °F]"          <temperature>   (gPool)   { channel = "pentair:easytouch:1:main:pooltemp" }
+Number Spa_Temp                "Spa Temp [%.1f °F]"           <temperature>   (gPool)   { channel = "pentair:easytouch:1:main:spatemp" }
+Number Air_Temp                "Air Temp [%.1f °F]"           <temperature>   (gPool)   { channel = "pentair:easytouch:1:main:airtemp" }
+Number Solar_Temp              "Solar Temp [%.1f °F]"         <temperature>   (gPool)   { channel = "pentair:easytouch:1:main:solartemp" }
+
+Number PoolHeatMode            "Pool Heat Mode [%d]"                          (gPool)   { channel="pentair:easytouch:1:main:poolheatmode" }
+String PoolHeatModeStr         "Pool Heat Mode [%s]"                          (gPool)   { channel="pentair:easytouch:1:main:poolheatmodestr" }
+Number SpaHeatMode             "Spa Heat Mode [%d]"                           (gPool)   { channel="pentair:easytouch:1:main:spaheatmode" }
+String SpaHeatModeStr          "Spa Heat Mode [%s]"                           (gPool)   { channel="pentair:easytouch:1:main:spaheatmodestr" }
+PoolSetPoint                   "Pool Set Point [%.1f °F]"                     (gPool)   { channel="pentair:easytouch:1:main:poolsetpoint" }
+Number SpaSetPoint             "Spa Set Point [%.1f °F]"                      (gPool)   { channel="pentair:easytouch:1:main:spasetpoint" }    
+Number HeatActive              "Heat Active [%d]"                             (gPool)  { channel="pentair:easytouch:1:main:heatactive" }
+
+Switch Mode_Spa                 "Spa Mode"                                    (gPool)  { channel = "pentair:easytouch:1:main:spa" }
+Switch Mode_Pool                "Pool Mode"                                   (gPool)  { channel = "pentair:easytouch:1:main:pool" }
+Switch Mode_PoolLight           "Pool Light"                                  (gPool)  { channel = "pentair:easytouch:1:main:aux1" }
+Switch Mode_SpaLight            "Spa Light"                                   (gPool)  { channel = "pentair:easytouch:1:main:aux2" }
+Switch Mode_Jets                "Jets"                                        (gPool)  { channel = "pentair:easytouch:1:main:aux3" }
+Switch Mode_Boost               "Boost Mode"                                  (gPool)  { channel = "pentair:easytouch:1:main:aux4" }
+Switch Mode_Aux5                "Aux5 Mode"                                   (gPool)  { channel = "pentair:easytouch:1:main:aux5" }
+Switch Mode_Aux6                "Aux6 Mode"                                   (gPool)  { channel = "pentair:easytouch:1:main:aux6" }
+Switch Mode_Aux7                "Aux7 Mode"                                   (gPool)  { channel = "pentair:easytouch:1:main:aux7" }
+Switch Mode_Spillway            "Spillway Mode"                               (gPool)  { channel = "pentair:easytouch:1:main:feature1" }
+
+Number SaltOutput               "Salt Output [%d%%]"                          (gPool)  { channel = "pentair:intellichlor:1:ic40:saltoutput" }
+Number Salinity                 "Salinity [%d ppm]"                           (gPool)  { channel = "pentair:intellichlor:1:ic40:salinity" }
+
+Switch Pump_Run                 "Pump running [%d]"                           (gPool) { channel = "pentair:intelliflo:1:pump1:run" }
+Number Pump_DriveState          "Pump drivestate [%d]"                        (gPool) { channel = "pentair:intelliflo:1:pump1:drivestate" }
+Number Pump_Mode                "Pump Mode [%d]"                              (gPool) { channel = "pentair:intelliflo:1:pump1:mode" }
+Number Pump_RPM                 "Pump RPM [%d]"                               (gPool) { channel = "pentair:intelliflo:1:pump1:rpm" }
+Number Pump_Power               "Pump Power [%d W]"                           (gPool) { channel = "pentair:intelliflo:1:pump1:power" }
+Number Pump_Error               "Pump Error [%d]"                             (gPool) { channel = "pentair:intelliflo:1:pump1:error" }
+Number Pump_PPC                 "Pump PPC [%d]"                               (gPool) { channel = "pentair:intelliflo:1:pump1:ppc" }
+```
 
 Here is an example sitemap:
 
-    Frame label="Pool" {
-       Switch item=Mode_Spa
-       Switch item=Mode_PoolLight
-       Switch item=Mode_SpaLight
-       Switch item=Mode_Jets
-       Text item=Pool_Temp valuecolor=[>82="red",>77="orange",<=77="blue"]
-       Text item=Spa_Temp valuecolor=[>97="red",>93="orange",<=93="blue"]
-       Setpoint item=SpaSetPoint minValue=85 maxValue=103 step=1.0
-       Group item=gPool label="Advanced"
-    }
-
+```
+Frame label="Pool" {
+   Switch item=Mode_Spa
+   Switch item=Mode_PoolLight
+   Switch item=Mode_SpaLight
+   Switch item=Mode_Jets
+   Text item=Pool_Temp valuecolor=[>82="red",>77="orange",<=77="blue"]
+   Text item=Spa_Temp valuecolor=[>97="red",>93="orange",<=93="blue"]
+   Setpoint item=SpaSetPoint minValue=85 maxValue=103 step=1.0
+   Group item=gPool label="Advanced"
+}
+```
 
 ## References
 
