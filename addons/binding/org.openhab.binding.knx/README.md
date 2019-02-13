@@ -64,7 +64,8 @@ Different kinds of channels are defined and can be used to group together Group 
 
 #### Standard Channel Types
 
-Standard channels are used most of the time. They are used in the common case where the physical state is owned by a decive within the KNX bus, e.g. by a switch actuator who "knows" whether the light is turned on or of or by a temperature sensor which reports the room temperature regularly.<br/><br/>
+Standard channels are used most of the time. They are used in the common case where the physical state is owned by a decive within the KNX bus, e.g. by a switch actuator who "knows" whether the light is turned on or of or by a temperature sensor which reports the room temperature regularly.
+
 Note: After changing the DPT of already existing Channels, openHab needs to be restarted for the changes to become effective.
 
 ##### Channel Type "switch"
