@@ -70,9 +70,9 @@ when
     Channel 'lirc:remote:local:Samsung:event' triggered KEY_DVD
 then
     // Toggle base boost on the AV Receiver
-    sendCommand(Remote_AVReceiver, "KEY_BASEBOOST")
+    Remote_AVReceiver.sendCommand("KEY_BASEBOOST")
     // Increase the volume by 5.
-    sendCommand(Remote_AVReceiver, "KEY_VOLUMEUP 5")
+    Remote_AVReceiver.sendCommand("KEY_VOLUMEUP 5")
 end
 ```
 
