@@ -192,6 +192,6 @@ then
             hsb = "160,100,60"
     }
 
-    sendCommand(Lamp_Color, hsb)
+    Lamp_Color.sendCommand(hsb)
 end
 ```
