@@ -606,15 +606,14 @@ rule "SendKeystrokeStringCommand"
 when   
     Item SwitchItemName received command ON
 then   
-    sendCommand(SEND_DSC_ALARM_COMMAND, "071,1*101#")
+    SEND_DSC_ALARM_COMMAND.sendCommand("071,1*101#")
 end
 
 rule "SendPollingCommand"
-
 when   
     Item SwitchItemName received command ON
 then   
-    sendCommand(SEND_DSC_ALARM_COMMAND, "000")
+    SEND_DSC_ALARM_COMMAND.sendCommand("000")
 end
 ```
 
