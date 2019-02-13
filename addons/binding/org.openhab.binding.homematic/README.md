@@ -406,19 +406,19 @@ rule "Display Test"
 when
     Item Button_bottom received update ON
 then
-    sendCommand(Display_line_1, "Line 1")
-    sendCommand(Display_line_3, "Line 3")
-    sendCommand(Display_line_5, "Line 5")
+    Display_line_1.sendCommand("Line 1")
+    Display_line_3.sendCommand("Line 3")
+    Display_line_5.sendCommand("Line 5")
 
-    sendCommand(Display_icon_1, "NONE")
-    sendCommand(Display_icon_3, "OPEN")
-    sendCommand(Display_icon_5, "INFO")
+    Display_icon_1.sendCommand("NONE")
+    Display_icon_3.sendCommand("OPEN")
+    Display_icon_5.sendCommand("INFO")
 
-    sendCommand(Display_color_1, "NONE")
-    sendCommand(Display_color_3, "RED")
-    sendCommand(Display_color_5, "BLUE")
+    Display_color_1.sendCommand("NONE")
+    Display_color_3.sendCommand("RED")
+    Display_color_5.sendCommand("BLUE")
 
-    sendCommand(Display_submit, ON)
+    Display_submit.sendCommand(ON)
 end
 ```
 
@@ -489,7 +489,7 @@ In scripts:
 ```javascript
 import org.eclipse.smarthome.core.types.RefreshType
 ...
-sendCommand(Var_1, RefreshType.REFRESH)
+Var_1.sendCommand(RefreshType.REFRESH)
 ```
 
 **Note:** adding new and removing deleted variables from the GATEWAY-EXTRAS Thing is currently not supported. You have to delete the Thing, start a scan and add it again.
