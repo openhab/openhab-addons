@@ -802,7 +802,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         private String constructCoverArtUrl(String mac, boolean coverart, String coverid, String artwork_url) {
             String hostAndPort;
             if (StringUtils.isNotEmpty(userId)) {
-                hostAndPort = "http://" + userId + ":" + password + "@" + host + ":" + webport;
+                hostAndPort = "http://" + encode(userId) + ":" + encode(password) + "@" + host + ":" + webport;
             } else {
                 hostAndPort = "http://" + host + ":" + webport;
             }
