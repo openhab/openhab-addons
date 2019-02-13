@@ -1,0 +1,6 @@
+<div layout="row" layout-align="end center" flex="100">
+	<div class="container">
+	   <md-button ng-repeat="option in ::$ctrl.commandOptions" 
+	       ng-click="$ctrl.sendCommand(option.command)">{{option.label}}</md-button>
+	</div>
+</div>
