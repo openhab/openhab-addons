@@ -105,7 +105,7 @@
             var deferred = $q.defer();
 
             if (!element) {
-                return deferred.resolve(undefined);
+                deferred.resolve(undefined);
             } else if (getOneFunction && self.singleElements[element.UID]) {
                 deferred.resolve(self.singleElements[element.UID]);
             } else if (getOneFunction) {
