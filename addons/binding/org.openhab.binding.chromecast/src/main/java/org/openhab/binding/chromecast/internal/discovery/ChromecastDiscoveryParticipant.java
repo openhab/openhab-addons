@@ -66,7 +66,7 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
         String friendlyName = service.getPropertyString("fn"); // friendly name;
 
         final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withThingType(getThingType(service))
-                .withProperties(properties).withRepresentationProperty(HOST).withLabel(friendlyName).build();
+                .withProperties(properties).withLabel(friendlyName).build();
 
         return result;
     }
@@ -96,5 +96,4 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
             return null;
         }
     }
-
 }

@@ -48,8 +48,6 @@
 			<channel id="trackNumber" typeId="trackNumber" />
 		</channels>
 
-		<representation-property>ipAddress</representation-property>
-
 		<config-description-ref uri="thing-type:chromecast:device" />
 	</thing-type>
 
@@ -97,8 +95,6 @@
 			<channel id="trackNumber" typeId="trackNumber" />
 		</channels>
 
-		<representation-property>ipAddress</representation-property>
-
 		<config-description-ref uri="thing-type:chromecast:device" />
 	</thing-type>
 
@@ -145,8 +141,6 @@
 			<channel id="title" typeId="system.media-title" />
 			<channel id="trackNumber" typeId="trackNumber" />
 		</channels>
-
-		<representation-property>ipAddress</representation-property>
 
 		<config-description-ref uri="thing-type:chromecast:device" />
 	</thing-type>
