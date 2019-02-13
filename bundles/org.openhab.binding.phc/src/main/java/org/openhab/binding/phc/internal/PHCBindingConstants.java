@@ -30,6 +30,7 @@ public class PHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_AM = new ThingTypeUID(BINDING_ID, "AM");
     public static final ThingTypeUID THING_TYPE_EM = new ThingTypeUID(BINDING_ID, "EM");
     public static final ThingTypeUID THING_TYPE_JRM = new ThingTypeUID(BINDING_ID, "JRM");
+    public static final ThingTypeUID THING_TYPE_DIM = new ThingTypeUID(BINDING_ID, "DIM");
 
     // List of all Channel Group IDs
     public static final String CHANNELS_AM = "am";
@@ -37,6 +38,7 @@ public class PHCBindingConstants {
     public static final String CHANNELS_EM_LED = "emLed";
     public static final String CHANNELS_JRM = "jrm";
     public static final String CHANNELS_JRM_TIME = "jrmT";
+    public static final String CHANNELS_DIM = "dim";
 
     // List of all configuration parameters
     public static final String PORT = "port";
@@ -45,4 +47,6 @@ public class PHCBindingConstants {
     public static final String UP_DOWN_TIME_2 = "upDownTime2";
     public static final String UP_DOWN_TIME_3 = "upDownTime3";
     public static final String UP_DOWN_TIME_4 = "upDownTime4";
+    public static final String DIM_TIME_1 = "dimTime1";
+    public static final String DIM_TIME_2 = "dimTime2";
 }

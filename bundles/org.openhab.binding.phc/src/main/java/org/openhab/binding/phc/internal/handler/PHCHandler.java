@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.phc.internal.handler;
 
+import static org.openhab.binding.phc.internal.PHCBindingConstants.*;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +22,7 @@ import java.util.Map.Entry;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -31,7 +34,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.phc.internal.PHCBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +49,9 @@ public class PHCHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(PHCHandler.class);
 
     private String moduleAddress; // like DIP switches
-    private final short[] upDownTimes = new short[4];
-    private final Map<String, State> channelState = new HashMap<>();
+    private byte module;
+    private final short[] times = new short[4];
+    private final Map<String, State> channelState = new HashMap<String, State>();
     private PHCBridgeHandler bridgeHandler;
 
     public PHCHandler(Thing thing) {
@@ -57,27 +60,30 @@ public class PHCHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        moduleAddress = (String) getConfig().get(PHCBindingConstants.ADDRESS);
+        moduleAddress = (String) getConfig().get(ADDRESS);
 
         if (getPHCBridgeHandler() == null) {
             return;
         }
 
-        getPHCBridgeHandler()
-                .addModule(Byte.parseByte(getThing().getThingTypeUID().equals(PHCBindingConstants.THING_TYPE_EM)
-                        ? new StringBuilder(moduleAddress).reverse().toString()
-                        : ("010" + new StringBuilder(moduleAddress).reverse().toString()), 2)); // 010x = 0x4x for
-                                                                                                // AM and JRM
+        module = Byte.parseByte(new StringBuilder(moduleAddress).reverse().toString(), 2);
 
-        if (getThing().getThingTypeUID().equals(PHCBindingConstants.THING_TYPE_JRM)) {
-            upDownTimes[0] = (short) (((BigDecimal) getConfig().get(PHCBindingConstants.UP_DOWN_TIME_1)).shortValue()
-                    * 10);
-            upDownTimes[1] = (short) (((BigDecimal) getConfig().get(PHCBindingConstants.UP_DOWN_TIME_2)).shortValue()
-                    * 10);
-            upDownTimes[2] = (short) (((BigDecimal) getConfig().get(PHCBindingConstants.UP_DOWN_TIME_3)).shortValue()
-                    * 10);
-            upDownTimes[3] = (short) (((BigDecimal) getConfig().get(PHCBindingConstants.UP_DOWN_TIME_4)).shortValue()
-                    * 10);
+        if (getThing().getThingTypeUID().equals(THING_TYPE_AM) || getThing().getThingTypeUID().equals(THING_TYPE_JRM)) {
+            module |= 0x40;
+        } else if (getThing().getThingTypeUID().equals(THING_TYPE_DIM)) {
+            module |= 0xA0;
+        }
+        getPHCBridgeHandler().addModule(module);
+
+        if (getThing().getThingTypeUID().equals(THING_TYPE_JRM)) {
+            times[0] = (short) (((BigDecimal) getConfig().get(UP_DOWN_TIME_1)).shortValue() * 10);
+            times[1] = (short) (((BigDecimal) getConfig().get(UP_DOWN_TIME_2)).shortValue() * 10);
+            times[2] = (short) (((BigDecimal) getConfig().get(UP_DOWN_TIME_3)).shortValue() * 10);
+            times[3] = (short) (((BigDecimal) getConfig().get(UP_DOWN_TIME_4)).shortValue() * 10);
+
+        } else if (getThing().getThingTypeUID().equals(THING_TYPE_DIM)) {
+            times[0] = (((BigDecimal) getConfig().get(DIM_TIME_1)).shortValue());
+            times[1] = (((BigDecimal) getConfig().get(DIM_TIME_2)).shortValue());
         }
 
         Bridge bridge = getBridge();
@@ -89,35 +95,44 @@ public class PHCHandler extends BaseThingHandler {
     }
 
     public void handleIncoming(String channelId, OnOffType state) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("EM command: {}, last: {}, in: {}", channelId, channelState.get(channelId), state);
+        }
+
         if (!channelState.containsKey(channelId) || !channelState.get(channelId).equals(state)) {
             postCommand(channelId, state);
             channelState.put(channelId, state);
         }
-        logger.debug("EM command: {}, last: {}, in: {}", channelId, channelState.get(channelId), state);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if ((PHCBindingConstants.CHANNELS_AM.equals(channelUID.getGroupId())) || PHCBindingConstants.CHANNELS_JRM
-                .equals(channelUID.getGroupId())
-                && (command instanceof OnOffType || command instanceof UpDownType || command instanceof StopMoveType)) {
-            if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                getPHCBridgeHandler().send(channelUID.getGroupId(),
-                        new StringBuilder(moduleAddress).reverse().toString(), channelUID.getIdWithoutGroup(), command,
-                        PHCBindingConstants.CHANNELS_JRM.equals(channelUID.getGroupId())
-                                ? upDownTimes[Integer.parseInt(channelUID.getIdWithoutGroup())]
-                                : 0);
-                logger.debug("send command: {}, {}", channelUID, command);
+        if ((CHANNELS_EM.equals(channelUID.getGroupId())) || CHANNELS_JRM_TIME.equals(channelUID.getGroupId())
+                && !(command instanceof OnOffType || command instanceof UpDownType || command instanceof StopMoveType
+                        || command instanceof PercentType)) {
+            return;
+        }
+        if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            if (CHANNELS_JRM.equals(channelUID.getGroupId()) || CHANNELS_DIM.equals(channelUID.getGroupId())) {
+                getPHCBridgeHandler().send(channelUID.getGroupId(), module & 0x1F, channelUID.getIdWithoutGroup(),
+                        command, times[Integer.parseInt(channelUID.getIdWithoutGroup())]);
             } else {
-                logger.info("The Thing {} is offline it requires to select a Bridge", getThing().getUID());
+                getPHCBridgeHandler().send(channelUID.getGroupId(), module & 0x1F, channelUID.getIdWithoutGroup(),
+                        command, (short) 0);
             }
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("send command: {}, {}", channelUID, command);
+            }
+        } else {
+            logger.info("The Thing {} is offline.", getThing().getUID());
         }
     }
 
     @Override
     public void handleUpdate(ChannelUID channelUID, State newState) {
-        if (PHCBindingConstants.CHANNELS_JRM_TIME.equals(channelUID.getGroupId())) {
-            upDownTimes[Integer
+        if (CHANNELS_JRM_TIME.equals(channelUID.getGroupId())) {
+            times[Integer
                     .parseInt(channelUID.getIdWithoutGroup())] = (short) (((DecimalType) newState).floatValue() * 10);
         }
     }
@@ -129,7 +144,7 @@ public class PHCHandler extends BaseThingHandler {
 
             Configuration configuration = editConfiguration();
             for (Entry<String, Object> configurationParmeter : configurationParameters.entrySet()) {
-                if (!configurationParmeter.getKey().equals(PHCBindingConstants.ADDRESS)) {
+                if (!configurationParmeter.getKey().equals(ADDRESS)) {
                     configuration.put(configurationParmeter.getKey(), configurationParmeter.getValue());
                 } else {
                     configuration.put(configurationParmeter.getKey(), moduleAddress);
@@ -158,7 +173,13 @@ public class PHCHandler extends BaseThingHandler {
             if (handler instanceof PHCBridgeHandler) {
                 bridgeHandler = (PHCBridgeHandler) handler;
             } else {
-                logger.debug("No available bridge handler for {}.", bridge.getUID());
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No available bridge handler for {}.", bridge.getUID());
+                }
+
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR,
+                        "No available bridge handler.");
+
                 return null;
             }
         }

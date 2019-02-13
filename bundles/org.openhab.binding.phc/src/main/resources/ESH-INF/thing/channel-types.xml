@@ -64,6 +64,15 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="dimChannels">
+		<label>DIM Channels</label>
+		<description>Outgoing dimmer channels.</description>
+		<channels>
+			<channel id="00" typeId="dim-channel" />
+			<channel id="01" typeId="dim-channel" />
+		</channels>
+	</channel-group-type>
+
 	<!-- Channel Types -->
 	<channel-type id="am-channel">
 		<item-type>Switch</item-type>
@@ -88,6 +97,12 @@
 		<item-type>Number</item-type>
 		<label>JRM-time Channel</label>
 		<description>The Time in seconds for an JRM channel.</description>
+	</channel-type>
+
+	<channel-type id="dim-channel">
+		<item-type>Dimmer</item-type>
+		<label>DIM Channel</label>
+		<description>Channel for a DIM module.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

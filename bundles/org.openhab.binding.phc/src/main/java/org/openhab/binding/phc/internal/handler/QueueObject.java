@@ -26,23 +26,19 @@ class QueueObject {
     private final Command command;
 
     private int counter;
-    private short upDownTime;
+    private short time;
 
-    public QueueObject(String moduleType, String moduleAddress, String channel, Command command) {
+    public QueueObject(String moduleType, int moduleAddress, String channel, Command command) {
         this.moduleType = moduleType;
-        this.moduleAddress = Byte.parseByte(moduleAddress, 2);
+        this.moduleAddress = (byte) moduleAddress;
         this.channel = Byte.parseByte(channel);
         this.command = command;
     }
 
-    public QueueObject(String moduleType, String moduleAddress, String channel, Command command, int counter,
-            short upDownTime) {
-        this.moduleType = moduleType;
-        this.moduleAddress = Byte.parseByte(moduleAddress, 2);
-        this.channel = Byte.parseByte(channel);
-        this.command = command;
-        this.counter = counter;
-        this.upDownTime = upDownTime;
+    public QueueObject(String moduleType, int moduleAddress, String channel, Command command, int couner, short time) {
+        this(moduleType, moduleAddress, channel, command);
+        this.counter = couner;
+        this.time = time;
     }
 
     public String getModuleType() {
@@ -69,7 +65,7 @@ class QueueObject {
         return counter;
     }
 
-    public short getUpDownTime() {
-        return upDownTime;
+    public short getTime() {
+        return time;
     }
 }

@@ -6,7 +6,7 @@ layout: documentation
 
 # PHC Binding
 
-This binding allows you to integrate modules(at the Moment AM, EM and JRM) of PHC, without the PHC control (STM), in openHAB.  
+This binding allows you to integrate modules(at the Moment AM, EM, JRM and DIM) of PHC, without the PHC control (STM), in openHAB.  
 
 The serial protocol is mainly extracted, with thanks to the developers from the projects [PHCtoUDP](https://sourceforge.net/projects/phctoudp/) and [OpenHC](https://sourceforge.net/projects/openhc/?source=directory).
 
@@ -51,6 +51,8 @@ In Linux amongst others the user 'openhab' must be added to the group 'dialout':
 
 - **JRM module:** This represents the JRM module with 4 channels for Shutters.
 
+- **DIM:** This represents the DM module with 2 dimmer channels.
+
 ## Discovery
 
 Not implemented yet.
@@ -66,6 +68,8 @@ Please note, if you define the things manually (not in the UI) that the ThingID 
 
 - **UpDownTime[1-4] (only JRM):** (advanced) The time in seconds that the shutter needs to move up or down. The default, if no value is specified, is 30 seconds.
 
+- **DimTime[1-2] (only DIM):** (advanced) The time in 1/10 seconds in that the dimmer should move lighter or darker. The default is 0.5 seconds.
+
 ## Channels
 
 | Thing Type             | Channel-Group Id | Channels | Item Type        |
@@ -75,6 +79,8 @@ Please note, if you define the things manually (not in the UI) that the ThingID 
 | EM                     | emLed            | 00-07    | Switch           |
 | JRM                    | jrm              | 00-03    | Rollershutter    |
 | JRM                    | jrmT             | 00-03    | Number           |
+| DIM                    | dim              | 00-01    | Dimmer           |
+| DIM                    | dimT             | 00-01    | Number           |
 
 **Channel UID:** ```phc:<Thing Type>:<ThingID>:<Channel Group>#<Channel>``` e.g. ```phc:AM:01101:am#03```
 
@@ -83,6 +89,7 @@ Please note, if you define the things manually (not in the UI) that the ThingID 
 - **emLed:** Outgoing switch channels e.g. for LEDs in light shutters.
 - **jrm:** Outgoing shutter channels.
 - **jrmT:** Time for shutter channels in seconds with an accuracy of 1/10 seconds. These channels are used instead of the configuration parameters. If you send the time via this channel, the Binding uses this time till you send another. After reboot the config parameter is used by default.
+- **dim:** Outgoing dimmer channels.
 
 ## Full Example
 
@@ -94,6 +101,7 @@ Bridge phc:bridge:demo [port="/dev/ttyUSB0"]{
     Thing AM 10110 [address="01101"]
     Thing EM 00110 [address="00110"]
     Thing JRM 10111 [address="10111", upDownTime3="60", upDownTime4="20"]
+    Thing DIM 00000 [address="00000"]
 ```
 
 .items
@@ -113,6 +121,10 @@ Rollershutter Shutter_3 {channel="phc:JRM:10111:jrm#02"}
 Rollershutter Shutter_4 {channel="phc:JRM:10111:jrm#03"}
 
 Number ShutterTime_1 {channel="phc:JRM:10111:jrmT#00"}
+
+//DIM Module
+Dimmer Dimmer_1 {channel="phc:DIM:00000:dim#00}
+Dimmer Dimmer_2 {channel="phc:DIM:00000:dim#01}
 
 // EM Module
 Switch InputLed_1 {channel="phc:EM:00110:emLed#03"}
