@@ -144,7 +144,7 @@ By setting a text on the item, the binding will send the notification which is t
 In a rule this can be done the following way:
 
 ``` 
-sendCommand(DeviceNotifyInfo, "My Information Message to be displayed")
+DeviceNotifyInfo.sendCommand("My Information Message to be displayed")
 ```
 
 ## Items
@@ -188,37 +188,37 @@ Sample sitemap configuration:
 For this reason, the brightness modes and example applications are repeated here.
 
 ```
-        Text label="LaMetric Time Demo" {
-            Frame label="Device Controls" {
-                Slider item=DeviceBrightness
-                Switch item=DeviceBrightnessMode mappings=[AUTO="Automatic",MANUAL="Manual"]
-                Slider item=DeviceVolume
-                Switch item=DeviceBluetooth
-                Selection item=DeviceApp mappings=["com.lametric.clock:widgetid"="Clock","com.lametric.countdown:widgetid"="Timer"]
-            }
-            Frame label="Device Notifications" {
-                Switch item=NotifyInfo
-                Switch item=NotifyWarning
-                Switch item=NotifyAlert
-            }
-            Frame label="Clock" {
-                Switch item=SetAlarmIn1Min
-                Selection item=ClockCommand mappings=["disableAlarm"="Disable Alarm"]
-            }
-            Frame label="Timer" {
-                Switch item=Set2MinTimer
-                Selection item=TimerCommand mappings=["start"="Start","pause"="Pause","reset"="Reset"]
-            }
-            Frame label="Radio" {
-                Default item=RadioControl
-            }
-            Frame label="Stopwatch" {
-                Selection item=StopwatchCommand mappings=["start"="Start","pause"="Pause","reset"="Reset"]
-            }
-            Frame label="Weather" {
-                Selection item=WeatherCommand mappings=["forecast"="Forecast"]
-            }
-        }
+  Text label="LaMetric Time Demo" {
+      Frame label="Device Controls" {
+          Slider item=DeviceBrightness
+          Switch item=DeviceBrightnessMode mappings=[AUTO="Automatic",MANUAL="Manual"]
+          Slider item=DeviceVolume
+          Switch item=DeviceBluetooth
+          Selection item=DeviceApp mappings=["com.lametric.clock:widgetid"="Clock","com.lametric.countdown:widgetid"="Timer"]
+      }
+      Frame label="Device Notifications" {
+          Switch item=NotifyInfo
+          Switch item=NotifyWarning
+          Switch item=NotifyAlert
+      }
+      Frame label="Clock" {
+          Switch item=SetAlarmIn1Min
+          Selection item=ClockCommand mappings=["disableAlarm"="Disable Alarm"]
+      }
+      Frame label="Timer" {
+          Switch item=Set2MinTimer
+          Selection item=TimerCommand mappings=["start"="Start","pause"="Pause","reset"="Reset"]
+      }
+      Frame label="Radio" {
+          Default item=RadioControl
+      }
+      Frame label="Stopwatch" {
+          Selection item=StopwatchCommand mappings=["start"="Start","pause"="Pause","reset"="Reset"]
+      }
+      Frame label="Weather" {
+          Selection item=WeatherCommand mappings=["forecast"="Forecast"]
+      }
+  }
 ```
 
 ## Rules
@@ -232,52 +232,52 @@ rule "Notify Info"
     when
         Item NotifyInfo changed to ON
     then
-        postUpdate(NotifyInfo, OFF)
+        NotifyInfo.postUpdate(OFF)
         
         logInfo("demo.rules", "Sending info notification")
-        sendCommand(DeviceNotifyInfo, "INFO!")
+        DeviceNotifyInfo.sendCommand("INFO!")
 end
 
 rule "Notify Warning"
     when
         Item NotifyWarning changed to ON
     then
-        postUpdate(NotifyWarning, OFF)
+        NotifyWarning.postUpdate(OFF)
         
         logInfo("demo.rules", "Sending warning notification")
-        sendCommand(DeviceNotifyWarning, "WARNING!")
+        DeviceNotifyWarning.sendCommand("WARNING!")
 end
 
 rule "Notify Alert"
     when
         Item NotifyAlert changed to ON
     then
-        postUpdate(NotifyAlert, OFF)
+        NotifyAlert.postUpdate(OFF)
         
         logInfo("demo.rules", "Sending alert notification")
-        sendCommand(DeviceNotifyAlert, "ALERT!")
+        DeviceNotifyAlert.sendCommand("ALERT!")
 end
 
 rule "Set Alarm in 1 Minute"
     when
          Item SetAlarmIn1Min changed to ON
     then
-         postUpdate(SetAlarmIn1Min, OFF)
+         SetAlarmIn1Min.postUpdate(OFF)
          
          logInfo("demo.rules", "Setting alarm for 1 minute from now")
          
          val cal = Calendar.getInstance()
          cal.add(Calendar.MINUTE, 1)
-         sendCommand(ClockSetAlarm, new DateTimeType(cal))
+         ClockSetAlarm.sendCommand(new DateTimeType(cal))
 end
 
 rule "Set 2 Minute Timer"
     when
          Item Set2MinTimer changed to ON
     then
-         postUpdate(Set2MinTimer, OFF)
+         Set2MinTimer.postUpdate(OFF)
          
          logInfo("demo.rules", "Configure timer for 2 minutes without starting")
-         sendCommand(TimerDuration, 120)
+         TimerDuration.sendCommand(120)
 end
 ```
