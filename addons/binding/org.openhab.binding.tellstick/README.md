@@ -171,14 +171,14 @@ rule "proxy_front_door_on"
 when
 	Item front_door_sensor changed to ON
 then
-	postUpdate(front_door_proxy, OPEN);		
+	front_door_proxy.postUpdate(OPEN);		
 end
 
 rule "proxy_front_door_off"
 when
 	Item front_door_sensor changed to OFF
 then
-	postUpdate(front_door_proxy, CLOSED);		
+	front_door_proxy.postUpdate(CLOSED);		
 end
 ```
 
