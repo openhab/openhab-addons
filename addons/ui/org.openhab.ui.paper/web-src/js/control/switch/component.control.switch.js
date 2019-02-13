@@ -19,6 +19,7 @@
         this.getIcon = controlItemService.getIcon;
         this.getLabel = controlItemService.getLabel;
         this.isOptionList = controlItemService.isOptionList;
+        this.isCommandOptions = isCommandOptions;
 
         this.$onInit = activate;
 
@@ -37,6 +38,12 @@
         function updateState() {
             controlItemService.sendCommand(ctrl.item, ctrl.item.state);
         }
+
+        function isCommandOptions() {
+            var commandDescription = ctrl.item.commandDescription;
+            return commandDescription && commandDescription.commandOptions && commandDescription.commandOptions.length > 0;
+        }
+
     }
 
 })()

@@ -11,9 +11,9 @@
 
     });
 
-    ItemControlController.$inject = [ 'thingRepository', 'channelTypeRepository', 'itemRepository', 'util', 'imageService' ];
+    ItemControlController.$inject = [ 'itemRepository', 'util' ];
 
-    function ItemControlController(thingRepository, channelTypeRepository, itemRepository, util, imageService) {
+    function ItemControlController(itemRepository, util) {
         var ctrl = this;
         this.item;
 
