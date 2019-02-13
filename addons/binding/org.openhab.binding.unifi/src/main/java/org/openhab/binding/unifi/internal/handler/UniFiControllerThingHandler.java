@@ -83,10 +83,8 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
 
     private static final String CACHE_KEY_PREFIX_ALIAS = "alias";
 
-    private static final String CACHE_KEY_PREFIX_BLOCKED = "blocked";
-
     private static final List<String> CACHE_KEY_PREFIXES = Arrays.asList(CACHE_KEY_PREFIX_MAC, CACHE_KEY_PREFIX_IP,
-            CACHE_KEY_PREFIX_HOSTNAME, CACHE_KEY_PREFIX_ALIAS, CACHE_KEY_PREFIX_BLOCKED);
+            CACHE_KEY_PREFIX_HOSTNAME, CACHE_KEY_PREFIX_ALIAS);
 
     private static final String CACHE_KEY_SEPARATOR = ":";
 
@@ -195,9 +193,6 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
                         break;
                     case CACHE_KEY_PREFIX_HOSTNAME:
                         suffix = client.getHostname();
-                        break;
-                    case CACHE_KEY_PREFIX_BLOCKED:
-                        suffix = Boolean.toString(client.isBlocked());
                         break;
                     case CACHE_KEY_PREFIX_ALIAS:
                         suffix = client.getAlias();

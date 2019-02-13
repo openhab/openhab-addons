@@ -52,10 +52,6 @@ public abstract class UniFiClient {
 
     protected boolean blocked;
 
-    public boolean isBlocked() {
-        return this.blocked;
-    }
-
     protected UniFiDevice device;
 
     public String getId() {
@@ -106,15 +102,19 @@ public abstract class UniFiClient {
 
     public abstract String getDeviceMac();
 
+    public boolean isBlocked() {
+        return this.blocked;
+    }
+
+    public void setBlocked(boolean value) {
+        this.blocked = value;
+    }
+
     @Override
     public String toString() {
         return String.format(
                 "UniFiClient{mac: '%s', ip: '%s', hostname: '%s', alias: '%s', wired: %b, blocked: %b, device: %s}",
                 mac, ip, hostname, alias, isWired(), blocked, device);
-    }
-
-    public void setBlocked(boolean value) {
-        this.blocked = value;
     }
 
 }

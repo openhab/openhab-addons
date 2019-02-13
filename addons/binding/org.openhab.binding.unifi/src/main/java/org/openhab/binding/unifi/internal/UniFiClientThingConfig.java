@@ -53,8 +53,7 @@ public class UniFiClientThingConfig {
 
     @Override
     public String toString() {
-        return String.format("UniFiClientConfig{cid: '%s', site: '%s', considerHome: %d, blocked: %s}", cid, site,
-                considerHome);
+        return String.format("UniFiClientConfig{cid: '%s', site: '%s', considerHome: %d}", cid, site, considerHome);
     }
 
 }
