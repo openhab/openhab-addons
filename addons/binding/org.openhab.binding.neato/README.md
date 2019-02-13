@@ -68,34 +68,40 @@ Below you will find examples of the necessary files:
 
 **neato.items**
 
-    Group GNeato
-    Number FannDammBattery  "Battery level [%.0f %%]" <battery> (GNeato) { channel = "neato:vacuumcleaner:fanndamm:battery-level" }
-    String FannDammState  "Status [MAP(neato-sv.map):%s]" (GNeato) { channel = "neato:vacuumcleaner:fanndamm:state" }
-    String FannDammError  "Error [%s]" (GNeato) { channel = "neato:vacuumcleaner:fanndamm:error" }
-    String FannDammAction  "Action [MAP(neato-sv.map):%s]" (GNeato) { channel = "neato:vacuumcleaner:fanndamm:action" }
-    Switch FannDammDockHasBeenSeen  "Seen dock [%s]" <present> (GNeato) { channel = "neato:vacuumcleaner:fanndamm:dock-has-been-seen" }
-    Switch FannDammIsDocked  "In dock [MAP(neato-sv.map):%s]" <present> (GNeato) { channel = "neato:vacuumcleaner:fanndamm:is-docked" }
-    Switch FannDammIsScheduled  "Scheduled [%s]" (GNeato) { channel = "neato:vacuumcleaner:fanndamm:is-scheduled" }
-    Switch FannDammIsCharging  "Is Charging [%s]" <heating> (GNeato) { channel = "neato:vacuumcleaner:fanndamm:is-charging" }
-    String FannDammCategory  "Cleaning Category [MAP(neato-sv.map):%s]" (GNeato)  { channel = "neato:vacuumcleaner:fanndamm:cleaning-category" }
-    String FannDammMode  "Cleaning Mode [MAP(neato-sv.map):%s]" (GNeato) { channel = "neato:vacuumcleaner:fanndamm:cleaning-mode" }
-    String FannDammModifier  "Cleaning Modifier [MAP(neato-sv.map):%s]" (GNeato) { channel = "neato:vacuumcleaner:fanndamm:cleaning-modifier" }
-    Number FannDammSpotWidth  "SpotWidth [%.0f]" <niveau> (GNeato) { channel = "neato:vacuumcleaner:fanndamm:cleaning-spotwidth" }
-    Number FannDammSpotHeight  "SpotHeight [%.0f]" <niveau> (GNeato)  { channel = "neato:vacuumcleaner:fanndamm:cleaning-spotheight" }
-    String FannDammCommand  "Send Command" { channel = "neato:vacuumcleaner:fanndamm:command" }
+```
+Group GNeato
+Number FannDammBattery  "Battery level [%.0f %%]" <battery> (GNeato) { channel = "neato:vacuumcleaner:fanndamm:battery-level" }
+String FannDammState  "Status [MAP(neato-sv.map):%s]" (GNeato) { channel = "neato:vacuumcleaner:fanndamm:state" }
+String FannDammError  "Error [%s]" (GNeato) { channel = "neato:vacuumcleaner:fanndamm:error" }
+String FannDammAction  "Action [MAP(neato-sv.map):%s]" (GNeato) { channel = "neato:vacuumcleaner:fanndamm:action" }
+Switch FannDammDockHasBeenSeen  "Seen dock [%s]" <present> (GNeato) { channel = "neato:vacuumcleaner:fanndamm:dock-has-been-seen" }
+Switch FannDammIsDocked  "In dock [MAP(neato-sv.map):%s]" <present> (GNeato) { channel = "neato:vacuumcleaner:fanndamm:is-docked" }
+Switch FannDammIsScheduled  "Scheduled [%s]" (GNeato) { channel = "neato:vacuumcleaner:fanndamm:is-scheduled" }
+Switch FannDammIsCharging  "Is Charging [%s]" <heating> (GNeato) { channel = "neato:vacuumcleaner:fanndamm:is-charging" }
+String FannDammCategory  "Cleaning Category [MAP(neato-sv.map):%s]" (GNeato)  { channel = "neato:vacuumcleaner:fanndamm:cleaning-category" }
+String FannDammMode  "Cleaning Mode [MAP(neato-sv.map):%s]" (GNeato) { channel = "neato:vacuumcleaner:fanndamm:cleaning-mode" }
+String FannDammModifier  "Cleaning Modifier [MAP(neato-sv.map):%s]" (GNeato) { channel = "neato:vacuumcleaner:fanndamm:cleaning-modifier" }
+Number FannDammSpotWidth  "SpotWidth [%.0f]" <niveau> (GNeato) { channel = "neato:vacuumcleaner:fanndamm:cleaning-spotwidth" }
+Number FannDammSpotHeight  "SpotHeight [%.0f]" <niveau> (GNeato)  { channel = "neato:vacuumcleaner:fanndamm:cleaning-spotheight" }
+String FannDammCommand  "Send Command" { channel = "neato:vacuumcleaner:fanndamm:command" }
+```
 
 **sitemap**
 
-    Frame label="Neato BotVac Connected" {
-	    Switch item=FannDammCommand mappings=[clean="Clean",stop="Stop",pause="Pause",resume="Resume", dock="Send to dock"]
-	    Text item=FannDammBattery label="Battery level"
-	    Text item=FannDammState
-	    Text item=FannDammError label="Error Message" icon="siren"
-	    Text item=FannDammAction label="Activity"
-	    Text item=FannDammIsDocked label="In dock"
-	    Group label="Mer information" item=GNeato
-    }
+```
+Frame label="Neato BotVac Connected" {
+    Switch item=FannDammCommand mappings=[clean="Clean",stop="Stop",pause="Pause",resume="Resume", dock="Send to dock"]
+    Text item=FannDammBattery label="Battery level"
+    Text item=FannDammState
+    Text item=FannDammError label="Error Message" icon="siren"
+    Text item=FannDammAction label="Activity"
+    Text item=FannDammIsDocked label="In dock"
+    Group label="Mer information" item=GNeato
+}
+```
 
 **neato.things**
 
-    neato:vacuumcleaner:fanndamm [ serial="vacuumcleaner-serial", secret="secret-string"]
+```
+neato:vacuumcleaner:fanndamm [ serial="vacuumcleaner-serial", secret="secret-string"]
+```
