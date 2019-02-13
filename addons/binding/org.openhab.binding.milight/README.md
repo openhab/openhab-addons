@@ -113,32 +113,35 @@ Limitations:
 
 ## Example
 
-	.items
+.items
 
-	Switch Light_Groundfloor    {channel="milight:whiteLed:ACCF23A6C0B4:0:ledbrightness"} # Switch for all white bulbs
-	Dimmer Light_LivingroomB    {channel="milight:whiteLed:ACCF23A6C0B4:1:ledbrightness"} # Dimmer changing brightness for bulb in zone 1
-	Dimmer Light_LivingroomC    {channel="milight:whiteLed:ACCF23A6C0B4:1:ledtemperature"} # Dimmer changing colorTemperature for bulb in zone 1
-	Dimmer RGBW_LivingroomB     {channel="milight:rgbwLed:ACCF23A6C0B4:2:ledbrightness"} # Dimmer changing brightness for RGBW bulb in zone 2
-	Color Light_Party           {channel="milight:rgbwLed:ACCF23A6C0B4:1:ledcolor"}# Colorpicker for rgb bulbs
+```
+Switch Light_Groundfloor	{channel="milight:whiteLed:ACCF23A6C0B4:0:ledbrightness"} # Switch for all white bulbs
+Dimmer Light_LivingroomB	{channel="milight:whiteLed:ACCF23A6C0B4:1:ledbrightness"} # Dimmer changing brightness for bulb in zone 1
+Dimmer Light_LivingroomC	{channel="milight:whiteLed:ACCF23A6C0B4:1:ledtemperature"} # Dimmer changing colorTemperature for bulb in zone 1
+Dimmer RGBW_LivingroomB		{channel="milight:rgbwLed:ACCF23A6C0B4:2:ledbrightness"} # Dimmer changing brightness for RGBW bulb in zone 2
+Color Light_Party		{channel="milight:rgbwLed:ACCF23A6C0B4:1:ledcolor"}# Colorpicker for rgb bulbs
 
-	# You have to link the items to the channels of your prefered group e.g. in paperui after you've saved
-	# your items file.
+# You have to link the items to the channels of your prefered group e.g. in paperui after you've saved
+# your items file.
 
-    # The command types nightMode and whiteMode are stateless and should be configured as pushbuttons as they only support a trigger action:
-    Switch Light_GroundfloorN   {channel="milight:whiteLed:ACCF23A6C0B4:0:lednightmode", autoupdate="false"} # Activate the NightMode for all bulbs
+# The command types nightMode and whiteMode are stateless and should be configured as pushbuttons as they only support a trigger action:
+Switch Light_GroundfloorN	{channel="milight:whiteLed:ACCF23A6C0B4:0:lednightmode", autoupdate="false"} # Activate the NightMode for all bulbs
 
-	# The command types animation_mode_relative and animation_speed are stateless and should be configured as pushbuttons as they only support INCREASE and DECREASE commands:
+# The command types animation_mode_relative and animation_speed are stateless and should be configured as pushbuttons as they only support INCREASE and DECREASE commands:
 
-    Dimmer AnimationMode		{channel="milight:rgbLed:ACCF23A6C0B4:5:animation_mode_relative", autoupdate="false"}
-    Dimmer AnimationSpeed	{channel="milight:rgbLed:ACCF23A6C0B4:5:animation_speed", autoupdate="false"}
+Dimmer AnimationMode		{channel="milight:rgbLed:ACCF23A6C0B4:5:animation_mode_relative", autoupdate="false"}
+Dimmer AnimationSpeed		{channel="milight:rgbLed:ACCF23A6C0B4:5:animation_speed", autoupdate="false"}
 
-    # Animation Mode for RGBWW bulbs is different, it allows to pick a mode directly.
+# Animation Mode for RGBWW bulbs is different, it allows to pick a mode directly.
 
-    Switch AnimationModeRgbWW {channel="milight:rgbwwLed:ACCF23A6C0B4:5:animation_mode"}
+Switch AnimationModeRgbWW	{channel="milight:rgbwwLed:ACCF23A6C0B4:5:animation_mode"}
+```
 
-	.sitemap
+.sitemap
 
-    Switch item=AnimationMode mappings=[DECREASE='-', INCREASE='+']
-    Switch item=AnimationSpeed mappings=[DECREASE='-', INCREASE='+']
-    Switch item=Light_GroundfloorN mappings=[ON='Night Mode']
-
+```
+Switch item=AnimationMode mappings=[DECREASE='-', INCREASE='+']
+Switch item=AnimationSpeed mappings=[DECREASE='-', INCREASE='+']
+Switch item=Light_GroundfloorN mappings=[ON='Night Mode']
+```
