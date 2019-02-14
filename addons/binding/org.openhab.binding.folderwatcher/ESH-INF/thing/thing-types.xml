@@ -61,11 +61,12 @@
 	</thing-type>
 
 	<!-- Sample Channel Type -->
-	<channel-type id="newfile-channel">
-		<item-type>String</item-type>
+	<channel-type id="newfile-channel">		
+		<kind>trigger</kind>
 		<label>New file names(s)</label>
 		<description>A new file name</description>
-		<state readOnly="true"></state>
+        <category>String</category>
+		<state readOnly="true"></state>		
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -30,5 +30,5 @@ public class FolderWatcherConfiguration {
     public Integer connectionTimeout;
     public boolean listHidden;
     public Integer diffHours;
-    // config1;
+
 }
