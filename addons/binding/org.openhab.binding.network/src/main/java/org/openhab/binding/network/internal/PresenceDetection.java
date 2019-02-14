@@ -202,6 +202,10 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                 arpPingState = "Arping tool by Thomas Habets (old version)";
                 break;
             }
+            case ELI_FULKERSON_ARP_PING_FOR_WINDOWS: {
+                arpPingState = "Eli Fulkerson ARPing tool for Windows";
+                break;
+            }
             case IPUTILS_ARPING: {
                 arpPingState = "Ipuitls Arping";
                 break;
@@ -306,24 +310,33 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         if (pingMethod != null) {
             detectionChecks += 1;
         }
-        if (arpPingMethod != ArpPingUtilEnum.UNKNOWN_TOOL) {
-            interfaceNames = networkUtils.getInterfaceNames();
-            detectionChecks += interfaceNames.size();
-        }
-
-        if (detectionChecks == 0) {
-            return false;
-        }
-
-        final ExecutorService executorService = getThreadsFor(detectionChecks);
-        this.executorService = executorService;
-
-        for (Integer tcpPort : tcpPorts) {
+        if (arpPingMethod != ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
             executorService.execute(() -> {
-                Thread.currentThread().setName("presenceDetectionTCP_" + hostname + " " + String.valueOf(tcpPort));
-                performServicePing(tcpPort);
+                Thread.currentThread().setName("presenceDetectionARP_" + hostname + " ");
+                performARPping(null);
                 checkIfFinished();
             });
+        } else {
+        
+           if (arpPingMethod != ArpPingUtilEnum.UNKNOWN_TOOL) {
+               interfaceNames = networkUtils.getInterfaceNames();
+               detectionChecks += interfaceNames.size();
+           }
+
+           if (detectionChecks == 0) {
+               return false;
+           }
+
+           final ExecutorService executorService = getThreadsFor(detectionChecks);
+           this.executorService = executorService;
+
+           for (Integer tcpPort : tcpPorts) {
+               executorService.execute(() -> {
+                   Thread.currentThread().setName("presenceDetectionTCP_" + hostname + " " + String.valueOf(tcpPort));
+                   performServicePing(tcpPort);
+                   checkIfFinished();
+                });
+           }
         }
 
         // ARP ping for IPv4 addresses. Use an own executor for each network interface
