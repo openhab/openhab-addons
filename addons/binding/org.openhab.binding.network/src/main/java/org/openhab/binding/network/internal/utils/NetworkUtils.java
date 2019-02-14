@@ -207,6 +207,8 @@ public class NetworkUtils {
             }
         } else if (result.contains("-w timeout")) {
             return ArpPingUtilEnum.IPUTILS_ARPING;
+        } else if (result.contains("Usage: arp-ping.exe")) {
+            return ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS;
         }
         return ArpPingUtilEnum.UNKNOWN_TOOL;
     }
@@ -283,7 +285,8 @@ public class NetworkUtils {
         UNKNOWN_TOOL,
         IPUTILS_ARPING,
         THOMAS_HABERT_ARPING,
-        THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT
+        THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT,
+        ELI_FULKERSON_ARP_PING_FOR_WINDOWS
     }
 
     /**
@@ -293,7 +296,7 @@ public class NetworkUtils {
      * * https://github.com/ThomasHabets/arping which also works on Windows and MacOS.
      *
      * @param arpUtilPath The arping absolute path including filename. Example: "arping" or "/usr/bin/arping" or
-     *            "C:\something\arping.exe"
+     *            "C:\something\arping.exe" or "arp-ping.exe"
      * @param interfaceName An interface name, on linux for example "wlp58s0", shown by ifconfig. Must not be null.
      * @param ipV4address The ipV4 address. Must not be null.
      * @param timeoutInMS A timeout in milliseconds
@@ -311,6 +314,9 @@ public class NetworkUtils {
         } else if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING) {
             proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-C", "1", "-i",
                     interfaceName, ipV4address).start();
+        } else if (arpingTool == ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
+            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS), 
+                                      "-x", ipV4address).start();
         } else {
             proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-C", "1", "-I",
                     interfaceName, ipV4address).start();
