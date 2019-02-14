@@ -310,43 +310,43 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         if (pingMethod != null) {
             detectionChecks += 1;
         }
-        if (arpPingMethod != ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
-            executorService.execute(() -> {
-                Thread.currentThread().setName("presenceDetectionARP_" + hostname + " ");
-                performARPping(null);
-                checkIfFinished();
-            });
-        } else {
-        
-           if (arpPingMethod != ArpPingUtilEnum.UNKNOWN_TOOL) {
-               interfaceNames = networkUtils.getInterfaceNames();
-               detectionChecks += interfaceNames.size();
-           }
-
-           if (detectionChecks == 0) {
-               return false;
-           }
-
-           final ExecutorService executorService = getThreadsFor(detectionChecks);
-           this.executorService = executorService;
-
-           for (Integer tcpPort : tcpPorts) {
-               executorService.execute(() -> {
-                   Thread.currentThread().setName("presenceDetectionTCP_" + hostname + " " + String.valueOf(tcpPort));
-                   performServicePing(tcpPort);
-                   checkIfFinished();
-                });
-           }
+        if (arpPingMethod != ArpPingUtilEnum.UNKNOWN_TOOL) {
+            interfaceNames = networkUtils.getInterfaceNames();
+            detectionChecks += interfaceNames.size();
         }
 
-        // ARP ping for IPv4 addresses. Use an own executor for each network interface
+        if (detectionChecks == 0) {
+            return false;
+        }
+
+        final ExecutorService executorService = getThreadsFor(detectionChecks);
+        this.executorService = executorService;
+
+        for (Integer tcpPort : tcpPorts) {
+            executorService.execute(() -> {
+                Thread.currentThread().setName("presenceDetectionTCP_" + hostname + " " + String.valueOf(tcpPort));
+                performServicePing(tcpPort);
+                checkIfFinished();
+            });
+        }
+
+        // ARP ping for IPv4 addresses. Use single executor for Windows tool and 
+        // each own executor for each network interface for other tools
         if (interfaceNames != null) {
-            for (final String interfaceName : interfaceNames) {
+            if (arpPingMethod != ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
                 executorService.execute(() -> {
-                    Thread.currentThread().setName("presenceDetectionARP_" + hostname + " " + interfaceName);
-                    performARPping(interfaceName);
-                    checkIfFinished();
-                });
+                   Thread.currentThread().setName("presenceDetectionARP_" + hostname + " ");
+                   performARPping(null);
+                   checkIfFinished();
+               });
+            } else {                        
+                for (final String interfaceName : interfaceNames) {
+                    executorService.execute(() -> {
+                       Thread.currentThread().setName("presenceDetectionARP_" + hostname + " " + interfaceName);
+                       performARPping(interfaceName);
+                       checkIfFinished();
+                   });
+               }
             }
         }
 
