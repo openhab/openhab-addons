@@ -71,24 +71,36 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         onControllerAdded();
         List<Room> rooms = bridgeHandler.getRooms();
-        for (Room r : rooms) {
-            onRoomAdded(r);
+        if(rooms != null)
+        {
+            for (Room r : rooms) {
+                onRoomAdded(r);
+            }
         }
         List<RoomStat> roomStats = bridgeHandler.getRoomStats();
-        for (RoomStat r : roomStats) {
-            onRoomStatAdded(r);
+        if(roomStats != null)
+        {
+            for (RoomStat r : roomStats) {
+                onRoomStatAdded(r);
+            }
         }
         List<SmartValve> smartValves = bridgeHandler.getSmartValves();
-        for (SmartValve v : smartValves) {
-            onSmartValveAdded(v);
+        if(smartValves!= null)
+        {
+            for (SmartValve v : smartValves) {
+                onSmartValveAdded(v);
+            }
         }
         List<HotWater> hotWater = bridgeHandler.getHotWater();
         if (hotWater != null && hotWater.size() > 0) {
             onHotWaterAdded();
         }
         List<SmartPlug> smartPlugs = bridgeHandler.getSmartPlugs();
-        for (SmartPlug p : smartPlugs) {
-            onSmartPlugAdded(p);
+        if(smartPlugs != null)
+        {
+            for (SmartPlug p : smartPlugs) {
+                onSmartPlugAdded(p);
+            }
         }
 
     }
