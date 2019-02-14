@@ -296,7 +296,7 @@ public class NetworkUtils {
      * * https://github.com/ThomasHabets/arping which also works on Windows and MacOS.
      *
      * @param arpUtilPath The arping absolute path including filename. Example: "arping" or "/usr/bin/arping" or
-     *            "C:\something\arping.exe"
+     *            "C:\something\arping.exe" or "arp-ping.exe"
      * @param interfaceName An interface name, on linux for example "wlp58s0", shown by ifconfig. Must not be null.
      * @param ipV4address The ipV4 address. Must not be null.
      * @param timeoutInMS A timeout in milliseconds
