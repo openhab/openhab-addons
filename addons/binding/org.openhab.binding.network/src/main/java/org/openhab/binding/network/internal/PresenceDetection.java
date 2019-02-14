@@ -332,21 +332,20 @@ public class PresenceDetection implements IPRequestReceivedCallback {
 
         // ARP ping for IPv4 addresses. Use single executor for Windows tool and 
         // each own executor for each network interface for other tools
-        if (interfaceNames != null) {
-            if (arpPingMethod != ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
+        if (arpPingMethod != ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
+            executorService.execute(() -> {
+               Thread.currentThread().setName("presenceDetectionARP_" + hostname + " ");
+               // arp-ping.exe tool capable of handling multiple interfaces by itself
+               performARPping(null);
+               checkIfFinished();
+            });
+        } else if (interfaceNames != null) {                        
+            for (final String interfaceName : interfaceNames) {
                 executorService.execute(() -> {
-                   Thread.currentThread().setName("presenceDetectionARP_" + hostname + " ");
-                   performARPping(null);
+                   Thread.currentThread().setName("presenceDetectionARP_" + hostname + " " + interfaceName);
+                   performARPping(interfaceName);
                    checkIfFinished();
-               });
-            } else {                        
-                for (final String interfaceName : interfaceNames) {
-                    executorService.execute(() -> {
-                       Thread.currentThread().setName("presenceDetectionARP_" + hostname + " " + interfaceName);
-                       performARPping(interfaceName);
-                       checkIfFinished();
-                   });
-               }
+               });               
             }
         }
 
