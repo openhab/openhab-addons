@@ -200,13 +200,15 @@ public class NetworkUtils {
         if (StringUtils.isBlank(result)) {
             return ArpPingUtilEnum.UNKNOWN_TOOL;
         } else if (result.contains("Thomas Habets")) {
-            if (result.matches("(?s)(.*)w sec(\\s*)Specify a timeout(.*)")) {
+            if (result.contains("w sec Specify a timeout")) {
                 return ArpPingUtilEnum.THOMAS_HABERT_ARPING;
             } else {
                 return ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT;
             }
         } else if (result.contains("-w timeout")) {
             return ArpPingUtilEnum.IPUTILS_ARPING;
+        } else if (result.contains("Usage: arp-ping.exe")) {
+            return ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS;
         }
         return ArpPingUtilEnum.UNKNOWN_TOOL;
     }
@@ -283,7 +285,8 @@ public class NetworkUtils {
         UNKNOWN_TOOL,
         IPUTILS_ARPING,
         THOMAS_HABERT_ARPING,
-        THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT
+        THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT,
+        ELI_FULKERSON_ARP_PING_FOR_WINDOWS
     }
 
     /**
@@ -311,6 +314,9 @@ public class NetworkUtils {
         } else if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING) {
             proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-C", "1", "-i",
                     interfaceName, ipV4address).start();
+        } else if (arpingTool == ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
+            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS), 
+                                      "-x", ipV4address).start();
         } else {
             proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-C", "1", "-I",
                     interfaceName, ipV4address).start();
