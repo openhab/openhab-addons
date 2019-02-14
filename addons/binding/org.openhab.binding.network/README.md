@@ -116,6 +116,7 @@ Linux has three different tools:
 *   arp-scan (not yet supported by this binding)
 *   arping of the ip-utils (Ubuntu/Debian: `apt-get install iputils-arping`)
 *   arping by Thomas Habets (Ubuntu/Debian: `apt-get install arping`)
+*   arp-ping by Eli Fulkerson (Windows: https://www.elifulkerson.com/projects/arp-ping.php)
 
 arping by Thomas Habets runs on Windows and MacOS as well.
 
