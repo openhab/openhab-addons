@@ -4,7 +4,7 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="deconz">
+	<bridge-type id="deconz" extensible="presencesensor,powersensor,consumptionsensor,switch,lightsensor,temperaturesensor,humiditysensor,pressuresensor,daylightsensor,openclosesensor,waterleakagesensor">
 		<label>Deconz</label>
 		<description>A running deCONZ software instance</description>
 		<config-description>
