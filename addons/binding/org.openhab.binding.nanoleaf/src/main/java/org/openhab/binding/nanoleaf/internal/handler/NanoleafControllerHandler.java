@@ -146,7 +146,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                 stopPanelDiscoveryJob();
                 return;
             } else {
-                logger.debug("Controlle is online. Stop pairing job, start update & panel discovery jobs");
+                logger.debug("Controller is online. Stop pairing job, start update & panel discovery jobs");
                 updateStatus(ThingStatus.ONLINE);
                 stopPairingJob();
                 startUpdateJob();
@@ -254,11 +254,21 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     }
 
     public boolean registerControllerListener(NanoleafControllerListener controllerListener) {
-        return controllerListeners.add(controllerListener);
+        logger.debug("Register new listener for controller {}", getThing().getUID());
+        boolean result = controllerListeners.add(controllerListener);
+        if (result) {
+            startPanelDiscoveryJob();
+        }
+        return result;
     }
 
     public boolean unregisterControllerListener(NanoleafControllerListener controllerListener) {
-        return controllerListeners.remove(controllerListener);
+        logger.debug("Unregister listener for controller {}", getThing().getUID());
+        boolean result = controllerListeners.remove(controllerListener);
+        if (result) {
+            stopPanelDiscoveryJob();
+        }
+        return result;
     }
 
     public NanoleafControllerConfig getControllerConfig() {
@@ -307,7 +317,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     }
 
     public synchronized void startPanelDiscoveryJob() {
-        if ((panelDiscoveryJob == null || panelDiscoveryJob.isCancelled())) {
+        if (!controllerListeners.isEmpty() && (panelDiscoveryJob == null || panelDiscoveryJob.isCancelled())) {
             logger.debug("Start panel discovery job, interval={} sec", PANEL_DISCOVERY_INTERVAL);
             panelDiscoveryJob = scheduler.scheduleWithFixedDelay(this::runPanelDiscovery, 0, PANEL_DISCOVERY_INTERVAL,
                     TimeUnit.SECONDS);
@@ -315,7 +325,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     }
 
     private synchronized void stopPanelDiscoveryJob() {
-        if (panelDiscoveryJob != null && !panelDiscoveryJob.isCancelled()) {
+        if (controllerListeners.isEmpty() && panelDiscoveryJob != null && !panelDiscoveryJob.isCancelled()) {
             logger.debug("Stop panel discovery job");
             panelDiscoveryJob.cancel(true);
             this.panelDiscoveryJob = null;
@@ -323,8 +333,14 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     }
 
     private void runUpdate() {
+        logger.debug("Run update job");
         try {
             updateFromControllerInfo();
+            // controller might have been offline, e.g. for firmware update. In this case, return to online state
+            if (ThingStatus.OFFLINE.equals(getThing().getStatus())) {
+                logger.debug("Controller {} is back online", thing.getUID());
+                updateStatus(ThingStatus.ONLINE);
+            }
         } catch (NanoleafUnauthorizedException nae) {
             logger.warn("Status update unauthorized: {}", nae.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -344,6 +360,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     }
 
     private void runPairing() {
+        logger.debug("Run pairing job");
         try {
             if (StringUtils.isNotEmpty(getAuthToken())) {
                 if (pairingJob != null) {
@@ -412,12 +429,17 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     }
 
     private void runPanelDiscovery() {
+        logger.debug("Run panel discovery job");
         // Trigger a new discovery of connected panels
         for (NanoleafControllerListener controllerListener : controllerListeners) {
             try {
                 controllerListener.onControllerInfoFetched(getThing().getUID(), getControllerInfo());
+            } catch (NanoleafUnauthorizedException nue) {
+                logger.warn("Panel discovery unauthorized: {}", nue.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/error.nanoleaf.controller.invalidToken");
             } catch (NanoleafException ne) {
-                logger.warn("Failed to discover panels", ne);
+                logger.warn("Failed to discover panels: ", ne);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/error.nanoleaf.controller.communication");
             } catch (RuntimeException e) {

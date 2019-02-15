@@ -75,7 +75,7 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService imp
      */
     @Override
     public void onControllerInfoFetched(ThingUID bridge, ControllerInfo controllerInfo) {
-        logger.debug("Start adding panels connected to controller with id {} to inbox", bridge.getAsString());
+        logger.debug("Discover panels connected to controller with id {}", bridge.getAsString());
         if (controllerInfo.getPanelLayout() != null) {
             if (controllerInfo.getPanelLayout().getLayout().getNumPanels() > 0) {
                 Iterator<PositionDatum> iterator = controllerInfo.getPanelLayout().getLayout().getPositionData()

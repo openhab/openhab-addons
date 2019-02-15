@@ -17,7 +17,6 @@ import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -73,7 +72,8 @@ public class NanoleafPanelHandler extends BaseThingHandler {
         if (controller == null) {
             initializePanel(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, ""));
         } else if (controller.getStatus().equals(ThingStatus.OFFLINE)) {
-            initializePanel(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, ""));
+            initializePanel(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    "@text/error.nanoleaf.panel.controllerOffline"));
         } else {
             initializePanel(controller.getStatusInfo());
         }
@@ -83,7 +83,8 @@ public class NanoleafPanelHandler extends BaseThingHandler {
     public void bridgeStatusChanged(ThingStatusInfo controllerStatusInfo) {
         logger.debug("Controller status changed to {}", controllerStatusInfo);
         if (controllerStatusInfo.getStatus().equals(ThingStatus.OFFLINE)) {
-            initializePanel(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, ""));
+            initializePanel(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    "@text/error.nanoleaf.panel.controllerOffline"));
         } else {
             initializePanel(controllerStatusInfo);
         }
@@ -109,13 +110,6 @@ public class NanoleafPanelHandler extends BaseThingHandler {
                     nae.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/error.nanoleaf.controller.invalidToken");
-            NanoleafControllerConfig controllerConfig = getConfigAs(NanoleafControllerConfig.class);
-            if (StringUtils.isEmpty(controllerConfig.authToken)) {
-                Bridge bridge = getBridge();
-                if (bridge != null && bridge.getHandler() != null) {
-                    ((NanoleafControllerHandler) bridge.getHandler()).startPairingJob();
-                }
-            }
         } catch (NanoleafException ne) {
             logger.warn("Handling command {} for channelUID {} failed: {}", command, channelUID, ne.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
