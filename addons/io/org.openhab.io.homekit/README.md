@@ -108,6 +108,12 @@ HomeKit requires a unique identifier for each accessory advertised by the bridge
 This unique identifier is hashed from the Item's name.
 For that reason, it is important that the name of your Items exposed to HomeKit remain consistent.
 
+HomeKit listens by default on port 9124.
+Java perfers the IPv6 network stack by default.
+If you have connection or detection problems, you can configure Java to prefer the IPv4 network stack instead.
+To prefer the IPv4 network stack, adapt the Java command line arguments to include: `-Djava.net.preferIPv4Stack=true`
+Depending on the openHAB installation method, you should modify `start.sh`, `start_debug.sh`, `start.bat`, or `start_debug.bat` (standalone/manual installation) or `EXTRA_JAVA_OPTS` in `/etc/default/openhab2` (Debian installation).
+
 If you encounter any issues with the add-on and need support, it may be important to get detailed logs of your device's communication with openHAB.
 In order to get logs from the underlying library used to implement the HomeKit protocol, enable trace logging using the following commands at [the console](https://www.openhab.org/docs/administration/console.html):
 
@@ -115,4 +121,3 @@ In order to get logs from the underlying library used to implement the HomeKit p
 openhab> log:set TRACE com.beowulfe.hap
 openhab> log:tail com.beowulfe.hap
 ```
-
