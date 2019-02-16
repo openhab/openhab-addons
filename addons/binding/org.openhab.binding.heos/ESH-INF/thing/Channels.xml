@@ -47,14 +47,14 @@
 		<label>Track position</label>
 		<description>The current track position</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="duration" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Track duration</label>
 		<description>The overall duration of the track</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="rawCommand" advanced="true">
 		<item-type>String</item-type>

@@ -169,6 +169,7 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
             // If not setting the group offline.
             id = gid = bridge.getActualGID(heosGroup.getGroupMemberHash());
             if (gid == null) {
+                blockInitialization = false;
                 setStatusOffline();
             } else {
                 heosGroup.setGid(gid);
