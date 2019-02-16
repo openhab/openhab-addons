@@ -145,7 +145,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      * Plays a media file from an external source. Can be
      * used for audio sink function
      *
-     * @param url The external URL where the file is located
+     * @param urlStr The external URL where the file is located
      */
     public void playURL(String urlStr) {
         ;
