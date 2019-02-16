@@ -27,6 +27,8 @@ A group uses the thing ID "group"
 ## Discovery
 
 This binding supports full automatic discovery of available players to be used as a bridge, players and groups (both after establishing a connection via a bridge).
+Please note that only one bridge is required to establish a connection.
+Adding a second bridge can cause trouble with the connection.
 It is recommended to use the PaperUI or other GUI to setup the system and add all players and groups.
 The bridge is discovered through UPnP in the local network.
 Once it is added the players and groups are discovered via the bridge and placed within the inbox.
@@ -43,7 +45,6 @@ The bridge has the following configuration parameter
 
 | Parameter         | Description                                                | Required  |
 |-----------------  |----------------------------------------------------------- | --------- |
-| name              | Player Type of the bridge                                  | no        |
 | ipAddress         | The network address of the bridge                          | yes       |
 | username          | The user name to login to the HEOS account                 | no        |
 | password          | The password for the HEOS account                          | no        |
@@ -53,7 +54,7 @@ The password and the user name are used to login to the HEOS account. This is re
 If no login information is provided these features can't be used.  
 
 ````
-Bridge heos:bridge:main "name" [ipAddress="192.168.0.1", name="Default", unserName="xxx", password="123456"]  
+Bridge heos:bridge:main "name" [ipAddress="192.168.0.1", unsername="xxx", password="123456"]  
 ````
 
 ### Player Configuration
@@ -63,37 +64,30 @@ Player have the following configuration parameter
 | Parameter         | Description                                                | Required  |
 |-----------------  |----------------------------------------------------------- | --------- |
 | pid               | The internal player ID                                     | yes       |
-| name              | The name of the player                                     | no        |
-| model             | The model type of the player                               | no        |
-| ipAddress         | The IP addres of the player                                | no        |
 
 For manual configuration a player can be defined as followed:
 
 ````
-Thing heos:player:pid "name" [pid="123456789", name="name", model="modelName", ipAddress="192.168.0.xxx"] 
+Thing heos:player:pid "name" [pid="123456789"] 
 ````
 
 PID behind the heos:player:--- should be changed as required. Every name or value can be used.
-It is recommended to use the player PID. Within the configuration the PID is mandatory.
-The rest is not required.
+It is recommended to use the player PID.
 If the PID isn't known it can be discovered by establishing a TelNet connection (port 1255) to one player and search for available players (Command: heos://player/get_players) within the network.
+An other way is to use PaperUI to discover the player via the bridge and get the PID.
 For further details refer to the [HEOS CLI](http://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf) specification.
 
 ### Group Configuration
 
 Player have the following configuration parameter
 
-| Parameter         | Description                                                | Required  |
-|-----------------  |----------------------------------------------------------- | --------- |
-| gid               | The internal group ID                                      | yes       |
-| name              | The name of the group                                      | no        |
-| leader            | The PID of the group leader                                | no        |
-| nameHash          | The name hash value                                        | no        |
-| groupMemberHash   | A hash value calculated by the group members               | no        |
+| Parameter         | Description                                                                          | Required  |
+|-----------------  |------------------------------------------------------------------------------------- | --------- |
+| members           | The members of the groups. These are the player IDs. IDs have to be separated by ";" | yes       |
 
 
 ```
-Thing heos:group:memberHash "name" [gid="123456789", name="name", model="modelName", ipAddress="192.168.0.xxx", memberHash="123456789"] 
+Thing heos:group:memberHash "name" [members="45345634;35534567"] 
 ```
 
 ### Defining Bridge and Players together
@@ -101,12 +95,10 @@ Thing heos:group:memberHash "name" [gid="123456789", name="name", model="modelNa
 Defining Player and Bridge together. To ensure that the players and groups are attached to the bridge the definition can be like:
 
 ```
-Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", name="Bridge", userName="userName", password="123456"] {
-	
-	player Kitchen "Kitchen"[pid="434523813", name="Kitchen", type="Player"]
-	player LivingRoom "Living Room"[pid="918797451", name="Living Room", type="Player"]
-  	player 813793755 "Bath Room"[pid="813793755", name="Bath Room", type="Player"]
-	
+Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", username="userName", password="123456"] {
+	player Kitchen "Kitchen"[pid="434523813"]
+	player LivingRoom "Living Room"[pid="918797451"]
+	group 813793755 "Ground Level"[members="434523813;918797451"]
 }
 ```
 
@@ -124,15 +116,14 @@ Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", name="Bridge", userNa
 | Album             | String        | Album Title                                                           |
 | Cover             | Image         | The cover of the actual song                                          |
 | Inputs            | String        | The input to be switched to. Input values from HEOS protocol          |
-| CurrentPosition   | Number        | Shows the current track position in seconds                           |
-| Duration          | Number        | The overall track duration in seconds                                 |
+| CurrentPosition   | Number:Time   | Shows the current track position in seconds                           |
+| Duration          | Number:Time   | The overall track duration in seconds                                 |
 | Type              | String        | The type of the played media. Station or song for example             |
 | Station           | String        | The station name if it is a station (Spotify shows track name....)    |
 | PlayUrl           | String        | Plays a media file located at the URL                                 |
 | Shuffle           | Switch        | Switches shuffle ON or OFF                                            |
-| RepeatMode        | String        | Defines the repeat mode: Inputs are: "One" ; "All" or "Off"           |
-| Playlists         | String        | Plays a playlist. Playlists are identified by numbers (starting at 0!). List can be found in the HEOS App            |
-
+| RepeatMode        | String        | Defines the repeat mode: Inputs are: "One" , "All" or "Off"           |
+| Playlists         | String        | Plays a playlist. Playlists are identified by numbers (starting at 0!). List can be found in the HEOS App |
 
 
 #### Example
@@ -153,8 +144,8 @@ Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Contro
 | Album             | String        | Album Title                                                           |
 | Ungroup           | Switch        | Deletes the group (OFF) or generate the group again (ON)              |
 | Cover             | Image         | The cover of the actual song                                          |
-| CurrentPosition   | Number        | Shows the current track position in seconds                           |
-| Duration          | Number        | The overall track duration in seconds                                 |
+| CurrentPosition   | Number:Time   | Shows the current track position in seconds                           |
+| Duration          | Number:Time   | The overall track duration in seconds                                 |
 | Type              | String        | The type of the played media. Station or song for example             |
 | Station           | String        | The station name if it is a station (Spotify shows track name....)    |
 | Inputs            | String        | The input to be switched to. Input values from HEOS protocol          |
@@ -205,25 +196,18 @@ An current list can be found within the HEOS CLI protocol which can be found [he
 |---------------------- |-----------    |--------------------------------------------------------------------------------------------------------------------------------------------------------   |
 | Reboot                | Switch        | Reboot the whole HEOS System. Can be used if you get in trouble with the system                                                                           |
 | BuildGroup            | Switch        | Is used to define a group. The player which shall be grouped has to be selected first. If Switch is then activated the group is build.                    |
-| RawCommand            | String        | A channel where every HEOS CLI command can be send to.                                                                                                    |
+
 
 
 For a list of the commands please refer to the [HEOS CLI protocol](http://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf).
 
-#### RawCommand example
-
-```
-heos://player/get_player_info?pid=975314685
-```
-
-At the moment no feedback is provided which can be used. Result of the command can be seen on the DEBUG level at the console
-
-
-
 
 ## *Dynamic Channels*
 
-Also the bridge supports dynamic channels which represent the players of the network and the favorites. They are added dynamically if a player is found and if favorites are defined within the HEOS Account. To activate Favorites the system has to be signed in to the HEOS Account.
+Also the bridge, players and groups supports dynamic channels which represent the players of the network and the favorites.
+They are added dynamically if a player is found and if favorites are defined within the HEOS Account.
+To activate Favorites the system has to be signed in to the HEOS Account.
+The player and group channels are only shown on the bridge.
 
 
 ### Favorite Channels
@@ -257,12 +241,10 @@ Example
 ###demo.things:
 
 ```
-Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", name="Bridge", userName="userName", password="123456"] {
-	
-	player Kitchen "Kitchen"[pid="434523813", name="Kitchen", type="Player"]
-	player LivingRoom "Living Room"[pid="918797451", name="Living Room", type="Player"]
-  	player 813793755 "Bath Room"[pid="813793755", name="Bath Room", type="Player"]
-	
+Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", username="userName", password="123456"] {
+    player Kitchen "Kitchen"[pid="434523813"]
+    player LivingRoom "Living Room"[pid="918797451"]
+    group 813793755 "Ground Level"[members="434523813;918797451"]
 }
 ```
 
@@ -273,7 +255,7 @@ Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Contro
 Switch LivingRoom_Mute "Mute"{channel="heos:player:main:LivingRoom:Mute"}
 Dimmer LivingRoom_Volume "Volume" {channel="heos:player:main:LivingRoom:Volume"}
 String LivingRoom_Title "Title [%s]" {channel="heos:player:main:LivingRoom:Title"}
-String LivingRoom_Interpret "Interpret [%s]" {channel="heos:player:main:LivingRoom:Interpret"}
+String LivingRoom_Interpret "Interpret [%s]" {channel="heos:player:main:LivingRoom:Artist"}
 String LivingRoom_Album "Album [%s]" {channel="heos:player:main:LivingRoom:Album"}
 ```
 

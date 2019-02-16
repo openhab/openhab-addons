@@ -70,11 +70,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
         setId();
     }
 
-    /**
-     * The channels which has to be updated during the refresh command
-     * For more information about refreshing the channels see
-     * {link {@link HeosThingBaseHandler#handleRefresh()}
-     */
     public abstract void setStatusOffline();
 
     public abstract void setStatusOnline();
