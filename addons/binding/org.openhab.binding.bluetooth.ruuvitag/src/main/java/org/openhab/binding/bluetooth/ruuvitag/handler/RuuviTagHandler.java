@@ -85,34 +85,34 @@ public class RuuviTagHandler extends BeaconBluetoothHandler implements Bluetooth
     public void onScanRecordReceived(BluetoothScanNotification scanNotification) {
         LoggerFactory.getLogger(this.getClass()).info("onScanRecordReceived");
         final byte[] manufacturerData = scanNotification.getManufacturerData();
-        boolean updated = false;
+        boolean fieldPresent = false;
         if (manufacturerData != null) {
             final RuuviMeasurement ruuvitagData = parser.parse(manufacturerData);
             LoggerFactory.getLogger(this.getClass()).info("onScanRecordReceived-> {}", ruuvitagData);
             if (ruuvitagData != null) {
-                updated |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_ACCELERATIONX,
+                fieldPresent |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_ACCELERATIONX,
                         ruuvitagData.getAccelerationX(), STANDARD_GRAVITY);
-                updated |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_ACCELERATIONY,
+                fieldPresent |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_ACCELERATIONY,
                         ruuvitagData.getAccelerationY(), STANDARD_GRAVITY);
-                updated |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_ACCELERATIONZ,
+                fieldPresent |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_ACCELERATIONZ,
                         ruuvitagData.getAccelerationZ(), STANDARD_GRAVITY);
-                updated |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_BATTERY,
+                fieldPresent |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_BATTERY,
                         ruuvitagData.getBatteryVoltage(), SmartHomeUnits.VOLT);
-                updated |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_DATA_FORMAT,
+                fieldPresent |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_DATA_FORMAT,
                         ruuvitagData.getDataFormat(), null);
-                updated |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_HUMIDITY, ruuvitagData.getHumidity(),
-                        SmartHomeUnits.PERCENT);
-                updated |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_MEASUREMENT_SEQUENCE_NUMBER,
+                fieldPresent |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_HUMIDITY,
+                        ruuvitagData.getHumidity(), SmartHomeUnits.PERCENT);
+                fieldPresent |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_MEASUREMENT_SEQUENCE_NUMBER,
                         ruuvitagData.getMeasurementSequenceNumber(), SmartHomeUnits.ONE);
-                updated |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_MOVEMENT_COUNTER,
+                fieldPresent |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_MOVEMENT_COUNTER,
                         ruuvitagData.getMovementCounter(), SmartHomeUnits.ONE);
-                updated |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_PRESSURE, ruuvitagData.getPressure(),
-                        SIUnits.PASCAL);
-                updated |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_TEMPERATURE,
+                fieldPresent |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_PRESSURE,
+                        ruuvitagData.getPressure(), SIUnits.PASCAL);
+                fieldPresent |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_TEMPERATURE,
                         ruuvitagData.getTemperature(), SIUnits.CELSIUS);
-                updated |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_TX_POWER, ruuvitagData.getTxPower(),
-                        DECIBEL_MILLIWATTS);
-                if (updated) {
+                fieldPresent |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_TX_POWER,
+                        ruuvitagData.getTxPower(), DECIBEL_MILLIWATTS);
+                if (fieldPresent) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

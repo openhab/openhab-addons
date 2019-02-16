@@ -59,25 +59,22 @@ public class RuuviTagDiscoveryParticipant implements BluetoothDiscoveryParticipa
     @Override
     public DiscoveryResult createResult(@NonNull BluetoothDevice device) {
         ThingUID thingUID = getThingUID(device);
-
-        if (thingUID != null) {
-            String label = "Ruuvi Tag";
-
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(BluetoothBindingConstants.CONFIGURATION_ADDRESS, device.getAddress().toString());
-            properties.put(Thing.PROPERTY_VENDOR, "Ruuvi Innovations Ltd (Oy)");
-            Integer txPower = device.getTxPower();
-            if (txPower != null) {
-                properties.put(BluetoothBindingConstants.PROPERTY_TXPOWER, Integer.toString(txPower));
-            }
-
-            // Create the discovery result and add to the inbox
-            return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(BluetoothBindingConstants.CONFIGURATION_ADDRESS)
-                    .withBridge(device.getAdapter().getUID()).withLabel(label).build();
-        } else {
+        if (thingUID == null) {
             return null;
         }
+        String label = "Ruuvi Tag";
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(BluetoothBindingConstants.CONFIGURATION_ADDRESS, device.getAddress().toString());
+        properties.put(Thing.PROPERTY_VENDOR, "Ruuvi Innovations Ltd (Oy)");
+        Integer txPower = device.getTxPower();
+        if (txPower != null) {
+            properties.put(BluetoothBindingConstants.PROPERTY_TXPOWER, Integer.toString(txPower));
+        }
+
+        // Create the discovery result and add to the inbox
+        return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                .withRepresentationProperty(BluetoothBindingConstants.CONFIGURATION_ADDRESS)
+                .withBridge(device.getAdapter().getUID()).withLabel(label).build();
     }
 
 }
