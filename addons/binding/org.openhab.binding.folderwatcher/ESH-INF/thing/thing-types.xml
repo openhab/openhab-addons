@@ -10,7 +10,7 @@
 		<description>FTP folder to be watched</description>
 
 		<channels>
-			<channel id="newfile" typeId="newfile-channel" />
+			<channel id="newftpfile" typeId="newfile-channel" />
 		</channels>
 
 		<config-description>
@@ -63,10 +63,35 @@
 	<!-- Sample Channel Type -->
 	<channel-type id="newfile-channel">		
 		<kind>trigger</kind>
-		<label>New file names(s)</label>
+		<label>New file name(s)</label>
 		<description>A new file name</description>
         <category>String</category>
 		<state readOnly="true"></state>		
 	</channel-type>
+	
+	
+	
+	
+	<!-- Sample Thing Type -->
+    <thing-type id="localfolder">
+        <label>Local Folder</label>
+        <description>Local folder to be watched</description>
+
+        <channels>
+            <channel id="newlocalfile" typeId="newfile-channel" />
+        </channels>
+
+        <config-description>
+            <parameter name="ftpAddress" type="text" required="true">
+                <label>FTP server</label>
+                <description>IP address of FTP server</description>
+                <context>network-address</context>
+            </parameter>           
+        </config-description>
+
+    </thing-type>
+    
+ 
+
 
 </thing:thing-descriptions>

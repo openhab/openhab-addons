@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.folderwatcher.internal;
+package org.openhab.binding.folderwatcher.internal.config;
 
 /**
  * The {@link FolderWatcherConfiguration} class contains fields mapping thing configuration parameters.

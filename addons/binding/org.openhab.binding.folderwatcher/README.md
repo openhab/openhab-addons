@@ -29,7 +29,7 @@ This binding currently supports the following channels:
 
 | Channel Type ID | Item Type    | Description                                                                            |
 |-----------------|--------------|----------------------------------------------------------------------------------------|
-| newfile-channel | String       | A new file name discovered on FTP                                                      |
+| newftpfile | String       | A new file name discovered on FTP                                                      |
 
 
 ## Full Example

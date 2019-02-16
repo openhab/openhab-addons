@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.folderwatcher.internal;
+package org.openhab.binding.folderwatcher.internal.handler;
 
-import static org.openhab.binding.folderwatcher.internal.FolderWatcherBindingConstants.CHANNEL_1;
+import static org.openhab.binding.folderwatcher.internal.FolderWatcherBindingConstants.CHANNEL_FILENAME;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -37,6 +37,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.folderwatcher.internal.config.FolderWatcherConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,9 +57,13 @@ public class FolderWatcherHandler extends BaseThingHandler {
 
     private File currentFtpListingFile;
 
+    @Nullable
     private ScheduledFuture<?> executionJob, initJob;
+    @Nullable
     private FTPClient ftp;
+    @Nullable
     private ArrayList<String> currentFtpListing = new ArrayList<String>();
+    @Nullable
     private ArrayList<String> previousFtpListing = new ArrayList<String>();
 
     public FolderWatcherHandler(Thing thing) {
@@ -96,7 +101,7 @@ public class FolderWatcherHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
+        if (CHANNEL_FILENAME.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
 
             }
@@ -199,7 +204,7 @@ public class FolderWatcherHandler extends BaseThingHandler {
 
             for (String newFtpFile : diffFtpListing) {
 
-                triggerChannel(CHANNEL_1, newFtpFile);
+                triggerChannel(CHANNEL_FILENAME, newFtpFile);
 
                 try {
                     Thread.sleep(3000);
