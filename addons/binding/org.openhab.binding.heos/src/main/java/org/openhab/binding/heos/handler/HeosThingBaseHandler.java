@@ -148,7 +148,6 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      * @param urlStr The external URL where the file is located
      */
     public void playURL(String urlStr) {
-        ;
         try {
             URL url = new URL(urlStr);
             api.playURL(id, url);
