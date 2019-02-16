@@ -22,11 +22,12 @@ Yeelight smart LED devices announce themselves on the network through UPnP, so t
 
 ## Thing Configuration
 
-All Yeelight things require the `deviceId` from the device as a configuration parameter:
+All Yeelight things require the `deviceId` from the device as a configuration parameter. This table shows all available parameters:
 
-| Parameter           | Values                                    | Mandatory |
-|---------------------|-------------------------------------------|-----------|
-| deviceId            | ID of the Yeelight device                 | Yes       |
+| Parameter           | Values                                         | Mandatory |
+|---------------------|------------------------------------------------|-----------|
+| deviceId            | ID of the Yeelight device                      | Yes       |
+| duration            | Duration for changing between different states | No        |
 
 ## Channels
 
@@ -36,18 +37,19 @@ All devices support some of the following channels:
 |--------|------|------|
 |`brightness` | `Dimmer` | This channel supports adjusting the brightness value, it is available on `dolphin` and `ceiling`.|
 |`color` | `Color` | This channel supports color control, it is available on `wonder` and `stripe`.|
-|`colorTemperature` | `Dimmer` | This channel supports adjusting the color temperature, it is available on `wonder` and `stripe` and `ceiling.|
+|`colorTemperature` | `Dimmer` | This channel supports adjusting the color temperature, it is available on `wonder` and `stripe` and `ceiling`.|
 
 ## Full Example
 
 Things:
 
 ```
-Thing yeelight:stripe:1 [ deviceId="0x000000000321a1bc" ]
+Thing yeelight:stripe:1 [ deviceId="0x000000000321a1bc", duration=1000 ]
 ```
 
 Items:
 
 ```
 Color YeelightLEDColor { channel="yeelight:stripe:1:color" }
+Switch YeelightLEDSwitch { channel="yeelight:stripe:1:color" }
 ```
