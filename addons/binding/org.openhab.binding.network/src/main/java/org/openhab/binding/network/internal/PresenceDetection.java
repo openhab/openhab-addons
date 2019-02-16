@@ -202,6 +202,10 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                 arpPingState = "Arping tool by Thomas Habets (old version)";
                 break;
             }
+            case ELI_FULKERSON_ARP_PING_FOR_WINDOWS: {
+                arpPingState = "Eli Fulkerson ARPing tool for Windows";
+                break;
+            }
             case IPUTILS_ARPING: {
                 arpPingState = "Ipuitls Arping";
                 break;
@@ -326,14 +330,22 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             });
         }
 
-        // ARP ping for IPv4 addresses. Use an own executor for each network interface
-        if (interfaceNames != null) {
+        // ARP ping for IPv4 addresses. Use single executor for Windows tool and 
+        // each own executor for each network interface for other tools
+        if (arpPingMethod != ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
+            executorService.execute(() -> {
+               Thread.currentThread().setName("presenceDetectionARP_" + hostname + " ");
+               // arp-ping.exe tool capable of handling multiple interfaces by itself
+               performARPping(null);
+               checkIfFinished();
+            });
+        } else if (interfaceNames != null) {                        
             for (final String interfaceName : interfaceNames) {
                 executorService.execute(() -> {
-                    Thread.currentThread().setName("presenceDetectionARP_" + hostname + " " + interfaceName);
-                    performARPping(interfaceName);
-                    checkIfFinished();
-                });
+                   Thread.currentThread().setName("presenceDetectionARP_" + hostname + " " + interfaceName);
+                   performARPping(interfaceName);
+                   checkIfFinished();
+               });               
             }
         }
 
