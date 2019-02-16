@@ -41,7 +41,7 @@ rule "Convert JSON to Item Type Number"
     Item Temperature_json changed
  then
     // use the transformation service to retrieve the value
-    val newValue = transform("JSONPATH", ".$.device.status.temperature", Temperature_json.state.toString)
+    val newValue = transform("JSONPATH", "$.device.status.temperature", Temperature_json.state.toString)
 
     // post the new value to the Number Item
     Temperature.postUpdate( newValue )
