@@ -13,11 +13,6 @@
 			<channel id="colorTemperature" typeId="colorTemperature" />
 		</channels>
 
-		<config-description>
-			<parameter name="deviceId" type="text" required="true">
-				<label>Device ID</label>
-				<description>Id of the Yeelight device to connect with.</description>
-			</parameter>
-		</config-description>
+        <config-description-ref uri="thing-type:device:base" />     
 	</thing-type>
 </thing:thing-descriptions>

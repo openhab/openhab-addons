@@ -8,7 +8,7 @@ It has the following extensions:
 
 ## Bridges
 
-In order to function, this binding requires a Bluetoooth adapter to be present, which handles the wireless communication.
+In order to function, this binding requires a Bluetooth adapter to be present, which handles the wireless communication.
 As there is no standard in Bluetooth for such dongles resp. chips, different adapters require a different implementation.
 This is why the Bluetooth binding itself does not come with any bridge handlers for such adapters itself, but instead is extensible by additional bundles which can implement support for a specific adapter. 
 

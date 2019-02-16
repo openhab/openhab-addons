@@ -365,11 +365,11 @@ rule "Play quiet knock-knock ringtone with the Xiaomi Gateway"
 when
     // Item ExampleSwitch changed to ON
 then
-    sendCommand(Gateway_SoundVolume, 2)
-    sendCommand(Gateway_Sound, 11)
+    Gateway_SoundVolume.sendCommand(2)
+    Gateway_Sound.sendCommand(11)
     Thread::sleep(2000) /* wait for 2 seconds */
-    sendCommand(Gateway_Sound, 10000)
-    sendCommand(Gateway_SoundVolume, 0)
+    Gateway_Sound.sendCommand(10000)
+    Gateway_SoundVolume.sendCommand(0)
 end
 ```
 
@@ -451,7 +451,8 @@ Or implement the support by youself and submit a pull request.
 You can access the whole message contents of the basic device thing with String items. That way you can make use of your device, even if it is not supported yet!
 The following examples are a demonstration, where a basic device thing for the gateway was manually added.
 
-```String Gateway_Raw { channel="mihome:basic:xxx:lastMessage" }
+```
+String Gateway_Raw { channel="mihome:basic:xxx:lastMessage" }
 String Gateway_Heartbeat { channel="mihome:basic:xxx:heartbeatMessage" }
 ```
 

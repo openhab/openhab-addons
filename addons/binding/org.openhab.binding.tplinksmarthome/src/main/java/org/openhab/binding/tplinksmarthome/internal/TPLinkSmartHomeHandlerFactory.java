@@ -59,9 +59,9 @@ public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
             device = new EnergySwitchDevice();
         } else if (HS220.is(thingTypeUID)) {
             device = new DimmerDevice();
-        } else if (LB130.is(thingTypeUID) || LB230.is(thingTypeUID)) {
+        } else if (LB130.is(thingTypeUID) || LB230.is(thingTypeUID) || KL130.is(thingTypeUID)) {
             device = new BulbDevice(thingTypeUID, COLOR_TEMPERATURE_LB130_MIN, COLOR_TEMPERATURE_LB130_MAX);
-        } else if (LB120.is(thingTypeUID)) {
+        } else if (LB120.is(thingTypeUID) || KL120.is(thingTypeUID)) {
             device = new BulbDevice(thingTypeUID, COLOR_TEMPERATURE_LB120_MIN, COLOR_TEMPERATURE_LB120_MAX);
         } else if (TPLinkSmartHomeThingType.isSwitchingDevice(thingTypeUID)) {
             device = new SwitchDevice();

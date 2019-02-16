@@ -177,7 +177,7 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
             // Hand over binding configurations to the network service
             presenceDetection.setUseDhcpSniffing(configuration.allowDHCPlisten);
             presenceDetection.setUseIcmpPing(configuration.allowSystemPings);
-            presenceDetection.setUseArpPing(true, configuration.arpPingToolPath);
+            presenceDetection.setUseArpPing(true, configuration.arpPingToolPath, configuration.arpPingUtilMethod);
         }
 
         this.retries = handlerConfiguration.retry.intValue();

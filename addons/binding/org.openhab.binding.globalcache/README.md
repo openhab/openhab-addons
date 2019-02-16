@@ -134,13 +134,13 @@ Other settings, such as *Sensor In*, *Sensor Notify*, and *LED Lighting*, may be
 A *Contact Closure channel* activates the contact closure (relay) on the iTach or GC-100 device.  
 For example, the following item links to the module 1, connector 1 channel on an iTach CC device.
 
-```java
+```
 Contact MyRelay    "My Relay [%s]"  (gRelays)   { channel="globalcache:itachCC:000C1E039BCF:cc-m1#c1" }
 ```
 
 The item definition for an iTach Flex WiFi device would look like this.
 
-```java
+```
 String MyRelay     "My Relay [%s]"  (gRelays)   { channel="globalcache:itachFlex:000C01AF4990:cc-m1#c1" }
 ```
 
@@ -149,7 +149,7 @@ String MyRelay     "My Relay [%s]"  (gRelays)   { channel="globalcache:itachFlex
 An *SL channel* sends serial command strings out the serial connector on the device.  
 For example, the following item links to the module 1 connector 1 channel on a GC-100-6 device.
 
-```java
+```
 String RS232ME      "My RS232-controlled Device"   { channel="globalcache:gc100_6:000C459A120A:sl-m1#c1" }
 ```
 
@@ -163,7 +163,7 @@ The Serial Direct channel type enables serial commands to be sent directly to th
 This is useful in rules where the serial command might be constructed "on the fly" in the body of the rule.
 For example, the following item links to the module 1 connector 1 channel on an iTach Flex device.
 
-```java
+```
 String RUSSCAA66    "Russound CAA66"   { channel="globalcache:itachFlex:000C45D530B9:sl-m1#c1-direct" }
 ```
 
@@ -178,7 +178,7 @@ Use URL encoding for non-printable characters.
 For example, the following item links to the receive channel on module 1 connector 1 on a GC-100.
 A rule that looks for updates on this item will be able to process messages sent from the device connected to the GlobalCache's serial port.
 
-```java
+```
 String RUSSCAA66_Receive    "Russound CAA66 Receive"   { channel="globalcache:gc100_06:000C1EFFF039:sl-m1#c1-receive" }
 ```
 
@@ -228,7 +228,7 @@ RS232ME_VOLUME_DOWN = VOLUME%20DOWN%0D%0A
 
 ### Items File
 
-```java
+```
 Switch ContactClosure1  "Relay on Connector 1"              { channel="globalcache:itachCC:000C1E017BCF:cc-m1#c1" }
 Switch ContactClosure2  "Relay on Connector 2"              { channel="globalcache:itachCC:000C1E017BCF:cc-m1#c2" }
 Switch ContactClosure3  "Relay on Connector 3"              { channel="globalcache:itachCC:000C1E017BCF:cc-m1#c3" }
@@ -251,7 +251,7 @@ String ZSAMSUNGHLS      "Samsung HL-S DLP TV"               { channel="globalcac
 
 This is an example of how to use contact closure, infrared, and serial devices in a sitemap.
 
-```perl
+```
 Frame label="Contact Closure" {
     Switch item=ContactClosure1 label="Open/Close Garage Door"
     Switch item=ContactClosure2 label="Light on Garage Door Opener"
@@ -285,7 +285,7 @@ Frame label="Garage Door" {
 
 This is an example of how to use a Contact Closure channel within a rule to implement a momentary contact switch, which could be used to trigger a garage door opener.
 
-```javascript
+```
 var boolean isRunning = false
 
 rule "Example Garage Door Opener"
@@ -294,9 +294,9 @@ when
 then
     if (isRunning == false ) {
         isRunning = true
-        sendCommand(ContactClosure1, ON)
+        ContactClosure1.sendCommand(ON)
         Thread.sleep(750)
-        sendCommand(ContactClosure1, OFF)
+        ContactClosure1.sendCommand(OFF)
         isRunning = false
     }      
 end
@@ -304,30 +304,30 @@ end
 
 This is an example of how to send IR and/or serial commands from within a rule.
 
-```javascript
+```
 rule "AV Power On/Off"
 when
     Item AVPowerOn received command
 then
     if(receivedCommand == ON) {
-        sendCommand(SAMSUNGHLS, "SAMSUNGHLS_POWER_ON")
-        sendCommand(HKAVR245, "HKAVR245_POWER_ON")
+        SAMSUNGHLS.sendCommand("SAMSUNGHLS_POWER_ON")
+        HKAVR245.sendCommand("HKAVR245_POWER_ON")
     }
     else {
-        sendCommand(SAMSUNGHLS, "SAMSUNGHLS_POWER_OFF")
-        sendCommand(HKAVR245, "HKAVR245_POWER_OFF")
+        SAMSUNGHLS.sendCommand("SAMSUNGHLS_POWER_OFF")
+        HKAVR245.sendCommand("HKAVR245_POWER_OFF")
     }
 end
 ```
 
 This is an example of how to send a serial command directly from within a rule.
 
-```javascript
+```
 rule "Russound Set Zone 1 Volume to 20"
 when
     Item RussoundSetVolume received command
 then
-    sendCommand(RUSSCAA66, "%F0%00%00%7F%00%00%70%05%02%02%00%00%F1%21%00%14%00%00%00%01%23%F7")
+    RUSSCAA66.sendCommand("%F0%00%00%7F%00%00%70%05%02%02%00%00%F1%21%00%14%00%00%00%01%23%F7")
 end
 ```
 
@@ -336,7 +336,7 @@ end
 Place a file named *globalcache.things* in the *conf/things* directory.
 The file should contain lines formatted like this.
 
-```java
+```
 globalcache:itachCC:000CFF17B106 [ ipAddress="192.168.12.62" ]
 globalcache:itachIR:000C0B1E54A0 [ ipAddress="192.168.12.63", mapFilename="ir-codes.map" ]
 globalcache:itachSL:000CF886B107 [ ipAddress="192.168.12.64", mapFilename="serial-codes.map"  ]

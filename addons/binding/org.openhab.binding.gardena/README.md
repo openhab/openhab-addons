@@ -94,7 +94,7 @@ smarthome:send ITEM_NAME REFRESH
 
 In scripts:
 
-```shell
+```
 import org.eclipse.smarthome.core.types.RefreshType
 ...
 sendCommand(ITEM_NAME, RefreshType.REFRESH)
@@ -102,7 +102,7 @@ sendCommand(ITEM_NAME, RefreshType.REFRESH)
 
 ## Examples
 
-```shell
+```
 // smart Water Control
 Switch  Watering_Valve      "Valve"             { channel="gardena:watering_computer:home:myValve:outlet#valve_open" }
 Number  Watering_Duration   "Duration [%d min]" { channel="gardena:watering_computer:home:myValve:outlet#button_manual_override_time" }
@@ -117,7 +117,7 @@ Number Watering_Timer_1     "Watering Timer 1 [%d min]  { channel="gardena:ic24:
 Number Pump_Timer           "Pump Timer [%d min]        { channel="gardena:electronic_pressure_pump:home:myPressurePump:manual_watering#manual_watering_timer" }
 ```
 
-```shell
+```
 Watering_Duration.sendCommand(30) // 30 minutes
 Watering_Valve.sendCommand(ON)
 
@@ -136,13 +136,13 @@ Pump_Timer.sendCommand(30) // turn the pump on for 30 minutes
 
 If you want to see what's going on in the binding, switch the loglevel to TRACE in the Karaf console
 
-```shell
+```
 log:set TRACE org.openhab.binding.gardena
 ```
 
 Set the logging back to normal
 
-```shell
+```
 log:set INFO org.openhab.binding.gardena
 ```
 

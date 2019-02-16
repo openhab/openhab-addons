@@ -26,7 +26,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
@@ -58,8 +57,8 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     private boolean useDHCPsniffing = false;
     private String arpPingState = "Disabled";
     private String ipPingState = "Disabled";
+    protected String arpPingUtilPath = "";
     protected ArpPingUtilEnum arpPingMethod = ArpPingUtilEnum.UNKNOWN_TOOL;
-    private String arpPingUtilPath = "arping";
     protected @Nullable IpPingMethodEnum pingMethod = null;
     private boolean iosDevice;
     private Set<Integer> tcpPorts = new HashSet<>();
@@ -112,7 +111,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                 InetAddress destinationAddress = InetAddress.getByName(hostname);
                 if (!destinationAddress.equals(cachedDestination)) {
                     logger.trace("host name resolved to other address, (re-)setup presence detection");
-                    setUseArpPing(true, arpPingUtilPath, destinationAddress);
+                    setUseArpPing(true, destinationAddress);
                     if (useDHCPsniffing) {
                         if (cachedDestination != null) {
                             disableDHCPListen(cachedDestination);
@@ -179,18 +178,39 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      * @param enable Enable or disable ARP ping
      * @param arpPingUtilPath c
      */
-    public void setUseArpPing(boolean enable, String arpPingUtilPath, @Nullable InetAddress destinationAddress) {
-        this.arpPingUtilPath = arpPingUtilPath;
-        if (!enable || StringUtils.isBlank(arpPingUtilPath)) {
+    private void setUseArpPing(boolean enable, @Nullable InetAddress destinationAddress) {
+        if (!enable || arpPingUtilPath.isEmpty()) {
             arpPingState = "Disabled";
             arpPingMethod = ArpPingUtilEnum.UNKNOWN_TOOL;
             return;
         } else if (destinationAddress == null || !(destinationAddress instanceof Inet4Address)) {
-            arpPingState = "Destination is not IPv4";
+            arpPingState = "Destination is not a valid IPv4 address";
             arpPingMethod = ArpPingUtilEnum.UNKNOWN_TOOL;
             return;
         }
-        arpPingMethod = networkUtils.determineNativeARPpingMethod(arpPingUtilPath);
+
+        switch (arpPingMethod) {
+            case UNKNOWN_TOOL: {
+                arpPingState = "Unknown arping tool";
+                break;
+            }
+            case THOMAS_HABERT_ARPING: {
+                arpPingState = "Arping tool by Thomas Habets";
+                break;
+            }
+            case THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT: {
+                arpPingState = "Arping tool by Thomas Habets (old version)";
+                break;
+            }
+            case ELI_FULKERSON_ARP_PING_FOR_WINDOWS: {
+                arpPingState = "Eli Fulkerson ARPing tool for Windows";
+                break;
+            }
+            case IPUTILS_ARPING: {
+                arpPingState = "Ipuitls Arping";
+                break;
+            }
+        }
     }
 
     /**
@@ -199,8 +219,10 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      * @param enable Enable or disable ARP ping
      * @param arpPingUtilPath enableDHCPListen(useDHCPsniffing);
      */
-    public void setUseArpPing(boolean enable, String arpPingUtilPath) {
-        setUseArpPing(enable, arpPingUtilPath, destination.getValue());
+    public void setUseArpPing(boolean enable, String arpPingUtilPath, ArpPingUtilEnum arpPingUtilMethod) {
+        setUseArpPing(enable, destination.getValue());
+        this.arpPingUtilPath = arpPingUtilPath;
+        this.arpPingMethod = arpPingUtilMethod;
     }
 
     public String getArpPingState() {
@@ -308,14 +330,22 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             });
         }
 
-        // ARP ping for IPv4 addresses. Use an own executor for each network interface
-        if (interfaceNames != null) {
+        // ARP ping for IPv4 addresses. Use single executor for Windows tool and 
+        // each own executor for each network interface for other tools
+        if (arpPingMethod != ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
+            executorService.execute(() -> {
+               Thread.currentThread().setName("presenceDetectionARP_" + hostname + " ");
+               // arp-ping.exe tool capable of handling multiple interfaces by itself
+               performARPping(null);
+               checkIfFinished();
+            });
+        } else if (interfaceNames != null) {                        
             for (final String interfaceName : interfaceNames) {
                 executorService.execute(() -> {
-                    Thread.currentThread().setName("presenceDetectionARP_" + hostname + " " + interfaceName);
-                    performARPping(interfaceName);
-                    checkIfFinished();
-                });
+                   Thread.currentThread().setName("presenceDetectionARP_" + hostname + " " + interfaceName);
+                   performARPping(interfaceName);
+                   checkIfFinished();
+               });               
             }
         }
 

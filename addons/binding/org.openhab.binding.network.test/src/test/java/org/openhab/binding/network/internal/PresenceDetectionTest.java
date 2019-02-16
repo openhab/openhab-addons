@@ -78,7 +78,7 @@ public class PresenceDetectionTest {
         subject.setUseDhcpSniffing(false);
         subject.setIOSDevice(true);
         subject.setServicePorts(Collections.singleton(1010));
-        subject.setUseArpPing(true, "arping");
+        subject.setUseArpPing(true, "arping", ArpPingUtilEnum.IPUTILS_ARPING);
         subject.setUseIcmpPing(true);
 
         assertThat(subject.pingMethod, is(IpPingMethodEnum.WINDOWS_PING));

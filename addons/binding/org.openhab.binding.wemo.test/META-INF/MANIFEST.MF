@@ -10,6 +10,7 @@ Import-Package:
  junit.framework,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.discovery.inbox,
+ org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.link,
@@ -29,5 +30,4 @@ Import-Package:
  org.mockito,
  org.mockito.hamcrest,
  org.mockito.stubbing
-Require-Bundle: org.eclipse.smarthome.core
 Automatic-Module-Name: org.openhab.binding.wemo.test
