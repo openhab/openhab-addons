@@ -43,7 +43,7 @@ public class TradfriLightData extends TradfriDeviceData {
     }
 
     public TradfriLightData setBrightness(PercentType brightness) {
-        attributes.add(DIMMER, new JsonPrimitive(Math.round(brightness.floatValue() / 100.0f * 254)));
+        attributes.add(DIMMER, new JsonPrimitive(Math.floor(brightness.doubleValue() * 2.54)));
         return this;
     }
 
