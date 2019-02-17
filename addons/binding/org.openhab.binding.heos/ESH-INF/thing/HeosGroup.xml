@@ -25,7 +25,7 @@
 			<channel id="Station" typeId="station" />
 			<channel id="PlayUrl" typeId="playUrl" />
 			<channel id="Ungroup" typeId="ungroup" />
-			<channel id="Shuffel" typeId="shuffleMode" />
+			<channel id="Shuffle" typeId="shuffleMode" />
 			<channel id="RepeatMode" typeId="repeatMode" />
 			<channel id="Playlists" typeId="playlists" />
 		</channels>
