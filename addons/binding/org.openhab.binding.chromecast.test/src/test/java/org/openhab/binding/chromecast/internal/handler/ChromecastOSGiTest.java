@@ -15,7 +15,7 @@ package org.openhab.binding.chromecast.internal.handler;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants.THING_TYPE_CHROMECAST;
+import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants.*;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.ManagedThingProvider;
@@ -28,7 +28,6 @@ import org.eclipse.smarthome.test.storage.VolatileStorageService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.chromecast.internal.ChromecastBindingConstants;
 
 /**
  * Tests for {@link ChromecastHandler}.
@@ -59,7 +58,7 @@ public class ChromecastOSGiTest extends JavaOSGiTest {
         assertThat(handler, is(nullValue()));
 
         Configuration configuration = new Configuration();
-        configuration.put(ChromecastBindingConstants.HOST, "hostname");
+        configuration.put(HOST, "hostname");
 
         Thing thing = ThingBuilder.create(THING_TYPE_CHROMECAST, "tv").withConfiguration(configuration).build();
         managedThingProvider.add(thing);
@@ -68,5 +67,4 @@ public class ChromecastOSGiTest extends JavaOSGiTest {
         assertThat(thing.getConfiguration(), is(notNullValue()));
         assertThat(thing.getHandler(), is(instanceOf(ChromecastHandler.class)));
     }
-
 }
