@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="chamberlainmyq"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+	<channel-type id="lightstate">
+		<item-type>Switch</item-type>
+		<label>Light State</label>
+		<description>On/Off Status of the Light</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="doorstate">
+		<item-type>Switch</item-type>
+		<label>Door State</label>
+		<description>On/Off Status of the Garage Door</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="rollerstate">
+		<item-type>Rollershutter</item-type>
+		<label>Roller Door State</label>
+		<description>Roller Status of the Garage Door</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="doorstatus">
+		<item-type>String</item-type>
+		<label>Door Status</label>
+		<description>Status of the Garage Door</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="dooropen">
+        <item-type>Contact</item-type>
+        <label>Door Open</label>
+        <description>Garage Door Open</description>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="doorclosed">
+        <item-type>Contact</item-type>
+        <label>Door Closed</label>
+        <description>Garage Door Closed</description>
+        <state readOnly="true" />
+    </channel-type>
+	<channel-type id="description" advanced="true">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>Description</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="serialnumber" advanced="true">
+		<item-type>String</item-type>
+		<label>Serial Number</label>
+		<description>Device Serial Number</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="Brand" advanced="true">
+		<item-type>String</item-type>
+		<label>Brand</label>
+		<description>Brand of Opener</description>
+		<state readOnly="true">
+			<options>
+				<option value="">off</option>
+				<option value="ECO">eco</option>
+				<option value="HEAT">heating</option>
+				<option value="COOL">cooling</option>
+				<option value="HEAT_COOL">heat/cool</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>
+
