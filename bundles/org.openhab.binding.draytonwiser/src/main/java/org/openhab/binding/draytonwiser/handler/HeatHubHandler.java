@@ -70,6 +70,8 @@ public class HeatHubHandler extends BaseBridgeHandler {
 
     private List<DraytonWiserItemUpdateListener> itemListeners = new ArrayList<>();
 
+    private int failCount;
+
     @Nullable
     private Domain domain;
 
@@ -83,6 +85,8 @@ public class HeatHubHandler extends BaseBridgeHandler {
         httpClient.setAddressResolutionTimeout(10000);
 
         gson = new Gson();
+
+        failCount = 0;
 
         try {
             httpClient.start();
@@ -398,7 +402,6 @@ public class HeatHubHandler extends BaseBridgeHandler {
 
         String payload = "{\"RequestOverride\":{\"Type\":\"Manual\", \"SetPoint\":" + setPoint + "}}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + room.getId().toString(), "PATCH", payload);
-        refresh();
     }
 
     public void setRoomManualMode(String roomName, Boolean manualMode) {
@@ -411,7 +414,6 @@ public class HeatHubHandler extends BaseBridgeHandler {
         sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + room.getId().toString(), "PATCH", payload);
         payload = "{\"RequestOverride\":{\"Type\":\"None\",\"Originator\" :\"App\",\"DurationMinutes\":0,\"SetPoint\":0}}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + room.getId().toString(), "PATCH", payload);
-        refresh();
     }
 
     public void setRoomWindowStateDetection(String roomName, Boolean windowStateDetection) {
@@ -424,7 +426,6 @@ public class HeatHubHandler extends BaseBridgeHandler {
         sendMessageToHeatHub(
                 DraytonWiserBindingConstants.ROOMS_ENDPOINT + room.getId().toString() + "/WindowDetectionActive",
                 "PATCH", payload);
-        refresh();
     }
 
     public void setRoomBoostActive(String roomName, Integer setPoint, Integer duration) {
@@ -436,7 +437,6 @@ public class HeatHubHandler extends BaseBridgeHandler {
         String payload = "{\"RequestOverride\":{\"Type\":\"Manual\",\"Originator\" :\"App\",\"DurationMinutes\":"
                 + duration + ",\"SetPoint\":" + setPoint + "}}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + room.getId().toString(), "PATCH", payload);
-        refresh();
     }
 
     public void setRoomSchedule(String roomName, String scheduleJSON) {
@@ -448,7 +448,6 @@ public class HeatHubHandler extends BaseBridgeHandler {
         String payload = scheduleJSON;
         sendMessageToHeatHub(DraytonWiserBindingConstants.SCHEDULES_ENDPOINT + room.getScheduleId().toString(), "PATCH",
                 payload);
-        refresh();
     }
 
     public void setRoomBoostInactive(String roomName) {
@@ -459,7 +458,6 @@ public class HeatHubHandler extends BaseBridgeHandler {
 
         String payload = "{\"RequestOverride\":{\"Type\":\"None\",\"Originator\" :\"App\",\"DurationMinutes\":0,\"SetPoint\":0}}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.ROOMS_ENDPOINT + room.getId().toString(), "PATCH", payload);
-        refresh();
     }
 
     public void setHotWaterManualMode(Boolean manualMode) {
@@ -467,26 +465,22 @@ public class HeatHubHandler extends BaseBridgeHandler {
         sendMessageToHeatHub(DraytonWiserBindingConstants.HOTWATER_ENDPOINT + "2", "PATCH", payload);
         payload = "{\"RequestOverride\":{\"Type\":\"None\",\"Originator\" :\"App\",\"DurationMinutes\":0,\"SetPoint\":0}}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.HOTWATER_ENDPOINT + "2", "PATCH", payload);
-        refresh();
     }
 
     public void setHotWaterSetPoint(Integer setPoint) {
         String payload = "{\"RequestOverride\":{\"Type\":\"Manual\", \"SetPoint\":" + setPoint + "}}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.HOTWATER_ENDPOINT + "2", "PATCH", payload);
-        refresh();
     }
 
     public void setHotWaterBoostActive(Integer duration) {
         String payload = "{\"RequestOverride\":{\"Type\":\"Manual\",\"Originator\" :\"App\",\"DurationMinutes\":"
                 + duration + ",\"SetPoint\":1100}}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.HOTWATER_ENDPOINT + "2", "PATCH", payload);
-        refresh();
     }
 
     public void setHotWaterBoostInactive() {
         String payload = "{\"RequestOverride\":{\"Type\":\"None\",\"Originator\" :\"App\",\"DurationMinutes\":0,\"SetPoint\":0}}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.HOTWATER_ENDPOINT + "2", "PATCH", payload);
-        refresh();
     }
 
     public void setAwayMode(Boolean awayMode) {
@@ -498,57 +492,46 @@ public class HeatHubHandler extends BaseBridgeHandler {
         sendMessageToHeatHub(DraytonWiserBindingConstants.SYSTEM_ENDPOINT + "RequestOverride", "PATCH", payload);
         payload = "{\"Type\":" + (awayMode ? "2" : "0") + ", \"setPoint\":" + (awayMode ? "-200" : "0") + "}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.HOTWATER_ENDPOINT + "2/RequestOverride", "PATCH", payload);
-        refresh();
     }
 
     public void setDeviceLocked(Integer deviceId, Boolean locked) {
         String payload = locked ? "true" : "false";
         sendMessageToHeatHub(DraytonWiserBindingConstants.DEVICE_ENDPOINT + deviceId + "/DeviceLockEnabled", "PATCH",
                 payload);
-        refresh();
     }
 
     public void setEcoMode(Boolean ecoMode) {
         String payload = "{\"EcoModeEnabled\":" + ecoMode + "}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.SYSTEM_ENDPOINT, "PATCH", payload);
-        refresh();
     }
 
     public void setSmartPlugSchedule(Integer id, String scheduleJSON) {
         String payload = scheduleJSON;
         sendMessageToHeatHub(DraytonWiserBindingConstants.SCHEDULES_ENDPOINT + id.toString(), "PATCH", payload);
-        refresh();
     }
 
     public void setSmartPlugManualMode(Integer id, Boolean manualMode) {
         String payload = "{\"Mode\":\"" + (manualMode ? "Manual" : "Auto") + "\"}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.SMARTPLUG_ENDPOINT + id.toString(), "PATCH", payload);
-        refresh();
     }
 
     public void setSmartPlugOutputState(Integer id, Boolean outputState) {
         String payload = "{\"RequestOutput\":\"" + (outputState ? "On" : "Off") + "\"}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.SMARTPLUG_ENDPOINT + id.toString(), "PATCH", payload);
-        // update the state after the heathub has had time to react
-        scheduler.schedule(() -> refresh(), 5, TimeUnit.SECONDS);
     }
 
     public void setSmartPlugAwayAction(Integer id, Boolean awayAction) {
         String payload = "{\"AwayAction\":\"" + (awayAction ? "Off" : "NoChange") + "\"}";
         sendMessageToHeatHub(DraytonWiserBindingConstants.SMARTPLUG_ENDPOINT + id.toString(), "PATCH", payload);
-        refresh();
     }
 
     synchronized private @Nullable ContentResponse sendMessageToHeatHub(String path, HttpMethod method) {
         return sendMessageToHeatHub(path, method.asString(), "");
     }
 
-    synchronized private @Nullable ContentResponse sendMessageToHeatHub(String path, HttpMethod method,
-            String content) {
-        return sendMessageToHeatHub(path, method.asString(), content);
-    }
-
     synchronized private @Nullable ContentResponse sendMessageToHeatHub(String path, String method, String content) {
+        // we need to keep track of the number of times that the heat hub has "failed" to respond.
+        // we only actually report a failure if we hit an error state 3 or more times
         try {
             logger.debug("Sending message to heathub: " + path);
             String address = (String) getConfig().get(DraytonWiserBindingConstants.ADDRESS);
@@ -557,16 +540,30 @@ public class HeatHubHandler extends BaseBridgeHandler {
             ContentResponse response = httpClient.newRequest("http://" + address + "/" + path).method(method)
                     .header("SECRET", secret).content(contentProvider).timeout(10, TimeUnit.SECONDS).send();
             if (response.getStatus() == 200) {
+                failCount = 0;
                 updateStatus(ThingStatus.ONLINE);
+                // update the state after the heathub has had time to react
+                scheduler.schedule(() -> refresh(), 5, TimeUnit.SECONDS);
                 return response;
             } else if (response.getStatus() == 401) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid authorization token");
+                failCount++;
+                if (failCount > 2) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Invalid authorization token");
+                }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                failCount++;
+                if (failCount > 2) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                }
             }
         } catch (TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Heathub didn't repond in time");
-            logger.debug(e.getMessage(), e);
+            failCount++;
+            if (failCount > 2) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Heathub didn't repond in time");
+                logger.debug(e.getMessage(), e);
+            }
         } catch (ExecutionException e) {
             logger.debug(e.getMessage(), e);
         } catch (Exception e) {
