@@ -138,6 +138,7 @@ public class ChromecastStatusUpdater {
         // In-between songs? It's thinking? It's not doing anything
         if (mediaStatus == null) {
             callback.updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
+            callback.updateState(CHANNEL_STOP, OnOffType.ON);
             callback.updateState(CHANNEL_CURRENT_TIME, UNDEF);
             updateMediaInfoStatus(null);
             return;
@@ -156,7 +157,7 @@ public class ChromecastStatusUpdater {
                 callback.updateState(CHANNEL_STOP, OnOffType.OFF);
                 break;
             default:
-                logger.debug("Unknown mediaStatus: {}", mediaStatus.playerState);
+                logger.debug("Unknown media status: {}", mediaStatus.playerState);
                 break;
         }
 

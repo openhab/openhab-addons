@@ -176,7 +176,6 @@ public class ChromecastCommander {
         if (command == OnOffType.ON) {
             try {
                 chromeCast.stopApp();
-                statusUpdater.updateMediaStatus(null);
                 statusUpdater.updateStatus(ThingStatus.ONLINE);
             } catch (final IOException ex) {
                 logger.debug("{} command failed: {}", command, ex.getMessage());
