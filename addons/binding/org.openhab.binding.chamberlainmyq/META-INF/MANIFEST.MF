@@ -19,7 +19,7 @@ Import-Package:
  javax.ws.rs.core,
  org.apache.commons.lang,
  org.apache.commons.io,
- org.openhab.core.annotation;resolution:=optional,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
