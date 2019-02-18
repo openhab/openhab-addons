@@ -22,7 +22,6 @@ import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
-import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -69,6 +68,9 @@ public class ChromecastCommander {
         switch (channelUID.getId()) {
             case CHANNEL_CONTROL:
                 handleControl(command);
+                break;
+            case CHANNEL_STOP:
+                handleStop(command);
                 break;
             case CHANNEL_VOLUME:
                 handleVolume(command);
@@ -146,15 +148,6 @@ public class ChromecastCommander {
                 return;
             }
 
-            if (command instanceof StopMoveType) {
-                final StopMoveType stopMoveType = (StopMoveType) command;
-                if (stopMoveType == StopMoveType.STOP) {
-                    chromeCast.stopApp();
-                    statusUpdater.updateMediaStatus(null);
-                }
-                return;
-            }
-
             if (command instanceof PlayPauseType) {
                 MediaStatus mediaStatus = chromeCast.getMediaStatus();
                 logger.debug("mediaStatus {}", mediaStatus);
@@ -173,9 +166,21 @@ public class ChromecastCommander {
                     logger.info("{} command not supported by current media", command);
                 }
             }
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             logger.debug("{} command failed: {}", command, e.getMessage());
             statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    private void handleStop(final Command command) {
+        if (command == OnOffType.ON) {
+            try {
+                chromeCast.stopApp();
+                statusUpdater.updateStatus(ThingStatus.ONLINE);
+            } catch (final IOException ex) {
+                logger.debug("{} command failed: {}", command, ex.getMessage());
+                statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, ex.getMessage());
+            }
         }
     }
 

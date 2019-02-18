@@ -55,6 +55,9 @@ public class ChromecastEventReceiver implements ChromeCastSpontaneousEventListen
     @Override
     public void spontaneousEventReceived(final ChromeCastSpontaneousEvent event) {
         switch (event.getType()) {
+            case CLOSE:
+                statusUpdater.updateMediaStatus(null);
+                break;
             case MEDIA_STATUS:
                 statusUpdater.updateMediaStatus(event.getData(MediaStatus.class));
                 break;
@@ -65,7 +68,7 @@ public class ChromecastEventReceiver implements ChromeCastSpontaneousEventListen
                 logger.debug("Received an 'UNKNOWN' event (class={})", event.getType().getDataClass());
                 break;
             default:
-                logger.debug("Unhandled event type: {}", event.getData());
+                logger.debug("Unhandled event type: {}", event.getType());
                 break;
         }
     }

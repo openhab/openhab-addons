@@ -23,7 +23,7 @@ Configure a Callback URL when the Chromecast cannot connect using the Primary Ad
 | Things           | Description                                                                  | Thing Type |
 |------------------|------------------------------------------------------------------------------|------------|
 | Chromecast       | Classic HDMI video Chromecasts and Google Homes                              | chromecast |
-| Chromecast Audio | The Chromecast whichonly does audio streaming and offers a headphone jack    | audio      |
+| Chromecast Audio | The Chromecast which only does audio streaming and offers a headphone jack   | audio      |
 | Audio Group      | A Chromecast audio group for multi-room audio defined via the Chromecast app | audiogroup |
 
 ## Discovery
@@ -41,6 +41,7 @@ The only configuration parameter is the `ipAddress`.
 | Channel Type ID | Item Type   | Description                                                                                                                                                                           |
 |-----------------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | control         | Player      | Player control; currently only supports play/pause and does not correctly update, if the state changes on the device itself                                                           |
+| stop            | Switch      | Send `ON` to this channel: Stops the Chromecast. If this channel is `ON`, the Chromecast is stopped, otherwise it is in another state (see control channel)                           |
 | volume          | Dimmer      | Control the volume, this is also updated if the volume is changed by another app                                                                                                      |
 | mute            | Switch      | Mute the audio                                                                                                                                                                        |
 | playuri         | String      | Can be used to tell the Chromecast to play media from a given url                                                                                                                     |
