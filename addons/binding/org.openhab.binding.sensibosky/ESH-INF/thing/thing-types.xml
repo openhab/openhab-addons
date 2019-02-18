@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sensibosky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ac">
+		<label>SensiboSky Smart AC Control</label>
+		<description>Your SensiboSky</description>
+
+		<channels>
+		    <channel id="power" typeId="power" />
+			<channel id="current-temperature" typeId="temperature-read" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="target-temperature" typeId="temperature-target" />
+			<channel id="fan-mode" typeId="fan-mode" />
+			<channel id="ac-mode" typeId="ac-mode" />
+			<channel id="swing-mode" typeId="swing-mode" />
+		</channels>
+
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<label>API Key</label>
+				<description>Your API key obtained from https://home.sensibo.com/me/api</description>
+			</parameter>
+			
+			<parameter name="refreshInterval" type="integer" min="300" max="86400">
+                <label>Refresh Interval</label>
+                <description>Refresh interval in seconds.</description>
+                <default>300</default>
+            </parameter>
+            
+            <parameter name="deviceId" type="integer">
+                <label>Device ID</label>
+                <description>The device ID. You are only required to set it if you have more than one Senisbo Sky devices. To get available device IDs call https://home.sensibo.com/api/v2/users/me/pods?apiKey=YOUR_API_KEY from the web browser or from the log viewer.</description>
+            </parameter>
+		</config-description>
+
+	</thing-type>
+
+    <channel-type id="power">
+        <item-type>Switch</item-type>
+        <label>Power</label>
+        <description>Turn your AC on and off</description>
+    </channel-type>
+
+	<channel-type id="temperature-read">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current Temperature</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+		
+	</channel-type>
+
+    <channel-type id="humidity">
+        <item-type>Number</item-type>
+        <label>Humidity</label>
+        <description>Current Humidity</description>
+        <state readOnly="true" pattern="%.1f %%" />
+    </channel-type>
+    
+    <channel-type id="temperature-target">
+        <item-type>Number:Temperature</item-type>
+        <label>Target Temperature</label>
+        <description>Target Temperature</description>
+        <state readOnly="false" pattern="%.1f %unit%" min="17" max="30" step="1" />
+    </channel-type>
+    
+    <channel-type id="fan-mode">
+        <item-type>String</item-type>
+        <label>Fan Mode</label>
+        <description>Current Fan Mode</description>
+        <state readOnly="false">
+            <options>
+                <option value="auto">Automatic</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="fan">Fan Only</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="ac-mode">
+        <item-type>String</item-type>
+        <label>AC Mode</label>
+        <description>Current AC Mode</description>
+        <state readOnly="false">
+            <options>
+                <option value="auto">Automatic</option>
+                <option value="dry">Dry</option>
+                <option value="heat">Heat</option>
+                <option value="cool">Cool</option>
+            </options>
+        </state>
+    </channel-type>
+    
+    <channel-type id="swing-mode">
+        <item-type>Switch</item-type>
+        <label>Swing Mode</label>
+        <description>Current Swing Mode</description>
+        <state readOnly="false" />
+    </channel-type>
+</thing:thing-descriptions>
