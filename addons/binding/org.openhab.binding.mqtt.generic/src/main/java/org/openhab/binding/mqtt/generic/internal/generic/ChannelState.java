@@ -141,7 +141,7 @@ public class ChannelState implements MqttMessageSubscriber {
     public void processMessage(String topic, byte[] payload) {
         final ChannelStateUpdateListener channelStateUpdateListener = this.channelStateUpdateListener;
         if (channelStateUpdateListener == null) {
-            logger.warn("MQTT message received, but MessageSubscriber object hasn't been started!", topic);
+            logger.warn("MQTT message received for topic {}, but MessageSubscriber object hasn't been started!", topic);
             return;
         }
 
@@ -293,6 +293,7 @@ public class ChannelState implements MqttMessageSubscriber {
         this.future = new CompletableFuture<>();
         connection.subscribe(config.stateTopic, this).thenRun(() -> {
             hasSubscribed = true;
+            logger.debug("Subscribed channel {} to topic: {}", this.channelUID, config.stateTopic);
             if (timeout > 0 && !future.isDone()) {
                 this.scheduledFuture = scheduler.schedule(this::receivedOrTimeout, timeout, TimeUnit.MILLISECONDS);
             } else {
