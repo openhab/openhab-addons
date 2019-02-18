@@ -89,7 +89,6 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
 
     @Override
     public void onScanRecordReceived(BluetoothScanNotification scanNotification) {
-        LoggerFactory.getLogger(this.getClass()).info("onScanRecordReceived");
         final byte[] manufacturerData = scanNotification.getManufacturerData();
         boolean fieldPresent = false;
         if (manufacturerData != null) {
