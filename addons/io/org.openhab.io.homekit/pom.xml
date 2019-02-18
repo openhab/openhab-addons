@@ -9,6 +9,7 @@
   </parent>
 
   <artifactId>org.openhab.io.homekit</artifactId>
+  <version>2.4.0-homekit-6</version>
   <packaging>eclipse-plugin</packaging>
 
   <name>HomeKit Integration</name>

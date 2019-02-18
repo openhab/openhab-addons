@@ -9,11 +9,11 @@ import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
-import com.beowulfe.hap.accessories.WindowCovering;
+import com.beowulfe.hap.accessories.BasicWindowCovering;
 import com.beowulfe.hap.accessories.properties.WindowCoveringPositionState;
 
 public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl<RollershutterItem>
-        implements WindowCovering {
+        implements BasicWindowCovering {
 
     public HomekitWindowCoveringImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
             HomekitAccessoryUpdater updater) {

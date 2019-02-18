@@ -1,5 +1,28 @@
 # Changes
 
+## 2.4.0-homekit-6
+
+### Add support for smoke and CO detectors
+
+[Cody Cutrer](https://github.com/ccutrer) has added support for Smoke and CO detectors. See the README for instructions on configuring.
+
+### HAP-Java fixes
+
+Several fixes HAP-Java from Cody Cutrer have been included in the release:
+
+* [Fix reading encrypted frames that don't line up with network frames](https://github.com/beowulfe/HAP-Java/pull/64)
+* [Bring HAP-Java in to compliance with the spec](https://github.com/beowulfe/HAP-Java/pull/65)
+* [Some optimizations to HAP-Java responses](https://github.com/beowulfe/HAP-Java/pull/65)
+* [Fix a pairing issue in which HAP-Java could listen on the wrong interface](https://github.com/beowulfe/HAP-Java/pull/67)
+
+### Artifact is now versioned
+
+Per request, the artifact is versioned with each milestone release.
+
+### Update on merging changes
+
+With the next HAP-Java release around the corner, I will rebase this branch on to 2.5.0 and start to integrate changes in to master. Further releases are likely to be based on 2.5.0; from what I understand we're to expect little issues running a plugin built for 2.5.x on 2.4.x, so long as no 2.5.x functionality is used.
+
 ## 2.4.0-homekit-5
 
 ### Breaking changes
