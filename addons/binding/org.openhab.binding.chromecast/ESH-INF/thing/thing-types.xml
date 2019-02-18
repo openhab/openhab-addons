@@ -11,6 +11,7 @@
 
 		<channels>
 			<channel id="control" typeId="system.media-control" />
+			<channel id="stop" typeId="stop" />
 			<channel id="volume" typeId="system.volume" />
 			<channel id="mute" typeId="system.mute" />
 			<channel id="playuri" typeId="playuri" />
@@ -60,6 +61,7 @@
 
 		<channels>
 			<channel id="control" typeId="system.media-control" />
+			<channel id="stop" typeId="stop" />
 			<channel id="volume" typeId="system.volume" />
 			<channel id="mute" typeId="system.mute" />
 			<channel id="playuri" typeId="playuri" />
@@ -109,6 +111,7 @@
 
 		<channels>
 			<channel id="control" typeId="system.media-control" />
+			<channel id="stop" typeId="stop" />
 			<channel id="volume" typeId="system.volume" />
 			<channel id="mute" typeId="system.mute" />
 			<channel id="playuri" typeId="playuri" />
@@ -150,6 +153,12 @@
 
 		<config-description-ref uri="thing-type:chromecast:device" />
 	</thing-type>
+
+	<channel-type id="stop">
+		<item-type>Switch</item-type>
+		<label>Stop</label>
+		<description>Stops the player. ON if the player is stopped.</description>
+	</channel-type>
 
 	<channel-type id="playuri" advanced="true">
 		<item-type>String</item-type>
