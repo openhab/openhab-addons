@@ -33,7 +33,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.bluetooth.BeaconBluetoothHandler;
-import org.openhab.binding.bluetooth.BluetoothDeviceListener;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 import org.openhab.binding.bluetooth.ruuvitag.RuuviTagBindingConstants;
 import org.slf4j.LoggerFactory;
@@ -52,7 +51,7 @@ import tec.uom.se.unit.TransformedUnit;
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public class RuuviTagHandler extends BeaconBluetoothHandler implements BluetoothDeviceListener {
+public class RuuviTagHandler extends BeaconBluetoothHandler {
 
     private static final double METRE_PER_SQUARE_SECOND_TO_STANDARD_GRAVITY = 9.80665;
     private static final UnitConverter DIVIDE_BY_TEN = new MultiplyConverter(10).inverse();
