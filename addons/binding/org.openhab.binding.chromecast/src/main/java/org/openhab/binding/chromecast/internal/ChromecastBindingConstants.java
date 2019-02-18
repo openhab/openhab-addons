@@ -13,7 +13,6 @@
 package org.openhab.binding.chromecast.internal;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,12 +36,8 @@ public class ChromecastBindingConstants {
     public static final ThingTypeUID THING_TYPE_AUDIO = new ThingTypeUID(BINDING_ID, "audio");
     public static final ThingTypeUID THING_TYPE_AUDIOGROUP = new ThingTypeUID(BINDING_ID, "audiogroup");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
-    static {
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_AUDIO);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_AUDIOGROUP);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CHROMECAST);
-    }
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_AUDIO, THING_TYPE_AUDIOGROUP, THING_TYPE_CHROMECAST).collect(Collectors.toSet()));
 
     // Config Parameters
     public static final String HOST = "ipAddress";
@@ -52,6 +47,7 @@ public class ChromecastBindingConstants {
 
     // Channel IDs
     public static final String CHANNEL_CONTROL = "control";
+    public static final String CHANNEL_STOP = "stop";
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_MUTE = "mute";
     public static final String CHANNEL_PLAY_URI = "playuri";
