@@ -43,7 +43,6 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
     private static final int TIMEOUT = 5;
 
     private ThingUID bridgeUID;
-    @Nullable
     private NikoHomeControlBridgeHandler handler;
 
     public NikoHomeControlDiscoveryService(NikoHomeControlBridgeHandler handler) {
@@ -61,7 +60,6 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
     public void deactivate() {
         removeOlderResults(new Date().getTime());
         this.handler.setNhcDiscovery(null);
-        this.handler = null;
     }
 
     /**

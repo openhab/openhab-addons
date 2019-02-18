@@ -69,6 +69,7 @@ public final class NikoHomeControlDiscover {
             while (true) {
                 datagramSocket.receive(packet);
                 if (isNhc(packet)) {
+                    logger.trace("Niko Home Control: bridge discovery response {}", new String(packet.getData()));
                     break;
                 }
             }

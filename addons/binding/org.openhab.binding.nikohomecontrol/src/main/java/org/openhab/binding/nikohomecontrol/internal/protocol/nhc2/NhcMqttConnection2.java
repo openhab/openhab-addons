@@ -28,7 +28,6 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -83,16 +82,12 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     private volatile String cocoAddress = "";
     private volatile int port;
 
-    private ScheduledExecutorService scheduler;
-
-    NhcMqttConnection2(String clientId, String persistencePath, ScheduledExecutorService scheduler)
-            throws CertificateException {
+    NhcMqttConnection2(String clientId, String persistencePath) throws CertificateException {
         this.persistenceBasePath = Paths.get(persistencePath).resolve("nikohomecontrol");
         // to be removed after testing
         logger.debug("Niko Home Control: base persistence path set to {}", persistenceBasePath);
         this.sslContextProvider = getSSLContext();
         this.clientId = clientId;
-        this.scheduler = scheduler;
     }
 
     private SSLContextProvider getSSLContext() throws CertificateException {

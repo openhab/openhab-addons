@@ -70,10 +70,8 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
         addr = (addr == null) ? "unknown" : addr.replace(".", "_");
         String clientId = addr + "-" + thing.getUID().toString().replace(":", "_");
         String userDataFolder = ConfigConstants.getUserDataFolder();
-        // to remove after testing
-        logger.debug("Niko Home Control: clientid {}, userdata folder {}", clientId, userDataFolder);
         try {
-            nhcComm = new NikoHomeControlCommunication2(this, clientId, userDataFolder, scheduler);
+            nhcComm = new NikoHomeControlCommunication2(this, clientId, userDataFolder);
             startCommunication();
         } catch (CertificateException e) {
             // this should not happen unless there is a programming error

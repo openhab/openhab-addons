@@ -89,9 +89,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                 Thread.sleep(1000);
             }
             if (nhcEventsRunning) {
-                logger.error(
-                        "Niko Home Control: starting from thread {}, but previous connection still active after 5000ms",
-                        Thread.currentThread().getId());
+                logger.error("Niko Home Control: starting but previous connection still active after 5000ms");
                 throw new IOException();
             }
 
@@ -103,8 +101,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
             Socket socket = this.nhcSocket;
             this.nhcOut = new PrintWriter(socket.getOutputStream(), true);
             this.nhcIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            logger.debug("Niko Home Control: connected via local port {} from thread {}", socket.getLocalPort(),
-                    Thread.currentThread().getId());
+            logger.debug("Niko Home Control: connected via local port {}", socket.getLocalPort());
 
             // initialize all info in local fields
             initialize();
@@ -114,8 +111,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
             (new Thread(nhcEvents)).start();
 
         } catch (IOException | InterruptedException e) {
-            logger.warn("Niko Home Control: error initializing communication from thread {}",
-                    Thread.currentThread().getId());
+            logger.warn("Niko Home Control: error initializing communication");
             stopCommunication();
             this.handler.controllerOffline();
         }
@@ -138,7 +134,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
         }
         this.nhcSocket = null;
 
-        logger.debug("Niko Home Control: communication stopped from thread {}", Thread.currentThread().getId());
+        logger.debug("Niko Home Control: communication stopped");
     }
 
     @Override
@@ -159,7 +155,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
         @Nullable
         String nhcMessage;
 
-        logger.debug("Niko Home Control: listening for events on thread {}", Thread.currentThread().getId());
+        logger.debug("Niko Home Control: listening for events");
         listenerStopped = false;
         nhcEventsRunning = true;
 
@@ -171,7 +167,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
             if (!listenerStopped) {
                 nhcEventsRunning = false;
                 // this is a socket error, not a communication stop triggered from outside this runnable
-                logger.warn("Niko Home Control: IO error in listener on thread {}", Thread.currentThread().getId());
+                logger.warn("Niko Home Control: IO error in listener");
                 // the IO has stopped working, so we need to close cleanly and try to restart
                 restartCommunication();
                 return;
@@ -180,7 +176,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
 
         nhcEventsRunning = false;
         // this is a stop from outside the runnable, so just log it and stop
-        logger.debug("Niko Home Control: event listener thread stopped on thread {}", Thread.currentThread().getId());
+        logger.debug("Niko Home Control: event listener thread stopped");
     };
 
     /**
@@ -217,13 +213,13 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
     @SuppressWarnings("null")
     private synchronized void sendMessage(Object nhcMessage) {
         String json = gsonOut.toJson(nhcMessage);
-        logger.debug("Niko Home Control: send json {} from thread {}", json, Thread.currentThread().getId());
+        logger.debug("Niko Home Control: send json {}", json);
         this.nhcOut.println(json);
         if (this.nhcOut.checkError()) {
             logger.warn("Niko Home Control: error sending message, trying to restart communication");
             restartCommunication();
             // retry sending after restart
-            logger.debug("Niko Home Control: resend json {} from thread {}", json, Thread.currentThread().getId());
+            logger.debug("Niko Home Control: resend json {}", json);
             this.nhcOut.println(json);
             if (this.nhcOut.checkError()) {
                 logger.warn("Niko Home Control: error resending message");
@@ -238,7 +234,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
      * @param nhcMessage message read from Niko Home Control.
      */
     private void readMessage(@Nullable String nhcMessage) {
-        logger.debug("Niko Home Control: received json {} on thread {}", nhcMessage, Thread.currentThread().getId());
+        logger.debug("Niko Home Control: received json {}", nhcMessage);
 
         try {
             NhcMessageBase1 nhcMessageGson = this.gsonIn.fromJson(nhcMessage, NhcMessageBase1.class);
@@ -458,7 +454,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
         for (Map<String, String> action : data) {
             String id = action.get("id");
             if (!this.actions.containsKey(id)) {
-                logger.warn("Niko Home Control: action in controller not known to openHab {}", id);
+                logger.warn("Niko Home Control: action in controller not known {}", id);
                 return;
             }
             Integer state = Integer.valueOf(action.get("value1"));

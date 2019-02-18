@@ -24,7 +24,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.IntStream;
@@ -93,10 +92,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
      * @throws UnknownHostException when the IP address is not provided
      *
      */
-    public NikoHomeControlCommunication2(NhcControllerEvent handler, String clientId, String persistencePath,
-            ScheduledExecutorService scheduler) throws CertificateException {
+    public NikoHomeControlCommunication2(NhcControllerEvent handler, String clientId, String persistencePath)
+            throws CertificateException {
         this.handler = handler;
-        this.mqttConnection = new NhcMqttConnection2(clientId, persistencePath, scheduler);
+        this.mqttConnection = new NhcMqttConnection2(clientId, persistencePath);
     }
 
     @Override
@@ -409,7 +408,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         // Once a devices list response is received, we know the communication is fully started.
         logger.debug("Niko Home Control: Communication start complete.");
         handler.controllerOnline();
-        communicationStarted.complete(true);
+        if (communicationStarted != null) {
+            communicationStarted.complete(true);
+        }
     }
 
     private void devicesStatusEvt(String response) {
@@ -560,12 +561,14 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         NhcMessage2 message = new NhcMessage2();
 
         message.method = "devices.control";
-        message.params = new ArrayList<>();
+        ArrayList<NhcMessageParam> params = new ArrayList<>();
         NhcMessageParam param = message.new NhcMessageParam();
-        message.params.add(param);
-        param.devices = new ArrayList<>();
+        params.add(param);
+        message.params = params;
+        ArrayList<NhcDevice2> devices = new ArrayList<>();
         NhcDevice2 device = new NhcDevice2();
-        param.devices.add(device);
+        devices.add(device);
+        param.devices = devices;
         device.uuid = actionId;
         device.properties = new ArrayList<>();
         NhcProperty property = device.new NhcProperty();
@@ -574,6 +577,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         NhcAction2 action = (NhcAction2) actions.get(actionId);
 
         switch (action.getType()) {
+            case GENERIC:
             case TRIGGER:
                 property.basicState = NHCTRIGGERED;
                 break;
@@ -610,12 +614,14 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         NhcMessage2 message = new NhcMessage2();
 
         message.method = "devices.control";
-        message.params = new ArrayList<>();
+        ArrayList<NhcMessageParam> params = new ArrayList<>();
         NhcMessageParam param = message.new NhcMessageParam();
-        message.params.add(param);
-        param.devices = new ArrayList<>();
+        params.add(param);
+        message.params = params;
+        ArrayList<NhcDevice2> devices = new ArrayList<>();
         NhcDevice2 device = new NhcDevice2();
-        param.devices.add(device);
+        devices.add(device);
+        param.devices = devices;
         device.uuid = thermostatId;
         device.properties = new ArrayList<>();
 
@@ -637,12 +643,14 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         NhcMessage2 message = new NhcMessage2();
 
         message.method = "devices.control";
-        message.params = new ArrayList<>();
+        ArrayList<NhcMessageParam> params = new ArrayList<>();
         NhcMessageParam param = message.new NhcMessageParam();
-        message.params.add(param);
-        param.devices = new ArrayList<>();
+        params.add(param);
+        message.params = params;
+        ArrayList<NhcDevice2> devices = new ArrayList<>();
         NhcDevice2 device = new NhcDevice2();
-        param.devices.add(device);
+        devices.add(device);
+        param.devices = devices;
         device.uuid = thermostatId;
         device.properties = new ArrayList<>();
 

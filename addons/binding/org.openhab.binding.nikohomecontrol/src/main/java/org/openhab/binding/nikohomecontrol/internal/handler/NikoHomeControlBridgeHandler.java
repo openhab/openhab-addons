@@ -50,7 +50,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeHandler.class);
 
     @Nullable
-    protected volatile NikoHomeControlCommunication nhcComm;
+    protected NikoHomeControlCommunication nhcComm;
 
     @Nullable
     private volatile ScheduledFuture<?> refreshTimer;

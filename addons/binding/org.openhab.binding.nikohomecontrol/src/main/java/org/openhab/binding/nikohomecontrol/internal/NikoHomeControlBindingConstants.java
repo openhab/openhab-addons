@@ -53,6 +53,7 @@ public class NikoHomeControlBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_PUSHBUTTON, THING_TYPE_ON_OFF_LIGHT, THING_TYPE_DIMMABLE_LIGHT,
                     THING_TYPE_BLIND, THING_TYPE_THERMOSTAT).collect(Collectors.toSet()));
+
     // List of all Channel ids
     public static final String CHANNEL_BUTTON = "button";
     public static final String CHANNEL_SWITCH = "switch";

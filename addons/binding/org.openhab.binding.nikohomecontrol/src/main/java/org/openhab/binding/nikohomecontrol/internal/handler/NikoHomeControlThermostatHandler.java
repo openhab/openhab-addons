@@ -149,7 +149,9 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
                     if (time <= 0) {
                         time = ((Number) this.getConfig().get(CONFIG_OVERRULETIME)).intValue();
                     }
-                    nhcThermostat.executeOverrule(Math.round(setpoint.floatValue() * 10), time);
+                    if (setpoint != null) {
+                        nhcThermostat.executeOverrule(Math.round(setpoint.floatValue() * 10), time);
+                    }
                 }
                 updateStatus(ThingStatus.ONLINE);
                 break;
