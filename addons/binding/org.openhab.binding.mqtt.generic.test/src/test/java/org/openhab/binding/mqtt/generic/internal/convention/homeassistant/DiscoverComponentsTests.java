@@ -28,9 +28,8 @@ import org.eclipse.smarthome.test.java.JavaOSGiTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents;
-import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HaID;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents.ComponentDiscovered;
+import org.openhab.binding.mqtt.generic.internal.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.internal.handler.ThingChannelConstants;
 
 import com.google.gson.Gson;
@@ -47,6 +46,9 @@ public class DiscoverComponentsTests extends JavaOSGiTest {
     @Mock
     ComponentDiscovered discovered;
 
+    @Mock
+    TransformationServiceProvider transformationServiceProvider;
+
     @Before
     public void setUp() {
         initMocks(this);
@@ -58,6 +60,7 @@ public class DiscoverComponentsTests extends JavaOSGiTest {
         doReturn(CompletableFuture.completedFuture(true)).when(connection).publish(any(), any());
         doReturn(CompletableFuture.completedFuture(true)).when(connection).publish(any(), any(), anyInt(),
                 anyBoolean());
+        doReturn(null).when(transformationServiceProvider).getTransformationService(any());
     }
 
     @Test
@@ -65,8 +68,8 @@ public class DiscoverComponentsTests extends JavaOSGiTest {
         // Create a scheduler
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
 
-        DiscoverComponents discover = spy(
-                new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing, scheduler, null, new Gson()));
+        DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing,
+                scheduler, null, new Gson(), transformationServiceProvider));
 
         discover.startDiscovery(connection, 50, new HaID("homeassistant", "object", "node", "component"), discovered)
                 .get(100, TimeUnit.MILLISECONDS);

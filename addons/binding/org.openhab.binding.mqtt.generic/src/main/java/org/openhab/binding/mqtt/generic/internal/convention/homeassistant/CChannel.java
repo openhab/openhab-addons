@@ -27,7 +27,9 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelConfigBuilder;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelState;
+import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateTransformation;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
+import org.openhab.binding.mqtt.generic.internal.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.internal.values.Value;
 
 /**
@@ -47,6 +49,9 @@ import org.openhab.binding.mqtt.generic.internal.values.Value;
  */
 @NonNullByDefault
 public class CChannel {
+    private static final String JINJA = "JINJA";
+    private static final String JSONPATH = "JSONPATH";
+
     public final ChannelUID channelUID;
     public final ChannelState channelState; // Channel state (value)
     public final Channel channel; // ESH Channel
@@ -56,20 +61,53 @@ public class CChannel {
     /**
      * Create a HomeAssistant Component Channel.
      *
-     * @param component The parent component.
-     * @param channelID The channel ID
-     * @param valueState A value container that is used to construct a {@link ChannelState}.
-     * @param state_topic The optional state topic.
+     * @param component     The parent component.
+     * @param channelID     The channel ID
+     * @param valueState    A value container that is used to construct a {@link ChannelState}.
+     * @param state_topic   The optional state topic.
      * @param command_topic The optional command topic. Either the command or the state topic have to be set!
-     * @param label The label for this channel. Should be internationalized.
-     * @param unit The unit for this channel. Can be empty.
+     * @param label         The label for this channel. Should be internationalized.
+     * @param unit          The unit for this channel. Can be empty.
      */
-    public CChannel(AbstractComponent component, String channelID, Value valueState, @Nullable String state_topic,
-            @Nullable String command_topic, String label, String unit,
+    public CChannel(AbstractComponent<?> component, String channelID, Value valueState, @Nullable String state_topic,
+            String label, String unit, @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
+        this(component, channelID, valueState, state_topic, null, false, label, unit, channelStateUpdateListener);
+    }
+
+    /**
+     * Create a HomeAssistant Component Channel.
+     *
+     * @param component     The parent component.
+     * @param channelID     The channel ID
+     * @param valueState    A value container that is used to construct a {@link ChannelState}.
+     * @param state_topic   The optional state topic.
+     * @param command_topic The optional command topic. Either the command or the state topic have to be set!
+     * @param label         The label for this channel. Should be internationalized.
+     * @param unit          The unit for this channel. Can be empty.
+     */
+    public CChannel(AbstractComponent<?> component, String channelID, Value valueState, @Nullable String command_topic,
+            boolean retain, String label, String unit,
+            @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
+        this(component, channelID, valueState, null, command_topic, retain, label, unit, channelStateUpdateListener);
+    }
+
+    /**
+     * Create a HomeAssistant Component Channel.
+     *
+     * @param component     The parent component.
+     * @param channelID     The channel ID
+     * @param valueState    A value container that is used to construct a {@link ChannelState}.
+     * @param state_topic   The optional state topic.
+     * @param command_topic The optional command topic. Either the command or the state topic have to be set!
+     * @param label         The label for this channel. Should be internationalized.
+     * @param unit          The unit for this channel. Can be empty.
+     */
+    public CChannel(AbstractComponent<?> component, String channelID, Value valueState, @Nullable String state_topic,
+            @Nullable String command_topic, boolean retain, String label, String unit,
             @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
         this.channelUID = new ChannelUID(component.channelGroupUID, channelID);
         channelTypeUID = component.haID.getChannelTypeID(channelID);
-        channelState = new ChannelState(ChannelConfigBuilder.create().withRetain(true).withStateTopic(state_topic)
+        channelState = new ChannelState(ChannelConfigBuilder.create().withRetain(retain).withStateTopic(state_topic)
                 .withCommandTopic(command_topic).build(), channelUID, valueState, channelStateUpdateListener);
 
         if (StringUtils.isBlank(state_topic)) {
@@ -82,8 +120,46 @@ public class CChannel {
         }
 
         Configuration configuration = new Configuration();
-        configuration.put("config", component.configJson);
+        configuration.put("config", component.getConfig());
         channel = ChannelBuilder.create(channelUID, channelState.getItemType()).withType(channelTypeUID)
                 .withKind(type.getKind()).withLabel(label).withConfiguration(configuration).build();
+    }
+
+    /*
+     * add the first non null template
+     */
+    void addTemplateIn(TransformationServiceProvider provider, @Nullable String... templates) {
+
+        for (String template : templates) {
+            if (template != null) {
+                // see https://www.home-assistant.io/docs/mqtt/processing_json/
+                if (StringUtils.startsWith(template, "json:")) {
+                    channelState.addTransformation(
+                            new ChannelStateTransformation(JSONPATH, template.substring(5), provider));
+                } else {
+                    channelState.addTransformation(new ChannelStateTransformation(JINJA, template, provider));
+                }
+                break;
+            }
+        }
+    }
+
+    /*
+     * add the first non null template
+     */
+    void addTemplateOut(TransformationServiceProvider provider, @Nullable String... templates) {
+
+        for (String template : templates) {
+            if (template != null) {
+                // see https://www.home-assistant.io/docs/mqtt/processing_json/
+                if (StringUtils.startsWith(template, "json:")) {
+                    channelState.addTransformationOut(
+                            new ChannelStateTransformation(JSONPATH, template.substring(5), provider));
+                } else {
+                    channelState.addTransformationOut(new ChannelStateTransformation(JINJA, template, provider));
+                }
+                break;
+            }
+        }
     }
 }

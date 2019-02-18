@@ -12,7 +12,7 @@
 		<label>HomeAssistant MQTT Component</label>
 		<description>You need a configured Broker first. This Thing represents a device, that follows the "HomeAssistant MQTT Component" specification.</description>
 		<config-description>
-			<parameter name="objectid" type="text" required="true">
+			<parameter name="objectid" type="text" required="true" multiple="true">
 				<label>Object ID</label>
 				<description>HomeAssistant Object ID</description>
 			</parameter>

@@ -19,6 +19,7 @@ import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListe
 import org.openhab.binding.mqtt.generic.internal.values.ImageValue;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * A MQTT camera, following the https://www.home-assistant.io/components/camera.mqtt/ specification.
@@ -28,36 +29,27 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentCamera extends AbstractComponent {
+public class ComponentCamera extends AbstractComponent<ComponentCamera.Config> {
     public static final String cameraChannelID = "camera"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config {
-        protected String name = "MQTT Camera";
-        protected String icon = "";
-        protected int qos = 1;
-        protected boolean retain = true;
-        protected @Nullable String unique_id;
+    static class Config extends AbstractConfiguration {
+        public Config() {
+            super("MQTT Camera");
+        }
 
+        @SerializedName(value = "topic", alternate = "t")
         protected String topic = "";
     };
 
-    protected Config config = new Config();
-
     public ComponentCamera(ThingUID thing, HaID haID, String configJSON,
             @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
-        super(thing, haID, configJSON, gson);
-        config = gson.fromJson(configJSON, Config.class);
+        super(thing, haID, configJSON, Config.class, gson);
 
         ImageValue value = new ImageValue();
-        channels.put(cameraChannelID, new CChannel(this, cameraChannelID, value, //
-                config.topic, null, config.name, "", channelStateUpdateListener));
-    }
-
-    @Override
-    public String name() {
-        return config.name;
+        addChannel(new CChannel(this, cameraChannelID, value, //
+                config.expand(config.topic), "Picture", "", channelStateUpdateListener));
     }
 }

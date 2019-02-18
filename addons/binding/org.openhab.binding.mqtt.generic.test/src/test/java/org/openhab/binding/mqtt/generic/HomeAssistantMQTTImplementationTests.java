@@ -44,13 +44,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.AbstractComponent;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.ComponentSwitch;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents;
-import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HaID;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents.ComponentDiscovered;
+import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HaID;
+import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HomeAssistentGroup;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
-import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelTypeProvider;
+import org.openhab.binding.mqtt.generic.internal.generic.MqttTypeProvider;
+import org.openhab.binding.mqtt.generic.internal.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.internal.handler.ThingChannelConstants;
 import org.osgi.service.cm.ConfigurationException;
 import org.slf4j.Logger;
@@ -74,6 +75,9 @@ public class HomeAssistantMQTTImplementationTests extends JavaOSGiTest {
 
     @Mock
     ChannelStateUpdateListener channelStateUpdateListener;
+
+    @Mock
+    TransformationServiceProvider transformationServiceProvider;
 
     /**
      * Create an observer that fails the test as soon as the broker client connection changes its connection state
@@ -122,6 +126,8 @@ public class HomeAssistantMQTTImplementationTests extends JavaOSGiTest {
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()])).get(200, TimeUnit.MILLISECONDS);
 
         failure = null;
+
+        doReturn(null).when(transformationServiceProvider).getTransformationService(any());
     }
 
     @After
@@ -153,13 +159,13 @@ public class HomeAssistantMQTTImplementationTests extends JavaOSGiTest {
 
     @Test
     public void parseHATree() throws InterruptedException, ExecutionException, TimeoutException {
-        MqttChannelTypeProvider channelTypeProvider = mock(MqttChannelTypeProvider.class);
+        MqttTypeProvider channelTypeProvider = mock(MqttTypeProvider.class);
 
-        final Map<String, AbstractComponent> haComponents = new HashMap<String, AbstractComponent>();
+        final Map<String, HomeAssistentGroup> haComponents = new HashMap<String, HomeAssistentGroup>();
 
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
         DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing,
-                scheduler, channelStateUpdateListener, new Gson()));
+                scheduler, channelStateUpdateListener, new Gson(), transformationServiceProvider));
 
         // The DiscoverComponents object calls ComponentDiscovered callbacks.
         // In the following implementation we add the found component to the `haComponents` map

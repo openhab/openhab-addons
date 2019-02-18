@@ -29,13 +29,13 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.Device;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.DeviceAttributes;
+import org.openhab.binding.mqtt.generic.internal.convention.homie300.DeviceAttributes.ReadyState;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.DeviceCallback;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.HandlerConfiguration;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.Node;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.Property;
-import org.openhab.binding.mqtt.generic.internal.convention.homie300.DeviceAttributes.ReadyState;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelState;
-import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelTypeProvider;
+import org.openhab.binding.mqtt.generic.internal.generic.MqttTypeProvider;
 import org.openhab.binding.mqtt.generic.internal.tools.DelayedBatchProcessing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 public class HomieThingHandler extends AbstractMQTTThingHandler implements DeviceCallback, Consumer<List<Object>> {
     private final Logger logger = LoggerFactory.getLogger(HomieThingHandler.class);
     protected Device device;
-    protected final MqttChannelTypeProvider channelTypeProvider;
+    protected final MqttTypeProvider typeProvider;
     /** The timeout per attribute field subscription */
     protected final int attributeReceiveTimeout;
     protected final int subscribeTimeout;
@@ -69,10 +69,10 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
      * @param attributeReceiveTimeout The timeout per attribute field subscription. In milliseconds.
      *            One attribute subscription and receiving should not take longer than 50ms.
      */
-    public HomieThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider, int subscribeTimeout,
+    public HomieThingHandler(Thing thing, MqttTypeProvider typeProvider, int subscribeTimeout,
             int attributeReceiveTimeout) {
         super(thing, subscribeTimeout);
-        this.channelTypeProvider = channelTypeProvider;
+        this.typeProvider = typeProvider;
         this.subscribeTimeout = subscribeTimeout;
         this.attributeReceiveTimeout = attributeReceiveTimeout;
         this.delayedProcessing = new DelayedBatchProcessing<Object>(subscribeTimeout, this, scheduler);
@@ -158,25 +158,25 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
 
     @Override
     public void nodeRemoved(Node node) {
-        channelTypeProvider.removeChannelGroupType(node.channelGroupTypeUID);
+        typeProvider.removeChannelGroupType(node.channelGroupTypeUID);
         delayedProcessing.accept(node);
     }
 
     @Override
     public void propertyRemoved(Property property) {
-        channelTypeProvider.removeChannelType(property.channelTypeUID);
+        typeProvider.removeChannelType(property.channelTypeUID);
         delayedProcessing.accept(property);
     }
 
     @Override
     public void nodeAddedOrChanged(Node node) {
-        channelTypeProvider.setChannelGroupType(node.channelGroupTypeUID, node.type());
+        typeProvider.setChannelGroupType(node.channelGroupTypeUID, node.type());
         delayedProcessing.accept(node);
     }
 
     @Override
     public void propertyAddedOrChanged(Property property) {
-        channelTypeProvider.setChannelType(property.channelTypeUID, property.getType());
+        typeProvider.setChannelType(property.channelTypeUID, property.getType());
         delayedProcessing.accept(property);
     }
 

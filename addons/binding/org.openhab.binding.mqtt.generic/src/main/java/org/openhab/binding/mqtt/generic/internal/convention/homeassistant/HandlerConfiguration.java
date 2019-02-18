@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.internal.handler.HomeAssistantThingHandler;
 
@@ -31,5 +34,5 @@ public class HandlerConfiguration {
     /**
      * The object id. This is comparable to a Homie Device.
      */
-    public String objectid = "";
+    public List<String> objectid = new ArrayList<>();
 }

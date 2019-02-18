@@ -35,17 +35,12 @@ public class ChannelStateTransformation {
     final String serviceName;
 
     /**
-     * Creates a new MQTT topic subscriber.
+     * Creates a new channel state transformer.
      *
-     * @param stateTopic The MQTT state topic
-     * @param commandTopic The MQTT command topic
      * @param pattern A transformation pattern, starting with the transformation service
      *            name,followed by a colon and the transformation itself. An Example:
      *            JSONPATH:$.device.status.temperature for a json {device: {status: {
      *            temperature: 23.2 }}}.
-     * @param channelUID The channel UID, used in processMessage() to inform the respective channel
-     *            of an update.
-     * @param cachedValue A value object
      * @param provider The transformation service provider
      */
     public ChannelStateTransformation(String pattern, TransformationServiceProvider provider) {
@@ -58,6 +53,21 @@ public class ChannelStateTransformation {
         String type = pattern.substring(0, index).toUpperCase();
         this.pattern = pattern.substring(index + 1);
         this.serviceName = type;
+    }
+
+    /**
+     * Creates a new channel state transformer.
+     *
+     * @param type A transformation service name.
+     * @param pattern A transformation. An Example:
+     *            $.device.status.temperature for a json {device: {status: {
+     *            temperature: 23.2 }}} (for type <code>JSONPATH</code>).
+     * @param provider The transformation service provider
+     */
+    public ChannelStateTransformation(String serviceName, String pattern, TransformationServiceProvider provider) {
+        this.serviceName = serviceName;
+        this.pattern = pattern;
+        this.provider = provider;
     }
 
     /**

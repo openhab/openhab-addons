@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -26,7 +27,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.core.transform.TransformationHelper;
 import org.eclipse.smarthome.core.transform.TransformationService;
 import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelStateDescriptionProvider;
-import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelTypeProvider;
+import org.openhab.binding.mqtt.generic.internal.generic.MqttTypeProvider;
 import org.openhab.binding.mqtt.generic.internal.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.internal.handler.GenericThingHandler;
 import org.openhab.binding.mqtt.generic.internal.handler.HomeAssistantThingHandler;
@@ -46,7 +47,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class)
 @NonNullByDefault
 public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements TransformationServiceProvider {
-    private @NonNullByDefault({}) MqttChannelTypeProvider typeProvider;
+    private @NonNullByDefault({}) MqttTypeProvider typeProvider;
     private @NonNullByDefault({}) MqttChannelStateDescriptionProvider stateDescriptionProvider;
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(MqttBindingConstants.GENERIC_MQTT_THING, MqttBindingConstants.HOMIE300_MQTT_THING,
@@ -55,7 +56,12 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements 
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID) || isHomeassistantDynamicType(thingTypeUID);
+    }
+
+    private boolean isHomeassistantDynamicType(ThingTypeUID thingTypeUID) {
+        return StringUtils.equals(MqttBindingConstants.BINDING_ID, thingTypeUID.getBindingId())
+                && StringUtils.startsWith(thingTypeUID.getId(), MqttBindingConstants.HOMEASSISTANT_MQTT_THING.getId());
     }
 
     @Activate
@@ -80,11 +86,11 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements 
     }
 
     @Reference
-    protected void setChannelProvider(MqttChannelTypeProvider provider) {
+    protected void setTypeProvider(MqttTypeProvider provider) {
         this.typeProvider = provider;
     }
 
-    protected void unsetChannelProvider(MqttChannelTypeProvider provider) {
+    protected void unsetTypeProvider(MqttTypeProvider provider) {
         this.typeProvider = null;
     }
 
@@ -96,8 +102,9 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements 
             return new GenericThingHandler(thing, stateDescriptionProvider, this, 1500);
         } else if (thingTypeUID.equals(MqttBindingConstants.HOMIE300_MQTT_THING)) {
             return new HomieThingHandler(thing, typeProvider, 1500, 200);
-        } else if (thingTypeUID.equals(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)) {
-            return new HomeAssistantThingHandler(thing, typeProvider, 1500, 200);
+        } else if (thingTypeUID.equals(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)
+                || isHomeassistantDynamicType(thingTypeUID)) {
+            return new HomeAssistantThingHandler(thing, typeProvider, this, 1500, 200);
         }
         return null;
     }

@@ -13,6 +13,7 @@
 package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
@@ -37,31 +38,35 @@ public class HaID {
      * Creates a {@link HaID} object for a given HomeAssistant MQTT topic.
      *
      * @param mqttTopic A topic like "homeassistant/binary_sensor/garden/config" or
-     *            "homeassistant/binary_sensor/0/garden/config"
+     *                      "homeassistant/binary_sensor/0/garden/config"
      */
     public HaID(String mqttTopic) {
         String[] strings = mqttTopic.split("/");
-        if (strings.length < 3) {
-            throw new IllegalArgumentException("MQTT topic not a HomeAssistant topic!");
+        if (strings.length < 4 || strings.length > 5) {
+            throw new IllegalArgumentException("MQTT topic not a HomeAssistant topic (wrong length)!");
         }
-        if (strings.length >= 5) {
-            component = strings[1];
+        if (!"config".equals(strings[strings.length - 1])) {
+            throw new IllegalArgumentException("MQTT topic not a HomeAssistant topic ('config' missing)!");
+        }
+
+        baseTopic = strings[0];
+        component = strings[1];
+
+        if (strings.length == 5) {
             nodeID = strings[2];
             objectID = strings[3];
         } else {
-            component = strings[1];
             nodeID = "";
             objectID = strings[2];
         }
-        baseTopic = strings[0];
     }
 
     /**
      * Creates a {@link HaID} by providing all components separately.
      *
      * @param baseTopic The base topic. Usually "homeassistant".
-     * @param objectID The object ID
-     * @param nodeID The node ID (can be the empty string)
+     * @param objectID  The object ID
+     * @param nodeID    The node ID (can be the empty string)
      * @param component The component ID
      */
     public HaID(String baseTopic, String objectID, String nodeID, String component) {
@@ -75,21 +80,17 @@ public class HaID {
      * Creates a {@link HaID} by providing a channel UID.
      *
      * @param baseTopic The base topic. Usually "homeassistant".
-     * @param channel The channel UID
+     * @param channel   The channel UID
      */
     public HaID(String baseTopic, ChannelUID channel) {
         String groupId = channel.getGroupId();
         if (groupId == null) {
             throw new IllegalArgumentException("Channel needs a group ID!");
         }
-        String[] groupParts = groupId.split("_");
-        if (groupParts.length != 2) {
-            throw new IllegalArgumentException("Channel needs a group ID with the pattern component_node!");
-        }
-        this.objectID = channel.getThingUID().getId();
-        this.nodeID = groupParts[1];
-        this.component = groupParts[0];
         this.baseTopic = baseTopic;
+        this.component = channel.getIdWithoutGroup();
+        this.nodeID = "";
+        this.objectID = groupId;
     }
 
     /**
@@ -119,7 +120,45 @@ public class HaID {
      * The channel group ID consists of the node-id and the component-id
      */
     public String getChannelGroupID() {
-        return component + "_" + nodeID;
+        return objectID;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + baseTopic.hashCode();
+        result = prime * result + component.hashCode();
+        result = prime * result + nodeID.hashCode();
+        result = prime * result + objectID.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        HaID other = (HaID) obj;
+        if (!baseTopic.equals(other.baseTopic)) {
+            return false;
+        }
+        if (!component.equals(other.component)) {
+            return false;
+        }
+        if (!nodeID.equals(other.nodeID)) {
+            return false;
+        }
+        if (!objectID.equals(other.objectID)) {
+            return false;
+        }
+        return true;
     }
 
     @Override

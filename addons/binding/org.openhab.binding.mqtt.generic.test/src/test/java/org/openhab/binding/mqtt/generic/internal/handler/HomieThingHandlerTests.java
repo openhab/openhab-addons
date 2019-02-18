@@ -52,16 +52,15 @@ import org.mockito.invocation.InvocationOnMock;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.Device;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.DeviceAttributes;
+import org.openhab.binding.mqtt.generic.internal.convention.homie300.DeviceAttributes.ReadyState;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.Node;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.NodeAttributes;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.Property;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.PropertyAttributes;
-import org.openhab.binding.mqtt.generic.internal.convention.homie300.DeviceAttributes.ReadyState;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.PropertyAttributes.DataTypeEnum;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateHelper;
-import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelTypeProvider;
-import org.openhab.binding.mqtt.generic.internal.handler.HomieThingHandler;
+import org.openhab.binding.mqtt.generic.internal.generic.MqttTypeProvider;
 import org.openhab.binding.mqtt.generic.internal.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.internal.mapping.SubscribeFieldToMQTTtopic;
 import org.openhab.binding.mqtt.generic.internal.tools.ChildMap;
@@ -94,7 +93,7 @@ public class HomieThingHandlerTests {
 
     private HomieThingHandler thingHandler;
 
-    private final MqttChannelTypeProvider channelTypeProvider = new MqttChannelTypeProvider();
+    private final MqttTypeProvider channelTypeProvider = new MqttTypeProvider();
 
     private final String deviceID = ThingChannelConstants.testHomieThing.getId();
     private final String deviceTopic = "homie/" + deviceID;

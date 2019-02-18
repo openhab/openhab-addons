@@ -16,9 +16,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
+import org.openhab.binding.mqtt.generic.internal.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.internal.values.OnOffValue;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * A MQTT BinarySensor, following the https://www.home-assistant.io/components/binary_sensor.mqtt/ specification.
@@ -26,52 +28,46 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentBinarySensor extends AbstractComponent {
+public class ComponentBinarySensor extends AbstractComponent<ComponentBinarySensor.Config> {
     public static final String sensorChannelID = "sensor"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config {
-        protected String name = "MQTT Sensor";
-        protected String icon = "";
-        protected int qos = 1;
-        protected boolean retain = true;
-        protected @Nullable String value_template;
-        protected @Nullable String unique_id;
+    static class Config extends AbstractConfiguration {
+        public Config() {
+            super("MQTT Binary Sensor");
+        }
 
-        protected String unit_of_measurement = "";
+        @SerializedName(value = "device_class", alternate = "dev_cla")
         protected @Nullable String device_class;
+        @SerializedName(value = "force_update", alternate = "frc_upd")
         protected boolean force_update = false;
+        @SerializedName(value = "expire_after", alternate = "exp_aft")
         protected int expire_after = 0;
 
+        @SerializedName(value = "state_topic", alternate = "stat_t")
         protected String state_topic = "";
+        @SerializedName(value = "payload_on", alternate = "pl_on")
         protected String payload_on = "ON";
+        @SerializedName(value = "payload_off", alternate = "pl_off")
         protected String payload_off = "OFF";
-
-        protected @Nullable String availability_topic;
-        protected String payload_available = "online";
-        protected String payload_not_available = "offline";
     };
 
-    protected Config config = new Config();
-
     public ComponentBinarySensor(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
-        super(thing, haID, configJSON, gson);
-        config = gson.fromJson(configJSON, Config.class);
+            @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson,
+            TransformationServiceProvider provider) {
+        super(thing, haID, configJSON, Config.class, gson);
 
         if (config.force_update) {
             throw new UnsupportedOperationException("Component:Sensor does not support forced updates");
         }
 
-        channels.put(sensorChannelID,
-                new CChannel(this, sensorChannelID, new OnOffValue(config.payload_on, config.payload_off),
-                        config.state_topic, null, config.name, config.unit_of_measurement, channelStateUpdateListener));
-    }
+        CChannel sensorChannel = new CChannel(this, sensorChannelID,
+                new OnOffValue(config.payload_on, config.payload_off), config.expand(config.state_topic), "State", "",
+                channelStateUpdateListener);
+        sensorChannel.addTemplateIn(provider, config.value_template);
 
-    @Override
-    public String name() {
-        return config.name;
+        addChannel(sensorChannel);
     }
 }

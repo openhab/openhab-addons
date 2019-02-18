@@ -19,18 +19,20 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelGroupUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.type.ChannelDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelDefinitionBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelGroupDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
-import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelTypeProvider;
+import org.openhab.binding.mqtt.generic.internal.generic.MqttTypeProvider;
 
 import com.google.gson.Gson;
 
@@ -41,48 +43,54 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public abstract class AbstractComponent {
+public abstract class AbstractComponent<C extends AbstractConfiguration> implements HomeAssistentGroup {
     // Component location fields
     protected final ChannelGroupTypeUID channelGroupTypeUID;
     protected final ChannelGroupUID channelGroupUID;
     protected final HaID haID;
 
     // Channels and configuration
-    protected final Map<String, CChannel> channels = new TreeMap<>();
+    private final Map<String, CChannel> channels = new TreeMap<>();
     // The hash code ({@link String#hashCode()}) of the configuration string
     // Used to determine if a component has changed.
     protected final int configHash;
     protected final String configJson;
-    private final Gson gson;
+    protected final C config;
 
     /**
      * Provide a thingUID and HomeAssistant topic ID to determine the ESH channel group UID and type.
      *
-     * @param thing A ThingUID
-     * @param haID A HomeAssistant topic ID
+     * @param thing      A ThingUID
+     * @param haID       A HomeAssistant topic ID
      * @param configJson The configuration string
-     * @param gson A Gson instance
+     * @param gson       A Gson instance
      */
-    public AbstractComponent(ThingUID thing, HaID haID, String configJson, Gson gson) {
-        this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID,
-                haID.getChannelGroupTypeID());
-        this.channelGroupUID = new ChannelGroupUID(thing, haID.getChannelGroupID());
+    public AbstractComponent(ThingUID thing, HaID haID, String configJson, Class<C> configClass, Gson gson) {
         this.haID = haID;
 
         this.configJson = configJson;
+        this.config = gson.fromJson(configJson, configClass);
         this.configHash = configJson.hashCode();
 
-        this.gson = gson;
+        this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID,
+                haID.getChannelGroupTypeID());
+        this.channelGroupUID = new ChannelGroupUID(thing, haID.getChannelGroupID());
+    }
+
+    @Nullable
+    protected CChannel addChannel(CChannel channel) {
+        return channels.put(channel.channelUID.getId(), channel);
     }
 
     /**
      * Subscribes to all state channels of the component and adds all channels to the provided channel type provider.
      *
-     * @param connection The connection
+     * @param connection                 The connection
      * @param channelStateUpdateListener A listener
      * @return A future that completes as soon as all subscriptions have been performed. Completes exceptionally on
      *         errors.
      */
+    @Override
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
         return channels.values().stream().map(v -> v.channelState.start(connection, scheduler, timeout))
@@ -95,6 +103,7 @@ public abstract class AbstractComponent {
      * @return A future that completes as soon as all subscriptions removals have been performed. Completes
      *         exceptionally on errors.
      */
+    @Override
     public CompletableFuture<@Nullable Void> stop() {
         return channels.values().stream().map(v -> v.channelState.stop())
                 .reduce(CompletableFuture.completedFuture(null), (f, v) -> f.thenCompose(b -> v));
@@ -105,7 +114,8 @@ public abstract class AbstractComponent {
      *
      * @param channelTypeProvider The channel type provider
      */
-    public void addChannelTypes(MqttChannelTypeProvider channelTypeProvider) {
+    @Override
+    public void addChannelTypes(MqttTypeProvider channelTypeProvider) {
         channels.values().forEach(v -> channelTypeProvider.setChannelType(v.channelTypeUID, v.type));
     }
 
@@ -115,13 +125,15 @@ public abstract class AbstractComponent {
      *
      * @param channelTypeProvider The channel type provider
      */
-    public void removeChannelTypes(MqttChannelTypeProvider channelTypeProvider) {
+    @Override
+    public void removeChannelTypes(MqttTypeProvider channelTypeProvider) {
         channels.values().forEach(v -> channelTypeProvider.removeChannelType(v.channelTypeUID));
     }
 
     /**
      * Each HomeAssistant component corresponds to an ESH Channel Group Type.
      */
+    @Override
     public ChannelGroupTypeUID groupTypeUID() {
         return channelGroupTypeUID;
     }
@@ -129,6 +141,7 @@ public abstract class AbstractComponent {
     /**
      * The unique id of this component within the ESH framework.
      */
+    @Override
     public ChannelGroupUID uid() {
         return channelGroupUID;
     }
@@ -136,11 +149,14 @@ public abstract class AbstractComponent {
     /**
      * Component (Channel Group) name.
      */
-    public abstract String name();
+    public String name() {
+        return config.name;
+    }
 
     /**
      * Each component consists of multiple ESH Channels.
      */
+    @Override
     public Map<String, CChannel> channelTypes() {
         return channels;
     }
@@ -153,6 +169,7 @@ public abstract class AbstractComponent {
      * @param channelID The channel ID
      * @return A components channel
      */
+    @Override
     public @Nullable CChannel channel(String channelID) {
         return channels.get(channelID);
     }
@@ -160,6 +177,7 @@ public abstract class AbstractComponent {
     /**
      * @return Returns the configuration hash value for easy comparison.
      */
+    @Override
     public int getConfigHash() {
         return configHash;
     }
@@ -167,6 +185,7 @@ public abstract class AbstractComponent {
     /**
      * Return the channel group type.
      */
+    @Override
     public ChannelGroupType type() {
         final List<ChannelDefinition> channelDefinitions = channels.values().stream()
                 .map(c -> new ChannelDefinitionBuilder(c.channelUID.getId(), c.channelTypeUID).build())
@@ -181,6 +200,33 @@ public abstract class AbstractComponent {
      */
     public void resetState() {
         channels.values().forEach(c -> c.channelState.getCache().resetState());
+    }
+
+    public String getConfig() {
+        return configJson;
+    }
+
+    public HaID getHaID() {
+        return haID;
+    }
+
+    @Override
+    public @NonNull ChannelGroupDefinition getGroupDefinition() {
+        return new ChannelGroupDefinition(channelGroupUID.getId(), groupTypeUID(), name(), null);
+    }
+
+    /**
+     * return a default value, if the nullable value is null
+     *
+     * @param value
+     * @param def
+     * @return value, if not null, else def
+     */
+    protected static <T> T defString(@Nullable T value, T def) {
+        if (value == null) {
+            return def;
+        }
+        return value;
     }
 
 }

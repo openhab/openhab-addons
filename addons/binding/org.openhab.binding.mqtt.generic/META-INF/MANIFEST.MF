@@ -8,6 +8,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
  com.google.gson,
+ com.google.gson.annotations,
+ com.google.gson.stream,
  org.apache.commons.lang,
  org.apache.commons.net.util,
  org.eclipse.jdt.annotation;resolution:=optional,
