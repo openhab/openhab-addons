@@ -3,7 +3,7 @@ Automatic-Module-Name: org.openhab.binding.harmonyhub
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
- lib/harmony-client-1.0-SNAPSHOT.jar
+ lib/harmony-client-1.0.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: HarmonyHub Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -11,9 +11,6 @@ Bundle-SymbolicName: org.openhab.binding.harmonyhub;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Import-Package: 
- com.google.common.base,
- com.google.common.collect,
- com.google.common.io,
  com.google.gson,
  com.google.gson.annotations,
  com.google.inject,

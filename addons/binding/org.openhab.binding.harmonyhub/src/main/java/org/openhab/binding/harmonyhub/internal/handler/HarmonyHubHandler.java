@@ -29,7 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.cache.ExpiringCacheAsync;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -77,21 +76,13 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
     private static final Comparator<Activity> ACTIVITY_COMPERATOR = Comparator.comparing(Activity::getActivityOrder,
             Comparator.nullsFirst(Integer::compareTo));
 
-    // one minute should be plenty short, but not overwhelm the hub with requests
-    private static final long CONFIG_CACHE_TIME = TimeUnit.MINUTES.toMillis(1);
     private static final int RETRY_TIME = 60;
     private static final int HEARTBEAT_INTERVAL = 30;
     // Websocket will timeout after 60 seconds, pick a sensible max under this,
     private static final int HEARTBEAT_INTERVAL_MAX = 50;
-
     private List<HubStatusListener> listeners = new CopyOnWriteArrayList<>();
-
-    private final ExpiringCacheAsync<@Nullable HarmonyConfig> configCache = new ExpiringCacheAsync<>(CONFIG_CACHE_TIME);
     private final HarmonyHubHandlerFactory factory;
-
-    // private @NonNullByDefault({}) ScheduledExecutorService buttonExecutor;
     private @NonNullByDefault({}) HarmonyHubConfig config;
-
     private @Nullable HarmonyClient client;
     private @Nullable ScheduledFuture<?> retryJob;
     private @Nullable ScheduledFuture<?> heartBeatJob;
@@ -221,7 +212,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
                     try {
                         client.sendPing();
                     } catch (Exception e) {
-                        logger.warn("heartbeat failed", e);
+                        logger.debug("heartbeat failed", e);
                         setOfflineAndReconnect("Hearbeat failed");
                     }
                 }, heartBeatInterval, heartBeatInterval, TimeUnit.SECONDS);
