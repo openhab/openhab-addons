@@ -47,10 +47,10 @@ import org.openhab.binding.harmonyhub.internal.config.HarmonyDeviceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.whistlingfish.harmony.config.ControlGroup;
-import net.whistlingfish.harmony.config.Device;
-import net.whistlingfish.harmony.config.Function;
-import net.whistlingfish.harmony.config.HarmonyConfig;
+import com.digitaldan.harmony.config.ControlGroup;
+import com.digitaldan.harmony.config.Device;
+import com.digitaldan.harmony.config.Function;
+import com.digitaldan.harmony.config.HarmonyConfig;
 
 /**
  * The {@link HarmonyDeviceHandler} is responsible for handling commands for Harmony Devices, which are

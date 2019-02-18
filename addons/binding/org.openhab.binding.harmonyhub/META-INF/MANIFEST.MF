@@ -3,19 +3,7 @@ Automatic-Module-Name: org.openhab.binding.harmonyhub
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
- lib/harmony-java-client-1.2.2.jar,
- lib/jackson-annotations-2.8.0.jar,
- lib/jackson-core-2.8.7.jar,
- lib/jackson-databind-2.8.7.jar,
- lib/jxmpp-core-0.5.0.jar,
- lib/jxmpp-jid-0.5.0.jar,
- lib/jxmpp-util-cache-0.5.0.jar,
- lib/smack-core-4.2.0.jar,
- lib/smack-java7-4.2.0.jar,
- lib/smack-resolver-javax-4.2.0.jar,
- lib/smack-sasl-javax-4.2.0.jar,
- lib/smack-tcp-4.2.0.jar,
- lib/xpp3-1.1.4c.jar
+ lib/harmony-client-1.0.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: HarmonyHub Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -23,13 +11,24 @@ Bundle-SymbolicName: org.openhab.binding.harmonyhub;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Import-Package: 
- com.google.common.base,
- com.google.common.collect,
- com.google.common.io,
+ com.google.gson,
+ com.google.gson.annotations,
  com.google.inject,
  javax.inject,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.jetty.client,
+ org.eclipse.jetty.client.api,
+ org.eclipse.jetty.client.util,
+ org.eclipse.jetty.http,
+ org.eclipse.jetty.io,
+ org.eclipse.jetty.server.session,
+ org.eclipse.jetty.util.component,
+ org.eclipse.jetty.util.ssl,
+ org.eclipse.jetty.websocket.api,
+ org.eclipse.jetty.websocket.client,
+ org.eclipse.jetty.websocket.common,
+ org.eclipse.jetty.websocket.common.scopes,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.cache,
