@@ -15,8 +15,9 @@ package org.openhab.binding.dmx.internal;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.List;
+
 import org.junit.Test;
-import org.openhab.binding.dmx.internal.ValueSet;
 
 /**
  * Tests cases ValueSet
@@ -49,7 +50,7 @@ public class ValueSetTest {
     }
 
     @Test
-    public void fromString() {
+    public void fromStringDouble() {
         ValueSet valueSet = ValueSet.fromString("1000:100,200:-1");
 
         // times
@@ -61,4 +62,23 @@ public class ValueSetTest {
         assertThat(valueSet.getValue(1), is(200));
     }
 
+    @Test
+    public void fromStringSingle() {
+        ValueSet valueSet = ValueSet.fromString("1000:100:-1");
+
+        // times
+        assertThat(valueSet.getFadeTime(), is(1000));
+        assertThat(valueSet.getHoldTime(), is(-1));
+
+        // values
+        assertThat(valueSet.getValue(0), is(100));
+    }
+
+    @Test
+    public void parseChaserConfig() {
+        List<ValueSet> config = ValueSet.parseChaseConfig("1000:200,100:100|1000:100:-1");
+
+        // step number is correct
+        assertThat(config.size(), is(2));
+    }
 }
