@@ -52,4 +52,8 @@ demo.items:
 Number:Temperature      temperature "Room Temperature [%.1f %unit%]" { channel="bluetooth:ruuvitag:hci0:beacon:temperature" }
 Number:Dimensionless    humidity    "Humidity [%.0f %unit%]"         { channel="bluetooth:ruuvitag:hci0:beacon:humidity" }
 Number:Pressure         pressure    "Air Pressure [%.0f %unit%]"     { channel="bluetooth:ruuvitag:hci0:beacon:pressure" }
+
+// Examples of converting units
+Number:Acceleration      acceleration_ms "Acceleration z [%.2f m/s²]" { channel="bluetooth:ruuvitag:hci0:beacon:accelerationz" }
+Number:Acceleration      acceleration_g  "Acceleration z (g-force) [%.2f g]" { channel="bluetooth:ruuvitag:hci0:beacon:accelerationz" }
 ```

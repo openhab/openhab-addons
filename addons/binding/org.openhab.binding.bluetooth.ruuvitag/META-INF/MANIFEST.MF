@@ -24,6 +24,7 @@ Import-Package:
  org.openhab.binding.bluetooth.notification,
  org.slf4j,
  tec.uom.lib.common.function,
+ tec.uom.se.format,
  tec.uom.se.function,
  tec.uom.se.unit
 Service-Component: OSGI-INF/*.xml

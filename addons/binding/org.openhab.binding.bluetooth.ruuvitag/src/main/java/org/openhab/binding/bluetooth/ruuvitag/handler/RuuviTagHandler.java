@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import fi.tkgwf.ruuvi.common.bean.RuuviMeasurement;
 import fi.tkgwf.ruuvi.common.parser.impl.AnyDataFormatParser;
+import tec.uom.se.format.SimpleUnitFormat;
 import tec.uom.se.function.LogConverter;
 import tec.uom.se.function.MultiplyConverter;
 import tec.uom.se.unit.TransformedUnit;
@@ -61,6 +62,12 @@ public class RuuviTagHandler extends BeaconBluetoothHandler implements Bluetooth
             SmartHomeUnits.METRE_PER_SQUARE_SECOND, new MultiplyConverter(METRE_PER_SQUARE_SECOND_TO_STANDARD_GRAVITY));
     private static final Unit<Power> DECIBEL_MILLIWATTS = new TransformedUnit<>("dBm",
             MetricPrefix.MILLI(SmartHomeUnits.WATT), EXP_BASE_TEN.concatenate(DIVIDE_BY_TEN));
+
+    static {
+        // Register the custom units labels
+        SimpleUnitFormat.getInstance().label(STANDARD_GRAVITY, "g");
+        SimpleUnitFormat.getInstance().label(DECIBEL_MILLIWATTS, "dBm");
+    }
 
     private final AnyDataFormatParser parser = new AnyDataFormatParser();
     private volatile Map<String, ChannelUID> channelCache = new HashMap<>();
