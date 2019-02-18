@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.bluetooth.BeaconBluetoothHandler;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 import org.openhab.binding.bluetooth.ruuvitag.RuuviTagBindingConstants;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fi.tkgwf.ruuvi.common.bean.RuuviMeasurement;
@@ -68,6 +69,7 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
         SimpleUnitFormat.getInstance().label(DECIBEL_MILLIWATTS, "dBm");
     }
 
+    private final Logger logger = LoggerFactory.getLogger(RuuviTagHandler.class);
     private final AnyDataFormatParser parser = new AnyDataFormatParser();
     private volatile Map<String, ChannelUID> channelCache = new HashMap<>();
 
@@ -93,7 +95,8 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
         boolean fieldPresent = false;
         if (manufacturerData != null) {
             final RuuviMeasurement ruuvitagData = parser.parse(manufacturerData);
-            LoggerFactory.getLogger(this.getClass()).info("onScanRecordReceived-> {}", ruuvitagData);
+            logger.trace("Ruuvi received new scan notification for {}: {}", scanNotification.getAddress(),
+                    ruuvitagData);
             if (ruuvitagData != null) {
                 fieldPresent |= updateStateIfLinked(RuuviTagBindingConstants.CHANNEL_ID_ACCELERATIONX,
                         ruuvitagData.getAccelerationX(), STANDARD_GRAVITY);
