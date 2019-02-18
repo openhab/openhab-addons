@@ -28,17 +28,17 @@ public class RuuviTagBindingConstants {
             "ruuvitag_beacon");
 
     // Channel IDs
-    public static final String CHANNEL_ID_BATTERY = "battery_voltage";
-    public static final String CHANNEL_ID_DATA_FORMAT = "data_format";
+    public static final String CHANNEL_ID_BATTERY = "batteryVoltage";
+    public static final String CHANNEL_ID_DATA_FORMAT = "dataFormat";
     public static final String CHANNEL_ID_TEMPERATURE = "temperature";
     public static final String CHANNEL_ID_HUMIDITY = "humidity";
     public static final String CHANNEL_ID_PRESSURE = "pressure";
-    public static final String CHANNEL_ID_TX_POWER = "tx_power";
+    public static final String CHANNEL_ID_TX_POWER = "txPower";
 
     public static final String CHANNEL_ID_ACCELERATIONX = "accelerationx";
     public static final String CHANNEL_ID_ACCELERATIONY = "accelerationy";
     public static final String CHANNEL_ID_ACCELERATIONZ = "accelerationz";
-    public static final String CHANNEL_ID_MEASUREMENT_SEQUENCE_NUMBER = "measurement_sequence_number";
-    public static final String CHANNEL_ID_MOVEMENT_COUNTER = "movement_counter";
+    public static final String CHANNEL_ID_MEASUREMENT_SEQUENCE_NUMBER = "measurementSequenceNumber";
+    public static final String CHANNEL_ID_MOVEMENT_COUNTER = "movementCounter";
 
 }

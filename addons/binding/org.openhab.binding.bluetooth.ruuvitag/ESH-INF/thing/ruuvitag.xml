@@ -19,14 +19,14 @@
 			<channel id="accelerationx" typeId="ruuvitag_accelerationx" />
 			<channel id="accelerationy" typeId="ruuvitag_accelerationy" />
 			<channel id="accelerationz" typeId="ruuvitag_accelerationz" />
-			<channel id="battery_voltage" typeId="ruuvitag_battery_voltage" />
-			<channel id="data_format" typeId="ruuvitag_data_format" />
+			<channel id="batteryVoltage" typeId="ruuvitag_batteryVoltage" />
+			<channel id="dataFormat" typeId="ruuvitag_dataFormat" />
 			<channel id="humidity" typeId="ruuvitag_humidity" />
-			<channel id="measurement_sequence_number" typeId="ruuvitag_measurement_sequence_number" />
-			<channel id="movement_counter" typeId="ruuvitag_movement_counter" />
+			<channel id="measurementSequenceNumber" typeId="ruuvitag_measurementSequenceNumber" />
+			<channel id="movementCounter" typeId="ruuvitag_movementCounter" />
 			<channel id="pressure" typeId="ruuvitag_pressure" />
 			<channel id="temperature" typeId="ruuvitag_temperature" />
-			<channel id="tx_power" typeId="ruuvitag_tx_power" />
+			<channel id="txPower" typeId="ruuvitag_txPower" />
 		</channels>
 
 		<config-description>
@@ -53,12 +53,12 @@
 		<label>Acceleration Z</label>
 		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
-	<channel-type id="ruuvitag_battery_voltage">
+	<channel-type id="ruuvitag_batteryVoltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
-	<channel-type id="ruuvitag_data_format" advanced="true">
+	<channel-type id="ruuvitag_dataFormat" advanced="true">
 		<item-type>Number</item-type>
 		<label>Data Format Version</label>
 		<state readOnly="true" pattern="%.0f" />
@@ -68,12 +68,12 @@
 		<label>Humidity</label>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
-	<channel-type id="ruuvitag_measurement_sequence_number" advanced="true">
+	<channel-type id="ruuvitag_measurementSequenceNumber" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Measurement Sequence Number</label>
 		<state readOnly="true" pattern="%.0f %unit%" />
 	</channel-type>
-	<channel-type id="ruuvitag_movement_counter" advanced="true">
+	<channel-type id="ruuvitag_movementCounter" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Measurement Counter</label>
 		<state readOnly="true" pattern="%.0f %unit%" />
@@ -88,7 +88,7 @@
 		<label>Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
-	<channel-type id="ruuvitag_tx_power">
+	<channel-type id="ruuvitag_txPower">
 		<item-type>Number:Power</item-type>
 		<label>TX Power</label>
 		<state readOnly="true" pattern="%.0f %unit%" />

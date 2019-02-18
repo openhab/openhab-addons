@@ -22,19 +22,19 @@ There is only a single configuration parameter `address`, which corresponds to t
 
 A Ruuvi Tag Smart Beacon has the following channels:
 
-| Channel ID                  | Item Type                | Description                    |
-| --------------------------- | ------------------------ | ------------------------------ |
-| temperature                 | Number:Temperature       | The measured temperature       |
-| humidity                    | Number:Dimensionless     | The measured humidity          |
-| pressure                    | Number:Pressure          | The measured air pressure      |
-| battery_voltage             | Number:ElectricPotential | The measured battery voltage   |
-| accelerationx               | Number:Acceleration      | The measured acceleration of X |
-| accelerationy               | Number:Acceleration      | The measured acceleration of Y |
-| accelerationz               | Number:Acceleration      | The measured acceleration of Z |
-| tx_power                    | Number:Power             | TX power                       |
-| data_format                 | Number                   | Data format version            |
-| measurement_sequence_number | Number:Dimensionless     | Measurement sequence number    |
-| movement_counter            | Number:Dimensionless     | Movement counter               |
+| Channel ID                | Item Type                | Description                    |
+| ------------------------- | ------------------------ | ------------------------------ |
+| temperature               | Number:Temperature       | The measured temperature       |
+| humidity                  | Number:Dimensionless     | The measured humidity          |
+| pressure                  | Number:Pressure          | The measured air pressure      |
+| batteryVoltage            | Number:ElectricPotential | The measured battery voltage   |
+| accelerationx             | Number:Acceleration      | The measured acceleration of X |
+| accelerationy             | Number:Acceleration      | The measured acceleration of Y |
+| accelerationz             | Number:Acceleration      | The measured acceleration of Z |
+| txPower                   | Number:Power             | TX power                       |
+| dataFormat                | Number                   | Data format version            |
+| measurementSequenceNumber | Number:Dimensionless     | Measurement sequence number    |
+| movementCounter           | Number:Dimensionless     | Movement counter               |
 
 Note: not all channels are always available. Available fields depends on [Ruuvi Data Format](https://github.com/ruuvi/ruuvi-sensor-protocols).
 
