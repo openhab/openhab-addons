@@ -202,7 +202,6 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
             @Override
             public void hubDisconnected(@Nullable String reason) {
                 setOfflineAndReconnect(String.format("Could not connect: %s", reason));
-
             }
 
             @Override
@@ -231,13 +230,11 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
             @Override
             public void activityStatusChanged(@Nullable Activity activity, @Nullable Status status) {
                 updateActivityStatus(activity, status);
-
             }
 
             @Override
             public void activityStarted(@Nullable Activity activity) {
                 updateState(activity);
-
             }
         };
 
@@ -246,7 +243,6 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
         try {
             logger.debug("Connecting: host {}", host);
             localClient.connect(host);
-
         } catch (Exception e) {
             logger.debug("Could not connect to HarmonyHub at {}", host, e);
             setOfflineAndReconnect("Could not connect: " + e.getMessage());
