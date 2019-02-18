@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
 /**
  * This discovery participant is able to recognize ruuvitag devices and create discovery results for them.
  *
- * @author Sami Salonen- Initial contribution
+ * @author Sami Salonen - Initial contribution
  *
  */
 @NonNullByDefault

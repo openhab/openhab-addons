@@ -19,7 +19,7 @@ import org.openhab.binding.bluetooth.BluetoothBindingConstants;
  * The {@link RuuviTagBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Sami Salonen- Initial contribution
+ * @author Sami Salonen - Initial contribution
  */
 public class RuuviTagBindingConstants {
 
