@@ -25,8 +25,8 @@ import org.openhab.binding.harmonyhub.internal.handler.HubStatusListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.whistlingfish.harmony.config.Device;
-import net.whistlingfish.harmony.config.HarmonyConfig;
+import com.digitaldan.harmony.config.Device;
+import com.digitaldan.harmony.config.HarmonyConfig;
 
 /**
  * The {@link HarmonyDeviceDiscoveryService} class discovers Harmony Devices connected to a Harmony Hub

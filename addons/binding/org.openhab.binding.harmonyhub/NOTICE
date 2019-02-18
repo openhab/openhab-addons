@@ -14,27 +14,7 @@ https://github.com/openhab/openhab2-addons
 
 == Third-party Content
 
-harmony-java-client
-* License: EPL 1.0 License
-* Project: https://github.com/tuck182/harmony-java-client
-* Source:  https://github.com/tuck182/harmony-java-client
-
-jackson
-* License: Apache 2.0 License
-* Project: https://github.com/FasterXML/jackson
-* Source:  https://github.com/FasterXML/jackson
-
-jxmpp
-* License: Apache 2.0 License
-* Project: https://github.com/igniterealtime/jxmpp
-* Source:  https://github.com/igniterealtime/jxmpp
-
-smack
-* License: Apache 2.0 License
-* Project: https://www.igniterealtime.org/projects/smack/
-* Source:  https://github.com/igniterealtime/Smack
-
-xpp3
-* License: Apache 2.0 License
-* Project: http://www.extreme.indiana.edu/xgws/xsoap/xpp/mxp1
-* Source:  http://www.extreme.indiana.edu/xgws/xsoap/xpp/mxp1
+harmony-client
+* License: EPL 2.0 License
+* Project: https://github.com/digitaldan/harmony-client
+* Source:  https://github.com/digitaldan/harmony-client
