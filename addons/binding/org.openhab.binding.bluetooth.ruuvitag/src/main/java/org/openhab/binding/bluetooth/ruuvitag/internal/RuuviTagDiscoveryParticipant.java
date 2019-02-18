@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -36,18 +36,20 @@ import org.osgi.service.component.annotations.Component;
  * @author Sami Salonen- Initial contribution
  *
  */
+@NonNullByDefault
 @Component(immediate = true)
 public class RuuviTagDiscoveryParticipant implements BluetoothDiscoveryParticipant {
 
     private static final int RUUVITAG_COMPANY_ID = 1177;
 
     @Override
-    public @NonNull Set<@NonNull ThingTypeUID> getSupportedThingTypeUIDs() {
+    public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
         return Collections.singleton(RuuviTagBindingConstants.THING_TYPE_BEACON);
     }
 
     @Override
-    public @Nullable ThingUID getThingUID(@NonNull BluetoothDevice device) {
+    @Nullable
+    public ThingUID getThingUID(BluetoothDevice device) {
         Integer manufacturerId = device.getManufacturerId();
         if (manufacturerId != null && manufacturerId == RUUVITAG_COMPANY_ID) {
             return new ThingUID(RuuviTagBindingConstants.THING_TYPE_BEACON, device.getAdapter().getUID(),
@@ -57,7 +59,8 @@ public class RuuviTagDiscoveryParticipant implements BluetoothDiscoveryParticipa
     }
 
     @Override
-    public DiscoveryResult createResult(@NonNull BluetoothDevice device) {
+    @Nullable
+    public DiscoveryResult createResult(BluetoothDevice device) {
         ThingUID thingUID = getThingUID(device);
         if (thingUID == null) {
             return null;

@@ -15,6 +15,8 @@ package org.openhab.binding.bluetooth.ruuvitag.internal;
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -29,6 +31,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Sami Salonen- Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.ruuvitag")
 public class RuuviTagHandlerFactory extends BaseThingHandlerFactory {
 
@@ -41,6 +44,7 @@ public class RuuviTagHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
+    @Nullable
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
