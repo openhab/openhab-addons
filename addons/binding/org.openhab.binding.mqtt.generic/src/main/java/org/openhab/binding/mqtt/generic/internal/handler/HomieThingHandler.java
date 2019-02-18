@@ -29,11 +29,11 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.Device;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.DeviceAttributes;
+import org.openhab.binding.mqtt.generic.internal.convention.homie300.DeviceAttributes.ReadyState;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.DeviceCallback;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.HandlerConfiguration;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.Node;
 import org.openhab.binding.mqtt.generic.internal.convention.homie300.Property;
-import org.openhab.binding.mqtt.generic.internal.convention.homie300.DeviceAttributes.ReadyState;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.internal.tools.DelayedBatchProcessing;
@@ -93,6 +93,7 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
 
     @Override
     public void initialize() {
+        logger.debug("About to initialize Homie device {}", device.attributes.name);
         config = getConfigAs(HandlerConfiguration.class);
         if (config.deviceid.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Object ID unknown");
@@ -104,14 +105,20 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
 
     @Override
     protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection) {
+        logger.debug("About to start Homie device {}", device.attributes.name);
         // We have mostly retained messages for Homie. QoS 1 is required.
         connection.setRetain(true);
         connection.setQos(1);
-        return device.subscribe(connection, scheduler, attributeReceiveTimeout);
+        return device.subscribe(connection, scheduler, attributeReceiveTimeout).thenCompose((Void v) -> {
+            return device.startChannels(connection, scheduler, attributeReceiveTimeout, this);
+        }).thenRun(() -> {
+            logger.debug("Homie device {} fully attached", device.attributes.name);
+        });
     }
 
     @Override
     protected void stop() {
+        logger.debug("About to stop Homie device {}", device.attributes.name);
         final ScheduledFuture<?> heartBeatTimer = this.heartBeatTimer;
         if (heartBeatTimer != null) {
             heartBeatTimer.cancel(false);
@@ -189,16 +196,14 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         if (!device.isInitialized()) {
             return;
         }
-
         List<Channel> channels = device.nodes().stream().flatMap(n -> n.properties.stream())
                 .map(prop -> prop.getChannel()).collect(Collectors.toList());
         updateThing(editThing().withChannels(channels).build());
         updateProperty(MqttBindingConstants.HOMIE_PROPERTY_VERSION, device.attributes.homie);
-
         final MqttBrokerConnection connection = this.connection;
         if (connection != null) {
             device.startChannels(connection, scheduler, attributeReceiveTimeout, this).thenRun(() -> {
-                logger.trace("Homie device {} fully attached", device.attributes.name);
+                logger.debug("Homie device {} fully attached", device.attributes.name);
             });
         }
     }
