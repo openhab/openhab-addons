@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.max.internal.handler;
 
@@ -22,7 +26,10 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +59,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.max.internal.MaxBackupUtils;
 import org.openhab.binding.max.internal.MaxBindingConstants;
 import org.openhab.binding.max.internal.command.ACommand;
 import org.openhab.binding.max.internal.command.CCommand;
@@ -95,29 +103,32 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Michael Helm (bernd.helm at helmundwalter.de) - Exclusive mode
  */
 public class MaxCubeBridgeHandler extends BaseBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(MaxCubeBridgeHandler.class);
+
+    private enum BackupState {
+        NO_BACKUP,
+        REQUESTED,
+        IN_PROGRESS
+    }
 
     /** timeout on network connection **/
     private static final int NETWORK_TIMEOUT = 10000;
+    /** MAX! Thermostat default off temperature */
+    private static final double DEFAULT_OFF_TEMPERATURE = 4.5;
+    /** MAX! Thermostat default on temperature */
+    private static final double DEFAULT_ON_TEMPERATURE = 30.5;
+    /** maximum queue size that we're allowing */
+    private static final int MAX_COMMANDS = 50;
+    private static final int MAX_DUTY_CYCLE = 80;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmm");
 
+    private final Logger logger = LoggerFactory.getLogger(MaxCubeBridgeHandler.class);
     private final List<Device> devices = new ArrayList<>();
     private List<RoomInformation> rooms;
     private final Set<String> lastActiveDevices = new HashSet<>();
-
-    /** MAX! Thermostat default off temperature */
-    private static final double DEFAULT_OFF_TEMPERATURE = 4.5;
-
-    /** MAX! Thermostat default on temperature */
-    private static final double DEFAULT_ON_TEMPERATURE = 30.5;
-
     private final List<DeviceConfiguration> configurations = new ArrayList<>();
-
-    /** maximum queue size that we're allowing */
-    private static final int MAX_COMMANDS = 50;
     private final BlockingQueue<SendCommand> commandQueue = new ArrayBlockingQueue<>(MAX_COMMANDS);
 
     private SendCommand lastCommandId;
-
     private long refreshInterval = 30;
     private String ipAddress;
     private int port;
@@ -130,8 +141,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     private boolean roomPropertiesSet;
 
     private final MessageProcessor messageProcessor = new MessageProcessor();
-
-    private static final int MAX_DUTY_CYCLE = 80;
     private final ReentrantLock dutyCycleLock = new ReentrantLock();
     private final Condition excessDutyCycle = dutyCycleLock.newCondition();
 
@@ -157,8 +166,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     private final Set<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArraySet<>();
 
     private ScheduledFuture<?> pollingJob;
-
     private Thread queueConsumerThread;
+    private BackupState backup = BackupState.REQUESTED;
+    private MaxBackupUtils backupUtil;
 
     public MaxCubeBridgeHandler(Bridge br) {
         super(br);
@@ -208,7 +218,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         logger.debug("Max Requests    {}.", maxRequestsPerConnection);
 
         previousOnline = true; // To trigger offline in case no connection @ startup
-
+        backupUtil = new MaxBackupUtils();
         startAutomaticRefresh();
     }
 
@@ -278,12 +288,12 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     }
 
-    private void cubeReboot() {
-        logger.info("Rebooting MAX! Cube {}", getThing().getThingTypeUID());
+    public void cubeReboot() {
+        logger.info("Rebooting MAX! Cube {}", getThing().getUID());
         MaxCubeBridgeConfiguration maxConfiguration = getConfigAs(MaxCubeBridgeConfiguration.class);
-        UdpCubeCommand reset = new UdpCubeCommand(UdpCubeCommand.UdpCommandType.RESET, maxConfiguration.serialNumber);
-        reset.setIpAddress(maxConfiguration.ipAddress);
-        reset.send();
+        UdpCubeCommand reboot = new UdpCubeCommand(UdpCubeCommand.UdpCommandType.REBOOT, maxConfiguration.serialNumber);
+        reboot.setIpAddress(maxConfiguration.ipAddress);
+        reboot.send();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Rebooting");
     }
 
@@ -432,10 +442,13 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 String commandContent = command.toString().trim().toUpperCase();
                 double setTemp = device.getTemperatureSetpoint();
                 if (commandContent.contentEquals(ThermostatModeType.AUTOMATIC.toString())) {
+                    device.setMode(ThermostatModeType.AUTOMATIC);
                     return new SCommand(device.getRFAddress(), device.getRoomId(), ThermostatModeType.AUTOMATIC, 0D);
                 } else if (commandContent.contentEquals(ThermostatModeType.BOOST.toString())) {
+                    device.setMode(ThermostatModeType.BOOST);
                     return new SCommand(device.getRFAddress(), device.getRoomId(), ThermostatModeType.BOOST, setTemp);
                 } else if (commandContent.contentEquals(ThermostatModeType.MANUAL.toString())) {
+                    device.setMode(ThermostatModeType.MANUAL);
                     logger.debug("updates to MANUAL mode with temperature '{}'", setTemp);
                     return new SCommand(device.getRFAddress(), device.getRoomId(), ThermostatModeType.MANUAL, setTemp);
                 } else {
@@ -607,6 +620,9 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         while (cont) {
             String raw = reader.readLine();
             if (raw != null) {
+                if (backup != BackupState.NO_BACKUP) {
+                    backupUtil.buildBackup(raw);
+                }
                 logger.trace("message block: '{}'", raw);
                 try {
                     this.messageProcessor.addReceivedLine(raw);
@@ -662,10 +678,16 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 break;
             case H:
                 processHMessage((HMessage) message);
+                if (backup == BackupState.REQUESTED) {
+                    backup = BackupState.IN_PROGRESS;
+                }
                 break;
             case L:
                 ((LMessage) message).updateDevices(devices, configurations);
                 logger.trace("{} devices found.", devices.size());
+                if (backup == BackupState.IN_PROGRESS) {
+                    backup = BackupState.NO_BACKUP;
+                }
                 break;
             case M:
                 processMMessage((MMessage) message);
@@ -984,5 +1006,12 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     public boolean hasExcessDutyCycle() {
         return dutyCycle >= MAX_DUTY_CYCLE;
+    }
+
+    public void backup() {
+        this.backup = BackupState.REQUESTED;
+        this.backupUtil = new MaxBackupUtils(
+                new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(formatter));
+        socketClose();
     }
 }

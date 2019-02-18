@@ -1,12 +1,15 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.miio.internal.transport;
 
 import java.io.IOException;
@@ -26,8 +29,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.miio.MiIoBindingConstants;
 import org.openhab.binding.miio.internal.Message;
+import org.openhab.binding.miio.internal.MiIoBindingConstants;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoCrypto;
 import org.openhab.binding.miio.internal.MiIoCryptoException;
@@ -71,7 +74,7 @@ public class MiIoAsyncCommunication {
     private int timeout;
     private boolean needPing = true;
     private static final int MAX_ERRORS = 3;
-    private static final int MAX_ID = 1000;
+    private static final int MAX_ID = 15000;
 
     private ConcurrentLinkedQueue<MiIoSendCommand> concurrentLinkedQueue = new ConcurrentLinkedQueue<MiIoSendCommand>();
 
@@ -133,7 +136,7 @@ public class MiIoAsyncCommunication {
             JsonObject fullCommand = new JsonObject();
             int cmdId = id.incrementAndGet();
             if (cmdId > MAX_ID) {
-                id.set(-1);
+                id.set(0);
             }
             fullCommand.addProperty("id", cmdId);
             fullCommand.addProperty("method", command);
@@ -396,7 +399,7 @@ public class MiIoAsyncCommunication {
 
     /**
      * Time delta between device time and server time
-     * 
+     *
      * @return delta
      */
     public int getTimeDelta() {

@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.dsmr.internal.meter;
 
@@ -47,13 +51,15 @@ public enum DSMRMeterType {
 
     /** ACE4000 Electricity */
     ELECTRICITY_ACE4000(DSMRMeterKind.MAIN_ELECTRICITY, CosemObjectType.METER_EQUIPMENT_IDENTIFIER,
-            CosemObjectType.METER_EQUIPMENT_IDENTIFIER, CosemObjectType.EMETER_DELIVERY_TARIFF0,
-            CosemObjectType.EMETER_DELIVERY_TARIFF1, CosemObjectType.EMETER_DELIVERY_TARIFF2,
-            CosemObjectType.EMETER_DELIVERY_TARIFF0_ANTIFRAUD, CosemObjectType.EMETER_DELIVERY_TARIFF1_ANTIFRAUD,
-            CosemObjectType.EMETER_DELIVERY_TARIFF2_ANTIFRAUD, CosemObjectType.EMETER_PRODUCTION_TARIFF0,
-            CosemObjectType.EMETER_PRODUCTION_TARIFF1, CosemObjectType.EMETER_PRODUCTION_TARIFF2,
-            CosemObjectType.EMETER_TARIFF_INDICATOR, CosemObjectType.EMETER_ACTIVE_IMPORT_POWER,
-            CosemObjectType.EMETER_TRESHOLD_A, CosemObjectType.EMETER_SWITCH_POSITION),
+            new CosemObjectType[] {
+                    CosemObjectType.METER_EQUIPMENT_IDENTIFIER, CosemObjectType.EMETER_DELIVERY_TARIFF0,
+                    CosemObjectType.EMETER_DELIVERY_TARIFF1, CosemObjectType.EMETER_PRODUCTION_TARIFF0,
+                    CosemObjectType.EMETER_PRODUCTION_TARIFF1, CosemObjectType.EMETER_TARIFF_INDICATOR,
+                    CosemObjectType.EMETER_ACTIVE_IMPORT_POWER, CosemObjectType.EMETER_SWITCH_POSITION },
+            new CosemObjectType[] {
+                    CosemObjectType.EMETER_DELIVERY_TARIFF2, CosemObjectType.EMETER_DELIVERY_TARIFF0_ANTIFRAUD,
+                    CosemObjectType.EMETER_DELIVERY_TARIFF1_ANTIFRAUD, CosemObjectType.EMETER_DELIVERY_TARIFF2_ANTIFRAUD,
+                    CosemObjectType.EMETER_PRODUCTION_TARIFF2, CosemObjectType.EMETER_TRESHOLD_A }),
 
     /** ACE4000 Gas meter */
     GAS_ACE4000(DSMRMeterKind.GAS, CosemObjectType.METER_EQUIPMENT_IDENTIFIER,
@@ -266,7 +272,7 @@ public enum DSMRMeterType {
     // @formatter:on
 
     public static final Set<ThingTypeUID> METER_THING_TYPES = Arrays.asList(DSMRMeterType.values()).stream()
-            .map(DSMRMeterType::getThingTypeUID).collect(Collectors.toSet());
+        .map(DSMRMeterType::getThingTypeUID).collect(Collectors.toSet());
 
     private final Logger logger = LoggerFactory.getLogger(DSMRMeterType.class);
 
@@ -302,7 +308,7 @@ public enum DSMRMeterType {
      *            String containing the channel configuration for this meter
      */
     DSMRMeterType(DSMRMeterKind meterKind, CosemObjectType cosemObjectTypeMeterId,
-            CosemObjectType... requiredCosemObjects) {
+        CosemObjectType... requiredCosemObjects) {
         this(meterKind, cosemObjectTypeMeterId, requiredCosemObjects, new CosemObjectType[0]);
     }
 
@@ -313,7 +319,7 @@ public enum DSMRMeterType {
      *            String containing the channel configuration for this meter
      */
     DSMRMeterType(DSMRMeterKind meterKind, CosemObjectType cosemObjectTypeMeterId,
-            CosemObjectType[] requiredCosemObjects, CosemObjectType[] optionalCosemObjects) {
+        CosemObjectType[] requiredCosemObjects, CosemObjectType[] optionalCosemObjects) {
         this.meterKind = meterKind;
         this.cosemObjectTypeMeterId = cosemObjectTypeMeterId;
         this.requiredCosemObjects = requiredCosemObjects;
@@ -322,7 +328,7 @@ public enum DSMRMeterType {
         supportedCosemObjects = new CosemObjectType[requiredCosemObjects.length + optionalCosemObjects.length];
         System.arraycopy(requiredCosemObjects, 0, supportedCosemObjects, 0, requiredCosemObjects.length);
         System.arraycopy(optionalCosemObjects, 0, supportedCosemObjects, requiredCosemObjects.length,
-                optionalCosemObjects.length);
+            optionalCosemObjects.length);
     }
 
     /**

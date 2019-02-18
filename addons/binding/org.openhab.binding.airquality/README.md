@@ -43,6 +43,9 @@ For the location parameter, the following syntax is allowed (comma separated lat
 
 If you always want to receive data from specific station and you know its unique ID, you can enter it instead of the coordinates.
 
+This `stationId` can be found by using the following link:
+https://api.waqi.info/search/?token=TOKEN&keyword=NAME, replacing TOKEN by your apikey and NAME by the station you are looking for.
+
 ## Channels
 
 The AirQuality information that is retrieved is available as these channels:
@@ -189,6 +192,6 @@ then
             hsb = "160,100,60"
     }
 
-    sendCommand(Lamp_Color, hsb)
+    Lamp_Color.sendCommand(hsb)
 end
 ```

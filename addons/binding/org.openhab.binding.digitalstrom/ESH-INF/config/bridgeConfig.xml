@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
+		http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd"
+>
+	<config-description uri="binding:digitalstrom:dssBridge">
+		<parameter-group name="connection">
+			<label>@text/dss_param_group_connection_label</label>
+			<description>@text/dss_param_group_connection_desc</description>
+		</parameter-group>
+		<parameter-group name="general">
+			<label>@text/dss_param_group_general_label</label>
+			<description>@text/dss_param_group_general_desc</description>
+		</parameter-group>
+		<!--Application token -->
+		<parameter name="applicationToken" type="text" groupName="connection">
+			<label>@text/dss_param_app_token_label</label>
+			<description>@text/dss_param_app_token_desc</description>
+			<required>false</required>
+		</parameter><!--ipAddress -->
+		<parameter name="dSSAddress" type="text" groupName="connection">
+			<context>network-address</context>
+			<label>@text/dss_param_ip_address_label</label>
+			<description>@text/dss_param_ip_address_desc</description>
+			<required>true</required>
+		</parameter><!--userName -->
+		<parameter name="userName" type="text" groupName="connection">
+			<label>@text/dss_param_username_label</label>
+			<description>@text/dss_param_username_desc</description>
+			<required>false</required>
+		</parameter><!--password -->
+		<parameter name="password" type="text" groupName="connection">
+			<label>@text/dss_param_password_label</label>
+			<description>@text/dss_param_password_desc</description>
+			<required>false</required>
+			<context>password</context>
+		</parameter>
+		<!--sensorDataUpdateInterval -->
+		<parameter name="sensorDataUpdateInterval" type="integer" groupName="general" min="60">
+			<default>120</default>
+			<label>@text/dss_param_sensor_inter_label</label>
+			<description>@text/dss_param_sensor_inter_desc</description>
+			<required>false</required>
+		</parameter><!--totalPowerUpdateInterval -->
+		<parameter name="totalPowerUpdateInterval" type="integer" groupName="general" min="1">
+			<default>30</default>
+			<label>@text/dss_param_total_power_inter_label</label>
+			<description>@text/dss_param_total_power_inter_desc</description>
+			<required>false</required>
+		</parameter><!--TrashBinDeleteTime -->
+		<parameter name="defaultTrashBinDeleteTime" type="integer" groupName="general" min="1">
+			<default>7</default>
+			<label>@text/dss_param_trash_delete_label</label>
+			<description>@text/dss_param_trash_delete_desc</description>
+			<required>false</required>
+		</parameter>
+		<!--sensorWaitTime -->
+		<parameter name="sensorWaitTime" type="integer" groupName="general" min="1">
+			<advanced>true</advanced>
+			<description>@text/dss_param_sensor_wait_label</description>
+			<default>60</default>
+			<label>@text/dss_param_sensor_wait_desc</label>
+			<required>false</required>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

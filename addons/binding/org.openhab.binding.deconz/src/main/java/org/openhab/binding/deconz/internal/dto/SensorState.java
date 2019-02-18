@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.deconz.internal.dto;
 
@@ -24,12 +28,16 @@ import org.eclipse.jdt.annotation.Nullable;
 public class SensorState {
     /** Some presence sensors, the daylight sensor and all light sensors provide the "dark" boolean. */
     public @Nullable Boolean dark;
-    /** The daylight sensor provides the "daylight" boolean. */
+    /** The daylight sensor and all light sensors provides the "daylight" boolean. */
     public @Nullable Boolean daylight;
+    /** Light sensors provide a light level value. */
+    public @Nullable Integer lightlevel;
     /** Light sensors provide a lux value. */
     public @Nullable Integer lux;
     /** Temperature sensors provide a degrees value. */
     public @Nullable Float temperature;
+    /** Humidity sensors provide a percent value. */
+    public @Nullable Float humidity;
     /** OpenClose sensors provide a boolean value. */
     public @Nullable Boolean open;
     /** fire sensors provide a boolean value. */
@@ -45,7 +53,13 @@ public class SensorState {
     /** Presence sensors provide this boolean. */
     public @Nullable Boolean presence;
     /** Power sensors provide this value in Watts. */
-    public @Nullable Integer power;
+    public @Nullable Float power;
+    /** Consumption sensors provide this value in Watts/hour. */
+    public @Nullable Float consumption;
+    /** Power sensors provide this value in Volt. */
+    public @Nullable Float voltage;
+    /** Power sensors provide this value in Milliampere. */
+    public @Nullable Float current;
     /** Light sensors and the daylight sensor provide a status integer that can have various semantics. */
     public @Nullable Integer status;
     /** Switches provide this value. */

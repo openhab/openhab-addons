@@ -1,0 +1,26 @@
+<div class="mdl-form__row mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet mdl-form__link %visibility_class%">
+	<span class="mdl-form__icon">
+		<img data-icon="%category%" src="../icon/%category%?state=%state%&format=%icon_type%" />
+	</span>
+	<span %labelstyle% class="mdl-form__label">
+		%label_header%
+	</span>
+	<span %valuestyle% class="mdl-form__value">
+        %value_header%
+    </span>
+	<div
+		class="mdl-form__control mdl-form__selection"
+		data-control-type="selection"
+		data-item="%item%"
+		data-value-map="%value_map%"
+		data-widget-id="%widget_id%"
+	>
+		<!-- arrow_drop_down -->
+		<i class="material-icons">&#xE5C5;</i>
+		<script type="text/html" class="mdl-form__selection-rows">
+			<div class="mdl-radio__group">
+				%rows%
+			</div>
+		</script>
+	</div>
+</div>

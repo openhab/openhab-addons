@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ClassPath: .
+Bundle-ManifestVersion: 2
+Bundle-Name: IoT Marketplace Extension Service Test
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.extensionservice.marketplace.
+ test;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Fragment-Host: org.openhab.extensionservice.marketplace
+Import-Package: 
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.hamcrest;core=split,
+ org.hamcrest.core,
+ org.junit;version="4.0.0",
+ org.mockito,
+ org.mockito.stubbing,
+ org.openhab.extensionservice.marketplace
+Automatic-Module-Name: org.openhab.extensionservice.marketplace.test

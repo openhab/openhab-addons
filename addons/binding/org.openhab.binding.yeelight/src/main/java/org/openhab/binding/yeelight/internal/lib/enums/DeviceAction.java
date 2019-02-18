@@ -1,15 +1,20 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.yeelight.internal.lib.enums;
 
 /**
  * @author Coaster Li - Initial contribution
+ * @author Joe Ho - Added duration
  */
 public enum DeviceAction {
     open,
@@ -24,6 +29,7 @@ public enum DeviceAction {
 
     private String mStrValue;
     private int mIntValue;
+    private int mIntDuration;
 
     public void putValue(String value) {
         this.mStrValue = value;
@@ -33,11 +39,19 @@ public enum DeviceAction {
         this.mIntValue = value;
     }
 
+    public void putDuration(int duration) {
+        this.mIntDuration = duration;
+    }
+
     public String strValue() {
         return mStrValue;
     }
 
     public int intValue() {
         return mIntValue;
+    }
+
+    public int intDuration() {
+        return mIntDuration;
     }
 }

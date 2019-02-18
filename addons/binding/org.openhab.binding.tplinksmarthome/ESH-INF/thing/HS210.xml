@@ -10,7 +10,7 @@
 		<category>WallSwitch</category>
 
 		<channels>
-			<channel id="switch" typeId="switch" />
+			<channel id="switch" typeId="system.power" />
 			<channel id="rssi" typeId="rssi" />
 		</channels>
 

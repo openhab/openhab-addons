@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="PaperUI">
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+<title>Paper UI</title>
+
+<link rel="shortcut icon" href="img/logo.ico" />
+
+<link type="text/css" href="css/bootstrap.min.css" rel="stylesheet">
+<link type="text/css" href="css/angular-material.min.css" rel="stylesheet">
+<link type="text/css" href="css/md-expansion-panel.min.css" rel="stylesheet">
+
+<!-- custom css files -->
+<link type="text/css" href="css/components.css" rel="stylesheet">
+<link type="text/css" href="css/layout.css" rel="stylesheet">
+<link type="text/css" href="css/views.css" rel="stylesheet">
+<link type="text/css" href="css/theme.css" rel="stylesheet">
+<link type="text/css" href="css/parameterDescription.css" rel="stylesheet">
+<link type="text/css" href="css/ol.css" rel="stylesheet">
+
+<!-- Icons/Fonts -->
+<link type="text/css" href="css/roboto-fontface.css" rel="stylesheet" media="all">
+<link type="text/css" href="css/material-icons.css" rel="stylesheet" media="all">
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+
+<noscript>
+	<div class="jsDisabled">Sorry! PaperUI requires JavaScript to run. Please enable it in your browser.</div>
+	<style>
+.jsEnabled {
+	display: none;
+}
+</style>
+</noscript>
+</head>
+
+<body ng-controller="BodyController">
+	<div id="authentication" data-access-token="{{ACCESS_TOKEN}}"></div>
+
+	<div ng-include="'partials/include.extension.html'"></div>
+	<div ng-include="'partials/navigation.menu.html'"></div>
+
+	<div class="jsEnabled" id="wrapper">
+		<header>
+			<a href="#" class="open-menu">&#x2261;</a>
+			<div class="title">
+				<h1 flex="60">
+					{{title}}
+					<span ng-repeat="subtitle in subtitles" class="subtitle">
+						<span class="chevron material-icons">chevron_right</span>
+						{{subtitle}}
+					</span>
+				</h1>
+			</div>
+		</header>
+		<bgsound id="audioSink" loop="1">
+
+		<ng-view autoscroll="true"></ng-view>
+
+		<footer> </footer>
+	</div>
+
+	<!-- lib js files -->
+	<script src="js/jquery.min.js"></script>
+	<script src="js/angular.min.js"></script>
+	<script src="js/jquery-ui.min.js"></script>
+	<script src="js/angular-bundle.min.js"></script>
+
+	<script src="js/bootstrap.min.js"></script>
+
+	<!-- TODO: Create custom variant to save space -->
+	<script src="js/tinycolor.js"></script>
+	<script src="js/masonry.pkgd.min.js"></script>
+
+	<script src="js/sprintf.min.js"></script>
+
+	<script src="js/eventsource.min.js"></script>
+	<script src="js/ol-esh.js"></script>
+
+	<!-- inject:js -->
+	<!-- endinject -->
+
+	<script src="js/widget.multiselect.js"></script>
+	<script src="js/search.filters.js"></script>
+	<script src="js/utility.js"></script>
+</body>
+
+</html>

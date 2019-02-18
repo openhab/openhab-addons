@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.milight.internal.handler;
 
@@ -58,6 +62,8 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
 
     protected int delayTimeMS = 50;
     protected int repeatTimes = 3;
+
+    protected int bridgeOffset;
 
     /**
      * A bulb always belongs to a zone in the milight universe and we need a way to queue commands for being send.
@@ -245,7 +251,7 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
     }
 
     /**
-     * Generates a unique command id for the {@see QueuedSend}. It incorporates the zone, bulb type and command
+     * Generates a unique command id for the {@see QueuedSend}. It incorporates the bridge, zone, bulb type and command
      * category.
      *
      * @param commandCategory The category of the command.
@@ -253,7 +259,7 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
      * @return
      */
     public int uidc(int commandCategory) {
-        return (config.zone + typeOffset + 1) * 64 + commandCategory;
+        return (bridgeOffset + config.zone + typeOffset + 1) * 64 + commandCategory;
     }
 
     protected void start(AbstractBridgeHandler handler) {
@@ -303,6 +309,7 @@ public abstract class AbstractLedHandler extends BaseThingHandler implements Led
         this.socket = h.socket;
         this.delayTimeMS = h.config.delayTime;
         this.repeatTimes = h.config.repeat;
+        this.bridgeOffset = h.bridgeOffset;
     }
 
     @Override

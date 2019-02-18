@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.nibeheatpump.internal.handler;
 
@@ -140,7 +144,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
         if (connector != null) {
             VariableInformation variableInfo = VariableInformation.getVariableInfo(pumpModel, coilAddress);
-            logger.debug("Usig variable information for register {}: {}", coilAddress, variableInfo);
+            logger.debug("Using variable information for register {}: {}", coilAddress, variableInfo);
 
             if (variableInfo != null && variableInfo.type == VariableInformation.Type.SETTING) {
                 int value = convertStateToNibeValue(command);
@@ -273,7 +277,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
                 if (pollingJob == null || pollingJob.isCancelled()) {
                     logger.debug("Start refresh task, interval={}sec", 1);
-                    pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, 1, TimeUnit.SECONDS);
+                    pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, 1, TimeUnit.SECONDS);
                 }
             } catch (NibeHeatPumpException e) {
                 logger.debug("Error occurred when connecting to heat pump, exception {}", e.getMessage());

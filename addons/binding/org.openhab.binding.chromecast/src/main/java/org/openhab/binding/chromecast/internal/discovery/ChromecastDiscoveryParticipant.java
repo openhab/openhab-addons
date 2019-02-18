@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.chromecast.internal.discovery;
 
@@ -33,6 +37,9 @@ import org.slf4j.LoggerFactory;
  */
 @Component(immediate = true)
 public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant {
+    private static final String PROPERTY_MODEL = "md";
+    private static final String PROPERTY_FRIENDLY_NAME = "fn";
+    private static final String PROPERTY_DEVICE_ID = "id";
     private static final String SERVICE_TYPE = "_googlecast._tcp.local.";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -59,16 +66,18 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
         int port = service.getPort();
         properties.put(PORT, port);
         logger.debug("Chromecast Found: {} {}", host, port);
-        String friendlyName = service.getPropertyString("fn"); // friendly name;
+        String id = service.getPropertyString(PROPERTY_DEVICE_ID);
+        properties.put(DEVICE_ID, id);
+        String friendlyName = service.getPropertyString(PROPERTY_FRIENDLY_NAME); // friendly name;
 
         final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withThingType(getThingType(service))
-                .withProperties(properties).withRepresentationProperty(HOST).withLabel(friendlyName).build();
+                .withProperties(properties).withRepresentationProperty(DEVICE_ID).withLabel(friendlyName).build();
 
         return result;
     }
 
     private ThingTypeUID getThingType(final ServiceInfo service) {
-        String model = service.getPropertyString("md"); // model
+        String model = service.getPropertyString(PROPERTY_MODEL); // model
         logger.debug("Chromecast Type: {}", model);
         if (model == null) {
             return null;
@@ -86,11 +95,10 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
     public ThingUID getThingUID(ServiceInfo service) {
         ThingTypeUID thingTypeUID = getThingType(service);
         if (thingTypeUID != null) {
-            String id = service.getPropertyString("id"); // device id
+            String id = service.getPropertyString(PROPERTY_DEVICE_ID); // device id
             return new ThingUID(thingTypeUID, id);
         } else {
             return null;
         }
     }
-
 }

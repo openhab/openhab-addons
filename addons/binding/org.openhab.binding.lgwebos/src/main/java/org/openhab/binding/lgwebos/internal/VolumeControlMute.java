@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.lgwebos.internal;
 
@@ -14,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.lgwebos.handler.LGWebOSHandler;
+import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,28 +48,31 @@ public class VolumeControlMute extends BaseChannelHandler<MuteListener, Object> 
             return;
         }
         if (OnOffType.ON == command || OnOffType.OFF == command) {
-            if (device.hasCapabilities(VolumeControl.Mute_Set)) {
+            if (hasCapability(device, VolumeControl.Mute_Set)) {
                 getControl(device).setMute(OnOffType.ON == command, getDefaultResponseListener());
             }
         } else {
-            logger.warn("Only accept OnOffType");
+            logger.warn("Only accept OnOffType. Type was {}.", command.getClass());
         }
     }
 
     @Override
     protected Optional<ServiceSubscription<MuteListener>> getSubscription(ConnectableDevice device, String channelId,
             LGWebOSHandler handler) {
-        if (device.hasCapability(VolumeControl.Mute_Subscribe)) {
+        if (hasCapability(device, VolumeControl.Mute_Subscribe)) {
             return Optional.of(getControl(device).subscribeMute(new MuteListener() {
 
                 @Override
                 public void onError(@Nullable ServiceCommandError error) {
-                    logger.debug("{} {} {}", error.getCode(), error.getPayload(), error.getMessage());
+                    logger.debug("Error in listening to mute changes: {}.", error == null ? "" : error.getMessage());
                 }
 
                 @Override
                 public void onSuccess(@Nullable Boolean value) {
-                    handler.postUpdate(channelId, value ? OnOffType.ON : OnOffType.OFF);
+                    if (value == null) {
+                        return;
+                    }
+                    handler.postUpdate(channelId, OnOffType.from(value));
                 }
             }));
         } else {

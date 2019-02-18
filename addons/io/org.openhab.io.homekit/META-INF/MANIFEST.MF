@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.io.homekit
 Bundle-ClassPath: 
  .,
- lib/com.beowulfe.hap.hap-1.1.3.jar,
+ lib/com.beowulfe.hap.hap-1.1.4.jar,
  lib/com.nimbusds.srp6a-1.5.2.jar,
  lib/io.netty.netty-all-4.0.32.Final.jar,
  lib/javax.json.javax.json-api-1.0.jar,
@@ -14,7 +14,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: HomeKit Integration
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.io.homekit;singleton:=true
-Bundle-Vendor: openhab.org
+Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Export-Package: org.openhab.io.homekit
 Import-Package: 

@@ -1,0 +1,26 @@
+This content is produced and maintained by the openHAB project.
+
+* Project home: https://www.openhab.org
+
+== Declared Project Licenses
+
+This program and the accompanying materials are made available under the terms
+of the Eclipse Public License 2.0 which is available at
+https://www.eclipse.org/legal/epl-2.0/.
+
+== Source Code
+
+https://github.com/openhab/openhab2-addons
+
+== Third Party Dependencies
+
+This bundle contains functionality, which references external Internet services that are
+offered under their respective terms of use. Please read these carefully before using this bundle.
+
+=== Weather Underground API
+
+The Weather Underground API at https://www.wunderground.com/weather/api/ is an Internet service
+offered by The Weather Underground, LLC (WUL) that provides weather information for any location worldwide.
+This service is free of charge but there is a daily limit and minute rate limit to the number of requests
+that can be made to the API for free. It requires attribution, has rate limits and their
+Terms of Use at https://www.wunderground.com/weather/api/d/terms.html have to be accepted.

@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.dsmr.internal.handler;
 
@@ -95,17 +99,17 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
             meterType = DSMRMeterType.valueOf(getThing().getThingTypeUID().getId().toUpperCase());
         } catch (IllegalArgumentException iae) {
             logger.warn(
-                    "{} could not be initialized due to an invalid meterType {}. Delete this Thing if the problem persists.",
-                    getThing(), getThing().getThingTypeUID().getId().toUpperCase());
+                "{} could not be initialized due to an invalid meterType {}. Delete this Thing if the problem persists.",
+                getThing(), getThing().getThingTypeUID().getId().toUpperCase());
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.configuration.invalidmetertype");
+                "@text/error.configuration.invalidmetertype");
             return;
         }
         DSMRMeterConfiguration meterConfig = getConfigAs(DSMRMeterConfiguration.class);
         DSMRMeterDescriptor meterDescriptor = new DSMRMeterDescriptor(meterType, meterConfig.channel);
         meter = new DSMRMeter(meterDescriptor);
         meterWatchdog = scheduler.scheduleWithFixedDelay(this::updateState, meterConfig.refresh, meterConfig.refresh,
-                TimeUnit.SECONDS);
+            TimeUnit.SECONDS);
         updateStatus(ThingStatus.UNKNOWN);
     }
 
@@ -179,7 +183,7 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     @Override
     public synchronized void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
-                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
+            && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
             // Set status to offline --> Thing will become online after receiving meter values
             setDeviceOffline(ThingStatusDetail.NONE, null);
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {

@@ -16,8 +16,13 @@
   <name>openHAB UI Components</name>
 
   <modules>
+    <module>iconset</module>
+    <module>org.openhab.ui.basic</module>
+    <module>org.openhab.ui.classic</module>
     <module>org.openhab.ui.cometvisu</module>
     <module>org.openhab.ui.cometvisu.php</module>
+    <module>org.openhab.ui.homebuilder</module>
+    <module>org.openhab.ui.paper</module>
   </modules>
 
 </project>

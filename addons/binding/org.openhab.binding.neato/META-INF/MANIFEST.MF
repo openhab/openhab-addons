@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.binding.neato
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: Neato Binding

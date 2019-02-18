@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.milight.internal.handler;
 
@@ -42,8 +46,8 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
     private String offlineReason = "";
     private @Nullable ScheduledFuture<?> scheduledFuture;
 
-    public BridgeV6Handler(Bridge bridge) {
-        super(bridge);
+    public BridgeV6Handler(Bridge bridge, int bridgeOffset) {
+        super(bridge, bridgeOffset);
     }
 
     /**
@@ -127,8 +131,9 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
             default:
                 // Delay putting the session offline
                 offlineReason = state.name();
-                scheduledFuture = scheduler.schedule(() -> updateStatus(ThingStatus.OFFLINE,
-                        ThingStatusDetail.CONFIGURATION_PENDING, offlineReason), 1000, TimeUnit.MILLISECONDS);
+                scheduledFuture = scheduler.schedule(
+                        () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, offlineReason),
+                        1000, TimeUnit.MILLISECONDS);
                 break;
         }
     }

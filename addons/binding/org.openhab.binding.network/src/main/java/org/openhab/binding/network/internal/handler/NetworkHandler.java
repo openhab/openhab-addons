@@ -1,16 +1,19 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.network.internal.handler;
 
 import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
 
-import java.net.UnknownHostException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -154,20 +157,13 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
      */
     void initialize(PresenceDetection presenceDetection) {
         handlerConfiguration = getConfigAs(NetworkHandlerConfiguration.class);
-        this.presenceDetection = presenceDetection;
 
-        try {
-            presenceDetection.setHostname(handlerConfiguration.hostname);
-        } catch (UnknownHostException e) {
-            logger.error("Configuration for hostname is faulty", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
-            return;
-        }
+        this.presenceDetection = presenceDetection;
+        presenceDetection.setHostname(handlerConfiguration.hostname);
 
         if (isTCPServiceDevice) {
             Integer port = handlerConfiguration.port;
             if (port == null) {
-                logger.error("You need to configure the port for a service device");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No port configured!");
                 return;
             }
@@ -181,7 +177,7 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
             // Hand over binding configurations to the network service
             presenceDetection.setUseDhcpSniffing(configuration.allowDHCPlisten);
             presenceDetection.setUseIcmpPing(configuration.allowSystemPings);
-            presenceDetection.setUseArpPing(true, configuration.arpPingToolPath);
+            presenceDetection.setUseArpPing(true, configuration.arpPingToolPath, configuration.arpPingUtilMethod);
         }
 
         this.retries = handlerConfiguration.retry.intValue();

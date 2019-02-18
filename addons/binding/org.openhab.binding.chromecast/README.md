@@ -3,12 +3,20 @@
 The binding integrates Google Chromecast streaming devices.
 It not only acts as a typical binding, but also registers each Chromecast device as an audio sink that can be used for playback.
 
-In order play audio streams that are served from the runtime, the binding needs to know the url to access.
+When a Chromecast is used as an audio sink, the Chromecast connects to the runtime to get the audio streams.
+The binding sends the Chromecast URLs for getting the audio streams based on the Primary Address (Network Settings configuration) and the runtime HTTP port.
+These URL defaults can be overridden with the Callback URL configuration parameter.
+
 This can be configured on the binding level:
 
 | Configuration Parameter | Type | Description                                                                                        |
 |-------------------------|------|----------------------------------------------------------------------------------------------------|
 | callbackUrl             | text | optional Callback URL - url to use for playing notification sounds, e.g. <http://192.168.0.2:8080> |
+
+Configure a Callback URL when the Chromecast cannot connect using the Primary Address or Port, e.g. when:
+
+* proxying HTTP (port 80/443) using Apache/NGINX to openHAB (port 8080)
+* openHAB is running inside a Docker container that has its own IP Address
 
 ## Supported Things
 

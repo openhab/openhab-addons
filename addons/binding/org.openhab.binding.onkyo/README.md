@@ -15,17 +15,21 @@ This binding supports only one thing: The Onkyo AV Receiver.  All supported Onky
 This binding can discover the supported Onkyo AV Receivers. At the moment only the following models are supported:
 
 -   TX-NR414
+-   TX-NR474
 -   TX-NR509
 -   TX-NR515
 -   TX-NR525
 -   TX-NR535
 -   TX-NR555
+-   TX-NR575
 -   TX-NR575E
 -   TX-NR616
 -   TX-NR626
 -   TX-NR636
 -   TX-NR646
 -   TX-NR656
+-   TX-NR676
+-   TX-NR686
 -   TX-NR708
 -   TX-NR717
 -   TX-NR727

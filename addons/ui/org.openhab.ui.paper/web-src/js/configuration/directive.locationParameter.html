@@ -1,0 +1,23 @@
+<label class="config-textInput" for="{{$ctrl.parameter.name}}">{{$ctrl.parameter.label}}</label>
+<md-input-container ng-class="{'md-input-invalid':form.configForm[$ctrl.parameter.name].$invalid}" 
+                    class="col-xs-12 configContainer no-animation"> 
+	<input class="location-input" 
+	           ng-init="focus=false" 
+	           ng-pattern="$ctrl.parameter.pattern" 
+	           name="{{::$ctrl.parameter.name}}" 
+	           ng-readonly="$ctrl.parameter.readOnly" 
+	           ng-model="$ctrl.model" 
+	           ng-required="$ctrl.parameter.required" 
+	           type="text" 
+	           ng-focus="focus=true" 
+	           ng-blur="focus=false" 
+	           aria-label="$ctrl.parameter.label"
+	           location-validation>
+	<div ng-messages="$ctrl.form[$ctrl.parameter.name].$error" ng-show="focus">
+		<div ng-message="pattern">Input should satisfy expression {{$ctrl.parameter.pattern}}</div>
+		<div ng-message="required">Field is required</div>
+		<div ng-message="locationValidation">Valid latitude range is [-90,90], valid longitude range is [-180,180]</div>
+	</div>
+	<map-component model="$ctrl.model" read-only="$ctrl.parameter.readOnly" on-update="$ctrl.onMapUpdate($event)"/>
+	<parameter-description description="$ctrl.parameter.description" />
+</md-input-container>

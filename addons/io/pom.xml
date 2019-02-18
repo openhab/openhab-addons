@@ -21,11 +21,16 @@
     <module>org.openhab.io.hueemulation</module>
     <module>org.openhab.io.hueemulation.test</module>
     <module>org.openhab.io.imperihome</module>
+    <module>org.openhab.io.javasound</module>
+    <module>org.openhab.io.mqttembeddedbroker</module>
+    <module>org.openhab.io.mqttembeddedbroker.test</module>
     <module>org.openhab.io.neeo</module>
     <module>org.openhab.io.openhabcloud</module>
+    <module>org.openhab.io.rest.docs</module>
     <module>org.openhab.io.transport.feed</module>
     <module>org.openhab.io.transport.modbus</module>
     <module>org.openhab.io.transport.modbus.test</module>
+    <module>org.openhab.io.webaudio</module>
   </modules>
 
 </project>

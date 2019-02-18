@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.io.hueemulation.internal;
 
@@ -31,7 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Listens to the ItemRegistry for items that fulfill one of these criteria:
  * <ul>
- * <li>Type is any of SWITCH, DIMMER, COLOR (or Group type with one of the mentioned base item types)
+ * <li>Type is any of SWITCH, DIMMER, COLOR, or Group
  * <li>The category is "ColorLight" for coloured lights or "Light" for switchables.
  * <li>The item is tagged, according to what is set with {@link #setFilterTags(Set, Set, Set)}.
  * </ul>
@@ -55,12 +59,15 @@ import org.slf4j.LoggerFactory;
  * </p>
  *
  * @author David Graeff - Initial contribution
+ * @author Florian Schmidt - Removed base type restriction from Group items
  */
 @NonNullByDefault
 public class LightItems implements RegistryChangeListener<Item> {
     private final Logger logger = LoggerFactory.getLogger(LightItems.class);
+    private static final String ITEM_TYPE_GROUP = "Group";
     private static final Set<String> ALLOWED_ITEM_TYPES = Stream
-            .of(CoreItemFactory.COLOR, CoreItemFactory.DIMMER, CoreItemFactory.SWITCH).collect(Collectors.toSet());
+            .of(CoreItemFactory.COLOR, CoreItemFactory.DIMMER, CoreItemFactory.ROLLERSHUTTER, CoreItemFactory.SWITCH, ITEM_TYPE_GROUP)
+            .collect(Collectors.toSet());
 
     // deviceMap maps a unique Item id to a Hue numeric id
     final TreeMap<String, Integer> itemUIDtoHueID = new TreeMap<>();
@@ -84,8 +91,8 @@ public class LightItems implements RegistryChangeListener<Item> {
      * </p>
      *
      * @param switchFilter The switch filter tags
-     * @param colorFilter The color filter tags
-     * @param whiteFilter The white bulb filter tags
+     * @param colorFilter  The color filter tags
+     * @param whiteFilter  The white bulb filter tags
      */
     public void setFilterTags(Set<String> switchFilter, Set<String> colorFilter, Set<String> whiteFilter) {
         this.switchFilter = switchFilter;
@@ -245,15 +252,9 @@ public class LightItems implements RegistryChangeListener<Item> {
 
     String getType(Item element) {
         if (element instanceof GroupItem) {
-            Item baseItem = ((GroupItem) element).getBaseItem();
-            if (baseItem != null) {
-                return baseItem.getType();
-            } else {
-                return "";
-            }
-        } else {
-            return element.getType();
+            return ITEM_TYPE_GROUP;
         }
+        return element.getType();
     }
 
     @SuppressWarnings({ "unused", "null" })

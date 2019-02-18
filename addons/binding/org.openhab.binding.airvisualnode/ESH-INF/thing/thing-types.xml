@@ -86,7 +86,7 @@
 	<channel-type id="Pm_25">
 		<item-type>Number:Density</item-type>
 		<label>PM2.5</label>
-		<description>PM2.5 level, μg/m&#179;</description>
+		<description>PM2.5 level, µg/m&#179;</description>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 

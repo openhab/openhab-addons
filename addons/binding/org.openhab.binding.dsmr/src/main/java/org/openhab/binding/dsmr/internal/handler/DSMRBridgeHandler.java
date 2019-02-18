@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.dsmr.internal.handler;
 
@@ -131,19 +135,18 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
         receivedTimeoutNanos = TimeUnit.SECONDS.toNanos(deviceConfig.receivedTimeout);
         try {
             DSMRDevice dsmrDevice = createDevice(deviceConfig);
-            // Start time monitoring.
             resetLastReceivedState();
             this.dsmrDevice = dsmrDevice; // otherwise Eclipse will give a null pointer error on the next line :-(
             dsmrDeviceRunnable = new DSMRDeviceRunnable(dsmrDevice, this);
             dsmrDeviceThread = new Thread(dsmrDeviceRunnable);
             dsmrDeviceThread.start();
             watchdog = scheduler.scheduleWithFixedDelay(this::alive, receivedTimeoutNanos, receivedTimeoutNanos,
-                    TimeUnit.NANOSECONDS);
+                TimeUnit.NANOSECONDS);
         } catch (IllegalArgumentException e) {
             logger.debug("Incomplete configuration: {}", deviceConfig);
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.configuration.incomplete");
+                "@text/error.configuration.incomplete");
         }
     }
 
@@ -159,10 +162,10 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
 
         if (deviceConfig.isSerialFixedSettings()) {
             dsmrDevice = new DSMRFixedConfigDevice(serialPortManager, deviceConfig.serialPort,
-                    DSMRSerialSettings.getPortSettingsFromConfiguration(deviceConfig), this);
+                DSMRSerialSettings.getPortSettingsFromConfiguration(deviceConfig), this);
         } else {
             dsmrDevice = new DSMRSerialAutoDevice(serialPortManager, deviceConfig.serialPort, this, scheduler,
-                    deviceConfig.receivedTimeout);
+                deviceConfig.receivedTimeout);
         }
         return dsmrDevice;
     }
@@ -201,7 +204,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
 
         if (deltaLastReceived > receivedTimeoutNanos) {
             logger.debug("No data received for {} seconds, restarting port if possible.",
-                    TimeUnit.NANOSECONDS.toSeconds(deltaLastReceived));
+                TimeUnit.NANOSECONDS.toSeconds(deltaLastReceived));
             if (dsmrDeviceRunnable != null) {
                 dsmrDeviceRunnable.restart();
             }
@@ -227,7 +230,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
     public synchronized void handleTelegramReceived(P1Telegram telegram) {
         if (telegram.getCosemObjects().isEmpty()) {
             logger.debug("Parsing worked but something went wrong, so there were no CosemObjects:{}",
-                    telegram.getTelegramState().stateDetails);
+                telegram.getTelegramState().stateDetails);
             deviceOffline(ThingStatusDetail.COMMUNICATION_ERROR, telegram.getTelegramState().stateDetails);
         } else {
             resetLastReceivedState();
@@ -252,7 +255,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
         getThing().getThings().forEach(child -> {
             if (logger.isTraceEnabled()) {
                 logger.trace("Update child:{} with {} objects", child.getThingTypeUID().getId(),
-                        telegram.getCosemObjects().size());
+                    telegram.getCosemObjects().size());
             }
             DSMRMeterHandler dsmrMeterHandler = (DSMRMeterHandler) child.getHandler();
 

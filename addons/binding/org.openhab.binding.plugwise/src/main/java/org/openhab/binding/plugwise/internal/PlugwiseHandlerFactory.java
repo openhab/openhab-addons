@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.plugwise.internal;
 
@@ -24,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.plugwise.internal.handler.PlugwiseRelayDeviceHandler;
 import org.openhab.binding.plugwise.internal.handler.PlugwiseScanHandler;
 import org.openhab.binding.plugwise.internal.handler.PlugwiseSenseHandler;
@@ -31,6 +36,7 @@ import org.openhab.binding.plugwise.internal.handler.PlugwiseStickHandler;
 import org.openhab.binding.plugwise.internal.handler.PlugwiseSwitchHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link PlugwiseHandlerFactory} is responsible for creating Plugwise things and thing handlers.
@@ -43,6 +49,8 @@ public class PlugwiseHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
 
+    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -53,7 +61,7 @@ public class PlugwiseHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_STICK)) {
-            PlugwiseStickHandler handler = new PlugwiseStickHandler((Bridge) thing);
+            PlugwiseStickHandler handler = new PlugwiseStickHandler((Bridge) thing, serialPortManager);
             registerDiscoveryService(handler);
             return handler;
         } else if (thingTypeUID.equals(THING_TYPE_CIRCLE) || thingTypeUID.equals(THING_TYPE_CIRCLE_PLUS)
@@ -89,4 +97,12 @@ public class PlugwiseHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
+    @Reference
+    protected void setSerialPortManager(SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
+
+    protected void unsetSerialPortManager(SerialPortManager serialPortManager) {
+        this.serialPortManager = null;
+    }
 }

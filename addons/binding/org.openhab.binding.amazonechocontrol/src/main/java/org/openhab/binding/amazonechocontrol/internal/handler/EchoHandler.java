@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.amazonechocontrol.internal.handler;
 
@@ -13,6 +17,7 @@ import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBi
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -54,6 +59,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificati
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState.QueueEntry;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMusicProvider;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState;
@@ -63,6 +69,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.Play
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.PlayerInfo.Progress;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.PlayerInfo.Provider;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState.PlayerInfo.Volume;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,6 +110,9 @@ public class EchoHandler extends BaseThingHandler {
     private boolean updateStartCommand = true;
     private @Nullable Integer noticationVolumeLevel;
     private @Nullable Boolean ascendingAlarm;
+    private @Nullable JsonPlaylists playLists;
+    private @Nullable JsonNotificationSound @Nullable [] alarmSounds;
+    private @Nullable List<JsonMusicProvider> musicProviders;
 
     private @Nullable JsonNotificationResponse currentNotification;
     private @Nullable ScheduledFuture<?> currentNotifcationUpdateTimer;
@@ -153,6 +163,7 @@ public class EchoHandler extends BaseThingHandler {
         ScheduledFuture<?> updateStateJob = this.updateStateJob;
         this.updateStateJob = null;
         if (updateStateJob != null) {
+            this.disableUpdate = false;
             updateStateJob.cancel(false);
         }
         stopProgressTimer();
@@ -171,7 +182,19 @@ public class EchoHandler extends BaseThingHandler {
         return this.bluetoothState;
     }
 
-    public @Nullable Connection findConnection() {
+    public @Nullable JsonPlaylists findPlaylists() {
+        return this.playLists;
+    }
+
+    public @Nullable JsonNotificationSound @Nullable [] findAlarmSounds() {
+        return this.alarmSounds;
+    }
+
+    public @Nullable List<JsonMusicProvider> findMusicProviders() {
+        return this.musicProviders;
+    }
+
+    private @Nullable Connection findConnection() {
         AccountHandler accountHandler = this.account;
         if (accountHandler != null) {
             return accountHandler.findConnection();
@@ -205,6 +228,7 @@ public class EchoHandler extends BaseThingHandler {
             ScheduledFuture<?> updateStateJob = this.updateStateJob;
             this.updateStateJob = null;
             if (updateStateJob != null) {
+                this.disableUpdate = false;
                 updateStateJob.cancel(false);
             }
             AccountHandler account = this.account;
@@ -602,15 +626,15 @@ public class EchoHandler extends BaseThingHandler {
             this.disableUpdate = true;
             final boolean bluetoothRefresh = needBluetoothRefresh;
             Runnable doRefresh = () -> {
+                this.disableUpdate = false;
                 BluetoothState state = null;
                 if (bluetoothRefresh) {
                     JsonBluetoothStates states;
                     states = connection.getBluetoothConnectionStates();
                     state = states.findStateByDevice(device);
-
                 }
-                this.disableUpdate = false;
-                updateState(account, device, state, null, null);
+
+                updateState(account, device, state, null, null, null, null, null);
             };
             if (command instanceof RefreshType) {
                 waitForUpdate = 0;
@@ -696,21 +720,38 @@ public class EchoHandler extends BaseThingHandler {
 
     public void updateState(AccountHandler accountHandler, @Nullable Device device,
             @Nullable BluetoothState bluetoothState, @Nullable DeviceNotificationState deviceNotificationState,
-            @Nullable AscendingAlarmModel ascendingAlarmModel) {
+            @Nullable AscendingAlarmModel ascendingAlarmModel, @Nullable JsonPlaylists playlists,
+            @Nullable JsonNotificationSound @Nullable [] alarmSounds,
+            @Nullable List<JsonMusicProvider> musicProviders) {
         try {
+            this.logger.debug("Handle updateState {}", this.getThing().getUID());
+
             if (deviceNotificationState != null) {
                 noticationVolumeLevel = deviceNotificationState.volumeLevel;
             }
             if (ascendingAlarmModel != null) {
                 ascendingAlarm = ascendingAlarmModel.ascendingAlarmEnabled;
             }
+            if (playlists != null) {
+                this.playLists = playlists;
+            }
+            if (alarmSounds != null) {
+                this.alarmSounds = alarmSounds;
+            }
+            if (musicProviders != null) {
+                this.musicProviders = musicProviders;
+            }
             if (!setDeviceAndUpdateThingState(accountHandler, device, null)) {
+                this.logger.debug("Handle updateState {} aborted: Not online", this.getThing().getUID());
                 return;
             }
             if (device == null) {
+                this.logger.debug("Handle updateState {} aborted: No device", this.getThing().getUID());
                 return;
             }
+
             if (this.disableUpdate) {
+                this.logger.debug("Handle updateState {} aborted: Disabled", this.getThing().getUID());
                 return;
             }
             Connection connection = this.findConnection();
@@ -1011,6 +1052,8 @@ public class EchoHandler extends BaseThingHandler {
             }
 
         } catch (Exception e) {
+            this.logger.debug("Handle updateState {} failed: {}", this.getThing().getUID(), e);
+
             disableUpdate = false;
             throw e; // Rethrow same exception
         }
@@ -1078,6 +1121,7 @@ public class EchoHandler extends BaseThingHandler {
     }
 
     public void handlePushCommand(String command, String payload) {
+        this.logger.debug("Handle push command {}", command);
         switch (command) {
             case "PUSH_VOLUME_CHANGE":
                 JsonCommandPayloadPushVolumeChange volumeChange = gson.fromJson(payload,
@@ -1103,7 +1147,8 @@ public class EchoHandler extends BaseThingHandler {
                 AccountHandler account = this.account;
                 Device device = this.device;
                 if (account != null && device != null) {
-                    updateState(account, device, null, null, null);
+                    this.disableUpdate = false;
+                    updateState(account, device, null, null, null, null, null, null);
                 }
         }
     }

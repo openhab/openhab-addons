@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.tplinksmarthome.internal;
 
@@ -55,9 +59,9 @@ public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
             device = new EnergySwitchDevice();
         } else if (HS220.is(thingTypeUID)) {
             device = new DimmerDevice();
-        } else if (LB130.is(thingTypeUID) || LB230.is(thingTypeUID)) {
+        } else if (LB130.is(thingTypeUID) || LB230.is(thingTypeUID) || KL130.is(thingTypeUID)) {
             device = new BulbDevice(thingTypeUID, COLOR_TEMPERATURE_LB130_MIN, COLOR_TEMPERATURE_LB130_MAX);
-        } else if (LB120.is(thingTypeUID)) {
+        } else if (LB120.is(thingTypeUID) || KL120.is(thingTypeUID)) {
             device = new BulbDevice(thingTypeUID, COLOR_TEMPERATURE_LB120_MIN, COLOR_TEMPERATURE_LB120_MAX);
         } else if (TPLinkSmartHomeThingType.isSwitchingDevice(thingTypeUID)) {
             device = new SwitchDevice();

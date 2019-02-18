@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.knx.internal.dpt;
 
@@ -33,7 +37,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.knx.KNXTypeMapper;
+import org.openhab.binding.knx.internal.KNXTypeMapper;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -494,7 +498,7 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
          * 20.1003: RF Filter Select, enumeration [0..3]
          * 20.1200: M-Bus Breaker/Valve State, enumeration [0..255]
          * 20.1202: Gas Measurement Condition, enumeration [0..3]
-
+         *
          */
         dptMainTypeMap.put(20, StringType.class);
         /** Exceptions Datapoint Types, Main number 20 */
@@ -600,6 +604,14 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
                             case 1: // * 5.001: Scaling, values: 0...100 %
                             default:
                                 return ((HSBType) type).getBrightness().toString();
+                        }
+                    case 232:
+                        switch (subNumber) {
+                            case 600: // 232.600
+                                HSBType hc = ((HSBType) type);
+                                return "r:" + convertPercentToByte(hc.getRed()) + " g:"
+                                        + convertPercentToByte(hc.getGreen()) + " b:"
+                                        + convertPercentToByte(hc.getBlue());
                         }
                     default:
                         HSBType hc = ((HSBType) type);
@@ -997,5 +1009,16 @@ public class KNXCoreTypeMapper implements KNXTypeMapper {
             }
         }
         return result;
+    }
+
+    /**
+     * convert 0...100% to 1 byte 0..255
+     *
+     * @param percent
+     * @return int 0..255
+     */
+    private int convertPercentToByte(PercentType percent) {
+        return percent.toBigDecimal().multiply(BigDecimal.valueOf(255))
+                .divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP).intValue();
     }
 }

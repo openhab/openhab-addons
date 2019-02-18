@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.neato.internal.handler;
 
@@ -14,6 +18,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -56,11 +61,10 @@ public class NeatoHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(@NonNull ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             refreshStateAndUpdate();
-        }
-        if (channelUID.getId().equals(NeatoBindingConstants.COMMAND)) {
+        } else if (channelUID.getId().equals(NeatoBindingConstants.COMMAND)) {
             sendCommandToRobot(command);
         }
     }
@@ -108,16 +112,18 @@ public class NeatoHandler extends BaseThingHandler {
     }
 
     public void refreshStateAndUpdate() {
-        try {
-            mrRobot.sendGetState();
-            updateStatus(ThingStatus.ONLINE);
+        if (mrRobot != null) {
+            try {
+                mrRobot.sendGetState();
+                updateStatus(ThingStatus.ONLINE);
 
-            mrRobot.sendGetGeneralInfo();
+                mrRobot.sendGetGeneralInfo();
 
-            publishChannels();
-        } catch (NeatoCommunicationException | CouldNotFindRobotException e) {
-            logger.debug("Error when refreshing state.", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                publishChannels();
+            } catch (NeatoCommunicationException | CouldNotFindRobotException e) {
+                logger.debug("Error when refreshing state.", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
         }
     }
 

@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.tesla.internal;
 
@@ -23,7 +27,6 @@ import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
-import org.openhab.binding.tesla.TeslaBindingConstants;
 
 /**
  * The {@link TeslaChannelSelectorProxy} class is a helper class to instantiate
@@ -138,7 +141,7 @@ public class TeslaChannelSelectorProxy {
                 return super.getState(s);
             }
         },
-        CHARGE_CABLE("conn_charge_cable", "chargecable", DecimalType.class, false),
+        CHARGE_CABLE("conn_charge_cable", "chargecable", StringType.class, false),
         CHARGE_CURRENT_REQUEST("charge_current_request", "chargecurrent", DecimalType.class, false),
         CHARGE_CURRENT_REQUEST_MAX("charge_current_request_max", "chargemaxcurrent", DecimalType.class, false),
         CHARGE_ENABLE_REQUEST("charge_enable_request", "chargeenablerequest", OnOffType.class, false) {
@@ -852,66 +855,11 @@ public class TeslaChannelSelectorProxy {
                 return super.getState(s);
             }
         },
-        SEAT_HEATER_LEFT("seat_heater_left", "leftseatheater", OnOffType.class, false) {
-            @Override
-            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                if (s.equals("true") || s.equals("1")) {
-                    return super.getState("ON");
-                }
-                if (s.equals("false") || s.equals("0")) {
-                    return super.getState("OFF");
-                }
-                return super.getState(s);
-            }
-        },
-        SEAT_HEATER_RIGHT("seat_heater_right", "rightseatheater", OnOffType.class, false) {
-            @Override
-            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                if (s.equals("true") || s.equals("1")) {
-                    return super.getState("ON");
-                }
-                if (s.equals("false") || s.equals("0")) {
-                    return super.getState("OFF");
-                }
-                return super.getState(s);
-            }
-        },
-        SEAT_HEATER_REAR_LEFT("seat_heater_rear_left", "leftrearseatheater", OnOffType.class, false) {
-            @Override
-            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                if (s.equals("true") || s.equals("1")) {
-                    return super.getState("ON");
-                }
-                if (s.equals("false") || s.equals("0")) {
-                    return super.getState("OFF");
-                }
-                return super.getState(s);
-            }
-        },
-        SEAT_HEATER_REAR_RIGHT("seat_heater_rear_right", "rightrearseatheater", OnOffType.class, false) {
-            @Override
-            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                if (s.equals("true") || s.equals("1")) {
-                    return super.getState("ON");
-                }
-                if (s.equals("false") || s.equals("0")) {
-                    return super.getState("OFF");
-                }
-                return super.getState(s);
-            }
-        },
-        SEAT_HEATER_REAR_CENTER("seat_heater_rear_center", "centerrearseatheater", OnOffType.class, false) {
-            @Override
-            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                if (s.equals("true") || s.equals("1")) {
-                    return super.getState("ON");
-                }
-                if (s.equals("false") || s.equals("0")) {
-                    return super.getState("OFF");
-                }
-                return super.getState(s);
-            }
-        },
+        SEAT_HEATER_LEFT("seat_heater_left", "leftseatheater", DecimalType.class, false),
+        SEAT_HEATER_RIGHT("seat_heater_right", "rightseatheater", DecimalType.class, false),
+        SEAT_HEATER_REAR_LEFT("seat_heater_rear_left", "leftrearseatheater", DecimalType.class, false),
+        SEAT_HEATER_REAR_RIGHT("seat_heater_rear_right", "rightrearseatheater", DecimalType.class, false),
+        SEAT_HEATER_REAR_CENTER("seat_heater_rear_center", "centerrearseatheater", DecimalType.class, false),
         SEAT_HEATER_REAR_RIGHT_BACK("seat_heater_rear_right_back", "rightrearbackseatheater", DecimalType.class, false),
         SEAT_HEATER_REAR_RIGHT_LEFT("seat_heater_rear_left_back", "leftrearbackseatheater", DecimalType.class, false),
         SEAT_TYPE("seat_type", "seattype", DecimalType.class, true),

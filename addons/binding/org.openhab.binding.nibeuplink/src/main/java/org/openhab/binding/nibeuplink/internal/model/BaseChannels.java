@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.nibeuplink.internal.model;
 
@@ -86,7 +90,7 @@ public class BaseChannels extends AbstractChannels {
     public static final Channel CH_40067 = INSTANCE.addChannel(
             new QuantityChannel("40067", "BT1 Average", ChannelGroup.BASE, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final Channel CH_43005 = INSTANCE.addChannel(new ScaledChannel("43005", "Degree Minutes (16 bit)",
-            ChannelGroup.BASE, ScaleFactor.DIV_10, "/Manage/4.9.3", "[0-9]+"));
+            ChannelGroup.BASE, ScaleFactor.DIV_10, "/Manage/4.9.3", "-?[0-9]+"));
     public static final Channel CH_43009 = INSTANCE.addChannel(
             new QuantityChannel("43009", "Calc. Supply S1", ChannelGroup.BASE, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final Channel CH_40071 = INSTANCE.addChannel(

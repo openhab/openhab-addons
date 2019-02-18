@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.nibeuplink.internal.connector;
 
-import static org.openhab.binding.nibeuplink.NibeUplinkBindingConstants.*;
+import static org.openhab.binding.nibeuplink.internal.NibeUplinkBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Queue;
@@ -23,11 +27,11 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.nibeuplink.config.NibeUplinkConfiguration;
-import org.openhab.binding.nibeuplink.handler.NibeUplinkHandler;
 import org.openhab.binding.nibeuplink.internal.AtomicReferenceTrait;
 import org.openhab.binding.nibeuplink.internal.command.Login;
 import org.openhab.binding.nibeuplink.internal.command.NibeUplinkCommand;
+import org.openhab.binding.nibeuplink.internal.config.NibeUplinkConfiguration;
+import org.openhab.binding.nibeuplink.internal.handler.NibeUplinkHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -180,6 +184,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
      */
     public void start() {
         this.config = uplinkHandler.getConfiguration();
+        setAuthenticated(false);
         updateJobReference(requestExecutorJobReference, scheduler.scheduleWithFixedDelay(requestExecutor,
                 WEB_REQUEST_INITIAL_DELAY, WEB_REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
     }
@@ -269,6 +274,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
     public void dispose() {
         logger.debug("Webinterface disposed.");
         cancelJobReference(requestExecutorJobReference);
+        setAuthenticated(false);
     }
 
     private boolean isAuthenticated() {
