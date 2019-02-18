@@ -127,9 +127,6 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Received bluetooth data which could not be parsed to any known Ruuvi Tag data formats");
             }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Received bluetooth data with empty ");
         }
         super.onScanRecordReceived(scanNotification);
     }
