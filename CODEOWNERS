@@ -219,13 +219,6 @@
 /addons/transform/org.openhab.transform.xpath.test/ @openhab/2-x-add-ons-maintainers
 /addons/transform/org.openhab.transform.xslt/ @openhab/2-x-add-ons-maintainers
 /addons/transform/org.openhab.transform.xslt.test/ @openhab/2-x-add-ons-maintainers
-/addons/ui/iconset/ @kaikreuzer
-/addons/ui/org.openhab.ui.basic/ @lolodomo @resetnow
-/addons/ui/org.openhab.ui.classic/ @lolodomo @resetnow
-/addons/ui/org.openhab.ui.cometvisu/ @peuter
-/addons/ui/org.openhab.ui.cometvisu.php/ @peuter
-/addons/ui/org.openhab.ui.homebuilder/ @kubawolanin
-/addons/ui/org.openhab.ui.paper/ @htreu
 /addons/voice/org.openhab.voice.googletts/ @gbicskei
 /addons/voice/org.openhab.voice.kaldi/ @kaikreuzer
 /addons/voice/org.openhab.voice.mactts/ @kaikreuzer
