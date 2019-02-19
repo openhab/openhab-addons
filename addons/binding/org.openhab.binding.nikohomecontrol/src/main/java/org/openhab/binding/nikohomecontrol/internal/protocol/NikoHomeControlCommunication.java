@@ -12,12 +12,10 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.protocol;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NhcLocation1;
-import org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NhcSystemInfo1;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NikoHomeControlCommunication1;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NikoHomeControlCommunication2;
 import org.slf4j.Logger;
@@ -44,10 +42,8 @@ public abstract class NikoHomeControlCommunication {
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlCommunication.class);
 
-    protected final NhcSystemInfo1 systemInfo = new NhcSystemInfo1();
-    protected final Map<String, NhcLocation1> locations = new HashMap<>();
-    protected final Map<String, NhcAction> actions = new HashMap<>();
-    protected final Map<String, NhcThermostat> thermostats = new HashMap<>();
+    protected final Map<String, NhcAction> actions = new ConcurrentHashMap<>();
+    protected final Map<String, NhcThermostat> thermostats = new ConcurrentHashMap<>();
 
     // handler representing the callback interface {@link NhcControllerEvent} for configuration parameters and events
     @NonNullByDefault({}) // this handler must be set in the derived classes constructors, therefore will not be null,

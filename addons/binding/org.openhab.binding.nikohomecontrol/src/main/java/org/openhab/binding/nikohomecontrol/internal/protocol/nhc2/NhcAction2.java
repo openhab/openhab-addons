@@ -48,7 +48,7 @@ public class NhcAction2 extends NhcAction {
      *
      * @return action on/off state
      */
-    boolean getBooleanState() {
+    boolean booleanState() {
         return this.booleanState;
     }
 

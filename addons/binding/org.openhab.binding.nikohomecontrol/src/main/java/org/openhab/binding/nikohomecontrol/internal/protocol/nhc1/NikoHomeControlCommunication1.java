@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,6 +54,9 @@ import com.google.gson.JsonParseException;
 public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication {
 
     private Logger logger = LoggerFactory.getLogger(NikoHomeControlCommunication1.class);
+
+    private final NhcSystemInfo1 systemInfo = new NhcSystemInfo1();
+    private final Map<String, NhcLocation1> locations = new ConcurrentHashMap<>();
 
     @Nullable
     private Socket nhcSocket;
@@ -270,7 +274,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
         }
     }
 
-    private void cmdSystemInfo(Map<String, String> data) {
+    private synchronized void cmdSystemInfo(Map<String, String> data) {
         logger.debug("Niko Home Control: systeminfo");
 
         if (data.containsKey("swversion")) {
@@ -310,7 +314,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
      *
      * @return the systemInfo
      */
-    public NhcSystemInfo1 getSystemInfo() {
+    public synchronized NhcSystemInfo1 getSystemInfo() {
         return this.systemInfo;
     }
 

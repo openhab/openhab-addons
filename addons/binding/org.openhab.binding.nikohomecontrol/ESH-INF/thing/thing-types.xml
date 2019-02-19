@@ -35,10 +35,10 @@
 	<bridge-type id="bridge2">
 		<label>Niko Home Control II Bridge</label>
 		<description>This bridge represents a Niko Home Control II Connected Controller</description>
-        <channels>
-            <channel id="alarm" typeId="alarm" />
-            <channel id="notice" typeId="notice" />
-        </channels>
+		<channels>
+			<channel id="alarm" typeId="alarm" />
+			<channel id="notice" typeId="notice" />
+		</channels>
 		<config-description>
 			<parameter name="addr" type="text" required="true">
 				<label>IP or Host Name</label>
@@ -70,24 +70,24 @@
 		</config-description>
 	</bridge-type>
 
-    <thing-type id="pushButton">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge" />
-            <bridge-type-ref id="bridge2" />
-        </supported-bridge-type-refs>
-        <label>Pushbutton</label>
-        <description>Pushbutton type action in Niko Home Control</description>
-        <channels>
-            <channel id="button" typeId="button" />
-        </channels>
-        <config-description>
-            <parameter name="actionId" type="text" required="true">
-                <label>Action ID</label>
-                <description>Niko Home Control action ID</description>
-                <advanced>false</advanced>
-            </parameter>
-        </config-description>
-    </thing-type>
+	<thing-type id="pushButton">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge2" />
+		</supported-bridge-type-refs>
+		<label>Pushbutton</label>
+		<description>Pushbutton type action in Niko Home Control</description>
+		<channels>
+			<channel id="button" typeId="button" />
+		</channels>
+		<config-description>
+			<parameter name="actionId" type="text" required="true">
+				<label>Action ID</label>
+				<description>Niko Home Control action ID</description>
+				<advanced>false</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
 	<thing-type id="onOff">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge" />
@@ -175,13 +175,13 @@
 		</config-description>
 	</thing-type>
 
-    <channel-type id="button">
-        <item-type>Switch</item-type>
-        <label>Button</label>
-        <description>Pushbutton control for action in Niko Home Control</description>
-        <category>Switch</category>
-        <autoUpdatePolicy>veto</autoUpdatePolicy>
-    </channel-type>
+	<channel-type id="button">
+		<item-type>Switch</item-type>
+		<label>Button</label>
+		<description>Pushbutton control for action in Niko Home Control</description>
+		<category>Switch</category>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Switch</label>

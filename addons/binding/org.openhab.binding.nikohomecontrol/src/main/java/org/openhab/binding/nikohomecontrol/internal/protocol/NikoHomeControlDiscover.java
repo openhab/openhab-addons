@@ -45,6 +45,18 @@ public final class NikoHomeControlDiscover {
     private String nhcBridgeId = "";
     private boolean isNhcII;
 
+    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+
+    static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+
     /**
      * Discover a Niko Home Control IP interface by broadcasting UDP packet 0x44 to port 10000. The IP interface will
      * reply. The address of the IP interface is than derived from that response.
@@ -68,8 +80,8 @@ public final class NikoHomeControlDiscover {
             datagramSocket.send(discoveryPacket);
             while (true) {
                 datagramSocket.receive(packet);
+                logger.trace("Niko Home Control: bridge discovery response {}", bytesToHex(packet.getData()));
                 if (isNhc(packet)) {
-                    logger.trace("Niko Home Control: bridge discovery response {}", new String(packet.getData()));
                     break;
                 }
             }

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -65,22 +66,21 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlCommunication2.class);
 
-    private volatile NhcMqttConnection2 mqttConnection;
+    private final NhcMqttConnection2 mqttConnection;
 
-    private volatile List<NhcProfile2> profiles = new ArrayList<>();
-    private volatile String profileUuid = "";
-
-    @Nullable
-    private volatile CompletableFuture<Boolean> communicationStarted;
-
-    private volatile List<NhcService2> services = new ArrayList<>();
-
-    private volatile List<NhcLocation2> locations = new ArrayList<>();
+    private final List<NhcProfile2> profiles = new CopyOnWriteArrayList<>();
+    private final List<NhcService2> services = new CopyOnWriteArrayList<>();
+    private final List<NhcLocation2> locations = new CopyOnWriteArrayList<>();
 
     @Nullable
     private volatile NhcSystemInfo2 nhcSystemInfo;
     @Nullable
     private volatile NhcTimeInfo2 nhcTimeInfo;
+
+    private volatile String profileUuid = "";
+
+    @Nullable
+    private volatile CompletableFuture<Boolean> communicationStarted;
 
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
 
@@ -125,7 +125,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
             mqttConnection.startPublicConnection(this, addrString, port);
             initializePublic();
         } catch (MqttException e) {
-            logger.debug("Niko Home Control: error in mqtt communication ");
+            logger.debug("Niko Home Control: error in mqtt communication");
             stopCommunication();
         }
     }
@@ -163,7 +163,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
             mqttConnection.startProfileConnection(this, profileUuid, password);
             initializeProfile();
         } catch (MqttException e) {
-            logger.warn("Niko Home Control: error in mqtt communication ");
+            logger.warn("Niko Home Control: error in mqtt communication");
             stopCommunication();
         }
     }
@@ -284,10 +284,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
             logger.debug("Niko Home Control: unexpected json {}", response);
         } catch (NoSuchElementException ignore) {
         }
-        if (profileList == null) {
-            profiles = new ArrayList<>();
-        } else {
-            profiles = profileList;
+        profiles.clear();
+        if (profileList != null) {
+            profiles.addAll(profileList);
         }
     }
 
@@ -304,10 +303,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
             logger.debug("Niko Home Control: unexpected json {}", response);
         } catch (NoSuchElementException ignore) {
         }
-        if (serviceList == null) {
-            services = new ArrayList<>();
-        } else {
-            services = serviceList;
+        services.clear();
+        if (serviceList != null) {
+            services.addAll(serviceList);
         }
     }
 
@@ -324,10 +322,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
             logger.debug("Niko Home Control: unexpected json {}", response);
         } catch (NoSuchElementException ignore) {
         }
-        if (locationList == null) {
-            locations = new ArrayList<>();
-        } else {
-            locations = locationList;
+        locations.clear();
+        if (locationList != null) {
+            locations.addAll(locationList);
         }
     }
 
@@ -389,7 +386,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
 
                 updateActionState((NhcAction2) this.actions.get(device.uuid), device);
             } else if ("thermostat".equals(device.type)) {
-
                 if (!this.thermostats.containsKey(device.uuid)) {
                     logger.debug("Niko Home Control: adding thermostatdevice {}, {}", device.uuid, device.name);
 
@@ -476,7 +472,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
     }
 
     private void updateActionState(NhcAction2 action, NhcDevice2 device) {
-
         Optional<NhcProperty> statusProperty = device.properties.stream().filter(p -> (p.status != null)).findFirst();
         Optional<NhcProperty> dimmerProperty = device.properties.stream().filter(p -> (p.brightness != null))
                 .findFirst();
@@ -493,25 +488,21 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         if (booleanState != null) {
             if (NHCON.equals(booleanState)) {
                 action.setBooleanState(true);
-                // should be removed after testing
                 logger.debug("Niko Home Control: setting action {} internally to ON", action.getId());
             } else if (NHCOFF.equals(booleanState)) {
                 action.setBooleanState(false);
-                // should be removed after testing
                 logger.debug("Niko Home Control: setting action {} internally to OFF", action.getId());
             }
         }
 
         if (dimmerProperty.isPresent()) {
             action.setState(Integer.valueOf(dimmerProperty.get().brightness));
-            // should be removed after testing
             logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(),
                     dimmerProperty.get().brightness);
         }
     }
 
     private void updateThermostatState(NhcThermostat2 thermostat, NhcDevice2 device) {
-
         Optional<NhcProperty> overruleActiveProperty = device.properties.stream()
                 .filter(p -> (p.overruleActive != null)).findFirst();
         Optional<NhcProperty> overruleSetpointProperty = device.properties.stream()
@@ -593,7 +584,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
                 } else {
                     // If the light is off, turn the light on before sending the brightness value, needs to happen
                     // in 2 separate messages.
-                    if (action.getBooleanState() == false) {
+                    if (!action.booleanState()) {
                         executeAction(actionId, NHCON);
                     }
                     property.brightness = value;

@@ -117,6 +117,7 @@ The following action thing types are valid for the configuration:
 ```
 pushButton, onOff, dimmer, blind
 ```
+
 `pushButton` types are used to map directly to stateless actions in the Niko Home Control system, such as All Off actions.
 Discovery will identify All Off actions and map them to `pushButton` things.
 
