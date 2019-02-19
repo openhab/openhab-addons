@@ -114,8 +114,8 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
                                     ruuvitagData.getBatteryVoltage(), SmartHomeUnits.VOLT);
                             break;
                         case CHANNEL_ID_DATA_FORMAT:
-                            atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getDataFormat(),
-                                    null);
+                            atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                                    ruuvitagData.getDataFormat());
                             break;
                         case CHANNEL_ID_HUMIDITY:
                             atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getHumidity(),
@@ -160,29 +160,42 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
     }
 
     /**
-     * Update channel state
+     * Update QuantityType channel state
      *
      * Update is not done when value is null.
      *
      * @param channelUID channel UID
      * @param value      value to update
-     * @param unit       unit associated with value, or null when we are updating DecimalType
+     * @param unit       unit associated with the value
      * @return whether the value was present
      */
     private <T extends Quantity<T>> boolean updateStateIfLinked(ChannelUID channelUID, @Nullable Number value,
-            @Nullable Unit<T> unit) {
+            Unit<T> unit) {
         if (value == null) {
             return false;
         }
-        if (!isLinked(channelUID)) {
-            return true;
-        }
-        if (unit == null) {
-            updateState(channelUID, new DecimalType(value.doubleValue()));
-        } else {
+        if (isLinked(channelUID)) {
             updateState(channelUID, new QuantityType<>(value, unit));
         }
         return true;
     }
 
+    /**
+     * Update DecimalType channel state
+     *
+     * Update is not done when value is null.
+     *
+     * @param channelUID channel UID
+     * @param value      value to update
+     * @return whether the value was present
+     */
+    private <T extends Quantity<T>> boolean updateStateIfLinked(ChannelUID channelUID, @Nullable Integer value) {
+        if (value == null) {
+            return false;
+        }
+        if (isLinked(channelUID)) {
+            updateState(channelUID, new DecimalType(value));
+        }
+        return true;
+    }
 }
