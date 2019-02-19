@@ -307,7 +307,9 @@ end
 
 ### Synchronise two instances
 
-Define a broker and a trigger channel on that broker in a "demo.Things" file:
+To synchronize item items from a SOURCE openHAB instance to a DESTINATION instance, do the following:
+
+Define a broker and a trigger channel for your DESTINATION openHAB installation (`thing` file):
 
 ```xtend
 Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
@@ -317,8 +319,21 @@ Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 }
 ```
 
-If you want to publish all item changes to an MQTT topic "allItems/",
-group items into a `myGroupOfItems` and do this in a "publishAll.rules" file:
+The trigger channel will trigger for each received message on the MQTT topic "allItems/".
+Now push those changes to your items in a `rules` file:
+
+```xtend
+rule "Publish all"
+when 
+      Channel "mqtt:broker:myUnsecureBroker:myTriggerChannel" triggered
+then
+    val parts = receivedEvent.split("#")
+    sendCommand(parts.get(0), parts.get(1)
+end
+```
+
+On your SOURCE openHAB installation, you need to define a group `myGroupOfItems` and add all items
+to it that you want to synchronize. Then add this rule to a `rule` file:
 
 ```xtend
 rule "Publish all"
@@ -327,18 +342,6 @@ when
 then
    val actions = getActions("mqtt","mqtt:broker:myUnsecureBroker")
    actions.publishMQTT("allItems/"+triggeringItem.name,triggeringItem.state)
-end
-```
-
-If you want to receive all item changes from an MQTT topic "allItems/",
-do this in a "ReceiveAll.rules" file:
-
-```xtend
-rule "Publish all"
-when 
-      Channel "mqtt:broker:myUnsecureBroker:myTriggerChannel" triggered
-then
-   // TODO
 end
 ```
 
