@@ -1,3 +1,9 @@
+---
+name: "\U0001F41B Bug report"
+about: Something isn't working correctly with a binding. This is the wrong place for user-interfaces or openhab core issues.
+
+---
+
 <!-- Provide a general summary of the issue in the *Title* above -->
 <!-- If the issue is related to a binding, please include its short name in -->
 <!-- square brackets in the title - Example: "[astro] My issue..." -->
