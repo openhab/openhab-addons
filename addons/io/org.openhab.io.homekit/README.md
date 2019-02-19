@@ -93,6 +93,7 @@ A full list of supported accessory types can be found in the table below.
 | Valve                 |                                   | Switch                    | Simple open/close valve. Assumes liquid is flowing when valve is open. |
 | WindowCovering        |                                   | Rollershutter             | Simple window covering with support for setting target position / current position support. |
 | SmokeSensor           |                                   | Switch, ContactSensor     | Smoke detector. ON / OPEN state means smokes detected. |
+| ContactSensor         |                                   | Switch, ContactSensor     | Contact sensor. ON / OPEN means no contact detected. |
 | CarbonMonoxideSensor  |                                   | Switch, ContactSensor     | CO detector. ON / OPEN state means smoke detected (it currently appears that Home.app on iOS doesn't distinguish between a smoke and CO detector). |
 
 
