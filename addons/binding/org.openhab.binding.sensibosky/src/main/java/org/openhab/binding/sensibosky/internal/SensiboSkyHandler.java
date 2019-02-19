@@ -28,9 +28,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.sensibosky.http.SensiboAcStateResponse;
-import org.openhab.binding.sensibosky.model.AcState;
-import org.openhab.binding.sensibosky.model.SensiboMeasurements;
+import org.openhab.binding.sensibosky.internal.http.SensiboAcStateResponse;
+import org.openhab.binding.sensibosky.internal.model.AcState;
+import org.openhab.binding.sensibosky.internal.model.SensiboMeasurements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

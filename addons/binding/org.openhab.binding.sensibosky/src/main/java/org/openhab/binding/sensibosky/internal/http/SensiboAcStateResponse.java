@@ -14,7 +14,7 @@ package org.openhab.binding.sensibosky.internal.http;
 
 import java.util.List;
 
-import org.openhab.binding.sensibosky.model.AcStateRead;
+import org.openhab.binding.sensibosky.internal.model.AcStateRead;
 
 import com.google.gson.annotations.SerializedName;
 

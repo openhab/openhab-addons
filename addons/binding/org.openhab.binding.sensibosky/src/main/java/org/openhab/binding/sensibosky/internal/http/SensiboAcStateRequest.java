@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.sensibosky.internal.http;
 
-import org.openhab.binding.sensibosky.model.AcState;
+import org.openhab.binding.sensibosky.internal.model.AcState;
 
 import com.google.gson.annotations.SerializedName;
 
