@@ -15,10 +15,27 @@
 
 		<config-description>
 			<parameter name="ftpAddress" type="text" required="true">
-				<label>FTP server</label>
+				<label>FTP Server</label>
 				<description>IP address of FTP server</description>
 				<context>network-address</context>
 			</parameter>
+            <parameter name="ftpPort" type="integer" required="true" min="1" max="65535">
+                <label>FTP Port</label>
+                <default>21</default>
+                <description>FTP server's port</description>
+            </parameter>
+            <parameter name="secureMode" type="text" required="true">
+                <label>FTP Security</label>
+                <limitToOptions>true</limitToOptions>
+                <options>
+	                <option value="NONE">None</option>
+	                <option value="IMPLICIT">TLS/SSL Implicit</option>
+	                <option value="EXPLICIT">TLS/SSL Explicit</option>
+                </options>
+                <default>NONE</default>
+                <description>FTP Security settings</description>
+                <advanced>true</advanced>
+            </parameter>          
 			<parameter name="ftpUsername" type="text" required="true">
 			    <label>Username</label>
                 <description>User name</description>
@@ -36,6 +53,12 @@
                 <label>List Hidden</label>
                  <default>false</default>
                 <description>Allow listing of hidden files</description>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="listRecursiveFtp" type="boolean" required="true">
+                <label>List Sub Folders</label>
+                <default>false</default>
+                <description>Allow listing of sub folders</description>
                 <advanced>true</advanced>
             </parameter>
             <parameter name="connectionTimeout" type="integer" required="true" min="1">
@@ -82,11 +105,28 @@
         </channels>
 
         <config-description>
-            <parameter name="ftpAddress" type="text" required="true">
-                <label>FTP server</label>
-                <description>IP address of FTP server</description>
-                <context>network-address</context>
-            </parameter>           
+            <parameter name="localDir" type="text" required="true">
+                <label>Local Directory</label>
+                <description>Local directory to be watched</description>
+            </parameter>       
+            <parameter name="pollIntervalLocal" type="integer" required="true" min="1">
+                <label>Polling interval, s</label>
+                <description>Interval for polling folder changes</description>
+                <default>60</default>
+                <advanced>true</advanced>
+            </parameter>   
+            <parameter name="listHiddenLocal" type="boolean" required="true">
+                <label>List Hidden</label>
+                <default>false</default>
+                <description>Allow listing of hidden files</description>
+                <advanced>true</advanced>
+            </parameter>
+            <parameter name="listRecursiveLocal" type="boolean" required="true">
+                <label>List Sub Folders</label>
+                <default>false</default>
+                <description>Allow listing of sub folders</description>
+                <advanced>true</advanced>
+            </parameter>
         </config-description>
 
     </thing-type>

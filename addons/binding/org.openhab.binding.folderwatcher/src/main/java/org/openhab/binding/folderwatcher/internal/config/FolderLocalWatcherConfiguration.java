@@ -13,25 +13,18 @@
 package org.openhab.binding.folderwatcher.internal.config;
 
 /**
- * The {@link FolderWatcherConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link FolderLocalWatcherConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Alexandr Salamatov - Initial contribution
  */
-public class FolderWatcherConfiguration {
+public class FolderLocalWatcherConfiguration {
 
     /**
      * Sample configuration parameter. Replace with your own.
      */
-    public String ftpAddress;
-    public Integer ftpPort;
-    public String ftpUsername;
-    public String ftpPassword;
-    public String ftpDir;
-    public Integer pollInterval;
-    public Integer connectionTimeout;
-    public boolean listHidden;
-    public Integer diffHours;
-    public boolean listRecursiveFtp;
-    public String secureMode;
+    public String localDir;
+    public boolean listHiddenLocal;
+    public Integer pollIntervalLocal;
+    public boolean listRecursiveLocal;
 
 }

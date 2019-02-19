@@ -15,19 +15,20 @@ package org.openhab.binding.folderwatcher.internal.handler;
 import static org.openhab.binding.folderwatcher.internal.FolderWatcherBindingConstants.CHANNEL_FILENAME;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.io.PrintWriter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
+import org.apache.commons.net.ftp.FTPSClient;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -37,6 +38,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.folderwatcher.internal.common.WatcherCommon;
 import org.openhab.binding.folderwatcher.internal.config.FolderWatcherConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +67,8 @@ public class FolderWatcherHandler extends BaseThingHandler {
     private ArrayList<String> currentFtpListing = new ArrayList<String>();
     @Nullable
     private ArrayList<String> previousFtpListing = new ArrayList<String>();
+    @Nullable
+    private WatcherCommon FileTools = new WatcherCommon();
 
     public FolderWatcherHandler(Thing thing) {
         super(thing);
@@ -72,27 +76,8 @@ public class FolderWatcherHandler extends BaseThingHandler {
         currentFtpListingFile = new File(ConfigConstants.getUserDataFolder() + File.separator + "FolderWatcher"
                 + File.separator + thing.getUID().getAsString().replace(':', '_') + ".data");
 
-        InitStorage();
-
-    }
-
-    private void InitStorage() {
-
         try {
-            if (!currentFtpListingFile.exists()) {
-
-                Files.createDirectories(currentFtpListingFile.toPath().getParent());
-
-                FileWriter fileWriter = new FileWriter(currentFtpListingFile);
-                fileWriter.write("INIT");
-
-                fileWriter.close();
-            } else {
-
-                previousFtpListing = (ArrayList<String>) Files
-                        .readAllLines(currentFtpListingFile.toPath().toAbsolutePath());
-
-            }
+            previousFtpListing = FileTools.InitStorage(currentFtpListingFile);
         } catch (IOException e) {
             logger.debug("Can't write file {}.", currentFtpListingFile);
         }
@@ -145,7 +130,8 @@ public class FolderWatcherHandler extends BaseThingHandler {
         }
     }
 
-    private void listDirectory(FTPClient ftpClient, String parentDir, String currentDir, int level) throws IOException {
+    private void listDirectory(FTPClient ftpClient, String parentDir, String currentDir, int level, boolean recursive)
+            throws IOException {
         String dirToList = parentDir;
         Calendar fileTimestamp = null;
         Calendar cal = Calendar.getInstance();
@@ -170,7 +156,9 @@ public class FolderWatcherHandler extends BaseThingHandler {
                 }
 
                 if (aFile.isDirectory()) {
-                    listDirectory(ftpClient, dirToList, currentFileName, level + 1);
+                    if (recursive) {
+                        listDirectory(ftpClient, dirToList, currentFileName, level + 1, recursive);
+                    }
                 } else {
 
                     fileTimestamp = aFile.getTimestamp();
@@ -183,36 +171,6 @@ public class FolderWatcherHandler extends BaseThingHandler {
                     }
                 }
             }
-        }
-    }
-
-    private void listNewFiles() throws IOException {
-
-        ArrayList<String> diffFtpListing = new ArrayList<String>();
-
-        if (!currentFtpListing.isEmpty()) {
-            FileWriter fileWriter = new FileWriter(currentFtpListingFile);
-
-            for (String newFtpFile : currentFtpListing) {
-                fileWriter.write(newFtpFile + "\n");
-            }
-
-            fileWriter.close();
-
-            diffFtpListing = (ArrayList<String>) currentFtpListing.clone();
-            diffFtpListing.removeAll(previousFtpListing);
-
-            for (String newFtpFile : diffFtpListing) {
-
-                triggerChannel(CHANNEL_FILENAME, newFtpFile);
-
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-
-                }
-            }
-            previousFtpListing = (ArrayList<String>) currentFtpListing.clone();
         }
     }
 
@@ -230,16 +188,35 @@ public class FolderWatcherHandler extends BaseThingHandler {
                     return;
                 }
 
-                ftp = new FTPClient();
+                if (config.secureMode.equals("NONE")) {
+                    ftp = new FTPClient();
+                } else {
+                    FTPSClient ftps;
+                    if (config.secureMode.equals("IMPLICIT")) {
+                        ftps = new FTPSClient(true);
+                    } else if (config.secureMode.equals("EXPLICIT")) {
+                        ftps = new FTPSClient(false);
+                    } else {
+                        ftps = null;
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                        return;
+                    }
+                    ftp = ftps;
+                }
+
                 reply = 0;
 
                 ftp.setListHiddenFiles(config.listHidden);
                 ftp.setConnectTimeout(config.connectionTimeout * 1000);
                 // Uncomment to see FTP response
-                // ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out), true));
+                ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out), true));
 
                 try {
-                    ftp.connect(config.ftpAddress);
+                    if (config.ftpPort > 0) {
+                        ftp.connect(config.ftpAddress, config.ftpPort);
+                    } else {
+                        ftp.connect(config.ftpAddress);
+                    }
                     reply = ftp.getReplyCode();
 
                     if (!FTPReply.isPositiveCompletion(reply)) {
@@ -289,13 +266,14 @@ public class FolderWatcherHandler extends BaseThingHandler {
         @Override
         public void run() {
 
+            ArrayList<String> diffFtpListing = new ArrayList<String>();
+            String ftpRootDir = config.ftpDir;
+
             if (ftp != null && ftp.isConnected()) {
 
                 ftp.enterLocalPassiveMode();
 
                 try {
-
-                    String ftpRootDir = config.ftpDir;
 
                     if (ftpRootDir.endsWith("/")) {
                         ftpRootDir = ftpRootDir.substring(0, ftpRootDir.length() - 1);
@@ -306,8 +284,22 @@ public class FolderWatcherHandler extends BaseThingHandler {
                     }
 
                     currentFtpListing.clear();
-                    listDirectory(ftp, ftpRootDir, "", 0);
-                    listNewFiles();
+                    listDirectory(ftp, ftpRootDir, "", 0, config.listRecursiveFtp);
+                    diffFtpListing = FileTools.listNewFiles(previousFtpListing, currentFtpListing,
+                            currentFtpListingFile);
+
+                    for (String newFtpFile : diffFtpListing) {
+
+                        triggerChannel(CHANNEL_FILENAME, newFtpFile);
+
+                        try {
+                            Thread.sleep(3000);
+                        } catch (InterruptedException e) {
+
+                        }
+                    }
+
+                    previousFtpListing = (ArrayList<String>) currentFtpListing.clone();
 
                 } catch (IOException e) {
                     logger.debug("FTP connection lost.");
