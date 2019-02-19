@@ -21,7 +21,6 @@
     <module>io</module>
     <module>persistence</module>
     <module>transform</module>
-    <module>ui</module>
     <module>voice</module>
   </modules>
 </project>
