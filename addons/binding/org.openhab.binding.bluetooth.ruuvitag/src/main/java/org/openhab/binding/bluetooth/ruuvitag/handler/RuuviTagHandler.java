@@ -86,8 +86,9 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
 
     @Override
     public void onScanRecordReceived(BluetoothScanNotification scanNotification) {
+        super.onScanRecordReceived(scanNotification);
         final byte[] manufacturerData = scanNotification.getManufacturerData();
-        if (manufacturerData != null) {
+        if (manufacturerData != null && manufacturerData.length > 0) {
             final RuuviMeasurement ruuvitagData = parser.parse(manufacturerData);
             logger.trace("Ruuvi received new scan notification for {}: {}", scanNotification.getAddress(),
                     ruuvitagData);
@@ -143,7 +144,7 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
                     }
                 }
                 if (atLeastOneRuuviFieldPresent) {
-                    updateStatus(ThingStatus.ONLINE);
+                    // In practice, updated to ONLINE by super.onScanRecordReceived already, based on RSSI value
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Received Ruuvi Tag data but no fields could be parsed");
@@ -152,9 +153,10 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Received bluetooth data which could not be parsed to any known Ruuvi Tag data formats");
             }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Received Bluetooth scan with no manufacturer data");
         }
-        super.onScanRecordReceived(scanNotification);
-
     }
 
     /**
