@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project.
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.sensibosky.internal;
 
 import java.io.ByteArrayInputStream;
@@ -5,12 +17,12 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.sensibosky.http.SensiboAcStateRequest;
-import org.openhab.binding.sensibosky.http.SensiboAcStateResponse;
-import org.openhab.binding.sensibosky.model.AcState;
-import org.openhab.binding.sensibosky.model.DeviceId;
-import org.openhab.binding.sensibosky.model.SensiboMeasurements;
-import org.openhab.binding.sensibosky.model.SensiboPods;
+import org.openhab.binding.sensibosky.internal.http.SensiboAcStateRequest;
+import org.openhab.binding.sensibosky.internal.http.SensiboAcStateResponse;
+import org.openhab.binding.sensibosky.internal.model.AcState;
+import org.openhab.binding.sensibosky.internal.model.DeviceId;
+import org.openhab.binding.sensibosky.internal.model.SensiboMeasurements;
+import org.openhab.binding.sensibosky.internal.model.SensiboPods;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
@@ -18,6 +30,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+/**
+ * The {@link SensiboApiConnection} class handles the connection to the sensibo API.
+ *
+ * @author Robert Kaczmarczyk - Initial contribution
+ */
 public class SensiboApiConnection {
     private SensiboSkyConfiguration configuration;
 
