@@ -122,6 +122,7 @@ Rollershutter MasterWindow_Blinds "Master Window Blinds" [ "WindowCovering" ]
 The following devices support report low battery status:
 
 * LeakSensor
+* ContactSensor
 * MotionSensor
 * SmokeSensor
 * CarbonMonoxideSensor
