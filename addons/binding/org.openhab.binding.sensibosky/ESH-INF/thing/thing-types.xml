@@ -90,15 +90,25 @@
                 <option value="dry">Dry</option>
                 <option value="heat">Heat</option>
                 <option value="cool">Cool</option>
-		<option value="fan">Fan Only</option>
+		        <option value="fan">Fan Only</option>
             </options>
         </state>
     </channel-type>
     
     <channel-type id="swing-mode">
-        <item-type>Switch</item-type>
+        <item-type>String</item-type>
         <label>Swing Mode</label>
         <description>Current Swing Mode</description>
-        <state readOnly="false" />
+        <state readOnly="false">
+            <options>
+                <option value="stopped">Stopped</option>
+                <option value="fixedTop">Fixed Top</option>
+                <option value="fixedMiddleTop">Fixed Middle Top</option>
+                <option value="fixedMiddle">Fixed Middle</option>
+                <option value="fixedMiddleBottom">Fixed Middle Bottom</option>
+                <option value="fixedBottom">Fixed Bottom</option>
+                <option value="rangeFull">Full</option>
+            </options>
+        </state>
     </channel-type>
 </thing:thing-descriptions>

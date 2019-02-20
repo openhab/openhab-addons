@@ -92,11 +92,7 @@ public class SensiboSkyHandler extends BaseThingHandler {
         } else if (SensiboSkyBindingConstants.AC_MODE.equals(channelUID.getId())) {
             currentState.mode = command.toString();
         } else if (SensiboSkyBindingConstants.SWING_MODE.equals(channelUID.getId())) {
-            if (command.toString().contentEquals("ON")) {
-                currentState.swing = "rangeFull";
-            } else {
-                currentState.swing = "stopped";
-            }
+            currentState.swing = command.toString();
         } else if (SensiboSkyBindingConstants.POWER.equals(channelUID.getId())) {
             currentState.on = command.toString().equals("ON");
         }
