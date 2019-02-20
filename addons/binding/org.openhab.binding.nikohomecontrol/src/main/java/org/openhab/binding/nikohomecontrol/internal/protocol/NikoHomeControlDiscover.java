@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
@@ -45,14 +46,14 @@ public final class NikoHomeControlDiscover {
     private String nhcBridgeId = "";
     private boolean isNhcII;
 
-    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
     static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
             int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
         }
         return new String(hexChars);
     }
@@ -80,7 +81,8 @@ public final class NikoHomeControlDiscover {
             datagramSocket.send(discoveryPacket);
             while (true) {
                 datagramSocket.receive(packet);
-                logger.trace("Niko Home Control: bridge discovery response {}", bytesToHex(packet.getData()));
+                logger.trace("Niko Home Control: bridge discovery response {}",
+                        bytesToHex(Arrays.copyOf(packet.getData(), packet.getLength())));
                 if (isNhc(packet)) {
                     break;
                 }
