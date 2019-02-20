@@ -29,7 +29,7 @@ System trigger channels are supported using non-retained properties, with *enum*
 
 ### HomeAssistant Thing
 
-HomeAssistant MQTT Components are recognised as well. The base topic needs to be **homeassistant**. 
+HomeAssistant MQTT Components are recognized as well. The base topic needs to be **homeassistant**. 
 The mapping is structured like this:
 
 
@@ -95,8 +95,8 @@ You can connect this channel to a Number item.
 
 ### Channel Type "dimmer"
  
-* __on__: A optional string (like "ON"/"Open") that is recognised as minimum.
-* __off__: A optional string (like "OFF"/"Close") that is recognised as maximum.
+* __on__: A optional string (like "ON"/"Open") that is recognized as minimum.
+* __off__: A optional string (like "OFF"/"Close") that is recognized as maximum.
 * __min__: A required minimum value.
 * __max__: A required maximum value.
 * __step__: For decrease, increase commands the step needs to be known
@@ -109,11 +109,11 @@ You can connect this channel to a Rollershutter or Dimmer item.
 
 ### Channel Type "contact", "switch"
 
-* __on__: A optional number (like 1, 10) or a string (like "ON"/"Open") that is recognised as on/open state.
-* __off__: A optional number (like 0, -10) or a string (like "OFF"/"Close") that is recognised as off/closed state.
+* __on__: A optional number (like 1, 10) or a string (like "ON"/"Open") that is recognized as on/open state.
+* __off__: A optional number (like 0, -10) or a string (like "OFF"/"Close") that is recognized as off/closed state.
 
-The contact channel by default recognises `"OPEN"` and `"CLOSED"`. You can connect this channel to a Contact item.
-The switch channel by default recognises `"ON"` and `"OFF"`. You can connect this channel to a Switch item.
+The contact channel by default recognizes `"OPEN"` and `"CLOSED"`. You can connect this channel to a Contact item.
+The switch channel by default recognizes `"ON"` and `"OFF"`. You can connect this channel to a Switch item.
 
 If **on** and **off** are not configured it publishes the strings mentioned before respectively.
 
@@ -121,8 +121,8 @@ You can connect this channel to a Contact or Switch item.
 
 ### Channel Type "colorRGB", "colorHSB"
 
-* __on__: An optional string (like "BRIGHT") that is recognised as on state. (ON will always be recognised.)
-* __off__: An optional string (like "DARK") that is recognised as off state. (OFF will always be recognised.)
+* __on__: An optional string (like "BRIGHT") that is recognized as on state. (ON will always be recognized.)
+* __off__: An optional string (like "DARK") that is recognized as off state. (OFF will always be recognized.)
 * __onBrightness__: If you connect this channel to a Switch item and turn it on,
 color and saturation are preserved from the last state, but
 the brightness will be set to this configured initial brightness (default: 10%).
@@ -161,9 +161,9 @@ The channel expects values on the corresponding MQTT topic to be in this format 
 
 ### Channel Type "rollershutter"
 
-* __on__: An optional string (like "Open") that is recognised as UP state.
-* __off__: An optional string (like "Close") that is recognised as DOWN state.
-* __stop__: An optional string (like "Stop") that is recognised as STOP state.
+* __on__: An optional string (like "Open") that is recognized as UP state.
+* __off__: An optional string (like "Close") that is recognized as DOWN state.
+* __stop__: An optional string (like "Stop") that is recognized as STOP state.
 
 You can connect this channel to a Rollershutter or Dimmer item.
 
@@ -305,9 +305,11 @@ then
 end
 ```
 
-### Synchronise two instances
+### Synchronize two instances
 
-Define a broker and a trigger channel on that broker in a "demo.Things" file:
+To synchronize item items from a SOURCE openHAB instance to a DESTINATION instance, do the following:
+
+Define a broker and a trigger channel for your DESTINATION openHAB installation (`thing` file):
 
 ```xtend
 Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
@@ -317,8 +319,21 @@ Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 }
 ```
 
-If you want to publish all item changes to an MQTT topic "allItems/",
-group items into a `myGroupOfItems` and do this in a "publishAll.rules" file:
+The trigger channel will trigger for each received message on the MQTT topic "allItems/".
+Now push those changes to your items in a `rules` file:
+
+```xtend
+rule "Publish all"
+when 
+      Channel "mqtt:broker:myUnsecureBroker:myTriggerChannel" triggered
+then
+    val parts = receivedEvent.split("#")
+    sendCommand(parts.get(0), parts.get(1)
+end
+```
+
+On your SOURCE openHAB installation, you need to define a group `myGroupOfItems` and add all items
+to it that you want to synchronize. Then add this rule to a `rule` file:
 
 ```xtend
 rule "Publish all"
@@ -327,18 +342,6 @@ when
 then
    val actions = getActions("mqtt","mqtt:broker:myUnsecureBroker")
    actions.publishMQTT("allItems/"+triggeringItem.name,triggeringItem.state)
-end
-```
-
-If you want to receive all item changes from an MQTT topic "allItems/",
-do this in a "ReceiveAll.rules" file:
-
-```xtend
-rule "Publish all"
-when 
-      Channel "mqtt:broker:myUnsecureBroker:myTriggerChannel" triggered
-then
-   // TODO
 end
 ```
 
