@@ -27,9 +27,9 @@
 					<description>Host or IP address of hub.</description>
 					<context>network-address</context>
 			</parameter>
-			<parameter name="heartBeatInterval" type="integer" required="false">
+			<parameter name="heartBeatInterval" type="integer" required="false" min="1" max="50">
 				<label>Heart Beat Interval</label>
-				<default>60</default>
+				<default>30</default>
 				<description>Heartbeat keep alive time in seconds.
 				</description>
 			</parameter>
