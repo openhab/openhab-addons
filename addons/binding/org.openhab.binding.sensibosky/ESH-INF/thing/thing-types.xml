@@ -49,7 +49,6 @@
 		<label>Temperature</label>
 		<description>Current Temperature</description>
 		<state readOnly="true" pattern="%.1f %unit%" />
-		
 	</channel-type>
 
     <channel-type id="humidity">
