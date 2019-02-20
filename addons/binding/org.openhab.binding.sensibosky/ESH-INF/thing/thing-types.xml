@@ -30,7 +30,7 @@
                 <default>300</default>
             </parameter>
             
-            <parameter name="deviceId" type="integer">
+            <parameter name="deviceId" type="text">
                 <label>Device ID</label>
                 <description>The device ID. You are only required to set it if you have more than one Senisbo Sky devices. To get available device IDs call https://home.sensibo.com/api/v2/users/me/pods?apiKey=YOUR_API_KEY from the web browser or from the log viewer.</description>
             </parameter>
@@ -76,7 +76,6 @@
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
                 <option value="high">High</option>
-                <option value="fan">Fan Only</option>
             </options>
         </state>
     </channel-type>
@@ -91,6 +90,7 @@
                 <option value="dry">Dry</option>
                 <option value="heat">Heat</option>
                 <option value="cool">Cool</option>
+		<option value="fan">Fan Only</option>
             </options>
         </state>
     </channel-type>
