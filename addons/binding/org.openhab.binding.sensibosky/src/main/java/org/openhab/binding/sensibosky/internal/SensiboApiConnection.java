@@ -44,7 +44,9 @@ public class SensiboApiConnection {
 
     private static final Properties HEADERS = new Properties();
 
-    private static final String METHOD = "GET";
+    private static final String METHOD_GET = "GET";
+
+    private static final String METHOD_POST = "POST";
 
     private static final int TIMEOUT = 30 * 1000; // 30 seconds
 
@@ -63,7 +65,7 @@ public class SensiboApiConnection {
         }
         String query = API_URL + "/users/me/pods?apiKey=" + configuration.apiKey;
         try {
-            String body = HttpUtil.executeUrl(METHOD, query, HEADERS, null, null, TIMEOUT);
+            String body = HttpUtil.executeUrl(METHOD_GET, query, HEADERS, null, null, TIMEOUT);
             SensiboPods pods = gson.fromJson(body, SensiboPods.class);
             boolean hasOnlyOneDevice = pods.result.size() == 1;
             if (!hasOnlyOneDevice) {
@@ -89,7 +91,7 @@ public class SensiboApiConnection {
         String query = API_URL + "/pods/" + getDeviceId() + "?apiKey=" + configuration.apiKey
                 + "&fields=measurements,temperatureUnit";
         try {
-            String body = HttpUtil.executeUrl(METHOD, query, HEADERS, null, null, TIMEOUT);
+            String body = HttpUtil.executeUrl(METHOD_GET, query, HEADERS, null, null, TIMEOUT);
             SensiboMeasurements measurements = gson.fromJson(body, SensiboMeasurements.class);
             return measurements;
         } catch (IOException e) {
@@ -105,7 +107,7 @@ public class SensiboApiConnection {
         request.acState = newState;
         String body = gson.toJson(request);
         try {
-            String response = HttpUtil.executeUrl("POST", query, HEADERS, new ByteArrayInputStream(body.getBytes()),
+            String response = HttpUtil.executeUrl(METHOD_POST, query, HEADERS, new ByteArrayInputStream(body.getBytes()),
                     "application/json", TIMEOUT);
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -115,7 +117,7 @@ public class SensiboApiConnection {
     public SensiboAcStateResponse readAcState() {
         String query = API_URL + "/pods/" + getDeviceId() + "/acStates?limit=1&apiKey=" + configuration.apiKey;
         try {
-            String body = HttpUtil.executeUrl(METHOD, query, HEADERS, null, null, TIMEOUT);
+            String body = HttpUtil.executeUrl(METHOD_GET, query, HEADERS, null, null, TIMEOUT);
             SensiboAcStateResponse response = gson.fromJson(body, SensiboAcStateResponse.class);
             return response;
         } catch (IOException e) {
