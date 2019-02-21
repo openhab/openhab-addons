@@ -317,13 +317,14 @@ Main documentation on `autoupdate` in [Items section of openHAB docs](https://ww
 
 > In the traditional standard, [entity] numbers for those entities start with a digit, followed by a number of four digits in range 1–9,999:
 
-> * coils numbers start at 1, with a leading zero and then span from 00001 to 09999
-> * discrete input numbers start with a leading one and then span from 10001 to 19999
-> * input register numbers start with a leading three and then span from 30001 to 39999
-> * holding register numbers start with a leading four and then span from 40001 to 49999
+> * coils numbers start with a zero and then span from 00001 to 09999
+> * discrete input numbers start with a one and then span from 10001 to 19999
+> * input register numbers start with a three and then span from 30001 to 39999
+> * holding register numbers start with a four and then span from 40001 to 49999
 >
 > This translates into [entity] addresses between 0 and 9,998 in data frames.
-> Note that entity starts counting at 1, data frame address at 0.
+
+Note that entity begins counting at 1, data frame address at 0.
 
 The openHAB modbus binding uses data frame entity addresses when referring to modbus entities.
 That is, the entity address configured in modbus binding is passed to modbus protocol frame as-is.
