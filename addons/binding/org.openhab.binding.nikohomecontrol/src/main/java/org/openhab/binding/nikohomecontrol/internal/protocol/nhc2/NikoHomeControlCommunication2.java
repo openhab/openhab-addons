@@ -517,16 +517,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         Optional<NhcProperty> positionProperty = device.properties.stream().filter(p -> (p.position != null))
                 .findFirst();
         Optional<NhcProperty> movingProperty = device.properties.stream().filter(p -> (p.moving != null)).findFirst();
-        Optional<NhcProperty> actionProperty = device.properties.stream().filter(p -> (p.action != null)).findFirst();
 
-        if (!(movingProperty.isPresent() && Boolean.valueOf(movingProperty.get().moving))) {
-            if (actionProperty.isPresent()) {
-
-            } else if (positionProperty.isPresent()) {
-                action.setState(Integer.valueOf(positionProperty.get().position));
-                logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(),
-                        positionProperty.get().position);
-            }
+        if (!(movingProperty.isPresent() && Boolean.valueOf(movingProperty.get().moving))
+                && positionProperty.isPresent()) {
+            action.setState(Integer.valueOf(positionProperty.get().position));
+            logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(),
+                    positionProperty.get().position);
         }
     }
 
