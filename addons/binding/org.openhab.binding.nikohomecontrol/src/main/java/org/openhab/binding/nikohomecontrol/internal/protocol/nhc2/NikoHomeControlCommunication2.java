@@ -373,6 +373,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
                     case "dimmer":
                         actionType = ActionType.DIMMER;
                         break;
+                    case "motor":
+                        actionType = ActionType.ROLLERSHUTTER;
+                        break;
                 }
 
                 if (!this.actions.containsKey(device.uuid)) {
@@ -472,6 +475,14 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
     }
 
     private void updateActionState(NhcAction2 action, NhcDevice2 device) {
+        if (action.getType() == ActionType.ROLLERSHUTTER) {
+            updateRollershutterState(action, device);
+        } else {
+            updateLightState(action, device);
+        }
+    }
+
+    private void updateLightState(NhcAction2 action, NhcDevice2 device) {
         Optional<NhcProperty> statusProperty = device.properties.stream().filter(p -> (p.status != null)).findFirst();
         Optional<NhcProperty> dimmerProperty = device.properties.stream().filter(p -> (p.brightness != null))
                 .findFirst();
@@ -499,6 +510,23 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
             action.setState(Integer.valueOf(dimmerProperty.get().brightness));
             logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(),
                     dimmerProperty.get().brightness);
+        }
+    }
+
+    private void updateRollershutterState(NhcAction2 action, NhcDevice2 device) {
+        Optional<NhcProperty> positionProperty = device.properties.stream().filter(p -> (p.position != null))
+                .findFirst();
+        Optional<NhcProperty> movingProperty = device.properties.stream().filter(p -> (p.moving != null)).findFirst();
+        Optional<NhcProperty> actionProperty = device.properties.stream().filter(p -> (p.action != null)).findFirst();
+
+        if (!(movingProperty.isPresent() && Boolean.valueOf(movingProperty.get().moving))) {
+            if (actionProperty.isPresent()) {
+
+            } else if (positionProperty.isPresent()) {
+                action.setState(Integer.valueOf(positionProperty.get().position));
+                logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(),
+                        positionProperty.get().position);
+            }
         }
     }
 

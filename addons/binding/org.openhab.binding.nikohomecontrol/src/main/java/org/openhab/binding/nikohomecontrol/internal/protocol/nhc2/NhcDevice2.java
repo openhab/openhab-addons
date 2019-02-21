@@ -27,6 +27,10 @@ class NhcDevice2 {
         String brightness;
         String aligned;
         String basicState;
+        // fields for motors
+        String action;
+        String position;
+        String moving;
         // fields for thermostats
         String setpointTemperature;
         String program;
