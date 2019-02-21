@@ -909,12 +909,6 @@
         <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.neeo/${project.version}</bundle>
     </feature>
 
-    <feature name="openhab-misc-restdocs" description="REST Documentation" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab.tp-swagger-jax-rs-provider</feature>
-        <bundle>mvn:org.openhab.io/org.openhab.io.rest.docs/${project.version}</bundle>
-    </feature>
-
     <feature name="openhab-misc-ruleengine" description="Rule Engine (Experimental)" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-core-automation</feature>

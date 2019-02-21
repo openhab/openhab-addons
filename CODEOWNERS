@@ -197,7 +197,6 @@
 /addons/io/org.openhab.io.mqttembeddedbroker.test/ @davidgraeff
 /addons/io/org.openhab.io.neeo/ @tmrobert8
 /addons/io/org.openhab.io.openhabcloud/ @kaikreuzer
-/addons/io/org.openhab.io.rest.docs/ @kaikreuzer
 /addons/io/org.openhab.io.sound/ @kaikreuzer
 /addons/io/org.openhab.io.transport.feed/ @svilenvul
 /addons/io/org.openhab.io.transport.modbus/ @ssalonen
