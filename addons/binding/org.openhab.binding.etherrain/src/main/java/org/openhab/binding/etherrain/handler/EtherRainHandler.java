@@ -39,10 +39,14 @@ public class EtherRainHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(EtherRainHandler.class);
 
     private EtherRainCommunication device = null;
+    private boolean connected = false;
 
     @Nullable
     private ScheduledFuture<?> updateJob;
 
+    /*
+     * Constructor class. Only call the parent constructor
+     */
     public EtherRainHandler(Thing thing) {
         super(thing);
     }
@@ -51,27 +55,8 @@ public class EtherRainHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
 
         if (command.toString().equals("REFRESH")) {
-
-            switch (channelUID.getId()) {
-                case EtherRainBindingConstants.CHANNEL_ID_COMMAND_STATUS:
-                    updateBridge();
-                    break;
-                case EtherRainBindingConstants.CHANNEL_ID_OPERATING_STATUS:
-                    updateBridge();
-                    break;
-                case EtherRainBindingConstants.CHANNEL_ID_OPERATING_RESULT:
-                    updateBridge();
-                    break;
-                case EtherRainBindingConstants.CHANNEL_ID_RELAY_INDEX:
-                    updateBridge();
-                    break;
-                case EtherRainBindingConstants.CHANNEL_ID_SENSOR_RAIN:
-                    updateBridge();
-                    break;
-                default:
-                    logger.error("Unknown channel: " + channelUID.toString());
-
-            }
+            updateBridge();
+            return;
         }
 
         else if (channelUID.getId().equals(EtherRainBindingConstants.CHANNEL_ID_EXECUTE)) {
@@ -90,7 +75,6 @@ public class EtherRainHandler extends BaseThingHandler {
 
     private boolean connectBridge() {
         EtherRainConfiguration config = getConfigAs(EtherRainConfiguration.class);
-        stopUpdateJob();
 
         logger.debug(
                 "Attempting to connect to Etherrain wtih config = (Hostname: {}, Port: {}, Password: {}, Refresh: {}).",
@@ -101,19 +85,21 @@ public class EtherRainHandler extends BaseThingHandler {
         try {
             EtherRainStatusResponse response = device.commandStatus();
             if (response == null) {
-                throw new Exception("Could not find device.");
+                logger.debug("Command Status returned null");
+                device = null;
+                updateStatus(ThingStatus.OFFLINE);
+                return false;
             }
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not create a connection to the EtherRain");
             logger.debug("Could not open API connection to the EtherRain device. Exception received: {}", e.toString());
+            device = null;
+            updateStatus(ThingStatus.OFFLINE);
             return false;
         }
 
         updateStatus(ThingStatus.ONLINE);
-        startUpdateJob();
-
-        logger.debug("EtherRain sucessfully initialized. Starting status poll at: " + config.refresh);
 
         return true;
     }
@@ -124,6 +110,9 @@ public class EtherRainHandler extends BaseThingHandler {
             updateBridge();
         }, getConfigAs(EtherRainConfiguration.class).refresh, getConfigAs(EtherRainConfiguration.class).refresh,
                 TimeUnit.SECONDS);
+
+        logger.debug("EtherRain sucessfully initialized. Starting status poll at: "
+                + getConfigAs(EtherRainConfiguration.class).refresh);
 
     }
 
@@ -138,9 +127,15 @@ public class EtherRainHandler extends BaseThingHandler {
     }
 
     private boolean updateBridge() {
-        if (device == null) {
-            logger.debug("Couldn't Update Bridge as device is not connected");
-            return false;
+
+        if (!connected || device == null) {
+            connected = connectBridge();
+            if (!connected || device == null) {
+                connected = false;
+                device = null;
+                logger.debug("Could not connect to Etherrain device.");
+                return false;
+            }
         }
 
         EtherRainStatusResponse response;
@@ -235,7 +230,7 @@ public class EtherRainHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        connectBridge();
+        startUpdateJob();
     }
 
     @Override

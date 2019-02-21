@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link EtherrainDiscoveryService} class discovers Harmony hubs and adds the results to the inbox.
+ * The {@link EtherrainDiscoveryService} class discovers Etherrain Device(s) and places them in the inbox.
  *
  * @author Joe Inkenbrandt - Initial contribution
  */
