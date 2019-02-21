@@ -249,7 +249,6 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
                 return;
             }
 
-            int actionState = nhcAction.getState();
             String actionLocation = nhcAction.getLocation();
 
             nhcAction.setEventHandler(this);
@@ -285,12 +284,12 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
     @Override
     public void actionEvent(int actionState) {
-        Configuration config = this.getConfig();
-
         ActionType actionType = nhcAction.getType();
 
         switch (actionType) {
             case TRIGGER:
+                updateState(CHANNEL_BUTTON, (actionState == 0) ? OnOffType.OFF : OnOffType.ON);
+                updateStatus(ThingStatus.ONLINE);
             case RELAY:
                 updateState(CHANNEL_SWITCH, (actionState == 0) ? OnOffType.OFF : OnOffType.ON);
                 updateStatus(ThingStatus.ONLINE);

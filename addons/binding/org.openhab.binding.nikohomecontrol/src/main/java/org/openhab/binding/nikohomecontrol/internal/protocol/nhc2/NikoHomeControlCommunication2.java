@@ -619,7 +619,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
                 }
                 break;
             case ROLLERSHUTTER:
-                // TODO
+                if (NHCSTOP.equals(value)) {
+                    property.action = value;
+                } else if (NHCUP.equals(value)) {
+                    property.position = "100";
+                } else if (NHCDOWN.equals(value)) {
+                    property.position = "0";
+                } else {
+                    int position = 100 - Integer.valueOf(value);
+                    property.position = String.valueOf(position);
+                }
                 break;
         }
 
