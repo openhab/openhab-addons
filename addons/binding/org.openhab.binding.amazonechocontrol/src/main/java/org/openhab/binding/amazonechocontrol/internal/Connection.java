@@ -1222,7 +1222,7 @@ public class Connection {
     }
 
     public JsonAutomation[] getRoutines() throws IOException, URISyntaxException {
-        String json = makeRequestAndReturnString(alexaServer + "/api/behaviors/automations");
+        String json = makeRequestAndReturnString(alexaServer + "/api/behaviors/automations?limit=2000");
         JsonAutomation[] result = parseJson(json, JsonAutomation[].class);
         return result;
     }
