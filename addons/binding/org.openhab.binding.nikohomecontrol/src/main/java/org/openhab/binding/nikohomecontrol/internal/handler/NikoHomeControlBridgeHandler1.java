@@ -53,7 +53,7 @@ public class NikoHomeControlBridgeHandler1 extends NikoHomeControlBridgeHandler 
         logger.debug("Niko Home Control: bridge handler host {}, port {}", addr, port);
 
         if (addr != null) {
-            nhcComm = new NikoHomeControlCommunication1(this);
+            nhcComm = new NikoHomeControlCommunication1(this, scheduler);
             startCommunication();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,

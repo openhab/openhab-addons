@@ -21,6 +21,7 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -68,6 +69,8 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
     private volatile boolean listenerStopped;
     private volatile boolean nhcEventsRunning;
 
+    private ScheduledExecutorService scheduler;
+
     // We keep only 2 gson adapters used to serialize and deserialize all messages sent and received
     protected final Gson gsonOut = new Gson();
     protected Gson gsonIn;
@@ -77,12 +80,14 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
      * Niko Home Control IP-interface.
      *
      */
-    public NikoHomeControlCommunication1(NhcControllerEvent handler) {
+    public NikoHomeControlCommunication1(NhcControllerEvent handler, ScheduledExecutorService scheduler) {
+        this.handler = handler;
+        this.scheduler = scheduler;
+
         // When we set up this object, we want to get the proper gson adapter set up once
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(NhcMessageBase1.class, new NikoHomeControlMessageDeserializer1());
         this.gsonIn = gsonBuilder.create();
-        this.handler = handler;
     }
 
     @Override
@@ -381,7 +386,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                 if (!locationId.isEmpty()) {
                     location = this.locations.get(locationId).getName();
                 }
-                NhcAction nhcAction = new NhcAction1(id, name, actionType, location);
+                NhcAction nhcAction = new NhcAction1(id, name, actionType, location, scheduler);
                 if (actionType == ActionType.ROLLERSHUTTER) {
                     nhcAction.setShutterTimes(openTime, closeTime);
                 }
