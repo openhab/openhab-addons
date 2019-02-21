@@ -201,14 +201,13 @@ The event message is the alarm or notice text coming from Niko Home Control.
 
 The binding has been tested with a Niko Home Control I IP-interface (550-00508) and the Niko Home Control Connected Controller (550-00003) for Niko Home Control I and Niko Home Control II.
 
-The Niko Home Control II bridge does not yet support rollershutters.
-
 The action events implemented are limited to onOff, dimmer, allOff, scenes, PIR and rollershutter or blinds.
 Other actions have not been implemented.
 It is not possible to tilt the slates of venetian blinds.
 
-Beyond action and thermostat events, the Niko Home Control communication also supports electricity usage data.
-This has not been implemented.
+Beyond action and thermostat events, the Niko Home Control communication also supports electricity, gas and water usage data.
+Niko Home Control II also supports 3rd party devices.
+All of this has not been implemented.
 
 ## Example
 
