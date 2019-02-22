@@ -69,35 +69,7 @@ class WebSocketArt extends WebSocketBase {
                     if (jsonMsg.data == null || jsonMsg.data.event == null) {
                         logger.debug("Empty d2d_service_message event: {}", msg);
                     } else {
-                        switch (jsonMsg.data.event) {
-                            case "art_mode_changed":
-                                logger.debug("art_mode_changed: {}", jsonMsg.data.status);
-                                if ("on".equals(jsonMsg.data.status)) {
-                                    this.remoteControllerWebSocket.callback.powerUpdated(false, true);
-                                } else {
-                                    this.remoteControllerWebSocket.callback.powerUpdated(true, false);
-                                }
-                                break;
-                            case "artmode_status":
-                                logger.debug("artmode_status: {}", jsonMsg.data.value);
-                                if ("on".equals(jsonMsg.data.value)) {
-                                    this.remoteControllerWebSocket.callback.powerUpdated(false, true);
-                                } else {
-                                    this.remoteControllerWebSocket.callback.powerUpdated(true, false);
-                                }
-                                break;
-                            case "go_to_standby":
-                                logger.debug("go_to_standby");
-                                this.remoteControllerWebSocket.callback.powerUpdated(false, false);
-                                break;
-                            case "wakeup":
-                                logger.debug("wakeup");
-                                // check artmode status to know complete status before updating
-                                this.remoteControllerWebSocket.getArtmodeStatus();
-                                break;
-                            default:
-                                logger.debug("Unknown d2d_service_message event: {}", msg);
-                        }
+                        handleD2DServiceMessage(msg, jsonMsg);
                     }
                     // ignore;
                     break;
@@ -107,6 +79,38 @@ class WebSocketArt extends WebSocketBase {
 
         } catch (Exception e) {
             logger.error("{}: Error ({}) in message: {}", this.getClass().getSimpleName(), e.getMessage(), msg, e);
+        }
+    }
+
+    private void handleD2DServiceMessage(String msg, JSONMessage jsonMsg) {
+        switch (jsonMsg.data.event) {
+            case "art_mode_changed":
+                logger.debug("art_mode_changed: {}", jsonMsg.data.status);
+                if ("on".equals(jsonMsg.data.status)) {
+                    this.remoteControllerWebSocket.callback.powerUpdated(false, true);
+                } else {
+                    this.remoteControllerWebSocket.callback.powerUpdated(true, false);
+                }
+                break;
+            case "artmode_status":
+                logger.debug("artmode_status: {}", jsonMsg.data.value);
+                if ("on".equals(jsonMsg.data.value)) {
+                    this.remoteControllerWebSocket.callback.powerUpdated(false, true);
+                } else {
+                    this.remoteControllerWebSocket.callback.powerUpdated(true, false);
+                }
+                break;
+            case "go_to_standby":
+                logger.debug("go_to_standby");
+                this.remoteControllerWebSocket.callback.powerUpdated(false, false);
+                break;
+            case "wakeup":
+                logger.debug("wakeup");
+                // check artmode status to know complete status before updating
+                this.remoteControllerWebSocket.getArtmodeStatus();
+                break;
+            default:
+                logger.debug("Unknown d2d_service_message event: {}", msg);
         }
     }
 

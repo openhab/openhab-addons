@@ -43,16 +43,28 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     private final static String WS_ENDPOINT_ART = "/api/v2/channels/com.samsung.art-app";
     private final static String WS_ENDPOINT_V2 = "/api/v2";
 
-    final WebSocketClient client;
     private final UUID uuid = UUID.randomUUID();
 
-    final RemoteControllerWebsocketCallback callback;
-
+    // WebSocket helper classes
     private final WebSocketRemote webSocketRemote;
     private final WebSocketArt webSocketArt;
     private final WebSocketV2 webSocketV2;
 
+    // JSON parser class. Also used by WebSocket handlers.
     final Gson gson = new Gson();
+
+    // Callback class. Also used by WebSocket handlers.
+    final RemoteControllerWebsocketCallback callback;
+
+    // Websocket client class shared by WebSocket handlers.
+    final WebSocketClient client;
+
+    // temporary storage for source app. Will be used as value for the sourceApp channel when information is complete.
+    // Also used by Websocket handlers.
+    String currentSourceApp = null;
+
+    // last app in the apps list: used to detect when status information is complete. Also used by Websocket handlers.
+    String lastApp = null;
 
     /**
      * Create and initialize remote controller instance.
@@ -125,13 +137,29 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     private void closeConnection() throws RemoteControllerException {
         logger.debug("RemoteControllerWebSocket closeConnection");
 
+        Exception exception = null;
         try {
             webSocketRemote.close();
+        } catch (Exception e) {
+            exception = e;
+        }
+        try {
             webSocketArt.close();
+        } catch (Exception e) {
+            exception = e;
+        }
+        try {
             webSocketV2.close();
+        } catch (Exception e) {
+            exception = e;
+        }
+        try {
             client.stop();
         } catch (Exception e) {
-            throw new RemoteControllerException(e);
+            exception = e;
+        }
+        if (exception != null) {
+            throw new RemoteControllerException(exception);
         }
     }
 
@@ -140,11 +168,6 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         logger.debug("RemoteControllerWebSocket close");
         closeConnection();
     }
-
-    // temporary storage for source app. Will be used as value for the sourceApp channel when information is complete
-    String currentSourceApp = null;
-    // last app in the apps list: used to detect when status information is complete
-    String lastApp = null;
 
     /**
      * Retrieve app status for all apps. In the WebSocketv2 handler the currently running app will be determined

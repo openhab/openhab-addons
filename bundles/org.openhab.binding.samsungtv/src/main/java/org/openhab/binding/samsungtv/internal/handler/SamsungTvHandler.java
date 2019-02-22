@@ -272,8 +272,6 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
                     existingService.clearCache();
                 }
                 putOnline();
-            } else {
-                // logger.trace("Ignore device={}", device);
             }
         } else {
             logger.error("Thing not yet initialized");

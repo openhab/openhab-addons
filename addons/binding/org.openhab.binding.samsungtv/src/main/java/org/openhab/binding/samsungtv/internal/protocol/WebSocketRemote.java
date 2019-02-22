@@ -95,19 +95,7 @@ class WebSocketRemote extends WebSocketBase {
                     logger.debug("App launched: {}", jsonMsg.params.data.appId);
                     break;
                 case "ed.installedApp.get":
-                    this.remoteControllerWebSocket.apps.clear();
-
-                    for (JSONMessage.App jsonApp : jsonMsg.data.data) {
-                        App app = this.remoteControllerWebSocket.new App(jsonApp.appId, jsonApp.name, jsonApp.app_type);
-                        this.remoteControllerWebSocket.apps.put(app.name, app);
-                    }
-
-                    logger.debug("Installed Apps: " + this.remoteControllerWebSocket.apps.entrySet().stream()
-                            .map(entry -> entry.getValue().appId + " = " + entry.getKey())
-                            .collect(Collectors.joining(", ")));
-
-                    this.remoteControllerWebSocket.updateCurrentApp();
-
+                    handleInstalledApps(jsonMsg);
                     break;
                 default:
                     logger.debug("WebSocketRemote Unknown event: {}", msg);
@@ -116,6 +104,20 @@ class WebSocketRemote extends WebSocketBase {
         } catch (Exception e) {
             logger.error("{}: Error ({}) in message: {}", this.getClass().getSimpleName(), e.getMessage(), msg, e);
         }
+    }
+
+    private void handleInstalledApps(JSONMessage jsonMsg) {
+        this.remoteControllerWebSocket.apps.clear();
+
+        for (JSONMessage.App jsonApp : jsonMsg.data.data) {
+            App app = this.remoteControllerWebSocket.new App(jsonApp.appId, jsonApp.name, jsonApp.app_type);
+            this.remoteControllerWebSocket.apps.put(app.name, app);
+        }
+
+        logger.debug("Installed Apps: " + this.remoteControllerWebSocket.apps.entrySet().stream()
+                .map(entry -> entry.getValue().appId + " = " + entry.getKey()).collect(Collectors.joining(", ")));
+
+        this.remoteControllerWebSocket.updateCurrentApp();
     }
 
 }

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.samsungtv.internal.protocol;
 
+import java.io.IOException;
 import java.net.URI;
 
 import org.eclipse.jetty.websocket.api.Session;
@@ -62,12 +63,12 @@ class WebSocketBase extends WebSocketAdapter {
             return;
         }
 
-        try {
-            logger.debug("{} connecting to: {}", this.getClass().getSimpleName(), uri);
+        logger.debug("{} connecting to: {}", this.getClass().getSimpleName(), uri);
+        isConnecting = true;
 
-            isConnecting = true;
+        try {
             this.remoteControllerWebSocket.client.connect(this, uri, new ClientUpgradeRequest());
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RemoteControllerException(e);
         }
     }

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.samsungtv.internal.protocol;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,41 +52,45 @@ class WebSocketV2 extends WebSocketBase {
             JSONMessage jsonMsg = this.remoteControllerWebSocket.gson.fromJson(msg, JSONMessage.class);
 
             if (jsonMsg.result != null) {
-                if ((remoteControllerWebSocket.currentSourceApp == null
-                        || remoteControllerWebSocket.currentSourceApp.isEmpty())
-                        && "true".equals(jsonMsg.result.visible)) {
-                    logger.debug("Running app: {} = {}", jsonMsg.result.id, jsonMsg.result.name);
-                    remoteControllerWebSocket.currentSourceApp = jsonMsg.result.name;
-                    remoteControllerWebSocket.callback.currentAppUpdated(remoteControllerWebSocket.currentSourceApp);
-                }
+                handleResult(jsonMsg);
+            }
+            if (jsonMsg.event == null) {
+                logger.debug("WebSocketV2 Unknown response format: {}", msg);
+                return;
+            }
 
-                if (remoteControllerWebSocket.lastApp != null
-                        && remoteControllerWebSocket.lastApp.equals(jsonMsg.result.id)) {
-                    if (remoteControllerWebSocket.currentSourceApp == null
-                            || remoteControllerWebSocket.currentSourceApp.isEmpty()) {
-                        remoteControllerWebSocket.callback.currentAppUpdated("");
-                    }
-                }
-            } else if (jsonMsg.event != null) {
-                switch (jsonMsg.event) {
-                    case "ms.channel.connect":
-                        logger.debug("Remote channel connected");
-                        // update is requested from ed.installedApp.get event: small risk that this websocket is not
-                        // yet connected
-                        break;
-                    case "ms.channel.clientConnect":
-                        logger.debug("Remote client connected");
-                        break;
-                    case "ms.channel.clientDisconnect":
-                        logger.debug("Remote client disconnected");
-                        break;
-                    default:
-                        logger.debug("WebSocketRemote Unknown event: {}", msg);
+            switch (jsonMsg.event) {
+                case "ms.channel.connect":
+                    logger.debug("Remote channel connected");
+                    // update is requested from ed.installedApp.get event: small risk that this websocket is not
+                    // yet connected
+                    break;
+                case "ms.channel.clientConnect":
+                    logger.debug("Remote client connected");
+                    break;
+                case "ms.channel.clientDisconnect":
+                    logger.debug("Remote client disconnected");
+                    break;
+                default:
+                    logger.debug("WebSocketV2 Unknown event: {}", msg);
 
-                }
             }
         } catch (Exception e) {
             logger.error("{}: Error ({}) in message: {}", this.getClass().getSimpleName(), e.getMessage(), msg, e);
+        }
+    }
+
+    private void handleResult(JSONMessage jsonMsg) {
+        if (StringUtils.isBlank(remoteControllerWebSocket.currentSourceApp) && "true".equals(jsonMsg.result.visible)) {
+            logger.debug("Running app: {} = {}", jsonMsg.result.id, jsonMsg.result.name);
+            remoteControllerWebSocket.currentSourceApp = jsonMsg.result.name;
+            remoteControllerWebSocket.callback.currentAppUpdated(remoteControllerWebSocket.currentSourceApp);
+        }
+
+        if (remoteControllerWebSocket.lastApp != null && remoteControllerWebSocket.lastApp.equals(jsonMsg.result.id)) {
+            if (StringUtils.isBlank(remoteControllerWebSocket.currentSourceApp)) {
+                remoteControllerWebSocket.callback.currentAppUpdated("");
+            }
         }
     }
 
