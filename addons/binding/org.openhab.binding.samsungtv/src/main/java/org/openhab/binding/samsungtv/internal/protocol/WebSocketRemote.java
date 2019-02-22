@@ -67,7 +67,7 @@ class WebSocketRemote extends WebSocketBase {
     @Override
     public void onWebSocketError(Throwable error) {
         super.onWebSocketError(error);
-        this.remoteControllerWebSocket.callback.connectionError(error);
+        remoteControllerWebSocket.callback.connectionError(error);
     }
 
     @Override
@@ -75,11 +75,11 @@ class WebSocketRemote extends WebSocketBase {
         String msg = msgarg.replace('\n', ' ');
         super.onWebSocketText(msg);
         try {
-            JSONMessage jsonMsg = this.remoteControllerWebSocket.gson.fromJson(msg, JSONMessage.class);
+            JSONMessage jsonMsg = remoteControllerWebSocket.gson.fromJson(msg, JSONMessage.class);
             switch (jsonMsg.event) {
                 case "ms.channel.connect":
                     logger.debug("Remote channel connected");
-                    this.remoteControllerWebSocket.getApps();
+                    getApps();
                     break;
                 case "ms.channel.clientConnect":
                     logger.debug("Remote client connected");
@@ -89,7 +89,7 @@ class WebSocketRemote extends WebSocketBase {
                     break;
                 case "ed.edenTV.update":
                     logger.debug("edenTV update: {}", jsonMsg.data.update_type);
-                    this.remoteControllerWebSocket.updateCurrentApp();
+                    remoteControllerWebSocket.updateCurrentApp();
                     break;
                 case "ed.apps.launch":
                     logger.debug("App launched: {}", jsonMsg.params.data.appId);
@@ -107,17 +107,85 @@ class WebSocketRemote extends WebSocketBase {
     }
 
     private void handleInstalledApps(JSONMessage jsonMsg) {
-        this.remoteControllerWebSocket.apps.clear();
+        remoteControllerWebSocket.apps.clear();
 
         for (JSONMessage.App jsonApp : jsonMsg.data.data) {
-            App app = this.remoteControllerWebSocket.new App(jsonApp.appId, jsonApp.name, jsonApp.app_type);
-            this.remoteControllerWebSocket.apps.put(app.name, app);
+            App app = remoteControllerWebSocket.new App(jsonApp.appId, jsonApp.name, jsonApp.app_type);
+            remoteControllerWebSocket.apps.put(app.name, app);
         }
 
-        logger.debug("Installed Apps: " + this.remoteControllerWebSocket.apps.entrySet().stream()
+        logger.debug("Installed Apps: " + remoteControllerWebSocket.apps.entrySet().stream()
                 .map(entry -> entry.getValue().appId + " = " + entry.getKey()).collect(Collectors.joining(", ")));
 
-        this.remoteControllerWebSocket.updateCurrentApp();
+        remoteControllerWebSocket.updateCurrentApp();
+    }
+
+    static class JSONAppInfo {
+
+        static class Params {
+            String event = "ed.installedApp.get";
+            String to = "host";
+        }
+
+        String method = "ms.channel.emit";
+        Params params = new Params();
+
+    }
+
+    void getApps() {
+        sendCommand(remoteControllerWebSocket.gson.toJson(new JSONAppInfo()));
+    }
+
+    static class JSONSourceApp {
+
+        public JSONSourceApp(String appName, boolean deepLink) {
+            params.data.appId = appName;
+            params.data.action_type = deepLink ? "DEEP_LINK" : "NATIVE_LAUNCH";
+        }
+
+        static class Params {
+            static class Data {
+                String appId;
+                String action_type;
+            }
+
+            String event = "ed.apps.launch";
+            String to = "host";
+            Data data = new Data();
+
+        }
+
+        String method = "ms.channel.emit";
+        Params params = new Params();
+
+    }
+
+    public void sendSourceApp(String appName, boolean deepLink) {
+        sendCommand(remoteControllerWebSocket.gson.toJson(new JSONSourceApp(appName, deepLink)));
+    }
+
+    static class JSONRemoteControl {
+
+        public JSONRemoteControl(boolean press, String key) {
+            params.Cmd = press ? "Press" : "Click";
+            params.DataOfCmd = key;
+        }
+
+        static class Params {
+            String Cmd;
+            String DataOfCmd;
+            String Option = "false";
+            String TypeOfRemote = "SendRemoteKey";
+
+        }
+
+        String method = "ms.remote.control";
+        Params params = new Params();
+
+    }
+
+    void sendKeyData(boolean press, String key) {
+        sendCommand(remoteControllerWebSocket.gson.toJson(new JSONRemoteControl(press, key)));
     }
 
 }

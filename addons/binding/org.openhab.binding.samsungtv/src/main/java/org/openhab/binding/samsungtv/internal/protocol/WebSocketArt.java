@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.samsungtv.internal.protocol;
 
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +50,7 @@ class WebSocketArt extends WebSocketBase {
         String msg = msgarg.replace('\n', ' ');
         super.onWebSocketText(msg);
         try {
-            JSONMessage jsonMsg = this.remoteControllerWebSocket.gson.fromJson(msg, JSONMessage.class);
+            JSONMessage jsonMsg = remoteControllerWebSocket.gson.fromJson(msg, JSONMessage.class);
 
             switch (jsonMsg.event) {
                 case "ms.channel.connect":
@@ -56,7 +58,7 @@ class WebSocketArt extends WebSocketBase {
                     break;
                 case "ms.channel.ready":
                     logger.debug("Art channel ready");
-                    this.remoteControllerWebSocket.getArtmodeStatus();
+                    getArtmodeStatus();
                     break;
                 case "ms.channel.clientConnect":
                     logger.debug("Art client connected");
@@ -87,31 +89,57 @@ class WebSocketArt extends WebSocketBase {
             case "art_mode_changed":
                 logger.debug("art_mode_changed: {}", jsonMsg.data.status);
                 if ("on".equals(jsonMsg.data.status)) {
-                    this.remoteControllerWebSocket.callback.powerUpdated(false, true);
+                    remoteControllerWebSocket.callback.powerUpdated(false, true);
                 } else {
-                    this.remoteControllerWebSocket.callback.powerUpdated(true, false);
+                    remoteControllerWebSocket.callback.powerUpdated(true, false);
                 }
                 break;
             case "artmode_status":
                 logger.debug("artmode_status: {}", jsonMsg.data.value);
                 if ("on".equals(jsonMsg.data.value)) {
-                    this.remoteControllerWebSocket.callback.powerUpdated(false, true);
+                    remoteControllerWebSocket.callback.powerUpdated(false, true);
                 } else {
-                    this.remoteControllerWebSocket.callback.powerUpdated(true, false);
+                    remoteControllerWebSocket.callback.powerUpdated(true, false);
                 }
                 break;
             case "go_to_standby":
                 logger.debug("go_to_standby");
-                this.remoteControllerWebSocket.callback.powerUpdated(false, false);
+                remoteControllerWebSocket.callback.powerUpdated(false, false);
                 break;
             case "wakeup":
                 logger.debug("wakeup");
                 // check artmode status to know complete status before updating
-                this.remoteControllerWebSocket.getArtmodeStatus();
+                getArtmodeStatus();
                 break;
             default:
                 logger.debug("Unknown d2d_service_message event: {}", msg);
         }
+    }
+
+    static class JSONArtModeStatus {
+
+        public JSONArtModeStatus(UUID uuid) {
+            params.data.id = uuid.toString();
+        }
+
+        static class Params {
+            static class Data {
+                String request = "get_artmode_status";
+                String id;
+            }
+
+            String event = "art_app_request";
+            String to = "host";
+            Data data = new Data();
+        }
+
+        String method = "ms.channel.emit";
+        Params params = new Params();
+
+    }
+
+    void getArtmodeStatus() {
+        sendCommand(remoteControllerWebSocket.gson.toJson(new JSONArtModeStatus(remoteControllerWebSocket.uuid)));
     }
 
 }

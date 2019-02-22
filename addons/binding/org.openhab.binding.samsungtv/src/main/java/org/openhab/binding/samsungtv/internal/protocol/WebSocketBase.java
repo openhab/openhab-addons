@@ -67,7 +67,7 @@ class WebSocketBase extends WebSocketAdapter {
         isConnecting = true;
 
         try {
-            this.remoteControllerWebSocket.client.connect(this, uri, new ClientUpgradeRequest());
+            remoteControllerWebSocket.client.connect(this, uri, new ClientUpgradeRequest());
         } catch (IOException e) {
             throw new RemoteControllerException(e);
         }
@@ -90,7 +90,7 @@ class WebSocketBase extends WebSocketAdapter {
     void sendCommand(String cmd) {
         try {
             // retry opening connection just in case
-            this.remoteControllerWebSocket.openConnection();
+            remoteControllerWebSocket.openConnection();
 
             if (isConnected()) {
                 getRemote().sendString(cmd);

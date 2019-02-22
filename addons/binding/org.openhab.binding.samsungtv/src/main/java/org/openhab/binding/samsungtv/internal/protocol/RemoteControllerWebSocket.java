@@ -43,8 +43,6 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     private final static String WS_ENDPOINT_ART = "/api/v2/channels/com.samsung.art-app";
     private final static String WS_ENDPOINT_V2 = "/api/v2";
 
-    private final UUID uuid = UUID.randomUUID();
-
     // WebSocket helper classes
     private final WebSocketRemote webSocketRemote;
     private final WebSocketArt webSocketArt;
@@ -66,6 +64,30 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     // last app in the apps list: used to detect when status information is complete. Also used by Websocket handlers.
     String lastApp = null;
 
+    // UUID used for data exchange via websockets
+    final UUID uuid = UUID.randomUUID();
+
+    // Description of Apps
+    class App {
+        String appId;
+        String name;
+        int type;
+
+        App(String appId, String name, int type) {
+            this.appId = appId;
+            this.name = name;
+            this.type = type;
+        }
+
+        @Override
+        public String toString() {
+            return this.name;
+        }
+    }
+
+    // Map of all available apps
+    Map<String, App> apps = new LinkedHashMap<>();
+
     /**
      * Create and initialize remote controller instance.
      *
@@ -75,7 +97,6 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
      * @param uniqueId                Unique Id used to send key codes.
      * @param remoteControllerService
      */
-
     public RemoteControllerWebSocket(String host, int port, String appName, String uniqueId,
             RemoteControllerWebsocketCallback remoteControllerWebsocketCallback) {
         super(host, port, appName, uniqueId);
@@ -187,76 +208,9 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         }
 
         for (App app : apps.values()) {
-            getAppStatus(app.appId);
+            webSocketV2.getAppStatus(app.appId);
         }
     }
-
-    static class JSONArtModeStatus {
-
-        public JSONArtModeStatus(UUID uuid) {
-            params.data.id = uuid.toString();
-        }
-
-        static class Params {
-            static class Data {
-                String request = "get_artmode_status";
-                String id;
-            }
-
-            String event = "art_app_request";
-            String to = "host";
-            Data data = new Data();
-        }
-
-        String method = "ms.channel.emit";
-        Params params = new Params();
-
-    }
-
-    void getArtmodeStatus() {
-        webSocketArt.sendCommand(gson.toJson(new JSONArtModeStatus(uuid)));
-    }
-
-    static class JSONAppStatus {
-
-        public JSONAppStatus(UUID uuid, String id) {
-            params.id = uuid.toString();
-            this.id = id;
-        }
-
-        static class Params {
-            String id;
-
-        }
-
-        String method = "ms.application.get";
-        String id;
-        Params params = new Params();
-
-    }
-
-    private void getAppStatus(String id) {
-        webSocketV2.sendCommand(gson.toJson(new JSONAppStatus(uuid, id)));
-    }
-
-    class App {
-        String appId;
-        String name;
-        int type;
-
-        App(String appId, String name, int type) {
-            this.appId = appId;
-            this.name = name;
-            this.type = type;
-        }
-
-        @Override
-        public String toString() {
-            return this.name;
-        }
-    }
-
-    Map<String, App> apps = new LinkedHashMap<>();
 
     /**
      * Send key code to Samsung TV.
@@ -346,52 +300,8 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         logger.debug("Command(s) successfully sent");
     }
 
-    static class JSONRemoteControl {
-
-        public JSONRemoteControl(boolean press, String key) {
-            params.Cmd = press ? "Press" : "Click";
-            params.DataOfCmd = key;
-        }
-
-        static class Params {
-            String Cmd;
-            String DataOfCmd;
-            String Option = "false";
-            String TypeOfRemote = "SendRemoteKey";
-
-        }
-
-        String method = "ms.remote.control";
-        Params params = new Params();
-
-    }
-
     private void sendKeyData(KeyCode key, boolean press) throws RemoteControllerException {
-        webSocketRemote.sendCommand(gson.toJson(new JSONRemoteControl(press, key.toString())));
-    }
-
-    static class JSONSourceApp {
-
-        public JSONSourceApp(String appName, boolean deepLink) {
-            params.data.appId = appName;
-            params.data.action_type = deepLink ? "DEEP_LINK" : "NATIVE_LAUNCH";
-        }
-
-        static class Params {
-            static class Data {
-                String appId;
-                String action_type;
-            }
-
-            String event = "ed.apps.launch";
-            String to = "host";
-            Data data = new Data();
-
-        }
-
-        String method = "ms.channel.emit";
-        Params params = new Params();
-
+        webSocketRemote.sendKeyData(press, key.toString());
     }
 
     public void sendSourceApp(String app) {
@@ -403,27 +313,11 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
             deepLink = appVal.type == 2;
         }
 
-        webSocketRemote.sendCommand(gson.toJson(new JSONSourceApp(appName, deepLink)));
+        webSocketRemote.sendSourceApp(appName, deepLink);
     }
 
     public void sendUrl(String url) {
-        webSocketRemote.sendCommand(gson.toJson(new JSONSourceApp("org.tizen.browser", false)));
-    }
-
-    static class JSONAppInfo {
-
-        static class Params {
-            String event = "ed.installedApp.get";
-            String to = "host";
-        }
-
-        String method = "ms.channel.emit";
-        Params params = new Params();
-
-    }
-
-    void getApps() {
-        webSocketRemote.sendCommand(gson.toJson(new JSONAppInfo()));
+        webSocketRemote.sendSourceApp("org.tizen.browser", false);
     }
 
     public List<String> getAppList() {

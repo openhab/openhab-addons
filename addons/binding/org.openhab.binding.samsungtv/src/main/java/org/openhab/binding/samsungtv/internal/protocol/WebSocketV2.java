@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.samsungtv.internal.protocol;
 
+import java.util.UUID;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +94,28 @@ class WebSocketV2 extends WebSocketBase {
                 remoteControllerWebSocket.callback.currentAppUpdated("");
             }
         }
+    }
+
+    static class JSONAppStatus {
+
+        public JSONAppStatus(UUID uuid, String id) {
+            params.id = uuid.toString();
+            this.id = id;
+        }
+
+        static class Params {
+            String id;
+
+        }
+
+        String method = "ms.application.get";
+        String id;
+        Params params = new Params();
+
+    }
+
+    void getAppStatus(String id) {
+        sendCommand(remoteControllerWebSocket.gson.toJson(new JSONAppStatus(remoteControllerWebSocket.uuid, id)));
     }
 
 }
