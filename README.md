@@ -1,18 +1,30 @@
-## openHAB 2 Add-ons
+# openHAB 2 Add-ons
 
-This repository contains add-ons that are implemented using the new [Eclipse SmartHome APIs](https://www.eclipse.org/smarthome/documentation/development/bindings/how-to.html) of openHAB 2.
+This repository contains the official set of add-ons that are implemented on top of openHAB 2 Core APIs.
+Add-ons that got accepted in here will be maintained (e.g. adapted to new core APIs)
+by the [openHAB 2 maintainers](https://github.com/orgs/openhab/teams/2-x-add-ons-maintainers).
 
-Note that all information about openHAB itself, the IDE setup and the contribution processes can be found in the [openhab-distro](https://github.com/openhab/openhab-distro) project, so please go there for any further details!
+To get started with binding development, follow our guidelines and tutorials over at https://www.openhab.org/docs/developer/.
+
+If you are interested in openHAB 2 Core development, we invite you to come by on https://github.com/openhab/openhab-core.
 
 ## Add-ons in other repositories
-Some add-ons (e.g. specific bindings such as [Z-Wave](https://github.com/openhab/org.openhab.binding.zwave)) are maintained in separate repositories in order to improve their management. In order to contribute to these bindings, you should follow the following steps -:
 
-1. Fork the repository on Github
-2. Clone your repository to your local computer as described in the [Github tutorial](https://help.github.com/articles/cloning-a-repository/)
-3. Open the openHAB Eclipse IDE
-4. Select the *File | Import* menu option
-5. Select *General | Existing Projects into Workspace* and click Next
-6. Select the root directory where you made the local clone of the repository
-7. Select the project and click *Next*
-8. The project will now be imported and available in the Package Explorer
-9. You may want to add the project to the *OH2 Add-ons* Working Set
+Some add-ons are not in this repository, but still part of the official [openHAB 2 distribution](https://github.com/openhab/openhab-distro).
+An incomplete list of other repositories follows below:
+
+* https://github.com/openhab/org.openhab.binding.zwave
+* https://github.com/openhab/org.openhab.binding.zigbee
+* https://github.com/openhab/openhab-webui
+
+## Build
+
+openHAB 2 add-ons are [Java](https://en.wikipedia.org/wiki/Java_(programming_language)) `.jar` files.
+
+The openHAB 2 build system is based on [maven](https://maven.apache.org/what-is-maven.html).
+The official IDE (Integrated development environment) is Eclipse.
+
+To build all add-ons from the command-line, type in:
+`mvn clean install`
+
+If you prefer an IDE, follow the instructions on https://www.openhab.org/docs/developer/development/ide.html
