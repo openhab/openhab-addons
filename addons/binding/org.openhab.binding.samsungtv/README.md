@@ -9,14 +9,15 @@ Because Samsung does not publish any documentation about the TV's UPnP interface
 
 Tested TV models:
 
-| Model     | State   | Notes                                                                                                            |
-|-----------|---------|------------------------------------------------------------------------------------------------------------------|
-| UE46E5505 | OK      | Initial contribution is done by this model                                                                       |
-| UE46D5700 | PARTIAL | Supports at my home only commands via the fake remote, no discovery                                              |
-| UE40F6500 | OK      | All channels except `colorTemperature`, `programTitle` and `channelName` are working                             |
-| UN50J5200 | PARTIAL | Status is retrieved (confirmed `power`, `media title`). Operating device seems not working.                      |
-| LE40D579  | PARTIAL | Supported channels: `volume`, `mute`, `sourceName`, `channel`, `programTitle`, `channelName`, `keyCode`, `power` |
-| LE40C650 | PARTIAL | Supports channels: `volume`, `mute`, `brightness`, `contrast`, `colorTemperature`, `channel`, `keyCode`, `power` (only power off, unable to power on) |
+| Model       | State   | Notes                                                                                                            |
+|-------------|---------|---------------------------------------------------------------------------------------------------------------|
+| UE48J5670SU | PARTIAL | Supported channels: `volume`, `sourceName`                                                                       |
+| UE46E5505   | OK      | Initial contribution is done by this model                                                                       |
+| UE46D5700   | PARTIAL | Supports at my home only commands via the fake remote, no discovery                                              |
+| UE40F6500   | OK      | All channels except `colorTemperature`, `programTitle` and `channelName` are working                             |
+| UN50J5200   | PARTIAL | Status is retrieved (confirmed `power`, `media title`). Operating device seems not working.                      |
+| LE40D579    | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `sourceName`,  `programTitle`, `channelName`,  `power` |
+| LE40C650    | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `brightness`, `contrast`, `colorTemperature`, `power` (only power off, unable to power on) |
 
 ## Discovery
 
