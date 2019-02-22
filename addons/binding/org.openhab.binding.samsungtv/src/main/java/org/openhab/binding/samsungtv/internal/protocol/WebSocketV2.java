@@ -31,7 +31,7 @@ class WebSocketV2 extends WebSocketBase {
         super(remoteControllerWebSocket);
     }
 
-    static class JSONMessage {
+    private static class JSONMessage {
         String event;
 
         static class Result {

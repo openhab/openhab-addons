@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 class WebSocketRemote extends WebSocketBase {
     private final Logger logger = LoggerFactory.getLogger(WebSocketBase.class);
 
-    static class JSONMessage {
+    private static class JSONMessage {
         String event;
 
         static class App {
@@ -78,21 +78,21 @@ class WebSocketRemote extends WebSocketBase {
             JSONMessage jsonMsg = this.remoteControllerWebSocket.gson.fromJson(msg, JSONMessage.class);
             switch (jsonMsg.event) {
                 case "ms.channel.connect":
-                    this.remoteControllerWebSocket.logger.debug("Remote channel connected");
+                    logger.debug("Remote channel connected");
                     this.remoteControllerWebSocket.getApps();
                     break;
                 case "ms.channel.clientConnect":
-                    this.remoteControllerWebSocket.logger.debug("Remote client connected");
+                    logger.debug("Remote client connected");
                     break;
                 case "ms.channel.clientDisconnect":
-                    this.remoteControllerWebSocket.logger.debug("Remote client disconnected");
+                    logger.debug("Remote client disconnected");
                     break;
                 case "ed.edenTV.update":
-                    this.remoteControllerWebSocket.logger.debug("edenTV update: {}", jsonMsg.data.update_type);
+                    logger.debug("edenTV update: {}", jsonMsg.data.update_type);
                     this.remoteControllerWebSocket.updateCurrentApp();
                     break;
                 case "ed.apps.launch":
-                    this.remoteControllerWebSocket.logger.debug("App launched: {}", jsonMsg.params.data.appId);
+                    logger.debug("App launched: {}", jsonMsg.params.data.appId);
                     break;
                 case "ed.installedApp.get":
                     this.remoteControllerWebSocket.apps.clear();
@@ -102,20 +102,19 @@ class WebSocketRemote extends WebSocketBase {
                         this.remoteControllerWebSocket.apps.put(app.name, app);
                     }
 
-                    this.remoteControllerWebSocket.logger.debug("Installed Apps: " + this.remoteControllerWebSocket.apps
-                            .entrySet().stream().map(entry -> entry.getValue().appId + " = " + entry.getKey())
+                    logger.debug("Installed Apps: " + this.remoteControllerWebSocket.apps.entrySet().stream()
+                            .map(entry -> entry.getValue().appId + " = " + entry.getKey())
                             .collect(Collectors.joining(", ")));
 
                     this.remoteControllerWebSocket.updateCurrentApp();
 
                     break;
                 default:
-                    this.remoteControllerWebSocket.logger.debug("WebSocketRemote Unknown event: {}", msg);
+                    logger.debug("WebSocketRemote Unknown event: {}", msg);
 
             }
         } catch (Exception e) {
-            this.remoteControllerWebSocket.logger.error("{}: Error ({}) in message: {}",
-                    this.getClass().getSimpleName(), e.getMessage(), msg, e);
+            logger.error("{}: Error ({}) in message: {}", this.getClass().getSimpleName(), e.getMessage(), msg, e);
         }
     }
 

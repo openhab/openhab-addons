@@ -37,22 +37,22 @@ import com.google.gson.Gson;
  */
 public class RemoteControllerWebSocket extends RemoteController implements Listener {
 
-    final Logger logger = LoggerFactory.getLogger(RemoteControllerWebSocket.class);
+    private final Logger logger = LoggerFactory.getLogger(RemoteControllerWebSocket.class);
 
     private final static String WS_ENDPOINT_REMOTE_CONTROL = "/api/v2/channels/samsung.remote.control";
     private final static String WS_ENDPOINT_ART = "/api/v2/channels/com.samsung.art-app";
     private final static String WS_ENDPOINT_V2 = "/api/v2";
-    WebSocketClient client;
 
+    final WebSocketClient client;
     private final UUID uuid = UUID.randomUUID();
 
-    RemoteControllerWebsocketCallback callback;
+    final RemoteControllerWebsocketCallback callback;
 
-    WebSocketRemote webSocketRemote;
-    WebSocketArt webSocketArt;
-    WebSocketV2 webSocketV2;
+    private final WebSocketRemote webSocketRemote;
+    private final WebSocketArt webSocketArt;
+    private final WebSocketV2 webSocketV2;
 
-    Gson gson = new Gson();
+    final Gson gson = new Gson();
 
     /**
      * Create and initialize remote controller instance.

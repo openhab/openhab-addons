@@ -58,6 +58,8 @@ import org.slf4j.LoggerFactory;
  */
 public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListener, EventListener {
 
+    private static final int WOL_PACKET_RETRY_COUNT = 10;
+
     private Logger logger = LoggerFactory.getLogger(SamsungTvHandler.class);
 
     /* Global configuration for Samsung TV Thing */
@@ -384,7 +386,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
             @Override
             public void run() {
                 count++;
-                if (count < 10) {
+                if (count < WOL_PACKET_RETRY_COUNT) {
                     WakeOnLanUtility.sendWOLPacket(configuration.macAddress);
                     scheduler.schedule(this, 100, TimeUnit.MILLISECONDS);
                 }
