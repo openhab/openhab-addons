@@ -18,7 +18,7 @@ Some add-ons are not in this repository, but still part of the official [openHAB
 
 ## Build
 
-openHAB 2 addons are [Java](https://en.wikipedia.org/wiki/Java_(programming_language)) `.jar` files.
+openHAB 2 add-ons are [Java](https://en.wikipedia.org/wiki/Java_(programming_language)) `.jar` files.
 
 The openHAB 2 buildsystem is based on [maven](https://maven.apache.org/what-is-maven.html).
 The official IDE (Integrated development environment) is Eclipse.
