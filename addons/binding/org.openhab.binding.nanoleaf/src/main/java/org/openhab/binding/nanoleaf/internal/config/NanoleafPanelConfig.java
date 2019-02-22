@@ -17,7 +17,6 @@ package org.openhab.binding.nanoleaf.internal.config;
  *
  * @author Martin Raepple - Initial contribution
  */
-
 public class NanoleafPanelConfig {
     /** ID of the light panel assigned by the controller */
     public static final String ID = "id";

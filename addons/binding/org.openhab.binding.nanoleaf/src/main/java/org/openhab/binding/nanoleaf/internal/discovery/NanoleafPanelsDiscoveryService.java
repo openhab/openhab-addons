@@ -39,10 +39,10 @@ import org.slf4j.LoggerFactory;
  */
 public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService implements NanoleafControllerListener {
 
-    private final Logger logger = LoggerFactory.getLogger(NanoleafPanelsDiscoveryService.class);
-    private static final int SEARCH_TIMEOUT = 60;
+    private static final int SEARCH_TIMEOUT_SECONDS = 60;
 
-    private NanoleafControllerHandler bridgeHandler;
+    private final Logger logger = LoggerFactory.getLogger(NanoleafPanelsDiscoveryService.class);
+    private final NanoleafControllerHandler bridgeHandler;
 
     /**
      * Constructs a new {@link NanoleafPanelsDiscoveryService} attached to the given bridge handler.
@@ -50,7 +50,7 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService imp
      * @param nanoleafControllerHandler The bridge handler this discovery service is attached to
      */
     public NanoleafPanelsDiscoveryService(NanoleafControllerHandler nanoleafControllerHandler) {
-        super(NanoleafHandlerFactory.SUPPORTED_THING_TYPES_UIDS, SEARCH_TIMEOUT, false);
+        super(NanoleafHandlerFactory.SUPPORTED_THING_TYPES_UIDS, SEARCH_TIMEOUT_SECONDS, false);
         this.bridgeHandler = nanoleafControllerHandler;
     }
 
