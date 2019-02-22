@@ -4,8 +4,8 @@
 		xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
 		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
-	<name>openHAB Tesla Binding</name>
-	<description>This is the binding for Tesla Electrical Vehicles.</description>
+	<name>Tesla Binding</name>
+	<description>This is the binding for Tesla Electric Vehicles.</description>
 	<author>Karel Goderis</author>
 
 </binding:binding>
