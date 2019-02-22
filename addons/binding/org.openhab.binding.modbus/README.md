@@ -228,11 +228,14 @@ For example, in the following example, item `Temperature_Modbus_Livingroom` is b
 Number  Temperature_Modbus_Livingroom                       "Temperature Living room [%.1f °C]"           <temperature>   { channel="modbus:data:siemensplc:holding:livingroom_temperature:number" }
 ```
 
-Make sure you bind item to a channel that is compatible, or use transformations to make it compatible. See [Transformations](#transformations) section for more information on transformation.
+Make sure you bind item to a channel that is compatible, or use transformations to make it compatible.
+See [Transformations](#transformations) section for more information on transformation.
 
 ### `autoupdate` parameter with items
 
-By default, openHAB has `autoupdate` enabled. This means that item _state_ is updated according to received commands. In some situations this might have unexpected side effects with polling bindings such as Modbus - see example below.
+By default, openHAB has `autoupdate` enabled.
+This means that item _state_ is updated according to received commands.
+In some situations this might have unexpected side effects with polling bindings such as Modbus - see example below.
 
 Typically, you see something like this
 
@@ -258,7 +261,8 @@ Let's go through it step by step
 4 [vent.ItemStateChangedEvent] - Kitchen_Bar_Table_Light changed from OFF to ON
 ```
 
-To prevent this "state fluctuation" (`OFF` -> `ON` -> `OFF` -> `ON`), some people prefer to disable `autoupdate` on Items used with polling bindings. With `autoupdate` disabled, one would get
+To prevent this "state fluctuation" (`OFF` -> `ON` -> `OFF` -> `ON`), some people prefer to disable `autoupdate` on Items used with polling bindings.
+With `autoupdate` disabled, one would get
 
 ```java
 // openHAB UI switch changed command is sent
@@ -369,10 +373,9 @@ See [Full examples](#full-examples) section for practical examples.
 
 The MODBUS specification defines each 16bit word to be encoded as Big Endian,
 but there is no specification on the order of those words within 32bit or larger data types.
-The net result is that when you have a master and slave that operate with the same
-Endian mode things work fine, but add a device with a different Endian mode and it is
-very hard to correct. To resolve this the binding supports a second set of valuetypes
-that have the words swapped.
+The net result is that when you have a master and slave that operate with the same Endian mode things work fine,
+but add a device with a different Endian mode and it is very hard to correct.
+To resolve this the binding supports a second set of valuetypes that have the words swapped.
 
 If you get strange values using the `int32`, `uint32`, `float32`, `int64`, or `uint64` valuetypes then just try the `int32_swap`, `uint32_swap`, `float32_swap`, `int64_swap`, or `uint64_swap` valuetype, depending upon what your data type is.
 
@@ -420,12 +423,16 @@ Data received is stored in list of bits (discrete inputs and coils), or in list 
 1. Extract a single number from the polled data, using specified location `readStart` and number "value type" `readValueType`.
 As an example, we can tell the binding to extract 32-bit float (`readValueType="float32"`) from register index `readStart="105"`.
 1. Number is converted to string (e.g. `"3.14"`) and passed as input to the transformation.
-Note that in case `readTransform="default"`, a default transformation provided by the binding is used. See [Transformations](#transformations) section for more details.
-1. For each [data channel](#channels), we try to convert the transformation output of previous step to a State type (e.g. `ON`/`OFF`, or `DecimalType`) accepted by the channel. If all the conversions fail (e.g. trying to convert `ON` to a number), the data channel is not updated.
+  Note that in case `readTransform="default"`, a default transformation provided by the binding is used.
+  See [Transformations](#transformations) section for more details.
+1. For each [data channel](#channels), we try to convert the transformation output of previous step to a State type (e.g. `ON`/`OFF`, or `DecimalType`) accepted by the channel.
+  If all the conversions fail (e.g. trying to convert `ON` to a number), the data channel is not updated.
 
-In case of read errors, all data channels are left unchanged, and `lastReadError` channel is updated with current time. Examples of errors include connection errors, IO errors on read, and explicit exception responses from the slave.
+In case of read errors, all data channels are left unchanged, and `lastReadError` channel is updated with current time.
+Examples of errors include connection errors, IO errors on read, and explicit exception responses from the slave.
 
-Note: there is a performance optimization that channel state is only updated when enough time has passed since last update, or when the state differs from previous update. See `updateUnchangedValuesEveryMillis` parameter in `data` thing.
+Note: there is a performance optimization that channel state is only updated when enough time has passed since last update, or when the state differs from previous update.
+See `updateUnchangedValuesEveryMillis` parameter in `data` thing.
 
 ### Write Steps
 
@@ -436,20 +443,26 @@ Commands passed to openHAB items that are bound to a [data channel](#channels) a
 1. Command is sent to openHAB item, that is bound to a [data channel](#channels).
 Command must be such that it is accepted by the item in the first place
 1. Command is converted to string (e.g. `"3.14"`) and passed to the transformation.
-Note that in case `readTransform="default"`, a default transformation provided by the binding is used. See [Transformations](#transformations) section for more details.
-3. We try to convert transformation output to number (`DecimalType`), `OPEN`/`CLOSED` (`OpenClosedType`), and `ON`/`OFF` (`OnOffType`); in this order. First successful conversion is stored.
-For example, `"3.14"` would convert to number (`DecimalType`), while `"CLOSED"` would convert to `CLOSED` (of `OpenClosedType`).'
+Note that in case `readTransform="default"`, a default transformation provided by the binding is used.
+  See [Transformations](#transformations) section for more details.
+3. We try to convert transformation output to number (`DecimalType`), `OPEN`/`CLOSED` (`OpenClosedType`), and `ON`/`OFF` (`OnOffType`); in this order.
+  First successful conversion is stored.
+  For example, `"3.14"` would convert to number (`DecimalType`), while `"CLOSED"` would convert to `CLOSED` (of `OpenClosedType`).'
 In case all conversions fail, the command is discarded and nothing is written to the Modbus slave.
 5. Next step depends on the `writeType`:
-   * `writeType="coil"`: the command from the transformation is converted to boolean. Non-zero numbers, `ON`, and `OPEN` are considered `true`; and rest as `false`.
-   * `writeType="holding"`: First, the command from the transformation is converted `1`/`0` number in case of `OPEN`/`ON` or `CLOSED`/`OFF`. The number is converted to one or more registers using `writeValueType`. For example, number `3.14` would be converted to two registers when `writeValueType="float32"`: [0x4048, 0xF5C3].
-6. Boolean (`writeType="coil"`) or registers (`writeType="holding"`) are written to the Modbus slave using `FC05`, `FC06`, `FC15`, or `FC16`, depending on the value of `writeMultipleEvenWithSingleRegisterOrCoil`. Write address is specified by `writeStart`.
+   * `writeType="coil"`: the command from the transformation is converted to boolean.
+     Non-zero numbers, `ON`, and `OPEN` are considered `true`; and rest as `false`.
+   * `writeType="holding"`: First, the command from the transformation is converted `1`/`0` number in case of `OPEN`/`ON` or `CLOSED`/`OFF`. The number is converted to one or more registers using `writeValueType`.
+   For example, number `3.14` would be converted to two registers when `writeValueType="float32"`: [0x4048, 0xF5C3].
+6. Boolean (`writeType="coil"`) or registers (`writeType="holding"`) are written to the Modbus slave using `FC05`, `FC06`, `FC15`, or `FC16`, depending on the value of `writeMultipleEvenWithSingleRegisterOrCoil`.
+  Write address is specified by `writeStart`.
 
 #### Advanced Write Using JSON
 
 There are some more advanced use cases which need more control how the command is converted to set of bits or requests.
 Due to this reason, one can return a special [JSON](https://en.wikipedia.org/wiki/JSON) output from the transformation (step 3).
-The JSON directly specifies the write requests to send to Modbus slave. In this case, steps 4. and 5. are skipped.
+The JSON directly specifies the write requests to send to Modbus slave.
+In this case, steps 4. and 5. are skipped.
 
 For example, if the transformation returns the following JSON
 
@@ -472,7 +485,8 @@ For example, if the transformation returns the following JSON
 Two write requests would be sent to the Modbus slave
 
 1. FC16 (write multiple holding register), with start address 5412, having three registers of data (1, 0, and 5).
-2. FC06 (write single holding register), with start address 555, and single register of data (3). Write is tried maximum of 10 times in case some of the writes fail.
+2. FC06 (write single holding register), with start address 555, and single register of data (3).
+  Write is tried maximum of 10 times in case some of the writes fail.
 
 The JSON transformation output can be useful when you need full control how the write goes, for example in case where the write address depends on the incoming command.
 Actually, you can omit specifying `writeStart`, `writeValueType` and `writeType` with JSON transformation output altogether.
@@ -499,7 +513,8 @@ Note that transformation is only one part of the overall process how polled data
 Consult [Read steps](#read-steps) and [Write steps](#write-steps) for more details.
 Specifically, note that you might not need transformations at all in some uses cases.
 
-Please also note that you should install relevant transformations in openHAB as necessary. For example, `openhab-transformation-javascript` feature provides the javascript (`JS`) transformation.
+Please also note that you should install relevant transformations in openHAB as necessary.
+For example, `openhab-transformation-javascript` feature provides the javascript (`JS`) transformation.
 
 #### Transform On Read
 
