@@ -13,11 +13,10 @@
 package org.openhab.binding.nanoleaf.internal.model;
 
 /**
- * Interface for states with a boolean value
+ * Interface for boolean value states
  *
  * @author Martin Raepple - Initial contribution
  */
-
 public interface BooleanState {
 
     public Boolean getValue();

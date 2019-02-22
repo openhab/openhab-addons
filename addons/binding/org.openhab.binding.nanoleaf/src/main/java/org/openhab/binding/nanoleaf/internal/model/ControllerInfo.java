@@ -100,5 +100,4 @@ public class ControllerInfo {
     public void setRhythm(Rhythm rhythm) {
         this.rhythm = rhythm;
     }
-
 }

@@ -9,11 +9,9 @@
 
 		<channels>
 			<channel id="power" typeId="power" />
-			<channel id="brightness" typeId="brightness" />
-			<channel id="hue" typeId="hue" />
-			<channel id="saturation" typeId="saturation" />
 			<channel id="color" typeId="color" />
 			<channel id="colorTemperature" typeId="colorTemperature" />
+			<channel id="colorTemperatureAbs" typeId="colorTemperatureAbs" />
 			<channel id="colorMode" typeId="colorMode" />
 			<channel id="effect" typeId="effect" />
 			<channel id="rhythmState" typeId="rhythmState" />
@@ -39,7 +37,6 @@
 		<description>@text/thing-type.nanoleaf.lightpanel.description</description>
 		<channels>
 			<channel id="panelColor" typeId="color" />
-			<channel id="panelBrightness" typeId="brightness" />
 		</channels>
 		
 		<config-description-ref uri="thing-type:nanoleaf:lightpanel" />
@@ -58,32 +55,17 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="brightness">
-		<item-type>Dimmer</item-type>
-		<label>@text/channel-type.nanoleaf.brightness.label</label>		
-		<description>@text/channel-type.nanoleaf.brightness.description</description>
-		<category>Light</category>
-		<state min="0" max="100" step="1" />
-	</channel-type>
-	
-	<channel-type id="hue">
-		<item-type>Number</item-type>
-		<label>@text/channel-type.nanoleaf.hue.label</label>
-		<description>@text/channel-type.nanoleaf.hue.description</description>
-		<state min="0" max="360" step="1" />
-	</channel-type>
+    <channel-type id="colorTemperature">
+        <item-type>Dimmer</item-type>
+        <label>@text/channel-type.nanoleaf.colorTemperature.label</label>
+        <description>@text/channel-type.nanoleaf.colorTemperature.description</description>
+        <state min="0" max="100" step="1" />
+    </channel-type>
 
-	<channel-type id="saturation">
-		<item-type>Dimmer</item-type>
-		<label>@text/channel-type.nanoleaf.saturation.label</label>
-		<description>@text/channel-type.nanoleaf.saturation.description</description>
-		<state min="0" max="100" step="1" />
-	</channel-type>
-	
-	<channel-type id="colorTemperature">
+	<channel-type id="colorTemperatureAbs">
 		<item-type>Number</item-type>
-		<label>@text/channel-type.nanoleaf.colorTemperature.label</label>
-		<description>@text/channel-type.nanoleaf.colorTemperature.description</description>
+		<label>@text/channel-type.nanoleaf.colorTemperatureAbs.label</label>
+		<description>@text/channel-type.nanoleaf.colorTemperatureAbs.description</description>
 		<category>ColorLight</category>
 		<state min="1200" max="6500" step="100" />
 	</channel-type>	

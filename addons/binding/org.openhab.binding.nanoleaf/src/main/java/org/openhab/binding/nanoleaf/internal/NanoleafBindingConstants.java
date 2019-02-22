@@ -40,11 +40,9 @@ public class NanoleafBindingConstants {
 
     // List of controller channels
     public static final String CHANNEL_POWER = "power";
-    public static final String CHANNEL_BRIGHTNESS = "brightness";
-    public static final String CHANNEL_HUE = "hue";
-    public static final String CHANNEL_SATURATION = "saturation";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_COLOR_TEMPERATURE = "colorTemperature";
+    public static final String CHANNEL_COLOR_TEMPERATURE_ABS = "colorTemperatureAbs";
     public static final String CHANNEL_COLOR_MODE = "colorMode";
     public static final String CHANNEL_EFFECT = "effect";
     public static final String CHANNEL_RHYTHM_STATE = "rhythmState";
@@ -53,7 +51,6 @@ public class NanoleafBindingConstants {
 
     // List of light panel channels
     public static final String CHANNEL_PANEL_COLOR = "panelColor";
-    public static final String CHANNEL_PANEL_BRIGHTNESS = "panelBrightness";
 
     // Nanoleaf OpenAPI URLs
     public static final String API_V1_BASE_URL = "/api/v1";
@@ -61,11 +58,17 @@ public class NanoleafBindingConstants {
     public static final String API_ADD_USER = "/new";
     public static final String API_DELETE_USER = "";
     public static final String API_SET_VALUE = "/state";
-    public static final String API_SELECT_EFFECT = "/effects";
+    public static final String API_EFFECT = "/effects";
     public static final String API_RHYTHM_MODE = "/rhythm/rhythmMode";
     public static final String API_MIN_FW_VER = "1.5.0";
 
     // mDNS discovery service type
     // see http://forum.nanoleaf.me/docs/openapi#_gf9l5guxt8r0
     public static final String SERVICE_TYPE = "_nanoleafapi._tcp.local.";
+
+    // Effect/scene name for static color
+    public static final String EFFECT_NAME_STATIC_COLOR = "*Dynamic*";
+
+    // Color channels increase/decrease brightness step size
+    public final static int BRIGHTNESS_STEP_SIZE = 5;
 }

@@ -35,6 +35,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -58,12 +59,10 @@ import org.openhab.binding.nanoleaf.internal.model.Brightness;
 import org.openhab.binding.nanoleaf.internal.model.ControllerInfo;
 import org.openhab.binding.nanoleaf.internal.model.Ct;
 import org.openhab.binding.nanoleaf.internal.model.Effects;
-import org.openhab.binding.nanoleaf.internal.model.Hue;
 import org.openhab.binding.nanoleaf.internal.model.IntegerState;
 import org.openhab.binding.nanoleaf.internal.model.On;
 import org.openhab.binding.nanoleaf.internal.model.Palette;
 import org.openhab.binding.nanoleaf.internal.model.Rhythm;
-import org.openhab.binding.nanoleaf.internal.model.Sat;
 import org.openhab.binding.nanoleaf.internal.model.State;
 import org.openhab.binding.nanoleaf.internal.model.Write;
 import org.slf4j.Logger;
@@ -81,15 +80,15 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class NanoleafControllerHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(NanoleafControllerHandler.class);
-    private HttpClient httpClient;
-    private List<NanoleafControllerListener> controllerListeners = new CopyOnWriteArrayList<>();
-
     // Pairing interval in seconds
     private final static int PAIRING_INTERVAL = 25;
 
     // Panel discovery interval in seconds
     private final static int PANEL_DISCOVERY_INTERVAL = 30;
+
+    private final Logger logger = LoggerFactory.getLogger(NanoleafControllerHandler.class);
+    private HttpClient httpClient;
+    private List<NanoleafControllerListener> controllerListeners = new CopyOnWriteArrayList<>();
 
     // Pairing, update and panel discovery jobs
     private @NonNullByDefault({}) ScheduledFuture<?> pairingJob;
@@ -99,11 +98,12 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     // JSON parser for API responses
     private final Gson gson = new Gson();
 
-    // Controller configuration settings
+    // Controller configuration settings and channel values
     private @Nullable String address;
     private int port;
     private int refreshIntervall;
     private @Nullable String authToken;
+    private @Nullable ControllerInfo controllerInfo;
 
     public NanoleafControllerHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
@@ -175,33 +175,33 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                     case CHANNEL_POWER:
                         sendStateCommand(On.class.getName(), command);
                         break;
-                    case CHANNEL_BRIGHTNESS:
-                        if (command instanceof OnOffType) {
-                            // On/Off sent to the dimmer item - turns controller on/off
-                            sendStateCommand(On.class.getName(), command);
-                        } else {
-                            sendStateCommand(Brightness.class.getName(), command);
-                        }
-                        break;
-                    case CHANNEL_HUE:
-                        sendStateCommand(Hue.class.getName(), command);
-                        break;
                     case CHANNEL_COLOR:
-                        sendEffectCommand(command);
+                        if (command instanceof OnOffType) {
+                            // On/Off command - turns controller on/off
+                            sendStateCommand(On.class.getName(), command);
+                            break;
+                        } else if (command instanceof HSBType) {
+                            // regular color HSB command
+                            sendEffectCommand(command);
+                            break;
+                        } else if (command instanceof PercentType) {
+                            // brightness command
+                            sendStateCommand(Brightness.class.getName(), command);
+                            break;
+                        } else if (command instanceof IncreaseDecreaseType) {
+                            // increase/decrease brightness
+                            sendStateCommand(Brightness.class.getName(), command);
+                            break;
+                        }
                         break;
                     case CHANNEL_COLOR_TEMPERATURE:
                         sendStateCommand(Ct.class.getName(), command);
                         break;
+                    case CHANNEL_COLOR_TEMPERATURE_ABS:
+                        sendStateCommand(Ct.class.getName(), command);
+                        break;
                     case CHANNEL_EFFECT:
                         sendEffectCommand(command);
-                        break;
-                    case CHANNEL_SATURATION:
-                        if (command instanceof OnOffType) {
-                            // On/Off sent to the dimmer item - turns controller on/off
-                            sendStateCommand(On.class.getName(), command);
-                        } else {
-                            sendStateCommand(Sat.class.getName(), command);
-                        }
                         break;
                     case CHANNEL_RHYTHM_MODE:
                         sendRhythmCommand(command);
@@ -369,10 +369,6 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                 logger.debug("Authentication token found. Canceling pairing job");
                 return;
             }
-            if (httpClient.isStarted()) {
-                httpClient.stop();
-            }
-            httpClient.start();
             ContentResponse authTokenResponse = OpenAPIUtils
                     .requestBuilder(httpClient, getControllerConfig(), API_ADD_USER, HttpMethod.POST).send();
             if (logger.isTraceEnabled()) {
@@ -433,11 +429,15 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         // Trigger a new discovery of connected panels
         for (NanoleafControllerListener controllerListener : controllerListeners) {
             try {
-                controllerListener.onControllerInfoFetched(getThing().getUID(), getControllerInfo());
+                controllerListener.onControllerInfoFetched(getThing().getUID(), receiveControllerInfo());
             } catch (NanoleafUnauthorizedException nue) {
                 logger.warn("Panel discovery unauthorized: {}", nue.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/error.nanoleaf.controller.invalidToken");
+                if (StringUtils.isEmpty(getAuthToken())) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                            "@text/error.nanoleaf.controller.noToken");
+                }
             } catch (NanoleafException ne) {
                 logger.warn("Failed to discover panels: ", ne);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -450,43 +450,83 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     }
 
     private void updateFromControllerInfo() throws NanoleafException, NanoleafUnauthorizedException {
-        ControllerInfo controllerInfo = getControllerInfo();
-        // update channels
+        logger.debug("Update channels for controller {}", thing.getUID());
+        this.controllerInfo = receiveControllerInfo();
         updateState(CHANNEL_POWER, controllerInfo.getState().getOn().getValue() ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_BRIGHTNESS,
-                new PercentType(controllerInfo.getState().getBrightness().getValue().intValue()));
-        updateState(CHANNEL_COLOR_TEMPERATURE,
+        updateState(CHANNEL_COLOR_TEMPERATURE_ABS,
                 new DecimalType(controllerInfo.getState().getColorTemperature().getValue().intValue()));
-        updateState(CHANNEL_HUE, new DecimalType(controllerInfo.getState().getHue().getValue().intValue()));
-        updateState(CHANNEL_SATURATION,
-                new PercentType(controllerInfo.getState().getSaturation().getValue().intValue()));
+        Float colorTempPercent = (controllerInfo.getState().getColorTemperature().getValue().floatValue()
+                - controllerInfo.getState().getColorTemperature().getMin().floatValue())
+                / (controllerInfo.getState().getColorTemperature().getMax().floatValue()
+                        - controllerInfo.getState().getColorTemperature().getMin().floatValue())
+                * PercentType.HUNDRED.intValue();
+        updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(colorTempPercent.intValue()));
         updateState(CHANNEL_EFFECT, new StringType(controllerInfo.getEffects().getSelect()));
+        Write colorData = receiveEffectData(EFFECT_NAME_STATIC_COLOR);
+        updateState(CHANNEL_COLOR,
+                new HSBType(new DecimalType(colorData.getPalette().get(0).getHue().longValue()),
+                        new PercentType(colorData.getPalette().get(0).getSaturation().intValue()),
+                        new PercentType(colorData.getPalette().get(0).getBrightness().intValue())));
         updateState(CHANNEL_COLOR_MODE, new StringType(controllerInfo.getState().getColorMode()));
         updateState(CHANNEL_RHYTHM_ACTIVE,
                 controllerInfo.getRhythm().getRhythmActive().booleanValue() ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_RHYTHM_MODE, new DecimalType(controllerInfo.getRhythm().getRhythmMode().intValue()));
         updateState(CHANNEL_RHYTHM_STATE,
                 controllerInfo.getRhythm().getRhythmConnected().booleanValue() ? OnOffType.ON : OnOffType.OFF);
-        logger.debug("Update channels for controller {}", thing.getUID());
 
-        // update properties which may have changed, or are not present during discovery
+        // update bridge properties which may have changed, or are not present during discovery
         Map<String, String> properties = editProperties();
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, controllerInfo.getSerialNo());
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, controllerInfo.getFirmwareVersion());
         updateProperties(properties);
+
+        // update the color channels of each panel
+        this.getThing().getThings().forEach(child -> {
+            NanoleafPanelHandler panelHandler = (NanoleafPanelHandler) child.getHandler();
+            if (panelHandler instanceof NanoleafPanelHandler) {
+                logger.debug("Update color channel for panel {}", panelHandler.getThing().getUID());
+                panelHandler.updatePanelColorChannel();
+            }
+        });
     }
 
-    private ControllerInfo getControllerInfo() throws NanoleafException, NanoleafUnauthorizedException {
-        ContentResponse controllerInfoJSON = OpenAPIUtils.sendOpenAPIRequest(OpenAPIUtils.requestBuilder(httpClient,
+    private ControllerInfo receiveControllerInfo() throws NanoleafException, NanoleafUnauthorizedException {
+        ContentResponse controllerlInfoJSON = OpenAPIUtils.sendOpenAPIRequest(OpenAPIUtils.requestBuilder(httpClient,
                 getControllerConfig(), API_GET_CONTROLLER_INFO, HttpMethod.GET));
-        ControllerInfo controllerInfo = gson.fromJson(controllerInfoJSON.getContentAsString(), ControllerInfo.class);
+        ControllerInfo controllerInfo = gson.fromJson(controllerlInfoJSON.getContentAsString(), ControllerInfo.class);
         return controllerInfo;
+    }
+
+    private Write receiveEffectData(String effectName) throws NanoleafException, NanoleafUnauthorizedException {
+        Effects effects = new Effects();
+        Write effectDataRequest = new Write();
+        effectDataRequest.setCommand("request");
+        effectDataRequest.setAnimName(effectName);
+        effects.setWrite(effectDataRequest);
+        Request receiveEffectDataRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(), API_EFFECT,
+                HttpMethod.PUT);
+        receiveEffectDataRequest.content(new StringContentProvider(gson.toJson(effects)), "application/json");
+        ContentResponse effectDataResponseJSON = OpenAPIUtils.sendOpenAPIRequest(receiveEffectDataRequest);
+        Write effectDataResponse = gson.fromJson(effectDataResponseJSON.getContentAsString(), Write.class);
+        return effectDataResponse;
     }
 
     private void sendStateCommand(String stateClass, Command command) throws NanoleafException {
         try {
             State stateObject = new State();
-            if (command instanceof DecimalType) {
+            if (command instanceof PercentType) {
+                IntegerState state = (IntegerState) Class.forName(stateClass).newInstance();
+                if (Brightness.class.getName().equals(stateClass)) {
+                    state.setValue(((PercentType) command).intValue());
+                } else {
+                    // Color temperature (percent)
+                    state.setValue(Math.round((controllerInfo.getState().getColorTemperature().getMax()
+                            - controllerInfo.getState().getColorTemperature().getMin())
+                            * ((PercentType) command).intValue() / PercentType.HUNDRED.floatValue()
+                            + controllerInfo.getState().getColorTemperature().getMin()));
+                }
+                stateObject.setState(state);
+            } else if (command instanceof DecimalType) {
                 IntegerState state = (IntegerState) Class.forName(stateClass).newInstance();
                 state.setValue(((DecimalType) command).intValue());
                 stateObject.setState(state);
@@ -494,6 +534,21 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                 BooleanState state = (BooleanState) Class.forName(stateClass).newInstance();
                 state.setValue(OnOffType.ON.equals(command));
                 stateObject.setState(state);
+            } else if (command instanceof IncreaseDecreaseType) {
+                if (controllerInfo != null) {
+                    Brightness brightness = controllerInfo.getState().getBrightness();
+                    if (command.equals(IncreaseDecreaseType.INCREASE)) {
+                        brightness.setValue(
+                                Math.min(brightness.getMax().intValue(), brightness.getValue() + BRIGHTNESS_STEP_SIZE));
+                    } else {
+                        brightness.setValue(
+                                Math.max(brightness.getMin().intValue(), brightness.getValue() - BRIGHTNESS_STEP_SIZE));
+                    }
+                    stateObject.setState(brightness);
+                    logger.debug("Setting controller brightness to {}", brightness.getValue());
+                    // update controller info in case new command is sent before next update job interval
+                    controllerInfo.getState().setBrightness(brightness);
+                }
             } else {
                 logger.warn("Unhandled command type: {}", command.getClass().getName());
                 return;
@@ -524,16 +579,11 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             effects.setWrite(write);
         } else if (command instanceof StringType) {
             effects.setSelect(command.toString());
-        } else if (command instanceof OnOffType) {
-            sendStateCommand(On.class.getName(), command);
-        } else if (command instanceof PercentType) {
-            // brightness to color channel
-            sendStateCommand(Brightness.class.getName(), command);
         } else {
             logger.warn("Unhandled command type: {}", command.getClass().getName());
             return;
         }
-        Request setNewEffectRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(), API_SELECT_EFFECT,
+        Request setNewEffectRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(), API_EFFECT,
                 HttpMethod.PUT);
         setNewEffectRequest.content(new StringContentProvider(gson.toJson(effects)), "application/json");
         OpenAPIUtils.sendOpenAPIRequest(setNewEffectRequest);
