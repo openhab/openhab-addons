@@ -373,9 +373,8 @@ See [Full examples](#full-examples) section for practical examples.
 
 The MODBUS specification defines each 16bit word to be encoded as Big Endian,
 but there is no specification on the order of those words within 32bit or larger data types.
-The net result is that when you have a master and slave that operate with the same
-Endian mode things work fine, but add a device with a different Endian mode and it is
-very hard to correct.
+The net result is that when you have a master and slave that operate with the same Endian mode things work fine,
+but add a device with a different Endian mode and it is very hard to correct.
 To resolve this the binding supports a second set of valuetypes that have the words swapped.
 
 If you get strange values using the `int32`, `uint32`, `float32`, `int64`, or `uint64` valuetypes then just try the `int32_swap`, `uint32_swap`, `float32_swap`, `int64_swap`, or `uint64_swap` valuetype, depending upon what your data type is.
