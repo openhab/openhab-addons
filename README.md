@@ -6,7 +6,7 @@ by the [openHAB 2 maintainers](https://github.com/orgs/openhab/teams/2-x-add-ons
 
 To get started with binding development, follow our guidelines and tutorials over at https://www.openhab.org/docs/developer/.
 
-If you are interested in openHAB core development, we invite you to come by on https://github.com/openhab/openhab-core.
+If you are interested in openHAB 2 Core development, we invite you to come by on https://github.com/openhab/openhab-core.
 
 ## Add-ons in other repositories
 
