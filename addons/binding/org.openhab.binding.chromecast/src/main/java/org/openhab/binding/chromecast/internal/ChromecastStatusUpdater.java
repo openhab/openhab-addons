@@ -152,6 +152,7 @@ public class ChromecastStatusUpdater {
                 callback.updateState(CHANNEL_STOP, OnOffType.OFF);
                 break;
             case BUFFERING:
+            case LOADING:
             case PLAYING:
                 callback.updateState(CHANNEL_CONTROL, PlayPauseType.PLAY);
                 callback.updateState(CHANNEL_STOP, OnOffType.OFF);
