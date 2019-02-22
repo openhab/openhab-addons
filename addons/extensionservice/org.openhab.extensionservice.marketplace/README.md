@@ -3,8 +3,7 @@
 This is an `ExtensionService`, which accesses the Eclipse IoT Marketplace and makes its content available as
 extensions.
 
-The internally used http address is
-"https://marketplace.eclipse.org/taxonomy/term/4988%2C4396/api/p?client=org.eclipse.smarthome".
+The internally used http address is "https://marketplace.eclipse.org/taxonomy/term/4988%2C4396/api/p?client=org.eclipse.smarthome".
 
 The default refresh value is 1 hour.
 If the eclipse server is not responding, another attempt happens 60 seconds later.
