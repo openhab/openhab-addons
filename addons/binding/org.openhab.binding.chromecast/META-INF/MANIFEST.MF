@@ -4,7 +4,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
  lib/protobuf-java-2.6.0.jar,
- lib/api-v2-0.10.5.jar,
+ lib/api-v2-0.10.6.jar,
  lib/jackson-core-asl-1.9.2.jar,
  lib/jackson-mapper-asl-1.9.2.jar
 Bundle-ManifestVersion: 2
