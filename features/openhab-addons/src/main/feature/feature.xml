@@ -261,16 +261,6 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.hue/${project.version}</bundle>
     </feature>
 
-    <feature name="openhab-binding-neato" description="Neato Binding" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.neato/${project.version}</bundle>
-    </feature>
-    
-    <feature name="openhab-binding-netatmo" description="Netatmo Binding" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.netatmo/${project.version}</bundle>
-    </feature>
-
     <feature name="openhab-binding-hdanywhere" description="HDAnywhere Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.hdanywhere/${project.version}</bundle>
@@ -459,9 +449,13 @@
     <feature name="openhab-binding-mqtt" description="MQTT Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mqtt</feature>
-        <feature>esh-automation-api</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.mqtt/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.mqtt.generic/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-binding-neato" description="Neato Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.neato/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-neeo" description="NEEO Binding" version="${project.version}">
@@ -474,9 +468,14 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.nest/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-netatmo" description="Netatmo Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.netatmo/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-network" description="Network Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>esh-model-script</feature>
+        <feature>openhab-core-model-script</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.network/${project.version}</bundle>
     </feature>
 
@@ -882,22 +881,19 @@
 
     <feature name="openhab-misc-imperihome" description="ImperiHome Integration" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>esh-model-item</feature>
+        <feature>openhab-core-model-item</feature>
         <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.imperihome/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-misc-market" description="Eclipse IoT Market" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>esh-automation-api</feature>
         <bundle>mvn:org.openhab.extensionservice/org.openhab.extensionservice.marketplace/${project.version}</bundle>
-        <bundle>mvn:org.openhab.extensionservice/org.openhab.extensionservice.marketplace.automation/${project.version}</bundle>
+<!--        <bundle>mvn:org.openhab.extensionservice/org.openhab.extensionservice.marketplace.automation/${project.version}</bundle>-->
     </feature>
 
     <feature name="openhab-misc-mqttbroker" description="Embedded MQTT Broker" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mqtt</feature>
-        <requirement>esh.tp;filter:="(feature=commons-net)"</requirement>
-        <feature dependency="true">esh.tp-commons-net</feature>
         <bundle>mvn:org.openhab.io/org.openhab.io.mqttembeddedbroker/${project.version}</bundle>
     </feature>
 
@@ -906,26 +902,13 @@
         <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.neeo/${project.version}</bundle>
     </feature>
 
-    <feature name="openhab-misc-restdocs" description="REST Documentation" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>esh.tp-swagger-jax-rs-provider</feature>
-        <bundle>mvn:org.openhab.io/org.openhab.io.rest.docs/${project.version}</bundle>
-    </feature>
-
     <feature name="openhab-misc-ruleengine" description="Rule Engine (Experimental)" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>esh-automation-api</feature>
-        <feature>esh-automation-commands</feature>
-        <feature>esh-automation-core</feature>
-        <feature>esh-automation-module-core</feature>
-        <feature>esh-automation-module-media</feature>
-        <feature>esh-automation-module-script</feature>
-        <feature>esh-automation-module-script-defaultscope</feature>
-        <feature>esh-automation-module-script-rulesupport</feature>
-        <feature>esh-automation-module-timer</feature>
-        <feature>esh-automation-parser-gson</feature>
-        <feature>esh-automation-providers</feature>
-        <feature>esh-automation-rest</feature>
+        <feature>openhab-core-automation</feature>
+        <feature>openhab-core-automation-module-media</feature>
+        <feature>openhab-core-automation-module-script</feature>
+        <feature>openhab-core-automation-module-script-rulesupport</feature>
+        <feature>openhab-core-automation-rest</feature>
         <feature>openhab-io-javasound</feature>
     </feature>
 
@@ -1006,61 +989,6 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.voicerss/${project.version}</bundle>
         <configfile finalname="${openhab.conf}/services/voicerss.cfg" override="false">mvn:${project.groupId}/openhab2-addons-external/${project.version}/cfg/voicerss</configfile>
-    </feature>
-
-    <!-- ui -->
-
-    <feature name="openhab-ui-basic" description="Basic UI" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab-iconset-classic</feature>
-        <bundle>mvn:org.openhab.ui/org.openhab.ui.basic/${project.version}</bundle>
-        <config name="org.eclipse.smarthome.basicui">
-            iconType = svg
-        </config>
-    </feature>
-
-    <feature name="openhab-ui-classic" description="Classic UI" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab-iconset-classic</feature>
-        <bundle>mvn:org.openhab.ui/org.openhab.ui.classic/${project.version}</bundle>
-        <config name="org.eclipse.smarthome.classicui">
-            defaultSitemap = _default
-        </config>
-    </feature>
-
-    <feature name="openhab-ui-cometvisu" description="CometVisu Backend" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>esh-model-item</feature>
-        <feature>esh-model-sitemap</feature>
-        <feature>esh-ui-icon</feature>
-        <feature>esh-ui</feature>
-        <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.cometvisu/${project.version}</bundle>
-        <configfile finalname="${openhab.conf}/services/cometvisu.cfg" override="false">mvn:${project.groupId}/openhab2-addons-external/${project.version}/cfg/cometvisu</configfile>
-    </feature>
-
-    <feature name="openhab-ui-cometvisu-php" description="PHP support for CometVisu" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab-ui-cometvisu</feature>
-        <bundle start-level="80">mvn:org.openhab.ui/org.openhab.ui.cometvisu.php/${project.version}</bundle>
-        <bundle start-level="80">mvn:org.openhab/com.caucho.quercus/4.0.45</bundle>
-    </feature>
-
-    <feature name="openhab-ui-homebuilder" description="Home Builder" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle>mvn:org.openhab.ui/org.openhab.ui.homebuilder/${project.version}</bundle>
-    </feature>
-
-    <feature name="openhab-ui-paper" description="Paper UI" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab-io-javasound</feature>
-        <feature>openhab-io-webaudio</feature>
-        <bundle>mvn:org.openhab.ui/org.openhab.ui.paper/${project.version}</bundle>
-    </feature>
-
-    <feature name="openhab-iconset-classic" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>esh-ui-icon</feature>
-        <bundle>mvn:org.openhab.ui.iconset/org.openhab.ui.iconset.classic/${project.version}</bundle>
     </feature>
 
 </features>

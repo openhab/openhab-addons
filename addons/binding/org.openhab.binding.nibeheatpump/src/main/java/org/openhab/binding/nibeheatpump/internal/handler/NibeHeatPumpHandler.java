@@ -144,7 +144,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
         if (connector != null) {
             VariableInformation variableInfo = VariableInformation.getVariableInfo(pumpModel, coilAddress);
-            logger.debug("Usig variable information for register {}: {}", coilAddress, variableInfo);
+            logger.debug("Using variable information for register {}: {}", coilAddress, variableInfo);
 
             if (variableInfo != null && variableInfo.type == VariableInformation.Type.SETTING) {
                 int value = convertStateToNibeValue(command);
@@ -277,7 +277,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
                 if (pollingJob == null || pollingJob.isCancelled()) {
                     logger.debug("Start refresh task, interval={}sec", 1);
-                    pollingJob = scheduler.scheduleAtFixedRate(pollingRunnable, 0, 1, TimeUnit.SECONDS);
+                    pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, 1, TimeUnit.SECONDS);
                 }
             } catch (NibeHeatPumpException e) {
                 logger.debug("Error occurred when connecting to heat pump, exception {}", e.getMessage());

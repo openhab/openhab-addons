@@ -56,7 +56,7 @@ For more security, the following optional parameters can be altered:
 
 You can extend your broker connection bridges with a channel:
 
-* __publishTrigger__: This channel is triggered when a value is published to the configured MQTT topic on this broker connection. The event payload will be the received MQTT topic value.
+* __publishTrigger__: This channel is triggered when a value is published to the configured MQTT topic on this broker connection. The event payload (in `receivedEvent`) will be the received MQTT topic and its value, separated by the hash character (`#`).
 
 Configuration parameters are:
 
@@ -75,7 +75,7 @@ A third connection uses a username and password for authentication.
 Secure is set to false as the username and password is requested by the broker.
 The credentials are plain values on the wire, therefore you should only use this on a secure connection.
 
-In a forth connection, the public key pinning is enabled again.
+In a fourth connection, the public key pinning is enabled again.
 This time, a public key hash is provided to pin the connection to a specific server.
 It follows the form "hashname:hashvalue". Valid *hashnames* are SHA-1, SHA-224, SHA-256, SHA-384, SHA-512 and all others listed
 in [Java MessageDigest Algorithms](https://docs.oracle.com/javase/9/docs/specs/security/standard-names.html#messagedigest-algorithms).

@@ -235,7 +235,6 @@ public class ChromecastHandler extends BaseThingHandler implements AudioSink {
         private final ChromecastStatusUpdater statusUpdater;
         private final ChromecastScheduler scheduler;
 
-        private final Runnable connectRunnable = this::connect;
         private final Runnable refreshRunnable = new Runnable() {
             @Override
             public void run() {
@@ -247,7 +246,7 @@ public class ChromecastHandler extends BaseThingHandler implements AudioSink {
                 AudioHTTPServer audioHttpServer, String callbackURL) {
             this.chromeCast = chromeCast;
 
-            this.scheduler = new ChromecastScheduler(handler.scheduler, CONNECT_DELAY, connectRunnable, refreshRate,
+            this.scheduler = new ChromecastScheduler(handler.scheduler, CONNECT_DELAY, this::connect, refreshRate,
                     refreshRunnable);
             this.statusUpdater = new ChromecastStatusUpdater(thing, handler);
 
@@ -278,6 +277,7 @@ public class ChromecastHandler extends BaseThingHandler implements AudioSink {
         private void connect() {
             try {
                 chromeCast.connect();
+                statusUpdater.updateMediaStatus(null);
                 statusUpdater.updateStatus(ThingStatus.ONLINE);
             } catch (final Exception e) {
                 statusUpdater.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,

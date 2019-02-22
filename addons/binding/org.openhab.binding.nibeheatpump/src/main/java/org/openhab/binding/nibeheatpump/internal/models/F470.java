@@ -22,8 +22,8 @@ import org.openhab.binding.nibeheatpump.internal.models.VariableInformation.Type
 /**
  * Class which holds all data variables of F470 heat pumps.
  *
- * @author Juho Mäkinen - Adding model F470
  * @author Pauli Anttila - Initial contribution
+ * @author Juho Mäkinen - Adding model F470
  */
 public class F470 {
 

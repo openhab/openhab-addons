@@ -15,6 +15,7 @@ Tested TV models:
 | UE46E5505   | OK      | Initial contribution is done by this model                                                                       |
 | UE46D5700   | PARTIAL | Supports at my home only commands via the fake remote, no discovery                                              |
 | UE40F6500   | OK      | All channels except `colorTemperature`, `programTitle` and `channelName` are working                             |
+| UN50J5200   | PARTIAL | Status is retrieved (confirmed `power`, `media title`). Operating device seems not working.                      |
 | LE40D579    | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `sourceName`,  `programTitle`, `channelName`,  `power` |
 | LE40C650    | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `brightness`, `contrast`, `colorTemperature`, `power` (only power off, unable to power on) |
 

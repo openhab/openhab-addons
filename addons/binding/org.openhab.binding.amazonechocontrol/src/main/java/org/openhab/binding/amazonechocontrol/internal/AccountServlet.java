@@ -393,7 +393,7 @@ public class AccountServlet extends HttpServlet {
 
         // device list
         html.append(
-                "<table><tr><th align='left'>Device</th><th align='left'>Serial Number</th><th align='left'>State</th><th align='left'>Thing</th><th align='left'>Type</th><th align='left'>Family</th></tr>");
+                "<table><tr><th align='left'>Device</th><th align='left'>Serial Number</th><th align='left'>State</th><th align='left'>Thing</th><th align='left'>Family</th><th align='left'>Type</th></tr>");
         for (Device device : this.account.getLastKnownDevices()) {
 
             html.append("<tr><td>");
