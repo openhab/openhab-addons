@@ -15,12 +15,11 @@ package org.openhab.binding.samsungtv.internal.handler;
 import static org.openhab.binding.samsungtv.internal.SamsungTvBindingConstants.*;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -358,9 +357,9 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     }
 
     @Override
-    public @Nullable Collection<@NonNull ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-            @Nullable Collection<@NonNull ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
-        return null;
+    public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+            Collection<ThingTypeUID> thingTypeUIDs, ThingUID bridgeUID) {
+        return Collections.emptyList();
     }
 
     /**

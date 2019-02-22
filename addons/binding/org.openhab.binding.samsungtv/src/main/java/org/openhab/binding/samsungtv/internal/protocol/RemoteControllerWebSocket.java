@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.samsungtv.internal.protocol;
 
@@ -15,43 +19,40 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.component.LifeCycle.Listener;
-import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
-import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
+import com.google.gson.Gson;
 
 /**
  * The {@link RemoteControllerWebSocket} is responsible for sending key codes to the
  * Samsung TV via the websocket protocol (for newer TV's).
  *
  * @author Arjan Mels - Initial contribution
+ * @author Arjan Mels - Moved websocket inner classes to standalone classes
  */
 public class RemoteControllerWebSocket extends RemoteController implements Listener {
 
-    private final Logger logger = LoggerFactory.getLogger(RemoteControllerWebSocket.class);
+    final Logger logger = LoggerFactory.getLogger(RemoteControllerWebSocket.class);
 
     private final static String WS_ENDPOINT_REMOTE_CONTROL = "/api/v2/channels/samsung.remote.control";
     private final static String WS_ENDPOINT_ART = "/api/v2/channels/com.samsung.art-app";
     private final static String WS_ENDPOINT_V2 = "/api/v2";
-    private WebSocketClient client;
+    WebSocketClient client;
 
-    UUID uuid = UUID.randomUUID();
+    private final UUID uuid = UUID.randomUUID();
 
-    private RemoteControllerWebsocketCallback callback;
+    RemoteControllerWebsocketCallback callback;
 
-    WebSocketRemote webSocketRemote = new WebSocketRemote();
-    WebSocketArt webSocketArt = new WebSocketArt();
-    WebSocketV2 webSocketV2 = new WebSocketV2();
+    WebSocketRemote webSocketRemote;
+    WebSocketArt webSocketArt;
+    WebSocketV2 webSocketV2;
+
+    Gson gson = new Gson();
 
     /**
      * Create and initialize remote controller instance.
@@ -70,6 +71,11 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         this.client.addLifeCycleListener(this);
 
         this.callback = remoteControllerWebsocketCallback;
+
+        webSocketRemote = new WebSocketRemote(this);
+        webSocketArt = new WebSocketArt(this);
+        webSocketV2 = new WebSocketV2(this);
+
     }
 
     private boolean isConnected() {
@@ -135,92 +141,15 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         closeConnection();
     }
 
-    /**
-     * Websocket base class
-     *
-     * @author Arjan Mels
-     *
-     */
-    class WebSocketBase extends WebSocketAdapter {
-        boolean isConnecting = false;
-
-        @Override
-        public void onWebSocketClose(int statusCode, String reason) {
-            logger.debug("{} connection closed: {} - {}", this.getClass().getSimpleName(), statusCode, reason);
-            super.onWebSocketClose(statusCode, reason);
-            isConnecting = false;
-        }
-
-        @Override
-        public void onWebSocketError(Throwable error) {
-            logger.error("{} connection error: {}", this.getClass().getSimpleName(), error.getMessage());
-            super.onWebSocketError(error);
-            isConnecting = false;
-        }
-
-        void connect(URI uri) throws RemoteControllerException {
-            if (isConnecting || isConnected()) {
-                logger.trace("{} already connecting or connected", this.getClass().getSimpleName());
-                return;
-            }
-
-            try {
-                logger.debug("{} connecting to: {}", this.getClass().getSimpleName(), uri);
-
-                isConnecting = true;
-                client.connect(this, uri, new ClientUpgradeRequest());
-            } catch (Exception e) {
-                throw new RemoteControllerException(e);
-            }
-        }
-
-        @Override
-        public void onWebSocketConnect(Session session) {
-            logger.debug("{} connection established: {}", this.getClass().getSimpleName(),
-                    session.getRemoteAddress().getHostString());
-            super.onWebSocketConnect(session);
-
-            isConnecting = false;
-        }
-
-        void close() {
-            logger.debug("{} connection close requested", this.getClass().getSimpleName());
-            getSession().close();
-        }
-
-        void sendCommand(String cmd) {
-            try {
-                // retry opening connection just in case
-                openConnection();
-
-                if (isConnected()) {
-                    getRemote().sendString(cmd);
-                    logger.trace("{}: sendCommand: {}", this.getClass().getSimpleName(), cmd);
-                } else {
-                    logger.warn("{} sending command while socket not connected: {}", this.getClass().getSimpleName(),
-                            cmd);
-                }
-            } catch (Exception e) {
-                logger.error("{}: cannot send command", this.getClass().getSimpleName(), e);
-            }
-        }
-
-        @Override
-        public void onWebSocketText(String str) {
-            logger.trace("{}: onWebSocketText: {}", this.getClass().getSimpleName(), str);
-        }
-
-    }
-
     // temporary storage for source app. Will be used as value for the sourceApp channel when information is complete
-    private String currentSourceApp = null;
+    String currentSourceApp = null;
     // last app in the apps list: used to detect when status information is complete
     String lastApp = null;
 
     /**
      * Retrieve app status for all apps. In the WebSocketv2 handler the currently running app will be determined
      */
-    private void updateCurrentApp() {
+    void updateCurrentApp() {
         if (webSocketV2.isNotConnected()) {
             logger.warn("Cannot retrieve current app webSocketV2 is not connected");
             return;
@@ -239,232 +168,52 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         }
     }
 
-    /**
-     * Websocket class for remote control
-     *
-     * @author Arjan Mels
-     *
-     */
-    class WebSocketRemote extends WebSocketBase {
-        @Override
-        public void onWebSocketError(Throwable error) {
-            super.onWebSocketError(error);
-            callback.connectionError(error);
+    static class JSONArtModeStatus {
+
+        public JSONArtModeStatus(UUID uuid) {
+            params.data.id = uuid.toString();
         }
 
-        @Override
-        public void onWebSocketText(String msgarg) {
-            String msg = msgarg.replace('\n', ' ');
-            super.onWebSocketText(msg);
-            try {
-                JSONObject json = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(msg);
-                switch (json.getAsString("event")) {
-                    case "ms.channel.connect":
-                        logger.debug("Remote channel connected");
-                        getApps();
-                        break;
-                    case "ms.channel.clientConnect":
-                        logger.debug("Remote client connected");
-                        break;
-                    case "ms.channel.clientDisconnect":
-                        logger.debug("Remote client disconnected");
-                        break;
-                    case "ed.edenTV.update":
-                        logger.debug("edenTV update: {}", ((JSONObject) json.get("data")).getAsString("update_type"));
-                        updateCurrentApp();
-                        break;
-                    case "ed.apps.launch":
-                        logger.debug("App launched: {}",
-                                ((JSONObject) ((JSONObject) json.get("params")).get("data")).get("appId"));
-                        break;
-                    case "ed.installedApp.get":
-                        apps.clear();
-
-                        JSONObject data = (JSONObject) json.get("data");
-                        JSONArray array = (JSONArray) data.get("data");
-
-                        for (Object jsonApp : array) {
-                            App app = new App(((JSONObject) jsonApp).getAsString("appId"),
-                                    ((JSONObject) jsonApp).getAsString("name"),
-                                    ((JSONObject) jsonApp).getAsNumber("app_type").intValue());
-                            apps.put(app.name, app);
-                        }
-
-                        logger.debug("Installed Apps: "
-                                + apps.entrySet().stream().map(entry -> entry.getValue().appId + " = " + entry.getKey())
-                                        .collect(Collectors.joining(", ")));
-
-                        updateCurrentApp();
-
-                        break;
-                    default:
-                        logger.debug("WebSocketRemote Unknown event: {}", msg);
-
-                }
-            } catch (Exception e) {
-                logger.error("{}: Error ({}) in message: {}", this.getClass().getSimpleName(), e.getMessage(), msg, e);
+        static class Params {
+            static class Data {
+                String request = "get_artmode_status";
+                String id;
             }
+
+            String event = "art_app_request";
+            String to = "host";
+            Data data = new Data();
         }
+
+        String method = "ms.channel.emit";
+        Params params = new Params();
 
     }
 
-    /**
-     * Websocket class to retrieve app status
-     *
-     * @author Arjan Mels
-     *
-     */
-    class WebSocketV2 extends WebSocketBase {
-
-        @Override
-        public void onWebSocketText(String msgarg) {
-            String msg = msgarg.replace('\n', ' ');
-            super.onWebSocketText(msg);
-            try {
-                JSONObject json = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(msg);
-                JSONObject result = (JSONObject) json.get("result");
-                if (result != null) {
-                    if ((currentSourceApp == null || currentSourceApp.isEmpty())
-                            && "true".equals(result.getAsString("visible"))) {
-                        logger.debug("Running app: {} = {}", result.getAsString("id"), result.getAsString("name"));
-                        currentSourceApp = result.getAsString("name");
-                        callback.currentAppUpdated(currentSourceApp);
-                    }
-
-                    if (lastApp != null && lastApp.equals(result.getAsString("id"))) {
-                        if (currentSourceApp == null || currentSourceApp.isEmpty()) {
-                            callback.currentAppUpdated("");
-                        }
-                    }
-                } else if (json.getAsString("event") != null) {
-                    switch (json.getAsString("event")) {
-                        case "ms.channel.connect":
-                            logger.debug("Remote channel connected");
-                            // update is requested from ed.installedApp.get event: small risk that this websocket is not
-                            // yet connected
-                            break;
-                        case "ms.channel.clientConnect":
-                            logger.debug("Remote client connected");
-                            break;
-                        case "ms.channel.clientDisconnect":
-                            logger.debug("Remote client disconnected");
-                            break;
-                        default:
-                            logger.debug("WebSocketRemote Unknown event: {}", msg);
-
-                    }
-                }
-            } catch (Exception e) {
-                logger.error("{}: Error ({}) in message: {}", this.getClass().getSimpleName(), e.getMessage(), msg, e);
-            }
-        }
-
+    void getArtmodeStatus() {
+        webSocketArt.sendCommand(gson.toJson(new JSONArtModeStatus(uuid)));
     }
 
-    /**
-     * Websocket class to retrieve artmode status (on o.a. the Frame TV's)
-     *
-     * @author Arjan Mels
-     *
-     */
-    class WebSocketArt extends WebSocketBase {
-        @Override
-        public void onWebSocketText(String msgarg) {
-            String msg = msgarg.replace('\n', ' ');
-            super.onWebSocketText(msg);
-            try {
-                JSONObject json = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE).parse(msg);
-                switch (json.getAsString("event")) {
-                    case "ms.channel.connect":
-                        logger.debug("Art channel connected");
-                        break;
-                    case "ms.channel.ready":
-                        logger.debug("Art channel ready");
-                        getArtmodeStatus();
-                        break;
-                    case "ms.channel.clientConnect":
-                        logger.debug("Art client connected");
-                        break;
-                    case "ms.channel.clientDisconnect":
-                        logger.debug("Art client disconnected");
-                        break;
+    static class JSONAppStatus {
 
-                    case "d2d_service_message":
-                        JSONObject json2 = (JSONObject) new JSONParser(JSONParser.MODE_PERMISSIVE)
-                                .parse(json.getAsString("data"));
-                        if (json2 == null || json2.getAsString("event") == null) {
-                            logger.debug("Empty d2d_service_message event: {}", msg);
-                        } else {
-                            switch (json2.getAsString("event")) {
-                                case "art_mode_changed":
-                                    logger.debug("art_mode_changed: {}", json2.getAsString("status"));
-                                    if ("on".equals(json2.getAsString("status"))) {
-                                        callback.powerUpdated(false, true);
-                                    } else {
-                                        callback.powerUpdated(true, false);
-                                    }
-                                    break;
-                                case "artmode_status":
-                                    logger.debug("artmode_status: {}", json2.getAsString("value"));
-                                    if ("on".equals(json2.getAsString("value"))) {
-                                        callback.powerUpdated(false, true);
-                                    } else {
-                                        callback.powerUpdated(true, false);
-                                    }
-                                    break;
-                                case "go_to_standby":
-                                    logger.debug("go_to_standby");
-                                    callback.powerUpdated(false, false);
-                                    break;
-                                case "wakeup":
-                                    logger.debug("wakeup");
-                                    // check artmode status to know complete status before updating
-                                    getArtmodeStatus();
-                                    break;
-                                default:
-                                    logger.debug("Unknown d2d_service_message event: {}", msg);
-                            }
-                        }
-                        // ignore;
-                        break;
-                    default:
-                        logger.debug("WebSocketArt Unknown event: {}", msg);
-                }
-
-            } catch (Exception e) {
-                logger.error("{}: Error ({}) in message: {}", this.getClass().getSimpleName(), e.getMessage(), msg, e);
-            }
+        public JSONAppStatus(UUID uuid, String id) {
+            params.id = uuid.toString();
+            this.id = id;
         }
 
-    }
+        static class Params {
+            String id;
 
-    private void getArtmodeStatus() {
-        JSONObject jsonData = new JSONObject();
-        jsonData.put("request", "get_artmode_status");
-        jsonData.put("id", uuid.toString());
+        }
 
-        JSONObject jsonParams = new JSONObject();
-        jsonParams.put("event", "art_app_request");
-        jsonParams.put("to", "host");
-        jsonParams.put("data", jsonData.toJSONString());
+        String method = "ms.application.get";
+        String id;
+        Params params = new Params();
 
-        JSONObject json = new JSONObject();
-        json.put("method", "ms.channel.emit");
-        json.put("params", jsonParams);
-
-        webSocketArt.sendCommand(json.toJSONString());
     }
 
     private void getAppStatus(String id) {
-        JSONObject jsonParams = new JSONObject();
-        jsonParams.put("id", id);
-
-        JSONObject json = new JSONObject();
-        json.put("method", "ms.application.get");
-        json.put("id", uuid.toString());
-        json.put("params", jsonParams);
-
-        webSocketV2.sendCommand(json.toJSONString());
+        webSocketV2.sendCommand(gson.toJson(new JSONAppStatus(uuid, id)));
     }
 
     class App {
@@ -574,18 +323,52 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         logger.debug("Command(s) successfully sent");
     }
 
+    static class JSONRemoteControl {
+
+        public JSONRemoteControl(boolean press, String key) {
+            params.Cmd = press ? "Press" : "Click";
+            params.DataOfCmd = key;
+        }
+
+        static class Params {
+            String Cmd;
+            String DataOfCmd;
+            String Option = "false";
+            String TypeOfRemote = "SendRemoteKey";
+
+        }
+
+        String method = "ms.remote.control";
+        Params params = new Params();
+
+    }
+
     private void sendKeyData(KeyCode key, boolean press) throws RemoteControllerException {
-        JSONObject jsonParams = new JSONObject();
-        jsonParams.put("Cmd", press ? "Press" : "Click");
-        jsonParams.put("DataOfCmd", key.toString());
-        jsonParams.put("Option", "false");
-        jsonParams.put("TypeOfRemote", "SendRemoteKey");
+        webSocketRemote.sendCommand(gson.toJson(new JSONRemoteControl(press, key.toString())));
+    }
 
-        JSONObject json = new JSONObject();
-        json.put("method", "ms.remote.control");
-        json.put("params", jsonParams);
+    static class JSONSourceApp {
 
-        webSocketRemote.sendCommand(json.toJSONString());
+        public JSONSourceApp(String appName, boolean deepLink) {
+            params.data.appId = appName;
+            params.data.action_type = deepLink ? "DEEP_LINK" : "NATIVE_LAUNCH";
+        }
+
+        static class Params {
+            static class Data {
+                String appId;
+                String action_type;
+            }
+
+            String event = "ed.apps.launch";
+            String to = "host";
+            Data data = new Data();
+
+        }
+
+        String method = "ms.channel.emit";
+        Params params = new Params();
+
     }
 
     public void sendSourceApp(String app) {
@@ -597,55 +380,27 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
             deepLink = appVal.type == 2;
         }
 
-        JSONObject jsonData = new JSONObject();
-        jsonData.put("appId", appName);
-        jsonData.put("action_type", deepLink ? "DEEP_LINK" : "NATIVE_LAUNCH");
-
-        JSONObject jsonParams = new JSONObject();
-        jsonParams.put("event", "ed.apps.launch");
-        jsonParams.put("to", "host");
-        jsonParams.put("data", jsonData);
-
-        JSONObject json = new JSONObject();
-        json.put("method", "ms.channel.emit");
-        json.put("params", jsonParams);
-
-        webSocketRemote.sendCommand(json.toJSONString());
+        webSocketRemote.sendCommand(gson.toJson(new JSONSourceApp(appName, deepLink)));
     }
 
     public void sendUrl(String url) {
-
-        JSONObject jsonData = new JSONObject();
-        jsonData.put("appId", "org.tizen.browser");
-        jsonData.put("action_type", "NATIVE_LAUNCH");
-        jsonData.put("metaTag", url);
-
-        JSONObject jsonParams = new JSONObject();
-        jsonParams.put("event", "ed.apps.launch");
-        jsonParams.put("to", "host");
-        jsonParams.put("data", jsonData);
-
-        JSONObject json = new JSONObject();
-        json.put("method", "ms.channel.emit");
-        json.put("params", jsonParams);
-
-        webSocketRemote.sendCommand(json.toJSONString());
+        webSocketRemote.sendCommand(gson.toJson(new JSONSourceApp("org.tizen.browser", false)));
     }
 
-    private void getApps() {
-        getInfo("ed.installedApp.get");
+    static class JSONAppInfo {
+
+        static class Params {
+            String event = "ed.installedApp.get";
+            String to = "host";
+        }
+
+        String method = "ms.channel.emit";
+        Params params = new Params();
+
     }
 
-    private void getInfo(String str) {
-        JSONObject jsonParams = new JSONObject();
-        jsonParams.put("event", str);
-        jsonParams.put("to", "host");
-
-        JSONObject json = new JSONObject();
-        json.put("method", "ms.channel.emit");
-        json.put("params", jsonParams);
-
-        webSocketRemote.sendCommand(json.toJSONString());
+    void getApps() {
+        webSocketRemote.sendCommand(gson.toJson(new JSONAppInfo()));
     }
 
     public List<String> getAppList() {
