@@ -10,7 +10,8 @@ If you are interested in openHAB core development, we invite you to come by on h
 
 ## Add-ons in other repositories
 
-Some add-ons are not in this repository, but still part of the official [openHAB 2 distribution](https://github.com/openhab/openhab-distro). An incomplete list of other repositories follows below:
+Some add-ons are not in this repository, but still part of the official [openHAB 2 distribution](https://github.com/openhab/openhab-distro).
+An incomplete list of other repositories follows below:
 
 * https://github.com/openhab/org.openhab.binding.zwave
 * https://github.com/openhab/org.openhab.binding.zigbee
