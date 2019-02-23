@@ -49,8 +49,6 @@ public final class VVM310Channels extends BaseChannels {
             ChannelGroup.GENERAL, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final Channel CH_40121 = INSTANCE.addChannel(new QuantityChannel("40121", "BT63 Add Supply Temp",
             ChannelGroup.GENERAL, ScaleFactor.DIV_10, SIUnits.CELSIUS));
-    public static final Channel CH_43437 = INSTANCE.addChannel(
-            new QuantityChannel("43437", "Supply Pump Speed EP14", ChannelGroup.GENERAL, SmartHomeUnits.PERCENT));
 
     public static final Channel CH_44302 = INSTANCE
             .addChannel(new QuantityChannel("44302", "Heat Meter - Cooling Cpr EP14", ChannelGroup.GENERAL,

@@ -105,6 +105,8 @@ public class BaseChannels extends AbstractChannels {
             "EB100-EP14-BT3 Return temp", ChannelGroup.BASE, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final Channel CH_40072 = INSTANCE.addChannel(new QuantityChannel("40072", "BF1 EP14 Flow",
             ChannelGroup.BASE, ScaleFactor.DIV_10, SIUnits.LITRE.divide(SIUnits.METRE)));
+    public static final Channel CH_43437 = INSTANCE.addChannel(
+            new QuantityChannel("43437", "Supply Pump Speed EP14", ChannelGroup.BASE, SmartHomeUnits.PERCENT));
     public static final Channel CH_40079 = INSTANCE.addChannel(new QuantityChannel("40079", "EB100-BE3 Current",
             ChannelGroup.BASE, ScaleFactor.DIV_10, SmartHomeUnits.AMPERE));
     public static final Channel CH_40081 = INSTANCE.addChannel(new QuantityChannel("40081", "EB100-BE2 Current",
@@ -153,6 +155,20 @@ public class BaseChannels extends AbstractChannels {
             .addChannel(new Channel("48132", "Temporary Lux", ChannelGroup.HOTWATER, "/Manage/2.1", "[01234]"));
     public static final Channel CH_47041 = INSTANCE
             .addChannel(new Channel("47041", "Hot water mode", ChannelGroup.HOTWATER, "/Manage/2.2", "[012]"));
+    public static final Channel CH_47045 = INSTANCE.addChannel(new QuantityChannel("47045",
+            "Start temperature HW Economy", ChannelGroup.HOTWATER, ScaleFactor.DIV_10, SIUnits.CELSIUS));
+    public static final Channel CH_47049 = INSTANCE.addChannel(new QuantityChannel("47049",
+            "Stop temperature HW Economy", ChannelGroup.HOTWATER, ScaleFactor.DIV_10, SIUnits.CELSIUS));
+    public static final Channel CH_47044 = INSTANCE.addChannel(new QuantityChannel("47044",
+            "Start temperature HW Normal", ChannelGroup.HOTWATER, ScaleFactor.DIV_10, SIUnits.CELSIUS));
+    public static final Channel CH_47048 = INSTANCE.addChannel(new QuantityChannel("47048",
+            "Stop temperature HW Normal", ChannelGroup.HOTWATER, ScaleFactor.DIV_10, SIUnits.CELSIUS));
+    public static final Channel CH_47043 = INSTANCE.addChannel(new QuantityChannel("47043",
+            "Start temperature HW Luxury", ChannelGroup.HOTWATER, ScaleFactor.DIV_10, SIUnits.CELSIUS));
+    public static final Channel CH_47047 = INSTANCE.addChannel(new QuantityChannel("47047",
+            "Stop temperature HW Luxury", ChannelGroup.HOTWATER, ScaleFactor.DIV_10, SIUnits.CELSIUS));
+    public static final Channel CH_47046 = INSTANCE.addChannel(new QuantityChannel("47046",
+            "Stop temperature periodic HW", ChannelGroup.HOTWATER, ScaleFactor.DIV_10, SIUnits.CELSIUS));
 
     // Compressor
     public static final Channel CH_10012 = INSTANCE
