@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.pde.ui.JunitLaunchConfig">
+<booleanAttribute key="append.args" value="true"/>
+<stringAttribute key="application" value="org.eclipse.pde.junit.runtime.coretestapplication"/>
+<booleanAttribute key="askclear" value="false"/>
+<booleanAttribute key="automaticAdd" value="false"/>
+<booleanAttribute key="automaticValidate" value="true"/>
+<stringAttribute key="bootstrap" value=""/>
+<stringAttribute key="checked" value="[NONE]"/>
+<booleanAttribute key="clearConfig" value="true"/>
+<booleanAttribute key="clearws" value="true"/>
+<booleanAttribute key="clearwslog" value="false"/>
+<stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/pde-junit"/>
+<booleanAttribute key="default" value="false"/>
+<booleanAttribute key="default_auto_start" value="true"/>
+<booleanAttribute key="includeOptional" value="false"/>
+<stringAttribute key="location" value="${workspace_loc}/../junit-workspace"/>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/org.openhab.io.bin2json.test"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="4"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value="=org.openhab.io.bin2json.test"/>
+<booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+<stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+<stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
+<booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+<stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value=""/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.openhab.io.bin2json.test"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
+<stringAttribute key="pde.version" value="3.3"/>
+<stringAttribute key="product" value="org.eclipse.equinox.p2.director.app.product"/>
+<booleanAttribute key="run_in_ui_thread" value="false"/>
+<stringAttribute key="selected_target_plugins" value="ch.qos.logback.classic,ch.qos.logback.core,ch.qos.logback.slf4j,com.eclipsesource.jaxrs.jersey-min,com.google.gson,com.google.guava,com.ibm.icu,javax.activation,javax.inject,javax.measure.unit-api,javax.servlet*3.1.0.v20140303-1611,javax.servlet*3.1.0.v201410161800,javax.transaction,javax.xml,net.bytebuddy.byte-buddy,net.bytebuddy.byte-buddy-agent,org.apache.ant,org.apache.commons.collections,org.apache.commons.exec,org.apache.commons.io,org.apache.commons.lang,org.apache.felix.gogo.command,org.apache.felix.gogo.runtime,org.apache.felix.scr*2.0.10.v20170501-2007,org.apache.felix.scr*2.0.14.v20180117-1452,org.eclipse.ant.core,org.eclipse.compare.core,org.eclipse.core.contenttype,org.eclipse.core.expressions,org.eclipse.core.filesystem,org.eclipse.core.jobs,org.eclipse.core.resources,org.eclipse.core.runtime,org.eclipse.core.variables,org.eclipse.emf.common,org.eclipse.emf.ecore,org.eclipse.emf.ecore.xmi,org.eclipse.equinox.app,org.eclipse.equinox.cm,org.eclipse.equinox.common,org.eclipse.equinox.ds,org.eclipse.equinox.event*1.4.0.v20170105-1446,org.eclipse.equinox.event*1.4.200.v20180426-0845,org.eclipse.equinox.preferences,org.eclipse.equinox.registry,org.eclipse.equinox.util*1.0.500.v20130404-1337,org.eclipse.equinox.util*1.1.0.v20180419-0833,org.eclipse.jetty.client,org.eclipse.jetty.http*9.4.11.v20180605,org.eclipse.jetty.http*9.4.5.v20170502,org.eclipse.jetty.io*9.4.11.v20180605,org.eclipse.jetty.io*9.4.5.v20170502,org.eclipse.jetty.osgi.alpn.fragment,org.eclipse.jetty.security*9.4.11.v20180605,org.eclipse.jetty.security*9.4.5.v20170502,org.eclipse.jetty.server*9.4.11.v20180605,org.eclipse.jetty.server*9.4.5.v20170502,org.eclipse.jetty.servlet*9.4.11.v20180605,org.eclipse.jetty.servlet*9.4.5.v20170502,org.eclipse.jetty.util*9.4.11.v20180605,org.eclipse.jetty.util*9.4.5.v20170502,org.eclipse.jetty.websocket.api,org.eclipse.jetty.websocket.client,org.eclipse.jetty.websocket.common,org.eclipse.jetty.xml,org.eclipse.osgi,org.eclipse.osgi.compatibility.state,org.eclipse.osgi.services*3.6.0.v20170228-1906,org.eclipse.osgi.services*3.7.0.v20180223-1712,org.eclipse.osgi.util*3.4.0.v20170111-1608,org.eclipse.osgi.util*3.5.0.v20180219-1511,org.eclipse.team.core,org.hamcrest,org.hamcrest.core*1.3.0.v201303031735,org.hamcrest.core*1.3.0.v20180420-1519,org.hamcrest.integration,org.hamcrest.library,org.hamcrest.text,org.junit,org.mockito.mockito-core,org.objenesis,org.openhab.core,org.slf4j.api,tec.uom.lib.uom-lib-common,tec.uom.se"/>
+<stringAttribute key="selected_workspace_plugins" value="org.openhab.io.bin2json,org.openhab.io.bin2json.test"/>
+<booleanAttribute key="show_selected_only" value="false"/>
+<booleanAttribute key="tracing" value="false"/>
+<booleanAttribute key="useCustomFeatures" value="false"/>
+<booleanAttribute key="useDefaultConfig" value="true"/>
+<booleanAttribute key="useDefaultConfigArea" value="false"/>
+<booleanAttribute key="useProduct" value="false"/>
+</launchConfiguration>

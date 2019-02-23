@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,
+ lib/jbbp-1.4.1.jar
+Bundle-ManifestVersion: 2
+Bundle-Name: openHAB Binary to JSON converter
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.io.bin2json
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Import-Package: 
+ com.google.gson,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.core.util,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml

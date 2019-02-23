@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.io.bin2test.test
+Bundle-ManifestVersion: 2
+Fragment-Host: org.openhab.io.bin2json
+Bundle-Name: openHAB Binary to JSON converter Tests
+Bundle-SymbolicName: org.openhab.io.bin2json.test;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: com.google.common.collect,
+ com.google.gson,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.hamcrest;core=split,
+ org.junit,
+ org.osgi.framework,
+ org.osgi.service.component,
+ org.slf4j
