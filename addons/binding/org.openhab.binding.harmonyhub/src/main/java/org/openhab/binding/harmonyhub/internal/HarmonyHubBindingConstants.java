@@ -37,6 +37,7 @@ public class HarmonyHubBindingConstants {
     public static final String CHANNEL_ACTIVITY_STARTED_TRIGGER = "activityStarted";
 
     public static final String CHANNEL_BUTTON_PRESS = "buttonPress";
+    public static final String CHANNEL_PLAYER = "player";
 
     public static final String DEVICE_PROPERTY_ID = "id";
     public static final String DEVICE_PROPERTY_NAME = "name";
