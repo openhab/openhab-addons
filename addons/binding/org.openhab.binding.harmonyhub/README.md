@@ -70,7 +70,10 @@ items:
 String HarmonyGreatRoomActivity              "Current Activity [%s]"  (gMain) { channel="harmonyhub:hub:GreatRoom:currentActivity" }
 ```
 
-Hubs can also send a button press to a device associated with the current activity. A String item can be used to send any button name/label or a Player item can be used to send Play/Pause/FastForward/Rewind/SkipForward/SkipBackward. This mimics the physical remote where buttons are mapped differently depending on which activity is running.  For example the play button may be sent to a DVD player when running a DVD activity, or it may be sent to a AppleTV when running that activity. 
+Hubs can also send a button press to a device associated with the current activity.
+A String item can be used to send any button name/label or a Player item can be used to send Play/Pause/FastForward/Rewind/SkipForward/SkipBackward. 
+This mimics the physical remote where buttons are mapped differently depending on which activity is running.  
+For example the play button may be sent to a DVD player when running a "Watch DVD" activity, or it may be sent to a AppleTV when running a "Watch Movie" activity. 
 
 
 ```java
