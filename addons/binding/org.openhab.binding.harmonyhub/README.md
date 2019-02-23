@@ -70,7 +70,18 @@ items:
 String HarmonyGreatRoomActivity              "Current Activity [%s]"  (gMain) { channel="harmonyhub:hub:GreatRoom:currentActivity" }
 ```
 
-Devices can send button presses
+Hubs can also send a button press to a device associated with the current activity.
+A String item can be used to send any button name/label or a Player item can be used to send Play/Pause/FastForward/Rewind/SkipForward/SkipBackward. 
+This mimics the physical remote where buttons are mapped differently depending on which activity is running.  
+For example the play button may be sent to a DVD player when running a "Watch DVD" activity, or it may be sent to a AppleTV when running a "Watch Movie" activity. 
+
+
+```java
+String HarmonyHubGreatButton            { channel="harmonyhub:hub:GreatRoom:buttonPress" }
+Player HarmonyHubGreatPlayer            { channel="harmonyhub:hub:GreatRoom:player" }
+```
+
+Devices can be sent button commands directly, regardless if they are part of the current running activity or not.
 
 ```java
 String HarmonyGreatRoomDenon            "Denon Button Press" (gMain) { channel="harmonyhub:device:GreatRoom:29529817:buttonPress" }
@@ -121,10 +132,19 @@ Sitemap:
 sitemap demo label="Main Menu" {
         Frame  {
                 Switch item=HarmonyGreatRoomActivity mappings=[PowerOff="PowerOff", TIVO="TIVO", Music="Music","APPLE TV"="APPLE TV", NETFLIX="NETFLIX"]
+                Switch item=HarmonyHubGreatButton label="Direction Pad" mappings=[DirectionUp='Up', DirectionDown='Down', DirectionLeft='<', DirectionRight='>', Select='OK']
                 Switch item=HarmonyGreatRoomDenon mappings=["Volume Up"="Volume Up","Volume Down"="Volume Down"]
         }
 }
 ```
 
-Possible values for the "buttonPress" channel can be determined via the REST API for channel-types, <http://YourServer:8080/rest/channel-types>.
+## ButtonPress values
+
+Example subset of values for the current activity "buttonPress" channels 
+
+```
+Mute,VolumeDown,VolumeUp,DirectionDown,DirectionLeft,DirectionRight,DirectionUp,Select,Stop,Play,Rewind,Pause,FastForward,SkipBackward,SkipForward,Menu,Back,Home,SelectGame,PageDown,PageUp,Aspect,Display,Search,Cross,Circle,Square,Triangle,PS,Info,NumberEnter,Hyphen,Number0,Number1,Number2,Number3,Number4,Number5,Number6,Number7,Number8,Number9,PrevChannel,ChannelDown,ChannelUp,Record,FrameAdvance,C,B,D,A,Live,ThumbsDown,ThumbsUp,TiVo,WiiA,WiiB,Guide,Clear,Green,Red,Blue,Yellow,Dot,Return,Favorite,Exit,Sleep
+```
+
+A complete list of names for device buttons values can be determined via the REST API for channel-types, <http://YourServer:8080/rest/channel-types>.
 Search the JSON for "harmonyhub:device".
