@@ -8,21 +8,21 @@
 		<label>Harmony Hub</label>
 		<description>A Logitech Harmony Hub</description>
 		<channels>
-            <channel id="currentActivity" typeId="currentActivity" />
-            <channel id="activityStarting" typeId="eventTrigger">
-                <label>Activity Starting Trigger</label>
-                <description>Triggered when an activity is starting</description>
-            </channel>
-            <channel id="activityStarted" typeId="eventTrigger">
-                <label>Activity Started Trigger</label>
-                <description>Triggered when an activity is started</description>
-            </channel>
-            <channel id="buttonPress" typeId="buttonPress">
-                <label>Button Press</label>
-                <description>The label/name of the button to press on a Harmony Hub which will be sent to the device associated with the current activity and label</description>
-            </channel>
-            <channel id="player" typeId="player" />
-        </channels>
+			<channel id="currentActivity" typeId="currentActivity" />
+			<channel id="activityStarting" typeId="eventTrigger">
+				<label>Activity Starting Trigger</label>
+				<description>Triggered when an activity is starting</description>
+			</channel>
+			<channel id="activityStarted" typeId="eventTrigger">
+				<label>Activity Started Trigger</label>
+				<description>Triggered when an activity is started</description>
+			</channel>
+			<channel id="buttonPress" typeId="buttonPress">
+				<label>Button Press</label>
+				<description>The label/name of the button to press on a Harmony Hub which will be sent to the device associated with the current activity and label</description>
+			</channel>
+			<channel id="player" typeId="player" />
+		</channels>
 		<properties>
 			<property name="name"></property>
 		</properties>

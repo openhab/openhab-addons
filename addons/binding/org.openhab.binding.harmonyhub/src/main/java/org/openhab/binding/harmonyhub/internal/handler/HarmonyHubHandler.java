@@ -86,7 +86,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
     private List<HubStatusListener> listeners = new CopyOnWriteArrayList<>();
     private final HarmonyHubHandlerFactory factory;
     private @NonNullByDefault({}) HarmonyHubConfig config;
-    private @NonNullByDefault({}) HarmonyClient client;
+    private final HarmonyClient client;
     private @Nullable ScheduledFuture<?> retryJob;
     private @Nullable ScheduledFuture<?> heartBeatJob;
 
@@ -127,7 +127,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
                     try {
                         client.startActivity(((DecimalType) command).intValue());
                     } catch (Exception e) {
-                        logger.error("Could not start activity", e);
+                        logger.warn("Could not start activity", e);
                     }
                 } else {
                     try {
@@ -140,7 +140,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
                     } catch (IllegalArgumentException e) {
                         logger.warn("Activity '{}' is not known by the hub, ignoring it.", command);
                     } catch (Exception e) {
-                        logger.error("Could not start activity", e);
+                        logger.warn("Could not start activity", e);
                     }
                 }
                 break;
