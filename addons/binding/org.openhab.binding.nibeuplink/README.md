@@ -1,12 +1,17 @@
 # NibeUplink Binding
 
 The NibeUplink binding is used to get "live data" from from Nibe heat pumps without plugging any custom devices into your heat pump.
-This avoids the risk of losing your warranty. Instead data is retrieved from Nibe Uplink. This binding should in general be compatible with heat pump models that support Nibe Uplink.
-In general read access is supported for all channels. Write access is only supported for a small subset of channels. Write access will only be available with a paid subscription for "manage" at NibeUplink.
+This avoids the risk of losing your warranty.
+Instead data is retrieved from Nibe Uplink.
+This binding should in general be compatible with heat pump models that support Nibe Uplink.
+In general read access is supported for all channels.
+Write access is only supported for a small subset of channels.
+Write access will only be available with a paid subscription for "manage" at NibeUplink.
 
 ## Supported Things
 
-This binding provides only one thing type: The Nibe heat pump. Create one Nibe heat pump thing per physical heat pump installation available in your home(s).
+This binding provides only one thing type: The Nibe heat pump.
+Create one Nibe heat pump thing per physical heat pump installation available in your home(s).
 If your setup contains an outdoor unit such as F2030 or F2040 and an indoor unit such as VVM320 this is one installation where the indoor unit is the master that has access to all data produced by the outdoor unit (slave).
 
 ## Discovery
@@ -48,13 +53,17 @@ password used to login on NibeUplink
 Id of your heatpump in NibeUplink (can be found in the URL after successful login: https://www.nibeuplink.com/System/**<nibeId>>**/Status/Overview)
 
 - **pollingInterval**  
-interval (seconds) in which values are retrieved from NibeUplink. Setting less than 60 seconds does not make any sense as the heat pump only provides periodic updates to NibeUplink. (default = 60). 
+interval (seconds) in which values are retrieved from NibeUplink.
+Setting less than 60 seconds does not make any sense as the heat pump only provides periodic updates to NibeUplink.
+(default = 60)
 
 - **houseKeepingInterval**  
-interval (seconds) in which list of "dead channels" (channels that do not return any data or invalid data) should be purged (default = 3600). Usually this settings should not be changed.
+interval (seconds) in which list of "dead channels" (channels that do not return any data or invalid data) should be purged (default = 3600).
+Usually this settings should not be changed.
 
 - **customChannel01 - customChannel08**  
-allows to define up to 8 custom channels which are not covered in the basic channel list of your model. Any number between 10000 and 50000 is allowed. 
+allows to define up to 8 custom channels which are not covered in the basic channel list of your model.
+Any number between 10000 and 50000 is allowed. 
 
 ### Examples
 
@@ -79,7 +88,8 @@ nibeuplink:vvm320:home2  [ user="...", password="...", nibeId="..."]
 
 ## Channels
 
-Available channels depend on the specific heatpump model. Following models/channels are currently available
+Available channels depend on the specific heatpump model.
+Following models/channels are currently available:
 
 ### All Models
 
@@ -305,7 +315,8 @@ nibeuplink:vvm320:mynibe     [ user="nibe@my-domain.de", password="secret123", n
 
 ### Items
 
-As the binding supports UoM you might define units in the item's label. An automatic conversion is applied e.g. from °C to °F then.
+As the binding supports UoM you might define units in the item's label.
+An automatic conversion is applied e.g. from °C to °F then.
 Channels which represent two states (such as on/off) are represented as Switch.
 Channels which have more than two states are internally represented as number.
 You need to define a map file which also gives you the opportunity to translate the state into your preferred language.
@@ -334,7 +345,9 @@ Please define each state as integer.
 
 ### Sitemaps
 
-Please take care of the status channels. If you use selection items an automatic mapping will be applied. If you prefer switch items a mapping must be applied like this:
+Please take care of the status channels.
+If you use selection items an automatic mapping will be applied.
+If you prefer switch items a mapping must be applied like this:
 
 ```
 Switch item=NIBE_HW_MODE mappings=[0="Eco", 1="Norm"]
