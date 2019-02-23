@@ -45,11 +45,55 @@
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
+	<channel-type id="f1145-type-40015">
+		<item-type>Number:Temperature</item-type>
+		<label>EB100-EP14-BT10 Brine In Temperature</label>
+		<description>Brine in temperature, BT10</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f1145-type-40016">
+		<item-type>Number:Temperature</item-type>
+		<label>EB100-EP14-BT11 Brine Out Temperature</label>
+		<description>Brine out temperature, BT11</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f1145-type-44270">
+		<item-type>Number:Temperature</item-type>
+		<label>Calculated Cooling Supply Temperature S1</label>
+		<description>Calculated supply temperature in cooling mode for the climate system</description>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="f1145-type-43416">
 		<item-type>Number</item-type>
 		<label>Compressor starts EB100-EP14</label>
 		<description>Number of compressor starts</description>
 		<state pattern="%d" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="f1145-type-43103">
+		<item-type>Number</item-type>
+		<label>HPAC state</label>
+		<description>State of the HPAC accessory</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="10">Off</option>
+				<option value="20">Wait</option>
+				<option value="30">Passive</option>
+				<option value="40">PassiveWait</option>
+				<option value="50">Active</option>
+				<option value="60">ActiveWait</option>
+				<option value="70">ActiveProtWait</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f1145-type-43439">
+		<item-type>Number:Dimensionless</item-type>
+		<label>EP14-GP2 Brine Pump Speed</label>
+		<description>Brine pump speed EP14 (GP2)</description>
+		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f1145-type-43420">

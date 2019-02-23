@@ -72,13 +72,6 @@
 		<description>Indicates if the ERS accessory is externaly blocked.</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="vvm320-type-43437">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Supply Pump Speed EP14</label>
-		<description>Supply Pump Speed EP14 (GP6)</description>
-		<state pattern="%d %%" readOnly="true">
-		</state>
-	</channel-type>
 	<channel-type id="vvm320-type-44055">
 		<item-type>Number:Temperature</item-type>
 		<label>EB101-EP14-BT3 Return Temp.</label>
@@ -237,6 +230,34 @@
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="vvm320-type-47374">
+		<item-type>Number</item-type>
+		<label>Start Temperature Cooling</label>
+		<description>Start Temperature Cooling in Auto mode</description>
+		<state min="10" max="40" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="vvm320-type-47375">
+		<item-type>Number</item-type>
+		<label>Stop Temperature Heating</label>
+		<description>Stop Temperature Heating in Auto mode</description>
+		<state min="0" max="30" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="vvm320-type-47376">
+		<item-type>Number</item-type>
+		<label>Stop Temperature Additive</label>
+		<description>Stop Temperature Additive heater in Auto mode</description>
+		<state min="-20" max="10" step="1" pattern="%d °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="vvm320-type-47377">
+		<item-type>Number</item-type>
+		<label>Outdoor Filter Time</label>
+		<description>Outdoor Filter Time in Auto mode</description>
+		<state min="1" max="48" step="1" pattern="%d h" readOnly="false">
+		</state>
+	</channel-type>
 	<channel-type id="vvm320-type-47394">
 		<item-type>Switch</item-type>
 		<label>Use room sensor S1</label>
@@ -247,14 +268,14 @@
 		<item-type>Number</item-type>
 		<label>Room sensor factor S1</label>
 		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
-		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
+		<state min="0" max="6" step="1" pattern="%.1f" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="vvm320-type-48793">
 		<item-type>Number</item-type>
 		<label>Room sensor cool factor S1</label>
 		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature in cooling mode.</description>
-		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
+		<state min="0" max="6" step="1" pattern="%.1f" readOnly="false">
 		</state>
 	</channel-type>
 </thing:thing-descriptions>
