@@ -143,5 +143,5 @@ Example subset of values for the current activity "buttonPress" channels
 Mute,VolumeDown,VolumeUp,DirectionDown,DirectionLeft,DirectionRight,DirectionUp,Select,Stop,Play,Rewind,Pause,FastForward,SkipBackward,SkipForward,Menu,Back,Home,SelectGame,PageDown,PageUp,Aspect,Display,Search,Cross,Circle,Square,Triangle,PS,Info,NumberEnter,Hyphen,Number0,Number1,Number2,Number3,Number4,Number5,Number6,Number7,Number8,Number9,PrevChannel,ChannelDown,ChannelUp,Record,FrameAdvance,C,B,D,A,Live,ThumbsDown,ThumbsUp,TiVo,WiiA,WiiB,Guide,Clear,Green,Red,Blue,Yellow,Dot,Return,Favorite,Exit,Sleep
 ```
 
-A complete list of values for device buttons values can be determined via the REST API for channel-types, <http://YourServer:8080/rest/channel-types>.
+A complete list of names for device buttons values can be determined via the REST API for channel-types, <http://YourServer:8080/rest/channel-types>.
 Search the JSON for "harmonyhub:device".
