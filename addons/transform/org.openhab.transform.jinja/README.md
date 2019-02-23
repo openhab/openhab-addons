@@ -26,6 +26,6 @@ the template `{{value_json['AM2301'].Temperature}}` extracts the string `4.7`.
 
 ## Further Reading
 
-* Wikipedia on [Jinja](https://en.wikipedia.org/wiki/Jinja_(template_engine%29).
+* Wikipedia on [Jinja](https://en.wikipedia.org/wiki/Jinja_(template_engine).
 * Home assistant [discovery](https://www.home-assistant.io/docs/mqtt/discovery/).
 * Home assistant [templating](https://www.home-assistant.io/docs/configuration/templating/).
