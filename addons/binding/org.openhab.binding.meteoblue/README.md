@@ -81,10 +81,20 @@ Each of the following channels is supported in all of the channel groups.
 | condition                | String             | A brief description of the forecast weather condition (e.g. 'Overcast') |
 |                          |                    | Valid values range from 1 - 17 (see the [meteoblue docs](https://content.meteoblue.com/nl/service-specifications/standards/symbols-and-pictograms#eztoc14635_1_6)) |
 | icon                     | Image              | Image used to represent the forecast (calculated) |
+|                          |                    | see [Image icons](#image-icons) below
 | predictability           | Number             | Estimated certainty of the forecast (percentage) |
 | predictabilityClass      | Number             | Range 0-5 (0=very low, 5=very high) |
 | precipitationHours       | Number             | Total hours of the day with precipitation |
 | humidityGreater90Hours   | Number             | Total hours of the day with relative humidity greater than 90% |
+
+
+## Image Icons
+
+To show the weather image icons in the UI, the [image files](https://content.meteoblue.com/hu/service-specifications/standards/symbols-and-pictograms) need to be downloaded and installed in the `conf/icons/classic` folder.
+
+In the "Downloads" section at the bottom of the page, download the file named `meteoblue_weather_pictograms_<date>.zip`.
+
+The files to extract from the zip file and install in the folder will be named "iday*.png" or "iday*.svg".
 
 
 ## Full Example
