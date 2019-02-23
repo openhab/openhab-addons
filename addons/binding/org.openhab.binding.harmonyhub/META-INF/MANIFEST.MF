@@ -3,7 +3,7 @@ Automatic-Module-Name: org.openhab.binding.harmonyhub
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: 
  .,
- lib/harmony-client-1.1.0.jar
+ lib/harmony-client-1.1.1.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: HarmonyHub Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

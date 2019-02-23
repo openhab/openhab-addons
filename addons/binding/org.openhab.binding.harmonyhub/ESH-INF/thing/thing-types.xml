@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="harmonyhub"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="hub">
 		<label>Harmony Hub</label>
@@ -17,15 +17,20 @@
 				<label>Activity Started Trigger</label>
 				<description>Triggered when an activity is started</description>
 			</channel>
+			<channel id="buttonPress" typeId="buttonPress">
+				<label>Button Press</label>
+				<description>The label/name of the button to press on a Harmony Hub which will be sent to the device associated with the current activity and label</description>
+			</channel>
+			<channel id="player" typeId="player" />
 		</channels>
 		<properties>
 			<property name="name"></property>
 		</properties>
 		<config-description>
 			<parameter name="host" type="text" required="false">
-					<label>Host</label>
-					<description>Host or IP address of hub.</description>
-					<context>network-address</context>
+				<label>Host</label>
+				<description>Host or IP address of hub.</description>
+				<context>network-address</context>
 			</parameter>
 			<parameter name="heartBeatInterval" type="integer" required="false" min="1" max="50">
 				<label>Heart Beat Interval</label>
@@ -74,4 +79,11 @@
 		<label>Button Press</label>
 		<description>The label/name of the button to press on a Harmony Hub device (write only)</description>
 	</channel-type>
+
+	<channel-type id="player">
+		<item-type>Player</item-type>
+		<label>Player Control</label>
+		<description>Send player commands (Rewind,FastForward,Play,Pause,SkipForward,SkipBackwards) to the device associated with the current running activity.</description>
+	</channel-type>
+
 </thing:thing-descriptions>
