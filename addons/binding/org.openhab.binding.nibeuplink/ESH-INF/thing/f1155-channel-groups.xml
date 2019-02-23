@@ -22,6 +22,9 @@
 			<channel id="43136" typeId="f1155-type-43136" />
 			<channel id="43122" typeId="f1155-type-43122" />
 			<channel id="43123" typeId="f1155-type-43123" />
+			<channel id="40015" typeId="f1155-type-40015" />
+			<channel id="40016" typeId="f1155-type-40016" />
+			<channel id="43439" typeId="f1155-type-43439" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="f1155-airsupply">

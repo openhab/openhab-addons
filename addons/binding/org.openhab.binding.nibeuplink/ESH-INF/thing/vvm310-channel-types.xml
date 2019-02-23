@@ -72,13 +72,6 @@
 		<description>Indicates if the ERS accessory is externaly blocked.</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="vvm310-type-43437">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Supply Pump Speed EP14</label>
-		<description>Supply Pump Speed EP14 (GP6)</description>
-		<state pattern="%d %%" readOnly="true">
-		</state>
-	</channel-type>
 	<channel-type id="vvm310-type-44055">
 		<item-type>Number:Temperature</item-type>
 		<label>EB101-EP14-BT3 Return Temp.</label>

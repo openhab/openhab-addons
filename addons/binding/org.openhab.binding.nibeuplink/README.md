@@ -1,12 +1,17 @@
 # NibeUplink Binding
 
 The NibeUplink binding is used to get "live data" from from Nibe heat pumps without plugging any custom devices into your heat pump.
-This avoids the risk of losing your warranty. Instead data is retrieved from Nibe Uplink. This binding should in general be compatible with heat pump models that support Nibe Uplink.
-In general read access is supported for all channels. Write access is only supported for a small subset of channels.
+This avoids the risk of losing your warranty.
+Instead data is retrieved from Nibe Uplink.
+This binding should in general be compatible with heat pump models that support Nibe Uplink.
+In general read access is supported for all channels.
+Write access is only supported for a small subset of channels.
+Write access will only be available with a paid subscription for "manage" at NibeUplink.
 
 ## Supported Things
 
-This binding provides only one thing type: The Nibe heat pump. Create one Nibe heat pump thing per physical heat pump installation available in your home(s).
+This binding provides only one thing type: The Nibe heat pump.
+Create one Nibe heat pump thing per physical heat pump installation available in your home(s).
 If your setup contains an outdoor unit such as F2030 or F2040 and an indoor unit such as VVM320 this is one installation where the indoor unit is the master that has access to all data produced by the outdoor unit (slave).
 
 ## Discovery
@@ -48,13 +53,17 @@ password used to login on NibeUplink
 Id of your heatpump in NibeUplink (can be found in the URL after successful login: https://www.nibeuplink.com/System/**<nibeId>>**/Status/Overview)
 
 - **pollingInterval**  
-interval (seconds) in which values are retrieved from NibeUplink. Setting less than 60 seconds does not make any sense as the heat pump only provides periodic updates to NibeUplink. (default = 60). 
+interval (seconds) in which values are retrieved from NibeUplink.
+Setting less than 60 seconds does not make any sense as the heat pump only provides periodic updates to NibeUplink.
+(default = 60)
 
 - **houseKeepingInterval**  
-interval (seconds) in which list of "dead channels" (channels that do not return any data or invalid data) should be purged (default = 3600). Usually this settings should not be changed.
+interval (seconds) in which list of "dead channels" (channels that do not return any data or invalid data) should be purged (default = 3600).
+Usually this settings should not be changed.
 
 - **customChannel01 - customChannel08**  
-allows to define up to 8 custom channels which are not covered in the basic channel list of your model. Any number between 10000 and 50000 is allowed. 
+allows to define up to 8 custom channels which are not covered in the basic channel list of your model.
+Any number between 10000 and 50000 is allowed. 
 
 ### Examples
 
@@ -79,7 +88,8 @@ nibeuplink:vvm320:home2  [ user="...", password="...", nibeId="..."]
 
 ## Channels
 
-Available channels depend on the specific heatpump model. Following models/channels are currently available
+Available channels depend on the specific heatpump model.
+Following models/channels are currently available:
 
 ### All Models
 
@@ -95,6 +105,7 @@ Available channels depend on the specific heatpump model. Following models/chann
 | base#40008      | Number:Temperature     | -32767 | 32767      | No       | BT2 Supply temp S1                         |                                               |
 | base#40012      | Number:Temperature     | -32767 | 32767      | No       | EB100-EP14-BT3 Return temp                 |                                               |
 | base#40072      | Number:Dimensionless   | -32767 | 32767      | No       | BF1 EP14 Flow                              |                                               |
+| base#43437      | Number:Dimensionless   | 0      | 100        | No       | Supply Pump Speed EP14                     |                                               |
 | base#40079      | Number:ElectricCurrent | 0      | 4294967295 | No       | EB100-BE3 Current                          |                                               |
 | base#40081      | Number:ElectricCurrent | 0      | 4294967295 | No       | EB100-BE2 Current                          |                                               |
 | base#40083      | Number:ElectricCurrent | 0      | 4294967295 | No       | EB100-BE1 Current                          |                                               |
@@ -114,6 +125,13 @@ Available channels depend on the specific heatpump model. Following models/chann
 | hotwater#44298  | Number:Energy          | 0      | 9999999    | No       | Heat Meter - HW Cpr and Add EP14           |                                               |
 | hotwater#48132  | Number                 | ---    | ---        | Yes      | Temporary Lux                              | 0=Off, 1=3h, 2=6h, 3=12h, 4=One time increase |
 | hotwater#47041  | Number                 | ---    | ---        | Yes      | Hot water mode                             | 0=Economy, 1=Normal, 2=Luxury                 |
+| hotwater#47045  | Number                 | 5      | 70         | No       | Start temperature HW Economy               |                                               |
+| hotwater#47049  | Number                 | 5      | 70         | No       | Stop temperature HW Economy                |                                               |
+| hotwater#47044  | Number                 | 5      | 70         | No       | Start temperature HW Normal                |                                               |
+| hotwater#47048  | Number                 | 5      | 70         | No       | Stop temperature HW Normal                 |                                               |
+| hotwater#47043  | Number                 | 5      | 70         | No       | Start temperature HW Luxury                |                                               |
+| hotwater#47047  | Number                 | 5      | 70         | No       | Stop temperature HW Luxury                 |                                               |
+| hotwater#47046  | Number                 | 55     | 70         | No       | Stop temperature Periodic HW               |                                               |
 
 ### F730
 
@@ -165,37 +183,44 @@ Available channels depend on the specific heatpump model. Following models/chann
 
 ### F1145 / 1245
 
-| Channel Type ID  | Item Type          | Min    | Max     | Writable | Description                       | Allowed Values (write access) |
-|------------------|--------------------|--------|---------|----------|-----------------------------------|-------------------------------|
-| general#44302    | Number:Energy      | 0      | 9999999 | No       | Heat Meter - Cooling Cpr EP14     |                               |
-| compressor#43424 | Number:Time        | 0      | 9999999 | No       | Tot. HW op.time compr. EB100-EP14 |                               |
-| compressor#43420 | Number:Time        | 0      | 9999999 | No       | Tot. op.time compr. EB100-EP14    |                               |
-| compressor#43416 | Number             | 0      | 9999999 | No       | Compressor starts EB100-EP14      |                               |
-| compressor#40022 | Number:Temperature | -32767 | 32767   | No       | EB100-EP14-BT17 Suction           |                               |
-| compressor#40019 | Number:Temperature | -32767 | 32767   | No       | EB100-EP14-BT15 Liquid Line       |                               |
-| compressor#40018 | Number:Temperature | -32767 | 32767   | No       | EB100-EP14-BT14 Hot Gas Temp      |                               |
-| compressor#40017 | Number:Temperature | -32767 | 32767   | No       | EB100-EP14-BT12 Condensor Out     |                               |
-| airsupply#40025  | Number:Temperature | -32767 | 32767   | No       | BT20 Exhaust air temp. 1          |                               |
-| airsupply#40026  | Number:Temperature | -32767 | 32767   | No       | BT21 Vented air temp. 1           |                               |
-
-
+| Channel Type ID  | Item Type            | Min    | Max     | Writable | Description                              | Allowed Values (write access) |
+|------------------|----------------------|--------|---------|----------|------------------------------------------|-------------------------------|
+| general#44302    | Number:Energy        | 0      | 9999999 | No       | Heat Meter - Cooling Cpr EP14            |                               |
+| general#44270    | Number:Temperature   | -32767 | 32767   | No       | Calculated Cooling Supply Temperature S1 |                               |
+| general#43103    | Number               | 10     | 70      | No       | HPAC state                               |                               |
+| compressor#43424 | Number:Time          | 0      | 9999999 | No       | Tot. HW op.time compr. EB100-EP14        |                               |
+| compressor#43420 | Number:Time          | 0      | 9999999 | No       | Tot. op.time compr. EB100-EP14           |                               |
+| compressor#43416 | Number               | 0      | 9999999 | No       | Compressor starts EB100-EP14             |                               |
+| compressor#40022 | Number:Temperature   | -32767 | 32767   | No       | EB100-EP14-BT17 Suction                  |                               |
+| compressor#40019 | Number:Temperature   | -32767 | 32767   | No       | EB100-EP14-BT15 Liquid Line              |                               |
+| compressor#40018 | Number:Temperature   | -32767 | 32767   | No       | EB100-EP14-BT14 Hot Gas Temp             |                               |
+| compressor#40017 | Number:Temperature   | -32767 | 32767   | No       | EB100-EP14-BT12 Condensor Out            |                               |
+| compressor#40015 | Number:Temperature   | -32767 | 32767   | No       | EB100-EP14-BT10 Brine In Temperature     |                               |
+| compressor#40016 | Number:Temperature   | -32767 | 32767   | No       | EB100-EP14-BT11 Brine Out Temperature    |                               |
+| compressor#43439 | Number:Dimensionless | 0      | 100     | No       | EP14-GP2 Brine Pump Speed                |                               |
+| airsupply#40025  | Number:Temperature   | -32767 | 32767   | No       | BT20 Exhaust air temp. 1                 |                               |
+| airsupply#40026  | Number:Temperature   | -32767 | 32767   | No       | BT21 Vented air temp. 1                  |                               |
+	
 ### F1155 / 1255
 
-| Channel Type ID  | Item Type          | Min    | Max     | Writable | Description                       | Allowed Values (write access) |
-|------------------|--------------------|--------|---------|----------|-----------------------------------|-------------------------------|
-| general#44302    | Number:Energy      | 0      | 9999999 | No       | Heat Meter - Cooling Cpr EP14     |                               |
-| compressor#43424 | Number:Time        | 0      | 9999999 | No       | Tot. HW op.time compr. EB100-EP14 |                               |
-| compressor#43420 | Number:Time        | 0      | 9999999 | No       | Tot. op.time compr. EB100-EP14    |                               |
-| compressor#43416 | Number             | 0      | 9999999 | No       | Compressor starts EB100-EP14      |                               |
-| compressor#40022 | Number:Temperature | -32767 | 32767   | No       | EB100-EP14-BT17 Suction           |                               |
-| compressor#40019 | Number:Temperature | -32767 | 32767   | No       | EB100-EP14-BT15 Liquid Line       |                               |
-| compressor#40018 | Number:Temperature | -32767 | 32767   | No       | EB100-EP14-BT14 Hot Gas Temp      |                               |
-| compressor#40017 | Number:Temperature | -32767 | 32767   | No       | EB100-EP14-BT12 Condensor Out     |                               |
-| compressor#43136 | Number:Frequency   | 0      | 65535   | No       | Compressor Frequency, Actual      |                               |
-| compressor#43122 | Number:Frequency   | -32767 | 32767   | No       | Compr. current min.freq.          |                               |
-| compressor#43123 | Number:Frequency   | -32767 | 32767   | No       | Compr. current max.freq.          |                               |
-| airsupply#40025  | Number:Temperature | -32767 | 32767   | No       | BT20 Exhaust air temp. 1          |                               |
-| airsupply#40026  | Number:Temperature | -32767 | 32767   | No       | BT21 Vented air temp. 1           |                               |
+| Channel Type ID  | Item Type            | Min    | Max     | Writable | Description                           | Allowed Values (write access) |
+|------------------|----------------------|--------|---------|----------|---------------------------------------|-------------------------------|
+| general#44302    | Number:Energy        | 0      | 9999999 | No       | Heat Meter - Cooling Cpr EP14         |                               |
+| compressor#43424 | Number:Time          | 0      | 9999999 | No       | Tot. HW op.time compr. EB100-EP14     |                               |
+| compressor#43420 | Number:Time          | 0      | 9999999 | No       | Tot. op.time compr. EB100-EP14        |                               |
+| compressor#43416 | Number               | 0      | 9999999 | No       | Compressor starts EB100-EP14          |                               |
+| compressor#40022 | Number:Temperature   | -32767 | 32767   | No       | EB100-EP14-BT17 Suction               |                               |
+| compressor#40019 | Number:Temperature   | -32767 | 32767   | No       | EB100-EP14-BT15 Liquid Line           |                               |
+| compressor#40018 | Number:Temperature   | -32767 | 32767   | No       | EB100-EP14-BT14 Hot Gas Temp          |                               |
+| compressor#40017 | Number:Temperature   | -32767 | 32767   | No       | EB100-EP14-BT12 Condensor Out         |                               |
+| compressor#43136 | Number:Frequency     | 0      | 65535   | No       | Compressor Frequency, Actual          |                               |
+| compressor#43122 | Number:Frequency     | -32767 | 32767   | No       | Compr. current min.freq.              |                               |
+| compressor#43123 | Number:Frequency     | -32767 | 32767   | No       | Compr. current max.freq.              |                               |
+| compressor#40015 | Number:Temperature   | -32767 | 32767   | No       | EB100-EP14-BT10 Brine In Temperature  |                               |
+| compressor#40016 | Number:Temperature   | -32767 | 32767   | No       | EB100-EP14-BT11 Brine Out Temperature |                               |
+| compressor#43439 | Number:Dimensionless | 0      | 100     | No       | EP14-GP2 Brine Pump Speed             |                               |
+| airsupply#40025  | Number:Temperature   | -32767 | 32767   | No       | BT20 Exhaust air temp. 1              |                               |
+| airsupply#40026  | Number:Temperature   | -32767 | 32767   | No       | BT21 Vented air temp. 1               |                               |
 
 ### VVM310 / VVM 500
 
@@ -203,7 +228,6 @@ Available channels depend on the specific heatpump model. Following models/chann
 |------------------|----------------------|--------|---------|----------|----------------------------------------------------|------------------------------------------------------|
 | general#44270    | Number:Temperature   | -32767 | 32767   | No       | Calc. Cooling Supply S1                            |                                                      |
 | general#40121    | Number:Temperature   | -32767 | 32767   | No       | BT63 Add Supply Temp                               |                                                      |
-| general#43437    | Number:Dimensionless | 0      | 255     | No       | Supply Pump Speed EP14                             |                                                      |
 | general#44302    | Number:Energy        | 0      | 9999999 | No       | Heat Meter - Cooling Cpr EP14                      |                                                      |
 | general#47011    | Number               | -10    | 10      | Yes      | Heat Offset S1                                     | values between -10 and 10                            |
 | general#47394    | Switch               | ---    | ---     | Yes      | Use room sensor S1                                 | 0=off, 1=on                                          |
@@ -243,12 +267,15 @@ Available channels depend on the specific heatpump model. Following models/chann
 |------------------|----------------------|--------|---------|----------|----------------------------------------------------|------------------------------------------------------|
 | general#44270    | Number:Temperature   | -32767 | 32767   | No       | Calc. Cooling Supply S1                            |                                                      |
 | general#40121    | Number:Temperature   | -32767 | 32767   | No       | BT63 Add Supply Temp                               |                                                      |
-| general#43437    | Number:Dimensionless | 0      | 255     | No       | Supply Pump Speed EP14                             |                                                      |
 | general#44302    | Number:Energy        | 0      | 9999999 | No       | Heat Meter - Cooling Cpr EP14                      |                                                      |
 | general#47011    | Number               | -10    | 10      | Yes      | Heat Offset S1                                     | values between -10 and 10                            |
 | general#47394    | Switch               | ---    | ---     | Yes      | Use room sensor S1                                 | 0=off, 1=on                                          |
 | general#47402    | Number               | 0      | 60      | Yes      | Room sensor factor S1                              | Values between 0 and 6                               |
 | general#48793    | Number               | 0      | 60      | Yes      | Room sensor cool factor S1                         | Values between 0 and 6                               |
+| general#47374    | Number:Temperature   | 10     | 40      | Yes      | Start temperature cooling                          | Values between 10 and 40                             |
+| general#47375    | Number:Temperature   | 0      | 30      | Yes      | Stop temperature heating                           | Values between 0 and 30                              |
+| general#47376    | Number:Temperature   | -20    | 10      | Yes      | Stop temperature additive                          | Values between -20 and 10                            |
+| general#47377    | Number:Time          | 1      | 48      | Yes      | Outdoor Filter Time                                | Values between 1 and 48                              |
 | compressor#44362 | Number:Temperature   | -32767 | 32767   | No       | EB101-EP14-BT28 Outdoor Temp                       |                                                      |
 | compressor#44396 | Number:Dimensionless | 0      | 255     | No       | EB101 Speed charge pump                            |                                                      |
 | compressor#44703 | Number               | ---    | ---     | No       | EB101-EP14 Defrosting Outdoor Unit                 | 0=No, 1=Active, 2=Passive                            |
@@ -288,7 +315,8 @@ nibeuplink:vvm320:mynibe     [ user="nibe@my-domain.de", password="secret123", n
 
 ### Items
 
-As the binding supports UoM you might define units in the item's label. An automatic conversion is applied e.g. from °C to °F then.
+As the binding supports UoM you might define units in the item's label.
+An automatic conversion is applied e.g. from °C to °F then.
 Channels which represent two states (such as on/off) are represented as Switch.
 Channels which have more than two states are internally represented as number.
 You need to define a map file which also gives you the opportunity to translate the state into your preferred language.
@@ -317,7 +345,9 @@ Please define each state as integer.
 
 ### Sitemaps
 
-Please take care of the status channels. If you use selection items an automatic mapping will be applied. If you prefer switch items a mapping must be applied like this:
+Please take care of the status channels.
+If you use selection items an automatic mapping will be applied.
+If you prefer switch items a mapping must be applied like this:
 
 ```
 Switch item=NIBE_HW_MODE mappings=[0="Eco", 1="Norm"]
