@@ -206,12 +206,9 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        HarmonyClient localClient = client;
-        if (localClient != null) {
-            localClient.getCurrentActivity().thenAccept((activity) -> {
-                updateState(channelUID, new StringType(activity.getLabel()));
-            });
-        }
+        client.getCurrentActivity().thenAccept((activity) -> {
+            updateState(channelUID, new StringType(activity.getLabel()));
+        });
     }
 
     @Override
@@ -413,9 +410,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
      * @param button
      */
     public void pressButton(int device, String button) {
-        if (client != null) {
-            client.pressButton(device, button);
-        }
+        client.pressButton(device, button);
     }
 
     /**
@@ -425,17 +420,11 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
      * @param button
      */
     public void pressButton(String device, String button) {
-        if (client != null) {
-            client.pressButton(device, button);
-        }
+        client.pressButton(device, button);
     }
 
     public CompletableFuture<@Nullable HarmonyConfig> getConfigFuture() {
-        HarmonyClient localClient = client;
-        if (localClient == null) {
-            throw new IllegalStateException("Client is null");
-        }
-        return localClient.getConfig();
+        return client.getConfig();
     }
 
     /**
