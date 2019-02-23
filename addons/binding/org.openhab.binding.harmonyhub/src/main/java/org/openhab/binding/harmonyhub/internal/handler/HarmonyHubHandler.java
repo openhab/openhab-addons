@@ -30,6 +30,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.NextPreviousType;
+import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -110,27 +113,70 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
             localClient.getCurrentActivity().thenAccept(activity -> {
                 updateState(activity);
             });
-        } else if (command instanceof StringType) {
-            try {
-                try {
-                    int actId = Integer.parseInt(command.toString());
-                    localClient.startActivity(actId);
-                } catch (NumberFormatException ignored) {
-                    localClient.startActivityByName(command.toString());
+            return;
+        }
+
+        Channel channel = getThing().getChannel(channelUID.getId());
+        if (channel == null) {
+            logger.warn("No such channel for UID {}", channelUID);
+            return;
+        }
+
+        switch (channel.getUID().getId()) {
+            case CHANNEL_CURRENT_ACTIVITY:
+                if (command instanceof DecimalType) {
+                    try {
+                        localClient.startActivity(((DecimalType) command).intValue());
+                    } catch (Exception e) {
+                        logger.error("Could not start activity", e);
+                    }
+                } else {
+                    try {
+                        try {
+                            int actId = Integer.parseInt(command.toString());
+                            localClient.startActivity(actId);
+                        } catch (NumberFormatException ignored) {
+                            localClient.startActivityByName(command.toString());
+                        }
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("Activity '{}' is not known by the hub, ignoring it.", command);
+                    } catch (Exception e) {
+                        logger.error("Could not start activity", e);
+                    }
                 }
-            } catch (IllegalArgumentException e) {
-                logger.warn("Activity '{}' is not known by the hub, ignoring it.", command);
-            } catch (Exception e) {
-                logger.error("Could not start activity", e);
-            }
-        } else if (command instanceof DecimalType) {
-            try {
-                localClient.startActivity(((DecimalType) command).intValue());
-            } catch (Exception e) {
-                logger.error("Could not start activity", e);
-            }
-        } else {
-            logger.warn("Command {}: Not an acceptable type (String or Decimal), ignoring", command);
+                break;
+            case CHANNEL_BUTTON_PRESS:
+                localClient.pressButtonCurrentActivity(command.toString());
+                break;
+            case CHANNEL_PLAYER:
+                String cmd = null;
+                if (command instanceof PlayPauseType) {
+                    if (command == PlayPauseType.PLAY) {
+                        cmd = "Play";
+                    } else if (command == PlayPauseType.PAUSE) {
+                        cmd = "Pause";
+                    }
+                } else if (command instanceof NextPreviousType) {
+                    if (command == NextPreviousType.NEXT) {
+                        cmd = "SkipForward";
+                    } else if (command == NextPreviousType.PREVIOUS) {
+                        cmd = "SkipBackward";
+                    }
+                } else if (command instanceof RewindFastforwardType) {
+                    if (command == RewindFastforwardType.FASTFORWARD) {
+                        cmd = "FastForward";
+                    } else if (command == RewindFastforwardType.REWIND) {
+                        cmd = "Rewind";
+                    }
+                }
+                if (cmd != null) {
+                    localClient.pressButtonCurrentActivity(cmd);
+                } else {
+                    logger.warn("Unknown player type {}", command);
+                }
+                break;
+            default:
+                logger.warn("Unknown channel id {}", channel.getUID().getId());
         }
     }
 
