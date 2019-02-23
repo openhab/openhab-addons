@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -162,8 +163,17 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
     }
 
     @Override
-    protected Predicate<Channel> channelFilter(EEPType eepType, byte[] senderId) {
-        return c -> c.getChannelTypeUID().getId().startsWith("rockerswitchListener")
+    protected Predicate<Channel> stateFilter(EEPType eepType, byte[] senderId) {
+        return c -> ChannelKind.STATE.equals(c.getKind())
+                && c.getChannelTypeUID().getId().startsWith("rockerswitchListener")
+                && c.getConfiguration().as(EnOceanChannelRockerSwitchListenerConfig.class).enoceanId
+                        .equalsIgnoreCase(HexUtils.bytesToHex(senderId));
+    }
+
+    @Override
+    protected Predicate<Channel> triggerFilter(EEPType eepType, byte[] senderId) {
+        return c -> ChannelKind.TRIGGER.equals(c.getKind())
+                && c.getChannelTypeUID().getId().startsWith("rockerswitchListener")
                 && c.getConfiguration().as(EnOceanChannelRockerSwitchListenerConfig.class).enoceanId
                         .equalsIgnoreCase(HexUtils.bytesToHex(senderId));
     }

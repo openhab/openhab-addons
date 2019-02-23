@@ -129,6 +129,17 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_GENERIC_COLOR = "genericColor";
     public final static String CHANNEL_GENERIC_TEACHINCMD = "genericTeachInCMD";
 
+    public final static String CHANNEL_VALVE_POSITION = "valvePosition";
+    public final static String CHANNEL_BUTTON_LOCK = "buttonLock";
+    public final static String CHANNEL_DISPLAY_ORIENTATION = "displayOrientation";
+    public final static String CHANNEL_TEMPERATURE_SETPOINTN = "temperatureSetPoint";
+    public final static String CHANNEL_FEED_TEMPERATURE = "feedTemperature";
+    public final static String CHANNEL_MEASUREMENT_CONTROL = "measurementControl";
+    public final static String CHANNEL_FAILURE_CODE = "failureCode";
+    public final static String CHANNEL_WAKEUPCYCLE = "wakeUpCycle";
+    public final static String CHANNEL_SERVICECOMMAND = "serviceCommand";
+    public final static String CHANNEL_STATUS_REQUEST_EVENT = "statusRequestEvent";
+
     public static final Map<String, EnOceanChannelDescription> CHANNELID2CHANNELDESCRIPTION = Collections
             .unmodifiableMap(new HashMap<String, EnOceanChannelDescription>() {
                 private static final long serialVersionUID = 1L;
