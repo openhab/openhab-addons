@@ -70,7 +70,7 @@ import com.digitaldan.harmony.config.HarmonyConfig;
  * @author Wouter Born - Add null annotations
  */
 @NonNullByDefault
-public class HarmonyHubHandler extends BaseBridgeHandler {
+public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClientListener {
 
     private final Logger logger = LoggerFactory.getLogger(HarmonyHubHandler.class);
 
@@ -86,31 +86,30 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
     private List<HubStatusListener> listeners = new CopyOnWriteArrayList<>();
     private final HarmonyHubHandlerFactory factory;
     private @NonNullByDefault({}) HarmonyHubConfig config;
-    private @Nullable HarmonyClient client;
+    private @NonNullByDefault({}) HarmonyClient client;
     private @Nullable ScheduledFuture<?> retryJob;
     private @Nullable ScheduledFuture<?> heartBeatJob;
-
-    private @Nullable HarmonyClientListener harmonyClientListener;
 
     private int heartBeatInterval;
 
     public HarmonyHubHandler(Bridge bridge, HarmonyHubHandlerFactory factory) {
         super(bridge);
         this.factory = factory;
+        client = new HarmonyClient();
+        client.addListener(this);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Handling command '{}' for {}", command, channelUID);
 
-        HarmonyClient localClient = client;
-        if (localClient == null) {
-            logger.warn("Cannot send command '{}' on {} because HarmonyClient is null", command, channelUID);
+        if (!client.isConnected()) {
+            logger.warn("Cannot send command '{}' on {} because HarmonyClient is not connected", command, channelUID);
             return;
         }
 
         if (command instanceof RefreshType) {
-            localClient.getCurrentActivity().thenAccept(activity -> {
+            client.getCurrentActivity().thenAccept(activity -> {
                 updateState(activity);
             });
             return;
@@ -126,7 +125,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
             case CHANNEL_CURRENT_ACTIVITY:
                 if (command instanceof DecimalType) {
                     try {
-                        localClient.startActivity(((DecimalType) command).intValue());
+                        client.startActivity(((DecimalType) command).intValue());
                     } catch (Exception e) {
                         logger.error("Could not start activity", e);
                     }
@@ -134,9 +133,9 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
                     try {
                         try {
                             int actId = Integer.parseInt(command.toString());
-                            localClient.startActivity(actId);
+                            client.startActivity(actId);
                         } catch (NumberFormatException ignored) {
-                            localClient.startActivityByName(command.toString());
+                            client.startActivityByName(command.toString());
                         }
                     } catch (IllegalArgumentException e) {
                         logger.warn("Activity '{}' is not known by the hub, ignoring it.", command);
@@ -146,7 +145,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
                 }
                 break;
             case CHANNEL_BUTTON_PRESS:
-                localClient.pressButtonCurrentActivity(command.toString());
+                client.pressButtonCurrentActivity(command.toString());
                 break;
             case CHANNEL_PLAYER:
                 String cmd = null;
@@ -170,7 +169,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
                     }
                 }
                 if (cmd != null) {
-                    localClient.pressButtonCurrentActivity(cmd);
+                    client.pressButtonCurrentActivity(cmd);
                 } else {
                     logger.warn("Unknown player type {}", command);
                 }
@@ -215,6 +214,44 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
         }
     }
 
+    @Override
+    public void hubDisconnected(@Nullable String reason) {
+        if (getThing().getStatus() == ThingStatus.ONLINE) {
+            setOfflineAndReconnect(String.format("Could not connect: %s", reason));
+        }
+    }
+
+    @Override
+    public void hubConnected() {
+        heartBeatJob = scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                client.sendPing();
+            } catch (Exception e) {
+                logger.debug("heartbeat failed", e);
+                setOfflineAndReconnect("Hearbeat failed");
+            }
+        }, heartBeatInterval, heartBeatInterval, TimeUnit.SECONDS);
+        updateStatus(ThingStatus.ONLINE);
+        getConfigFuture().thenAcceptAsync(harmonyConfig -> updateCurrentActivityChannel(harmonyConfig), scheduler)
+                .exceptionally(e -> {
+                    setOfflineAndReconnect("Getting config failed: " + e.getMessage());
+                    return null;
+                });
+        client.getCurrentActivity().thenAccept(activity -> {
+            updateState(activity);
+        });
+    }
+
+    @Override
+    public void activityStatusChanged(@Nullable Activity activity, @Nullable Status status) {
+        updateActivityStatus(activity, status);
+    }
+
+    @Override
+    public void activityStarted(@Nullable Activity activity) {
+        updateState(activity);
+    }
+
     /**
      * Starts the connection process
      */
@@ -242,53 +279,9 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
             }
         }
 
-        HarmonyClient localClient = new HarmonyClient();
-        harmonyClientListener = new HarmonyClientListener() {
-
-            @Override
-            public void hubDisconnected(@Nullable String reason) {
-                setOfflineAndReconnect(String.format("Could not connect: %s", reason));
-            }
-
-            @Override
-            public void hubConnected() {
-                client = localClient;
-                heartBeatJob = scheduler.scheduleWithFixedDelay(() -> {
-                    try {
-                        client.sendPing();
-                    } catch (Exception e) {
-                        logger.debug("heartbeat failed", e);
-                        setOfflineAndReconnect("Hearbeat failed");
-                    }
-                }, heartBeatInterval, heartBeatInterval, TimeUnit.SECONDS);
-                updateStatus(ThingStatus.ONLINE);
-                getConfigFuture()
-                        .thenAcceptAsync(harmonyConfig -> updateCurrentActivityChannel(harmonyConfig), scheduler)
-                        .exceptionally(e -> {
-                            setOfflineAndReconnect("Getting config failed: " + e.getMessage());
-                            return null;
-                        });
-                localClient.getCurrentActivity().thenAccept(activity -> {
-                    updateState(activity);
-                });
-            }
-
-            @Override
-            public void activityStatusChanged(@Nullable Activity activity, @Nullable Status status) {
-                updateActivityStatus(activity, status);
-            }
-
-            @Override
-            public void activityStarted(@Nullable Activity activity) {
-                updateState(activity);
-            }
-        };
-
-        localClient.addListener(harmonyClientListener);
-
         try {
             logger.debug("Connecting: host {}", host);
-            localClient.connect(host);
+            client.connect(host);
         } catch (Exception e) {
             logger.debug("Could not connect to HarmonyHub at {}", host, e);
             setOfflineAndReconnect("Could not connect: " + e.getMessage());
@@ -300,12 +293,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler {
         if (localHeartBeatJob != null && !localHeartBeatJob.isDone()) {
             localHeartBeatJob.cancel(false);
         }
-
-        HarmonyClient localClient = client;
-        if (localClient != null) {
-            localClient.removeListener(harmonyClientListener);
-            localClient.disconnect();
-        }
+        client.disconnect();
     }
 
     private void setOfflineAndReconnect(String error) {
