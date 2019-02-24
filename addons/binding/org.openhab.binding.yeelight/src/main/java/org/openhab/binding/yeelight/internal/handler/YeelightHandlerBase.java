@@ -259,14 +259,14 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     }
 
     void updateBrightnessAndColorUI(DeviceStatus status) {
-        PercentType brightness = status.isPowerOff() ? new PercentType(0) : new PercentType(status.getBrightness());
+        PercentType brightness = status.isPowerOff() ? PercentType.ZERO : new PercentType(status.getBrightness());
 
         HSBType tempHsbType = HSBType.fromRGB(status.getR(), status.getG(), status.getB());
         HSBType hsbType = status.getMode() == DeviceMode.MODE_HSV
                 ? new HSBType(new DecimalType(status.getHue()), new PercentType(status.getSat()), brightness)
                 : new HSBType(tempHsbType.getHue(), tempHsbType.getSaturation(), brightness);
 
-        logger.debug("Update Color->{}", hsbType.toString());
+        logger.debug("Update Color->{}", hsbType);
         updateState(CHANNEL_COLOR, hsbType);
 
         logger.debug("Update CT->{}", status.getCt());
