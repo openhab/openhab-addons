@@ -71,7 +71,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     protected final DelayedBatchProcessing<AbstractComponent<?>> delayedProcessing;
     protected final DiscoverComponents discoverComponents;
 
-    private final Gson gson = new Gson();
+    private final Gson gson;
     protected final Map<String, AbstractComponent<?>> haComponents = new HashMap<>();
 
     protected HandlerConfiguration config = new HandlerConfiguration();
@@ -89,6 +89,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     public HomeAssistantThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider, int subscribeTimeout,
             int attributeReceiveTimeout) {
         super(thing, subscribeTimeout);
+        this.gson = new GsonBuilder().registerTypeAdapterFactory(HAConfigTypeAdapterFactory.INSTANCE).create();
         this.channelTypeProvider = channelTypeProvider;
         this.attributeReceiveTimeout = attributeReceiveTimeout;
         this.delayedProcessing = new DelayedBatchProcessing<>(attributeReceiveTimeout, this, scheduler);

@@ -16,11 +16,20 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertThat;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class HAConfigurationTests {
+
+    private Gson gson;
+
+    @Before
+    public void init() {
+        this.gson = new GsonBuilder().registerTypeAdapterFactory(HAConfigTypeAdapterFactory.INSTANCE).create();
+    }
 
     @Test
     public void testTasmotaSwitch() {
@@ -45,7 +54,7 @@ public class HAConfigurationTests {
                 + "    \"~\":\"sonoff-2476/\"\n" //
                 + "}";
 
-        HAConfiguration config = HAConfiguration.fromString(json, new Gson());
+        HAConfiguration config = HAConfiguration.fromString(json, gson);
 
         assertThat(config.name, is("Licht Dachterasse"));
         assertThat(config.device, is(notNullValue()));
@@ -76,7 +85,7 @@ public class HAConfigurationTests {
                 + "    ]\n" //
                 + "}";
 
-        HAConfiguration config = HAConfiguration.fromString(json, new Gson(), ComponentFan.Config.class);
+        HAConfiguration config = HAConfiguration.fromString(json, gson, ComponentFan.Config.class);
         assertThat(config.name, is("Bedroom Fan"));
 
     }
