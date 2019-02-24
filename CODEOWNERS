@@ -206,6 +206,8 @@
 /addons/persistence/org.openhab.persistence.mapdb.test/ @mkhl
 /addons/transform/org.openhab.transform.exec/ @openhab/2-x-add-ons-maintainers
 /addons/transform/org.openhab.transform.javascript/ @openhab/2-x-add-ons-maintainers
+/addons/transform/org.openhab.transform.jinja/ @jochen314 
+/addons/transform/org.openhab.transform.jinja.test/ @jochen314
 /addons/transform/org.openhab.transform.jsonpath/ @clinique
 /addons/transform/org.openhab.transform.jsonpath.test/ @clinique
 /addons/transform/org.openhab.transform.map/ @openhab/2-x-add-ons-maintainers
