@@ -74,7 +74,7 @@ class KeContactTransceiver {
                 selector = Selector.open();
 
                 if (transceiverThread == null) {
-                    transceiverThread = new Thread(transceiverRunnable, "ESH-Keba-Transceiver");
+                    transceiverThread = new Thread(transceiverRunnable, "openHAB-Keba-Transceiver");
                     transceiverThread.start();
                 }
 
