@@ -30,6 +30,5 @@ public class BlueZAdapterConstants {
 
     // Properties
     public static final String PROPERTY_ADDRESS = "address";
-    public static final String PROPERTY_DISCOVERY = "discovery";
 
 }

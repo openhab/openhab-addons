@@ -90,14 +90,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
     protected void addBluetoothAdapter(BluetoothAdapter adapter) {
         this.adapters.add(adapter);
-        BluetoothDiscoveryListener listener = new BluetoothDiscoveryListener() {
-
-            @Override
-            public void deviceDiscovered(BluetoothDevice device) {
-                BluetoothDiscoveryService.this.deviceDiscovered(adapter, device);
-
-            }
-        };
+        BluetoothDiscoveryListener listener = device -> deviceDiscovered(adapter, device);
         adapter.addDiscoveryListener(listener);
         registeredListeners.put(adapter.getUID(), listener);
     }
@@ -139,6 +132,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void deviceDiscovered(BluetoothAdapter adapter, BluetoothDevice device) {
+        logger.debug("Discovered bluetooth device '{}': {}", device.getName(), device);
         for (BluetoothDiscoveryParticipant participant : participants) {
             try {
                 DiscoveryResult result = participant.createResult(device);
@@ -146,8 +140,8 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
                     thingDiscovered(result);
                     return;
                 }
-            } catch (Exception e) {
-                logger.error("Participant '{}' threw an exception", participant.getClass().getName(), e);
+            } catch (RuntimeException e) {
+                logger.warn("Participant '{}' threw an exception", participant.getClass().getName(), e);
             }
         }
 
@@ -164,7 +158,9 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService {
             properties.put(BluetoothBindingConstants.PROPERTY_TXPOWER, Integer.toString(txPower));
         }
         String manufacturer = BluetoothCompanyIdentifiers.get(device.getManufacturerId());
-        if (manufacturer != null) {
+        if (manufacturer == null) {
+            logger.debug("Unknown manufacturer Id ({}) found on bluetooth device.", device.getManufacturerId());
+        } else {
             properties.put(Thing.PROPERTY_VENDOR, manufacturer);
             label += " (" + manufacturer + ")";
         }
