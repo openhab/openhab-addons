@@ -670,7 +670,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         if (connection != null) {
             connection.send(command, value);
         } else {
-            logger.debug("Connect send command to onkyo receiver since the onkyo binding is not initialized");
+            logger.debug("Cannot send command to onkyo receiver since the onkyo binding is not initialized");
         }
     }
 
