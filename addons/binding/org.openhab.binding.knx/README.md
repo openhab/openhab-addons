@@ -27,7 +27,7 @@ The IP Gateway is the most commonly used way to connect to the KNX bus. At its b
 | ipAddress           | for `TUNNEL` | Network address of the KNX/IP gateway. If type `ROUTER` is set, the IPv4 Multicast Address can be set.  | for `TUNNEL`: \<nothing\>, for `ROUTER`: 224.0.23.12 |
 | portNumber          | for `TUNNEL` | Port number of the KNX/IP gateway                                                                            | 3671                                                 |
 | localIp             | No           | Network address of the local host to be used to set up the connection to the KNX/IP gateway                  | the system-wide configured primary interface address |
-| localSourceAddr     | No           | The (virtual) individual address for identification of this KNX/IP gateway within the KNX bus                | 0.0.0                                                |
+| localSourceAddr     | No           | The (virtual) individual address for identification of this KNX/IP gateway within the KNX bus <br/><br/>Note: Use a free adress, not the one of the interface. Or leave it at `0.0.0` and let openHAB decide which address to use.                | 0.0.0                                                |
 | useNAT              | No           | Whether there is network address translation between the server and the gateway                              | false                                                |
 | readingPause        | No           | Time in milliseconds of how long should be paused between two read requests to the bus during initialization | 50                                                   |
 | responseTimeout     | No           | Timeout in seconds to wait for a response from the KNX bus                                                   | 10                                                   |
@@ -65,6 +65,8 @@ Different kinds of channels are defined and can be used to group together Group 
 #### Standard Channel Types
 
 Standard channels are used most of the time. They are used in the common case where the physical state is owned by a decive within the KNX bus, e.g. by a switch actuator who "knows" whether the light is turned on or of or by a temperature sensor which reports the room temperature regularly.
+
+Note: After changing the DPT of already existing Channels, openHAB needs to be restarted for the changes to become effective.
 
 ##### Channel Type "switch"
 
