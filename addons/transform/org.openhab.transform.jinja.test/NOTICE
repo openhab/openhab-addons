@@ -1,6 +1,6 @@
-This content is produced and maintained by the Eclipse SmartHome project.
+This content is produced and maintained by the openHAB project.
 
-* Project home: https://eclipse.org/smarthome/
+* Project home: https://www.openhab.org
 
 == Declared Project Licenses
 
@@ -10,10 +10,4 @@ https://www.eclipse.org/legal/epl-2.0/.
 
 == Source Code
 
-https://github.com/eclipse/smarthome
-
-== Copyright Holders
-
-See the NOTICE file distributed with the source code at
-https://github.com/eclipse/smarthome/blob/master/NOTICE
-for detailed information regarding copyright ownership.
+https://github.com/openhab/openhab2-addons

@@ -931,6 +931,11 @@
         <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.javascript/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-transformation-jinja" description="Jinja Transformation" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.jinja/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-transformation-jsonpath" description="JSONPath Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle dependency="true">mvn:com.jayway.jsonpath/json-path/2.1.0</bundle>
