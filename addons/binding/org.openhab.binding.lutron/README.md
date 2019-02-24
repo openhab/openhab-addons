@@ -143,7 +143,7 @@ Note, however, that version 11.6 or higher of the RadioRA 2 software may be requ
 When using auto-discovery, remember to select the correct value for the `model` parameter after accepting the keypad thing from the inbox.
 The correct channels will then be automatically configured.
 
-Supported settings for `model` parameter: H1RLD, H3BSRL, H3S, H4S, H5BRL, H6BRL, W1RLD, W2RLD, W3BD, W3BRL, W3BSRL, W3S, W4S, W5BRL, W5BRLIR, W6BRL, W7B, Generic (default)
+Supported settings for `model` parameter: H1RLD, H2RLD, H3BSRL, H3S, H4S, H5BRL, H6BRL, HN1RLD, HN2RLD, HN3S, HN3BSRL, HN4S, HN5BRL, HN6BRL, W1RLD, W2RLD, W3BD, W3BRL, W3BSRL, W3S, W4S, W5BRL, W5BRLIR, W6BRL, W7B, Generic (default)
 
 Example:
 

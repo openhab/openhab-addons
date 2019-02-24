@@ -47,6 +47,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
     protected static final Integer ACTION_PRESS = 3;
     protected static final Integer ACTION_RELEASE = 4;
+    protected static final Integer ACTION_HOLD = 5;
     protected static final Integer ACTION_LED_STATE = 9;
 
     protected static final Integer LED_OFF = 0;
@@ -339,6 +340,9 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                     }
                 } else if (ACTION_RELEASE.toString().equals(parameters[1])) {
                     updateState(channelUID, OnOffType.OFF);
+                } else if (ACTION_HOLD.toString().equals(parameters[1])) {
+                    updateState(channelUID, OnOffType.OFF); // Signal a release if we receive a hold code as we will not
+                                                            // get a subsequent release.
                 }
             } else {
                 logger.warn("Unable to determine channel for component {} in keypad update event message",

@@ -232,6 +232,13 @@
 					<option value="H4S">H4S</option>
 					<option value="H5BRL">H5BRL</option>
 					<option value="H6BRL">H6BRL</option>
+					<option value="HN1RLD">HN1RLD</option>
+					<option value="HN2RLD">HN2RLD</option>
+					<option value="HN3BSRL">HN3BSRL</option>
+					<option value="HN3S">HN3S</option>
+					<option value="HN4S">HN4S</option>
+					<option value="HN5BRL">HN5BRL</option>
+					<option value="HN6BRL">HN6BRL</option>
 					<option value="W1RLD">W1RLD</option>
 					<option value="W2RLD">W2RLD</option>
 					<option value="W3BD">W3BD</option>
