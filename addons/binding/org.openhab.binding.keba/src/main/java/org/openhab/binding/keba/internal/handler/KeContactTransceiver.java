@@ -196,7 +196,7 @@ class KeContactTransceiver {
                         logger.trace("{} waiting on handerLock {}", Thread.currentThread().getName(),
                                 handlerLock.toString());
                     }
-                    handlerLock.wait();
+                    handlerLock.wait(KeContactHandler.REPORT_INTERVAL);
                 }
 
                 return buffers.remove(handler);
