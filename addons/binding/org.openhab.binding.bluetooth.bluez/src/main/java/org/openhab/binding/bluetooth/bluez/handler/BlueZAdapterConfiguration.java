@@ -10,15 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluetooth;
+package org.openhab.binding.bluetooth.bluez.handler;
 
 /**
- * An enumeration of transaction completion status values
+ * Configuration properties class.
  *
- * @author Chris Jackson - Initial contribution
- *
+ * @author Hilbrand Bouwkamp - Initial contribution
  */
-public enum BluetoothCompletionStatus {
-    SUCCESS,
-    ERROR
+public class BlueZAdapterConfiguration {
+
+    public String address;
+
+    public Boolean discovery;
 }
