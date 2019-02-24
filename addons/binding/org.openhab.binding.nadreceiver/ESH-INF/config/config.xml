@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:nadreceiver:config">
+		<parameter name="hostname" type="text">
+			<label>Network Address</label>
+			<description>The IP or host name of the NAD Receiver</description>
+			<context>network-address</context>
+		</parameter>
+		<parameter name="port" type="integer" min="1" max="65335">
+			<label>Port</label>
+			<description>Port for the NAD Receiver device to control. It uses telnet and therefore by default use port 23.</description>
+			<default>23</default>
+		</parameter>		
+		<parameter name="reconnectInterval" type="integer" min="1" max="60" unit="min">
+			<label>Reconnect Interval</label>
+			<description>The period in minutes that the handler will wait between connection attempts</description>
+			<unitLabel>minutes</unitLabel>
+			<default>5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="heartbeatInterval" type="integer" min="1" max="60" unit="min">
+			<label>Keepalive Heartbeat Interval</label>
+			<description>The period in minutes between connection heartbeat checks</description>
+			<unitLabel>minutes</unitLabel>
+			<default>5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="maxSources" type="integer" min="1" max="60" unit="min">
+			<label>Maximum number of sources</label>
+			<description>The binding will iterate from 1 to max. number of sources to detect them</description>
+			<unitLabel>sources</unitLabel>
+			<default>9</default>
+			<advanced>true</advanced>
+		</parameter>            
+	</config-description>
+</config-description:config-descriptions>

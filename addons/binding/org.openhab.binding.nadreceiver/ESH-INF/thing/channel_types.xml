@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nadreceiver"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Commands -->
+	<channel-type id="model">
+		<item-type>String</item-type>
+		<label>Model</label>
+		<description>Model name of the device</description>
+		<category>Information</category>
+	</channel-type>
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power on/off your device</description>
+		<category>Switch</category>
+	</channel-type>    
+	<channel-type id="volume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Volume level of the TV.</description>
+		<category>SoundVolume</category>
+	</channel-type>
+	<channel-type id="mute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Mute state of the TV.</description>
+		<category>Switch</category>
+	</channel-type>	
+	<!-- Will get dynamic state options -->
+	<channel-type id="source">
+		<item-type>String</item-type>
+		<label>Input Source</label>
+		<description>Select the input source of the receiver</description>
+		<category>Options</category>					
+	</channel-type>
+</thing:thing-descriptions>

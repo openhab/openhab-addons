@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nadreceiver"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="receiver">
+		<label>NadReceiver Binding Thing</label>
+		<description>Thing for NadReceiver Binding</description>
+
+		<channels>
+			<channel id="model" typeId="model" />
+			<channel id="power" typeId="power" />
+			<channel id="volume" typeId="volume" />
+			<channel id="mute" typeId="mute" />			
+			<channel id="source" typeId="source" />
+		</channels>
+
+		<config-description-ref uri="thing-type:nadreceiver:config" />
+	</thing-type>
+
+</thing:thing-descriptions>
