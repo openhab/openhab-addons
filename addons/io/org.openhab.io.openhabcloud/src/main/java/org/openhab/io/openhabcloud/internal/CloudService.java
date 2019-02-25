@@ -67,11 +67,12 @@ import org.slf4j.LoggerFactory;
  * @author Victor Belov - Initial contribution
  * @author Kai Kreuzer - migrated code to new Jetty client and ESH APIs
  */
-@Component(immediate = true, service = { EventSubscriber.class, ActionService.class }, property = {
-        Constants.SERVICE_PID + "=org.openhab.openhabcloud",
-        ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=io:openhabcloud",
-        ConfigurableService.SERVICE_PROPERTY_LABEL + "=openHAB Cloud",
-        ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=io" })
+@Component(immediate = true, service = { EventSubscriber.class,
+        ActionService.class }, configurationPid = "org.openhab.openhabcloud", property = {
+                Constants.SERVICE_PID + "=org.openhab.openhabcloud",
+                ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=io:openhabcloud",
+                ConfigurableService.SERVICE_PROPERTY_LABEL + "=openHAB Cloud",
+                ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=io" })
 public class CloudService implements ActionService, CloudClientListener, EventSubscriber {
 
     private static final String CFG_EXPOSE = "expose";
@@ -98,9 +99,9 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     /**
      * This method sends notification message to mobile app through the openHAB Cloud service
      *
-     * @param userId the {@link String} containing the openHAB Cloud user id to send message to
-     * @param message the {@link String} containing a message to send to specified user id
-     * @param icon the {@link String} containing a name of the icon to be used with this notification
+     * @param userId   the {@link String} containing the openHAB Cloud user id to send message to
+     * @param message  the {@link String} containing a message to send to specified user id
+     * @param icon     the {@link String} containing a name of the icon to be used with this notification
      * @param severity the {@link String} containing severity (good, info, warning, error) of notification
      */
     public void sendNotification(String userId, String message, String icon, String severity) {
@@ -112,8 +113,8 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * Sends an advanced notification to log. Log notifications are not pushed to user
      * devices but are shown to all account users in notifications log
      *
-     * @param message the {@link String} containing a message to send to specified user id
-     * @param icon the {@link String} containing a name of the icon to be used with this notification
+     * @param message  the {@link String} containing a message to send to specified user id
+     * @param icon     the {@link String} containing a name of the icon to be used with this notification
      * @param severity the {@link String} containing severity (good, info, warning, error) of notification
      */
     public void sendLogNotification(String message, String icon, String severity) {
@@ -125,8 +126,8 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * Sends a broadcast notification. Broadcast notifications are pushed to all
      * mobile devices of all users of the account
      *
-     * @param message the {@link String} containing a message to send to specified user id
-     * @param icon the {@link String} containing a name of the icon to be used with this notification
+     * @param message  the {@link String} containing a message to send to specified user id
+     * @param icon     the {@link String} containing a name of the icon to be used with this notification
      * @param severity the {@link String} containing severity (good, info, warning, error) of notification
      */
     public void sendBroadcastNotification(String message, String icon, String severity) {
