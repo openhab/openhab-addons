@@ -7,5 +7,6 @@
 	<thing-type id="endpoint" extensible="color,contact,datetime,dimmer,image,location,number,player,rollershutter,string,switch">
 		<label>HTTP Endpoint</label>
 		<description>A Thing that can be observed and/or controlled with HTTP requests.</description>
+		<config-description-ref uri="thing-type:http:endpoint-config"/>
 	</thing-type>
 </thing:thing-descriptions>

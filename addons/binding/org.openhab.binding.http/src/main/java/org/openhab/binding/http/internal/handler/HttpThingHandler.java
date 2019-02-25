@@ -21,6 +21,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.http.internal.HttpChannelState;
 import org.openhab.binding.http.internal.model.HttpChannelConfig;
+import org.openhab.binding.http.internal.model.HttpEndpointConfig;
+import org.openhab.binding.http.internal.model.InvalidConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,17 +51,19 @@ public class HttpThingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         try {
+            final HttpEndpointConfig endpointConfig = getConfigAs(HttpEndpointConfig.class);
+
             for (final Channel channel : getThing().getChannels()) {
                 final ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
                 if (channelTypeUID != null) {
                     final HttpChannelConfig config = Optional.ofNullable(channel.getConfiguration().as(HttpChannelConfig.class))
-                        .orElseThrow(() -> new HttpChannelConfig.InvalidConfigurationException("A required configuration property was not set"));
+                        .orElseThrow(() -> new InvalidConfigurationException("A required configuration property was not set"));
                     final HttpChannelState channelState = new HttpChannelState(
                             channel,
                             this.httpClient,
-                            config.getStateRequest(bundleContext),
+                            config.getStateRequest(endpointConfig, bundleContext),
                             scheduler,
-                            config.getCommandRequest(bundleContext),
+                            config.getCommandRequest(endpointConfig, bundleContext),
                             this::isLinked,
                             this::updateState,
                             this::communicationsError
@@ -68,7 +72,7 @@ public class HttpThingHandler extends BaseThingHandler {
                 }
             }
             updateStatus(ThingStatus.ONLINE);
-        } catch (final HttpChannelConfig.InvalidConfigurationException | IllegalArgumentException e) {
+        } catch (final InvalidConfigurationException | IllegalArgumentException e) {
             disposeChannels();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }

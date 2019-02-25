@@ -4,39 +4,82 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0
 	http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:http:config-stateonly">
-		<parameter name="stateUrl" type="text" required="true">
-			<label>State URL</label>
+	<config-description uri="thing-type:http:endpoint-config">
+		<parameter-group name="thing-base-config">
+			<label>Base HTTP Configuration</label>
+			<description>Base configuration for options related to the HTTP request itself.</description>
+		</parameter-group>
+		<parameter-group name="thing-state-config">
+			<label>Base State Configuration</label>
+			<description>Base configuration for options related to fetching state.</description>
+		</parameter-group>
+		<parameter-group name="thing-command-config">
+			<label>Base Command Configuration</label>
+			<description>Base configuration for options related to sending commands.</description>
+		</parameter-group>
+
+		<parameter name="baseUrl" type="text" required="true" groupName="thing-base-config">
+			<label>Base URL</label>
 			<description>
-				URL to fetch to retrieve the state of the channel. The URL should return a State value; see the README
-				for more information.
+				The base URL used to acess information about this Thing. Individual channels may specify a URL suffix
+				that will be appended to the base URL.
 			</description>
 		</parameter>
-		<parameter name="stateRefreshInterval" type="integer" required="true">
+		<parameter name="connectTimeout" type="integer" groupName="thing-base-config">
+			<label>Connect Timeout (ms)</label>
+			<description>TCP connection timeout, in milliseconds.</description>
+			<default>3000</default>
+		</parameter>
+		<parameter name="requestTimeout" type="integer" groupName="thing-base-config">
+			<label>Request Timeout (ms)</label>
+			<description>HTTP request timeout, in millseconds.</description>
+			<default>5000</default>
+		</parameter>
+		<parameter name="username" type="text" groupName="thing-base-config">
+			<label>Username</label>
+			<description>Optional username to use for HTTP Basic authentication.</description>
+		</parameter>
+		<parameter name="password" type="text" groupName="thing-base-config">
+			<context>password</context>
+			<label>Password</label>
+			<description>Optional password to use for HTTP Basic authentication.</description>
+		</parameter>
+
+		<parameter name="stateRefreshInterval" type="integer" groupName="thing-state-config">
 			<label>State Refresh Interval (ms)</label>
 			<description>How often (in milliseconds) to refresh state by fetching the State URL.</description>
 			<default>60000</default>
 		</parameter>
-		<parameter name="stateUsername" type="text">
-			<label>State Username</label>
-			<description>Optional username to use for HTTP Basic authentication.</description>
+
+		<parameter name="commandMethod" type="text" groupName="thing-command-config">
+			<label>Command HTTP Method</label>
+			<description>HTTP Method to use when sending a command to a channel.</description>
+			<default>POST</default>
+			<options>
+				<option value="POST">POST</option>
+				<option value="GET">GET</option>
+				<option value="PUT">PUT</option>
+			</options>
 		</parameter>
-		<parameter name="statePassword" type="text">
-			<context>password</context>
-			<label>State Password</label>
-			<description>Optional password to use for HTTP Basic authentication</description>
+		<parameter name="commandContentType" type="text" groupName="thing-command-config">
+			<label>Command Content Type</label>
+			<description>The content type to use when sending a command to a channel.</description>
+			<default>text/plain; charset=utf-8</default>
 		</parameter>
-		<parameter name="stateConnectTimeout" type="integer" required="true">
-			<label>State Connect Timeout</label>
-			<description>HTTP connect timeout, in milliseconds.</description>
-			<default>3000</default>
+	</config-description>
+
+	<config-description uri="thing-type:http:config-stateonly">
+		<parameter-group name="state-config">
+			<label>State Configuration</label>
+			<description>Configuration for options related to fetching state for this channel.</description>
+		</parameter-group>
+
+		<parameter name="urlSuffix" type="text">
+			<label>URL Suffix</label>
+			<description>Suffix appended to the Thing's Base URL for requests on this channel.</description>
 		</parameter>
-		<parameter name="stateRequestTimeout" type="integer" required="true">
-			<label>State Request Timeout</label>
-			<description>HTTP request timeout, in milliseconds.</description>
-			<default>5000</default>
-		</parameter>
-		<parameter name="stateResponseTransform" type="text">
+
+		<parameter name="stateResponseTransform" type="text" groupName="state-config">
 			<label>State Response Transformation</label>
 			<description>A transformation rule used to transform the HTTP response from the State URL.</description>
 		</parameter>
@@ -45,92 +88,23 @@
 	<config-description uri="thing-type:http:config-all">
 		<parameter-group name="state-config">
 			<label>State Configuration</label>
-			<description>This section allows you to configure a request to make to fetch the state of the channel.</description>
+			<description>Configuration for options related to fetching state for this channel.</description>
 		</parameter-group>
 		<parameter-group name="command-config">
 			<label>Command Configuration</label>
-			<description>This setion allows you to configure a request to make to change the state of the channel.</description>
+			<description>Configuration for options related to sending commands on this channel.</description>
 		</parameter-group>
 
-		<parameter name="stateUrl" type="text" groupName="state-config">
-			<label>State URL</label>
-			<description>
-				URL to fetch to retrieve the state of the channel. The URL should return a State value; see the README for
-				more information.
-			</description>
+		<parameter name="urlSuffix" type="text">
+			<label>URL Suffix</label>
+			<description>Suffix appended to the Thing's Base URL for requests on this channel.</description>
 		</parameter>
-		<parameter name="stateRefreshInterval" type="integer" groupName="state-config">
-			<label>State Refresh Interval (ms)</label>
-			<description>How often (in milliseconds) to refresh state by fetching the State URL.</description>
-			<default>60000</default>
-		</parameter>
-		<parameter name="stateUsername" type="text" groupName="state-config">
-			<label>State Username</label>
-			<description>Optional username to use for HTTP Basic authentication.</description>
-		</parameter>
-		<parameter name="statePassword" type="text" groupName="state-config">
-			<context>password</context>
-			<label>State Password</label>
-			<description>Optional password to use for HTTP Basic authentication.</description>
-		</parameter>
-		<parameter name="stateConnectTimeout" type="integer" groupName="state-config" required="true">
-			<label>State Connect Timeout</label>
-			<description>HTTP connect timeout, in milliseconds.</description>
-			<default>3000</default>
-		</parameter>
-		<parameter name="stateRequestTimeout" type="integer" groupName="state-config" required="true">
-			<label>State Request Timeout</label>
-			<description>HTTP request timeout, in milliseconds.</description>
-			<default>5000</default>
-		</parameter>
+
 		<parameter name="stateResponseTransform" type="text" groupName="state-config">
 			<label>State Response Transformation</label>
 			<description>A transformation rule used to transform the HTTP response from the State URL.</description>
 		</parameter>
 
-		<parameter name="commandMethod" type="text" groupName="command-config">
-			<label>Command HTTP Method</label>
-			<description>HTTP Method to use when sending a command to the channel.</description>
-			<default>POST</default>
-			<options>
-				<option value="POST">POST</option>
-				<option value="GET">GET</option>
-				<option value="PUT">PUT</option>
-			</options>
-		</parameter>
-		<parameter name="commandUrl" type="text" groupName="command-config">
-			<label>Command URL</label>
-			<description><![CDATA[
-				URL to request to change the state of the channel.  See the README for possible Command values. For POST
-				requests, the request body will be by default of type <code>text/plain</code> and will simply be the
-				command.  For GET requests, the request body will be empty, but you can interpolate the command into
-				the URL by using <code>%s</code>.
-			]]></description>
-		</parameter>
-		<parameter name="commandUsername" type="text" groupName="command-config">
-			<label>Command Username</label>
-			<description>Optional username to use for HTTP Basic authentication.</description>
-		</parameter>
-		<parameter name="commandPassword" type="text" groupName="command-config">
-			<context>password</context>
-			<label>Command Password</label>
-			<description>Optional password to use for HTTP Basic authentication.</description>
-		</parameter>
-		<parameter name="commandConnectTimeout" type="integer" groupName="command-config" required="true">
-			<label>Command Connect Timeout</label>
-			<description>HTTP connect timeout, in milliseconds.</description>
-			<default>3000</default>
-		</parameter>
-		<parameter name="commandRequestTimeout" type="integer" groupName="command-config" required="true">
-			<label>Command Request Timeout</label>
-			<description>HTTP request timeout, in milliseconds.</description>
-			<default>5000</default>
-		</parameter>
-		<parameter name="commandContentType" type="text" required="true" groupName="command-config">
-			<label>Command Content Type</label>
-			<description>The content type to use for the HTTP request.</description>
-			<default>text/plain; charset=utf-8</default>
-		</parameter>
 		<parameter name="commandRequestTransform" type="text" groupName="command-config">
 			<label>Command Request Transformation</label>
 			<description>A transformation rule used to transform the command before it is sent to the Command URL.</description>
