@@ -30,7 +30,7 @@ All devices support the following channels (non exhaustive):
 | Channel Type ID  | Item Type | Description                                                                                       |   |   |
 |------------------|-----------|---------------------------------------------------------------------------------------------------|---|---|
 | state            | Number    | This channel indicates the current operational state of the wallbox                               |   |   |
-| maxpresetcurrent | Number    | This channel supports adjusting the maximim current the charging station should deliver to the EV |   |   |
+| maxpresetcurrent | Number    | This channel supports adjusting the maximum current the charging station should deliver to the EV |   |   |
 | power            | Number    | This channel indicates the active power delivered by the charging station                         |   |   |
 | I1/2/3           | Number    | This channel indicates the current for the given phase                                            |   |   |
 | U1/2/3           | Number    | This channel indicates the voltage for the given phase                                            |   |   |

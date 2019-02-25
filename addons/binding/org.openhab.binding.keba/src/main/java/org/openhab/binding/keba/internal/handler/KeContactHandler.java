@@ -43,7 +43,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.keba.internal.KebaBindingConstants.KebaFirmware;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaSeries;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaType;
 import org.slf4j.Logger;
@@ -83,10 +82,8 @@ public class KeContactHandler extends BaseThingHandler {
     private int maxPresetCurrent = 0;
     private int maxSystemCurrent = 63000;
     private KebaType type;
-    private KebaFirmware firmware;
     private KebaSeries series;
 
-    @SuppressWarnings("null")
     public KeContactHandler(Thing thing) {
         super(thing);
     }
@@ -95,6 +92,13 @@ public class KeContactHandler extends BaseThingHandler {
     public void initialize() {
         if (getConfig().get(IP_ADDRESS) != null && !getConfig().get(IP_ADDRESS).equals("")) {
             transceiver.registerHandler(this);
+
+            cache = new ExpiringCacheMap<>(
+                    Math.max((((BigDecimal) getConfig().get(POLLING_REFRESH_INTERVAL)).intValue()) - 5, 0) * 1000);
+
+            cache.put(CACHE_REPORT_1, () -> transceiver.send("report 1", getHandler()));
+            cache.put(CACHE_REPORT_2, () -> transceiver.send("report 2", getHandler()));
+            cache.put(CACHE_REPORT_3, () -> transceiver.send("report 3", getHandler()));
 
             if (pollingJob == null || pollingJob.isCancelled()) {
                 try {
@@ -105,13 +109,6 @@ public class KeContactHandler extends BaseThingHandler {
                             "An exception occurred while scheduling the polling job");
                 }
             }
-
-            cache = new ExpiringCacheMap<>(
-                    Math.max((((BigDecimal) getConfig().get(POLLING_REFRESH_INTERVAL)).intValue()) - 5, 0) * 1000);
-
-            cache.put(CACHE_REPORT_1, () -> transceiver.send("report 1", getHandler()));
-            cache.put(CACHE_REPORT_2, () -> transceiver.send("report 2", getHandler()));
-            cache.put(CACHE_REPORT_3, () -> transceiver.send("report 3", getHandler()));
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "IP address or port number not set");
@@ -174,12 +171,14 @@ public class KeContactHandler extends BaseThingHandler {
                     }
                 }
             }
-        } catch (InterruptedException | NumberFormatException | IOException e) {
+        } catch (NumberFormatException | IOException e) {
             logger.debug("An exception occurred while polling the KEBA KeContact '{}': {}", getThing().getUID(),
                     e.getMessage(), e);
             Thread.currentThread().interrupt();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "An exception occurred while while polling the charging station");
+        } catch (InterruptedException e) {
+            logger.debug("Polling job has been interrupted for handler of thing '{}'.", getThing().getUID());
         }
     };
 
@@ -220,7 +219,6 @@ public class KeContactHandler extends BaseThingHandler {
                         Map<String, String> properties = editProperties();
                         properties.put(CHANNEL_FIRMWARE, entry.getValue().getAsString());
                         updateProperties(properties);
-                        firmware = KebaFirmware.getFirmware(entry.getValue().getAsString());
                         break;
                     }
                     case "Plug": {
@@ -425,7 +423,8 @@ public class KeContactHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if ((command instanceof RefreshType)) {
-            scheduler.schedule(pollingRunnable, 0, TimeUnit.SECONDS);
+            // let's assume we do frequent enough polling and ignore the REFRESH request here
+            // in order to prevent too many channel state updates
         } else {
             switch (channelUID.getId()) {
                 case CHANNEL_MAX_PRESET_CURRENT: {
