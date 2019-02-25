@@ -100,38 +100,4 @@ public class KebaBindingConstants {
             throw new IllegalArgumentException("Not a valid series");
         }
     };
-
-    public enum KebaFirmware {
-        V201M21("2.01m21"),
-        V22A1("2.2a1"),
-        V23A2("2.3a2"),
-        V23A3("2.3a3"),
-        V25A3("2.5a3"),
-        V3042A1("3.04.2a1"),
-        V3062A5("3.06.2a5"),
-        V3071A1("3.07.1a1"),
-        V3084("3.08.4");
-
-        private final String id;
-
-        private KebaFirmware(final String id) {
-            this.id = id;
-        }
-
-        @Override
-        public String toString() {
-            return id;
-        }
-
-        public static KebaFirmware getFirmware(String text) throws IllegalArgumentException {
-            for (KebaFirmware c : KebaFirmware.values()) {
-                if (text.contains(c.id)) {
-                    return c;
-                }
-            }
-
-            throw new IllegalArgumentException("Not a valid firmware");
-        }
-
-    };
 }
