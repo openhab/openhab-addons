@@ -218,6 +218,8 @@ public class SomfyTahomaBindingConstants {
 
     // unsupported uiClasses
     public static final String PROTOCOLGATEWAY = "ProtocolGateway";
+    public static final String REMOTECONTROLLER = "RemoteController";
+    public static final String NETWORKCOMPONENT = "NetworkComponent";
 
     // cache timeout
     public static final int CACHE_EXPIRY = 10000;

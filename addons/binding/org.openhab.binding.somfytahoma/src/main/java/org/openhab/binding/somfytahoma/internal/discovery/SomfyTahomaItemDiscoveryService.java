@@ -230,6 +230,8 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 deviceDiscovered(device, THING_TYPE_GATE);
                 break;
             case PROTOCOLGATEWAY:
+            case REMOTECONTROLLER:
+            case NETWORKCOMPONENT:
                 break;
             default:
                 logger.info("Detected a new unsupported device: {}", device.getUiClass());
@@ -240,7 +242,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 for (SomfyTahomaState state : device.getStates()) {
                     sb.append(state.toString()).append('\n');
                 }
-                logger.warn("Device states: {}", sb.toString());
+                logger.info("Device states: {}", sb.toString());
         }
     }
 
