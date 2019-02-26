@@ -95,7 +95,7 @@ public class EchoHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
     private Gson gson = new Gson();
     private @Nullable Device device;
-    private Set<String> capabilities = new HashSet<String>();
+    private Set<String> capabilities = new HashSet<>();
     private @Nullable AccountHandler account;
     private @Nullable ScheduledFuture<?> updateStateJob;
     private @Nullable ScheduledFuture<?> ignoreVolumeChange;
