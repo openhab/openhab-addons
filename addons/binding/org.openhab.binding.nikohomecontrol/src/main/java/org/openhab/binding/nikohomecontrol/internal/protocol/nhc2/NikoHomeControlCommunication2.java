@@ -373,7 +373,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
                     case "dimmer":
                         actionType = ActionType.DIMMER;
                         break;
-                    case "motor":
+                    case "rolldownshutter":
+                    case "sunblind":
+                    case "venetianblind":
                         actionType = ActionType.ROLLERSHUTTER;
                         break;
                 }
