@@ -1079,7 +1079,7 @@ public class Connection {
 
             JsonArray nodesToExecute = new JsonArray();
 
-            Map<String, Object> volumeParameters = new Hashtable<String, Object>();
+            Map<String, Object> volumeParameters = new Hashtable<>();
             // add tts volume
             volumeParameters.clear();
             volumeParameters.put("value", ttsVolume);
