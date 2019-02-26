@@ -44,7 +44,7 @@ final byte[] testdata = new byte[] {
 // @formatter:on
 
 JsonObject json = new Bin2Json(frameParserRule).convert(testdata);
-logger.debug(json.toString());
+logger.debug("{}", json.toString());
 ```
 
 Outputs:
