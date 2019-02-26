@@ -16,15 +16,22 @@ package org.openhab.binding.lutron.internal.discovery.project;
  * Type of output device in a Lutron system.
  *
  * @author Allan Tong - Initial contribution
+ * @author Bob Adair - Added additional output types
  */
 public enum OutputType {
     AUTO_DETECT,
     CCO_MAINTAINED,
     CCO_PULSED,
+    CEILING_FAN_TYPE,
+    ECO_SYSTEM_FLUORESCENT,
+    FLUORESCENT_DB,
     INC,
     MLV,
     NON_DIM,
     NON_DIM_ELV,
     NON_DIM_INC,
+    SHEER_BLIND,
     SYSTEM_SHADE,
+    VENETIAN_BLIND,
+    ZERO_TO_TEN,
 }
