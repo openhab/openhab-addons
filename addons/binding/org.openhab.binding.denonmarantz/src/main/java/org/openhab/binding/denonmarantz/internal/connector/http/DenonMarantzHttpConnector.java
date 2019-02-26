@@ -113,16 +113,23 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
      */
     @Override
     public void connect() {
-        refreshState();
-        startPolling();
-    }
-
-    private void startPolling() {
         if (!isPolling()) {
             logger.debug("HTTP polling started.");
+            try {
+                setConfigProperties();
+            } catch (IOException e) {
+                logger.debug("IO error while retrieving document:", e);
+                state.connectionError("IO error while connecting to AVR: " + e.getMessage());
+                return;
+            }
+
             pollingJob = scheduler.scheduleWithFixedDelay(() -> {
                 try {
                     refreshHttpProperties();
+                } catch (IOException e) {
+                    logger.debug("IO error while retrieving document: {}", e);
+                    state.connectionError("IO error while connecting to AVR: " + e.getMessage());
+                    stopPolling();
                 } catch (RuntimeException e) {
                     /**
                      * We need to catch this RuntimeException, as otherwise the polling stops.
@@ -134,7 +141,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
                     }
                     logger.error("Error while polling Http: \"{}\". Stacktrace: \n{}", e.getMessage(), sb.toString());
                 }
-            }, config.httpPollingInterval, config.httpPollingInterval, TimeUnit.SECONDS);
+            }, 0, config.httpPollingInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -157,17 +164,6 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
         logger.debug("disposing connector");
 
         stopPolling();
-    }
-
-    /**
-     * Gets the current state of all properties from the receiver, including
-     * basic configuration info (like the number of zones)
-     *
-     * @throws IOException
-     */
-    private void refreshState() {
-        setConfigProperties();
-        refreshHttpProperties();
     }
 
     @Override
@@ -196,7 +192,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
         }
     }
 
-    private void updateMain() {
+    private void updateMain() throws IOException {
         String url = statusUrl + URL_MAIN;
         logger.trace("Refreshing URL: {}", url);
 
@@ -206,7 +202,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
         }
     }
 
-    private void updateMainZone() {
+    private void updateMainZone() throws IOException {
         String url = statusUrl + URL_ZONE_MAIN;
         logger.trace("Refreshing URL: {}", url);
 
@@ -229,7 +225,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
         }
     }
 
-    private void updateSecondaryZones() {
+    private void updateSecondaryZones() throws IOException {
         for (int i = 2; i <= config.getZoneCount(); i++) {
             String url = String.format("%s" + URL_ZONE_SECONDARY_LITE, statusUrl, i, i);
             logger.trace("Refreshing URL: {}", url);
@@ -254,7 +250,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
         }
     }
 
-    private void updateDisplayInfo() {
+    private void updateDisplayInfo() throws IOException {
         String url = statusUrl + URL_APP_COMMAND;
         logger.trace("Refreshing URL: {}", url);
 
@@ -269,7 +265,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
         }
     }
 
-    private boolean setConfigProperties() {
+    private boolean setConfigProperties() throws IOException {
         String url = statusUrl + URL_DEVICE_INFO;
         logger.debug("Refreshing URL: {}", url);
 
@@ -289,7 +285,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
         return (deviceinfo != null);
     }
 
-    private void refreshHttpProperties() {
+    private void refreshHttpProperties() throws IOException {
         logger.trace("Refreshing Denon status");
 
         updateMain();
@@ -299,7 +295,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
     }
 
     @Nullable
-    private <T> T getDocument(String uri, Class<T> response) {
+    private <T> T getDocument(String uri, Class<T> response) throws IOException {
         try {
             String result = HttpUtil.executeUrl("GET", uri, REQUEST_TIMEOUT_MS);
             logger.trace("result of getDocument for uri '{}':\r\n{}", uri, result);
@@ -321,16 +317,13 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
             logger.debug("Unexpected error occurred during unmarshalling of document: {}", e.getMessage());
         } catch (XMLStreamException e) {
             logger.debug("Communication error: {}", e.getMessage());
-        } catch (IOException e) {
-            logger.debug("IO error while retrieving document: {}", e);
-            state.connectionError("IO error while connecting to AVR: " + e.getMessage());
         }
 
         return null;
     }
 
     @Nullable
-    private <T, S> T postDocument(String uri, Class<T> response, S request) {
+    private <T, S> T postDocument(String uri, Class<T> response, S request) throws IOException {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(request.getClass());
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
@@ -350,9 +343,6 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
             }
         } catch (JAXBException e) {
             logger.debug("Encoding error in post", e);
-        } catch (IOException e) {
-            logger.debug("IO error while sending document: {}", e);
-            state.connectionError("IO error while sending command to AVR: " + e.getMessage());
         }
 
         return null;
