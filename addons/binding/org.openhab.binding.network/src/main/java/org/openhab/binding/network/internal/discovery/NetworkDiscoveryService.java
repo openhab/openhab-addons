@@ -1,16 +1,19 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.network.internal.discovery;
 
 import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
 
-import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -93,6 +96,9 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     @Override
     @Deactivate
     protected void deactivate() {
+        if (executorService != null) {
+            executorService.shutdown();
+        }
         super.deactivate();
     }
 
@@ -118,6 +124,9 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
      */
     @Override
     protected void startScan() {
+        if (executorService == null) {
+            executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+        }
         final ExecutorService service = executorService;
         if (service == null) {
             return;
@@ -126,17 +135,11 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         logger.trace("Starting Network Device Discovery");
 
         final Set<String> networkIPs = networkUtils.getNetworkIPs(MAXIMUM_IPS_PER_INTERFACE);
-        executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
         scannedIPcount = 0;
 
         for (String ip : networkIPs) {
             final PresenceDetection s = new PresenceDetection(this, 2000);
-            try {
-                s.setHostname(ip);
-            } catch (UnknownHostException unknownHostException) {
-                logger.trace("Skip IP that cannot be converted to a InetAddress", unknownHostException);
-                continue;
-            }
+            s.setHostname(ip);
             s.setIOSDevice(true);
             s.setUseDhcpSniffing(false);
             s.setTimeout(PING_TIMEOUT_IN_MS);
@@ -235,7 +238,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
 
         Map<String, Object> properties = new HashMap<>();
         properties.put(PARAMETER_HOSTNAME, ip);
-        thingDiscovered(DiscoveryResultBuilder.create(createPingUID(ip)).withTTL(120).withProperties(properties)
-                .withLabel("Network Device (" + ip + ")").build());
+        thingDiscovered(DiscoveryResultBuilder.create(createPingUID(ip)).withTTL(DISCOVERY_RESULT_TTL)
+                .withProperties(properties).withLabel("Network Device (" + ip + ")").build());
     }
 }

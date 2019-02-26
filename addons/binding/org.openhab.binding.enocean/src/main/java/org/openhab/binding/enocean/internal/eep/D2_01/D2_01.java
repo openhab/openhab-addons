@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.enocean.internal.eep.D2_01;
 
@@ -22,6 +26,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.core.util.HexUtils;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelDimmerConfig;
 import org.openhab.binding.enocean.internal.eep.Base._VLDMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
@@ -93,20 +98,25 @@ public abstract class D2_01 extends _VLDMessage {
         return UnDefType.UNDEF;
     }
 
-    protected void setDimmingData(Command command, byte outputChannel) {
+    protected void setDimmingData(Command command, byte outputChannel, Configuration config) {
+        byte outputValue;
+
         if (command instanceof DecimalType) {
             if (((DecimalType) command).equals(DecimalType.ZERO)) {
-                setData(CMD_ACTUATOR_SET_STATUS, outputChannel, STATUS_SWITCHING_OFF);
+                outputValue = STATUS_SWITCHING_OFF;
             } else {
-                setData(CMD_ACTUATOR_SET_STATUS, outputChannel, ((DecimalType) command).byteValue());
+                outputValue = ((DecimalType) command).byteValue();
             }
         } else if ((OnOffType) command == OnOffType.ON) {
-            setData(CMD_ACTUATOR_SET_STATUS, outputChannel, STATUS_DIMMING_100);
+            outputValue = STATUS_DIMMING_100;
         } else {
-            setData(CMD_ACTUATOR_SET_STATUS, outputChannel, STATUS_SWITCHING_OFF);
+            outputValue = STATUS_SWITCHING_OFF;
         }
 
-        setData(CMD_ACTUATOR_SET_STATUS, outputChannel);
+        EnOceanChannelDimmerConfig c = config.as(EnOceanChannelDimmerConfig.class);
+        byte rampingTime = (c.rampingTime == null) ? Zero : c.rampingTime.byteValue();
+
+        setData(CMD_ACTUATOR_SET_STATUS, (byte) ((rampingTime << 5) | outputChannel), outputValue);
     }
 
     protected State getDimmingData() {
@@ -207,7 +217,7 @@ public abstract class D2_01 extends _VLDMessage {
             if (command == RefreshType.REFRESH) {
                 setSwitchingQueryData(AllChannels_Mask);
             } else {
-                setDimmingData(command, AllChannels_Mask);
+                setDimmingData(command, AllChannels_Mask, config);
             }
         } else if (channelId.equals(CHANNEL_INSTANTPOWER) && command == RefreshType.REFRESH) {
             setPowerMeasurementQueryData(AllChannels_Mask);

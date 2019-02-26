@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.max.internal.command;
 
@@ -112,8 +116,10 @@ public class UdpCubeCommand {
                 // We have a response
                 String message = new String(receivePacket.getData(), receivePacket.getOffset(),
                         receivePacket.getLength(), StandardCharsets.UTF_8);
-                logger.trace("Broadcast response from {} : {} '{}'", receivePacket.getAddress(), message.length(),
-                        message);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Broadcast response from {} : {} '{}'", receivePacket.getAddress(), message.length(),
+                            message);
+                }
 
                 // Check if the message is correct
                 if (message.startsWith("eQ3Max") && !message.equals(MAXCUBE_COMMAND_STRING)) {
@@ -133,7 +139,7 @@ public class UdpCubeCommand {
                     } else {
                         // TODO: Further parsing of the other message types
                         commandResponse.put("messageResponse",
-                                Utils.getHex(message.substring(24).getBytes(StandardCharsets.UTF_8)));
+                                Utils.getHex(message.substring(20).getBytes(StandardCharsets.UTF_8)));
                     }
 
                     commandRunning = false;
@@ -159,7 +165,7 @@ public class UdpCubeCommand {
      * Send broadcast message over all active interfaces
      *
      * @param commandString string to be used for the discovery
-     * @param ipAddress IP address of the MAX! Cube
+     * @param ipAddress     IP address of the MAX! Cube
      *
      */
     private void sendUdpCommand(String commandString, String ipAddress) {

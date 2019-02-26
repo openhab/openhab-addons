@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.ui.homebuilder
+Bundle-ManifestVersion: 2
+Bundle-Name: HomeBuilder User Interface
+Bundle-SymbolicName: org.openhab.ui.homebuilder
+Bundle-Version: 2.5.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Service-Component: OSGI-INF/*.xml
+Import-Package: com.google.gson,
+ com.google.gson.annotations,
+ javax.servlet,
+ javax.servlet.http,
+ javax.ws.rs,
+ javax.ws.rs.core,
+ org.eclipse.smarthome.io.rest,
+ org.openhab.ui.dashboard,
+ org.osgi.framework,
+ org.osgi.service.cm,
+ org.osgi.service.http,
+ org.slf4j
+Bundle-Vendor: openHAB
+Bundle-ActivationPolicy: lazy

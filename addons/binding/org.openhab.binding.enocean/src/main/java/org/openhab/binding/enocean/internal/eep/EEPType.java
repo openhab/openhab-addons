@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.enocean.internal.eep;
 
@@ -48,6 +52,8 @@ import org.openhab.binding.enocean.internal.eep.A5_04.A5_04_01;
 import org.openhab.binding.enocean.internal.eep.A5_04.A5_04_02;
 import org.openhab.binding.enocean.internal.eep.A5_04.A5_04_02_Eltako;
 import org.openhab.binding.enocean.internal.eep.A5_04.A5_04_03;
+import org.openhab.binding.enocean.internal.eep.A5_06.A5_06_01;
+import org.openhab.binding.enocean.internal.eep.A5_06.A5_06_01_ELTAKO;
 import org.openhab.binding.enocean.internal.eep.A5_07.A5_07_01;
 import org.openhab.binding.enocean.internal.eep.A5_07.A5_07_02;
 import org.openhab.binding.enocean.internal.eep.A5_07.A5_07_03;
@@ -94,6 +100,8 @@ import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_00;
 import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_01;
 import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_02;
 import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_03;
+import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_01;
+import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_01_ELTAKO;
 import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_09;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Blinds;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Dimming;
@@ -175,8 +183,13 @@ public enum EEPType {
     MechanicalHandle02(RORG._4BS, 0x14, 0x09, false, A5_14_09.class, THING_TYPE_MECHANICALHANDLE,
             CHANNEL_WINDOWHANDLESTATE, CHANNEL_CONTACT, CHANNEL_BATTERY_VOLTAGE, CHANNEL_RECEIVINGSTATE),
 
-    ContactAndSwitch(RORG._1BS, 0x00, 0x01, false, D5_00_01.class, THING_TYPE_CONTACT, CHANNEL_CONTACT,
+    ContactAndSwitch01(RORG._1BS, 0x00, 0x01, false, D5_00_01.class, THING_TYPE_CONTACT, CHANNEL_CONTACT,
             CHANNEL_RECEIVINGSTATE),
+    ContactAndSwitch02(RORG._4BS, 0x14, 0x01, false, A5_14_01.class, THING_TYPE_CONTACT, CHANNEL_BATTERY_VOLTAGE,
+            CHANNEL_CONTACT, CHANNEL_RECEIVINGSTATE),
+
+    BatteryStatus(RORG._4BS, 0x14, 0x01, false, "ELTAKO", ELTAKOID, A5_14_01_ELTAKO.class, THING_TYPE_CONTACT,
+            CHANNEL_BATTERY_VOLTAGE, CHANNEL_ENERGY_STORAGE, CHANNEL_RECEIVINGSTATE),
 
     TemperatureSensor_A5_02_01(RORG._4BS, 0x02, 0x01, false, A5_02_01.class, THING_TYPE_TEMPERATURESENSOR,
             CHANNEL_TEMPERATURE, CHANNEL_RECEIVINGSTATE),
@@ -258,6 +271,11 @@ public enum EEPType {
     FXBH_A5_08_01(RORG._4BS, 0x08, 0x01, false, "FXBH", ELTAKOID, A5_08_01_FXBH.class,
             THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, CHANNEL_MOTIONDETECTION, CHANNEL_ILLUMINATION,
             CHANNEL_RECEIVINGSTATE),
+
+    LightSensor01(RORG._4BS, 0x06, 0x01, false, A5_06_01.class, THING_TYPE_LIGHTSENSOR, CHANNEL_ILLUMINATION,
+            CHANNEL_RECEIVINGSTATE),
+    LightSensor02(RORG._4BS, 0x06, 0x01, false, "ELTAKO", ELTAKOID, A5_06_01_ELTAKO.class, THING_TYPE_LIGHTSENSOR,
+            CHANNEL_ILLUMINATION, CHANNEL_RECEIVINGSTATE),
 
     RoomPanel_A5_10_01(RORG._4BS, 0x10, 0x01, false, A5_10_01.class, THING_TYPE_ROOMOPERATINGPANEL, CHANNEL_TEMPERATURE,
             CHANNEL_SETPOINT, CHANNEL_FANSPEEDSTAGE, CHANNEL_OCCUPANCY, CHANNEL_RECEIVINGSTATE),

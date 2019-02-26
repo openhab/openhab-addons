@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.io.homekit.internal;
 
@@ -15,7 +19,7 @@ import java.util.Map;
  * Characteristics are used by complex accessories that can't be represented by
  * a single item (i.e. a thermostat)
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public enum HomekitCharacteristicType {
 
@@ -23,11 +27,11 @@ public enum HomekitCharacteristicType {
     TARGET_TEMPERATURE("TargetTemperature"),
     HEATING_COOLING_MODE("homekit:HeatingCoolingMode");
 
-    private static final Map<String, HomekitCharacteristicType> tagMap = new HashMap<>();
+    private static final Map<String, HomekitCharacteristicType> TAG_MAP = new HashMap<>();
 
     static {
         for (HomekitCharacteristicType type : HomekitCharacteristicType.values()) {
-            tagMap.put(type.tag, type);
+            TAG_MAP.put(type.tag, type);
         }
     }
 
@@ -38,6 +42,6 @@ public enum HomekitCharacteristicType {
     }
 
     public static HomekitCharacteristicType valueOfTag(String tag) {
-        return tagMap.get(tag);
+        return TAG_MAP.get(tag);
     }
 }

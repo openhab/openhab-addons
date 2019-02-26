@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.mihome.internal.handler;
 
@@ -55,9 +59,13 @@ import com.google.gson.JsonParser;
  */
 public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements XiaomiSocketListener {
 
-    private static final long DISCOVERY_LOCK_TIME_MILLIS = TimeUnit.SECONDS.toMillis(10);
     private static final long READ_ACK_RETENTION_MILLIS = TimeUnit.HOURS.toMillis(2);
     private static final long BRIDGE_CONNECTION_TIMEOUT_MILLIS = TimeUnit.MINUTES.toMillis(5);
+
+    private static final String JOIN_PERMISSION = "join_permission";
+    private static final String YES = "yes";
+    private static final String NO = "no";
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private static final JsonParser PARSER = new JsonParser();
     private static final EncryptionHelper CRYPTER = new EncryptionHelper();
@@ -106,7 +114,6 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
     synchronized void cancelRunningTimer() {
         if (timerIsRunning) {
             connectionTimeout.cancel();
-            logger.debug("Cancelled running timer");
             connectionTimeout = new Timer();
             timerIsRunning = false;
         }
@@ -129,9 +136,13 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
         socket.registerListener(this);
 
         scheduler.schedule(() -> {
-            discoverItems();
+            readDeviceList();
         }, 1, TimeUnit.SECONDS);
         startTimer();
+    }
+
+    public void readDeviceList() {
+        sendCommandToBridge("get_id_list");
     }
 
     @Override
@@ -299,7 +310,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
 
     void writeToDevice(String itemId, String command) {
         sendCommandToBridge("write", new String[] { "sid", "data" },
-                new Object[] { itemId, "{" + command + ", \\\"key\\\": \\\"" + getEncryptedKey() + "\"}" });
+                new Object[] { itemId, "{" + command + ", \\\"key\\\": \\\"" + getEncryptedKey() + "\\\"}" });
     }
 
     void writeToBridge(String[] keys, Object[] values) {
@@ -374,14 +385,18 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
         }
     }
 
-    public void discoverItems() {
-        long lockedFor = DISCOVERY_LOCK_TIME_MILLIS - (System.currentTimeMillis() - lastDiscoveryTime);
+    public void discoverItems(long discoveryTimeout) {
+        long lockedFor = discoveryTimeout - (System.currentTimeMillis() - lastDiscoveryTime);
         if (lockedFor <= 0) {
             logger.debug("Triggered discovery");
-            sendCommandToBridge("get_id_list");
+            readDeviceList();
+            writeToBridge(new String[] { JOIN_PERMISSION }, new Object[] { YES });
+            scheduler.schedule(() -> {
+                writeToBridge(new String[] { JOIN_PERMISSION }, new Object[] { NO });
+            }, discoveryTimeout, TimeUnit.MILLISECONDS);
             lastDiscoveryTime = System.currentTimeMillis();
         } else {
-            logger.debug("Triggered discovery, but locked for {}ms", lockedFor);
+            logger.debug("A discovery has already been triggered, please wait for {}ms", lockedFor);
         }
     }
 

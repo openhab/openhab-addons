@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.ui.cometvisu.internal.backend;
 
@@ -45,6 +49,10 @@ import org.eclipse.smarthome.core.persistence.PersistenceService;
 import org.eclipse.smarthome.core.persistence.QueryablePersistenceService;
 import org.eclipse.smarthome.io.rest.RESTResource;
 import org.openhab.ui.cometvisu.internal.Config;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.rrd4j.ConsolFun;
 import org.rrd4j.core.FetchData;
 import org.rrd4j.core.FetchRequest;
@@ -57,34 +65,35 @@ import org.slf4j.LoggerFactory;
  * handles requests for chart series data from the CometVisu client
  * used by the diagram plugin
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  *
  */
+@Component(immediate = true, service = { ChartResource.class, RESTResource.class })
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_CHART_ALIAS)
 public class ChartResource implements RESTResource {
     private final Logger logger = LoggerFactory.getLogger(ChartResource.class);
 
     // pattern RRDTool uses to format doubles in XML files
-    static final String PATTERN = "0.0000000000E00";
+    private static final String PATTERN = "0.0000000000E00";
 
-    static final DecimalFormat df;
+    private static final DecimalFormat DECIMAL_FORMAT;
 
     protected static final String RRD_FOLDER = org.eclipse.smarthome.config.core.ConfigConstants.getUserDataFolder()
             + File.separator + "persistence" + File.separator + "rrd4j";
 
     static {
-        df = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ENGLISH);
-        df.applyPattern(PATTERN);
-        // df.setPositivePrefix("+");
+        DECIMAL_FORMAT = (DecimalFormat) NumberFormat.getNumberInstance(Locale.ENGLISH);
+        DECIMAL_FORMAT.applyPattern(PATTERN);
     }
 
-    protected static Map<String, QueryablePersistenceService> persistenceServices = new HashMap<String, QueryablePersistenceService>();
+    protected static Map<String, QueryablePersistenceService> persistenceServices = new HashMap<>();
 
     private ItemRegistry itemRegistry;
 
     @Context
     private UriInfo uriInfo;
 
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
     public void addPersistenceService(PersistenceService service) {
         if (service instanceof QueryablePersistenceService) {
             persistenceServices.put(service.getId(), (QueryablePersistenceService) service);
@@ -99,6 +108,7 @@ public class ChartResource implements RESTResource {
         return persistenceServices;
     }
 
+    @Reference
     protected void setItemRegistry(ItemRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
@@ -176,7 +186,7 @@ public class ChartResource implements RESTResource {
 
     public Object getPersistenceSeries(QueryablePersistenceService persistenceService, Item item, Date timeBegin,
             Date timeEnd, long resolution) {
-        Map<Long, ArrayList<String>> data = new HashMap<Long, ArrayList<String>>();
+        Map<Long, List<String>> data = new HashMap<>();
 
         // Define the data filter
         FilterCriteria filter = new FilterCriteria();
@@ -196,7 +206,7 @@ public class ChartResource implements RESTResource {
             HistoricItem historicItem = it.next();
             org.eclipse.smarthome.core.types.State state = historicItem.getState();
             if (state instanceof DecimalType) {
-                ArrayList<String> vals = new ArrayList<String>();
+                List<String> vals = new ArrayList<>();
                 vals.add(formatDouble(((DecimalType) state).doubleValue(), "null", true));
                 data.put(historicItem.getTimestamp().getTime(), vals);
             }
@@ -219,9 +229,9 @@ public class ChartResource implements RESTResource {
      */
     public Object getRrdSeries(QueryablePersistenceService persistenceService, Item item,
             ConsolFun consilidationFunction, Date timeBegin, Date timeEnd, long resolution) {
-        Map<Long, ArrayList<String>> data = new TreeMap<Long, ArrayList<String>>();
+        Map<Long, List<String>> data = new TreeMap<>();
         try {
-            List<String> itemNames = new ArrayList<String>();
+            List<String> itemNames = new ArrayList<>();
 
             if (item instanceof GroupItem) {
                 GroupItem groupItem = (GroupItem) item;
@@ -236,7 +246,7 @@ public class ChartResource implements RESTResource {
             }
 
         } catch (FileNotFoundException e) {
-            // rrd file does not exist, fallback to generic persistance service
+            // rrd file does not exist, fallback to generic persistence service
             logger.debug("no rrd file found '{}'", (RRD_FOLDER + File.separator + item.getName() + ".rrd"));
             return getPersistenceSeries(persistenceService, item, timeBegin, timeEnd, resolution);
         } catch (Exception e) {
@@ -246,10 +256,10 @@ public class ChartResource implements RESTResource {
         return convertToRrd(data);
     }
 
-    private ArrayList<Object> convertToRrd(Map<Long, ArrayList<String>> data) {
+    private List<Object> convertToRrd(Map<Long, List<String>> data) {
         // sort data by key
-        Map<Long, ArrayList<String>> treeMap = new TreeMap<Long, ArrayList<String>>(data);
-        ArrayList<Object> rrd = new ArrayList<Object>();
+        Map<Long, List<String>> treeMap = new TreeMap<>(data);
+        List<Object> rrd = new ArrayList<>();
         for (Long time : treeMap.keySet()) {
             Object[] entry = new Object[2];
             entry[0] = time;
@@ -259,13 +269,12 @@ public class ChartResource implements RESTResource {
         return rrd;
     }
 
-    private Map<Long, ArrayList<String>> addRrdData(Map<Long, ArrayList<String>> data, String itemName,
+    private Map<Long, List<String>> addRrdData(Map<Long, List<String>> data, String itemName,
             ConsolFun consilidationFunction, Date timeBegin, Date timeEnd, long resolution) throws IOException {
         RrdDb rrdDb = new RrdDb(RRD_FOLDER + File.separator + itemName + ".rrd");
         FetchRequest fetchRequest = rrdDb.createFetchRequest(consilidationFunction, Util.getTimestamp(timeBegin),
                 Util.getTimestamp(timeEnd), resolution);
         FetchData fetchData = fetchRequest.fetchData();
-        // logger.info(fetchData.toString());
         long[] timestamps = fetchData.getTimestamps();
         double[][] values = fetchData.getValues();
 
@@ -277,9 +286,9 @@ public class ChartResource implements RESTResource {
             long time = timestamps[row] * 1000;
 
             if (!data.containsKey(time)) {
-                data.put(time, new ArrayList<String>());
+                data.put(time, new ArrayList<>());
             }
-            ArrayList<String> vals = data.get(time);
+            List<String> vals = data.get(time);
             int indexOffset = vals.size();
             for (int dsIndex = 0; dsIndex < fetchData.getColumnCount(); dsIndex++) {
                 vals.add(dsIndex + indexOffset, formatDouble(values[dsIndex][row], "null", true));
@@ -295,7 +304,7 @@ public class ChartResource implements RESTResource {
             return nanString;
         }
         if (forceExponents) {
-            return df.format(x);
+            return DECIMAL_FORMAT.format(x);
         }
         return "" + x;
     }

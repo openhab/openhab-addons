@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.kodi.internal.handler;
 
@@ -21,7 +25,6 @@ import java.util.stream.Collectors;
 import javax.measure.Unit;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -77,14 +80,12 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     private final Logger logger = LoggerFactory.getLogger(KodiHandler.class);
 
     private final KodiConnection connection;
-
-    private ScheduledFuture<?> connectionCheckerFuture;
-
-    private ScheduledFuture<?> statusUpdaterFuture;
-
     private final KodiDynamicStateDescriptionProvider stateDescriptionProvider;
 
-    public KodiHandler(@NonNull Thing thing, KodiDynamicStateDescriptionProvider stateDescriptionProvider,
+    private ScheduledFuture<?> connectionCheckerFuture;
+    private ScheduledFuture<?> statusUpdaterFuture;
+
+    public KodiHandler(Thing thing, KodiDynamicStateDescriptionProvider stateDescriptionProvider,
             WebSocketClient webSocketClient) {
         super(thing);
         connection = new KodiConnection(this, webSocketClient);

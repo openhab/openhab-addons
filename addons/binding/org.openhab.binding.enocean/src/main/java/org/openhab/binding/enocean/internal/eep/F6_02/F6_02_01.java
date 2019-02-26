@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.enocean.internal.eep.F6_02;
 
@@ -132,6 +136,7 @@ public class F6_02_01 extends _RPSMessage {
                                     : UpDownType.DOWN;
                         }
                     }
+                    break;
                 case ToggleDir1:
                     if ((bytes[0] >>> 5) == dir1) {
                         if (((bytes[0] & PRESSED) != 0)) {
@@ -142,6 +147,7 @@ public class F6_02_01 extends _RPSMessage {
                                             : inverse((UpDownType) currentState));
                         }
                     }
+                    break;
                 case ToggleDir2:
                     if ((bytes[0] >>> 5) == dir2) {
                         if (((bytes[0] & PRESSED) != 0)) {
@@ -152,6 +158,7 @@ public class F6_02_01 extends _RPSMessage {
                                             : inverse((UpDownType) currentState));
                         }
                     }
+                    break;
                 default:
                     break;
             }

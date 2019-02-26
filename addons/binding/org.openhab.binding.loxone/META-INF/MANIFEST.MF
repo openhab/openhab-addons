@@ -8,11 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.loxone;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: 
- org.openhab.binding.loxone,
- org.openhab.binding.loxone.handler
 Import-Package: 
- com.google.common.collect,
  com.google.gson,
  com.google.gson.annotations,
  org.apache.commons.codec,
@@ -29,6 +25,7 @@ Import-Package:
  org.eclipse.jetty.websocket.common.extensions,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.upnp,
  org.eclipse.smarthome.core.common,
  org.eclipse.smarthome.core.id,
  org.eclipse.smarthome.core.library.types,
@@ -42,8 +39,6 @@ Import-Package:
  org.jupnp,
  org.jupnp.model.meta,
  org.jupnp.model.types,
- org.openhab.binding.loxone,
- org.openhab.binding.loxone.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

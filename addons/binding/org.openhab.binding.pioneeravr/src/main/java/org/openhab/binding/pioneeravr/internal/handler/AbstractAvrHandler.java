@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.pioneeravr.internal.handler;
 
@@ -22,20 +26,20 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.pioneeravr.PioneerAvrBindingConstants;
+import org.openhab.binding.pioneeravr.internal.PioneerAvrBindingConstants;
 import org.openhab.binding.pioneeravr.internal.protocol.RequestResponseFactory;
-import org.openhab.binding.pioneeravr.protocol.AvrConnection;
-import org.openhab.binding.pioneeravr.protocol.AvrConnectionException;
-import org.openhab.binding.pioneeravr.protocol.AvrResponse;
-import org.openhab.binding.pioneeravr.protocol.CommandTypeNotSupportedException;
-import org.openhab.binding.pioneeravr.protocol.event.AvrDisconnectionEvent;
-import org.openhab.binding.pioneeravr.protocol.event.AvrDisconnectionListener;
-import org.openhab.binding.pioneeravr.protocol.event.AvrStatusUpdateEvent;
-import org.openhab.binding.pioneeravr.protocol.event.AvrUpdateListener;
-import org.openhab.binding.pioneeravr.protocol.states.MuteStateValues;
-import org.openhab.binding.pioneeravr.protocol.states.PowerStateValues;
-import org.openhab.binding.pioneeravr.protocol.utils.DisplayInformationConverter;
-import org.openhab.binding.pioneeravr.protocol.utils.VolumeConverter;
+import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrConnection;
+import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrConnectionException;
+import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrResponse;
+import org.openhab.binding.pioneeravr.internal.protocol.avr.CommandTypeNotSupportedException;
+import org.openhab.binding.pioneeravr.internal.protocol.event.AvrDisconnectionEvent;
+import org.openhab.binding.pioneeravr.internal.protocol.event.AvrDisconnectionListener;
+import org.openhab.binding.pioneeravr.internal.protocol.event.AvrStatusUpdateEvent;
+import org.openhab.binding.pioneeravr.internal.protocol.event.AvrUpdateListener;
+import org.openhab.binding.pioneeravr.internal.protocol.states.MuteStateValues;
+import org.openhab.binding.pioneeravr.internal.protocol.states.PowerStateValues;
+import org.openhab.binding.pioneeravr.internal.protocol.utils.DisplayInformationConverter;
+import org.openhab.binding.pioneeravr.internal.protocol.utils.VolumeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.squeezebox.internal.handler;
 
@@ -18,20 +22,21 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller - Moved class to its own file.
  */
 class SqueezeBoxPlayerState {
-    boolean savedMute;
-    boolean savedPower;
-    boolean savedStop;
-    boolean savedControl;
+    private final Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerState.class);
 
-    int savedVolume;
-    int savedShuffle;
-    int savedRepeat;
-    int savedPlaylistIndex;
-    int savedNumberPlaylistTracks;
-    int savedPlayingTime;
+    private boolean savedMute;
+    private boolean savedPower;
+    private boolean savedStop;
+    private boolean savedControl;
+
+    private int savedVolume;
+    private int savedShuffle;
+    private int savedRepeat;
+    private int savedPlaylistIndex;
+    private int savedNumberPlaylistTracks;
+    private int savedPlayingTime;
 
     private SqueezeBoxPlayerHandler playerHandler;
-    private Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerState.class);
 
     public SqueezeBoxPlayerState(SqueezeBoxPlayerHandler playerHandler) {
         this.playerHandler = playerHandler;

@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.ui.cometvisu.internal.servlet;
 
@@ -19,6 +23,7 @@ import java.util.Set;
 
 import javax.servlet.ServletException;
 
+import org.eclipse.smarthome.config.core.ConfigurableService;
 import org.eclipse.smarthome.core.events.EventPublisher;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.persistence.PersistenceService;
@@ -30,7 +35,16 @@ import org.openhab.ui.cometvisu.internal.Config;
 import org.openhab.ui.cometvisu.internal.util.ClientInstaller;
 import org.openhab.ui.cometvisu.php.PHProvider;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationException;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -39,8 +53,13 @@ import org.slf4j.LoggerFactory;
 /**
  * registers the CometVisuServlet-Service
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  */
+@Component(immediate = true, service = CometVisuApp.class, configurationPid = "org.openhab.cometvisu", property = {
+        Constants.SERVICE_PID + "=org.openhab.cometvisu",
+        ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=ui:cometvisu",
+        ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=ui",
+        ConfigurableService.SERVICE_PROPERTY_LABEL + "=CometVisu" })
 public class CometVisuApp {
 
     private final Logger logger = LoggerFactory.getLogger(CometVisuApp.class);
@@ -79,6 +98,7 @@ public class CometVisuApp {
         return servlet;
     }
 
+    @Reference
     protected void setEventPublisher(EventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
     }
@@ -91,6 +111,7 @@ public class CometVisuApp {
         return this.eventPublisher;
     }
 
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
     public void addPersistenceService(PersistenceService service) {
         if (service instanceof QueryablePersistenceService) {
             persistenceServices.put(service.getId(), (QueryablePersistenceService) service);
@@ -109,6 +130,7 @@ public class CometVisuApp {
         return iconProviders;
     }
 
+    @Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.DYNAMIC)
     public void addIconProvider(IconProvider iconProvider) {
         this.iconProviders.add(iconProvider);
     }
@@ -117,6 +139,7 @@ public class CometVisuApp {
         this.iconProviders.remove(iconProvider);
     }
 
+    @Reference
     protected void setItemRegistry(ItemRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
@@ -129,6 +152,7 @@ public class CometVisuApp {
         this.itemRegistry = null;
     }
 
+    @Reference
     public void setItemUIRegistry(ItemUIRegistry itemUIRegistry) {
         this.itemUIRegistry = itemUIRegistry;
     }
@@ -137,6 +161,7 @@ public class CometVisuApp {
         this.itemUIRegistry = null;
     }
 
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
     public void addSitemapProvider(SitemapProvider provider) {
         sitemapProviders.add(provider);
     }
@@ -153,6 +178,7 @@ public class CometVisuApp {
         return sitemapProviders;
     }
 
+    @Reference
     protected void setHttpService(HttpService httpService) {
         this.httpService = httpService;
     }
@@ -161,6 +187,7 @@ public class CometVisuApp {
         this.httpService = null;
     }
 
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
     public void setPHProvider(PHProvider prov) {
         this.phpProvider = prov;
         if (servlet != null) {
@@ -172,7 +199,7 @@ public class CometVisuApp {
         return this.phpProvider;
     }
 
-    public void unsetPHProvider() {
+    public void unsetPHProvider(PHProvider prov) {
         this.phpProvider = null;
         if (servlet != null) {
             servlet.unsetPHProvider();
@@ -183,10 +210,10 @@ public class CometVisuApp {
         if (properties != null) {
             setProperties(properties);
             if (properties.get(Config.COMETVISU_WEBFOLDER_PROPERTY) != null) {
-                Config.COMETVISU_WEBFOLDER = (String) properties.get(Config.COMETVISU_WEBFOLDER_PROPERTY);
+                Config.cometvisuWebfolder = (String) properties.get(Config.COMETVISU_WEBFOLDER_PROPERTY);
             }
             if (properties.get(Config.COMETVISU_WEBAPP_ALIAS_PROPERTY) != null) {
-                Config.COMETVISU_WEBAPP_ALIAS = (String) properties.get(Config.COMETVISU_WEBAPP_ALIAS_PROPERTY);
+                Config.cometvisuWebappAlias = (String) properties.get(Config.COMETVISU_WEBAPP_ALIAS_PROPERTY);
             }
             if (properties.get(Config.COMETVISU_AUTODOWNLOAD_PROPERTY) != null) {
                 Object propertyValue = properties.get(Config.COMETVISU_AUTODOWNLOAD_PROPERTY);
@@ -199,13 +226,13 @@ public class CometVisuApp {
                     newValue = (Boolean) propertyValue;
                 }
 
-                boolean changed = Config.COMETVISU_AUTO_DOWNLOAD != newValue;
-                Config.COMETVISU_AUTO_DOWNLOAD = newValue;
-                if (Config.COMETVISU_AUTO_DOWNLOAD && changed) {
+                boolean changed = Config.cometvisuAutoDownload != newValue;
+                Config.cometvisuAutoDownload = newValue;
+                if (Config.cometvisuAutoDownload && changed) {
                     // let the installer check if the CometVisu client is installed and do that if not
                     installer.check();
                 }
-                Config.COMETVISU_AUTO_DOWNLOAD = newValue;
+                Config.cometvisuAutoDownload = newValue;
             }
             for (String key : properties.keySet()) {
                 String[] parts = key.split(">");
@@ -232,12 +259,14 @@ public class CometVisuApp {
      *            Configuration properties for this component obtained from the
      *            ConfigAdmin service
      */
+    @Activate
     protected void activate(Map<String, Object> configProps) throws ConfigurationException {
         readConfiguration(configProps);
         registerServlet();
-        logger.info("Started CometVisu UI at {} serving {}", Config.COMETVISU_WEBAPP_ALIAS, Config.COMETVISU_WEBFOLDER);
+        logger.info("Started CometVisu UI at {} serving {}", Config.cometvisuWebappAlias, Config.cometvisuWebfolder);
     }
 
+    @Deactivate
     public void deactivate(BundleContext componentContext) {
         unregisterServlet();
         logger.info("Stopped CometVisu UI");
@@ -246,19 +275,19 @@ public class CometVisuApp {
     private void registerServlet() {
         // As the alias is user configurable, we have to check if it has a
         // trailing slash but no leading slash
-        if (!Config.COMETVISU_WEBAPP_ALIAS.startsWith("/")) {
-            Config.COMETVISU_WEBAPP_ALIAS = "/" + Config.COMETVISU_WEBAPP_ALIAS;
+        if (!Config.cometvisuWebappAlias.startsWith("/")) {
+            Config.cometvisuWebappAlias = "/" + Config.cometvisuWebappAlias;
         }
 
-        if (Config.COMETVISU_WEBAPP_ALIAS.endsWith("/")) {
-            Config.COMETVISU_WEBAPP_ALIAS = Config.COMETVISU_WEBAPP_ALIAS.substring(0,
-                    Config.COMETVISU_WEBAPP_ALIAS.length() - 1);
+        if (Config.cometvisuWebappAlias.endsWith("/")) {
+            Config.cometvisuWebappAlias = Config.cometvisuWebappAlias.substring(0,
+                    Config.cometvisuWebappAlias.length() - 1);
         }
 
-        Dictionary<String, String> servletParams = new Hashtable<String, String>();
-        servlet = new CometVisuServlet(Config.COMETVISU_WEBFOLDER, this);
+        Dictionary<String, String> servletParams = new Hashtable<>();
+        servlet = new CometVisuServlet(Config.cometvisuWebfolder, this);
         try {
-            httpService.registerServlet(Config.COMETVISU_WEBAPP_ALIAS, servlet, servletParams, null);
+            httpService.registerServlet(Config.cometvisuWebappAlias, servlet, servletParams, null);
         } catch (ServletException e) {
             logger.error("Error during servlet startup", e);
         } catch (NamespaceException e) {
@@ -267,7 +296,7 @@ public class CometVisuApp {
     }
 
     private void unregisterServlet() {
-        httpService.unregister(Config.COMETVISU_WEBAPP_ALIAS);
+        httpService.unregister(Config.cometvisuWebappAlias);
     }
 
     /**
@@ -277,6 +306,7 @@ public class CometVisuApp {
      * @param configuration
      *            Updated configuration properties
      */
+    @Modified
     protected void modified(Map<String, Object> configProps) throws ConfigurationException {
         logger.info("updated({})", configProps);
         if (configProps == null) {

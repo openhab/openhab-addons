@@ -1,0 +1,32 @@
+<div class="icontrol">
+	<div ng-if="::($ctrl.item.type === 'Switch')">
+		<switch-control item="$ctrl.item"></switch-control>
+	</div>
+	<div ng-if="::($ctrl.item.type === 'Dimmer')">
+		<dimmer-control item="$ctrl.item"></dimmer-control>
+	</div>
+	<div ng-if="::($ctrl.item.type === 'Color')">
+		<color-control item="$ctrl.item"></color-control>
+	</div>
+	<div ng-if="::($ctrl.item.type.indexOf('Number') === 0)" class="numberWidget">
+		<number-control item="$ctrl.item"></number-control>
+	</div>
+	<div ng-if="::($ctrl.item.type === 'Rollershutter')">
+		<rollershutter-control item="$ctrl.item"></rollershutter-control>
+	</div>
+	<div ng-if="::($ctrl.item.type === 'Player')">
+		<player-control item="$ctrl.item"></player-control>
+	</div>
+	<div ng-if="::($ctrl.item.type === 'Contact')">
+		<contact-control item="$ctrl.item"></contact-control>
+	</div>
+	<div ng-if="::($ctrl.item.type === 'Location')">
+		<location-control item="$ctrl.item"></location-control>
+	</div>
+	<div ng-if="::($ctrl.item.type === 'Image')">
+		<image-control item="$ctrl.item"></image-control>
+	</div>
+	<div ng-if="::($ctrl.item.type === 'DateTime' || $ctrl.item.type === 'String')">
+		<string-control item="$ctrl.item"></string-control>
+	</div>
+</div>

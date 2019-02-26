@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.ui.cometvisu.internal.backend;
 
@@ -23,15 +27,15 @@ import org.openhab.ui.cometvisu.internal.Config;
 import org.openhab.ui.cometvisu.internal.backend.beans.ConfigBean;
 import org.openhab.ui.cometvisu.internal.backend.beans.LoginBean;
 import org.openhab.ui.cometvisu.internal.backend.beans.ResourcesBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * handles login request from the CometVisu client
  * currently this is just a placeholder and does no real authentification
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  */
+@Component(immediate = true, service = { LoginResource.class, RESTResource.class })
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_LOGIN_ALIAS)
 public class LoginResource implements RESTResource {
     @GET

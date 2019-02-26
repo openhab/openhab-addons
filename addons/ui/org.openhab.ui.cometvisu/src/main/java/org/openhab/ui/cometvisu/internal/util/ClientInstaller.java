@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.ui.cometvisu.internal.util;
 
@@ -49,9 +53,9 @@ public class ClientInstaller {
     private int timeout = 5000;
 
     /** URL for releases in github API */
-    private static final String releaseURL = "https://api.github.com/repos/CometVisu/CometVisu/releases";
+    private static final String RELEASE_URL = "https://api.github.com/repos/CometVisu/CometVisu/releases";
 
-    private static final byte[] buffer = new byte[0xFFFF];
+    private static final byte[] BUFFER = new byte[0xFFFF];
 
     private Map<String, Object> latestRelease;
 
@@ -84,28 +88,27 @@ public class ClientInstaller {
      * @param force {boolean} force downloading if client not found
      */
     public void check(boolean force) {
-        if (alreadyCheckedFolders.contains(Config.COMETVISU_WEBFOLDER) && !force) {
+        if (alreadyCheckedFolders.contains(Config.cometvisuWebfolder) && !force) {
             // this folder has been checked already
-            logger.debug("web folder {} has already been checked", Config.COMETVISU_WEBFOLDER);
+            logger.debug("web folder {} has already been checked", Config.cometvisuWebfolder);
             return;
         }
         if (!force) {
             // do not add the forced checks
-            alreadyCheckedFolders.add(Config.COMETVISU_WEBFOLDER);
+            alreadyCheckedFolders.add(Config.cometvisuWebfolder);
         }
 
-        File webFolder = new File(Config.COMETVISU_WEBFOLDER);
+        File webFolder = new File(Config.cometvisuWebfolder);
         if (!webFolder.exists()) {
             logger.debug("creating cometvisu webfolder {}", webFolder.getAbsolutePath());
             webFolder.mkdirs();
         }
         if (webFolder.isDirectory()) {
-
             // check for cometvisu either we have a index.html in it (for releases) or we have a package.json in it (for
             // source versions)
             if (!new File(webFolder, "index.html").exists() || !new File(webFolder, "package.json").exists()) {
                 // no cometvisu found if folder is empty download the cometvisu
-                if (Config.COMETVISU_AUTO_DOWNLOAD || force) {
+                if (Config.cometvisuAutoDownload || force) {
                     downloadLatestRelease();
                 } else {
                     downloadAvailableButBlocked = true;
@@ -217,9 +220,9 @@ public class ClientInstaller {
             Properties headers = new Properties();
             headers.setProperty("Accept", "application/json");
             try {
-                String response = HttpUtil.executeUrl("GET", releaseURL, headers, null, null, timeout);
+                String response = HttpUtil.executeUrl("GET", RELEASE_URL, headers, null, null, timeout);
                 if (response == null) {
-                    logger.error("No response received from '{}'", releaseURL);
+                    logger.error("No response received from '{}'", RELEASE_URL);
                 } else {
                     List<Map<String, Object>> jsonResponse = new Gson().fromJson(response, ArrayList.class);
 
@@ -239,7 +242,7 @@ public class ClientInstaller {
     public void downloadLatestRelease() {
         // request the download URL for the latest CometVisu release from the github API
         Map<String, Object> latestRelease = getLatestRelease();
-        List<Map<String, Object>> assets = (ArrayList<Map<String, Object>>) latestRelease.get("assets");
+        List<Map<String, Object>> assets = (List<Map<String, Object>>) latestRelease.get("assets");
 
         Map<String, Object> releaseAsset = null;
         for (Object assetObj : assets) {
@@ -260,7 +263,7 @@ public class ClientInstaller {
 
                 ZipFile zip = new ZipFile(releaseFile, ZipFile.OPEN_READ);
 
-                extractFolder("cometvisu/release/", zip, Config.COMETVISU_WEBFOLDER);
+                extractFolder("cometvisu/release/", zip, Config.cometvisuWebfolder);
             } catch (IOException e) {
                 logger.error("error opening release zip file {}", e.getMessage(), e);
             } finally {
@@ -294,8 +297,8 @@ public class ClientInstaller {
 
                     try (InputStream is = zipFile.getInputStream(entry);
                             OutputStream os = new FileOutputStream(file);) {
-                        for (int len; (len = is.read(buffer)) != -1;) {
-                            os.write(buffer, 0, len);
+                        for (int len; (len = is.read(BUFFER)) != -1;) {
+                            os.write(BUFFER, 0, len);
                         }
                         logger.info("extracted zip file {} to folder {}", zipFile.getName(), destDir);
                     } catch (IOException e) {

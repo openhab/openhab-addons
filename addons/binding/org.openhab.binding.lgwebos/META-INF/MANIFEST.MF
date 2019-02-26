@@ -12,8 +12,7 @@ Bundle-SymbolicName: org.openhab.binding.lgwebos;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Export-Package: 
- org.openhab.binding.lgwebos.action,
- org.openhab.binding.lgwebos.handler
+ org.openhab.binding.lgwebos.action
 Import-Package: 
  javax.jmdns,
  org.apache.commons.lang,
@@ -22,7 +21,7 @@ Import-Package:
  org.apache.http.message,
  org.apache.http.protocol,
  org.eclipse.jdt.annotation;resolution:=optional,
- org.eclipse.smarthome.automation.annotation;resolution:=optional,
+ org.openhab.core.automation.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
@@ -33,6 +32,5 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.openhab.binding.lgwebos.action,
- org.openhab.binding.lgwebos.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

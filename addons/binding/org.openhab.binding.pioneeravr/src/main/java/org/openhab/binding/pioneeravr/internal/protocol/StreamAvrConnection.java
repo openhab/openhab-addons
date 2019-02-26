@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.pioneeravr.internal.protocol;
 
@@ -29,14 +33,14 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.pioneeravr.internal.protocol.ParameterizedCommand.ParameterizedCommandType;
 import org.openhab.binding.pioneeravr.internal.protocol.SimpleCommand.SimpleCommandType;
-import org.openhab.binding.pioneeravr.protocol.AvrCommand;
-import org.openhab.binding.pioneeravr.protocol.AvrConnection;
-import org.openhab.binding.pioneeravr.protocol.CommandTypeNotSupportedException;
-import org.openhab.binding.pioneeravr.protocol.event.AvrDisconnectionEvent;
-import org.openhab.binding.pioneeravr.protocol.event.AvrDisconnectionListener;
-import org.openhab.binding.pioneeravr.protocol.event.AvrStatusUpdateEvent;
-import org.openhab.binding.pioneeravr.protocol.event.AvrUpdateListener;
-import org.openhab.binding.pioneeravr.protocol.utils.VolumeConverter;
+import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrCommand;
+import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrConnection;
+import org.openhab.binding.pioneeravr.internal.protocol.avr.CommandTypeNotSupportedException;
+import org.openhab.binding.pioneeravr.internal.protocol.event.AvrDisconnectionEvent;
+import org.openhab.binding.pioneeravr.internal.protocol.event.AvrDisconnectionListener;
+import org.openhab.binding.pioneeravr.internal.protocol.event.AvrStatusUpdateEvent;
+import org.openhab.binding.pioneeravr.internal.protocol.event.AvrUpdateListener;
+import org.openhab.binding.pioneeravr.internal.protocol.utils.VolumeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

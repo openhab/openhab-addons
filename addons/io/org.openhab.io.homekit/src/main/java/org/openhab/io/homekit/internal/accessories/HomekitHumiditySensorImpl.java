@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.io.homekit.internal.accessories;
 
@@ -21,7 +25,7 @@ import com.beowulfe.hap.accessories.HumiditySensor;
 
 /**
  *
- * @author Andy Lintner - Initial implementation
+ * @author Andy Lintner - Initial contribution
  */
 public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl<NumberItem> implements HumiditySensor {
 
@@ -32,7 +36,7 @@ public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl<Numb
 
     @Override
     public CompletableFuture<Double> getCurrentRelativeHumidity() {
-        DecimalType state = (DecimalType) getItem().getStateAs(DecimalType.class);
+        DecimalType state = getItem().getStateAs(DecimalType.class);
         if (state == null) {
             return CompletableFuture.completedFuture(null);
         }

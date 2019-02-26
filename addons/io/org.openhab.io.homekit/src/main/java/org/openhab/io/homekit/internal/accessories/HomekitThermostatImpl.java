@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.io.homekit.internal.accessories;
 
@@ -40,7 +44,7 @@ import com.beowulfe.hap.accessories.thermostat.BasicThermostat;
  * <li>Heating/Cooling Mode: String type (see HomekitSettings.thermostat*Mode)</li>
  * </ul>
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<GroupItem>
         implements BasicThermostat, GroupedAccessory {
@@ -128,7 +132,7 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
     @Override
     public CompletableFuture<Double> getCurrentTemperature() {
         Item item = getItemRegistry().get(currentTemperatureItemName);
-        DecimalType state = (DecimalType) item.getStateAs(DecimalType.class);
+        DecimalType state = item.getStateAs(DecimalType.class);
         if (state == null) {
             return CompletableFuture.completedFuture(null);
         }
@@ -144,7 +148,7 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
     public CompletableFuture<Double> getTargetTemperature() {
         if (targetTemperatureItemName != null) {
             Item item = getItemRegistry().get(targetTemperatureItemName);
-            DecimalType state = (DecimalType) item.getStateAs(DecimalType.class);
+            DecimalType state = item.getStateAs(DecimalType.class);
             if (state == null) {
                 return CompletableFuture.completedFuture(null);
             }
@@ -231,7 +235,7 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
             return null;
         }
         if (!(item instanceof GenericItem)) {
-            throw new RuntimeException("Expected GenericItem, found " + item.getClass().getCanonicalName());
+            throw new IllegalStateException("Expected GenericItem, found " + item.getClass().getCanonicalName());
         }
         return (T) item;
     }

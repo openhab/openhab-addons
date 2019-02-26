@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ntp"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ntp">
+		<label>NTP Server</label>
+		<description>An NTP server that provides current date and time</description>
+		<channels>
+			<channel id="dateTime" typeId="dateTime-channel" />
+			<channel id="string" typeId="string-channel" />
+		</channels>
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>The NTP server hostname.</description>
+				<default>0.pool.ntp.org</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="true" unit="s">
+				<label>Refresh interval</label>
+				<description>
+					Interval that new time updates are posted to the event bus in seconds.
+				</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="refreshNtp" type="integer" required="true">
+				<label>NTP refresh frequency</label>
+				<description>
+					Number of updates before querying the NTP server.
+				</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="serverPort" type="integer">
+				<label>Server port</label>
+				<description>The port that the NTP server could use.</description>
+				<default>123</default>
+			</parameter>
+			<parameter name="timeZone" type="text" required="false">
+				<label>Timezone</label>
+				<description>The configured timezone.</description>
+			</parameter>
+			<parameter name="locale" type="text" required="false">
+				<label>Locale</label>
+				<description>The configured locale.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<channel-type id="dateTime-channel">
+		<item-type>DateTime</item-type>
+		<label>Date</label>
+		<description>NTP refreshed date &amp; time</description>
+		<category>Date</category>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="string-channel">
+		<item-type>String</item-type>
+		<label>Date</label>
+		<description>NTP refreshed date &amp; time</description>
+		<category>Date</category>
+		<state readOnly="true" />
+		<config-description>
+			<parameter name="DateTimeFormat" type="text" required="false">
+				<label>Date Time Format</label>
+				<description>Formattting of the date &amp; time.</description>
+				<default>yyyy-MM-dd HH:mm:ss z</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+</thing:thing-descriptions>

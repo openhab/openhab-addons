@@ -148,7 +148,7 @@ Basic parameters
 
 | Parameter | Type    | Required | Default if omitted | Description                                                                                                                                                                                               |     |
 | --------- | ------- | -------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
-| port      | text    | ✓        |                    | Serial port to use, for example `"/dev/ttyS0"` or `"COM1"`                                                                                                                                                    |     |
+| port      | text    | ✓        |                    | Serial port to use, for example `"/dev/ttyS0"` or `"COM1"`                                                                                                                                                |     |
 | id        | integer |          | `1`                | Slave id. Also known as station address or unit identifier. See [Wikipedia](https://en.wikipedia.org/wiki/Modbus) and [simplymodbus](http://www.simplymodbus.ca/index.html) articles for more information |     |
 | baud      | integer | ✓        |                    | Baud of the connection. Valid values are: `75`, `110`, `300`, `1200`, `2400`, `4800`, `9600`, `19200`, `38400`, `57600`, `115200`.                                                                        |     |
 | stopBits  | text    | ✓        |                    | Stop bits. Valid values are: `"1.0"`, `"1.5"`, `"2.0"`.                                                                                                                                                       |     |
@@ -180,14 +180,14 @@ With low baud rates and/or long read requests (that is, many items polled), ther
 
 `poller` thing takes care of polling the Modbus serial slave or Modbus TCP server data regularly.
 
-| Parameter     | Type    | Required | Default if omitted | Description                                                                                                                                                                            |
-| ------------- | ------- | -------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `start`       | integer |          | `0`                | Address of the first register, coil, or discrete input to poll. Input as zero-based index number.                                                                                      |
-| `length`      | integer | ✓        | (-)                | Number of registers, coils or discrete inputs to read.                                                                                                                                 |
+| Parameter     | Type    | Required | Default if omitted | Description                                                                                                                                                                                    |
+| ------------- | ------- | -------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `start`       | integer |          | `0`                | Address of the first register, coil, or discrete input to poll. Input as zero-based index number.                                                                                              |
+| `length`      | integer | ✓        | (-)                | Number of registers, coils or discrete inputs to read.                                                                                                                                         |
 | `type`        | text    | ✓        | (-)                | Type of modbus items to poll. This matches directly to Modbus request type or function code (FC). Valid values are: `"coil"` (FC01), `"discrete"` (FC02), `"holding"`(FC03), `"input"` (FC04). |
-| `refresh`     | integer |          | `500`              | Poll interval in milliseconds. Use zero to disable automatic polling.                                                                                                                  |
-| `maxTries`    | integer |          | `3`                | Maximum tries when reading. <br /><br />Number of tries when reading data, if some of the reading fail. For single try, enter 1.                                                       |
-| `cacheMillis` | integer |          | `50`               | Duration for data cache to be valid, in milliseconds. This cache is used only to serve `REFRESH`  commands. Use zero to disable the caching.                                           |
+| `refresh`     | integer |          | `500`              | Poll interval in milliseconds. Use zero to disable automatic polling.                                                                                                                          |
+| `maxTries`    | integer |          | `3`                | Maximum tries when reading. <br /><br />Number of tries when reading data, if some of the reading fail. For single try, enter 1.                                                               |
+| `cacheMillis` | integer |          | `50`               | Duration for data cache to be valid, in milliseconds. This cache is used only to serve `REFRESH`  commands. Use zero to disable the caching.                                                   |
 
 Note: Polling can be manually triggered by sending `REFRESH` command to item bound to channel of `data` thing.
 When manually triggering polling, a new poll is executed as soon as possible, and sibling `data` things (i.e. things that share the same `poller` bridge) are updated.
@@ -202,16 +202,16 @@ n.b. note that some numerics like 'readStart' need to be entered as 'text'.
 
 | Parameter                                   | Type    | Required | Default if omitted | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------- | ------- | -------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `readValueType`                             | text    |          | (empty)            | How data is read from modbus. Use empty for write-only things.<br /><br />Bit value type must be used with coils and discrete inputs. With registers all value types are applicable. Valid values are: `"int64"`, `"int64_swap"`, `"uint64"`, `"uint64_swap"`, `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"uint32"`, `"uint32_swap"`, `"int16"`, `"uint16"`, `"int8"`, `"uint8"`, or `"bit"`. See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                                                                                       |
+| `readValueType`                             | text    |          | (empty)            | How data is read from modbus. Use empty for write-only things.<br /><br />Bit value type must be used with coils and discrete inputs. With registers all value types are applicable. Valid values are: `"int64"`, `"int64_swap"`, `"uint64"`, `"uint64_swap"`, `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"uint32"`, `"uint32_swap"`, `"int16"`, `"uint16"`, `"int8"`, `"uint8"`, or `"bit"`. See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                               |
 | `readStart`                                 | text    |          | (empty)            | Start address to start reading the value. Use empty for write-only things. <br /><br />Input as zero-based index number, e.g. in place of `400001` (first holding register), use the address `"0"`.  Must be between (poller start) and (poller start + poller length - 1) (inclusive).<br /><br />With registers and value type less than 16 bits, you must use `"X.Y"` format where `Y` specifies the sub-element to read from the 16 bit register:<ul> <li>For example, `"3.1"` would mean pick second bit from register index `3` with bit value type. </li><li>With int8 valuetype, it would pick the high byte of register index `3`.</li></ul> |
 | `readTransform`                             | text    |          | `"default"`        | Transformation to apply to polled data, after it has been converted to number using `readValueType`. <br /><br />Use "default" to communicate that no transformation is done and value should be passed as is.<br />Use `"SERVICENAME(ARG)"` to use transformation service `SERVICENAME` with argument `ARG`. <br />Any other value than the above types will be interpreted as static text, in which case the actual content of the polled value is ignored.                                                                                                                                                                                         |
-| `writeValueType`                            | text    |          | (empty)            | How data is written to modbus. Only applicable to registers. Valid values are: `"int64"`, `"int64_swap"`, `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"int16"`. See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `writeStart`                                | text    |          | (empty)            | Start address of the first holding register or coil in the write. Use empty for read-only things. <br />Use zero based address, e.g. in place of `400001` (first holding register), use the address `"0"`. This address is passed to data frame as is.                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `writeValueType`                            | text    |          | (empty)            | How data is written to modbus. Only applicable to registers. Valid values are: `"int64"`, `"int64_swap"`, `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"int16"`. See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                                                                                                                                                                                                                                                              |
+| `writeStart`                                | text    |          | (empty)            | Start address of the first holding register or coil in the write. Use empty for read-only things. <br />Use zero based address, e.g. in place of `400001` (first holding register), use the address `"0"`. This address is passed to data frame as is.                                                                                                                                                                                                                                                                                                                                                                                                |
 | `writeType`                                 | text    |          | (empty)            | Type of data to write. Use empty for read-only things. Valid values: `"coil"` or `"holding"`.<br /><br /> Coil uses function code (FC) FC05 or FC15. Holding register uses FC06 or FC16. See `writeMultipleEvenWithSingleRegisterOrCoil` parameter.                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `writeTransform`                            | text    |          | `"default"`        | Transformation to apply to received commands.<br /><br />Use `"default"` to communicate that no transformation is done and value should be passed as is.    <br />Use `"SERVICENAME(ARG)"` to use transformation service `SERVICENAME` with argument `ARG`.    <br />Any other value than the above types will be interpreted as static text, in which case the actual content of the command value is ignored.                                                                                                                                                                                                                                       |
 | `writeMultipleEvenWithSingleRegisterOrCoil` | boolean |          | `false`            | Controls how single register / coil of data is written.<br /> By default, or when 'false, FC06 ("Write single holding register") / FC05 ("Write single coil"). Or when 'true', using FC16 ("Write Multiple Holding Registers") / FC15 ("Write Multiple Coils").                                                                                                                                                                                                                                                                                                                                               |
 | `writeMaxTries`                             | integer |          | `3`                | Maximum tries when writing <br /><br />Number of tries when writing data, if some of the writes fail. For single try, enter `1`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-
+| `updateUnchangedValuesEveryMillis`          | integer |          | `1000`             | Interval to update unchanged values. <br /><br />Modbus binding by default is not updating the item and channel state every time new data is polled from a slave, for performance reasons. Instead, the state is updated whenever it differs from previously updated state, or when enough time has passed since the last update. The time interval can be adjusted using this parameter. Use value of `0` if you like to update state with every poll, even though the value has not changed. In milliseconds.                                                                                                                                       |
 
 ## Channels
 
@@ -309,7 +309,7 @@ You can disable `autoupdate` as follows:
 Number  Temperature_Modbus_Livingroom                       "Temperature Living room [%.1f °C]"           <temperature>   { channel="modbus:data:siemensplc:holding:livingroom_temperature:number", autoupdate="false" }
 ```
 
-Main documentation on `autoupdate` in [Items section of openHAB docs](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax). 
+Main documentation on `autoupdate` in [Items section of openHAB docs](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax).
 
 
 ## Details
@@ -449,6 +449,8 @@ Note that in case `readTransform="default"`, a default transformation provided b
 1. For each [data channel](#channels), we try to convert the transformation output of previous step to a State type (e.g. `ON`/`OFF`, or `DecimalType`) accepted by the channel. If all the conversions fail (e.g. trying to convert `ON` to a number), the data channel is not updated.
 
 In case of read errors, all data channels are left unchanged, and `lastReadError` channel is updated with current time. Examples of errors include connection errors, IO errors on read, and explicit exception responses from the slave.
+
+Note: there is a performance optimization that channel state is only updated when enough time has passed since last update, or when the state differs from previous update. See `updateUnchangedValuesEveryMillis` parameter in `data` thing.
 
 ### Write Steps
 
@@ -1030,6 +1032,198 @@ There is no trigger anymore but one can use transformations to accomplish the sa
 
 The new binding supports 32 bit values types when writing.
 
+### How to manually migrate
+
+Here is a step by step example for a migration from a 1.x configuration to a equivalent 2.x configuration. 
+It does not cover all features the 1.x configuration offers, but it should serve as an example on how to get it done.
+Please note that although you can do all this stuff also using PaperUI, the file based approach is strongly recommended if you need to migrate more than only a handful of Items.
+
+The 1.x modbus configuration to be updated defined 4 slaves:
+
+`modbus.cfg`
+
+```
+    poll=500
+
+    tcp.slave1.connection=192.168.2.9:502
+    tcp.slave1.type=coil
+    tcp.slave1.id=1
+    tcp.slave1.start=12288
+    tcp.slave1.length=128
+    tcp.slave1.updateunchangeditems=false
+
+    tcp.slave2.connection=192.168.2.9:502
+    tcp.slave2.type=holding
+    tcp.slave2.id=2
+    tcp.slave2.start=12338
+    tcp.slave2.length=100
+    tcp.slave2.updateunchangeditems=false
+
+    tcp.slave3.connection=192.168.2.9:502
+    tcp.slave3.type=holding
+    tcp.slave3.id=3
+    tcp.slave3.start=12438
+    tcp.slave3.length=100
+    tcp.slave3.updateunchangeditems=false
+
+    tcp.slave4.connection=192.168.2.9:502
+    tcp.slave4.type=holding
+    tcp.slave4.id=4
+    tcp.slave4.start=12538
+    tcp.slave4.length=100
+    tcp.slave4.updateunchangeditems=false
+```
+
+As you can see, all the slaves poll the same modbus device (actually a Wago 750-841 controller). 
+We now have to create `Things` for this slaves.
+
+The 2.x modbus binding uses a three-level definition. 
+Level one defines a `Bridge` for every modbus device that is to be addressed. 
+The 1.x configuration in this example only addresses one device, so there will be one top level bridge.
+
+```
+Bridge modbus:tcp:wago [ host="192.168.2.9", port=502, id=1 ] {
+
+}
+```
+Host and Port are taken from the 1.x modbus config.
+
+Within the top level `Bridge` there are one or more second level bridges that replace the former `slave` configurations.
+The poll frequency can now be set per `poller`, so you may want to define different poll cycles up to your needs.
+The slave `Bridge` configs go inside the top level config.
+For the four `poller`s defined in this example the 2.x configuration looks like this:
+
+```
+Bridge modbus:tcp:wago [ host="192.168.2.9", port=502, id=1 ] {
+
+    Bridge poller wago_slave1 [ start=12288, length=128, refresh=500, type="coil" ] {
+    }
+
+    Bridge poller wago_slave2 [ start=12338, length=100, refresh=4000, type="holding" ] {
+    }
+
+    Bridge poller wago_slave3 [ start=12438, length=100, refresh=5000, type="holding" ] {
+    }
+
+    Bridge poller wago_slave4 [ start=12538, length=100, refresh=10000, type="holding" ] {
+    }
+}
+```
+
+Address, length and type can be directly taken over from the 1.x config.
+
+The third (and most complex) part is the definition of data `Thing` objects for every `Item` bound to modbus.
+This definitions go into the corresponding 2nd level `Bridge` definitions.
+Here it is especially important that the modbus binding now uses absolute addresses all over the place, while the addresses in the item definition for the 1.x binding were relative to the start address of the slave definition before.
+For less work in the following final step, the update of the `Item` configuration, the naming of the `data` things in this example uses the offset of the modbus value within the `poller` as suffix, starting with 0(!). 
+See below for details.
+
+Here a few examples of the Item configuration from the 1.x binding:
+
+The first Item polled with the first `poller` used this configuration (with offset 0):
+
+```
+Switch FooSwitch  "Foo Switch"  {modbus="slave1:0"} 
+```
+
+Now we have to define a `Thing` that can later be bound to that Item.
+
+The `slave1` `poller` uses `12288` as start address. 
+So we define the first data Thing within the `poller` `wago_slave1` with this address and choose a name that ends with `0`:
+
+```
+Thing data wago_s1_000 [ readStart="12288", readValueType="bit", writeStart="12288", writeValueType="bit", writeType="coil" ]
+```
+
+The second Item of the 1.x binding (offset `1`) is defined as follows.
+
+```
+Switch BarSwitch  "Bar Switch" {modbus="slave1:1"}
+```
+
+This leads to the thing definition
+
+```
+Thing data wago_s1_001 [ readStart="12289", readValueType="bit", writeStart="12289", writeValueType="bit", writeType="coil" ]
+```
+
+Note the absolute address `12289` (12288+1) which has to be used here.
+
+Incorporating this definitions into the thing file leads to:
+
+`wago.things`:
+
+```
+Bridge modbus:tcp:wago [ host="192.168.2.9", port=502, id=1 ] {
+
+    Bridge poller wago_slave1 [ start=12288, length=128, refresh=500, type="coil" ] {
+        Thing data wago_s1_000 [ readStart="12288", readValueType="bit", writeStart="12288", writeValueType="bit", writeType="coil" ]
+        Thing data wago_s1_001 [ readStart="12289", readValueType="bit", writeStart="12289", writeValueType="bit", writeType="coil" ]
+    }
+
+    Bridge poller wago_slave2 [ start=12338, length=100, refresh=4000, type="holding" ] {
+    }
+
+    Bridge poller wago_slave3 [ start=12438, length=100, refresh=5000, type="holding" ] {
+    }
+
+    Bridge poller wago_slave4 [ start=12538, length=100, refresh=10000, type="holding" ] {
+    }
+}
+```
+
+Save this in the `things` subdirectory of your openHAB 2 config. 
+Watch the file `events.log` as it lists your new added `data` `Things`. 
+Given that there are no config errors, they quickly change from `INITIALIZING` to `ONLINE`. 
+
+Finally the Item definition has to be changed to refer to the new created `data` `Thing`. 
+You can copy the names you need for this directly from the `events.log` file:
+
+```
+Switch FooSwitch  "Foo Switch" {modbus="slave1:0"} 
+Switch BarSwitch  "Bar Switch" {modbus="slave1:1"}
+```
+
+turn into
+
+```
+Switch FooSwitch  "Foo Switch" {channel="modbus:data:wago:wago_slave1:wago_s1_000:switch", autopudate="false"} 
+Switch BarSwitch  "Bar Switch" {channel="modbus:data:wago:wago_slave1:wago_s1_001:switch", autoupdate="false"}
+```
+
+If you have many Items to change and used the naming scheme recommended above, you can now use the following search-and-replace expressions in your editor:
+
+Replace 
+
+`{modbus="slave1:`
+
+by 
+
+`{channel="modbus:data:wago:wago_slave1:wago_s1_00`
+
+in all lines which used single digits for the address in the 1.x config.
+Instead of `wago`, `wago_slave1` and `wago_s1_00` you have to use the names you have chosen for your `Bridge`, `poller` and `data` things.
+Similar expressions are to be used for two-digit and three-digit relative addresses.
+
+Replace 
+
+`"}`
+
+by 
+
+`:switch"}`
+
+in all lines dealing with switches.
+For other Item types use the respective replace strings.
+
+That way you can update even a large amount of Item definitions in only a few steps.
+
+The definition of `autoupdate` is optional; please refer to ##autoupdate to check whether you need it or not.
+
+Continue to add `data` `Thing`s for all your other Items the same way and link them to your Items.
+
+Save your updated item file and check whether updates come in as expected.
+ 
 ## Troubleshooting
 
 ### Thing Status

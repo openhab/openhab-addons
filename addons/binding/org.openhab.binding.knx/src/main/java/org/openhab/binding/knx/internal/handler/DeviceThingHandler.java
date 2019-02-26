@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.knx.internal.handler;
 
-import static org.openhab.binding.knx.KNXBindingConstants.*;
+import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -34,14 +38,13 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.knx.KNXBindingConstants;
-import org.openhab.binding.knx.KNXTypeMapper;
-import org.openhab.binding.knx.client.InboundSpec;
-import org.openhab.binding.knx.client.OutboundSpec;
-import org.openhab.binding.knx.handler.AbstractKNXThingHandler;
+import org.openhab.binding.knx.internal.KNXBindingConstants;
+import org.openhab.binding.knx.internal.KNXTypeMapper;
 import org.openhab.binding.knx.internal.channel.KNXChannelType;
 import org.openhab.binding.knx.internal.channel.KNXChannelTypes;
 import org.openhab.binding.knx.internal.client.AbstractKNXClient;
+import org.openhab.binding.knx.internal.client.InboundSpec;
+import org.openhab.binding.knx.internal.client.OutboundSpec;
 import org.openhab.binding.knx.internal.config.DeviceConfig;
 import org.openhab.binding.knx.internal.dpt.KNXCoreTypeMapper;
 import org.slf4j.Logger;

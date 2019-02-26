@@ -1,12 +1,18 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.ui.cometvisu.internal.util;
+
+import java.util.Date;
 
 import javax.ws.rs.core.MediaType;
 
@@ -36,11 +42,9 @@ public class SseUtil {
      * @return a new OutboundEvent.
      */
     public static OutboundEvent buildEvent(Object eventObject) {
-
         OutboundEvent.Builder eventBuilder = new OutboundEvent.Builder();
         StateBeanMessageBodyWriter writer = new StateBeanMessageBodyWriter();
-        // OutboundEvent event = eventBuilder.mediaType(MediaType.APPLICATION_JSON_TYPE).data(eventObject).build();
-        java.util.Date date = new java.util.Date();
+        Date date = new Date();
         OutboundEvent event = eventBuilder.mediaType(MediaType.APPLICATION_JSON_TYPE)
                 .data(writer.serialize(eventObject)).id(String.valueOf(date.getTime())).build();
 

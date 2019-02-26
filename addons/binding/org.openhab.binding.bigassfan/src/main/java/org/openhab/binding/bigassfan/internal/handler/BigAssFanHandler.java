@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.bigassfan.internal.handler;
 
@@ -157,6 +161,8 @@ public class BigAssFanHandler extends BaseThingHandler {
             handleLightLevelMin(command);
         } else if (channelUID.getId().equals(CHANNEL_LIGHT_LEVEL_MAX)) {
             handleLightLevelMax(command);
+        } else if (channelUID.getId().equals(CHANNEL_FAN_SLEEP)) {
+            handleSleep(command);
         } else {
             logger.debug("Received command for {} on unknown channel {}", thing.getUID(), channelUID.getId());
         }
@@ -288,6 +294,19 @@ public class BigAssFanHandler extends BaseThingHandler {
                 sendCommand(macAddress, ";FAN;WINTERMODE;OFF");
             } else if (command.equals(OnOffType.ON)) {
                 sendCommand(macAddress, ";FAN;WINTERMODE;ON");
+            }
+        }
+    }
+
+    private void handleSleep(Command command) {
+        logger.debug("Handling fan sleep command {}", command);
+
+        // <mac;SLEEP;STATE;ON|OFF>
+        if (command instanceof OnOffType) {
+            if (command.equals(OnOffType.OFF)) {
+                sendCommand(macAddress, ";SLEEP;STATE;OFF");
+            } else if (command.equals(OnOffType.ON)) {
+                sendCommand(macAddress, ";SLEEP;STATE;ON");
             }
         }
     }
@@ -693,6 +712,8 @@ public class BigAssFanHandler extends BaseThingHandler {
                 updateFanSpeedMin(messageParts);
             } else if (messageUpperCase.contains(";FAN;SPD;MAX;")) {
                 updateFanSpeedMax(messageParts);
+            } else if (messageUpperCase.contains(";SLEEP;STATE")) {
+                updateFanSleepMode(messageParts);
             } else if (messageUpperCase.contains(";LEARN;MINSPEED;")) {
                 updateFanLearnMinSpeed(messageParts);
             } else if (messageUpperCase.contains(";LEARN;MAXSPEED;")) {
@@ -831,6 +852,17 @@ public class BigAssFanHandler extends BaseThingHandler {
             PercentType state = BigAssFanConverter.speedToPercent(messageParts[4]);
             updateChannel(CHANNEL_FAN_SPEED_MAX, state);
             fanStateMap.put(CHANNEL_FAN_SPEED_MAX, state);
+        }
+
+        private void updateFanSleepMode(String[] messageParts) {
+            if (messageParts.length != 4) {
+                logger.debug("SLEEP;STATE; has unexpected number of parameters: {}", Arrays.toString(messageParts));
+                return;
+            }
+            logger.debug("Process fan sleep mode for {}: {}", thing.getUID(), messageParts[3]);
+            OnOffType state = "ON".equalsIgnoreCase(messageParts[3]) ? OnOffType.ON : OnOffType.OFF;
+            updateChannel(CHANNEL_FAN_SLEEP, state);
+            fanStateMap.put(CHANNEL_FAN_SLEEP, state);
         }
 
         private void updateFanLearnMinSpeed(String[] messageParts) {

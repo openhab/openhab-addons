@@ -1,15 +1,21 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.vitotronic.internal;
 
 import java.util.Hashtable;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -18,10 +24,11 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.vitotronic.VitotronicBindingConstants;
-import org.openhab.binding.vitotronic.handler.VitotronicBridgeHandler;
-import org.openhab.binding.vitotronic.handler.VitotronicThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.vitotronic.internal.discovery.VitotronicDiscoveryService;
+import org.openhab.binding.vitotronic.internal.handler.VitotronicBridgeHandler;
+import org.openhab.binding.vitotronic.internal.handler.VitotronicThingHandler;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,20 +38,22 @@ import org.slf4j.LoggerFactory;
  *
  * @author Stefan Andres - Initial contribution
  */
+@NonNullByDefault
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.vitotronic")
 public class VitotronicHandlerFactory extends BaseThingHandlerFactory {
 
-    private Logger logger = LoggerFactory.getLogger(VitotronicHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(VitotronicHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        logger.trace("Ask Handler for Suported Thing {}",
+        logger.trace("Ask Handler for Supported Thing {}",
                 VitotronicBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID));
         return VitotronicBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
-        logger.trace("Install Handler for Thing {}", thing.toString());
+    protected @Nullable ThingHandler createHandler(Thing thing) {
+        logger.trace("Install Handler for Thing {}", thing.getUID());
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
@@ -65,23 +74,19 @@ public class VitotronicHandlerFactory extends BaseThingHandlerFactory {
         VitotronicDiscoveryService discoveryService = new VitotronicDiscoveryService(bridgeHandler);
         logger.trace("Try to register Discovery service on BundleID: {} Service: {}",
                 bundleContext.getBundle().getBundleId(), DiscoveryService.class.getName());
-
-        Hashtable<String, String> prop = new Hashtable<String, String>();
-
-        bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, prop);
+        bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>());
         discoveryService.activate();
     }
 
     @Override
-    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
-            ThingUID bridgeUID) {
-        logger.trace("Create Thing for Type {}", thingUID.toString());
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
+        logger.trace("Create Thing for Type {}", thingUID);
 
         String adapterID = (String) configuration.get(VitotronicBindingConstants.ADAPTER_ID);
 
         if (VitotronicBindingConstants.THING_TYPE_UID_BRIDGE.equals(thingTypeUID)) {
-
-            logger.trace("Create Bride: {}", adapterID);
+            logger.trace("Create Bridge: {}", adapterID);
             return super.createThing(thingTypeUID, configuration, thingUID, null);
         } else {
             if (supportsThingType(thingTypeUID)) {
@@ -90,6 +95,6 @@ public class VitotronicHandlerFactory extends BaseThingHandlerFactory {
             }
         }
 
-        throw new IllegalArgumentException("The thing type " + thingTypeUID + " is not supported by the binding.");
+        return null;
     }
 }

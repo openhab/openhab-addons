@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.enocean.internal.discovery;
 
@@ -15,8 +19,6 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
-import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.util.HexUtils;
@@ -37,12 +39,10 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Weber - Initial contribution
  */
 
-public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService
-        implements ESP3PacketListener, ExtendedDiscoveryService {
+public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService implements ESP3PacketListener {
     private final Logger logger = LoggerFactory.getLogger(EnOceanDeviceDiscoveryService.class);
 
     private EnOceanBridgeHandler bridgeHandler;
-    DiscoveryServiceCallback discoveryServiceCallback;
 
     public EnOceanDeviceDiscoveryService(EnOceanBridgeHandler bridgeHandler) {
         super(null, 60, false);
@@ -154,8 +154,4 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService
         return 0;
     }
 
-    @Override
-    public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
-        this.discoveryServiceCallback = discoveryServiceCallback;
-    }
 }

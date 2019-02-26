@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.yeelight.internal.lib.device;
 
@@ -69,10 +73,10 @@ public class MethodFactory {
 
     /**
      * @param type scene type {@link DeviceMethod#SCENE_TYPE_COLOR}
-     *            {@link DeviceMethod#SCENE_TYPE_CT}
-     *            {@link DeviceMethod#SCENE_TYPE_DELAY}
-     *            {@link DeviceMethod#SCENE_TYPE_HSV}
-     *            {@link DeviceMethod#SCENE_TYPE_CF}
+     *                 {@link DeviceMethod#SCENE_TYPE_CT}
+     *                 {@link DeviceMethod#SCENE_TYPE_DELAY}
+     *                 {@link DeviceMethod#SCENE_TYPE_HSV}
+     *                 {@link DeviceMethod#SCENE_TYPE_CF}
      *
      */
     public static DeviceMethod buildScene(String type, int value, int brightness, int count, int endAction,
@@ -162,6 +166,8 @@ public class MethodFactory {
             case stripe:
                 return new DeviceMethod(MethodAction.PROP,
                         new Object[] { "power", "name", "bright", "ct", "rgb", "hue", "sat" });
+            case desklamp:
+                return new DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright", "ct" });
             default:
                 return null;
         }

@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.deconz.internal.dto;
 
@@ -49,9 +53,13 @@ public class SensorState {
     /** Presence sensors provide this boolean. */
     public @Nullable Boolean presence;
     /** Power sensors provide this value in Watts. */
-    public @Nullable Integer power;
+    public @Nullable Float power;
     /** Consumption sensors provide this value in Watts/hour. */
-    public @Nullable Integer consumption;
+    public @Nullable Float consumption;
+    /** Power sensors provide this value in Volt. */
+    public @Nullable Float voltage;
+    /** Power sensors provide this value in Milliampere. */
+    public @Nullable Float current;
     /** Light sensors and the daylight sensor provide a status integer that can have various semantics. */
     public @Nullable Integer status;
     /** Switches provide this value. */

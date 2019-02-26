@@ -68,6 +68,12 @@
 		<label>Dimmer</label>
 		<description>Dimmer</description>
 		<category>DimmableLight</category>
+		<config-description>
+			<parameter name="rampingTime" type="integer">
+				<label>Ramping time</label>
+				<description>A5-38-08: Ramping Time (in seconds), 0 = no ramping, 1..255 = seconds to 100%; D2-01-01: 0 = switch, 1-3 = timer 1-3, 4 = stop</description>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-type id="temperature">
@@ -147,13 +153,20 @@
 		<description>Used energy in Kilowatt hours</description>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
-	
-    <channel-type id="batteryVoltage">
-        <item-type>Number:ElectricPotential</item-type>
-        <label>Battery Voltage</label>
-        <description>Voltage of the battery</description>
-        <state pattern="%f %unit%" readOnly="true" />
-    </channel-type>
+
+	<channel-type id="batteryVoltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<description>Voltage of the battery</description>
+		<state pattern="%f %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="energyStorage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Energy Storage</label>
+		<description>?</description>
+		<state pattern="%f %unit%" readOnly="true" />
+	</channel-type>
 
 	<!-- Teach in Channel -->
 	<channel-type id="teachInCMD" advanced="true">

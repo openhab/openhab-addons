@@ -1,22 +1,31 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.yeelight.internal.lib.services;
 
 import java.awt.Color;
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.net.NetworkInterface;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.openhab.binding.yeelight.internal.lib.device.DeviceBase;
 import org.openhab.binding.yeelight.internal.lib.device.DeviceFactory;
@@ -41,13 +50,15 @@ public class DeviceManager {
 
     private static final String MULTI_CAST_HOST = "239.255.255.250";
     private static final int MULTI_CAST_PORT = 1982;
+    private static final int TIMEOUT = 10000;
 
     public static DeviceManager sInstance;
     public boolean mSearching = false;
-    public Thread mDiscoveryThread;
-    public DatagramSocket mDiscoverySocket;
+
     public Map<String, DeviceBase> mDeviceList = new HashMap<>();
     public List<DeviceListener> mListeners = new ArrayList<>();
+
+    private ExecutorService executorService;
 
     private DeviceManager() {
     }
@@ -93,63 +104,96 @@ public class DeviceManager {
     }
 
     private void searchDevice() {
-        if (mSearching && mDiscoveryThread != null) {
+        if (mSearching) {
             logger.debug("{}: Already in discovery, return!", TAG);
             return;
         }
-        mSearching = true;
-        mDiscoveryThread = new Thread(() -> {
-            try {
-                mDiscoverySocket = new DatagramSocket();
-                DatagramPacket dpSend = new DatagramPacket(DISCOVERY_MSG.getBytes(), DISCOVERY_MSG.getBytes().length,
-                        InetAddress.getByName(MULTI_CAST_HOST), MULTI_CAST_PORT);
-                mDiscoverySocket.send(dpSend);
-                logger.debug("{}: send discovery message!", TAG);
-                while (mSearching) {
-                    byte[] buf = new byte[1024];
-                    DatagramPacket dpRecv = new DatagramPacket(buf, buf.length);
-                    mDiscoverySocket.receive(dpRecv);
-                    byte[] bytes = dpRecv.getData();
-                    StringBuffer buffer = new StringBuffer();
-                    for (int i = 0; i < dpRecv.getLength(); i++) {
-                        // parse /r
-                        if (bytes[i] == 13) {
-                            continue;
-                        }
-                        buffer.append((char) bytes[i]);
-                    }
-                    logger.debug("{}: got message: {}", TAG, buffer.toString());
-                    String[] infos = buffer.toString().split("\n");
-                    Map<String, String> bulbInfo = new HashMap<>();
-                    for (String info : infos) {
-                        int index = info.indexOf(":");
-                        if (index == -1) {
-                            continue;
-                        }
-                        String key = info.substring(0, index).trim();
-                        String value = info.substring(index + 1).trim();
 
-                        bulbInfo.put(key, value);
-                    }
-                    logger.debug("{}: got bulbInfo: {}", TAG, bulbInfo);
-                    if (bulbInfo.containsKey("model") && bulbInfo.containsKey("id")) {
-                        DeviceBase device = DeviceFactory.build(bulbInfo);
-                        if (bulbInfo.containsKey("name")) {
-                            device.setDeviceName(bulbInfo.get("name"));
-                        } else {
-                            device.setDeviceName("");
+        logger.debug("Starting Discovery");
+
+        try {
+            final InetAddress multicastAddress = InetAddress.getByName(MULTI_CAST_HOST);
+
+            final List<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+
+            executorService = Executors.newFixedThreadPool(networkInterfaces.size());
+            mSearching = true;
+
+            for (final NetworkInterface networkInterface : networkInterfaces) {
+
+                logger.debug("Starting Discovery on: {}", networkInterface.getDisplayName());
+
+                executorService.execute(() -> {
+                    try {
+                        MulticastSocket multiSocket = new MulticastSocket(MULTI_CAST_PORT);
+
+                        multiSocket.setSoTimeout(TIMEOUT);
+                        multiSocket.setNetworkInterface(networkInterface);
+                        multiSocket.joinGroup(multicastAddress);
+
+                        while (mSearching) {
+                            byte[] buf = new byte[1024];
+                            DatagramPacket dpSend = new DatagramPacket(DISCOVERY_MSG.getBytes(),
+                                    DISCOVERY_MSG.getBytes().length, multicastAddress, MULTI_CAST_PORT);
+
+                            DatagramPacket dpRecv = new DatagramPacket(buf, buf.length);
+
+                            multiSocket.send(dpSend);
+
+                            try {
+                                multiSocket.receive(dpRecv);
+                                byte[] bytes = dpRecv.getData();
+                                StringBuffer buffer = new StringBuffer();
+                                for (int i = 0; i < dpRecv.getLength(); i++) {
+                                    // parse /r
+                                    if (bytes[i] == 13) {
+                                        continue;
+                                    }
+                                    buffer.append((char) bytes[i]);
+                                }
+                                logger.debug("{}: got message: {}", TAG, buffer.toString());
+                                String[] infos = buffer.toString().split("\n");
+                                Map<String, String> bulbInfo = new HashMap<>();
+                                for (String info : infos) {
+                                    int index = info.indexOf(":");
+                                    if (index == -1) {
+                                        continue;
+                                    }
+                                    String key = info.substring(0, index).trim();
+                                    String value = info.substring(index + 1).trim();
+
+                                    bulbInfo.put(key, value);
+                                }
+                                logger.debug("{}: got bulbInfo: {}", TAG, bulbInfo);
+                                if (bulbInfo.containsKey("model") && bulbInfo.containsKey("id")) {
+                                    DeviceBase device = DeviceFactory.build(bulbInfo);
+                                    if (bulbInfo.containsKey("name")) {
+                                        device.setDeviceName(bulbInfo.get("name"));
+                                    } else {
+                                        device.setDeviceName("");
+                                    }
+                                    if (mDeviceList.containsKey(device.getDeviceId())) {
+                                        updateDevice(mDeviceList.get(device.getDeviceId()), bulbInfo);
+                                    }
+                                    notifyDeviceFound(device);
+                                }
+                            } catch (SocketTimeoutException e) {
+                                logger.debug("Error timeout: {}", e.getMessage(), e);
+                            }
+
                         }
-                        if (mDeviceList.containsKey(device.getDeviceId())) {
-                            updateDevice(mDeviceList.get(device.getDeviceId()), bulbInfo);
+
+                        multiSocket.close();
+                    } catch (Exception e) {
+                        if (!e.getMessage().contains("No IP addresses bound to interface")) {
+                            logger.debug("Error getting ip addresses: {}", e.getMessage(), e);
                         }
-                        notifyDeviceFound(device);
                     }
-                }
-            } catch (Exception e) {
-                logger.debug("Exception: {}", e);
+                });
             }
-        });
-        mDiscoveryThread.start();
+        } catch (IOException e) {
+            logger.debug("Error getting ip addresses: {}", e.getMessage(), e);
+        }
     }
 
     private void notifyDeviceFound(DeviceBase device) {
@@ -231,6 +275,8 @@ public class DeviceManager {
                 return "Yeelight White LED Bulb v2";
             case stripe:
                 return "Yeelight Color LED Stripe";
+            case desklamp:
+                return "Yeelight Mi LED Desk Lamp";
             default:
                 return "";
         }

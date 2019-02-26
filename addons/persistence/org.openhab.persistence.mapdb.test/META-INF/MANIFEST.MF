@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests for the Eclipse SmartHome MapDB Persistence
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.persistence.mapdb.test
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Fragment-Host: org.openhab.persistence.mapdb
+Import-Package: 
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.core.library.items,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.test,
+ org.eclipse.smarthome.test.java,
+ org.hamcrest;core=split,
+ org.hamcrest.beans,
+ org.hamcrest.collection,
+ org.junit,
+ org.junit.rules,
+ org.osgi.service.cm
+Automatic-Module-Name: org.openhab.persistence.mapdb.test

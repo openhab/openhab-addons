@@ -65,7 +65,7 @@ The binding is tested with amazon.de, amazon.fr, amazon.it, amazon.com and amazo
 
 1) Create an 'Amazon Account' thing
 2) open the url YOUR_OPENHAB/amazonechocontrol in your browser (e.g. http://openhab:8080/amazonechocontrol/), click the link for your account thing and login.
-3) You should see now a message the the login was successful
+3) You should see now a message that the login was successful
 
 ## Discovery
 
@@ -127,7 +127,7 @@ It will be configured at runtime by using the save channel to store the current 
 | nextAlarm             | DateTime    | R           | echo, echoshow, echospot      | Next alarm on the device
 | nextMusicAlarm        | DateTime    | R           | echo, echoshow, echospot      | Next music alarm on the device
 | nextTimer             | DateTime    | R           | echo, echoshow, echospot      | Next timer on the device
-| startRoutine          | Switch      | W         | echo, echoshow, echospot      | Write Only! Type in what you normally say to Alexa without the preceding "Alexa," 
+| startRoutine          | String      | W           | echo, echoshow, echospot      | Write Only! Type in what you normally say to Alexa without the preceding "Alexa," 
 | musicProviderId       | String      | R/W         | echo, echoshow, echospot      | Current Music provider
 | playMusicVoiceCommand | String      | W         | echo, echoshow, echospot      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles' 
 | startCommand          | String      | W         | echo, echoshow, echospot      | Write Only! Used to start anything. Available options: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing and FlashBriefing.<FlahshbriefingDeviceID> (Note: The options are case sensitive)

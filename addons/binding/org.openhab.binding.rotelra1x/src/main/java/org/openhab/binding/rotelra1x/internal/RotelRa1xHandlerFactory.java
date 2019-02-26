@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.rotelra1x.internal;
 
-import static org.openhab.binding.rotelra1x.RotelRa1xBindingConstants.THING_TYPE_AMP;
+import static org.openhab.binding.rotelra1x.internal.RotelRa1xBindingConstants.THING_TYPE_AMP;
 
 import java.util.Collections;
 import java.util.Set;
@@ -18,7 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.rotelra1x.handler.RotelRa1xHandler;
+import org.openhab.binding.rotelra1x.internal.handler.RotelRa1xHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**

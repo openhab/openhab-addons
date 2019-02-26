@@ -1,12 +1,21 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.valloxmv.internal;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -123,9 +132,42 @@ public class ValloxMVBindingConstants {
     public static final String CHANNEL_HOME_SPEED_SETTING = "homespeedsetting";
 
     /**
-     * arget temperature in home state.
+     * Away fan speed in % (0-100).
+     */
+    public static final String CHANNEL_AWAY_SPEED_SETTING = "awayspeedsetting";
+
+    /**
+     * Boost fan speed in % (0-100).
+     */
+    public static final String CHANNEL_BOOST_SPEED_SETTING = "boostspeedsetting";
+
+    /**
+     * Target temperature in home state.
      */
     public static final String CHANNEL_HOME_AIR_TEMP_TARGET = "homeairtemptarget";
+
+    /**
+     * Target temperature in away state.
+     */
+    public static final String CHANNEL_AWAY_AIR_TEMP_TARGET = "awayairtemptarget";
+
+    /**
+     * Target temperature in boost state.
+     */
+    public static final String CHANNEL_BOOST_AIR_TEMP_TARGET = "boostairtemptarget";
+
+    /**
+     * Set of writable channels that are dimensionless
+     */
+    public final static Set<String> WRITABLE_CHANNELS_DIMENSIONLESS = Collections.unmodifiableSet(
+            new HashSet<String>(Arrays.asList(CHANNEL_EXTR_FAN_BALANCE_BASE, CHANNEL_SUPP_FAN_BALANCE_BASE,
+                    CHANNEL_HOME_SPEED_SETTING, CHANNEL_AWAY_SPEED_SETTING, CHANNEL_BOOST_SPEED_SETTING)));
+
+    /**
+     * Set of writable channels that are temperatures
+     */
+    public final static Set<String> WRITABLE_CHANNELS_TEMPERATURE = Collections.unmodifiableSet(new HashSet<String>(
+            Arrays.asList(CHANNEL_HOME_AIR_TEMP_TARGET, CHANNEL_AWAY_AIR_TEMP_TARGET, CHANNEL_BOOST_AIR_TEMP_TARGET)));
 
     // Thing configuration
     /**

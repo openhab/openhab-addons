@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.groheondus.internal;
 
@@ -27,7 +31,10 @@ public class GroheOndusBindingConstants {
     public static final String CHANNEL_PRESSURE = "pressure";
     public static final String CHANNEL_TEMPERATURE_GUARD = "temperature_guard";
     public static final String CHANNEL_VALVE_OPEN = "valve_open";
+    public static final String CHANNEL_WATERCONSUMPTION = "waterconsumption";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_BATTERY = "battery";
+
+    public static final String CHANNEL_CONFIG_TIMEFRAME = "timeframe";
 }

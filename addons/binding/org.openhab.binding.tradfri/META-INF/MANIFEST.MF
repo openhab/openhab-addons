@@ -1,0 +1,37 @@
+Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-ManifestVersion: 2
+Bundle-Name: TRÅDFRI Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.tradfri;singleton:=tr
+ ue
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Import-Package: 
+ com.google.gson,
+ javax.jmdns,
+ org.eclipse.californium.core,
+ org.eclipse.californium.core.coap,
+ org.eclipse.californium.core.network,
+ org.eclipse.californium.core.network.config,
+ org.eclipse.californium.elements,
+ org.eclipse.californium.scandium,
+ org.eclipse.californium.scandium.config,
+ org.eclipse.californium.scandium.dtls,
+ org.eclipse.californium.scandium.dtls.pskstore,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.mdns,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.osgi.framework,
+ org.osgi.service.component,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
+Automatic-Module-Name: org.openhab.binding.tradfri

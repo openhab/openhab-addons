@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.ui.cometvisu.internal;
 
@@ -30,7 +34,7 @@ import org.openhab.ui.cometvisu.internal.backend.beans.StateBean;
  * {@link StateBeanMessageBodyWriter} is used to serialize state update messages
  * for the CometVisu client
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  */
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
@@ -50,7 +54,7 @@ public class StateBeanMessageBodyWriter implements MessageBodyWriter<Object> {
     @Override
     public void writeTo(Object stateBean, Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
-                    throws IOException, WebApplicationException {
+            throws IOException, WebApplicationException {
         StringBuilder sb = new StringBuilder();
         sb.append(serialize(stateBean));
         try (DataOutputStream dos = new DataOutputStream(entityStream)) {
@@ -71,7 +75,7 @@ public class StateBeanMessageBodyWriter implements MessageBodyWriter<Object> {
             StateBean stateBean = (StateBean) bean;
             msg += "\"" + stateBean.name + "\":\"" + stateBean.state + "\"";
         } else if (bean instanceof List<?>) {
-            List<String> states = new ArrayList<String>();
+            List<String> states = new ArrayList<>();
             for (Object bo : (List<?>) bean) {
                 if (bo instanceof StateBean) {
                     StateBean stateBean = (StateBean) bo;

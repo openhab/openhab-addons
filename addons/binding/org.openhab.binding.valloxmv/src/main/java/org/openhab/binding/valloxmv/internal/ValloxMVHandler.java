@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.valloxmv.internal;
 
@@ -95,25 +99,13 @@ public class ValloxMVHandler extends BaseThingHandler {
                     valloxSendSocket.request(channelUID, "5");
                     valloxSendSocket.request(null, null);
                 }
-            } else if (ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE.equals(channelUID.getId())) {
+            } else if (ValloxMVBindingConstants.WRITABLE_CHANNELS_DIMENSIONLESS.contains(channelUID.getId())) {
                 if (command instanceof QuantityType) {
                     QuantityType<Dimensionless> quantity = (QuantityType<Dimensionless>) command;
                     valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
                     valloxSendSocket.request(null, null);
                 }
-            } else if (ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE.equals(channelUID.getId())) {
-                if (command instanceof QuantityType) {
-                    QuantityType<Dimensionless> quantity = (QuantityType<Dimensionless>) command;
-                    valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
-                    valloxSendSocket.request(null, null);
-                }
-            } else if (ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING.equals(channelUID.getId())) {
-                if (command instanceof QuantityType) {
-                    QuantityType<Dimensionless> quantity = (QuantityType<Dimensionless>) command;
-                    valloxSendSocket.request(channelUID, Integer.toString(quantity.intValue()));
-                    valloxSendSocket.request(null, null);
-                }
-            } else if (ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET.equals(channelUID.getId())) {
+            } else if (ValloxMVBindingConstants.WRITABLE_CHANNELS_TEMPERATURE.contains(channelUID.getId())) {
                 if (command instanceof QuantityType) {
                     // Convert temperature to millidegree Kelvin
                     QuantityType<Temperature> quantity = ((QuantityType<Temperature>) command)

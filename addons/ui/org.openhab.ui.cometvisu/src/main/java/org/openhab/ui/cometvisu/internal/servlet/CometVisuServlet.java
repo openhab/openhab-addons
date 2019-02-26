@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.ui.cometvisu.internal.servlet;
 
@@ -86,7 +90,7 @@ import com.google.gson.Gson;
 /**
  * Servlet for CometVisu files
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  */
 public class CometVisuServlet extends HttpServlet {
     private static final long serialVersionUID = 4448918908615003303L;
@@ -107,11 +111,10 @@ public class CometVisuServlet extends HttpServlet {
     protected String root;
     protected File rootFolder;
     protected File userFileFolder;
-    // protected String serverAlias;
     protected String defaultUserDir;
     protected PHProvider engine;
-    protected ServletContext _servletContext;
-    protected ServletConfig _config;
+    protected ServletContext servletContext;
+    protected ServletConfig config;
 
     protected boolean phpEnabled = false;
 
@@ -145,8 +148,8 @@ public class CometVisuServlet extends HttpServlet {
         try {
             this.engine.createQuercusEngine();
             this.engine.setIni("include_path", ".:" + rootFolder.getAbsolutePath());
-            if (_servletContext != null) {
-                this.engine.init(rootFolder.getAbsolutePath(), defaultUserDir, _servletContext);
+            if (servletContext != null) {
+                this.engine.init(rootFolder.getAbsolutePath(), defaultUserDir, servletContext);
                 phpEnabled = true;
             }
         } catch (Exception e) {
@@ -169,12 +172,12 @@ public class CometVisuServlet extends HttpServlet {
     @Override
     public final void init(ServletConfig config) throws ServletException {
         super.init(config);
-        _config = config;
-        _servletContext = config.getServletContext();
+        this.config = config;
+        servletContext = config.getServletContext();
 
         // init php service if available
         if (this.engine != null) {
-            this.engine.init(rootFolder.getAbsolutePath(), defaultUserDir, _servletContext);
+            this.engine.init(rootFolder.getAbsolutePath(), defaultUserDir, servletContext);
             phpEnabled = true;
         }
     }
@@ -233,7 +236,6 @@ public class CometVisuServlet extends HttpServlet {
                     logger.debug("reading sitemap '{}'", sitemap);
                     VisuConfig config = new VisuConfig(sitemap, cometVisuApp, rootFolder);
 
-                    // logger.info("response: "+config.getConfigXml());
                     resp.setContentType(MediaType.APPLICATION_XML);
                     resp.getWriter().write(config.getConfigXml(req));
                     resp.flushBuffer();
@@ -247,7 +249,6 @@ public class CometVisuServlet extends HttpServlet {
                 }
             }
         }
-        // logger.info("Path: " + req.getPathInfo());
         if (path.matches(".*editor/dataproviders/.+\\.(php|json)$") || path.matches(".*designs/get_designs\\.php$")) {
             dataProviderService(requestedFile, req, resp);
         } else if (path.endsWith(rssLogPath)) {
@@ -320,7 +321,7 @@ public class CometVisuServlet extends HttpServlet {
         }
 
         String[] itemNames = request.getParameter("f").split(",");
-        List<Item> items = new ArrayList<Item>();
+        List<Item> items = new ArrayList<>();
 
         for (String name : itemNames) {
             try {
@@ -492,10 +493,8 @@ public class CometVisuServlet extends HttpServlet {
 
                     rss += "</channel></rss>";
                     response.getWriter().write(rss);
-
                 }
                 response.flushBuffer();
-
             }
         }
     }
@@ -626,12 +625,11 @@ public class CometVisuServlet extends HttpServlet {
 
         // Prepare some variables. The full Range represents the complete file.
         Range full = new Range(0, length - 1, length);
-        List<Range> ranges = new ArrayList<Range>();
+        List<Range> ranges = new ArrayList<>();
 
         // Validate and process Range and If-Range headers.
         String range = request.getHeader("Range");
         if (range != null) {
-
             // Range header should match format "bytes=n-n,n-n,n-n...". If not,
             // then return 416.
             if (!range.matches("^bytes=\\d*-\\d*(,\\d*-\\d*)*$")) {
@@ -750,7 +748,6 @@ public class CometVisuServlet extends HttpServlet {
             output = response.getOutputStream();
 
             if (ranges.isEmpty() || ranges.get(0) == full) {
-
                 // Return full file.
                 Range r = full;
                 response.setContentType(contentType);
@@ -772,9 +769,7 @@ public class CometVisuServlet extends HttpServlet {
                     // Copy full range.
                     copy(input, output, r.start, r.length);
                 }
-
             } else if (ranges.size() == 1) {
-
                 // Return single part of file.
                 Range r = ranges.get(0);
                 response.setContentType(contentType);
@@ -786,9 +781,7 @@ public class CometVisuServlet extends HttpServlet {
                     // Copy single part range.
                     copy(input, output, r.start, r.length);
                 }
-
             } else {
-
                 // Return multiple parts of file.
                 response.setContentType("multipart/byteranges; boundary=" + MULTIPART_BOUNDARY);
                 response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT); // 206.
@@ -912,7 +905,7 @@ public class CometVisuServlet extends HttpServlet {
     private final void dataProviderService(File file, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         logger.debug("dataprovider '{}' requested", file.getPath());
-        List<Object> beans = new ArrayList<Object>();
+        List<Object> beans = new ArrayList<>();
         String resultString = null;
 
         File resourceFolder = rootFolder;
@@ -938,12 +931,12 @@ public class CometVisuServlet extends HttpServlet {
             // all item names
 
             // collect all available transform types
-            ArrayList<String> transformTypes = new ArrayList<String>();
+            List<String> transformTypes = new ArrayList<>();
             for (Transform transform : Transform.values()) {
                 transformTypes.add(transform.toString().toLowerCase());
             }
 
-            Map<String, ArrayList<Object>> groups = new HashMap<String, ArrayList<Object>>();
+            Map<String, List<Object>> groups = new HashMap<>();
             for (Item item : this.cometVisuApp.getItemRegistry().getItems()) {
                 ItemBean bean = new ItemBean();
                 bean.value = item.getName();
@@ -965,7 +958,7 @@ public class CometVisuServlet extends HttpServlet {
                     continue;
                 }
                 if (!groups.containsKey(type)) {
-                    groups.put(type, new ArrayList<Object>());
+                    groups.put(type, new ArrayList<>());
                 }
                 groups.get(type).add(bean);
             }
@@ -1035,7 +1028,6 @@ public class CometVisuServlet extends HttpServlet {
                     beans.add(bean);
                 }
             }
-
         } else if (file.getName().equals("get_designs.php")) {
             // all designs
             File designDir = new File(resourceFolder, "designs/");
@@ -1048,10 +1040,8 @@ public class CometVisuServlet extends HttpServlet {
                     }
                 }
             }
-
         } else if (file.getName().equals("list_all_rrds.php")) {
             // all item names
-
         }
         if (beans.size() == 0 && resultString == null) {
             // nothing found try the PHP files

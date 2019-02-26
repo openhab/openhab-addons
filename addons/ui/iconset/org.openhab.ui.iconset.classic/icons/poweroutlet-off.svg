@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64">
+  <defs>
+    <circle id="0" cx="32" cy="32" r="14"/>
+    <clipPath id="1">
+      <use xlink:href="#0"/>
+    </clipPath>
+    <linearGradient id="4" gradientUnits="userSpaceOnUse" y1="15" x2="0" y2="49">
+      <stop style="stop-color:#4e493f"/>
+      <stop offset=".7677" style="stop-color:#3b3732"/>
+    </linearGradient>
+    <linearGradient id="3" gradientUnits="userSpaceOnUse" y1="46" x2="0" y2="18">
+      <stop style="stop-color:#f8f5e5"/>
+      <stop offset="1" style="stop-color:#cac7b9"/>
+    </linearGradient>
+    <linearGradient id="2" gradientUnits="userSpaceOnUse" y1="57" x2="0" y2="7">
+      <stop style="stop-color:#cac7b9"/>
+      <stop offset="1" style="stop-color:#f8f5e5"/>
+    </linearGradient>
+    <linearGradient id="5" gradientUnits="userSpaceOnUse" y1="48" x2="0" y2="16" xlink:href="#2"/>
+  </defs>
+  <path d="m16 7h32c4.97 0 9 4.03 9 9v32c0 4.97-4.03 9-9 9h-32c-4.97 0-9-4.03-9-9v-32c0-4.97 4.03-9 9-9z" style="fill:url(#2);stroke-miterlimit:10;stroke:#7c715e;stroke-width:.25"/>
+  <path d="m44 49h-24c-2.76 0-5-2.24-5-5v-24c0-2.76 2.24-5 5-5h24c2.76 0 5 2.24 5 5v24c0 2.76-2.24 5-5 5" style="fill:url(#4)"/>
+  <path d="m21 16h22c2.76 0 5 2.24 5 5v22c0 2.76-2.24 5-5 5h-22c-2.76 0-5-2.24-5-5v-22c0-2.76 2.24-5 5-5z" style="fill:url(#5);stroke-miterlimit:10;stroke:#7c715e;stroke-width:.25"/>
+  <circle cx="32" cy="32" r="14" style="fill:url(#3)"/>
+  <g style="fill:#1a171b">
+    <circle cx="26.91" cy="32" r="1.91"/>
+    <circle cx="37.09" cy="32" r="1.91"/>
+  </g>
+  <g style="fill:#8c8c8c">
+    <path d="m31.36 19.27h1.27v2.55h-1.27z"/>
+    <path d="m31.36 42.18h1.27v2.55h-1.27z"/>
+  </g>
+  <g style="clip-path:url(#1)">
+    <g>
+      <path d="m17.23 33.14h4.09v13.64h-4.09z" style="fill:#ccbeae"/>
+      <path d="m20.82 33.64v12.64h-3.09v-12.64h3.09m1-1h-5.09v14.64h5.09v-14.64z" style="fill:#a59988"/>
+    </g>
+    <g>
+      <path d="m17.23 17.23h4.09v13.64h-4.09z" style="fill:#ccbeae"/>
+      <path d="m20.82 17.73v12.64h-3.09v-12.64h3.09m1-1h-5.09v14.64h5.09v-14.64z" style="fill:#a59988"/>
+    </g>
+  </g>
+  <g style="clip-path:url(#1)">
+    <g>
+      <path d="m42.68 17.23h4.09v13.64h-4.09z" style="fill:#ccbeae"/>
+      <path d="m46.27 17.73v12.64h-3.09v-12.64h3.09m1-1h-5.09v14.64h5.09v-14.64z" style="fill:#a59988"/>
+    </g>
+    <g>
+      <path d="m42.68 33.14h4.09v13.64h-4.09z" style="fill:#ccbeae"/>
+      <path d="m46.27 33.64v12.64h-3.09v-12.64h3.09m1-1h-5.09v14.64h5.09v-14.64z" style="fill:#a59988"/>
+    </g>
+  </g>
+  <circle cx="32" cy="32" r="14" style="fill:none;stroke-miterlimit:10;stroke:#5e5549;stroke-width:.5"/>
+  <circle cx="44.5" cy="19.5" r="1.5" style="fill:#f00"/>
+</svg>

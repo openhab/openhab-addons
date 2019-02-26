@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.mihome.internal.handler;
 
@@ -73,6 +77,7 @@ public class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiI
     protected static final Unit<Angle> ANGLE_UNIT = SmartHomeUnits.DEGREE_ANGLE;
     protected static final Unit<Time> TIME_UNIT = MILLI(SmartHomeUnits.SECOND);
 
+    private static final String REMOVE_DEVICE = "remove_device";
     private static final long ONLINE_TIMEOUT_MILLIS = TimeUnit.HOURS.toMillis(2);
     private ScheduledFuture<?> onlineCheckTask;
 
@@ -113,6 +118,12 @@ public class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiI
             onlineCheckTask.cancel(false);
         }
 
+    }
+
+    @Override
+    public void handleRemoval() {
+        getXiaomiBridgeHandler().writeToBridge(new String[] { REMOVE_DEVICE }, new Object[] { itemId });
+        super.handleRemoval();
     }
 
     @Override

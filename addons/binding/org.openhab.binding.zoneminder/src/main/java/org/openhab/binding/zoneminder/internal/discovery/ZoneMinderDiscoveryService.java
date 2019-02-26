@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.zoneminder.internal.discovery;
 
@@ -19,9 +23,9 @@ import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
 import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.zoneminder.ZoneMinderConstants;
-import org.openhab.binding.zoneminder.handler.ZoneMinderServerBridgeHandler;
-import org.openhab.binding.zoneminder.handler.ZoneMinderThingMonitorHandler;
+import org.openhab.binding.zoneminder.internal.ZoneMinderConstants;
+import org.openhab.binding.zoneminder.internal.handler.ZoneMinderServerBridgeHandler;
+import org.openhab.binding.zoneminder.internal.handler.ZoneMinderThingMonitorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +88,7 @@ public class ZoneMinderDiscoveryService extends AbstractDiscoveryService impleme
         super.stopScan();
     }
 
-    protected String BuildMonitorLabel(String id, String name) {
+    protected String buildMonitorLabel(String id, String name) {
         return String.format("%s [%s]", ZoneMinderConstants.ZONEMINDER_MONITOR_NAME, name);
     }
 
@@ -105,7 +109,6 @@ public class ZoneMinderDiscoveryService extends AbstractDiscoveryService impleme
      *
      * @param node the node to be added
      */
-
     public void deviceAdded(IZoneMinderMonitorData monitor) {
         try {
             ThingUID bridgeUID = serverHandler.getThing().getUID();
@@ -125,7 +128,7 @@ public class ZoneMinderDiscoveryService extends AbstractDiscoveryService impleme
                         ZoneMinderConstants.MONITOR_EVENT_OPENHAB);
 
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(bridgeUID).withLabel(BuildMonitorLabel(monitor.getId(), monitor.getName())).build();
+                        .withBridge(bridgeUID).withLabel(buildMonitorLabel(monitor.getId(), monitor.getName())).build();
 
                 thingDiscovered(discoveryResult);
             }
@@ -133,6 +136,5 @@ public class ZoneMinderDiscoveryService extends AbstractDiscoveryService impleme
             logger.error("[DISCOVERY]: Error occurred when calling 'monitorAdded' from Discovery. Exception={}",
                     ex.getMessage());
         }
-
     }
 }

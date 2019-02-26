@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.yeelight.internal.discovery;
 
@@ -94,6 +98,8 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CTBULB, device.getDeviceId());
             case stripe:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_STRIPE, device.getDeviceId());
+            case desklamp:
+                return new ThingUID(YeelightBindingConstants.THING_TYPE_DESKLAMP, device.getDeviceId());
             default:
                 return null;
         }
@@ -115,6 +121,8 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
                 return YeelightBindingConstants.THING_TYPE_CTBULB;
             case stripe:
                 return YeelightBindingConstants.THING_TYPE_STRIPE;
+            case desklamp:
+                return YeelightBindingConstants.THING_TYPE_DESKLAMP;
             default:
                 return null;
         }

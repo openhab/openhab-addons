@@ -1,0 +1,16 @@
+<md-dialog aria-label="Add rule" class="rules-dialog"> <md-dialog-content class="md-dialog-content">
+<h1>Select a rule template</h1>
+<br>
+<div>
+	<form name="myForm">
+		<md-select ng-invalid="" required placeholder="rule template" aria-label="Select template" ng-model="templateUID"> <md-option ng-repeat="item in templateData" value="{{item.uid}}"> {{item.label?item.label:item.description}} </md-option> </md-select>
+	</form>
+</div>
+</md-dialog-content>
+
+<div class="md-actions" layout="row">
+	<md-button ng-click="close()">Cancel</md-button>
+	<md-button ng-disabled="myForm.$invalid" ng-click="openConfig(templateUID)">Next</md-button>
+</div>
+
+</md-dialog>

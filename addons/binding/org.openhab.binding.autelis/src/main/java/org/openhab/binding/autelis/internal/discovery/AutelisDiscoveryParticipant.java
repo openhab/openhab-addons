@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.autelis.internal.discovery;
 
@@ -13,13 +17,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant;
+import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
-import org.openhab.binding.autelis.AutelisBindingConstants;
+import org.openhab.binding.autelis.internal.AutelisBindingConstants;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,15 +34,18 @@ import org.slf4j.LoggerFactory;
  *
  * Discovery Service for Autelis Pool Controllers.
  *
- * @author Dan Cunningham
+ * @author Dan Cunningham - Initial contribution
  *
  */
+@NonNullByDefault
+@Component(immediate = true)
 public class AutelisDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(AutelisDiscoveryParticipant.class);
 
-    private static String MANUFACTURER = "autelis";
-    private static String MODEL = "pc100pi";
+    private static final String MANUFACTURER = "autelis";
+    private static final String MODEL_PENTAIR = "pc100p";
+    private static final String MODEL_JANDY = "pc100j";
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -43,7 +53,7 @@ public class AutelisDiscoveryParticipant implements UpnpDiscoveryParticipant {
     }
 
     @Override
-    public DiscoveryResult createResult(RemoteDevice device) {
+    public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         ThingUID uid = getThingUID(device);
         if (uid != null) {
             Map<String, Object> properties = new HashMap<>(3);
@@ -69,16 +79,19 @@ public class AutelisDiscoveryParticipant implements UpnpDiscoveryParticipant {
     }
 
     @Override
-    public ThingUID getThingUID(RemoteDevice device) {
-        if (device != null) {
-            if (device.getDetails().getManufacturerDetails().getManufacturer() != null
-                    && device.getDetails().getModelDetails().getModelNumber() != null) {
-                if (device.getDetails().getManufacturerDetails().getManufacturer().toLowerCase()
-                        .startsWith(MANUFACTURER)
-                        && device.getDetails().getModelDetails().getModelNumber().toLowerCase().equals(MODEL)) {
-                    logger.debug("Autelis Pool Control Found at {}", device.getDetails().getBaseURL());
-                    return new ThingUID(AutelisBindingConstants.POOLCONTROL_THING_TYPE_UID,
-                            device.getIdentity().getUdn().getIdentifierString().replaceAll(":", "").toUpperCase());
+    public @Nullable ThingUID getThingUID(RemoteDevice device) {
+        if (device.getDetails().getManufacturerDetails().getManufacturer() != null
+                && device.getDetails().getModelDetails().getModelNumber() != null) {
+            logger.trace("UPNP {} : {}", device.getDetails().getManufacturerDetails().getManufacturer(),
+                    device.getDetails().getModelDetails().getModelNumber());
+            if (device.getDetails().getManufacturerDetails().getManufacturer().toLowerCase().startsWith(MANUFACTURER)) {
+                logger.debug("Autelis Pool Control Found at {}", device.getDetails().getBaseURL());
+                String id = device.getIdentity().getUdn().getIdentifierString().replaceAll(":", "").toUpperCase();
+                if (device.getDetails().getModelDetails().getModelNumber().toLowerCase().startsWith(MODEL_PENTAIR)) {
+                    return new ThingUID(AutelisBindingConstants.PENTAIR_THING_TYPE_UID, id);
+                }
+                if (device.getDetails().getModelDetails().getModelNumber().toLowerCase().startsWith(MODEL_JANDY)) {
+                    return new ThingUID(AutelisBindingConstants.JANDY_THING_TYPE_UID, id);
                 }
             }
         }

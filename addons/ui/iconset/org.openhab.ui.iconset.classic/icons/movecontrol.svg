@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64">
+  <g style="fill:none;stroke-miterlimit:10;stroke:#212121;stroke-width:4">
+    <path d="m32 14v36"/>
+    <path d="m14 32h36"/>
+  </g>
+  <g style="fill:#212121">
+    <path d="m26 14h12l-6-7.5z"/>
+    <path d="m38 50h-12l6 7.5z"/>
+    <path d="m50 26v12l7.5-6z"/>
+    <path d="m14 38v-12l-7.5 6z"/>
+  </g>
+</svg>

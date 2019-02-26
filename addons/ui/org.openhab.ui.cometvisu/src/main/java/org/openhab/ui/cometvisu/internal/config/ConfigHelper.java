@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.ui.cometvisu.internal.config;
 
@@ -14,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -69,7 +74,7 @@ import org.slf4j.LoggerFactory;
  * a set of helper methods to convert an openHAB sitemap to a CometVisu config
  * XML file.
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  */
 public class ConfigHelper {
     public enum Transform {
@@ -85,10 +90,6 @@ public class ConfigHelper {
         LOCATION
     }
 
-    // MashMap(openHAB-Icon,CometVisu-Icon)
-    // private static HashMap<String,String> iconMapping = new
-    // HashMap<String,String>();
-
     private final Logger logger = LoggerFactory.getLogger(ConfigHelper.class);
     private Pages pages;
 
@@ -98,9 +99,9 @@ public class ConfigHelper {
 
     private ObjectFactory factory = new ObjectFactory();
 
-    private HashMap<String, Mapping> mappings = new HashMap<String, Mapping>();
+    private Map<String, Mapping> mappings = new HashMap<>();
 
-    private HashMap<String, String> chartPeriodMapping = new HashMap<String, String>();
+    private Map<String, String> chartPeriodMapping = new HashMap<>();
 
     public final String defaultChartHeight = "300px";
 
@@ -114,7 +115,6 @@ public class ConfigHelper {
         logger.info("icon mapping enabled: {}, {} known mappings",
                 Config.iconConfig.get(Config.COMETVISU_ICON_ENABLE_MAPPING_PROPERTY), Config.iconMappings.size());
 
-        // this.initIconMapping();
         this.initBasicMappings();
         this.initBasicStylings();
         this.initStatusBar();
@@ -205,7 +205,7 @@ public class ConfigHelper {
     private void initBasicStylings() {
         StylingEntry styling = new StylingEntry();
         styling.setName("RedGreen");
-        HashMap<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("0", "red");
         map.put("1", "green");
         for (String value : map.keySet()) {
@@ -250,7 +250,7 @@ public class ConfigHelper {
         // Rollershutter mapping
         Mapping mapping = new Mapping();
         mapping.setName("shutter");
-        HashMap<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("UP", "&#8593;");
         map.put("STOP", "o");
         map.put("DOWN", "&#8595;");
@@ -282,7 +282,7 @@ public class ConfigHelper {
         // Open/Close (for contacts)
         mapping = new Mapping();
         mapping.setName("OpenClose");
-        HashMap<String, Icon> iconMap = new HashMap<String, Icon>();
+        Map<String, Icon> iconMap = new HashMap<>();
         iconMap.put("1", createIcon("fts_window_1w_open", "red"));
         iconMap.put("0", createIcon("fts_window_1w", null));
         for (String value : iconMap.keySet()) {
@@ -539,7 +539,7 @@ public class ConfigHelper {
 
         Transform transform = Transform.NUMBER;
 
-        List<Class<? extends Command>> states = new ArrayList<Class<? extends Command>>();
+        List<Class<? extends Command>> states = new ArrayList<>();
         states.add(DecimalType.class);
         states.add(OnOffType.class);
         states.add(OpenClosedType.class);
@@ -585,7 +585,7 @@ public class ConfigHelper {
 
         Transform transform = Transform.NUMBER;
 
-        List<Class<? extends Command>> states = new ArrayList<Class<? extends Command>>();
+        List<Class<? extends Command>> states = new ArrayList<>();
         states.add(DecimalType.class);
         states.add(OnOffType.class);
         states.add(OpenClosedType.class);
@@ -602,9 +602,6 @@ public class ConfigHelper {
         }
 
         Address address = getAddress(item, transform);
-        // String mappingName = String.valueOf(sitemapMapping.hashCode());
-        // Mapping mapping = createMapping(mappingName, sitemapMapping);
-        // addToMappings(mapping);
 
         Multitrigger mtrigger = factory.createMultitrigger();
         mtrigger.setShowstatus("true");
@@ -704,13 +701,6 @@ public class ConfigHelper {
      *            the openHAB @Widget the styling is read from
      */
     public void addStyling(Object bean, Widget widget) {
-        // StylingEntry styling = null;
-        // EList<org.eclipse.smarthome.model.sitemap.ColorArray> smap = getStyling(widget);
-        // for (org.eclipse.smarthome.model.sitemap.ColorArray colors : smap) {
-        // Entry entry = new Entry();
-        // entry.getContent().add(colors.getArg());
-        //
-        // }
     }
 
     public void addToStylings(StylingEntry styling) {
@@ -787,11 +777,6 @@ public class ConfigHelper {
         label = label.replaceAll("\\[.*\\]$", "");
         return StringEscapeUtils.escapeXml(label);
     }
-
-    // public JAXBElement<?> convertToJAXBElement(Object bean) {
-    // return new JAXBElement(new QName(bean.getClass().getSimpleName()
-    // .toLowerCase()), bean.getClass(), bean);
-    // }
 
     /**
      * add the separating line in the navbar
@@ -991,7 +976,7 @@ public class ConfigHelper {
      *            - Pages,Page,Group element wich should be checked
      */
     public void cleanup(Object page, Pages pages) {
-        List<JAXBElement<?>> children = new ArrayList<JAXBElement<?>>();
+        List<JAXBElement<?>> children = new ArrayList<>();
         if (page instanceof Pages) {
             cleanup(((Pages) page).getPage(), pages);
         } else if (page instanceof Page) {
@@ -999,8 +984,8 @@ public class ConfigHelper {
         } else if (page instanceof Group) {
             children = ((Group) page).getPageOrGroupOrLine();
         }
-        List<JAXBElement<?>> childsToAdd = new ArrayList<JAXBElement<?>>();
-        List<JAXBElement<?>> groupsToDelete = new ArrayList<JAXBElement<?>>();
+        List<JAXBElement<?>> childsToAdd = new ArrayList<>();
+        List<JAXBElement<?>> groupsToDelete = new ArrayList<>();
         for (JAXBElement<?> element : children) {
             if (element.getValue() instanceof Page) {
                 // check if this page only has invisible subpages and a pagejump
@@ -1014,7 +999,7 @@ public class ConfigHelper {
                             firstChildPage = (Page) ge.getValue();
                         }
                         if (((Page) ge.getValue()).isVisible() == null
-                                || ((Page) ge.getValue()).isVisible().booleanValue() == true) {
+                                || ((Page) ge.getValue()).isVisible().booleanValue()) {
                             visible++;
                         }
                     } else if (ge.getValue() instanceof Group) {
@@ -1048,7 +1033,7 @@ public class ConfigHelper {
                     }
                     if (ge.getValue() instanceof Page) {
                         Page p = (Page) ge.getValue();
-                        if (p.isVisible() == null || p.isVisible().booleanValue() == true) {
+                        if (p.isVisible() == null || p.isVisible().booleanValue()) {
                             visible++;
                         }
                     } else {

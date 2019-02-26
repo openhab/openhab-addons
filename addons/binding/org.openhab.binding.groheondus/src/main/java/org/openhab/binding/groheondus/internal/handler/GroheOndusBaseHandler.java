@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.groheondus.internal.handler;
 
@@ -83,7 +87,7 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
         if (appliance == null) {
             return;
         }
-        updateChannel(channelUID, appliance, getLastMeasurement(appliance));
+        updateChannel(channelUID, appliance, getLastDataPoint(appliance));
     }
 
     public void updateChannels() {
@@ -100,13 +104,13 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
             return;
         }
 
-        M measurement = getLastMeasurement(appliance);
+        M measurement = getLastDataPoint(appliance);
         getThing().getChannels().forEach(channel -> updateChannel(channel.getUID(), appliance, measurement));
 
         updateStatus(ThingStatus.ONLINE);
     }
 
-    protected abstract M getLastMeasurement(T appliance);
+    protected abstract M getLastDataPoint(T appliance);
 
     protected abstract void updateChannel(ChannelUID channelUID, T appliance, M measurement);
 

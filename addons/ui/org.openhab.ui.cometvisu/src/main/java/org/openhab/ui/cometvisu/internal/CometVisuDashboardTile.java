@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.ui.cometvisu.internal;
 
@@ -14,14 +18,20 @@ import java.util.Set;
 
 import org.eclipse.smarthome.model.sitemap.SitemapProvider;
 import org.openhab.ui.dashboard.DashboardTile;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
  *
  * @author Tobias Bräutigam - Initial contribution
  */
+@Component
 public class CometVisuDashboardTile implements DashboardTile {
     private Set<SitemapProvider> sitemapProviders = new HashSet<>();
 
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
     public void addSitemapProvider(SitemapProvider provider) {
         sitemapProviders.add(provider);
     }
@@ -37,7 +47,6 @@ public class CometVisuDashboardTile implements DashboardTile {
 
     @Override
     public String getUrl() {
-
         Set<String> sitemapNames = new HashSet<>();
         // collect all sitemap names
         for (SitemapProvider provider : sitemapProviders) {
@@ -55,7 +64,7 @@ public class CometVisuDashboardTile implements DashboardTile {
         }
         String path = "/";
         // lets find the index.html
-        File root = new File(Config.COMETVISU_WEBFOLDER);
+        File root = new File(Config.cometvisuWebfolder);
         File index = new File(root, "index.html");
         if (index.exists()) {
             path = "/index.html";
@@ -75,7 +84,7 @@ public class CometVisuDashboardTile implements DashboardTile {
                 }
             }
         }
-        return Config.COMETVISU_WEBAPP_ALIAS + path + "?config=" + sitemap;
+        return Config.cometvisuWebappAlias + path + "?config=" + sitemap;
     }
 
     @Override

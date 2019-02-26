@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.squeezebox.internal.handler;
 
@@ -64,7 +68,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Get favorites from LMS; update channel and send to players
  */
 public class SqueezeBoxServerHandler extends BaseBridgeHandler {
-    private Logger logger = LoggerFactory.getLogger(SqueezeBoxServerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SqueezeBoxServerHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(SQUEEZEBOXSERVER_THING_TYPE);
@@ -320,14 +324,25 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             return;
         }
 
-        logger.debug("Sending command: {}", command);
+        logger.debug("Sending command: {}", sanitizeCommand(command));
         try {
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
             writer.write(command + NEW_LINE);
             writer.flush();
         } catch (IOException e) {
-            logger.error("Error while sending command to Squeeze Server ({}) ", command, e);
+            logger.error("Error while sending command to Squeeze Server ({}) ", sanitizeCommand(command), e);
         }
+    }
+
+    /*
+     * Remove password from login command to prevent it from being logged
+     */
+    String sanitizeCommand(String command) {
+        String sanitizedCommand = command;
+        if (command.startsWith("login")) {
+            sanitizedCommand = command.replace(password, "**********");
+        }
+        return sanitizedCommand;
     }
 
     /**
@@ -785,7 +800,12 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         private String constructCoverArtUrl(String mac, boolean coverart, String coverid, String artwork_url) {
-            String hostAndPort = "http://" + host + ":" + webport;
+            String hostAndPort;
+            if (StringUtils.isNotEmpty(userId)) {
+                hostAndPort = "http://" + userId + ":" + password + "@" + host + ":" + webport;
+            } else {
+                hostAndPort = "http://" + host + ":" + webport;
+            }
 
             // Default to using the convenience artwork URL (should be rare)
             String url = hostAndPort + "/music/current/cover.jpg?player=" + encode(mac);
@@ -808,7 +828,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     url = hostAndPort + "/" + decode(artwork_url);
                 }
             }
-            logger.trace("{}: URL for cover art is {}", mac, url);
             return url;
         }
 

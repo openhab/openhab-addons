@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.ui.cometvisu.internal.listeners;
 
@@ -14,18 +18,22 @@ import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.items.ItemRegistryChangeListener;
 import org.openhab.ui.cometvisu.internal.backend.EventBroadcaster;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Listener responsible for notifying the CometVisu backend about changes
  * in the ItemRegistry
- * 
+ *
  * @author Tobias Bräutigam - Initial Contribution and API
  */
+@Component(immediate = true)
 public class ItemRegistryEventListener implements ItemRegistryChangeListener {
     private ItemRegistry itemRegistry;
 
     private EventBroadcaster eventBroadcaster;
 
+    @Reference
     protected void setEventBroadcaster(EventBroadcaster eventBroadcaster) {
         this.eventBroadcaster = eventBroadcaster;
     }
@@ -34,6 +42,7 @@ public class ItemRegistryEventListener implements ItemRegistryChangeListener {
         this.eventBroadcaster = null;
     }
 
+    @Reference
     protected void setItemRegistry(ItemRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
         this.itemRegistry.addRegistryChangeListener(this);

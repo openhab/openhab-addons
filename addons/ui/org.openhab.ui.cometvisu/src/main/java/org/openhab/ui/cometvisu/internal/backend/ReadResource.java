@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.ui.cometvisu.internal.backend;
 
@@ -41,6 +45,8 @@ import org.openhab.ui.cometvisu.internal.Config;
 import org.openhab.ui.cometvisu.internal.backend.beans.StateBean;
 import org.openhab.ui.cometvisu.internal.listeners.StateEventListener;
 import org.openhab.ui.cometvisu.internal.util.SseUtil;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +54,9 @@ import org.slf4j.LoggerFactory;
  * handles read request from the CometVisu client every request initializes a
  * SSE communication
  *
- * @author Tobias Bräutigam
+ * @author Tobias Bräutigam - Initial contribution
  */
+@Component(immediate = true)
 @Path(Config.COMETVISU_BACKEND_ALIAS + "/" + Config.COMETVISU_BACKEND_READ_ALIAS)
 public class ReadResource implements EventBroadcaster, RESTResource {
     private final Logger logger = LoggerFactory.getLogger(ReadResource.class);
@@ -62,8 +69,8 @@ public class ReadResource implements EventBroadcaster, RESTResource {
 
     private StateEventListener stateEventListener;
 
-    private List<String> itemNames = new ArrayList<String>();
-    private Map<Item, Map<String, Class<? extends State>>> items = new HashMap<Item, Map<String, Class<? extends State>>>();
+    private List<String> itemNames = new ArrayList<>();
+    private Map<Item, Map<String, Class<? extends State>>> items = new HashMap<>();
 
     @Context
     private UriInfo uriInfo;
@@ -74,7 +81,7 @@ public class ReadResource implements EventBroadcaster, RESTResource {
     @Context
     private HttpServletRequest request;
 
-    private Collection<ItemFactory> itemFactories = new CopyOnWriteArrayList<ItemFactory>();
+    private Collection<ItemFactory> itemFactories = new CopyOnWriteArrayList<>();
 
     public ReadResource() {
         this.executorService = Executors.newSingleThreadExecutor();
@@ -82,6 +89,7 @@ public class ReadResource implements EventBroadcaster, RESTResource {
         this.stateEventListener.setEventBroadcaster(this);
     }
 
+    @Reference
     protected void setItemRegistry(ItemRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
@@ -119,10 +127,10 @@ public class ReadResource implements EventBroadcaster, RESTResource {
         broadcaster.add(eventOutput);
 
         // get all requested items and send their states to the client
-        items = new HashMap<Item, Map<String, Class<? extends State>>>();
+        items = new HashMap<>();
         // send the current states of all items to the client
         if (this.itemRegistry != null) {
-            List<StateBean> states = new ArrayList<StateBean>();
+            List<StateBean> states = new ArrayList<>();
             for (String cvItemName : itemNames) {
                 try {
                     String[] parts = cvItemName.split(":");
@@ -141,7 +149,7 @@ public class ReadResource implements EventBroadcaster, RESTResource {
                     }
                     Item item = this.itemRegistry.getItem(ohItemName);
                     if (!items.containsKey(item)) {
-                        items.put(item, new HashMap<String, Class<? extends State>>());
+                        items.put(item, new HashMap<>());
                     }
                     items.get(item).put(cvItemName, stateClass);
                     StateBean itemState = new StateBean();

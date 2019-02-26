@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sonyaudio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Commands -->
+	<channel-type id="input-zr5">
+		<item-type>String</item-type>
+		<label>Input Source</label>
+		<description>Select the input source of the speaker</description>
+		<state>
+			<options>
+				<option value="btaudio">Bluetooth Audio</option>
+				<option value="usb">USB</option>
+				<option value="analog">Analog</option>
+				<option value="hdmi1">HDMI</option>
+				<option value="network">Home Network</option>
+				<option value="cast">Chromecast</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="sound-field-zr5">
+		<item-type>String</item-type>
+		<label>Sound Field</label>
+		<description>Select the Sound Field for the receiver</description>
+		<state>
+			<options>
+				<option value="clearAudio">ClearAudio+</option>
+				<option value="hiphop">R&amp;B / HIP HOP</option>
+				<option value="standard">FLAT</option>
+				<option value="rock">ROCK</option>
+				<option value="pop">POP</option>
+				<option value="latin">LATIN</option>
+				<option value="jazz">JAZZ</option>
+				<option value="classic">CLASSIC</option>
+				<option value="custom">CUSTOM</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- SRS-ZR5 Thing Type -->
+	<thing-type id="SRS-ZR5">
+		<label>SONY wirelesspeaker SRS-ZR5</label>
+		<description>SONY wirelesspeaker SRS-ZR5</description>
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="input" typeId="input-zr5" />
+			<channel id="volume" typeId="volume" />
+			<channel id="mute" typeId="mute" />
+			<channel id="soundField" typeId="sound-field-zr5" />
+		</channels>
+		<config-description-ref uri="thing-type:sonyaudio:config" />
+	</thing-type>
+</thing:thing-descriptions>

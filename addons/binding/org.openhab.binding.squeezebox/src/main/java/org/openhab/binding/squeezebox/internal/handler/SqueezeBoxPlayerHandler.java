@@ -1,15 +1,21 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.squeezebox.internal.handler;
 
 import static org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,8 +70,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Convert sound notification volume from channel to config parameter
  */
 public class SqueezeBoxPlayerHandler extends BaseThingHandler implements SqueezeBoxPlayerEventListener {
-
-    private Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(SQUEEZEBOXPLAYER_THING_TYPE);
@@ -413,17 +418,18 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         // Only get the image if this is my PlayerHandler instance
         if (isMe(mac)) {
             if (StringUtils.isNotEmpty(url)) {
+                String sanitizedUrl = sanitizeUrl(url);
                 RawType image = IMAGE_CACHE.putIfAbsentAndGet(url, () -> {
-                    logger.debug("Trying to download the content of URL {}", url);
+                    logger.debug("Trying to download the content of URL {}", sanitizedUrl);
                     try {
                         return HttpUtil.downloadImage(url);
                     } catch (IllegalArgumentException e) {
-                        logger.debug("IllegalArgumentException when downloading image from {}", url, e);
+                        logger.debug("IllegalArgumentException when downloading image from {}", sanitizedUrl, e);
                         return null;
                     }
                 });
                 if (image == null) {
-                    logger.debug("Failed to download the content of URL {}", url);
+                    logger.debug("Failed to download the content of URL {}", sanitizedUrl);
                     return null;
                 } else {
                     return image;
@@ -431,6 +437,26 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             }
         }
         return null;
+    }
+
+    /*
+     * Replaces the password in the URL, if present
+     */
+    private String sanitizeUrl(String url) {
+        String sanitizedUrl = url;
+        try {
+            URI uri = new URI(url);
+            String userInfo = uri.getUserInfo();
+            if (userInfo != null) {
+                String[] userInfoParts = userInfo.split(":");
+                if (userInfoParts.length == 2) {
+                    sanitizedUrl = url.replace(userInfoParts[1], "**********");
+                }
+            }
+        } catch (URISyntaxException e) {
+            // Just return what was passed in
+        }
+        return sanitizedUrl;
     }
 
     /**

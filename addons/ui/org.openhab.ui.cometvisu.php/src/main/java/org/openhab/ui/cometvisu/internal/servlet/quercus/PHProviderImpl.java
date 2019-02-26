@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.ui.cometvisu.internal.servlet.quercus;
 
@@ -19,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openhab.ui.cometvisu.php.PHProvider;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +63,7 @@ import com.caucho.vfs.WriteStream;
  * @link http://quercus.caucho.com/
  *
  */
+@Component(immediate = true)
 public class PHProviderImpl implements PHProvider {
 
     private final Logger logger = LoggerFactory.getLogger(PHProviderImpl.class);
@@ -65,7 +71,7 @@ public class PHProviderImpl implements PHProvider {
 
     protected QuercusEngine engine;
     protected String defaultUserDir;
-    protected ServletContext _servletContext;
+    protected ServletContext servletContext;
 
     @Override
     public void createQuercusEngine() {
@@ -95,7 +101,7 @@ public class PHProviderImpl implements PHProvider {
         checkServletAPIVersion(context);
 
         this.defaultUserDir = userDir;
-        this._servletContext = context;
+        this.servletContext = context;
 
         Path pwd = new FilePath(path);
         Path webInfDir = pwd;
@@ -166,7 +172,7 @@ public class PHProviderImpl implements PHProvider {
             env.setPwd(path.getParent());
             logger.debug("setting user dir to {}", path.getParent().getNativePath());
             System.setProperty("user.dir", path.getParent().getNativePath());
-            quercus.setServletContext(new QuercusServletContextImpl(_servletContext));
+            quercus.setServletContext(new QuercusServletContextImpl(servletContext));
 
             try {
                 env.start();
@@ -226,7 +232,7 @@ public class PHProviderImpl implements PHProvider {
                         e);
 
                 throw myException;
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 if (response.isCommitted()) {
                     e.printStackTrace(ws.getPrintWriter());
                 }
@@ -257,8 +263,8 @@ public class PHProviderImpl implements PHProvider {
             logger.error("{}", e.getMessage(), e);
         } catch (RuntimeException e) {
             throw e;
-        } catch (Throwable e) {
-            handleThrowable(response, e);
+        } catch (Exception e) {
+            handleException(response, e);
         }
     }
 
@@ -293,7 +299,6 @@ public class PHProviderImpl implements PHProvider {
                 sb.append("/");
             }
             sb.append(pathInfo);
-
         }
 
         String scriptPath = sb.toString();
@@ -309,7 +314,7 @@ public class PHProviderImpl implements PHProvider {
         return path;
     }
 
-    protected void handleThrowable(HttpServletResponse response, Throwable e) throws IOException, ServletException {
+    protected void handleException(HttpServletResponse response, Throwable e) throws IOException, ServletException {
         throw new ServletException(e);
     }
 

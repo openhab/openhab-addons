@@ -1,17 +1,24 @@
 /**
- * Copyright (c) 2010-2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.km200.internal;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -24,17 +31,15 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.km200.handler.KM200GatewayHandler;
-import org.openhab.binding.km200.handler.KM200ThingHandler;
 import org.openhab.binding.km200.internal.discovery.KM200GatewayDiscoveryService;
+import org.openhab.binding.km200.internal.handler.KM200GatewayHandler;
+import org.openhab.binding.km200.internal.handler.KM200ThingHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Sets;
 
 /**
  * The {@link KM200HandlerFactory} is responsible for creating things and thing
@@ -45,8 +50,9 @@ import com.google.common.collect.Sets;
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.km200", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class KM200HandlerFactory extends BaseThingHandlerFactory {
 
-    public final Set<ThingTypeUID> SUPPORTED_ALL_THING_TYPES_UIDS = Sets
-            .union(KM200GatewayHandler.SUPPORTED_THING_TYPES_UIDS, KM200ThingHandler.SUPPORTED_THING_TYPES_UIDS);
+    public final Set<ThingTypeUID> SUPPORTED_ALL_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.concat(KM200GatewayHandler.SUPPORTED_THING_TYPES_UIDS.stream(),
+                    KM200ThingHandler.SUPPORTED_THING_TYPES_UIDS.stream()).collect(Collectors.toSet()));
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
