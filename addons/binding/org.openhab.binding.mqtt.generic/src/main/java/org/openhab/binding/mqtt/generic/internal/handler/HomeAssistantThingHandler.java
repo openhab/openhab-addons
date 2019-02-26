@@ -72,7 +72,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     protected final DiscoverComponents discoverComponents;
 
     private final Gson gson = new Gson();
-    protected final Map<String, AbstractComponent<?>> haComponents = new HashMap<String, AbstractComponent<?>>();
+    protected final Map<String, AbstractComponent<?>> haComponents = new HashMap<>();
 
     protected HandlerConfiguration config = new HandlerConfiguration();
     private HaID discoveryHomeAssistantID = new HaID("", "", "", "");

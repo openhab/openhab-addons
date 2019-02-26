@@ -54,7 +54,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     private @Nullable ScheduledFuture<?> future;
     private final Gson gson = new Gson();
 
-    public static final Map<String, String> HA_COMP_TO_NAME = new TreeMap<String, String>();
+    public static final Map<String, String> HA_COMP_TO_NAME = new TreeMap<>();
     {
         HA_COMP_TO_NAME.put("alarm_control_panel", "Alarm Control Panel");
         HA_COMP_TO_NAME.put("binary_sensor", "Sensor");
