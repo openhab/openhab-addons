@@ -8,7 +8,7 @@ On Raspberry Pi the user on which openHAB is running (default user name is "open
 ## Dependencies
 
 Make sure that the [wiringPi](http://wiringpi.com/) library has been installed and that the `gpio` command line tool is available to openHAB.
-The shared library `libwiringPi.so` is required by the [pi4j](http://pi4j.com/) Java library to access the GPIO ports.
+The shared library `libwiringPi.so` is required by the [Pi4J](http://pi4j.com/) Java library to access the GPIO ports.
 Without satisfying this dependency you will see strange `NoClassDefFoundError: Could not initialize class ...` errors in the openHAB logs.
 
 ## Supported Things
