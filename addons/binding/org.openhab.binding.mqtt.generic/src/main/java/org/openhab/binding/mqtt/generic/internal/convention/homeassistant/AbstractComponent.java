@@ -39,9 +39,10 @@ import com.google.gson.Gson;
  * It has a name and consists of multiple channels.
  *
  * @author David Graeff - Initial contribution
+ * @param <C> Config class derived from {@link HAConfiguration}
  */
 @NonNullByDefault
-public abstract class AbstractComponent<CONFIG extends HAConfiguration> {
+public abstract class AbstractComponent<C extends HAConfiguration> {
     // Component location fields
     protected final ChannelGroupTypeUID channelGroupTypeUID;
     protected final ChannelGroupUID channelGroupUID;
@@ -53,7 +54,7 @@ public abstract class AbstractComponent<CONFIG extends HAConfiguration> {
     // Used to determine if a component has changed.
     protected final int configHash;
     protected final String configJson;
-    protected final CONFIG config;
+    protected final C config;
 
     /**
      * Provide a thingUID and HomeAssistant topic ID to determine the ESH channel group UID and type.
@@ -63,7 +64,7 @@ public abstract class AbstractComponent<CONFIG extends HAConfiguration> {
      * @param configJson The configuration string
      * @param gson A Gson instance
      */
-    public AbstractComponent(ThingUID thing, HaID haID, String configJson, Gson gson, Class<CONFIG> clazz) {
+    public AbstractComponent(ThingUID thing, HaID haID, String configJson, Gson gson, Class<C> clazz) {
         this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID,
                 haID.getChannelGroupTypeID());
         this.channelGroupUID = new ChannelGroupUID(thing, haID.getChannelGroupID());
