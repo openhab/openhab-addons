@@ -131,7 +131,7 @@ It will be configured at runtime by using the save channel to store the current 
 | musicProviderId       | String      | R/W         | echo, echoshow, echospot      | Current Music provider
 | playMusicVoiceCommand | String      | W         | echo, echoshow, echospot      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles' 
 | startCommand          | String      | W         | echo, echoshow, echospot      | Write Only! Used to start anything. Available options: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing and FlashBriefing.<FlahshbriefingDeviceID> (Note: The options are case sensitive)
-| textToSpeech          | String      | W         | echo, echoshow, echospot      | Write Only! Write some text to this channel and alexa will speak it. It is possible to use plain text or SSML: e.g. <speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human.</amazon:effect></speak>
+| textToSpeech          | String      | W         | echo, echoshow, echospot      | Write Only! Write some text to this channel and alexa will speak it. It is possible to use plain text or SSML: e.g. `<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human.</amazon:effect></speak>`
 | textToSpeechVolume    | Dimmer      | R/W       | echo, echoshow, echospot      | Volume of the textToSpeech channel, if 0 the current volume will be used
 | lastVoiceCommand      | String      | R/W         | echo, echoshow, echospot      | Last voice command spoken to the device. Writing to the channel starts voice output.
 | mediaProgress         | Dimmer      | R/W         | echo, echoshow, echospot      | Media progress in percent 
