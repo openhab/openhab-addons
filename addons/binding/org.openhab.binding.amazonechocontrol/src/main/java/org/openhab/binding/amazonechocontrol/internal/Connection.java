@@ -1067,7 +1067,7 @@ public class Connection {
 
     public void textToSpeech(Device device, String text, int ttsVolume, int standardVolume)
             throws IOException, URISyntaxException {
-        Map<String, Object> parameters = new Hashtable<String, Object>();
+        Map<String, Object> parameters = new Hashtable<>();
         parameters.put("textToSpeak", text);
         executeSequenceCommandWithVolume(device, "Alexa.Speak", parameters, ttsVolume, standardVolume);
     }
