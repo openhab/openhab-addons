@@ -41,7 +41,7 @@ public class ComponentAlarmControlPanel extends AbstractComponent<ComponentAlarm
      */
     static class Config extends HAConfiguration {
         Config() {
-            super("MQTT Alarm Control Panel");
+            super("MQTT Alarm");
         }
 
         protected @Nullable String code;

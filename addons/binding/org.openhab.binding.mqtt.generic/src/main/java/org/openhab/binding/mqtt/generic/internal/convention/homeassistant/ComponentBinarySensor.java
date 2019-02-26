@@ -34,7 +34,7 @@ public class ComponentBinarySensor extends AbstractComponent<ComponentBinarySens
      */
     static class Config extends HAConfiguration {
         Config() {
-            super("MQTT Sensor");
+            super("MQTT Binary Sensor");
         }
 
         protected String unit_of_measurement = "";

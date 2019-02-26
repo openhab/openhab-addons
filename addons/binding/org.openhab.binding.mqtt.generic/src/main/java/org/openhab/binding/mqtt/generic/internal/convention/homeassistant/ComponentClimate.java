@@ -34,7 +34,7 @@ public class ComponentClimate extends AbstractComponent<ComponentClimate.Config>
      */
     static class Config extends HAConfiguration {
         Config() {
-            super("MQTT Climate");
+            super("MQTT HVAC");
         }
     }
 

@@ -36,7 +36,7 @@ public class ComponentFan extends AbstractComponent<ComponentFan.Config> {
      */
     static class Config extends HAConfiguration {
         Config() {
-            super("MQTT fan");
+            super("MQTT Fan");
         }
 
         protected @Nullable String state_topic;
