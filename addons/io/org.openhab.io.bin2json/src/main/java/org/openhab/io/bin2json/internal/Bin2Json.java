@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.igormaznitsa.jbbp.JBBPParser;
 import com.igormaznitsa.jbbp.exceptions.JBBPException;
 import com.igormaznitsa.jbbp.model.JBBPAbstractArrayField;
@@ -162,27 +163,27 @@ public class Bin2Json {
             final JsonArray jsonArray = new JsonArray();
             if (field instanceof JBBPFieldArrayBit) {
                 for (final byte b : ((JBBPFieldArrayBit) field).getArray()) {
-                    jsonArray.add(b);
+                    jsonArray.add(new JsonPrimitive(b));
                 }
             } else if (field instanceof JBBPFieldArrayBoolean) {
                 for (final boolean b : ((JBBPFieldArrayBoolean) field).getArray()) {
-                    jsonArray.add(b);
+                    jsonArray.add(new JsonPrimitive(b));
                 }
             } else if (field instanceof JBBPFieldArrayByte) {
                 for (final byte b : ((JBBPFieldArrayByte) field).getArray()) {
-                    jsonArray.add(b);
+                    jsonArray.add(new JsonPrimitive(b));
                 }
             } else if (field instanceof JBBPFieldArrayInt) {
                 for (final int b : ((JBBPFieldArrayInt) field).getArray()) {
-                    jsonArray.add(b);
+                    jsonArray.add(new JsonPrimitive(b));
                 }
             } else if (field instanceof JBBPFieldArrayLong) {
                 for (final long b : ((JBBPFieldArrayLong) field).getArray()) {
-                    jsonArray.add(b);
+                    jsonArray.add(new JsonPrimitive(b));
                 }
             } else if (field instanceof JBBPFieldArrayShort) {
                 for (final short b : ((JBBPFieldArrayShort) field).getArray()) {
-                    jsonArray.add(b);
+                    jsonArray.add(new JsonPrimitive(b));
                 }
             } else if (field instanceof JBBPFieldArrayStruct) {
                 final JBBPFieldArrayStruct array = (JBBPFieldArrayStruct) field;
@@ -191,11 +192,11 @@ public class Bin2Json {
                 }
             } else if (field instanceof JBBPFieldArrayUByte) {
                 for (final byte b : ((JBBPFieldArrayUByte) field).getArray()) {
-                    jsonArray.add(b & 0xFF);
+                    jsonArray.add(new JsonPrimitive(b & 0xFF));
                 }
             } else if (field instanceof JBBPFieldArrayUShort) {
                 for (final short b : ((JBBPFieldArrayUShort) field).getArray()) {
-                    jsonArray.add(b & 0xFFFF);
+                    jsonArray.add(new JsonPrimitive(b & 0xFFFF));
                 }
             } else {
                 throw new ConversionException(String.format("Unexpected field type '%s'", field));
