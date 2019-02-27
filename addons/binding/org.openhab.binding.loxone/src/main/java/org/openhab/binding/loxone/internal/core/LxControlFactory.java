@@ -39,6 +39,7 @@ class LxControlFactory {
         add(new LxControlSwitch.Factory());
         add(new LxControlTextState.Factory());
         add(new LxControlTimedSwitch.Factory());
+        add(new LxControlColorPickerV2.Factory());
     }
 
     private static Map<String, LxControlInstance> controls;
@@ -47,15 +48,15 @@ class LxControlFactory {
      * Create a {@link LxControl} object for a control received from the Miniserver
      *
      * @param client
-     *            websocket client to facilitate communication with Miniserver
+     *                     websocket client to facilitate communication with Miniserver
      * @param uuid
-     *            UUID of the control to be created
+     *                     UUID of the control to be created
      * @param json
-     *            JSON describing the control as received from the Miniserver
+     *                     JSON describing the control as received from the Miniserver
      * @param room
-     *            Room that this control belongs to
+     *                     Room that this control belongs to
      * @param category
-     *            Category that this control belongs to
+     *                     Category that this control belongs to
      * @return
      *         created control object or null if error
      */
