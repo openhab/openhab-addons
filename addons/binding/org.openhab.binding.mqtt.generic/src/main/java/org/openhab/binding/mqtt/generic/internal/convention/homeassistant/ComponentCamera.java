@@ -28,36 +28,27 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentCamera extends AbstractComponent {
+public class ComponentCamera extends AbstractComponent<ComponentCamera.Config> {
     public static final String cameraChannelID = "camera"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config {
-        protected String name = "MQTT Camera";
-        protected String icon = "";
-        protected int qos = 1;
-        protected boolean retain = true;
-        protected @Nullable String unique_id;
+    static class Config extends HAConfiguration {
+        Config() {
+            super("MQTT Camera");
+        }
 
         protected String topic = "";
     };
 
-    protected Config config = new Config();
-
     public ComponentCamera(ThingUID thing, HaID haID, String configJSON,
             @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
-        super(thing, haID, configJSON, gson);
-        config = gson.fromJson(configJSON, Config.class);
+        super(thing, haID, configJSON, gson, Config.class);
 
         ImageValue value = new ImageValue();
         channels.put(cameraChannelID, new CChannel(this, cameraChannelID, value, //
                 config.topic, null, config.name, "", channelStateUpdateListener));
     }
 
-    @Override
-    public String name() {
-        return config.name;
-    }
 }

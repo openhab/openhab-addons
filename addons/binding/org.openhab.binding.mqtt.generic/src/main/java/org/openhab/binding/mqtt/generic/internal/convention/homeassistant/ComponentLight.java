@@ -38,7 +38,7 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentLight extends AbstractComponent implements ChannelStateUpdateListener {
+public class ComponentLight extends AbstractComponent<ComponentLight.Config> implements ChannelStateUpdateListener {
     public static final String switchChannelID = "light"; // Randomly chosen channel "ID"
     public static final String brightnessChannelID = "brightness"; // Randomly chosen channel "ID"
     public static final String colorChannelID = "color"; // Randomly chosen channel "ID"
@@ -46,12 +46,10 @@ public class ComponentLight extends AbstractComponent implements ChannelStateUpd
     /**
      * Configuration class for MQTT component
      */
-    static class Config {
-        protected String name = "MQTT Light";
-        protected String icon = "";
-        protected int qos = 1;
-        protected boolean retain = true;
-        protected @Nullable String unique_id;
+    static class Config extends HAConfiguration {
+        Config() {
+            super("MQTT Light");
+        }
 
         protected int brightness_scale = 255;
         protected boolean optimistic = false;
@@ -94,13 +92,8 @@ public class ComponentLight extends AbstractComponent implements ChannelStateUpd
 
         protected String payload_on = "ON";
         protected String payload_off = "OFF";
-
-        protected @Nullable String availability_topic;
-        protected String payload_available = "online";
-        protected String payload_not_available = "offline";
     };
 
-    protected Config config = new Config();
     protected CChannel colorChannel;
     protected CChannel switchChannel;
     protected CChannel brightnessChannel;
@@ -108,10 +101,8 @@ public class ComponentLight extends AbstractComponent implements ChannelStateUpd
 
     public ComponentLight(ThingUID thing, HaID haID, String configJSON,
             @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
-        super(thing, haID, configJSON, gson);
+        super(thing, haID, configJSON, gson, Config.class);
         this.channelStateUpdateListener = channelStateUpdateListener;
-        config = gson.fromJson(configJSON, Config.class);
-
         ColorValue value = new ColorValue(true, config.payload_on, config.payload_off, 100);
 
         // Create three MQTT subscriptions and use this class object as update listener

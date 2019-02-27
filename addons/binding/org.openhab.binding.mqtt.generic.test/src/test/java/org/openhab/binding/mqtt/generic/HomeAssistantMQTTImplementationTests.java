@@ -47,8 +47,8 @@ import org.mockito.Mock;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.AbstractComponent;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.ComponentSwitch;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents;
-import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HaID;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents.ComponentDiscovered;
+import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HaID;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.internal.handler.ThingChannelConstants;
@@ -155,7 +155,7 @@ public class HomeAssistantMQTTImplementationTests extends JavaOSGiTest {
     public void parseHATree() throws InterruptedException, ExecutionException, TimeoutException {
         MqttChannelTypeProvider channelTypeProvider = mock(MqttChannelTypeProvider.class);
 
-        final Map<String, AbstractComponent> haComponents = new HashMap<String, AbstractComponent>();
+        final Map<String, AbstractComponent<?>> haComponents = new HashMap<String, AbstractComponent<?>>();
 
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
         DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing,
