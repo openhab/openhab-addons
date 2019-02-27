@@ -64,7 +64,7 @@ public class CChannel {
      * @param label The label for this channel. Should be internationalized.
      * @param unit The unit for this channel. Can be empty.
      */
-    public CChannel(AbstractComponent component, String channelID, Value valueState, @Nullable String state_topic,
+    public CChannel(AbstractComponent<?> component, String channelID, Value valueState, @Nullable String state_topic,
             @Nullable String command_topic, String label, String unit,
             @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
         this.channelUID = new ChannelUID(component.channelGroupUID, channelID);

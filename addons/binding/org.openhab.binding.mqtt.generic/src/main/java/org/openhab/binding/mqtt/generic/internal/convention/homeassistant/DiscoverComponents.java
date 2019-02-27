@@ -56,7 +56,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
      * Implement this to get notified of new components
      */
     public static interface ComponentDiscovered {
-        void componentDiscovered(HaID homeAssistantTopicID, AbstractComponent component);
+        void componentDiscovered(HaID homeAssistantTopicID, AbstractComponent<?> component);
     }
 
     /**
@@ -81,7 +81,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         }
         HaID haID = new HaID(topic);
         String config = new String(payload);
-        AbstractComponent component = CFactory.createComponent(thingUID, haID, config, updateListener, gson);
+        AbstractComponent<?> component = CFactory.createComponent(thingUID, haID, config, updateListener, gson);
         if (component != null) {
             logger.trace("Found HomeAssistant thing {} component {}", haID.objectID, haID.component);
             if (discoveredListener != null) {

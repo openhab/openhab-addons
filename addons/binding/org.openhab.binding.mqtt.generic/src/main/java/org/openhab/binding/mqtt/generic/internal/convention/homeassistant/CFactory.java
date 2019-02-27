@@ -43,7 +43,7 @@ public class CFactory {
      * @param updateListener A channel state update listener
      * @return A HA MQTT Component
      */
-    public static @Nullable AbstractComponent createComponent(ThingUID thingUID, HaID haID, String configJSON,
+    public static @Nullable AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID, String configJSON,
             @Nullable ChannelStateUpdateListener updateListener, Gson gson) {
         try {
             switch (haID.component) {
@@ -82,7 +82,7 @@ public class CFactory {
      * @param updateListener A channel state update listener
      * @return A HA MQTT Component
      */
-    public static @Nullable AbstractComponent createComponent(String basetopic, Channel channel,
+    public static @Nullable AbstractComponent<?> createComponent(String basetopic, Channel channel,
             @Nullable ChannelStateUpdateListener updateListener, Gson gson) {
         HaID haID = new HaID(basetopic, channel.getUID());
         ThingUID thingUID = channel.getUID().getThingUID();
