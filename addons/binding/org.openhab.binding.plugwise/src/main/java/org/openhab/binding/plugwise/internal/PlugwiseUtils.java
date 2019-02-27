@@ -18,7 +18,6 @@ import static org.openhab.binding.plugwise.internal.protocol.field.DeviceType.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.GregorianCalendar;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -88,7 +87,7 @@ public final class PlugwiseUtils {
     }
 
     public static DateTimeType newDateTimeType(LocalDateTime localDateTime) {
-        return new DateTimeType(GregorianCalendar.from(localDateTime.atZone(ZoneId.systemDefault())));
+        return new DateTimeType(localDateTime.atZone(ZoneId.systemDefault()));
     }
 
     public static void stopBackgroundThread(@Nullable Thread thread) {
