@@ -26,13 +26,16 @@ public class EtherRainBindingConstants {
     private static final String BINDING_ID = "etherrain";
 
     // List of all Thing ids
+
     private static final String ETHERRAIN = "etherrain";
 
     // List of all Thing Type UIDs
+
     public static final ThingTypeUID ETHERRAIN_THING = new ThingTypeUID(BINDING_ID, ETHERRAIN);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(ETHERRAIN_THING);
 
     // List of internal default values
+
     public static final int DEFAULT_WAIT_BEFORE_INITIAL_REFRESH = 30;
     public static final int DEFAULT_REFRESH_RATE = 60;
     public static final short DISCOVERY_SUBNET_MASK = 24;
