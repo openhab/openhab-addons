@@ -1,52 +1,56 @@
-# <bindingName> Binding
+# Etherrain Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+The Etherrain binding is used to control a sprinkler controller from Quicksmart:
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+http://www.quicksmart.com/qs_etherrain.html
+
+The API exposed by the controller is fairly robust, but it is specific. The binding attempts to 
+
+## Overview
+
+An Etherrain controller can control 7-8 zones (depending on model) and can also report on the status of a rain sensor.
+The controller itself accepts a single command that contains an initial delay, and an on-time for each of the zone. Once this execute command is sent, the controller will, first, wait the initial delay time, then cycle through each zone and turn it on the amount of time specified. 
+The binding exposes the rain sensor as a contact as well as the operating status of of the controller. 
+
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+The bridge represents a physical Etherrain controller and contains all channels need to control it. 
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+The binding will automatically discover Etherrain controllers when a thing is added.
 
 ## Binding Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters 
-# This may be changed by the user for security reasons.
-secret=EclipseSmartHome
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+There are two main categories of configuration. The first is the configuration of the communication settings (IP address, timeout, etc.)
+The second is the initial delay and on-time for each zone when an exectute command is issued. 
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+This is optional, it is recommended to let the binding discover and add Etherrain controllers.
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+To manually configure a Etherrain controller you may specify it's host name or ip ("hostname"). You can also optionally specify the unit's password ("pw"), port it is communicating on ("port") or refresh rate ("refresh") 
+
+```java
+Bridge etherrain:etherrain:BackyardSprinkler [ host="192.168.1.100"]
+```
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+The etherrain controller exposes the rain sensor as well as several status messages. Finally, there are commands to execute and clear the commands:
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+items:
 
-## Full Example
+```java
+String SprinkerCommandStatus       "Command Status [%s]"  (gMain) { channel="etherrain:etherrain:sprinkler0:commandstatus" }
+String SprinkerOperatingStatus     "Operating Status [%s]"  (gMain) { channel="etherrain:etherrain:sprinkler0:operatingstatus" }
+String SprinkerOperatingResult     "Operating Result [%s]"  (gMain) { channel="etherrain:etherrain:sprinkler0:operatingresult" }
+            
+String SprinklerActiveZone         "Active Zone [%s]"  (gMain) { channel="etherrain:etherrain:sprinkler0:relayindex" }                  
+Switch  SprinklerRainSensor        (gMain) { channel="etherrain:etherrain:sprinkler0:rainsensor" }
+            
+Switch SprinklerExecute            (gMain) { channel="etherrain:etherrain:sprinkler0:execute" }
+Switch SprinklerClear              (gMain) { channel="etherrain:etherrain:sprinkler0:clear" }
+```
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
