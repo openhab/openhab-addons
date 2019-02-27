@@ -7,6 +7,8 @@
 		<label>General Channels</label>
 		<channels>
 			<channel id="44302" typeId="f1145-type-44302" />
+			<channel id="44270" typeId="f1145-type-44270" />
+			<channel id="43103" typeId="f1145-type-43103" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="f1145-compressor">
@@ -19,6 +21,9 @@
 			<channel id="40019" typeId="f1145-type-40019" />
 			<channel id="40018" typeId="f1145-type-40018" />
 			<channel id="40017" typeId="f1145-type-40017" />
+			<channel id="40015" typeId="f1145-type-40015" />
+			<channel id="40016" typeId="f1145-type-40016" />
+			<channel id="43439" typeId="f1145-type-43439" />
 		</channels>
 	</channel-group-type>
 

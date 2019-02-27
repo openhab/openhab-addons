@@ -25,25 +25,25 @@ import org.eclipse.smarthome.core.library.types.PercentType;
  *
  */
 public class TradfriColor {
-    
+
     // Tradfri uses the CIE color space (see https://en.wikipedia.org/wiki/CIE_1931_color_space),
     // which uses x,y-coordinates.
     // Its own app comes with 3 predefined color temperature settings (0,1,2), which have those values:
     private final static double[] PRESET_X = new double[] { 24933.0, 30138.0, 33137.0 };
     private final static double[] PRESET_Y = new double[] { 24691.0, 26909.0, 27211.0 };
-    
+
     /**
      * CIE XY color values in the tradfri range 0 to 65535.
      * May be <code>null</code> if the calculation method does not support this color range.
      */
     public Integer xyX, xyY;
-    
+
     /**
      * Brightness level in the tradfri range 0 to 254.
      * May be <code>null</code> if the calculation method does not support this color range.
      */
     public Integer brightness;
-    
+
     /**
      * Construct from CIE XY values in the tradfri range.
      *
@@ -62,7 +62,7 @@ public class TradfriColor {
             }
         }
     }
-    
+
     /**
      * Construct from HSBType
      *
@@ -74,7 +74,7 @@ public class TradfriColor {
         this.xyY = normalize(xyArray[1].doubleValue() / 100.0);
         this.brightness = (int) (hsb.getBrightness().floatValue() * 2.54);
     }
-    
+
     /**
      * Obtain the TradfriColor (x/y) as HSBType
      *
@@ -83,12 +83,12 @@ public class TradfriColor {
     public HSBType getHSB() {
         float x = unnormalize(xyX);
         float y = unnormalize(xyY);
-        
+
         HSBType converted = HSBType.fromXY(x, y);
-        
+
         return new HSBType(converted.getHue(), converted.getSaturation(), xyBrightnessToPercentType(brightness));
     }
-    
+
     /**
      * Construct from color temperature in percent.
      * 0 (coldest) to 100 (warmest).
@@ -99,7 +99,7 @@ public class TradfriColor {
      */
     public TradfriColor(PercentType percentType) {
         double percent = percentType.doubleValue();
-        
+
         int x, y;
         if (percent < 50.0) {
             // we calculate a value that is between preset 0 and 1
@@ -112,11 +112,11 @@ public class TradfriColor {
             x = (int) Math.round(PRESET_X[1] + p * (PRESET_X[2] - PRESET_X[1]));
             y = (int) Math.round(PRESET_Y[1] + p * (PRESET_Y[2] - PRESET_Y[1]));
         }
-        
+
         this.xyX = x;
         this.xyY = y;
     }
-    
+
     /**
      * Normalize value to the tradfri range.
      *
@@ -126,7 +126,7 @@ public class TradfriColor {
     private int normalize(double value) {
         return (int) (value * 65535 + 0.5);
     }
-    
+
     /**
      * Reverse-normalize value from the tradfri range.
      *
@@ -136,7 +136,7 @@ public class TradfriColor {
     private float unnormalize(int value) {
         return (value / 65535.0f);
     }
-    
+
     /**
      * Calculate the color temperature from given x and y values.
      *
@@ -163,7 +163,7 @@ public class TradfriColor {
         }
         return new PercentType((int) Math.round(value * 100.0));
     }
-    
+
     /**
      * Converts the xyBrightness value to PercentType
      *
@@ -178,5 +178,4 @@ public class TradfriColor {
         }
         return new PercentType((int) Math.ceil(xyBrightness / 2.54));
     }
-    
 }

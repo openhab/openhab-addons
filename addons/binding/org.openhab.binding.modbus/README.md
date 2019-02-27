@@ -43,7 +43,7 @@ Useful tools
 
 ## Supported Things
 
-This binding support 6 different things types
+This binding supports 4 different things types
 
 | Thing    | Type   | Description                                                                                                                                                                                                                               |
 | -------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -63,35 +63,10 @@ Other than the things themselves, there is no binding configuration.
 
 ## Serial Port Configuration
 
-Without correct configuration, the binding might not be able to open the serial port for communication, and you will see an error message in the logs.
-Following section gives serial configuration advice with different platforms.
+With serial Modbus slaves, configuration of the serial port in openHAB is important.
+Otherwise you might encounter errors preventing all communication.
 
-### Windows
-
-No special configuration is needed, you can use the COM port number (e.g. `COM4`) in the thing configuration.
-
-### Linux
-
-If you can see issues related to opening the serial port with Linux, and you are using **non standard serial ports** (e.g. `/dev/ttyAMA0`) you might have to configure openHAB to detect and access the port correctly:
-
-* Adapt java command line arguments to include `-Dgnu.io.rxtx.SerialPorts=/dev/ttyAMA0` (where `/dev/ttyAMA0` is the serial port). If you have multiple serial ports to configure, separate them with colon (`:`). Depending on openHAB installation method, you should modify `start.sh`, `start_debug.sh`, `start.bat`, or  `start_debug.bat` (standalone/manual installation) or `EXTRA_JAVA_OPTS` in `/etc/default/openhab2` (debian installation)
-* Depending on linux distribution, you might need to add the user running openHAB to `dialout` user group. With Debian openHAB installation: `sudo usermod -a -G dialout openhab`. The user will need to logout from all login instances and log back in to see their new group added. If the user added to this group still cannot get permission, rebooting the box to ensure the new group permission is attached to the user is suggested.
-* When using more than one USB-Serial converters, it may happen that the `/dev/ttyUSB0` device is named `/dev/ttyUSB1` after a reboot. To prevent this problem, alias names can be assigned to serial devices by adding them to `/etc/udev/rules.d/99-com.rules`. Example:
-
-```bash
-SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="AE01F0PD", SYMLINK+="ttyMySensors"
-SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{serial}=="0001", SYMLINK+="ttyCulStick"
-```
-
-You need to find relevant pieces of information using e.g. `udevadm` command line utility:
-
-```
-udevadm info -a -p $(udevadm info -q path -n /dev/ttyACM0)
-```
-
-### MacOS
-
-When working with a Mac, it may be necessary to install a driver for the USB-RS232 converter (e.g. [osx-pl2303](http://osx-pl2303.sourceforge.net/) or [pl2303](http://mac.softpedia.com/get/Drivers/PL2303-OS-X-driver.shtml) and create the `/var/lock` folder; see the [rxtx troubleshooting guide](http://rxtx.qbang.org/wiki/index.php/Trouble_shooting#Mac_OS_X_users).
+See [general documentation about serial port configuration](/docs/administration/serial.html) to configure the serial port correctly.
 
 ## Thing Configuration
 
@@ -135,7 +110,7 @@ Advanced parameters
 | `reconnectAfterMillis`          |          | integer | `0`                | The connection is kept open at least the time specified here. Value of zero means that connection is disconnected after every MODBUS transaction. In milliseconds. |
 | `connectTimeoutMillis`          |          | integer | `10000`            | The maximum time that is waited when establishing the connection. Value of zero means that system/OS default is respected. In milliseconds.                        |
 
-**Note:** Advanced parameters must be equal to all `tcp` things sharing the same `host` and `port`.
+**Note:** Advanced parameters must be equal for all `tcp` things sharing the same `host` and `port`.
 
 The advanced parameters have conservative defaults, meaning that they should work for most users.
 In some cases when extreme performance is required (e.g. poll period below 10 ms), one might want to decrease the delay parameters, especially `timeBetweenTransactionsMillis`. Similarly, with some slower devices on might need to increase the values.
@@ -168,7 +143,7 @@ Advanced parameters
 | `connectMaxTries`               |          | integer | `1`                | How many times we try to establish the connection. Should be at least 1.                                                                   |
 | `connectTimeoutMillis`          |          | integer | `10000`            | The maximum time that is waited when establishing the connection. Value of zero means thatsystem/OS default is respected. In milliseconds. |
 
-With the exception of `id` parameters should be equal to all `serial` things sharing the same `port`.
+With the exception of `id` parameters should be equal for all `serial` things sharing the same `port`.
 
 These parameters have conservative defaults, meaning that they should work for most users.
 In some cases when extreme performance is required (e.g. poll period below 10ms), one might want to decrease the delay parameters, especially `timeBetweenTransactionsMillis`.
@@ -253,13 +228,14 @@ For example, in the following example, item `Temperature_Modbus_Livingroom` is b
 Number  Temperature_Modbus_Livingroom                       "Temperature Living room [%.1f °C]"           <temperature>   { channel="modbus:data:siemensplc:holding:livingroom_temperature:number" }
 ```
 
-Make sure you bind item to a channel that is compatible, or use transformations to make it compatible. See [Transformations](#transformations) section for more information on transformation.
+Make sure you bind item to a channel that is compatible, or use transformations to make it compatible.
+See [Transformations](#transformations) section for more information on transformation.
 
 ### `autoupdate` parameter with items
 
-Please note that Modbus protocol is polling, and commands in openHAB might take some time to propagate. This might produce some transient effects with item values when parameters are changed.
-
-By default, openHAB has `autoupdate` enabled. This means that item _state_ is updated according to received commands. In some situations this might have unexpected side effects with polling bindings such as Modbus - see example below.
+By default, openHAB has `autoupdate` enabled.
+This means that item _state_ is updated according to received commands.
+In some situations this might have unexpected side effects with polling bindings such as Modbus - see example below.
 
 Typically, you see something like this
 
@@ -285,7 +261,8 @@ Let's go through it step by step
 4 [vent.ItemStateChangedEvent] - Kitchen_Bar_Table_Light changed from OFF to ON
 ```
 
-To prevent this "state fluctuation" (`OFF` -> `ON` -> `OFF` -> `ON`), some people prefer like to disable `autoupdate` with polling bindings. With `autoupdate` disabled, one would get
+To prevent this "state fluctuation" (`OFF` -> `ON` -> `OFF` -> `ON`), some people prefer to disable `autoupdate` on Items used with polling bindings.
+With `autoupdate` disabled, one would get
 
 ```java
 // openHAB UI switch changed command is sent
@@ -299,9 +276,8 @@ To prevent this "state fluctuation" (`OFF` -> `ON` -> `OFF` -> `ON`), some peopl
 Item state has no "fluctuation", it updates from `OFF` to `ON`.
 
 To summarize (credits to [rossko57's community post](https://community.openhab.org/t/rule-to-postupdate-an-item-works-but-item-falls-back-after-some-seconds/19986/2?u=ssalonen)):
-
-* `autoupdate=false`: monitor the _actual_ state of device
-* `autoupdate=true`: allows more faster display of the _expected_ state in a sitemap
+* `autoupdate="false"`: monitor the _actual_ state of device
+* `autoupdate="true"`: (or defaulted) allows faster display of the _expected_ state in a sitemap
 
 You can disable `autoupdate` as follows:
 
@@ -327,14 +303,17 @@ Main documentation on `autoupdate` in [Items section of openHAB docs](https://ww
 >
 > This translates into [entity] addresses between 0 and 9,998 in data frames.
 
+Note that entity begins counting at 1, data frame address at 0.
+
 The openHAB modbus binding uses data frame entity addresses when referring to modbus entities.
 That is, the entity address configured in modbus binding is passed to modbus protocol frame as-is.
 For example, Modbus `poller` thing with `start=3`, `length=2` and `type=holding` will read modbus entities with the following numbers 40004 and 40005.
+The manufacturer of any modbus device may choose to use either notation, you may have to infer which, or use trial and error.
 
 ### Value Types On Read And Write
 
 This section explains the detailed descriptions of different value types on read and write.
-Note that value types less than 16 bits are not supported on write (see [poller thing](#poller-thing) documentation for details).
+Note that value types less than 16 bits are not supported on write to holding registers (see [poller thing](#poller-thing) documentation for details).
 
 See [Full examples](#full-examples) section for practical examples.
 
@@ -394,10 +373,9 @@ See [Full examples](#full-examples) section for practical examples.
 
 The MODBUS specification defines each 16bit word to be encoded as Big Endian,
 but there is no specification on the order of those words within 32bit or larger data types.
-The net result is that when you have a master and slave that operate with the same
-Endian mode things work fine, but add a device with a different Endian mode and it is
-very hard to correct. To resolve this the binding supports a second set of valuetypes
-that have the words swapped.
+The net result is that when you have a master and slave that operate with the same Endian mode things work fine,
+but add a device with a different Endian mode and it is very hard to correct.
+To resolve this the binding supports a second set of valuetypes that have the words swapped.
 
 If you get strange values using the `int32`, `uint32`, `float32`, `int64`, or `uint64` valuetypes then just try the `int32_swap`, `uint32_swap`, `float32_swap`, `int64_swap`, or `uint64_swap` valuetype, depending upon what your data type is.
 
@@ -445,12 +423,16 @@ Data received is stored in list of bits (discrete inputs and coils), or in list 
 1. Extract a single number from the polled data, using specified location `readStart` and number "value type" `readValueType`.
 As an example, we can tell the binding to extract 32-bit float (`readValueType="float32"`) from register index `readStart="105"`.
 1. Number is converted to string (e.g. `"3.14"`) and passed as input to the transformation.
-Note that in case `readTransform="default"`, a default transformation provided by the binding is used. See [Transformations](#transformations) section for more details.
-1. For each [data channel](#channels), we try to convert the transformation output of previous step to a State type (e.g. `ON`/`OFF`, or `DecimalType`) accepted by the channel. If all the conversions fail (e.g. trying to convert `ON` to a number), the data channel is not updated.
+  Note that in case `readTransform="default"`, a default transformation provided by the binding is used.
+  See [Transformations](#transformations) section for more details.
+1. For each [data channel](#channels), we try to convert the transformation output of previous step to a State type (e.g. `ON`/`OFF`, or `DecimalType`) accepted by the channel.
+  If all the conversions fail (e.g. trying to convert `ON` to a number), the data channel is not updated.
 
-In case of read errors, all data channels are left unchanged, and `lastReadError` channel is updated with current time. Examples of errors include connection errors, IO errors on read, and explicit exception responses from the slave.
+In case of read errors, all data channels are left unchanged, and `lastReadError` channel is updated with current time.
+Examples of errors include connection errors, IO errors on read, and explicit exception responses from the slave.
 
-Note: there is a performance optimization that channel state is only updated when enough time has passed since last update, or when the state differs from previous update. See `updateUnchangedValuesEveryMillis` parameter in `data` thing.
+Note: there is a performance optimization that channel state is only updated when enough time has passed since last update, or when the state differs from previous update.
+See `updateUnchangedValuesEveryMillis` parameter in `data` thing.
 
 ### Write Steps
 
@@ -461,20 +443,26 @@ Commands passed to openHAB items that are bound to a [data channel](#channels) a
 1. Command is sent to openHAB item, that is bound to a [data channel](#channels).
 Command must be such that it is accepted by the item in the first place
 1. Command is converted to string (e.g. `"3.14"`) and passed to the transformation.
-Note that in case `readTransform="default"`, a default transformation provided by the binding is used. See [Transformations](#transformations) section for more details.
-3. We try to convert transformation output to number (`DecimalType`), `OPEN`/`CLOSED` (`OpenClosedType`), and `ON`/`OFF` (`OnOffType`); in this order. First successful conversion is stored.
-For example, `"3.14"` would convert to number (`DecimalType`), while `"CLOSED"` would convert to `CLOSED` (of `OpenClosedType`).'
+Note that in case `readTransform="default"`, a default transformation provided by the binding is used.
+  See [Transformations](#transformations) section for more details.
+3. We try to convert transformation output to number (`DecimalType`), `OPEN`/`CLOSED` (`OpenClosedType`), and `ON`/`OFF` (`OnOffType`); in this order.
+  First successful conversion is stored.
+  For example, `"3.14"` would convert to number (`DecimalType`), while `"CLOSED"` would convert to `CLOSED` (of `OpenClosedType`).'
 In case all conversions fail, the command is discarded and nothing is written to the Modbus slave.
 5. Next step depends on the `writeType`:
-   * `writeType="coil"`: the command from the transformation is converted to boolean. Non-zero numbers, `ON`, and `OPEN` are considered `true`; and rest as `false`.
-   * `writeType="holding"`: First, the command from the transformation is converted `1`/`0` number in case of `OPEN`/`ON` or `CLOSED`/`OFF`. The number is converted to one or more registers using `writeValueType`. For example, number `3.14` would be converted to two registers when `writeValueType="float32"`: [0x4048, 0xF5C3].
-6. Boolean (`writeType="coil"`) or registers (`writeType="holding"`) are written to the Modbus slave using `FC05`, `FC06`, `FC15`, or `FC16`, depending on the value of `writeMultipleEvenWithSingleRegisterOrCoil`. Write address is specified by `writeStart`.
+   * `writeType="coil"`: the command from the transformation is converted to boolean.
+     Non-zero numbers, `ON`, and `OPEN` are considered `true`; and rest as `false`.
+   * `writeType="holding"`: First, the command from the transformation is converted `1`/`0` number in case of `OPEN`/`ON` or `CLOSED`/`OFF`. The number is converted to one or more registers using `writeValueType`.
+   For example, number `3.14` would be converted to two registers when `writeValueType="float32"`: [0x4048, 0xF5C3].
+6. Boolean (`writeType="coil"`) or registers (`writeType="holding"`) are written to the Modbus slave using `FC05`, `FC06`, `FC15`, or `FC16`, depending on the value of `writeMultipleEvenWithSingleRegisterOrCoil`.
+  Write address is specified by `writeStart`.
 
 #### Advanced Write Using JSON
 
 There are some more advanced use cases which need more control how the command is converted to set of bits or requests.
 Due to this reason, one can return a special [JSON](https://en.wikipedia.org/wiki/JSON) output from the transformation (step 3).
-The JSON directly specifies the write requests to send to Modbus slave. In this case, steps 4. and 5. are skipped.
+The JSON directly specifies the write requests to send to Modbus slave.
+In this case, steps 4. and 5. are skipped.
 
 For example, if the transformation returns the following JSON
 
@@ -497,7 +485,8 @@ For example, if the transformation returns the following JSON
 Two write requests would be sent to the Modbus slave
 
 1. FC16 (write multiple holding register), with start address 5412, having three registers of data (1, 0, and 5).
-2. FC06 (write single holding register), with start address 555, and single register of data (3). Write is tried maximum of 10 times in case some of the writes fail.
+2. FC06 (write single holding register), with start address 555, and single register of data (3).
+  Write is tried maximum of 10 times in case some of the writes fail.
 
 The JSON transformation output can be useful when you need full control how the write goes, for example in case where the write address depends on the incoming command.
 Actually, you can omit specifying `writeStart`, `writeValueType` and `writeType` with JSON transformation output altogether.
@@ -524,7 +513,8 @@ Note that transformation is only one part of the overall process how polled data
 Consult [Read steps](#read-steps) and [Write steps](#write-steps) for more details.
 Specifically, note that you might not need transformations at all in some uses cases.
 
-Please also note that you should install relevant transformations, as necessary. For example, `openhab-transformation-javascript` feature provides the javascript (`JS`) transformation.
+Please also note that you should install relevant transformations in openHAB as necessary.
+For example, `openhab-transformation-javascript` feature provides the javascript (`JS`) transformation.
 
 #### Transform On Read
 
@@ -590,9 +580,9 @@ In this case, boolean input is considered to be either number `0`/`1`, `ON`/`OFF
 // function to invert Modbus binary states
 // variable "input" contains data passed by OpenHAB binding
 (function(inputData) {
-    var out = inputData ;      // allow Undefined to pass through
+    var out = inputData ;      // allow UNDEF to pass through
     if (inputData == '1' || inputData == 'ON' || inputData == 'OPEN') {
-        out = '0' ;
+        out = '0' ;  // change to OFF or OPEN depending on your Item type
     } else if (inputData == '0' || inputData == 'OFF' || inputData == 'CLOSED') {
         out = '1' ;
     }
@@ -752,7 +742,7 @@ sitemap modbus_ex2 label="modbus_ex2"
 
 ### Scaling Example
 
-This example divides value on read, and multiplies them on write.
+This example divides value on read, and multiplies them on write, using JS transforms.
 
 `things/modbus_ex_scaling.things`:
 
@@ -1028,9 +1018,9 @@ Old binding had converted the input based on item type.
 The old binding had `trigger` parameter in item configuration to react only to some openHAB commands, or to some polled states.
 There is no trigger anymore but one can use transformations to accomplish the same thing. See [Transformations](#transformations) for examples.
 
-### Support For 32 Bit Value Types In Writing
+### Support For 32, 64 Bit Value Types In Writing
 
-The new binding supports 32 bit values types when writing.
+The new binding supports 32 and 64 bit values types when writing.
 
 ### How to manually migrate
 

@@ -141,7 +141,7 @@ public class TeslaChannelSelectorProxy {
                 return super.getState(s);
             }
         },
-        CHARGE_CABLE("conn_charge_cable", "chargecable", DecimalType.class, false),
+        CHARGE_CABLE("conn_charge_cable", "chargecable", StringType.class, false),
         CHARGE_CURRENT_REQUEST("charge_current_request", "chargecurrent", DecimalType.class, false),
         CHARGE_CURRENT_REQUEST_MAX("charge_current_request_max", "chargemaxcurrent", DecimalType.class, false),
         CHARGE_ENABLE_REQUEST("charge_enable_request", "chargeenablerequest", OnOffType.class, false) {

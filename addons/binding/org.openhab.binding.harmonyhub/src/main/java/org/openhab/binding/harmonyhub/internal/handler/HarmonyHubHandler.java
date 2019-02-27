@@ -22,18 +22,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.cache.ExpiringCacheAsync;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.NextPreviousType;
+import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -56,12 +55,11 @@ import org.openhab.binding.harmonyhub.internal.config.HarmonyHubConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.whistlingfish.harmony.ActivityChangeListener;
-import net.whistlingfish.harmony.ActivityStatusListener;
-import net.whistlingfish.harmony.HarmonyClient;
-import net.whistlingfish.harmony.HarmonyHubListener;
-import net.whistlingfish.harmony.config.Activity;
-import net.whistlingfish.harmony.config.HarmonyConfig;
+import com.digitaldan.harmony.HarmonyClient;
+import com.digitaldan.harmony.HarmonyClientListener;
+import com.digitaldan.harmony.config.Activity;
+import com.digitaldan.harmony.config.Activity.Status;
+import com.digitaldan.harmony.config.HarmonyConfig;
 
 /**
  * The {@link HarmonyHubHandler} is responsible for handling commands for Harmony Hubs, which are
@@ -72,7 +70,7 @@ import net.whistlingfish.harmony.config.HarmonyConfig;
  * @author Wouter Born - Add null annotations
  */
 @NonNullByDefault
-public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubListener {
+public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClientListener {
 
     private final Logger logger = LoggerFactory.getLogger(HarmonyHubHandler.class);
 
@@ -81,20 +79,14 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
     private static final Comparator<Activity> ACTIVITY_COMPERATOR = Comparator.comparing(Activity::getActivityOrder,
             Comparator.nullsFirst(Integer::compareTo));
 
-    // one minute should be plenty short, but not overwhelm the hub with requests
-    private static final long CONFIG_CACHE_TIME = TimeUnit.MINUTES.toMillis(1);
     private static final int RETRY_TIME = 60;
     private static final int HEARTBEAT_INTERVAL = 30;
-
+    // Websocket will timeout after 60 seconds, pick a sensible max under this,
+    private static final int HEARTBEAT_INTERVAL_MAX = 50;
     private List<HubStatusListener> listeners = new CopyOnWriteArrayList<>();
-
-    private final ExpiringCacheAsync<@Nullable HarmonyConfig> configCache = new ExpiringCacheAsync<>(CONFIG_CACHE_TIME);
     private final HarmonyHubHandlerFactory factory;
-
-    private @NonNullByDefault({}) ScheduledExecutorService buttonExecutor;
     private @NonNullByDefault({}) HarmonyHubConfig config;
-
-    private @Nullable HarmonyClient client;
+    private final HarmonyClient client;
     private @Nullable ScheduledFuture<?> retryJob;
     private @Nullable ScheduledFuture<?> heartBeatJob;
 
@@ -103,47 +95,92 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
     public HarmonyHubHandler(Bridge bridge, HarmonyHubHandlerFactory factory) {
         super(bridge);
         this.factory = factory;
+        client = new HarmonyClient();
+        client.addListener(this);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Handling command '{}' for {}", command, channelUID);
 
-        HarmonyClient localClient = client;
-        if (localClient == null) {
-            logger.warn("Cannot send command '{}' on {} because HarmonyClient is null", command, channelUID);
+        if (!client.isConnected()) {
+            logger.warn("Cannot send command '{}' on {} because HarmonyClient is not connected", command, channelUID);
             return;
         }
 
         if (command instanceof RefreshType) {
-            updateState(localClient.getCurrentActivity());
-        } else if (command instanceof StringType) {
-            try {
-                try {
-                    int actId = Integer.parseInt(command.toString());
-                    localClient.startActivity(actId);
-                } catch (NumberFormatException ignored) {
-                    localClient.startActivityByName(command.toString());
+            client.getCurrentActivity().thenAccept(activity -> {
+                updateState(activity);
+            });
+            return;
+        }
+
+        Channel channel = getThing().getChannel(channelUID.getId());
+        if (channel == null) {
+            logger.warn("No such channel for UID {}", channelUID);
+            return;
+        }
+
+        switch (channel.getUID().getId()) {
+            case CHANNEL_CURRENT_ACTIVITY:
+                if (command instanceof DecimalType) {
+                    try {
+                        client.startActivity(((DecimalType) command).intValue());
+                    } catch (Exception e) {
+                        logger.warn("Could not start activity", e);
+                    }
+                } else {
+                    try {
+                        try {
+                            int actId = Integer.parseInt(command.toString());
+                            client.startActivity(actId);
+                        } catch (NumberFormatException ignored) {
+                            client.startActivityByName(command.toString());
+                        }
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("Activity '{}' is not known by the hub, ignoring it.", command);
+                    } catch (Exception e) {
+                        logger.warn("Could not start activity", e);
+                    }
                 }
-            } catch (IllegalArgumentException e) {
-                logger.warn("Activity '{}' is not known by the hub, ignoring it.", command);
-            } catch (Exception e) {
-                logger.error("Could not start activity", e);
-            }
-        } else if (command instanceof DecimalType) {
-            try {
-                localClient.startActivity(((DecimalType) command).intValue());
-            } catch (Exception e) {
-                logger.error("Could not start activity", e);
-            }
-        } else {
-            logger.warn("Command {}: Not an acceptable type (String or Decimal), ignoring", command);
+                break;
+            case CHANNEL_BUTTON_PRESS:
+                client.pressButtonCurrentActivity(command.toString());
+                break;
+            case CHANNEL_PLAYER:
+                String cmd = null;
+                if (command instanceof PlayPauseType) {
+                    if (command == PlayPauseType.PLAY) {
+                        cmd = "Play";
+                    } else if (command == PlayPauseType.PAUSE) {
+                        cmd = "Pause";
+                    }
+                } else if (command instanceof NextPreviousType) {
+                    if (command == NextPreviousType.NEXT) {
+                        cmd = "SkipForward";
+                    } else if (command == NextPreviousType.PREVIOUS) {
+                        cmd = "SkipBackward";
+                    }
+                } else if (command instanceof RewindFastforwardType) {
+                    if (command == RewindFastforwardType.FASTFORWARD) {
+                        cmd = "FastForward";
+                    } else if (command == RewindFastforwardType.REWIND) {
+                        cmd = "Rewind";
+                    }
+                }
+                if (cmd != null) {
+                    client.pressButtonCurrentActivity(cmd);
+                } else {
+                    logger.warn("Unknown player type {}", command);
+                }
+                break;
+            default:
+                logger.warn("Unknown channel id {}", channel.getUID().getId());
         }
     }
 
     @Override
     public void initialize() {
-        buttonExecutor = Executors.newSingleThreadScheduledExecutor();
         config = getConfigAs(HarmonyHubConfig.class);
         cancelRetry();
         updateStatus(ThingStatus.UNKNOWN);
@@ -152,7 +189,6 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
 
     @Override
     public void dispose() {
-        buttonExecutor.shutdownNow();
         listeners.clear();
         cancelRetry();
         disconnectFromHub();
@@ -170,41 +206,47 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        HarmonyClient localClient = client;
-        if (localClient != null) {
-            updateState(channelUID, new StringType(localClient.getCurrentActivity().getLabel()));
+        client.getCurrentActivity().thenAccept((activity) -> {
+            updateState(channelUID, new StringType(activity.getLabel()));
+        });
+    }
+
+    @Override
+    public void hubDisconnected(@Nullable String reason) {
+        if (getThing().getStatus() == ThingStatus.ONLINE) {
+            setOfflineAndReconnect(String.format("Could not connect: %s", reason));
         }
     }
 
-    /**
-     * HarmonyHubListener interface
-     */
     @Override
-    public void removeFrom(@Nullable HarmonyClient hc) {
-        // we have been removed from listening
+    public void hubConnected() {
+        heartBeatJob = scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                client.sendPing();
+            } catch (Exception e) {
+                logger.debug("heartbeat failed", e);
+                setOfflineAndReconnect("Hearbeat failed");
+            }
+        }, heartBeatInterval, heartBeatInterval, TimeUnit.SECONDS);
+        updateStatus(ThingStatus.ONLINE);
+        getConfigFuture().thenAcceptAsync(harmonyConfig -> updateCurrentActivityChannel(harmonyConfig), scheduler)
+                .exceptionally(e -> {
+                    setOfflineAndReconnect("Getting config failed: " + e.getMessage());
+                    return null;
+                });
+        client.getCurrentActivity().thenAccept(activity -> {
+            updateState(activity);
+        });
     }
 
-    /**
-     * HarmonyHubListener interface
-     */
     @Override
-    public void addTo(@Nullable HarmonyClient hc) {
-        if (hc == null) {
-            logger.warn("Cannot add listeners to HarmonyClient that is null");
-            return;
-        }
-        hc.addListener(new ActivityChangeListener() {
-            @Override
-            public void activityStarted(@Nullable Activity activity) {
-                updateState(activity);
-            }
-        });
-        hc.addListener(new ActivityStatusListener() {
-            @Override
-            public void activityStatusChanged(@Nullable Activity activity, Activity.@Nullable Status status) {
-                updateActivityStatus(activity, status);
-            }
-        });
+    public void activityStatusChanged(@Nullable Activity activity, @Nullable Status status) {
+        updateActivityStatus(activity, status);
+    }
+
+    @Override
+    public void activityStarted(@Nullable Activity activity) {
+        updateState(activity);
     }
 
     /**
@@ -213,7 +255,8 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
     private synchronized void connect() {
         disconnectFromHub();
 
-        heartBeatInterval = config.heartBeatInterval > 0 ? config.heartBeatInterval : HEARTBEAT_INTERVAL;
+        heartBeatInterval = Math.min(config.heartBeatInterval > 0 ? config.heartBeatInterval : HEARTBEAT_INTERVAL,
+                HEARTBEAT_INTERVAL_MAX);
 
         String host = config.host;
 
@@ -233,27 +276,9 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
             }
         }
 
-        HarmonyClient localClient = HarmonyClient.getInstance();
-        localClient.addListener(this);
-        client = localClient;
-
         try {
             logger.debug("Connecting: host {}", host);
-            localClient.connect(host);
-            heartBeatJob = scheduler.scheduleWithFixedDelay(() -> {
-                try {
-                    localClient.sendPing();
-                } catch (Exception e) {
-                    logger.warn("heartbeat failed", e);
-                    setOfflineAndReconnect("Hearbeat failed");
-                }
-            }, heartBeatInterval, heartBeatInterval, TimeUnit.SECONDS);
-            updateStatus(ThingStatus.ONLINE);
-            getConfigFuture().thenAcceptAsync(harmonyConfig -> updateCurrentActivityChannel(harmonyConfig), scheduler)
-                    .exceptionally(e -> {
-                        setOfflineAndReconnect("Getting config failed: " + e.getMessage());
-                        return null;
-                    });
+            client.connect(host);
         } catch (Exception e) {
             logger.debug("Could not connect to HarmonyHub at {}", host, e);
             setOfflineAndReconnect("Could not connect: " + e.getMessage());
@@ -265,12 +290,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
         if (localHeartBeatJob != null && !localHeartBeatJob.isDone()) {
             localHeartBeatJob.cancel(false);
         }
-
-        HarmonyClient localClient = client;
-        if (localClient != null) {
-            localClient.removeListener(this);
-            localClient.disconnect();
-        }
+        client.disconnect();
     }
 
     private void setOfflineAndReconnect(String error) {
@@ -390,13 +410,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
      * @param button
      */
     public void pressButton(int device, String button) {
-        if (!buttonExecutor.isShutdown()) {
-            buttonExecutor.execute(() -> {
-                if (client != null) {
-                    client.pressButton(device, button);
-                }
-            });
-        }
+        client.pressButton(device, button);
     }
 
     /**
@@ -406,33 +420,11 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyHubLi
      * @param button
      */
     public void pressButton(String device, String button) {
-        if (!buttonExecutor.isShutdown()) {
-            buttonExecutor.execute(() -> {
-                if (client != null) {
-                    client.pressButton(device, button);
-                }
-            });
-        }
+        client.pressButton(device, button);
     }
 
     public CompletableFuture<@Nullable HarmonyConfig> getConfigFuture() {
-        Supplier<@Nullable HarmonyConfig> configSupplier = () -> {
-            HarmonyClient localClient = client;
-            if (localClient == null) {
-                throw new IllegalStateException("Client is null");
-            }
-            try {
-                logger.debug("Getting config from client");
-                return localClient.getConfig();
-            } catch (Exception e) {
-                logger.debug("Could not get config from client", e);
-                throw e;
-            }
-        };
-
-        return configCache.getValue(() -> {
-            return CompletableFuture.supplyAsync(configSupplier, scheduler);
-        });
+        return client.getConfig();
     }
 
     /**
