@@ -28,42 +28,31 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentCover extends AbstractComponent {
+public class ComponentCover extends AbstractComponent<ComponentCover.Config> {
     public static final String switchChannelID = "cover"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config {
-        protected String name = "MQTT fan";
-        protected String icon = "";
-        protected int qos = 1;
-        protected boolean retain = true;
-        protected @Nullable String state_value_template;
-        protected @Nullable String unique_id;
+    static class Config extends HAConfiguration {
+        Config() {
+            super("MQTT Cover");
+        }
 
         protected @Nullable String state_topic;
         protected @Nullable String command_topic;
         protected String payload_open = "OPEN";
         protected String payload_close = "CLOSE";
         protected String payload_stop = "STOP";
-    };
-
-    protected Config config = new Config();
+    }
 
     public ComponentCover(ThingUID thing, HaID haID, String configJSON,
             @Nullable ChannelStateUpdateListener updateListener, Gson gson) {
-        super(thing, haID, configJSON, gson);
-        config = gson.fromJson(configJSON, Config.class);
+        super(thing, haID, configJSON, gson, Config.class);
 
         RollershutterValue value = new RollershutterValue(config.payload_open, config.payload_close,
                 config.payload_stop);
         channels.put(switchChannelID, new CChannel(this, switchChannelID, value, //
                 config.state_topic, config.command_topic, config.name, "", updateListener));
-    }
-
-    @Override
-    public String name() {
-        return config.name;
     }
 }
