@@ -114,7 +114,7 @@ public abstract class AbstractMqttAttributeClass implements SubscribeFieldToMQTT
     public interface AttributeChanged {
         /**
          * An attribute has changed
-         * 
+         *
          * @param name The name of the field
          * @param value The new value
          * @param connection The broker connection
@@ -204,7 +204,7 @@ public abstract class AbstractMqttAttributeClass implements SubscribeFieldToMQTT
      * @return A list of Field objects
      */
     protected static List<Field> getAllFields(Class<?> clazz) {
-        List<Field> fields = new ArrayList<Field>();
+        List<Field> fields = new ArrayList<>();
 
         Class<?> currentClass = clazz;
         while (currentClass != null) {

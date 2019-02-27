@@ -29,13 +29,13 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author David Graeff - Initial contribution
  *
- * @param <TYPE> Any object
+ * @param <T> Any object
  */
 @NonNullByDefault
-public class DelayedBatchProcessing<TYPE> implements Consumer<TYPE> {
+public class DelayedBatchProcessing<T> implements Consumer<T> {
     private final int delay;
-    private final Consumer<List<TYPE>> consumer;
-    private final List<TYPE> queue = Collections.synchronizedList(new ArrayList<>());
+    private final Consumer<List<T>> consumer;
+    private final List<T> queue = Collections.synchronizedList(new ArrayList<>());
     private final ScheduledExecutorService executor;
     protected @Nullable ScheduledFuture<?> future;
 
@@ -46,7 +46,7 @@ public class DelayedBatchProcessing<TYPE> implements Consumer<TYPE> {
      * @param consumer A consumer of the list of collected objects
      * @param executor A scheduled executor service
      */
-    public DelayedBatchProcessing(int delay, Consumer<List<TYPE>> consumer, ScheduledExecutorService executor) {
+    public DelayedBatchProcessing(int delay, Consumer<List<T>> consumer, ScheduledExecutorService executor) {
         this.delay = delay;
         this.consumer = consumer;
         this.executor = executor;
@@ -62,7 +62,7 @@ public class DelayedBatchProcessing<TYPE> implements Consumer<TYPE> {
      * @param t An object
      */
     @Override
-    public void accept(TYPE t) {
+    public void accept(T t) {
         queue.add(t);
         final ScheduledFuture<?> scheduledFuture = this.future;
         if (scheduledFuture == null || scheduledFuture.isDone()) {
@@ -75,12 +75,12 @@ public class DelayedBatchProcessing<TYPE> implements Consumer<TYPE> {
      *
      * @return A list of accumulated objects
      */
-    public List<TYPE> join() {
+    public List<T> join() {
         ScheduledFuture<?> scheduledFuture = this.future;
         if (scheduledFuture != null && !scheduledFuture.isDone()) {
             scheduledFuture.cancel(false);
         }
-        List<TYPE> lqueue = new ArrayList<>();
+        List<T> lqueue = new ArrayList<>();
         synchronized (queue) {
             lqueue.addAll(queue);
             queue.clear();
@@ -108,7 +108,7 @@ public class DelayedBatchProcessing<TYPE> implements Consumer<TYPE> {
     }
 
     private void run() {
-        List<TYPE> lqueue = new ArrayList<>();
+        List<T> lqueue = new ArrayList<>();
         synchronized (queue) {
             lqueue.addAll(queue);
             queue.clear();

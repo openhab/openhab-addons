@@ -75,7 +75,7 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         this.channelTypeProvider = channelTypeProvider;
         this.subscribeTimeout = subscribeTimeout;
         this.attributeReceiveTimeout = attributeReceiveTimeout;
-        this.delayedProcessing = new DelayedBatchProcessing<Object>(subscribeTimeout, this, scheduler);
+        this.delayedProcessing = new DelayedBatchProcessing<>(subscribeTimeout, this, scheduler);
         this.device = new Device(this.thing.getUID(), this, new DeviceAttributes());
     }
 

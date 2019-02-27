@@ -31,6 +31,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
+import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HAConfiguration;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HaID;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -51,8 +52,9 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantDiscovery.class);
     protected final Map<String, Set<String>> componentsPerThingID = new TreeMap<>();
     private @Nullable ScheduledFuture<?> future;
+    private final Gson gson = new Gson();
 
-    public static final Map<String, String> HA_COMP_TO_NAME = new TreeMap<String, String>();
+    public static final Map<String, String> HA_COMP_TO_NAME = new TreeMap<>();
     {
         HA_COMP_TO_NAME.put("alarm_control_panel", "Alarm Control Panel");
         HA_COMP_TO_NAME.put("binary_sensor", "Sensor");
@@ -64,10 +66,6 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         HA_COMP_TO_NAME.put("lock", "Lock");
         HA_COMP_TO_NAME.put("sensor", "Sensor");
         HA_COMP_TO_NAME.put("switch", "Switch");
-    }
-
-    private static class Config {
-        String name = "";
     }
 
     static final String BASE_TOPIC = "homeassistant";
@@ -154,12 +152,13 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         final String componentNames = components.stream().map(c -> HA_COMP_TO_NAME.getOrDefault(c, c))
                 .collect(Collectors.joining(","));
 
-        Config config = new Gson().fromJson(new String(payload, StandardCharsets.UTF_8), Config.class);
+        HAConfiguration config = HAConfiguration.fromString(new String(payload, StandardCharsets.UTF_8), gson);
 
         Map<String, Object> properties = new HashMap<>();
         properties.put("objectid", topicParts.objectID);
         properties.put("nodeid", topicParts.nodeID);
         properties.put("basetopic", BASE_TOPIC);
+        config.addDeviceProperties(properties);
         // First remove an already discovered thing with the same ID
         thingRemoved(thingUID);
         // Because we need the new properties map with the updated "components" list
