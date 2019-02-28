@@ -194,6 +194,9 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             return;
         }
 
+        ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+        String channelTypeId = (channelTypeUID != null) ? channelTypeUID.getId() : "";
+
         // check if we do support refreshs
         if (command == RefreshType.REFRESH) {
             if (!sendingEEPType.getSupportsRefresh()) {
@@ -229,14 +232,19 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             // The currentState is updated by EnOceanBaseSensorHandler after receiving a response.
             State currentState = getCurrentState(channelId);
 
-            ESP3Packet msg = eep
-                    .setSenderId(senderId).setDestinationId(destinationId).convertFromCommand(channelId,
-                            channel.getChannelTypeUID().getId(), command, currentState, channelConfig)
-                    .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
+            eep.convertFromCommand(channelId, channelTypeId, command, currentState, channelConfig);
 
-            getBridgeHandler().sendMessage(msg, null);
+            if (eep.hasData()) {
+                ESP3Packet msg = eep.setSenderId(senderId).setDestinationId(destinationId)
+                        .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
+
+                getBridgeHandler().sendMessage(msg, null);
+            } else {
+                logger.debug("Not gonna send this message...");
+            }
+
         } catch (Exception e) {
-            logger.debug(e.getMessage());
+            logger.error("Exception while sending telegram!", e);
         }
     }
 
