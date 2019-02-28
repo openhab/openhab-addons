@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -234,7 +235,11 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
             if (!getLinkedChannels().contains(channel)) {
                 return;
             }
-            if (channel.getChannelTypeUID().getId().contains("Listener")) {
+
+            ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+            String channelTypeId = (channelTypeUID != null) ? channelTypeUID.getId() : "";
+
+            if (channelTypeId.contains("Listener")) {
                 return;
             }
 
@@ -247,22 +252,25 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
                 lastTriggerEvent = result;
 
                 EEP eep = EEPFactory.createEEP(sendingEEPType);
-                ESP3Packet press = eep.setSenderId(senderId).setDestinationId(destinationId)
-                        .convertFromCommand(channelId, channel.getChannelTypeUID().getId(), result, currentState,
-                                channel.getConfiguration())
-                        .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
+                eep.convertFromCommand(channelId, channelTypeId, result, currentState, channel.getConfiguration());
 
-                getBridgeHandler().sendMessage(press, null);
+                if (eep.hasData()) {
+                    ESP3Packet press = eep.setSenderId(senderId).setDestinationId(destinationId)
+                            .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
 
-                if (channelConfig.duration > 0) {
-                    scheduler.schedule(() -> {
-                        ESP3Packet release = eep.convertFromCommand(channelId, channel.getChannelTypeUID().getId(),
-                                convertToReleasedCommand(lastTriggerEvent), currentState, channel.getConfiguration())
-                                .getERP1Message();
+                    getBridgeHandler().sendMessage(press, null);
 
-                        getBridgeHandler().sendMessage(release, null);
+                    if (channelConfig.duration > 0) {
+                        scheduler.schedule(() -> {
+                            eep.convertFromCommand(channelId, channelTypeId, convertToReleasedCommand(lastTriggerEvent),
+                                    currentState, channel.getConfiguration());
 
-                    }, channelConfig.duration, TimeUnit.MILLISECONDS);
+                            ESP3Packet release = eep.getERP1Message();
+
+                            getBridgeHandler().sendMessage(release, null);
+
+                        }, channelConfig.duration, TimeUnit.MILLISECONDS);
+                    }
                 }
             }
 
