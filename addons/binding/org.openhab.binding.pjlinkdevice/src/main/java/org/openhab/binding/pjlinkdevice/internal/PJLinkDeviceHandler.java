@@ -66,17 +66,27 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
 
         @Override
         public void run() {
-            PJLinkDeviceHandler.this.logger.info("Polling device status...");
-            PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_POWER),
-                    RefreshType.REFRESH);
-            // this updates both CHANNEL_AUDIO_MUTE and CHANNEL_VIDEO_MUTE
-            PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_AUDIO_MUTE),
-                    RefreshType.REFRESH);
-            // this updates both CHANNEL_INPUT and CHANNEL_INPUT_DYNAMIC
-            PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_INPUT),
-                    RefreshType.REFRESH);
-        }
+            // Do not poll if configuration is incomplete
+            if (PJLinkDeviceHandler.this.getThing().getStatusInfo()
+                    .getStatusDetail() != ThingStatusDetail.HANDLER_CONFIGURATION_PENDING) {
 
+                PJLinkDeviceHandler.this.logger.info("Polling device status...");
+                if (PJLinkDeviceHandler.this.config.refreshPower) {
+                    PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_POWER),
+                            RefreshType.REFRESH);
+                }
+                if (PJLinkDeviceHandler.this.config.refreshMute) {
+                    // this updates both CHANNEL_AUDIO_MUTE and CHANNEL_VIDEO_MUTE
+                    PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_AUDIO_MUTE),
+                            RefreshType.REFRESH);
+                }
+                // this updates both CHANNEL_INPUT and CHANNEL_INPUT_DYNAMIC
+                if (PJLinkDeviceHandler.this.config.refreshInputChannel) {
+                    PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_INPUT),
+                            RefreshType.REFRESH);
+                }
+            }
+        }
     }
 
     @Nullable
@@ -101,7 +111,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     }
 
     @Override
-    public synchronized void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Received command {} on channel {}", command, channelUID.getId());
         try {
             PJLinkDevice device = config.getDevice();
@@ -122,9 +132,11 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
             if (channelUID.getId().equals(PJLinkDeviceBindingConstants.CHANNEL_INPUT)
                     || channelUID.getId().equals(PJLinkDeviceBindingConstants.CHANNEL_INPUT_DYNAMIC)) {
                 if (command == RefreshType.REFRESH) {
+
                     StringType input = new StringType(device.getInputStatus().getResult().getValue());
                     updateState(PJLinkDeviceBindingConstants.CHANNEL_INPUT, input);
                     updateState(PJLinkDeviceBindingConstants.CHANNEL_INPUT_DYNAMIC, input);
+
                 } else {
                     logger.trace("Received input command" + command);
                     Input input = new Input(((StringType) command).toString());
@@ -157,6 +169,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
             }
 
             updateStatus(ThingStatus.ONLINE);
+            logger.trace("Successfully handled command {} on channel {}", command, channelUID.getId());
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (ResponseException e) {
@@ -168,7 +181,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     }
 
     @Override
-    public synchronized void initialize() {
+    public void initialize() {
         config = getConfigAs(PJLinkDeviceConfiguration.class);
         setupDevice();
         setupRefreshInterval();
@@ -204,7 +217,9 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
 
     private void setupRefreshInterval() {
         clearRefreshInterval();
-        if (config.refresh > 0) {
+        boolean atLeastOneChannelToBeRefreshed = PJLinkDeviceHandler.this.config.refreshPower
+                || PJLinkDeviceHandler.this.config.refreshMute || PJLinkDeviceHandler.this.config.refreshInputChannel;
+        if (config.refresh > 0 && atLeastOneChannelToBeRefreshed) {
             refreshJob = scheduler.scheduleWithFixedDelay(new RefreshRunnable(), 0, config.refresh, TimeUnit.SECONDS);
         }
     }

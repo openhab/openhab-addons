@@ -37,6 +37,18 @@
 				<label>Refresh interval (s)</label>
 				<description>How often to poll the device state (in seconds). A value of zero will disable polling.</description>
 			</parameter>
+			<parameter name="refreshPower" type="boolean" required="true">
+				<default>false</default>
+				<label>Enable polling for power state</label>
+			</parameter>
+			<parameter name="refreshMute" type="boolean" required="true">
+				<default>false</default>
+				<label>Enable polling for mute state</label>
+			</parameter>
+			<parameter name="refreshInputChannel" type="boolean" required="true">
+				<default>false</default>
+				<label>Enable polling for selected input channel</label>
+			</parameter>
 		</config-description>
 
 	</thing-type>
@@ -59,7 +71,7 @@
 		<label>Audio Mute</label>
 		<description>Select the audio mute status</description>
 	</channel-type>
-	
+
 	<channel-type id="videoMuteChannelType">
 		<item-type>Switch</item-type>
 		<label>Video Mute</label>

@@ -39,6 +39,9 @@ public abstract class AbstractCommand<RequestType extends Request, ResponseType 
     public ResponseType execute() throws ResponseException, IOException, AuthenticationException {
         RequestType request = createRequest();
         String responseString = this.pjLinkDevice.execute(request.getRequestString() + "\r");
+        if (responseString == null) {
+            throw new ResponseException("Response is null");
+        }
         if (responseString.equals("PJLINK ERRA")) {
             throw new AuthenticationException("Authentication error, wrong password provided?");
         }

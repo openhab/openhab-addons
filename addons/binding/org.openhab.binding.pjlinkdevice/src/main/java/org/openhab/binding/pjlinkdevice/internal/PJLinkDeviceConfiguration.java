@@ -33,6 +33,10 @@ public class PJLinkDeviceConfiguration {
 
     public int refresh;
 
+    public boolean refreshPower;
+    public boolean refreshMute;
+    public boolean refreshInputChannel;
+
     protected PJLinkDevice device;
 
     public PJLinkDevice getDevice() throws UnknownHostException {

@@ -37,10 +37,8 @@ public class AuthenticationCommand implements Command<Response> {
 
     @Override
     public Response execute() throws ResponseException, IOException, AuthenticationException {
-        synchronized (this.device) {
-            this.device.addPrefixToNextCommand(this.createRequest().getRequestString());
-            return this.testCommand.execute();
-        }
+        this.device.addPrefixToNextCommand(this.createRequest().getRequestString());
+        return this.testCommand.execute();
     }
 
     protected AuthenticationRequest createRequest() {

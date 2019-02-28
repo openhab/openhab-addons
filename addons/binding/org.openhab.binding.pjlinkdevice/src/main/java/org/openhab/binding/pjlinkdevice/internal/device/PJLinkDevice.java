@@ -91,12 +91,11 @@ public class PJLinkDevice {
         return "PJLink " + this.ipAddress + ":" + this.tcpPort;
     }
 
-    protected synchronized void connect() throws IOException, ResponseException, AuthenticationException {
+    protected void connect() throws IOException, ResponseException, AuthenticationException {
         this.connect(false);
     }
 
-    protected synchronized void connect(boolean forceReconnect)
-            throws IOException, ResponseException, AuthenticationException {
+    protected void connect(boolean forceReconnect) throws IOException, ResponseException, AuthenticationException {
         Instant now = Instant.now();
         boolean connectionTooOld = false;
         if (this.socketCreatedOn != null) {
