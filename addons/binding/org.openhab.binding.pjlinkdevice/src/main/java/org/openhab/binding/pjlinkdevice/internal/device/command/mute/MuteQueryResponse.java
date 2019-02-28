@@ -13,7 +13,6 @@
 package org.openhab.binding.pjlinkdevice.internal.device.command.mute;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 
 import org.openhab.binding.pjlinkdevice.internal.device.command.ErrorCode;
@@ -26,45 +25,43 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 public class MuteQueryResponse extends PrefixedResponse {
 
     public enum MuteQueryResponseValue {
-        OFF,
-        VIDEO_MUTE_ON,
-        AUDIO_MUTE_ON,
-        AUDIO_AND_VIDEO_MUTE_ON;
+        OFF("Mute off", "30", false, false),
+        VIDEO_MUTE_ON("Video muted", "11", false, true),
+        AUDIO_MUTE_ON("Audio muted", "21", true, false),
+        AUDIO_AND_VIDEO_MUTE_ON("Audio and video muted", "31", true, true);
+
+        private String text;
+        private String code;
+        private boolean audioMuted;
+        private boolean videoMuted;
+
+        private MuteQueryResponseValue(String text, String code, boolean audioMuted, boolean videoMuted) {
+            this.text = text;
+            this.code = code;
+            this.audioMuted = audioMuted;
+            this.videoMuted = videoMuted;
+        }
 
         public String getText() {
-            final HashMap<MuteQueryResponseValue, String> texts = new HashMap<MuteQueryResponseValue, String>();
-            texts.put(OFF, "Mute off");
-            texts.put(VIDEO_MUTE_ON, "Video muted");
-            texts.put(AUDIO_MUTE_ON, "Audio muted");
-            texts.put(AUDIO_AND_VIDEO_MUTE_ON, "Audio and video muted");
-            return texts.get(this);
+            return this.text;
         }
 
         public static MuteQueryResponseValue parseString(String code) throws ResponseException {
-            final HashMap<String, MuteQueryResponseValue> codes = new HashMap<String, MuteQueryResponseValue>();
-            codes.put("30", OFF);
-            codes.put("11", VIDEO_MUTE_ON);
-            codes.put("21", AUDIO_MUTE_ON);
-            codes.put("31", AUDIO_AND_VIDEO_MUTE_ON);
-
-            MuteQueryResponseValue result = codes.get(code);
-            if (result == null) {
-                throw new ResponseException("Cannot understand status: " + code);
+            for (MuteQueryResponseValue result : MuteQueryResponseValue.values()) {
+                if (result.code.equals(code)) {
+                    return result;
+                }
             }
 
-            return result;
+            throw new ResponseException("Cannot understand status: " + code);
         }
 
         public boolean isAudioMuted() {
-            return new HashSet<MuteQueryResponseValue>(Arrays.asList(new MuteQueryResponseValue[] {
-                    MuteQueryResponseValue.AUDIO_AND_VIDEO_MUTE_ON, MuteQueryResponseValue.AUDIO_MUTE_ON }))
-                            .contains(this);
+            return this.audioMuted;
         }
 
         public boolean isVideoMuted() {
-            return new HashSet<MuteQueryResponseValue>(Arrays.asList(new MuteQueryResponseValue[] {
-                    MuteQueryResponseValue.AUDIO_AND_VIDEO_MUTE_ON, MuteQueryResponseValue.VIDEO_MUTE_ON }))
-                            .contains(this);
+            return this.videoMuted;
         }
     }
 

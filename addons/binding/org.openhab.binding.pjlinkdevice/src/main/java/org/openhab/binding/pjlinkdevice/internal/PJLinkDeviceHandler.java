@@ -62,33 +62,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PJLinkDeviceHandler extends BaseThingHandler {
 
-    public class RefreshRunnable implements Runnable {
-
-        @Override
-        public void run() {
-            // Do not poll if configuration is incomplete
-            if (PJLinkDeviceHandler.this.getThing().getStatusInfo()
-                    .getStatusDetail() != ThingStatusDetail.HANDLER_CONFIGURATION_PENDING) {
-
-                PJLinkDeviceHandler.this.logger.info("Polling device status...");
-                if (PJLinkDeviceHandler.this.config.refreshPower) {
-                    PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_POWER),
-                            RefreshType.REFRESH);
-                }
-                if (PJLinkDeviceHandler.this.config.refreshMute) {
-                    // this updates both CHANNEL_AUDIO_MUTE and CHANNEL_VIDEO_MUTE
-                    PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_AUDIO_MUTE),
-                            RefreshType.REFRESH);
-                }
-                // this updates both CHANNEL_INPUT and CHANNEL_INPUT_DYNAMIC
-                if (PJLinkDeviceHandler.this.config.refreshInputChannel) {
-                    PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_INPUT),
-                            RefreshType.REFRESH);
-                }
-            }
-        }
-    }
-
     @Nullable
     private PJLinkDeviceConfiguration config;
 
@@ -108,6 +81,29 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     public void dispose() {
         clearRefreshInterval();
         factory.removeChannelTypesForThing(getThing().getUID());
+    }
+
+    public void refresh() {
+        // Do not poll if configuration is incomplete
+        if (PJLinkDeviceHandler.this.getThing().getStatusInfo()
+                .getStatusDetail() != ThingStatusDetail.HANDLER_CONFIGURATION_PENDING) {
+
+            PJLinkDeviceHandler.this.logger.debug("Polling device status...");
+            if (PJLinkDeviceHandler.this.config.refreshPower) {
+                PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_POWER),
+                        RefreshType.REFRESH);
+            }
+            if (PJLinkDeviceHandler.this.config.refreshMute) {
+                // this updates both CHANNEL_AUDIO_MUTE and CHANNEL_VIDEO_MUTE
+                PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_AUDIO_MUTE),
+                        RefreshType.REFRESH);
+            }
+            if (PJLinkDeviceHandler.this.config.refreshInputChannel) {
+                // this updates both CHANNEL_INPUT and CHANNEL_INPUT_DYNAMIC
+                PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_INPUT),
+                        RefreshType.REFRESH);
+            }
+        }
     }
 
     @Override
@@ -220,7 +216,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
         boolean atLeastOneChannelToBeRefreshed = PJLinkDeviceHandler.this.config.refreshPower
                 || PJLinkDeviceHandler.this.config.refreshMute || PJLinkDeviceHandler.this.config.refreshInputChannel;
         if (config.refresh > 0 && atLeastOneChannelToBeRefreshed) {
-            refreshJob = scheduler.scheduleWithFixedDelay(new RefreshRunnable(), 0, config.refresh, TimeUnit.SECONDS);
+            refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refresh, TimeUnit.SECONDS);
         }
     }
 

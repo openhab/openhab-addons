@@ -62,7 +62,7 @@ public class PJLinkDevice {
     protected BufferedReader reader;
     protected Socket socket;
     protected int timeout = TIMEOUT;
-    private Logger logger;
+    static private Logger logger = LoggerFactory.getLogger(PJLinkDevice.class);
     private String prefixForNextCommand;
     private Instant socketCreatedOn;
 
@@ -77,13 +77,6 @@ public class PJLinkDevice {
 
     public PJLinkDevice(int tcpPort, InetAddress ipAddress, String adminPassword) {
         this(tcpPort, ipAddress, adminPassword, TIMEOUT);
-    }
-
-    protected Logger getLogger() {
-        if (this.logger == null) {
-            this.logger = LoggerFactory.getLogger(this.getClass());
-        }
-        return this.logger;
     }
 
     @Override
@@ -130,11 +123,11 @@ public class PJLinkDevice {
             }
             switch (header.substring(0, "PJLINK x".length())) {
                 case "PJLINK 0":
-                    getLogger().info("Authentication not needed");
+                    logger.info("Authentication not needed");
                     this.authenticationRequired = false;
                     break;
                 case "PJLINK 1":
-                    getLogger().warn("Authentication needed");
+                    logger.warn("Authentication needed");
                     this.authenticationRequired = true;
                     if (this.adminPassword == null) {
                         this.socket.close();
@@ -152,14 +145,14 @@ public class PJLinkDevice {
                     }
                     break;
                 default:
-                    getLogger().warn("Cannot handle introduction response {}", header);
+                    logger.warn("Cannot handle introduction response {}", header);
                     throw new ResponseException("Invalid header: " + header);
             }
         } catch (ConnectException | SocketTimeoutException | NoRouteToHostException e) {
             throw e;
         } catch (IOException | ResponseException e) {
             // This should not happen and might be a user configuration issue, we log a warning message therefore.
-            getLogger().warn("Could not create a socket connection", e);
+            logger.warn("Could not create a socket connection", e);
             throw e;
         }
     }
@@ -201,10 +194,10 @@ public class PJLinkDevice {
         }
         String response = null;
         while ((response = reader.readLine()) != null && response.isEmpty()) {
-            getLogger().info("Got empty string response for request '{}' from {}, waiting for another line", response,
+            logger.info("Got empty string response for request '{}' from {}, waiting for another line", response,
                     fullCommand.replaceAll("\r", "\\\\r"), ipAddress.toString());
         }
-        getLogger().info("Got response '{}' for request '{}' from {}", response, fullCommand.replaceAll("\r", "\\\\r"),
+        logger.info("Got response '{}' for request '{}' from {}", response, fullCommand.replaceAll("\r", "\\\\r"),
                 ipAddress.toString());
         return response;
     }

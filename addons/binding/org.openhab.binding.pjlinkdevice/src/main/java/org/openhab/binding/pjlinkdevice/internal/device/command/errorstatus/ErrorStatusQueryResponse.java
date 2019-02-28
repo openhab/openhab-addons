@@ -27,67 +27,67 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 public class ErrorStatusQueryResponse extends PrefixedResponse {
 
     public enum ErrorStatusQueryResponseState {
-        OK_UNKOWN,
-        WARNING,
-        ERROR;
+        OK_UNKOWN("OK/no failure detection", "0"),
+        WARNING("Warning", "1"),
+        ERROR("Error", "2");
+
+        private String text;
+        private String code;
+
+        private ErrorStatusQueryResponseState(String text, String code) {
+            this.text = text;
+            this.code = code;
+        }
 
         public String getText() {
-            final HashMap<ErrorStatusQueryResponseState, String> texts = new HashMap<ErrorStatusQueryResponseState, String>();
-            texts.put(OK_UNKOWN, "OK/no failure detection");
-            texts.put(WARNING, "Warning");
-            texts.put(ERROR, "Error");
-            return texts.get(this);
+            return this.text;
         }
 
         public static ErrorStatusQueryResponseState parseString(String code) throws ResponseException {
-            final HashMap<String, ErrorStatusQueryResponseState> codes = new HashMap<String, ErrorStatusQueryResponseState>();
-            codes.put("0", OK_UNKOWN);
-            codes.put("1", WARNING);
-            codes.put("2", ERROR);
-
-            ErrorStatusQueryResponseState result = codes.get(code);
-            if (result == null) {
-                throw new ResponseException("Cannot understand status: " + code);
+            for (ErrorStatusQueryResponseState result : ErrorStatusQueryResponseState.values()) {
+                if (result.code.equals(code)) {
+                    return result;
+                }
             }
 
-            return result;
+            throw new ResponseException("Cannot understand status: " + code);
         }
     }
 
     public enum ErrorStatusDevicePart {
-        FAN,
-        LAMP,
-        TEMPERATURE,
-        COVER_OPEN,
-        FILTER,
-        OTHER;
+        FAN("Fan error", "FanError", 0),
+        LAMP("Lamp error", "LampError", 1),
+        TEMPERATURE("Temperature error", "TemperatureError", 2),
+        COVER_OPEN("Cover open error", "CoverOpenError", 3),
+        FILTER("Filter error", "FilterError", 4),
+        OTHER("Other errors", "OtherErrors", 5);
+
+        private String text;
+        private String camelCaseText;
+        private int positionInResponse;
+
+        private ErrorStatusDevicePart(String text, String camelCaseText, int positionInResponse) {
+            this.text = text;
+            this.camelCaseText = camelCaseText;
+            this.positionInResponse = positionInResponse;
+        }
 
         public String getText() {
-            final HashMap<ErrorStatusDevicePart, String> texts = new HashMap<ErrorStatusDevicePart, String>();
-            texts.put(FAN, "Fan error");
-            texts.put(LAMP, "Lamp error");
-            texts.put(TEMPERATURE, "Temperature error");
-            texts.put(COVER_OPEN, "Cover open error");
-            texts.put(FILTER, "Filter error");
-            texts.put(OTHER, "Other errors");
-            return texts.get(this);
+            return this.getText();
         }
 
         public String getCamelCaseText() {
-            final HashMap<ErrorStatusDevicePart, String> texts = new HashMap<ErrorStatusDevicePart, String>();
-            texts.put(FAN, "FanError");
-            texts.put(LAMP, "LampError");
-            texts.put(TEMPERATURE, "TemperatureError");
-            texts.put(COVER_OPEN, "CoverOpenError");
-            texts.put(FILTER, "FilterError");
-            texts.put(OTHER, "OtherErrors");
-            return texts.get(this);
+            return this.camelCaseText;
         }
 
         public static ErrorStatusDevicePart getDevicePartByResponsePosition(int pos) {
-            ErrorStatusDevicePart[] ordered = new ErrorStatusDevicePart[] { FAN, LAMP, TEMPERATURE, COVER_OPEN, FILTER,
-                    OTHER };
-            return ordered[pos];
+            for (ErrorStatusDevicePart result : ErrorStatusDevicePart.values()) {
+                if (result.positionInResponse == pos) {
+                    return result;
+                }
+            }
+
+            return OTHER;
         }
     }
 

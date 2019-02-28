@@ -23,17 +23,25 @@ Autodiscovery is checking all IP addressess of all class C IPv4 subnets connecte
 
 The *pjLinkDevice* thing type has the following parameters:
 
-- *ipAddress*: the IPv4 address of the device
-- *tcpPort*: the listening TCP port of the devices
-- *password*: the PJLink password of the device (should be left empty for devices without authentication)
-- *refresh*: the polling interval (in seconds) to update the channel values from the device, can be set to 0 to disable polling
+| Parameter             | Description                                                                                                          |
+|-----------------------|----------------------------------------------------------------------------------------------------------------------|
+| ipAddress             | the IPv4 address of the device                                                                                       |
+| tcpPort               | the listening TCP port of the devices                                                                                |
+| password              | the PJLink password of the device (should be left empty for devices without authentication)                          |
+| refresh               | the polling interval (in seconds) to update the channel values from the device, can be set to 0 to disable polling   |
+| refreshPower          | enables polling of the power status                                                                                  |
+| refreshMute           | enables polling of the mute status                                                                                   |
+| refreshInputChannel   | enables polling of the selected input channel                                                                        |
+
 
 ## Channels
 
-- *powerChannel*: Switches the device on/off
-- *inputChannel*: Switches the input of the device
-- *audioMuteChannel*: Mutes the device audio
-- *videoMuteChannel*: Mutes the device video
+| Channel           | Description                               |
+|-------------------|-------------------------------------------|
+| powerChannel      | Switches the device on/off                |
+| inputChannel      | Switches the input channel of the device  |
+| audioMuteChannel  | Mutes the device audio                    |
+| videoMuteChannel  | Mutes the device video                    |
 
 ## Full Example
 

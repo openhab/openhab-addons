@@ -31,8 +31,6 @@ import org.openhab.binding.pjlinkdevice.internal.PJLinkDeviceBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableSet;
-
 /**
  * @author Nils Schnabel - Initial contribution
  */
@@ -111,7 +109,7 @@ public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryServ
         } catch (SocketException e) {
             logger.warn("Could not enumerate network interfaces", e);
         }
-        return ImmutableSet.of();
+        return new HashSet<InetAddress>();
     }
 
     protected abstract void collectAddressesToScan(Set<InetAddress> addressesToScan, InterfaceAddress i);

@@ -13,7 +13,6 @@
 package org.openhab.binding.pjlinkdevice.internal.device.command.input;
 
 import java.util.Arrays;
-import java.util.HashMap;
 
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
@@ -23,36 +22,32 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 public class Input {
 
     enum InputType {
-        RGB,
-        VIDEO,
-        DIGITAL,
-        STORAGE,
-        NETWORK;
+        RGB("RGB", "1"),
+        VIDEO("Video", "2"),
+        DIGITAL("Digital", "3"),
+        STORAGE("Storage", "4"),
+        NETWORK("Network", "5");
+
+        private String text;
+        private String code;
+
+        private InputType(String text, String code) {
+            this.text = text;
+            this.code = code;
+        }
 
         public String getText() {
-            final HashMap<InputType, String> texts = new HashMap<InputType, String>();
-            texts.put(RGB, "RGB");
-            texts.put(VIDEO, "Video");
-            texts.put(DIGITAL, "Digital");
-            texts.put(STORAGE, "Storage");
-            texts.put(NETWORK, "Network");
-            return texts.get(this);
+            return this.text;
         }
 
         public static InputType parseString(String value) throws ResponseException {
-            final HashMap<String, InputType> codes = new HashMap<String, InputType>();
-            codes.put("1", RGB);
-            codes.put("2", VIDEO);
-            codes.put("3", DIGITAL);
-            codes.put("4", STORAGE);
-            codes.put("5", NETWORK);
-
-            InputType result = codes.get(value.substring(0, 1));
-            if (result == null) {
-                throw new ResponseException("Unknown input channel type: " + value);
+            for (InputType result : InputType.values()) {
+                if (result.code.equals(value.substring(0, 1))) {
+                    return result;
+                }
             }
 
-            return result;
+            throw new ResponseException("Unknown input channel type: " + value);
         }
     }
 
