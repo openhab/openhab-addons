@@ -8,8 +8,6 @@ Bundle-SymbolicName: org.openhab.binding.pjlinkdevice;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Import-Package: gnu.io;resolution:=optional,
- org.apache.commons.lang,
- org.apache.commons.net,
  org.apache.commons.net.util,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,

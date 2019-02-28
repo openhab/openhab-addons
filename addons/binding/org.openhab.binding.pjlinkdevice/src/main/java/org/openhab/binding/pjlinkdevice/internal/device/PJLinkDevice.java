@@ -62,7 +62,7 @@ public class PJLinkDevice {
     protected BufferedReader reader;
     protected Socket socket;
     protected int timeout = TIMEOUT;
-    static private Logger logger = LoggerFactory.getLogger(PJLinkDevice.class);
+    private final Logger logger = LoggerFactory.getLogger(PJLinkDevice.class);
     private String prefixForNextCommand;
     private Instant socketCreatedOn;
 
