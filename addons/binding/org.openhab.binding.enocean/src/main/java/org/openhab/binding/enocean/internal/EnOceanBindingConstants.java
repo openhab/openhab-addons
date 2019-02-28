@@ -53,6 +53,7 @@ public class EnOceanBindingConstants {
             "temperatureHumiditySensor");
     public final static ThingTypeUID THING_TYPE_AUTOMATEDMETERSENSOR = new ThingTypeUID(BINDING_ID,
             "automatedMeterSensor");
+    public final static ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
 
     public final static ThingTypeUID THING_TYPE_OCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID, "occupancySensor");
     public final static ThingTypeUID THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID,
@@ -61,12 +62,13 @@ public class EnOceanBindingConstants {
     public final static ThingTypeUID THING_TYPE_GENERICTHING = new ThingTypeUID(BINDING_ID, "genericThing");
     public final static ThingTypeUID THING_TYPE_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "rollershutter");
 
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(Arrays.asList(
-            THING_TYPE_PUSHBUTTON, THING_TYPE_ROCKERSWITCH, THING_TYPE_CLASSICDEVICE, THING_TYPE_CENTRALCOMMAND,
-            THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT,
-            THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_TEMPERATURESENSOR, THING_TYPE_TEMPERATUREHUMIDITYSENSOR,
-            THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER, THING_TYPE_OCCUPANCYSENSOR,
-            THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR, THING_TYPE_AUTOMATEDMETERSENSOR));
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+            Arrays.asList(THING_TYPE_PUSHBUTTON, THING_TYPE_ROCKERSWITCH, THING_TYPE_CLASSICDEVICE,
+                    THING_TYPE_CENTRALCOMMAND, THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE,
+                    THING_TYPE_CONTACT, THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_TEMPERATURESENSOR,
+                    THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER,
+                    THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR,
+                    THING_TYPE_AUTOMATEDMETERSENSOR, THING_TYPE_THERMOSTAT));
 
     // List of all Channel Type Ids, these type ids are also used as channel ids during dynamic creation of channels
     // this makes it a lot easier as we do not have to manage a type id and an id, drawback long channel names
@@ -132,7 +134,7 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_VALVE_POSITION = "valvePosition";
     public final static String CHANNEL_BUTTON_LOCK = "buttonLock";
     public final static String CHANNEL_DISPLAY_ORIENTATION = "displayOrientation";
-    public final static String CHANNEL_TEMPERATURE_SETPOINTN = "temperatureSetPoint";
+    public final static String CHANNEL_TEMPERATURE_SETPOINT = "temperatureSetPoint";
     public final static String CHANNEL_FEED_TEMPERATURE = "feedTemperature";
     public final static String CHANNEL_MEASUREMENT_CONTROL = "measurementControl";
     public final static String CHANNEL_FAILURE_CODE = "failureCode";
@@ -257,6 +259,29 @@ public class EnOceanBindingConstants {
                             new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_COLOR), CoreItemFactory.COLOR));
                     put(CHANNEL_GENERIC_TEACHINCMD, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_GENERIC_TEACHINCMD), CoreItemFactory.SWITCH));
+
+                    put(CHANNEL_VALVE_POSITION, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_VALVE_POSITION), CoreItemFactory.NUMBER));
+                    put(CHANNEL_BUTTON_LOCK, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_BUTTON_LOCK), CoreItemFactory.SWITCH));
+                    put(CHANNEL_DISPLAY_ORIENTATION, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_DISPLAY_ORIENTATION), CoreItemFactory.NUMBER));
+                    put(CHANNEL_TEMPERATURE_SETPOINT, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE_SETPOINT), CoreItemFactory.NUMBER));
+                    put(CHANNEL_FEED_TEMPERATURE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_FEED_TEMPERATURE), CoreItemFactory.NUMBER));
+                    put(CHANNEL_MEASUREMENT_CONTROL, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_MEASUREMENT_CONTROL), CoreItemFactory.SWITCH));
+                    put(CHANNEL_FAILURE_CODE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_FAILURE_CODE), CoreItemFactory.NUMBER));
+                    put(CHANNEL_WAKEUPCYCLE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_WAKEUPCYCLE), CoreItemFactory.NUMBER));
+                    put(CHANNEL_SERVICECOMMAND, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_SERVICECOMMAND), CoreItemFactory.NUMBER));
+
+                    put(CHANNEL_STATUS_REQUEST_EVENT,
+                            new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_STATUS_REQUEST_EVENT),
+                                    CoreItemFactory.SWITCH, "", true, true));
 
                     put(CHANNEL_REPEATERMODE, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_REPEATERMODE), CoreItemFactory.STRING));

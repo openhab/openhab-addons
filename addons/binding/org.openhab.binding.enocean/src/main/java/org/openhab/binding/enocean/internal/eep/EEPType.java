@@ -103,6 +103,7 @@ import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_03;
 import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_01;
 import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_01_ELTAKO;
 import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_09;
+import org.openhab.binding.enocean.internal.eep.A5_20.A5_20_04;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Blinds;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Dimming;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Switching;
@@ -370,6 +371,11 @@ public enum EEPType {
                     });
                 }
             }),
+
+    Thermostat(RORG._4BS, 0x20, 0x04, false, A5_20_04.class, THING_TYPE_THERMOSTAT, CHANNEL_VALVE_POSITION,
+            CHANNEL_BUTTON_LOCK, CHANNEL_DISPLAY_ORIENTATION, CHANNEL_TEMPERATURE_SETPOINT, CHANNEL_FEED_TEMPERATURE,
+            CHANNEL_MEASUREMENT_CONTROL, CHANNEL_FAILURE_CODE, CHANNEL_WAKEUPCYCLE, CHANNEL_SERVICECOMMAND,
+            CHANNEL_STATUS_REQUEST_EVENT),
 
     SwitchWithEnergyMeasurment_00(RORG.VLD, 0x01, 0x00, true, D2_01_00.class, THING_TYPE_MEASUREMENTSWITCH,
             CHANNEL_GENERAL_SWITCHING, CHANNEL_TOTALUSAGE),
