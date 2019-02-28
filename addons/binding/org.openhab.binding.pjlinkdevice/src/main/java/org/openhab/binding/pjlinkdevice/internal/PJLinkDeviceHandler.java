@@ -155,6 +155,8 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                     }
                 }
             }
+
+            updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (ResponseException e) {
