@@ -11,6 +11,7 @@ Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  org.apache.commons.io,
  org.apache.commons.lang,
+ org.openhab.core.automation.annotation;resolution:=optional,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,

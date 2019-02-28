@@ -95,6 +95,7 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
             deviceLock.lock();
             if (device != null) {
                 device.removeListener(this);
+                device.disconnect();
                 device = null;
             }
         } finally {

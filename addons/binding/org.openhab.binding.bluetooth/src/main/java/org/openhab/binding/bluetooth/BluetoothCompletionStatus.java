@@ -15,7 +15,7 @@ package org.openhab.binding.bluetooth;
 /**
  * An enumeration of transaction completion status values
  *
- * @author Chris Jackson - Initial Implementation
+ * @author Chris Jackson - Initial contribution
  *
  */
 public enum BluetoothCompletionStatus {

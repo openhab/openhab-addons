@@ -49,8 +49,6 @@ public final class VVM320Channels extends BaseChannels {
             ChannelGroup.GENERAL, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final Channel CH_40121 = INSTANCE.addChannel(new QuantityChannel("40121", "BT63 Add Supply Temp",
             ChannelGroup.GENERAL, ScaleFactor.DIV_10, SIUnits.CELSIUS));
-    public static final Channel CH_43437 = INSTANCE.addChannel(
-            new QuantityChannel("43437", "Supply Pump Speed EP14", ChannelGroup.GENERAL, SmartHomeUnits.PERCENT));
 
     public static final Channel CH_44302 = INSTANCE
             .addChannel(new QuantityChannel("44302", "Heat Meter - Cooling Cpr EP14", ChannelGroup.GENERAL,
@@ -64,6 +62,15 @@ public final class VVM320Channels extends BaseChannels {
             ChannelGroup.GENERAL, ScaleFactor.DIV_10, "/Manage/1.9.4", "[0123456]*[0-9]"));
     public static final Channel CH_48793 = INSTANCE.addChannel(new ScaledChannel("48793", "Room sensor cool factor",
             ChannelGroup.GENERAL, ScaleFactor.DIV_10, "/Manage/1.9.4", "[0123456]*[0-9]"));
+
+    public static final Channel CH_47374 = INSTANCE.addChannel(new ScaledChannel("47374", "Start Temperature Cooling",
+            ChannelGroup.GENERAL, ScaleFactor.DIV_10, "/Manage/4.9.2", "[0-9]*[0-9]"));
+    public static final Channel CH_47375 = INSTANCE.addChannel(new ScaledChannel("47375", "Stop Temperature Heating",
+            ChannelGroup.GENERAL, ScaleFactor.DIV_10, "/Manage/4.9.2", "[0-9]*[0-9]"));
+    public static final Channel CH_47376 = INSTANCE.addChannel(new ScaledChannel("47376", "Stop Temperature Additive",
+            ChannelGroup.GENERAL, ScaleFactor.DIV_10, "/Manage/4.9.2", "[0-9]*[0-9]"));
+    public static final Channel CH_47377 = INSTANCE.addChannel(
+            new Channel("47377", "Outdoor Filter Time", ChannelGroup.GENERAL, "/Manage/4.9.2", "[0-4]*[0-9]"));
 
     // Compressor
     public static final Channel CH_44362 = INSTANCE.addChannel(new QuantityChannel("44362",

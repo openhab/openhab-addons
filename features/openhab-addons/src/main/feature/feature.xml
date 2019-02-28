@@ -709,11 +709,17 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.sonyaudio/${project.version}</bundle>
     </feature>
 
-	<feature name="openhab-binding-souliss" description="Souliss Binding" version="${project.version}">
+	 <feature name="openhab-binding-souliss" description="Souliss Binding" version="${project.version}">
 		 <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.souliss/${project.version}</bundle>
     </feature>
-	
+  
+    <feature name="openhab-binding-spotify" description="Spotify Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-http</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.spotify/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-squeezebox" description="Squeezebox Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
@@ -907,12 +913,6 @@
         <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.neeo/${project.version}</bundle>
     </feature>
 
-    <feature name="openhab-misc-restdocs" description="REST Documentation" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab.tp-swagger-jax-rs-provider</feature>
-        <bundle>mvn:org.openhab.io/org.openhab.io.rest.docs/${project.version}</bundle>
-    </feature>
-
     <feature name="openhab-misc-ruleengine" description="Rule Engine (Experimental)" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-core-automation</feature>
@@ -933,6 +933,11 @@
     <feature name="openhab-transformation-javascript" description="Javascript Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.javascript/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-transformation-jinja" description="Jinja Transformation" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.jinja/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-transformation-jsonpath" description="JSONPath Transformation" version="${project.version}">

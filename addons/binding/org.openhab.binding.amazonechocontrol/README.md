@@ -98,7 +98,7 @@ It will be configured at runtime by using the save channel to store the current 
 
 | Channel Type ID       | Item Type | Access Mode | Thing Type | Description                                                                                                                                                                
 |-----------------------|-------------|-------------|------------|------------------------------------------------------------------------------------------
-| player                | Player      | R/W         | echo, echoshow, echospot, wha | Control the music player e.g. pause/continue/next track/previous track                                                                                                
+| player                | Player      | R/W         | echo, echoshow, echospot, wha | Control the music player  (Supported commands: PLAY or ON, PAUSE or OFF, NEXT, PREVIOUS, REWIND, FASTFORWARD)                                                                                               
 | volume                | Dimmer      | R/W         | echo, echoshow, echospot      | Control the volume                                                                                            
 | shuffle               | Switch      | R/W         | echo, echoshow, echospot, wha | Shuffle play if applicable, e.g. playing a playlist     
 | imageUrl              | String      | R           | echo, echoshow, echospot, wha | Url of the album image or radio station logo     
