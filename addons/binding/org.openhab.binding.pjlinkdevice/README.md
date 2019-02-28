@@ -9,6 +9,7 @@ Aspects that can be controlled via PJLink are power on/off, input source selecti
 Supported are devices which support the PJLink protocol (class 1). 
 
 Limitations at this point:
+
 - only IPv4 connections are supported
 - only PJLink class 1 commands are supported
 

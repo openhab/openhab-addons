@@ -32,11 +32,11 @@
 				<label>TCP Port</label>
 				<description>The TCP port of the PJLink device to control.</description>
 			</parameter>
-            <parameter name="refresh" type="integer" required="true" min="0">
-                <default>5</default>
-                <label>Refresh interval (s)</label>
-                <description>How often to poll the device state (in seconds). A value of zero will disable polling.</description>
-            </parameter>
+			<parameter name="refresh" type="integer" required="true" min="0">
+				<default>5</default>
+				<label>Refresh interval (s)</label>
+				<description>How often to poll the device state (in seconds). A value of zero will disable polling.</description>
+			</parameter>
 		</config-description>
 
 	</thing-type>
