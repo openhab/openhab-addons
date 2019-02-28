@@ -63,7 +63,7 @@ public class ChamberlainMyQBindingConstants {
 
     // API Information
     public static final String WEBSITE = "https://myqexternal.myqdevice.com";
-    public static final String APP_ID = "NWknvuBd7LoFHfXmKNMBcgajXtZEgKUh4V7WNzMidrpUUluDpVYVZx+xT4PCM5Kx";
+    public static final String APP_ID = "OA9I/hgmPHFp9RYKJqCKfwnhh28uqLJzZ9KOJf1DXoo8N2XAaVX6A1wcLYyWsnnv";
     public static final String CULTURE = "en";
     public static final String BRANDID = "2";
     public static final String USERAGENT = "Chamberlain/3.73";

@@ -195,7 +195,7 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
     public JsonObject getMyqData() throws InvalidLoginException, IOException {
         logger.debug("Retrieving door data");
         String tempToken = getSecurityToken();
-        String url = String.format("%s/api/v4/userdevicedetails/get?appId=%s&SecurityToken=%s", WEBSITE, enc(APP_ID),
+        String url = String.format("%s/api/v4/UserDeviceDetails/Get?appId=%s&SecurityToken=%s", WEBSITE, enc(APP_ID),
                 enc(tempToken));
 
         JsonObject data = request("GET", url, null, null, true, false, enc(tempToken));
@@ -219,7 +219,7 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
                 "{\"ApplicationId\":\"%s\"," + "\"SecurityToken\":\"%s\"," + "\"MyQDeviceId\":\"%s\","
                         + "\"AttributeName\":\"%s\"," + "\"AttributeValue\":\"%d\"}",
                 APP_ID, enc(tempToken), deviceID, name, state);
-        String url = String.format("%s/api/v4/deviceattribute/putdeviceattribute?appId=%s&SecurityToken=%s", WEBSITE,
+        String url = String.format("%s/api/v4/DeviceAttribute/PutDeviceAttribute?appId=%s&SecurityToken=%s", WEBSITE,
                 enc(APP_ID), enc(tempToken));
 
         request("PUT", url, message, "application/json", true, false, enc(tempToken));
