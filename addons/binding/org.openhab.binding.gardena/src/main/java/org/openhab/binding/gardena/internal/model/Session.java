@@ -20,12 +20,12 @@ import com.google.gson.annotations.SerializedName;
  * @author Gerhard Riegler - Initial contribution
  */
 public class Session {
-
+    @SerializedName("id")
     private String token;
     private long created;
 
-    @SerializedName(value = "user_id")
-    private String userId;
+    @SerializedName("attributes")
+    private SessionAttributes sessionAttributes = new SessionAttributes();
 
     public Session() {
         this.created = System.currentTimeMillis();
@@ -39,17 +39,17 @@ public class Session {
     }
 
     /**
-     * Returns the userId of the session.
-     */
-    public String getUserId() {
-        return userId;
-    }
-
-    /**
      * Returns the creation timestamp of the session.
      */
     public long getCreated() {
         return created;
+    }
+
+    /**
+     * Returns the session attributes.
+     */
+    public SessionAttributes getSessionAttributes() {
+        return sessionAttributes;
     }
 
 }

@@ -106,12 +106,12 @@ public class GardenaSmartImpl implements GardenaSmart {
     private static final String DEFAULT_MOWER_DURATION = "180";
 
     private static final String URL = "https://smart.gardena.com";
-    private static final String URL_LOGIN = URL + "/sg-1/sessions";
-    private static final String URL_LOCATIONS = URL + "/sg-1/locations/?user_id=";
-    private static final String URL_DEVICES = URL + "/sg-1/devices/?locationId=";
-    private static final String URL_COMMAND = URL + "/sg-1/devices/%s/abilities/%s/command?locationId=%s";
-    private static final String URL_PROPERTY = URL + "/sg-1/devices/%s/abilities/%s/properties/%s?locationId=%s";
-    private static final String URL_SETTING = URL + "/sg-1/devices/%s/settings/%s?locationId=%s";
+    private static final String URL_LOGIN = URL + "/v1/auth/token";
+    private static final String URL_LOCATIONS = URL + "/v1/locations/?user_id=";
+    private static final String URL_DEVICES = URL + "/v1/devices/?locationId=";
+    private static final String URL_COMMAND = URL + "/v1/devices/%s/abilities/%s/command?locationId=%s";
+    private static final String URL_PROPERTY = URL + "/v1/devices/%s/abilities/%s/properties/%s?locationId=%s";
+    private static final String URL_SETTING = URL + "/v1/devices/%s/settings/%s?locationId=%s";
 
     private Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new DateDeserializer())
             .registerTypeAdapter(PropertyValue.class, new PropertyValueDeserializer()).create();
@@ -215,8 +215,8 @@ public class GardenaSmartImpl implements GardenaSmart {
             allDevicesById.clear();
 
             verifySession();
-            Locations locations = executeRequest(HttpMethod.GET, URL_LOCATIONS + session.getUserId(), null,
-                    Locations.class);
+            Locations locations = executeRequest(HttpMethod.GET,
+                    URL_LOCATIONS + session.getSessionAttributes().getUserId(), null, Locations.class);
 
             for (Location location : locations.getLocations()) {
                 allLocations.add(location);
@@ -455,7 +455,8 @@ public class GardenaSmartImpl implements GardenaSmart {
 
             if (!result.equals(SessionWrapper.class)) {
                 verifySession();
-                request.header("X-Session", session.getToken());
+                request.header("authorization", "Bearer " + session.getToken());
+                request.header("authorization-provider", session.getSessionAttributes().getProvider());
             }
 
             ContentResponse contentResponse = request.send();
@@ -468,7 +469,7 @@ public class GardenaSmartImpl implements GardenaSmart {
             if (status == 500) {
                 throw new GardenaException(
                         gson.fromJson(contentResponse.getContentAsString(), Errors.class).toString());
-            } else if (status != 200 && status != 204) {
+            } else if (status != 200 && status != 204 && status != 201) {
                 throw new GardenaException(String.format("Error %s %s", status, contentResponse.getReason()));
             }
 
