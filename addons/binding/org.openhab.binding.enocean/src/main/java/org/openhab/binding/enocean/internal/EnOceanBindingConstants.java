@@ -141,6 +141,7 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_WAKEUPCYCLE = "wakeUpCycle";
     public final static String CHANNEL_SERVICECOMMAND = "serviceCommand";
     public final static String CHANNEL_STATUS_REQUEST_EVENT = "statusRequestEvent";
+    public final static String CHANNEL_SEND_COMMAND = "sendCommand";
 
     public static final Map<String, EnOceanChannelDescription> CHANNELID2CHANNELDESCRIPTION = Collections
             .unmodifiableMap(new HashMap<String, EnOceanChannelDescription>() {
@@ -282,6 +283,8 @@ public class EnOceanBindingConstants {
                     put(CHANNEL_STATUS_REQUEST_EVENT,
                             new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_STATUS_REQUEST_EVENT),
                                     CoreItemFactory.SWITCH, "", true, true));
+                    put(CHANNEL_SEND_COMMAND, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_SEND_COMMAND), CoreItemFactory.SWITCH));
 
                     put(CHANNEL_REPEATERMODE, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_REPEATERMODE), CoreItemFactory.STRING));

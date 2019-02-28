@@ -401,4 +401,11 @@
 		<event />
 	</channel-type>
 
+	<channel-type id="sendCommand">
+		<item-type>Switch</item-type>
+		<label>Send command</label>
+		<description>You can send telegrams to the device by switching this channel on</description>
+		<category>thermostat</category>
+	</channel-type>
+
 </thing:thing-descriptions>
