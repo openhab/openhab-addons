@@ -22,10 +22,12 @@ import java.util.Set;
 
 import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.openhab.binding.pjlinkdevice.internal.PJLinkDeviceBindingConstants;
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AuthenticationException;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
+import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -33,6 +35,8 @@ import com.google.common.collect.ImmutableSet;
  * @author Nils Schnabel - Initial contribution
  *
  */
+
+@Component(service = DiscoveryService.class, immediate = true, configurationPid = "org.openhab.binding.pjlinkdevice.internal.discovery.DiscoveryParticipantClass1")
 public class DiscoveryParticipantClass1 extends AbstractDiscoveryParticipant {
 
     public DiscoveryParticipantClass1() throws IllegalArgumentException {
