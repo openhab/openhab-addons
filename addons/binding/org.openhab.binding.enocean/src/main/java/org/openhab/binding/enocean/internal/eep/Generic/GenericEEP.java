@@ -16,6 +16,7 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.PARAM
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -78,10 +79,10 @@ public class GenericEEP extends EEP {
     }
 
     @Override
-    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command, State currentState, Configuration config) {
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
+            Hashtable<String, State> currentState, Configuration config) {
         if (config != null) {
-            EnOceanChannelTransformationConfig transformationInfo = config
-                    .as(EnOceanChannelTransformationConfig.class);
+            EnOceanChannelTransformationConfig transformationInfo = config.as(EnOceanChannelTransformationConfig.class);
 
             String input = channelId + "|" + command.toString();
             String output = Transformation.transform(transformationInfo.transformationType,
@@ -98,11 +99,11 @@ public class GenericEEP extends EEP {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
+            Configuration config) {
         if (config != null) {
 
-            EnOceanChannelTransformationConfig transformationInfo = config
-                    .as(EnOceanChannelTransformationConfig.class);
+            EnOceanChannelTransformationConfig transformationInfo = config.as(EnOceanChannelTransformationConfig.class);
 
             String payload = HexUtils.bytesToHex(bytes);
             String input = channelId + "|" + payload;

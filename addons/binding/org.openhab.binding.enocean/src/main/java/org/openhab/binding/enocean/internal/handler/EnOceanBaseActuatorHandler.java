@@ -29,7 +29,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.enocean.internal.config.EnOceanActuatorConfig;
 import org.openhab.binding.enocean.internal.eep.EEP;
@@ -223,16 +222,10 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         }
 
         try {
-            EEP eep = EEPFactory.createEEP(sendingEEPType);
             Configuration channelConfig = channel.getConfiguration();
 
-            // Eltako rollershutter do not support absolute value just values relative to the current position
-            // If we want to go to 80% we must know the current position to determine how long the rollershutter has
-            // to drive up/down. However items seems to be stateless, so we have to store the state by ourself.
-            // The currentState is updated by EnOceanBaseSensorHandler after receiving a response.
-            State currentState = getCurrentState(channelId);
-
-            eep.convertFromCommand(channelId, channelTypeId, command, currentState, channelConfig);
+            EEP eep = EEPFactory.createEEP(sendingEEPType);
+            eep.convertFromCommand(channelId, channelTypeId, command, channelState, channelConfig);
 
             if (eep.hasData()) {
                 ESP3Packet msg = eep.setSenderId(senderId).setDestinationId(destinationId)

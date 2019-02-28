@@ -15,6 +15,7 @@ package org.openhab.binding.enocean.internal.eep;
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.Arrays;
+import java.util.Hashtable;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -76,8 +77,8 @@ public abstract class EEP {
         setOptionalData(packet.getOptionalPayload());
     }
 
-    public void convertFromCommand(String channelId, String channelTypeId, Command command, State currentState,
-            Configuration config) {
+    public void convertFromCommand(String channelId, String channelTypeId, Command command,
+            Hashtable<String, State> currentState, Configuration config) {
         if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
             throw new IllegalArgumentException(String.format("Command %s of channel %s(%s) is not supported",
                     command.toString(), channelId, channelTypeId));
@@ -226,9 +227,9 @@ public abstract class EEP {
         return 0;
     }
 
-    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command, State currentState,
-            Configuration config) {
-
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
+            Hashtable<String, State> currentState, Configuration config) {
+        logger.warn("No implementation for sending data from channel {}/{} for this EEP!", channelId, channelTypeId);
     }
 
     protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
@@ -242,7 +243,7 @@ public abstract class EEP {
     }
 
     protected void teachInQueryImpl(Configuration config) {
-
+        logger.warn("No implementation for sending a response for this teach in!");
     }
 
     protected boolean getBit(int byteData, int bit) {

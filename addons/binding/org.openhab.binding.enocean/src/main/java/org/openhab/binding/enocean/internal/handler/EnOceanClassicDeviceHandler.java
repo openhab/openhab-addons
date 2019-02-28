@@ -245,14 +245,13 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
             EnOceanChannelVirtualRockerSwitchConfig channelConfig = channel.getConfiguration()
                     .as(EnOceanChannelVirtualRockerSwitchConfig.class);
-            State currentState = getCurrentState(channelId);
             StringType result = convertToPressedCommand(command, channelConfig.getSwitchMode());
 
             if (result != null) {
                 lastTriggerEvent = result;
 
                 EEP eep = EEPFactory.createEEP(sendingEEPType);
-                eep.convertFromCommand(channelId, channelTypeId, result, currentState, channel.getConfiguration());
+                eep.convertFromCommand(channelId, channelTypeId, result, channelState, channel.getConfiguration());
 
                 if (eep.hasData()) {
                     ESP3Packet press = eep.setSenderId(senderId).setDestinationId(destinationId)
@@ -263,7 +262,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
                     if (channelConfig.duration > 0) {
                         scheduler.schedule(() -> {
                             eep.convertFromCommand(channelId, channelTypeId, convertToReleasedCommand(lastTriggerEvent),
-                                    currentState, channel.getConfiguration());
+                                    channelState, channel.getConfiguration());
 
                             ESP3Packet release = eep.getERP1Message();
 
