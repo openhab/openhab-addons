@@ -234,13 +234,13 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             case CHANNEL_COLORTEMPERATURE:
                 if (command instanceof PercentType) {
                     lightState = LightStateConverter.toColorTemperatureLightState((PercentType) command);
-                    lightState.setTransitionTime(fadeTime);
+                    if (lightState != null) {
+                        lightState.setTransitionTime(fadeTime);
+                    }
                 } else if (command instanceof OnOffType) {
                     lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
                     if (isOsramPar16) {
                         lightState = addOsramSpecificCommands(lightState, (OnOffType) command);
-                    } else {
-                        lightState.setTransitionTime(fadeTime);
                     }
                 } else if (command instanceof IncreaseDecreaseType) {
                     lightState = convertColorTempChangeToStateUpdate((IncreaseDecreaseType) command, light);
@@ -253,13 +253,13 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             case CHANNEL_BRIGHTNESS:
                 if (command instanceof PercentType) {
                     lightState = LightStateConverter.toBrightnessLightState((PercentType) command);
-                    lightState.setTransitionTime(fadeTime);
+                    if (lightState != null) {
+                        lightState.setTransitionTime(fadeTime);
+                    }
                 } else if (command instanceof OnOffType) {
                     lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
                     if (isOsramPar16) {
                         lightState = addOsramSpecificCommands(lightState, (OnOffType) command);
-                    } else {
-                        lightState.setTransitionTime(fadeTime);
                     }
                 } else if (command instanceof IncreaseDecreaseType) {
                     lightState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, light);
@@ -280,8 +280,6 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
                     lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
                     if (isOsramPar16) {
                         lightState = addOsramSpecificCommands(lightState, (OnOffType) command);
-                    } else {
-                        lightState.setTransitionTime(fadeTime);
                     }
                 }
                 if (lightState != null && lastSentColorTemp != null) {
@@ -298,16 +296,22 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
                         lightState = LightStateConverter.toOnOffLightState(OnOffType.OFF);
                     } else {
                         lightState = LightStateConverter.toColorLightState(hsbCommand, light.getState());
+                        if (lightState != null) {
+                            lightState.setTransitionTime(fadeTime);
+                        }
                     }
                 } else if (command instanceof PercentType) {
                     lightState = LightStateConverter.toBrightnessLightState((PercentType) command);
+                    if (lightState != null) {
+                        lightState.setTransitionTime(fadeTime);
+                    }
                 } else if (command instanceof OnOffType) {
                     lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 } else if (command instanceof IncreaseDecreaseType) {
                     lightState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, light);
-                }
-                if (lightState != null) {
-                    lightState.setTransitionTime(fadeTime);
+                    if (lightState != null) {
+                        lightState.setTransitionTime(fadeTime);
+                    }
                 }
                 break;
             case CHANNEL_ALERT:
