@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.power;
 
-import java.util.HashMap;
-
 import org.openhab.binding.pjlinkdevice.internal.device.command.PrefixedResponse;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
@@ -23,33 +21,31 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 public class PowerQueryResponse extends PrefixedResponse {
 
     public enum PowerQueryResponseValue {
-        STAND_BY,
-        POWER_ON,
-        COOLING_DOWN,
-        WARMING_UP;
+        STAND_BY("Stand-by", "0"),
+        POWER_ON("Power on", "1"),
+        COOLING_DOWN("Cooling down", "2"),
+        WARMING_UP("Warming up", "3");
+
+        private String text;
+        private String code;
+
+        private PowerQueryResponseValue(String text, String code) {
+            this.text = text;
+            this.code = code;
+        }
 
         public String getText() {
-            final HashMap<PowerQueryResponseValue, String> texts = new HashMap<PowerQueryResponseValue, String>();
-            texts.put(STAND_BY, "Stand-by");
-            texts.put(POWER_ON, "Power on");
-            texts.put(COOLING_DOWN, "Cooling down");
-            texts.put(WARMING_UP, "Warming up");
-            return texts.get(this);
+            return this.text;
         }
 
         public static PowerQueryResponseValue parseString(String code) throws ResponseException {
-            final HashMap<String, PowerQueryResponseValue> codes = new HashMap<String, PowerQueryResponseValue>();
-            codes.put("0", STAND_BY);
-            codes.put("1", POWER_ON);
-            codes.put("2", COOLING_DOWN);
-            codes.put("3", WARMING_UP);
-
-            PowerQueryResponseValue result = codes.get(code);
-            if (result == null) {
-                throw new ResponseException("Cannot understand status: " + code);
+            for (PowerQueryResponseValue result : PowerQueryResponseValue.values()) {
+                if (result.code.equals(code)) {
+                    return result;
+                }
             }
 
-            return result;
+            throw new ResponseException("Cannot understand status: " + code);
         }
 
     }

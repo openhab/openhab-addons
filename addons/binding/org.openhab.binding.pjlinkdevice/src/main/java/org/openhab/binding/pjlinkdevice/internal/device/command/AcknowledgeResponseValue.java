@@ -12,30 +12,32 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command;
 
-import java.util.HashMap;
-
 /**
  * @author Nils Schnabel - Initial contribution
  */
 public enum AcknowledgeResponseValue {
-    OK;
+    OK("Success", "OK");
+
+    private String text;
+    private String code;
+
+    private AcknowledgeResponseValue(String text, String code) {
+        this.text = text;
+        this.code = code;
+    }
 
     public String getText() {
-        final HashMap<AcknowledgeResponseValue, String> texts = new HashMap<AcknowledgeResponseValue, String>();
-        texts.put(OK, "Success");
-
-        return texts.get(this);
+        return this.text;
     }
 
     public static AcknowledgeResponseValue getValueForCode(String code) throws ResponseException {
-        final HashMap<String, AcknowledgeResponseValue> codes = new HashMap<String, AcknowledgeResponseValue>();
-        codes.put("OK", OK);
-        AcknowledgeResponseValue result = codes.get(code);
-        if (result == null) {
-            throw new ResponseException("Cannot understand status: " + code);
+        for (AcknowledgeResponseValue result : AcknowledgeResponseValue.values()) {
+            if (result.code.equals(code)) {
+                return result;
+            }
         }
 
-        return result;
+        throw new ResponseException("Cannot understand status: " + code);
     }
 
 }

@@ -13,34 +13,37 @@
 package org.openhab.binding.pjlinkdevice.internal.device.command;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.Set;
 
 /**
  * @author Nils Schnabel - Initial contribution
  */
 public enum ErrorCode {
-    UNDEFINED_COMMAND,
-    OUT_OF_PARAMETER,
-    UNAVAILABLE_TIME,
-    DEVICE_FAILURE;
+    UNDEFINED_COMMAND("Undefined command", "ERR1"),
+    OUT_OF_PARAMETER("Out of parameter", "ERR2"),
+    UNAVAILABLE_TIME("Unavailable time", "ERR3"),
+    DEVICE_FAILURE("Projector/Display failure", "ERR4");
+
+    private String text;
+    private String code;
+
+    private ErrorCode(String text, String code) {
+        this.text = text;
+        this.code = code;
+    }
 
     public static ErrorCode getValueForCode(String code) throws ResponseException {
-        final HashMap<String, ErrorCode> codes = new HashMap<String, ErrorCode>();
-        codes.put("ERR1", UNDEFINED_COMMAND);
-        codes.put("ERR2", OUT_OF_PARAMETER);
-        codes.put("ERR3", UNAVAILABLE_TIME);
-        codes.put("ERR4", DEVICE_FAILURE);
-        return codes.get(code);
+        for (ErrorCode result : ErrorCode.values()) {
+            if (result.code.equals(code)) {
+                return result;
+            }
+        }
+
+        return null;
     }
 
     public String getText() throws ResponseException {
-        final HashMap<ErrorCode, String> texts = new HashMap<ErrorCode, String>();
-        texts.put(UNDEFINED_COMMAND, "Undefined command");
-        texts.put(OUT_OF_PARAMETER, "Out of parameter");
-        texts.put(UNAVAILABLE_TIME, "Unavailable time");
-        texts.put(DEVICE_FAILURE, "Projector/Display failure");
-        return texts.get(this);
+        return this.text;
     }
 
     public static void checkForErrorStatus(String code, Set<ErrorCode> restrictCodesTo) throws ResponseException {
