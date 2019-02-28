@@ -16,6 +16,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The main Gardena config class.
  *
@@ -27,12 +29,13 @@ public class GardenaConfig {
     private static final Integer DEFAULT_CONNECTION_TIMEOUT = 10;
     private static final Integer DEFAULT_REFRESH = 60;
 
+    @SerializedName("username")
     private String email;
     private String password;
 
-    private Integer sessionTimeout = DEFAULT_SESSION_TIMEOUT;
-    private Integer connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
-    private Integer refresh = DEFAULT_REFRESH;
+    private transient Integer sessionTimeout = DEFAULT_SESSION_TIMEOUT;
+    private transient Integer connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
+    private transient Integer refresh = DEFAULT_REFRESH;
 
     public GardenaConfig() {
     }
