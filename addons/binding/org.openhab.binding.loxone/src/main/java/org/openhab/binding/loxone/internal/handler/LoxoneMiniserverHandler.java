@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
@@ -259,6 +260,22 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
 
                 if (command instanceof HSBType) {
                     colorPicker.setColor((HSBType) command);
+                } else if (command instanceof OnOffType) {
+                    if (command == OnOffType.ON) {
+                        colorPicker.on();
+                    } else {
+                        colorPicker.off();
+                    }
+                } else if (command instanceof DecimalType) {
+                    colorPicker.setBrightness((DecimalType) command);
+                } else if (command instanceof PercentType) {
+                    colorPicker.setBrightness((PercentType) command);
+                } else if (command instanceof IncreaseDecreaseType) {
+                    if (((IncreaseDecreaseType) command).equals(IncreaseDecreaseType.INCREASE)) {
+                        colorPicker.increaseDecreaseBrightness(1);
+                    } else {
+                        colorPicker.increaseDecreaseBrightness(-1);
+                    }
                 }
 
                 return;
@@ -598,7 +615,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
         } else if (control instanceof LxControlDimmer) {
             addChannel(channels, "Dimmer", dimmerTypeId, id, label, "Dimmer", tags);
         } else if (control instanceof LxControlColorPickerV2) {
-            addChannel(channels, "Color", colorPickerTypeId, id, label + " / Color Picker", "Color Picker", tags);
+            addChannel(channels, "Color", colorPickerTypeId, id, label, "Color Picker", tags);
         }
 
         return channels;
