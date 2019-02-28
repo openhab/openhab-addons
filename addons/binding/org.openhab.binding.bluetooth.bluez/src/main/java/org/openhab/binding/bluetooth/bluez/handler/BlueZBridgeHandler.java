@@ -17,12 +17,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -35,7 +37,6 @@ import org.openhab.binding.bluetooth.BluetoothAdapter;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
-import org.openhab.binding.bluetooth.bluez.BlueZAdapterConstants;
 import org.openhab.binding.bluetooth.bluez.BlueZBluetoothDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,19 +49,23 @@ import tinyb.BluetoothManager;
  * level adaptor functionality for scanning and arbitration.
  *
  * @author Kai Kreuzer - Initial contribution and API
+ * @author Hilbrand Bouwkamp - Simplified calling scan and better handling manual scanning
  */
+@NonNullByDefault
 public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAdapter {
 
     private final Logger logger = LoggerFactory.getLogger(BlueZBridgeHandler.class);
 
-    private tinyb.BluetoothAdapter adapter;
+    private @NonNullByDefault({}) tinyb.BluetoothAdapter adapter;
 
     private final Map<String, tinyb.BluetoothDevice> tinybDeviceCache = new ConcurrentHashMap<>();
 
     // Our BT address
-    private BluetoothAddress address;
+    private @NonNullByDefault({}) BluetoothAddress address;
 
-    // internal flag for the discovery configuration
+    // Internal flag for the discovery configuration
+    private boolean discoveryConfigActive = true;
+    // Actual discovery status.
     private boolean discoveryActive = true;
 
     // Map of Bluetooth devices known to this bridge.
@@ -70,7 +75,7 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
     // Set of discovery listeners
     protected final Set<BluetoothDiscoveryListener> discoveryListeners = new CopyOnWriteArraySet<>();
 
-    private ScheduledFuture<?> discoveryJob;
+    private @NonNullByDefault({}) ScheduledFuture<?> discoveryJob;
 
     /**
      * Constructor
@@ -97,17 +102,16 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
             }
         }
 
-        Object cfgAddress = getConfig().get(BlueZAdapterConstants.PROPERTY_ADDRESS);
-        if (cfgAddress != null) {
-            address = new BluetoothAddress(cfgAddress.toString());
+        final BlueZAdapterConfiguration configuration = getConfigAs(BlueZAdapterConfiguration.class);
+        if (configuration.address != null) {
+            address = new BluetoothAddress(configuration.address);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "address not set");
             return;
         }
 
-        Object discovery = getConfig().get(BlueZAdapterConstants.PROPERTY_DISCOVERY);
-        if (discovery != null && discovery.toString().equalsIgnoreCase(Boolean.FALSE.toString())) {
-            discoveryActive = false;
+        discoveryActive = discoveryConfigActive = Boolean.TRUE.equals(configuration.discovery);
+        if (discoveryConfigActive) {
             logger.debug("Deactivated discovery participation.");
         }
 
@@ -116,12 +120,8 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
             if (a.getAddress().equals(address.toString())) {
                 adapter = a;
                 updateStatus(ThingStatus.ONLINE);
-                if (!adapter.getDiscovering()) {
-                    adapter.startDiscovery();
-                }
-                discoveryJob = scheduler.scheduleWithFixedDelay(() -> {
-                    checkForNewDevices();
-                }, 0, 10, TimeUnit.SECONDS);
+                startDiscovery();
+                discoveryJob = scheduler.scheduleWithFixedDelay(this::refreshDevices, 0, 10, TimeUnit.SECONDS);
                 return;
             }
         }
@@ -147,80 +147,14 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
         discoveryListeners.remove(listener);
     }
 
-    @Override
-    public void scanStart() {
-        if (adapter != null) {
-            if (!adapter.getDiscovering()) {
-                adapter.setRssiDiscoveryFilter(-96);
-                adapter.startDiscovery();
-            }
-            for (tinyb.BluetoothDevice tinybDevice : adapter.getDevices()) {
-                synchronized (devices) {
-                    logger.debug("Device {} has RSSI {}", tinybDevice.getAddress(), tinybDevice.getRSSI());
-                    BluetoothDevice device = devices.get(tinybDevice.getAddress());
-                    if (device == null) {
-                        createAndRegisterBlueZDevice(tinybDevice);
-                    } else {
-                        // let's update the rssi and txpower values
-                        device.setRssi(tinybDevice.getRSSI());
-                        device.setTxPower(tinybDevice.getTxPower());
-                        // The Bluetooth discovery expects a complete list on every scan,
-                        // so we also have to report the already known devices.
-                        notifyDiscoveryListeners(device);
-                    }
-                }
-            }
+    private void startDiscovery() {
+        if (!adapter.getDiscovering()) {
+            adapter.setRssiDiscoveryFilter(-96);
+            adapter.startDiscovery();
         }
     }
 
-    @Override
-    public void scanStop() {
-        // nothing do do here, we need to keep the adapter in discovery mode as we otherwise won't get any RSSI updates
-        // either
-    }
-
-    @Override
-    public BluetoothAddress getAddress() {
-        return address;
-    }
-
-    @Override
-    public BluetoothDevice getDevice(BluetoothAddress address) {
-        if (devices.containsKey(address.toString())) {
-            return devices.get(address.toString());
-        } else {
-            synchronized (devices) {
-                if (devices.containsKey(address.toString())) {
-                    return devices.get(address.toString());
-                } else {
-                    BlueZBluetoothDevice device = new BlueZBluetoothDevice(this, address, "");
-                    device.initialize();
-                    devices.put(address.toString(), device);
-                    return device;
-                }
-            }
-        }
-    }
-
-    @Override
-    public void dispose() {
-        if (discoveryJob != null) {
-            discoveryJob.cancel(true);
-            discoveryJob = null;
-        }
-        for (BluetoothDevice device : devices.values()) {
-            ((BlueZBluetoothDevice) device).dispose();
-        }
-        devices.clear();
-    }
-
-    public Collection<tinyb.BluetoothDevice> getTinyBDevices() {
-        synchronized (tinybDeviceCache) {
-            return Collections.unmodifiableCollection(tinybDeviceCache.values());
-        }
-    }
-
-    private void checkForNewDevices() {
+    private void refreshDevices() {
         logger.debug("Refreshing Bluetooth device list...");
         Set<String> newAddresses = new HashSet<>();
         List<tinyb.BluetoothDevice> tinybDevices = adapter.getDevices();
@@ -252,14 +186,63 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
         }
     }
 
+    @Override
+    public void scanStart() {
+        // Enable scanning even while discovery is disabled in config. This allows manual starting discovery.
+        discoveryActive = true;
+    }
+
+    @Override
+    public void scanStop() {
+        // Set active discovery state back to the configured discovery state.
+        discoveryActive = discoveryConfigActive;
+        // We need to keep the adapter in discovery mode as we otherwise won't get any RSSI updates either
+    }
+
+    @Override
+    public BluetoothAddress getAddress() {
+        return address;
+    }
+
+    @Override
+    public BluetoothDevice getDevice(BluetoothAddress bluetoothAddress) {
+        String address = bluetoothAddress.toString();
+        synchronized (devices) {
+            if (devices.containsKey(address)) {
+                return devices.get(address);
+            } else {
+                BlueZBluetoothDevice device = new BlueZBluetoothDevice(this, bluetoothAddress, "");
+                device.initialize();
+                devices.put(address, device);
+                return device;
+            }
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (discoveryJob != null) {
+            discoveryJob.cancel(true);
+            discoveryJob = null;
+        }
+        for (BluetoothDevice device : devices.values()) {
+            ((BlueZBluetoothDevice) device).dispose();
+        }
+        devices.clear();
+    }
+
+    public Collection<tinyb.BluetoothDevice> getTinyBDevices() {
+        synchronized (tinybDeviceCache) {
+            return Collections.unmodifiableCollection(tinybDeviceCache.values());
+        }
+    }
+
     private BlueZBluetoothDevice createAndRegisterBlueZDevice(tinyb.BluetoothDevice tinybDevice) {
         BlueZBluetoothDevice device = new BlueZBluetoothDevice(this, tinybDevice);
-        tinybDevice.getManufacturerData().keySet().stream().filter(manufacturerId -> manufacturerId != null).findFirst()
-                .ifPresent(manufacturerId -> {
-                    // Convert to unsigned int to match the convention in
-                    // BluetoothCompanyIdentifiers
-                    device.setManufacturerId(manufacturerId & 0xFFFF);
-                });
+        tinybDevice.getManufacturerData().entrySet().stream().map(Map.Entry::getKey).filter(Objects::nonNull)
+                .findFirst().ifPresent(manufacturerId ->
+                // Convert to unsigned int to match the convention in BluetoothCompanyIdentifiers
+                device.setManufacturerId(manufacturerId & 0xFFFF));
         device.initialize();
         devices.put(tinybDevice.getAddress(), device);
         notifyDiscoveryListeners(device);
@@ -280,5 +263,4 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
         Integer rssi = device.getRssi();
         return rssi != null && rssi != 0;
     }
-
 }

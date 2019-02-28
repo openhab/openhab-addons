@@ -74,7 +74,7 @@ class KeContactTransceiver {
                 selector = Selector.open();
 
                 if (transceiverThread == null) {
-                    transceiverThread = new Thread(transceiverRunnable, "ESH-Keba-Transceiver");
+                    transceiverThread = new Thread(transceiverRunnable, "openHAB-Keba-Transceiver");
                     transceiverThread.start();
                 }
 
@@ -196,7 +196,7 @@ class KeContactTransceiver {
                         logger.trace("{} waiting on handerLock {}", Thread.currentThread().getName(),
                                 handlerLock.toString());
                     }
-                    handlerLock.wait();
+                    handlerLock.wait(KeContactHandler.REPORT_INTERVAL);
                 }
 
                 return buffers.remove(handler);
