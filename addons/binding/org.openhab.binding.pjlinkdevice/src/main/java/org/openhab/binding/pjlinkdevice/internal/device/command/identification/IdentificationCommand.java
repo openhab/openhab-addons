@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.identification;
 
-import java.util.HashMap;
-
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AbstractCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
@@ -24,22 +22,21 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 public class IdentificationCommand extends AbstractCommand<IdentificationRequest, IdentificationResponse> {
 
     public enum IdentificationProperty {
-        NAME,
-        MANUFACTURER,
-        MODEL,
-        CLASS,
-        OTHER_INFORMATION,
-        LAMP_HOURS;
+        NAME("NAME"),
+        MANUFACTURER("INF1"),
+        MODEL("INF2"),
+        CLASS("CLSS"),
+        OTHER_INFORMATION("INFO"),
+        LAMP_HOURS("LAMP");
+
+        private String prefix;
+
+        private IdentificationProperty(String prefix) {
+            this.prefix = prefix;
+        }
 
         public String getJPLinkCommandPrefix() {
-            final HashMap<IdentificationProperty, String> texts = new HashMap<IdentificationProperty, String>();
-            texts.put(NAME, "NAME");
-            texts.put(MANUFACTURER, "INF1");
-            texts.put(MODEL, "INF2");
-            texts.put(CLASS, "CLSS");
-            texts.put(OTHER_INFORMATION, "INFO");
-            texts.put(LAMP_HOURS, "LAMP");
-            return texts.get(this);
+            return this.prefix;
         }
     }
 
