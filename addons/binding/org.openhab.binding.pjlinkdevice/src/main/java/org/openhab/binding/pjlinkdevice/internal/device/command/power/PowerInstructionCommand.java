@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.power;
 
-import java.util.HashMap;
-
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AbstractCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
@@ -24,14 +22,17 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 public class PowerInstructionCommand extends AbstractCommand<PowerInstructionRequest, PowerInstructionResponse> {
 
     public enum PowerInstructionState {
-        ON,
-        OFF;
+        ON("1"),
+        OFF("0");
+
+        private String pjLinkRepresentation;
+
+        private PowerInstructionState(String pjLinkRepresentation) {
+            this.pjLinkRepresentation = pjLinkRepresentation;
+        }
 
         public String getPJLinkRepresentation() {
-            final HashMap<PowerInstructionState, String> texts = new HashMap<PowerInstructionState, String>();
-            texts.put(ON, "1");
-            texts.put(OFF, "0");
-            return texts.get(this);
+            return this.pjLinkRepresentation;
         }
     }
 

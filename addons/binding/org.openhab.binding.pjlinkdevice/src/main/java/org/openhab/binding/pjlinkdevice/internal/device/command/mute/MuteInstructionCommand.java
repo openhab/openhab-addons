@@ -24,28 +24,33 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 public class MuteInstructionCommand extends AbstractCommand<MuteInstructionRequest, MuteInstructionResponse> {
 
     public enum MuteInstructionState {
-        ON,
-        OFF;
+        ON("1"),
+        OFF("0");
+
+        private String pjLinkRepresentation;
+
+        private MuteInstructionState(String pjLinkRepresentation) {
+            this.pjLinkRepresentation = pjLinkRepresentation;
+        }
 
         public String getPJLinkRepresentation() {
-            final HashMap<MuteInstructionState, String> texts = new HashMap<MuteInstructionState, String>();
-            texts.put(ON, "1");
-            texts.put(OFF, "0");
-            return texts.get(this);
+            return this.pjLinkRepresentation;
         }
     }
 
     public enum MuteInstructionChannel {
-        VIDEO,
-        AUDIO,
-        AUDIO_AND_VIDEO;
+        VIDEO("1"),
+        AUDIO("2"),
+        AUDIO_AND_VIDEO("3");
+
+        private String pjLinkRepresentation;
+
+        private MuteInstructionChannel(String pjLinkRepresentation) {
+            this.pjLinkRepresentation = pjLinkRepresentation;
+        }
 
         public String getPJLinkRepresentation() {
-            final HashMap<MuteInstructionChannel, String> texts = new HashMap<MuteInstructionChannel, String>();
-            texts.put(VIDEO, "1");
-            texts.put(AUDIO, "2");
-            texts.put(AUDIO_AND_VIDEO, "3");
-            return texts.get(this);
+            return this.pjLinkRepresentation;
         }
     }
 
