@@ -460,6 +460,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.mqtt.generic/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-nanoleaf" description="Nanoleaf Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-mdns</feature>        
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.nanoleaf/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-neato" description="Neato Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.neato/${project.version}</bundle>
