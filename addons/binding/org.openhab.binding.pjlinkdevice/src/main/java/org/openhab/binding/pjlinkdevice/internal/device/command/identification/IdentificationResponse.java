@@ -23,7 +23,7 @@ public class IdentificationResponse extends PrefixedResponse {
     private String result = null;
 
     public IdentificationResponse(IdentificationCommand command) {
-        super(command.identificationProperty.getJPLinkCommandPrefix() + "=");
+        super(command.identificationProperty.getPJLinkCommandPrefix() + "=");
     }
 
     public String getResult() {

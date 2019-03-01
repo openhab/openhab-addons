@@ -27,7 +27,7 @@ public class IdentificationRequest implements Request {
 
     @Override
     public String getRequestString() {
-        return "%1" + this.command.identificationProperty.getJPLinkCommandPrefix() + " ?";
+        return "%1" + this.command.identificationProperty.getPJLinkCommandPrefix() + " ?";
     }
 
 }

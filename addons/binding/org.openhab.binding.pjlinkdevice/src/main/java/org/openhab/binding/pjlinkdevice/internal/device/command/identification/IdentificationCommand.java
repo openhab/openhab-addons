@@ -35,7 +35,7 @@ public class IdentificationCommand extends AbstractCommand<IdentificationRequest
             this.prefix = prefix;
         }
 
-        public String getJPLinkCommandPrefix() {
+        public String getPJLinkCommandPrefix() {
             return this.prefix;
         }
     }
