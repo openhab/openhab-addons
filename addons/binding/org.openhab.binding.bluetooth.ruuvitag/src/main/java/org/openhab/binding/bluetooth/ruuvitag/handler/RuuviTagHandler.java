@@ -154,8 +154,8 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
                         "Received bluetooth data which could not be parsed to any known Ruuvi Tag data formats");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Received Bluetooth scan with no manufacturer data");
+            // Received Bluetooth scan with no manufacturer data
+            // This happens -- we ignore this silently.
         }
     }
 
