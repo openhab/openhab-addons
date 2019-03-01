@@ -79,10 +79,14 @@ However, if you like to do it, here is an example.
 
 wifiled.things:
 
-    Thing wifiled:wifiled:F0FE6B19CB2A [ ip="192.168.178.91", port=5577, pollingPeriod=3000, protocol="LD686", driver="CLASSIC", fadeDurationInMs=1000, fadeSteps=100 ]
+```
+Thing wifiled:wifiled:F0FE6B19CB2A [ ip="192.168.178.91", port=5577, pollingPeriod=3000, protocol="LD686", driver="CLASSIC", fadeDurationInMs=1000, fadeSteps=100 ]
+```
 
 wifiled.items:
 
-    Switch MyWiFiLight_power "Power" (Light) {channel="wifiled:wifiled:F0FE6B19CB2A:power"}
-    Dimmer MyWiFiLight_white "White" (Light) {channel="wifiled:wifiled:F0FE6B19CB2A:white"}
-    Color  MyWiFiLight_color "Color" (Light) {channel="wifiled:wifiled:F0FE6B19CB2A:color"}
+```
+Switch MyWiFiLight_power "Power" (Light) {channel="wifiled:wifiled:F0FE6B19CB2A:power"}
+Dimmer MyWiFiLight_white "White" (Light) {channel="wifiled:wifiled:F0FE6B19CB2A:white"}
+Color  MyWiFiLight_color "Color" (Light) {channel="wifiled:wifiled:F0FE6B19CB2A:color"}
+```

@@ -58,6 +58,12 @@
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="postCommand" type="boolean">
+			<label>Is command</label>
+			<description>If the received MQTT value should not only update the state of linked items, but command them, enable this option.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
 
 		<parameter name="min" type="decimal">
 			<label>Absolute minimum</label>

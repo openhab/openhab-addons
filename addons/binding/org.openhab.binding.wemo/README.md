@@ -54,6 +54,7 @@ Devices support some of the following channels:
 | energyToday | Number     | Energy in Wh used today. |
 | energyTotal | Number     | Energy in Wh used in total. |
 | standbyLimit | Number    | Minimum energy draw in W to register device as switched on (default 8W, configurable via WeMo App). |
+|onStandBy| Switch | Read-only indication of whether  or not the device plugged in to the insight switch is drwawing more than the standby limit.|
 | brightness   | Number    | Brightness of a WeMo LED. |
 
 

@@ -61,8 +61,8 @@
 /addons/binding/org.openhab.binding.helios/ @kgoderis
 /addons/binding/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
 /addons/binding/org.openhab.binding.homematic.test/ @FStolte @gerrieg @mdicke2s
-/addons/binding/org.openhab.binding.hue/ @cweitkamp @lolodomo
-/addons/binding/org.openhab.binding.hue.test/ @cweitkamp @lolodomo
+/addons/binding/org.openhab.binding.hue/ @cweitkamp
+/addons/binding/org.openhab.binding.hue.test/ @cweitkamp
 /addons/binding/org.openhab.binding.hyperion/ @tavalin
 /addons/binding/org.openhab.binding.icloud/ @pgfeller
 /addons/binding/org.openhab.binding.innogysmarthome/ @ollie-dev
@@ -197,7 +197,6 @@
 /addons/io/org.openhab.io.mqttembeddedbroker.test/ @davidgraeff
 /addons/io/org.openhab.io.neeo/ @tmrobert8
 /addons/io/org.openhab.io.openhabcloud/ @kaikreuzer
-/addons/io/org.openhab.io.rest.docs/ @kaikreuzer
 /addons/io/org.openhab.io.sound/ @kaikreuzer
 /addons/io/org.openhab.io.transport.feed/ @svilenvul
 /addons/io/org.openhab.io.transport.modbus/ @ssalonen
@@ -207,6 +206,8 @@
 /addons/persistence/org.openhab.persistence.mapdb.test/ @mkhl
 /addons/transform/org.openhab.transform.exec/ @openhab/2-x-add-ons-maintainers
 /addons/transform/org.openhab.transform.javascript/ @openhab/2-x-add-ons-maintainers
+/addons/transform/org.openhab.transform.jinja/ @jochen314 
+/addons/transform/org.openhab.transform.jinja.test/ @jochen314
 /addons/transform/org.openhab.transform.jsonpath/ @clinique
 /addons/transform/org.openhab.transform.jsonpath.test/ @clinique
 /addons/transform/org.openhab.transform.map/ @openhab/2-x-add-ons-maintainers
@@ -219,13 +220,6 @@
 /addons/transform/org.openhab.transform.xpath.test/ @openhab/2-x-add-ons-maintainers
 /addons/transform/org.openhab.transform.xslt/ @openhab/2-x-add-ons-maintainers
 /addons/transform/org.openhab.transform.xslt.test/ @openhab/2-x-add-ons-maintainers
-/addons/ui/iconset/ @kaikreuzer
-/addons/ui/org.openhab.ui.basic/ @lolodomo @resetnow
-/addons/ui/org.openhab.ui.classic/ @lolodomo @resetnow
-/addons/ui/org.openhab.ui.cometvisu/ @peuter
-/addons/ui/org.openhab.ui.cometvisu.php/ @peuter
-/addons/ui/org.openhab.ui.homebuilder/ @kubawolanin
-/addons/ui/org.openhab.ui.paper/ @htreu
 /addons/voice/org.openhab.voice.googletts/ @gbicskei
 /addons/voice/org.openhab.voice.kaldi/ @kaikreuzer
 /addons/voice/org.openhab.voice.mactts/ @kaikreuzer

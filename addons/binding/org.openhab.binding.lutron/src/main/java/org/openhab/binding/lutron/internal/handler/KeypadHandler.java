@@ -104,6 +104,7 @@ public class KeypadHandler extends BaseKeypadHandler {
         switch (mod) {
             case "W1RLD":
             case "H1RLD":
+            case "HN1RLD":
                 buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
                         Component.BUTTON5, Component.BUTTON6));
                 buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
@@ -112,6 +113,7 @@ public class KeypadHandler extends BaseKeypadHandler {
                 break;
             case "W2RLD":
             case "H2RLD":
+            case "HN2RLD":
                 buttonList.addAll(
                         Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON5, Component.BUTTON6));
                 buttonList
@@ -120,6 +122,7 @@ public class KeypadHandler extends BaseKeypadHandler {
                 break;
             case "W3S":
             case "H3S":
+            case "HN3S":
                 buttonList.addAll(
                         Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3, Component.BUTTON6));
                 buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
@@ -138,12 +141,14 @@ public class KeypadHandler extends BaseKeypadHandler {
                 break;
             case "W3BSRL":
             case "H3BSRL":
+            case "HN3BSRL":
                 buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON3, Component.BUTTON5));
                 buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
                 ledList.addAll(Arrays.asList(Component.LED1, Component.LED3, Component.LED5));
                 break;
             case "W4S":
             case "H4S":
+            case "HN4S":
                 buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
                         Component.BUTTON4, Component.BUTTON6));
                 buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
@@ -152,6 +157,7 @@ public class KeypadHandler extends BaseKeypadHandler {
                 break;
             case "W5BRL":
             case "H5BRL":
+            case "HN5BRL":
             case "W5BRLIR":
                 buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
                         Component.BUTTON4, Component.BUTTON5));
@@ -161,6 +167,7 @@ public class KeypadHandler extends BaseKeypadHandler {
                 break;
             case "W6BRL":
             case "H6BRL":
+            case "HN6BRL":
                 buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
                         Component.BUTTON4, Component.BUTTON5, Component.BUTTON6));
                 buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));

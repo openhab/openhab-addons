@@ -172,7 +172,11 @@ public class OwserverConnection {
 
         OwserverPacket returnPacket = request(requestPacket);
         if ((returnPacket.getReturnCode() != -1) && returnPacket.hasPayload()) {
-            returnState = DecimalType.valueOf(returnPacket.getPayloadString().trim());
+            try {
+                returnState = DecimalType.valueOf(returnPacket.getPayloadString().trim());
+            } catch (NumberFormatException e) {
+                throw new OwException("could not parse '" + returnPacket.getPayloadString().trim() + "' to a number");
+            }
         } else {
             throw new OwException("invalid or empty packet");
         }

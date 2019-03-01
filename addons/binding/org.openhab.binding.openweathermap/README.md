@@ -104,7 +104,7 @@ Once the parameter `forecastDays` will be changed, the available channel groups 
 | forecastHours03, forecastHours06, ... forecastHours120 | condition       | String               | Forecast weather condition.                                                |
 | forecastHours03, forecastHours06, ... forecastHours120 | condition-id    | String               | Id of the forecasted weather condition. **Advanced**                       |
 | forecastHours03, forecastHours06, ... forecastHours120 | icon            | Image                | Icon representing the forecasted weather condition.                        |
-| forecastHours03, forecastHours06, ... forecastHours120 | icon-id         | String               | Id fo the icon representing the forecasted weather condition. **Advanced** |
+| forecastHours03, forecastHours06, ... forecastHours120 | icon-id         | String               | Id of the icon representing the forecasted weather condition. **Advanced** |
 | forecastHours03, forecastHours06, ... forecastHours120 | temperature     | Number:Temperature   | Forecasted temperature.                                                    |
 | forecastHours03, forecastHours06, ... forecastHours120 | min-temperature | Number:Temperature   | Minimum forecasted temperature.                                            |
 | forecastHours03, forecastHours06, ... forecastHours120 | max-temperature | Number:Temperature   | Maximum forecasted temperature.                                            |
@@ -114,8 +114,8 @@ Once the parameter `forecastDays` will be changed, the available channel groups 
 | forecastHours03, forecastHours06, ... forecastHours120 | wind-direction  | Number:Angle         | Forecasted wind direction.                                                 |
 | forecastHours03, forecastHours06, ... forecastHours120 | gust-speed      | Number:Speed         | Forecasted gust speed. **Advanced**                                        |
 | forecastHours03, forecastHours06, ... forecastHours120 | cloudiness      | Number:Dimensionless | Forecasted cloudiness.                                                     |
-| forecastHours03, forecastHours06, ... forecastHours120 | rain            | Number:Length        | Expected rain volume.                                 |
-| forecastHours03, forecastHours06, ... forecastHours120 | snow            | Number:Length        | Expected snow volume.                                 |
+| forecastHours03, forecastHours06, ... forecastHours120 | rain            | Number:Length        | Expected rain volume.                                                      |
+| forecastHours03, forecastHours06, ... forecastHours120 | snow            | Number:Length        | Expected snow volume.                                                      |
 
 ### Daily Forecast
 
@@ -220,10 +220,10 @@ Image miamiHourlyForecast06ConditionIcon "Icon" { channel="openweathermap:weathe
 Number:Temperature miamiHourlyForecast06Temperature "Temperature in Miami for hours 3 to 6 [%.1f %unit%]" <temperature> { channel="openweathermap:weather-and-forecast:api:miami:forecastHours06#temperature" }
 ...
 
-DateTime localCurrentUVIndexTimestamp "Timestamp of last measurement [%1$tY-%1$tm-%1$td]" <time> { channel="openweathermap:uvindex:api:local:current#timestamp" }
+DateTime localCurrentUVIndexTimestamp "Timestamp of last measurement [%1$tY-%1$tm-%1$td]" <time> { channel="openweathermap:uvindex:api:local:current#time-stamp" }
 Number localCurrentUVIndex "Current UV Index [%d]" { channel="openweathermap:uvindex:api:local:current#uvindex" }
 
-DateTime localForecastTomorrowUVIndexTimestamp "Timestamp of forecast [%1$tY-%1$tm-%1$td]" <time> { channel="openweathermap:uvindex:api:local:forecastTomorrow#timestamp" }
+DateTime localForecastTomorrowUVIndexTimestamp "Timestamp of forecast [%1$tY-%1$tm-%1$td]" <time> { channel="openweathermap:uvindex:api:local:forecastTomorrow#time-stamp" }
 Number localForecastTomorrowUVIndex "UV Index for tomorrow [%d]" { channel="openweathermap:uvindex:api:local:forecastTomorrow#uvindex" }
 ...
 ```

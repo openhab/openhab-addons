@@ -130,7 +130,7 @@ rule "Power on TV via Wake on LAN"
 when
 Item LG_TV0_Power received command ON
 then
-    sendCommand( LG_TV0_WOL, ON)
+    LG_TV0_WOL.sendCommand(ON)
 end
 
 // for relative volume changes

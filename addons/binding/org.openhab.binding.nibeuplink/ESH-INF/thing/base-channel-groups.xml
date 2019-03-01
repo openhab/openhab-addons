@@ -29,6 +29,7 @@
 			<channel id="44300" typeId="base-type-44300" />
 			<channel id="48043" typeId="base-type-48043" />
 			<channel id="10012" typeId="base-type-10012" />
+			<channel id="43437" typeId="base-type-43437" />		
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="base-hotwater">
@@ -40,6 +41,13 @@
 			<channel id="44298" typeId="base-type-44298" />
 			<channel id="48132" typeId="base-type-48132" />
 			<channel id="47041" typeId="base-type-47041" />
+			<channel id="47045" typeId="base-type-47045" />
+			<channel id="47049" typeId="base-type-47049" />
+			<channel id="47044" typeId="base-type-47044" />
+			<channel id="47048" typeId="base-type-47048" />
+			<channel id="47043" typeId="base-type-47043" />
+			<channel id="47047" typeId="base-type-47047" />
+			<channel id="47046" typeId="base-type-47046" />
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

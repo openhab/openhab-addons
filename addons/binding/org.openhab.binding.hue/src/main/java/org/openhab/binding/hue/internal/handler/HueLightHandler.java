@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * command.
  *
  * @author Dennis Nobel - Initial contribution
- * @author Oliver Libutzki
+ * @author Oliver Libutzki - Adjustments
  * @author Kai Kreuzer - stabilized code
  * @author Andre Fuechsel - implemented switch off when brightness == 0, changed to support generic thing types, changed
  *         the initialization of properties
@@ -224,6 +224,8 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         FullLight light = getLight();
         if (light == null) {
             logger.debug("hue light not known on bridge. Cannot handle command.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-wrong-light-id");
             return;
         }
 
@@ -232,13 +234,13 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             case CHANNEL_COLORTEMPERATURE:
                 if (command instanceof PercentType) {
                     lightState = LightStateConverter.toColorTemperatureLightState((PercentType) command);
-                    lightState.setTransitionTime(fadeTime);
+                    if (lightState != null) {
+                        lightState.setTransitionTime(fadeTime);
+                    }
                 } else if (command instanceof OnOffType) {
                     lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
                     if (isOsramPar16) {
                         lightState = addOsramSpecificCommands(lightState, (OnOffType) command);
-                    } else {
-                        lightState.setTransitionTime(fadeTime);
                     }
                 } else if (command instanceof IncreaseDecreaseType) {
                     lightState = convertColorTempChangeToStateUpdate((IncreaseDecreaseType) command, light);
@@ -251,13 +253,13 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             case CHANNEL_BRIGHTNESS:
                 if (command instanceof PercentType) {
                     lightState = LightStateConverter.toBrightnessLightState((PercentType) command);
-                    lightState.setTransitionTime(fadeTime);
+                    if (lightState != null) {
+                        lightState.setTransitionTime(fadeTime);
+                    }
                 } else if (command instanceof OnOffType) {
                     lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
                     if (isOsramPar16) {
                         lightState = addOsramSpecificCommands(lightState, (OnOffType) command);
-                    } else {
-                        lightState.setTransitionTime(fadeTime);
                     }
                 } else if (command instanceof IncreaseDecreaseType) {
                     lightState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, light);
@@ -278,8 +280,6 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
                     lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
                     if (isOsramPar16) {
                         lightState = addOsramSpecificCommands(lightState, (OnOffType) command);
-                    } else {
-                        lightState.setTransitionTime(fadeTime);
                     }
                 }
                 if (lightState != null && lastSentColorTemp != null) {
@@ -296,16 +296,22 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
                         lightState = LightStateConverter.toOnOffLightState(OnOffType.OFF);
                     } else {
                         lightState = LightStateConverter.toColorLightState(hsbCommand, light.getState());
+                        if (lightState != null) {
+                            lightState.setTransitionTime(fadeTime);
+                        }
                     }
                 } else if (command instanceof PercentType) {
                     lightState = LightStateConverter.toBrightnessLightState((PercentType) command);
+                    if (lightState != null) {
+                        lightState.setTransitionTime(fadeTime);
+                    }
                 } else if (command instanceof OnOffType) {
                     lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 } else if (command instanceof IncreaseDecreaseType) {
                     lightState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, light);
-                }
-                if (lightState != null) {
-                    lightState.setTransitionTime(fadeTime);
+                    if (lightState != null) {
+                        lightState.setTransitionTime(fadeTime);
+                    }
                 }
                 break;
             case CHANNEL_ALERT:
@@ -499,7 +505,14 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
     @Override
     public void onLightRemoved(@Nullable HueBridge bridge, FullLight light) {
         if (light.getId().equals(lightId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "offline.light-removed");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.light-removed");
+        }
+    }
+
+    @Override
+    public void onLightGone(@Nullable HueBridge bridge, FullLight light) {
+        if (light.getId().equals(lightId)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.light-not-reachable");
         }
     }
 

@@ -64,21 +64,21 @@ public class SysteminfoHandler extends BaseThingHandler {
      * CPU load, or information about the free and used memory.
      * They are updated periodically at {@link #refreshIntervalHighPriority}.
      */
-    private Set<ChannelUID> highPriorityChannels = new HashSet<ChannelUID>();
+    private Set<ChannelUID> highPriorityChannels = new HashSet<>();
 
     /**
      * Channels with priority configuration parameter set to Medium. These channels usually need update of the
      * state not so oft like battery capacity, storage used and etc.
      * They are updated periodically at {@link #refreshIntervalMediumPriority}.
      */
-    private Set<ChannelUID> mediumPriorityChannels = new HashSet<ChannelUID>();
+    private Set<ChannelUID> mediumPriorityChannels = new HashSet<>();
 
     /**
      * Channels with priority configuration parameter set to Low. They represent static information or information
      * that is updated rare- e.g. CPU name, storage name and etc.
      * They are updated only at {@link #initialize()}.
      */
-    private Set<ChannelUID> lowPriorityChannels = new HashSet<ChannelUID>();
+    private Set<ChannelUID> lowPriorityChannels = new HashSet<>();
 
     /**
      * Wait time for the creation of Item-Channel links in seconds. This delay is needed, because the Item-Channel
@@ -113,7 +113,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "Thing can not be initialized!");
+                    "Thing cannot be initialized!");
         }
 
     }
@@ -124,7 +124,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             logger.debug("Systeminfo implementation is instantiated!");
             return true;
         } catch (Exception e) {
-            logger.error("Can not instantate Systeminfo object!", e);
+            logger.error("Cannot instantate Systeminfo object!", e);
             return false;
         }
     }
@@ -143,10 +143,10 @@ public class SysteminfoHandler extends BaseThingHandler {
             logger.debug("Refresh time for high priority channels set to {} s", refreshIntervalHighPriority);
             return true;
         } catch (IllegalArgumentException e) {
-            logger.error("Refresh time value is invalid! Please change the thing configuration!", e);
+            logger.warn("Refresh time value is invalid! Please change the thing configuration!");
             return false;
         } catch (ClassCastException e) {
-            logger.error("Channel configuration can not be read !");
+            logger.debug("Channel configuration cannot be read!");
             return false;
         }
     }
@@ -163,7 +163,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             logger.debug("Properties updated!");
             return true;
         } catch (Exception e) {
-            logger.debug("Can not get system properties! Please try to restart the binding.", e);
+            logger.debug("Cannot get system properties! Please try to restart the binding.", e);
             return false;
         }
 
@@ -177,7 +177,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             Configuration properties = channel.getConfiguration();
             String priority = (String) properties.get(PRIOIRITY_PARAM);
             if (priority == null) {
-                logger.debug("Channel with id {} will not be updated. The channel has no priority set !",
+                logger.debug("Channel with UID {} will not be updated. The channel has no priority set !",
                         channel.getUID());
                 break;
             }
@@ -192,7 +192,7 @@ public class SysteminfoHandler extends BaseThingHandler {
                     lowPriorityChannels.add(channel.getUID());
                     break;
                 default:
-                    logger.error("Invalid priority configuration parameter. Channel will not be updated !");
+                    logger.debug("Invalid priority configuration parameter. Channel will not be updated!");
             }
         }
     }
@@ -215,7 +215,7 @@ public class SysteminfoHandler extends BaseThingHandler {
                 lowPriorityChannels.add(channelUID);
                 break;
             default:
-                logger.error("Invalid priority configuration parameter. Channel will not be updated !");
+                logger.debug("Invalid priority configuration parameter. Channel will not be updated!");
         }
     }
 
@@ -255,7 +255,7 @@ public class SysteminfoHandler extends BaseThingHandler {
         if (state != null) {
             updateState(channelID, state);
         } else {
-            logger.warn("Channel with ID {} can not be updated! No information available for the selected device.",
+            logger.warn("Channel with ID {} cannot be updated! No information available for the selected device.",
                     channelID);
         }
     }
@@ -443,14 +443,14 @@ public class SysteminfoHandler extends BaseThingHandler {
                     state = systeminfo.getProcessThreads(deviceIndex);
                     break;
                 default:
-                    logger.error("Channel with unknown ID: {} !", channelID);
+                    logger.debug("Channel with unknown ID: {} !", channelID);
             }
         } catch (DeviceNotFoundException e) {
-            logger.error("No information for channel {} with device intex {} :", channelID, deviceIndex, e);
+            logger.warn("No information for channel {} with device index {} :", channelID, deviceIndex);
         } catch (Exception e) {
-            logger.error("Unexpected error occurred while getting system information!", e);
+            logger.debug("Unexpected error occurred while getting system information!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Can not get system info as result of unexpected error. Please try to restart the binding (remove and re-add the thing)!");
+                    "Cannot get system info as result of unexpected error. Please try to restart the binding (remove and re-add the thing)!");
         }
         return state != null ? state : UnDefType.UNDEF;
     }
@@ -470,7 +470,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             // Only in this case the deviceIndex is part of the channel configuration - PID (Process Identifier)
             int pid = getPID(channelUID);
             deviceIndex = pid;
-            logger.debug("Channel with UID {} tracks process with PID: {}", channelUID.getAsString(), pid);
+            logger.debug("Channel with UID {} tracks process with PID: {}", channelUID, pid);
         } else {
             String channelGroupID = channelUID.getGroupId();
             char lastChar = channelGroupID.charAt(channelGroupID.length() - 1);
@@ -501,7 +501,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             }
 
         } catch (ClassCastException e) {
-            logger.debug("Channel configuraiton can not be read ! Fall back to default value.", e);
+            logger.debug("Channel configuration cannot be read ! Fall back to default value.", e);
         } catch (IllegalArgumentException e) {
             logger.debug("PID (Process Identifier) must be positive number. Fall back to default value. ", e);
         }
@@ -548,8 +548,8 @@ public class SysteminfoHandler extends BaseThingHandler {
             Channel oldChannel = this.thing.getChannel(channelUID.getId());
 
             if (oldChannel == null) {
-                logger.warn("Channel with UID : {} can not be updated, as it can not be found !",
-                        channelUID.getAsString());
+                logger.warn("Channel with UID {} cannot be updated, as it cannot be found !",
+                        channelUID);
                 continue;
             }
             Configuration currentChannelConfig = oldChannel.getConfiguration();
@@ -581,7 +581,7 @@ public class SysteminfoHandler extends BaseThingHandler {
         configuration.put(parameter, newConfig.get(parameter));
 
         Object newValue = newConfig.get(parameter);
-        logger.debug("Channel with UID : {} has changed its {} from {} to {}", channel.getUID(), parameter, oldValue,
+        logger.debug("Channel with UID {} has changed its {} from {} to {}", channel.getUID(), parameter, oldValue,
                 newValue);
         publishDataForChannel(channel.getUID());
     }

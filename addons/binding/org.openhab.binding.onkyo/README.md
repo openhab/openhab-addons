@@ -155,6 +155,25 @@ The Onkyo AVR supports the following channels (some channels are model specific)
 | netmenu#item8             | String    | The text of USB/Net Menu entry 8                                                                                 |
 | netmenu#item9             | String    | The text of USB/Net Menu entry 9                                                                                 |
 
+## Rule Actions
+
+This binding includes a rule action which allows to send raw eISCP messages to the receiver. The rule action can be used to send commands to the receiver that are not supported by channels.
+There is a separate instance for each receiver, which can be retrieved through
+
+```
+val onkyoActions = getActions("onkyo","onkyo:onkyoAVR:avr-livingroom")
+```
+
+where the first parameter always has to be `onkyo` and the second (`onkyo:onkyoAVR:avr-livingroom`) is the Thing UID of the broker that should be used.
+Once this action instance is retrieved, you can invoke the `onkyoActions.sendRawCommand(String action, String value)` method on it:
+
+```
+onkyoActions.sendRawCommand("CTL", "UP")
+```
+This command for instance increases the volume for the center channel. For a description of all commands you can e.g. search [this GitHub project](https://github.com/miracle2k/onkyo-eiscp/tree/master/commands/main).
+
+Also note that when sending multiple commands there has to be a `Thread::sleep(100)` in between the commands because the action does not wait for a response from the receiver.
+
 ## Input Source Mapping
 
 Here after are the ID values of the input sources:

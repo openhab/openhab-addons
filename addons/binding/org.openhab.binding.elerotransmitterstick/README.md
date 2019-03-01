@@ -92,5 +92,5 @@ String Rollershutter1State  {channel="elerotransmitterstick:elerochannel:0a0a0a0
 A sitemap entry looks like this:
 
 ```
-Selection item=Rollershutter1 label=“Kitchen” mappings=[0=“open”, 100=“closed”, 25=“shading”]
+Selection item=Rollershutter1 label="Kitchen" mappings=[0="open", 100="closed", 25="shading"]
 ```

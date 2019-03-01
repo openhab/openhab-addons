@@ -16,8 +16,8 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
-import org.eclipse.smarthome.automation.template.RuleTemplateProvider;
 import org.eclipse.smarthome.core.storage.Storage;
+import org.openhab.core.automation.template.RuleTemplateProvider;
 import org.openhab.extensionservice.marketplace.MarketplaceExtension;
 import org.openhab.extensionservice.marketplace.MarketplaceExtensionHandler;
 import org.openhab.extensionservice.marketplace.MarketplaceHandlerException;
