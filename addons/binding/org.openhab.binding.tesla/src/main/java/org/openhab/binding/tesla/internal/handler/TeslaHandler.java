@@ -61,8 +61,8 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.glassfish.jersey.client.ClientProperties;
 import org.openhab.binding.tesla.internal.TeslaBindingConstants;
-import org.openhab.binding.tesla.internal.TeslaChannelSelectorProxy;
 import org.openhab.binding.tesla.internal.TeslaBindingConstants.EventKeys;
+import org.openhab.binding.tesla.internal.TeslaChannelSelectorProxy;
 import org.openhab.binding.tesla.internal.TeslaChannelSelectorProxy.TeslaChannelSelector;
 import org.openhab.binding.tesla.internal.protocol.ChargeState;
 import org.openhab.binding.tesla.internal.protocol.ClimateState;
@@ -290,10 +290,10 @@ public class TeslaHandler extends BaseThingHandler {
                                 moveSunroof(0);
                             } else if (command instanceof IncreaseDecreaseType
                                     && command == IncreaseDecreaseType.INCREASE) {
-                                moveSunroof(Math.min(chargeState.charge_limit_soc + 1, 100));
+                                moveSunroof(Math.min(vehicleState.sun_roof_percent_open + 1, 100));
                             } else if (command instanceof IncreaseDecreaseType
                                     && command == IncreaseDecreaseType.DECREASE) {
-                                moveSunroof(Math.max(chargeState.charge_limit_soc - 1, 0));
+                                moveSunroof(Math.max(vehicleState.sun_roof_percent_open - 1, 0));
                             }
                             break;
                         }
@@ -392,7 +392,7 @@ public class TeslaHandler extends BaseThingHandler {
                                 if (((OnOffType) command) == OnOffType.ON) {
                                     if (eventThread == null) {
                                         eventThread = new Thread(eventRunnable,
-                                                "ESH-Tesla-Event Stream-" + getThing().getUID());
+                                                "openHAB-Tesla-Events-" + getThing().getUID());
                                         eventThread.start();
                                     }
                                 } else {
