@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.loxone.internal.discovery;
+package org.openhab.binding.loxone.internal;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,29 +24,27 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.DeviceDetails;
 import org.jupnp.model.meta.RemoteDevice;
-import org.openhab.binding.loxone.internal.LoxoneBindingConstants;
-import org.openhab.binding.loxone.internal.handler.LoxoneMiniserverHandler;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link LoxoneMiniserverDiscoveryParticipant} class creates Miniserver things.
+ * The {@link LxDiscoveryParticipant} class creates Miniserver things.
  * It analyzes UPNP devices discovered by the framework and if Loxone Miniserver is found,
  * a new thing discovery is reported, which in turn will result in creating a {@link Thing}
- * and subsequently a new {@link LoxoneMiniserverHandler} object.
+ * and subsequently a new {@link LxServerHandler} object.
  *
  * @author Pawel Pieczul - Initial contribution
  *
  */
 @Component(immediate = true)
-public class LoxoneMiniserverDiscoveryParticipant implements UpnpDiscoveryParticipant {
+public class LxDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
-    private Logger logger = LoggerFactory.getLogger(LoxoneMiniserverDiscoveryParticipant.class);
+    private final Logger logger = LoggerFactory.getLogger(LxDiscoveryParticipant.class);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return LoxoneMiniserverHandler.SUPPORTED_THING_TYPES_UIDS;
+        return LxServerHandler.SUPPORTED_THING_TYPES_UIDS;
     }
 
     @Override
@@ -66,8 +64,8 @@ public class LoxoneMiniserverDiscoveryParticipant implements UpnpDiscoveryPartic
             String model = details.getModelDetails().getModelName();
 
             logger.debug("Creating discovery result for serial {} label {} port {}", serial, label, port);
-            properties.put(LoxoneBindingConstants.MINISERVER_PARAM_HOST, host);
-            properties.put(LoxoneBindingConstants.MINISERVER_PARAM_PORT, port);
+            properties.put(LxBindingConstants.MINISERVER_PARAM_HOST, host);
+            properties.put(LxBindingConstants.MINISERVER_PARAM_PORT, port);
             properties.put(Thing.PROPERTY_VENDOR, vendor);
             properties.put(Thing.PROPERTY_MODEL_ID, model);
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, serial);
@@ -89,7 +87,7 @@ public class LoxoneMiniserverDiscoveryParticipant implements UpnpDiscoveryPartic
                     serial = device.getIdentity().getUdn().getIdentifierString();
                 }
                 if (serial != null) {
-                    return new ThingUID(LoxoneBindingConstants.THING_TYPE_MINISERVER, serial);
+                    return new ThingUID(LxBindingConstants.THING_TYPE_MINISERVER, serial);
                 }
             }
         }

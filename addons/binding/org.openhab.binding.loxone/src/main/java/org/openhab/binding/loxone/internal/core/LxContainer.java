@@ -15,6 +15,8 @@ package org.openhab.binding.loxone.internal.core;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.openhab.binding.loxone.internal.controls.LxControl;
+
 /**
  * Container on Loxone Miniserver that groups {@link LxControl} objects.
  * <p>
@@ -24,19 +26,19 @@ import java.util.Set;
  *
  */
 public class LxContainer {
-    private LxUuid uuid;
+    private final LxUuid uuid;
+    private final Set<LxControl> controls = new HashSet<>();
     private String name;
-    private Set<LxControl> controls = new HashSet<>();
 
     /**
      * Create a new container with given uuid and name
      *
      * @param uuid
-     *            UUID of the container as received from the Miniserver
+     *                 UUID of the container as received from the Miniserver
      * @param name
-     *            name of the container as received from the Miniserver
+     *                 name of the container as received from the Miniserver
      */
-    LxContainer(LxUuid uuid, String name) {
+    public LxContainer(LxUuid uuid, String name) {
         this.uuid = uuid;
         this.name = name;
     }
@@ -65,9 +67,9 @@ public class LxContainer {
      * Update container's name
      *
      * @param name
-     *            a new name of the container
+     *                 a new name of the container
      */
-    void setName(String name) {
+    public void setName(String name) {
         this.name = name;
         uuid.setUpdate(true);
     }
@@ -75,10 +77,9 @@ public class LxContainer {
     /**
      * Add a new control to this container or mark existing control's and container's UUIDs as updated.
      *
-     * @param control
-     *            control to be added or updated
+     * @param control control to be added or updated
      */
-    void addOrUpdateControl(LxControl control) {
+    public void addOrUpdateControl(LxControl control) {
         uuid.setUpdate(true);
         for (LxControl c : controls) {
             if (control.equals(c)) {
@@ -93,12 +94,10 @@ public class LxContainer {
     /**
      * Removes a control from the container
      *
-     * @param control
-     *            control object to remove from the container
-     * @return
-     *         true if control object existed in the container and was removed
+     * @param control control object to remove from the container
+     * @return true if control object existed in the container and was removed
      */
-    boolean removeControl(LxControl control) {
+    public boolean removeControl(LxControl control) {
         return controls.remove(control);
     }
 }

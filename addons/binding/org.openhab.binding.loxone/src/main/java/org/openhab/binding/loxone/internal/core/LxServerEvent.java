@@ -15,13 +15,12 @@ package org.openhab.binding.loxone.internal.core;
 import org.openhab.binding.loxone.internal.core.LxWsClient.LxWebSocket;
 
 /**
- * Event used to communicate between websocket client ({@link LxWebSocket}) and object representing a Miniserver
- * ({@link LxServer})
+ * Event used to communicate between websocket client ({@link LxWebSocket}) and thing handler
  *
  * @author Pawel Pieczul - initial contribution
  *
  */
-class LxServerEvent {
+public class LxServerEvent {
     /**
      * Type of {@link LxServerEvent} event
      *
@@ -29,38 +28,38 @@ class LxServerEvent {
      *
      */
     public enum EventType {
-        /**
-         * Unspecified event
-         */
-        NONE,
-        /**
-         * Miniserver is online - websocket connection ready to pass commands and receive controls state updates
-         */
-        SERVER_ONLINE,
-        /**
-         * Miniserver is offline - websocket connection is closed. There is a reason parameter associated.
-         */
-        SERVER_OFFLINE,
-        /**
-         * Received configuration of Miniserver. There is a {@link LxJsonApp3} object associated.
-         */
-        RECEIVED_CONFIG,
-        /**
-         * Received control's state value or text update from Miniserver. There is a {@link LxWsStateUpdateEvent} object
-         * associated.
-         */
-        STATE_UPDATE,
-        /**
-         * Received request to shutdown thread from {@link LxServer} object.
-         */
-        CLIENT_CLOSING
+    /**
+     * Unspecified event
+     */
+    NONE,
+    /**
+     * Miniserver is online - websocket connection ready to pass commands and receive controls state updates
+     */
+    SERVER_ONLINE,
+    /**
+     * Miniserver is offline - websocket connection is closed. There is a reason parameter associated.
+     */
+    SERVER_OFFLINE,
+    /**
+     * Received configuration of Miniserver. There is a {@link LxJsonApp3} object associated.
+     */
+    RECEIVED_CONFIG,
+    /**
+     * Received control's state value or text update from Miniserver. There is a {@link LxWsStateUpdateEvent} object
+     * associated.
+     */
+    STATE_UPDATE,
+    /**
+     * Received request to shutdown thread from thing handler object.
+     */
+    CLIENT_CLOSING
     }
 
-    private EventType event;
-    private LxOfflineReason reason;
-    private Object object;
+    private final EventType event;
+    private final LxOfflineReason reason;
+    private final Object object;
 
-    LxServerEvent(EventType event, LxOfflineReason reason, Object object) {
+    public LxServerEvent(EventType event, LxOfflineReason reason, Object object) {
         this.event = event;
         this.reason = reason;
         this.object = object;
@@ -72,7 +71,7 @@ class LxServerEvent {
      * @return
      *         type of event
      */
-    EventType getEvent() {
+    public EventType getEvent() {
         return event;
     }
 
@@ -82,7 +81,7 @@ class LxServerEvent {
      * @return
      *         reason for going offline
      */
-    LxOfflineReason getOfflineReason() {
+    public LxOfflineReason getOfflineReason() {
         return reason;
     }
 
@@ -92,7 +91,7 @@ class LxServerEvent {
      * @return
      *         object associated with event
      */
-    Object getObject() {
+    public Object getObject() {
         return object;
     }
 }

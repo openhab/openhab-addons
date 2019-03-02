@@ -10,17 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.loxone.internal.config;
-
-import org.openhab.binding.loxone.internal.handler.LoxoneMiniserverHandler;
+package org.openhab.binding.loxone.internal;
 
 /**
- * Configuration of a Loxone Miniserver ({@link LoxoneMiniserverHandler})
+ * Configuration of a Loxone Miniserver ({@link LxServerHandler})
  *
  * @author Pawel Pieczul - Initial contribution
  *
  */
-public class LoxoneMiniserverConfig {
+public class LxBindingConfiguration {
     /**
      * Host address or IP of the Miniserver
      */
@@ -74,5 +72,8 @@ public class LoxoneMiniserverConfig {
      * Websocket client's max text message size in kB
      */
     public int maxTextMsgSize;
+    /**
+     * Authentication method (0-auto, 1-hash, 2-token)
+     */
     public int authMethod;
 }

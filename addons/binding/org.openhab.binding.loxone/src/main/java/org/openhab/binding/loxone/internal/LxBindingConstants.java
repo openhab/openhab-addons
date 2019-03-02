@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Pawel Pieczul - Initial contribution
  */
 @NonNullByDefault
-public class LoxoneBindingConstants {
+public class LxBindingConstants {
 
     public static final String BINDING_ID = "loxone";
 

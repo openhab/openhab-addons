@@ -25,18 +25,18 @@ import java.nio.ByteOrder;
  *
  */
 public class LxUuid {
-    private String uuid;
-    private String uuidOriginal;
+    private final String uuid;
+    private final String uuidOriginal;
     private boolean updated;
 
     /**
      * Create a new {@link LxUuid} object from an UUID on a Miniserver.
      *
-     * @param uuid
-     *            identifier retrieved from Loxone Miniserver
+     * @param uuid identifier retrieved from Loxone Miniserver
      */
     public LxUuid(String uuid) {
-        init(uuid);
+        uuidOriginal = uuid;
+        this.uuid = init(uuid);
     }
 
     public LxUuid(byte data[], int offset) {
@@ -46,13 +46,13 @@ public class LxUuid {
                 ByteBuffer.wrap(data, offset + 6, 2).order(ByteOrder.LITTLE_ENDIAN).getShort(), data[offset + 8],
                 data[offset + 9], data[offset + 10], data[offset + 11], data[offset + 12], data[offset + 13],
                 data[offset + 14], data[offset + 15]);
-        init(id);
+        uuidOriginal = id;
+        this.uuid = init(id);
     }
 
-    private void init(String uuid) {
-        uuidOriginal = uuid;
-        this.uuid = uuidOriginal.replaceAll("[^a-zA-Z0-9-]", "-").toUpperCase();
+    private String init(String uuid) {
         updated = true;
+        return uuidOriginal.replaceAll("[^a-zA-Z0-9-]", "-").toUpperCase();
     }
 
     @Override
@@ -83,8 +83,7 @@ public class LxUuid {
     /**
      * Returns an original string that was used to create UUID.
      *
-     * @return
-     *         original string for the UUID
+     * @return original string for the UUID
      */
 
     public String getOriginalString() {
@@ -94,20 +93,18 @@ public class LxUuid {
     /**
      * Indicate the object corresponding to UUID has recently been updated.
      *
-     * @param updated
-     *            true if object has been updated
+     * @param updated true if object has been updated
      */
-    void setUpdate(boolean updated) {
+    public void setUpdate(boolean updated) {
         this.updated = updated;
     }
 
     /**
      * See if the object corresponding to UUID has been recently updated.
      *
-     * @return
-     *         true if object was updated
+     * @return true if object was updated
      */
-    boolean getUpdate() {
+    public boolean getUpdate() {
         return updated;
     }
 }

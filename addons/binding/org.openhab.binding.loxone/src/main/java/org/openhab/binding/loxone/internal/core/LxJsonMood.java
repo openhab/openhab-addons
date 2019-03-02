@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import org.openhab.binding.loxone.internal.controls.LxControlLightControllerV2;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -23,16 +25,16 @@ import com.google.gson.annotations.SerializedName;
  * @author Pawel Pieczul - initial contribution
  *
  */
-class LxJsonMood {
+public class LxJsonMood {
     /**
      * The userfriendly name for this mood
      */
-    String name;
+    public String name;
 
     /**
      * An ID that uniquely identifies this mood (e.g. inside activeMoods)
      */
-    Integer id;
+    public Integer id;
 
     /**
      * Bitmask that tells if the mood is used for a specific purpose in the logic.
@@ -42,18 +44,18 @@ class LxJsonMood {
      * 2: a T5 or other inputs activate/deactivate this mood
      */
     @SerializedName("used")
-    Integer isUsed;
+    public Integer isUsed;
 
     /**
      * Whether or not this mood can be controlled with a t5 input
      */
     @SerializedName("t5")
-    Boolean isT5Controlled;
+    public Boolean isT5Controlled;
 
     /**
      * If a mood is marked as static it cannot be deleted or modified in any way.
      * But it can be moved within and between favorite and additional lists.
      */
     @SerializedName("static")
-    Boolean isStatic;
+    public Boolean isStatic;
 }

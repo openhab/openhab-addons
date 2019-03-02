@@ -47,10 +47,10 @@ import javax.crypto.spec.IvParameterSpec;
 import org.apache.commons.codec.binary.Hex;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.id.InstanceUUID;
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxJsonResponse.LxJsonKeySalt;
 import org.openhab.binding.loxone.internal.core.LxJsonResponse.LxJsonSubResponse;
 import org.openhab.binding.loxone.internal.core.LxJsonResponse.LxJsonToken;
-import org.openhab.binding.loxone.internal.core.LxServer.Configuration;
 import org.openhab.binding.loxone.internal.core.LxWsClient.LxWebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,7 +121,7 @@ class LxWsSecurityToken extends LxWsSecurity {
     private String token;
     private int tokenRefreshRetryCount;
     private ScheduledFuture<?> tokenRefreshTimer;
-    private Lock tokenRefreshLock = new ReentrantLock();
+    private final Lock tokenRefreshLock = new ReentrantLock();
 
     private final byte[] initVector = new byte[IV_LENGTH_BYTES];
     private final Logger logger = LoggerFactory.getLogger(LxWsSecurityToken.class);
@@ -131,14 +131,14 @@ class LxWsSecurityToken extends LxWsSecurity {
     /**
      * Create a token-based authentication instance.
      *
-     * @param debugId instance of the client used for debugging purposes only
-     * @param configuration configuration object for getting and setting custom properties (e.g. token)
-     * @param socket websocket to perform communication with Miniserver
-     * @param user user to authenticate
-     * @param password password to authenticate
+     * @param debugId    instance of the client used for debugging purposes only
+     * @param handlerApi API to the thing handler
+     * @param socket     websocket to perform communication with Miniserver
+     * @param user       user to authenticate
+     * @param password   password to authenticate
      */
-    LxWsSecurityToken(int debugId, Configuration configuration, LxWebSocket socket, String user, String password) {
-        super(debugId, configuration, socket, user, password);
+    LxWsSecurityToken(int debugId, LxServerHandlerApi handlerApi, LxWebSocket socket, String user, String password) {
+        super(debugId, handlerApi, socket, user, password);
     }
 
     @Override
@@ -284,7 +284,7 @@ class LxWsSecurityToken extends LxWsSecurity {
             aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             aesDecryptCipher.init(Cipher.DECRYPT_MODE, aesKey, ivSpec);
             // get token value from configuration storage
-            token = (String) configuration.get(SETTINGS_TOKEN);
+            token = handlerApi.getSetting(SETTINGS_TOKEN);
             logger.debug("[{}] Retrieved token value: {}", debugId, token);
         } catch (InvalidParameterException e) {
             return setError(LxOfflineReason.INTERNAL_ERROR, "Invalid parameter: " + e.getMessage());
@@ -430,7 +430,7 @@ class LxWsSecurityToken extends LxWsSecurity {
         if (token != null) {
             properties.put(SETTINGS_PASSWORD, null);
         }
-        configuration.setSettings(properties);
+        handlerApi.setSettings(properties);
     }
 
     private LxJsonToken parseTokenResponse(JsonElement response) {

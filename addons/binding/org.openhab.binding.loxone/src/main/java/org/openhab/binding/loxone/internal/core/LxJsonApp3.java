@@ -13,7 +13,6 @@
 package org.openhab.binding.loxone.internal.core;
 
 import java.util.Map;
-
 import com.google.gson.JsonElement;
 
 /**
@@ -22,58 +21,58 @@ import com.google.gson.JsonElement;
  * @author Pawel Pieczul - initial contribution
  *
  */
-class LxJsonApp3 {
+public class LxJsonApp3 {
 
-    LxJsonInfo msInfo;
-    Map<String, LxJsonControl> controls;
-    Map<String, LxJsonRoom> rooms;
-    Map<String, LxJsonCat> cats;
+    public LxJsonInfo msInfo;
+    public Map<String, LxJsonControl> controls;
+    public Map<String, LxJsonRoom> rooms;
+    public Map<String, LxJsonCat> cats;
 
-    class LxJsonInfo {
-        String serialNr;
-        String location;
-        String roomTitle;
-        String catTitle;
-        String msName;
-        String projectName;
-        String remoteUrl;
-        String swVersion;
-        String macAddress;
+    public class LxJsonInfo {
+        public String serialNr;
+        public String location;
+        public String roomTitle;
+        public String catTitle;
+        public String msName;
+        public String projectName;
+        public String remoteUrl;
+        public String swVersion;
+        public String macAddress;
     }
 
-    class LxJsonRoom {
-        String uuid;
-        String name;
+    public class LxJsonRoom {
+        public String uuid;
+        public String name;
     }
 
-    class LxJsonCat {
-        String uuid;
-        String name;
-        String type;
+    public class LxJsonCat {
+        public String uuid;
+        public String name;
+        public String type;
     }
 
-    class LxJsonControl {
+    public class LxJsonControl {
 
-        class LxJsonDetails {
-            class LxJsonText {
-                String off;
-                String on;
+        public class LxJsonDetails {
+            public class LxJsonText {
+                public String off;
+                public String on;
             }
 
-            LxJsonText text;
-            String format;
-            int movementScene;
-            String allOff;
-            Map<String, String> outputs;
+            public LxJsonText text;
+            public String format;
+            public int movementScene;
+            public String allOff;
+            public Map<String, String> outputs;
         }
 
-        String uuidAction;
-        String name;
-        String type;
-        String room;
-        String cat;
-        LxJsonDetails details;
-        Map<String, JsonElement> states;
-        Map<String, LxJsonControl> subControls;
+        public String uuidAction;
+        public String name;
+        public String type;
+        public String room;
+        public String cat;
+        public LxJsonDetails details;
+        public Map<String, JsonElement> states;
+        public Map<String, LxJsonControl> subControls;
     }
 }

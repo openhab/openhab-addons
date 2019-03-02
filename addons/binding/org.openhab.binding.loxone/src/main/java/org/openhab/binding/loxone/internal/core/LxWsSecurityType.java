@@ -33,11 +33,11 @@ public enum LxWsSecurityType {
     TOKEN;
     /**
      * Encode security type based on index
-     * 
+     *
      * @param index
-     *            0 for auto, 1 for hash, 2 for token
+     *                  0 for auto, 1 for hash, 2 for token
      * @return
-     * security type fo given index
+     *         security type fo given index
      */
     public static LxWsSecurityType getType(int index) {
         switch (index) {

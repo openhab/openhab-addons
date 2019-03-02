@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import org.openhab.binding.loxone.internal.controls.LxControl;
+
 /**
  * Category of Loxone Miniserver's {@link LxControl} object.
  *
@@ -26,18 +28,18 @@ public class LxCategory extends LxContainer {
      * @author Pawel Pieczul - initial contribution
      */
     public enum CategoryType {
-        /**
-         * Category for lights
-         */
-        LIGHTS,
-        /**
-         * Category for shading / rollershutter / blinds
-         */
-        SHADING,
-        /**
-         * Unknown category
-         */
-        UNDEFINED
+    /**
+     * Category for lights
+     */
+    LIGHTS,
+    /**
+     * Category for shading / rollershutter / blinds
+     */
+    SHADING,
+    /**
+     * Unknown category
+     */
+    UNDEFINED
     }
 
     private CategoryType type;
@@ -45,12 +47,9 @@ public class LxCategory extends LxContainer {
     /**
      * Create a {@link LxCategory} object
      *
-     * @param uuid
-     *            UUID of this category object on the Miniserver
-     * @param name
-     *            name of the category
-     * @param type
-     *            type of the category, as retrieved from the Miniserver
+     * @param uuid UUID of this category object on the Miniserver
+     * @param name name of the category
+     * @param type type of the category, as retrieved from the Miniserver
      */
     public LxCategory(LxUuid uuid, String name, String type) {
         super(uuid, name);
@@ -60,8 +59,7 @@ public class LxCategory extends LxContainer {
     /**
      * Obtain the type of this category
      *
-     * @return
-     *         type of category
+     * @return type of category
      */
     public CategoryType getType() {
         return type;
@@ -70,10 +68,9 @@ public class LxCategory extends LxContainer {
     /**
      * Set the type of this category
      *
-     * @param type
-     *            new type to set as received from Miniserver
+     * @param type new type to set as received from Miniserver
      */
-    void setType(String type) {
+    public void setType(String type) {
         String tl = type.toLowerCase();
         if (tl.equals("lights")) {
             this.type = CategoryType.LIGHTS;

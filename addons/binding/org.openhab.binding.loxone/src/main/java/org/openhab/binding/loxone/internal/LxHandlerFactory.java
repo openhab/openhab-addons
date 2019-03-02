@@ -20,22 +20,21 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.loxone.internal.handler.LoxoneMiniserverHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Factory responsible for creating Loxone things (Miniservers) and their handlers ({@link LoxoneMiniserverHandler}
+ * Factory responsible for creating Loxone things (Miniservers) and their handlers ({@link LxServerHandler}
  *
  * @author Pawel Pieczul - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.loxone")
-public class LoxoneHandlerFactory extends BaseThingHandlerFactory {
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.loxone")
+public class LxHandlerFactory extends BaseThingHandlerFactory {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(LoxoneBindingConstants.THING_TYPE_MINISERVER);
+            .singleton(LxBindingConstants.THING_TYPE_MINISERVER);
 
-    private LoxoneDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
+    private LxDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -45,19 +44,19 @@ public class LoxoneHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID uid = thing.getThingTypeUID();
-        if (uid.equals(LoxoneBindingConstants.THING_TYPE_MINISERVER)) {
-            LoxoneMiniserverHandler handler = new LoxoneMiniserverHandler(thing, dynamicStateDescriptionProvider);
+        if (uid.equals(LxBindingConstants.THING_TYPE_MINISERVER)) {
+            LxServerHandler handler = new LxServerHandler(thing, dynamicStateDescriptionProvider);
             return handler;
         }
         return null;
     }
 
     @Reference
-    protected void setDynamicStateDescriptionProvider(LoxoneDynamicStateDescriptionProvider provider) {
+    protected void setDynamicStateDescriptionProvider(LxDynamicStateDescriptionProvider provider) {
         this.dynamicStateDescriptionProvider = provider;
     }
 
-    protected void unsetDynamicStateDescriptionProvider(LoxoneDynamicStateDescriptionProvider provider) {
+    protected void unsetDynamicStateDescriptionProvider(LxDynamicStateDescriptionProvider provider) {
         this.dynamicStateDescriptionProvider = null;
     }
 }

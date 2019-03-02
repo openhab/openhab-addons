@@ -23,8 +23,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxJsonResponse.LxJsonSubResponse;
-import org.openhab.binding.loxone.internal.core.LxServer.Configuration;
 import org.openhab.binding.loxone.internal.core.LxWsClient.LxWebSocket;
 
 /**
@@ -40,7 +40,7 @@ abstract class LxWsSecurity {
     final String user;
     final String password;
     final LxWebSocket socket;
-    final Configuration configuration;
+    final LxServerHandlerApi handlerApi;
 
     LxOfflineReason reason;
     String details;
@@ -51,20 +51,15 @@ abstract class LxWsSecurity {
     /**
      * Create an authentication instance.
      *
-     * @param debugId
-     *            instance of the client used for debugging purposes only
-     * @param configuration
-     *            configuration object for getting and setting custom properties (e.g. token)
-     * @param socket
-     *            websocket to perform communication with Miniserver
-     * @param user
-     *            user to authenticate
-     * @param password
-     *            password to authenticate
+     * @param debugId    instance of the client used for debugging purposes only
+     * @param handlerApi API to the thing handler
+     * @param socket     websocket to perform communication with Miniserver
+     * @param user       user to authenticate
+     * @param password   password to authenticate
      */
-    LxWsSecurity(int debugId, Configuration configuration, LxWebSocket socket, String user, String password) {
+    LxWsSecurity(int debugId, LxServerHandlerApi handlerApi, LxWebSocket socket, String user, String password) {
         this.debugId = debugId;
-        this.configuration = configuration;
+        this.handlerApi = handlerApi;
         this.socket = socket;
         this.user = user;
         this.password = password;
@@ -77,8 +72,7 @@ abstract class LxWsSecurity {
      * {@link LxOfflineReason#NONE}
      * Only one authentication can run in parallel and must be performed sequentially (create no more threads).
      *
-     * @param doneCallback
-     *            callback to execute when authentication is finished or failed
+     * @param doneCallback callback to execute when authentication is finished or failed
      */
     void authenticate(BiConsumer<LxOfflineReason, String> doneCallback) {
         Runnable init = () -> {
@@ -97,8 +91,7 @@ abstract class LxWsSecurity {
      * Perform user authentication using a specific authentication algorithm.
      * This method will be executed in a dedicated thread to allow sending synchronous messages to the Miniserver.
      *
-     * @return
-     *         true when authentication granted
+     * @return true when authentication granted
      */
     abstract boolean execute();
 
@@ -113,10 +106,8 @@ abstract class LxWsSecurity {
     /**
      * Check a response received from the Miniserver for errors, interpret it and store the results in class fields.
      *
-     * @param response
-     *            response received from the Miniserver
-     * @return
-     *         {@link LxOfflineReason#NONE} when response is correct or a specific {@link LxOfflineReason}
+     * @param response response received from the Miniserver
+     * @return {@link LxOfflineReason#NONE} when response is correct or a specific {@link LxOfflineReason}
      */
     boolean checkResponse(LxJsonSubResponse response) {
         if (response == null || cancel) {
@@ -131,12 +122,9 @@ abstract class LxWsSecurity {
      * Hash string (e.g. containing user name and password or token) according to the algorithm required by the
      * Miniserver.
      *
-     * @param string
-     *            string to be hashed
-     * @param hashKeyHex
-     *            hash key received from the Miniserver in hex format
-     * @return
-     *         hashed string or null if failed
+     * @param string     string to be hashed
+     * @param hashKeyHex hash key received from the Miniserver in hex format
+     * @return hashed string or null if failed
      */
     String hashString(String string, String hashKeyHex) {
         try {
@@ -154,10 +142,8 @@ abstract class LxWsSecurity {
     /**
      * Encrypt string using current encryption algorithm.
      *
-     * @param string
-     *            input string to encrypt
-     * @return
-     *         encrypted string
+     * @param string input string to encrypt
+     * @return encrypted string
      */
     String encrypt(String string) {
         // by default no encryption
@@ -169,10 +155,8 @@ abstract class LxWsSecurity {
      * If control is not encrypted or decryption is not available or not ready, the control should be returned in its
      * original form.
      *
-     * @param control
-     *            control to be decrypted
-     * @return
-     *         decrypted control or original control in case decryption is unavailable, control is not encrypted or
+     * @param control control to be decrypted
+     * @return decrypted control or original control in case decryption is unavailable, control is not encrypted or
      *         other issue occurred
      */
     String decryptControl(String control) {
@@ -183,12 +167,9 @@ abstract class LxWsSecurity {
     /**
      * Set error code and return false. It is used to report detailed error information from inside the algorithms.
      *
-     * @param reason
-     *            reason for failure
-     * @param details
-     *            details of the failure
-     * @return
-     *         always false
+     * @param reason  reason for failure
+     * @param details details of the failure
+     * @return always false
      */
     boolean setError(LxOfflineReason reason, String details) {
         if (reason != null) {
@@ -203,24 +184,16 @@ abstract class LxWsSecurity {
     /**
      * Create an authentication instance.
      *
-     * @param type
-     *            type of security algorithm
-     * @param swVersion
-     *            Miniserver's software version or null if unknown
-     * @param debugId
-     *            instance of the client used for debugging purposes only
-     * @param configuration
-     *            configuration object for getting and setting custom properties (e.g. token)
-     * @param socket
-     *            websocket to perform communication with Miniserver
-     * @param user
-     *            user to authenticate
-     * @param password
-     *            password to authenticate
-     * @return
-     *         created security object
+     * @param type       type of security algorithm
+     * @param swVersion  Miniserver's software version or null if unknown
+     * @param debugId    instance of the client used for debugging purposes only
+     * @param handlerApi API to the thing handler
+     * @param socket     websocket to perform communication with Miniserver
+     * @param user       user to authenticate
+     * @param password   password to authenticate
+     * @return created security object
      */
-    static LxWsSecurity create(LxWsSecurityType type, String swVersion, int debugId, Configuration configuration,
+    static LxWsSecurity create(LxWsSecurityType type, String swVersion, int debugId, LxServerHandlerApi handlerApi,
             LxWebSocket socket, String user, String password) {
         LxWsSecurityType securityType = type;
         if (securityType == LxWsSecurityType.AUTO && swVersion != null) {
@@ -232,9 +205,9 @@ abstract class LxWsSecurity {
             }
         }
         if (securityType == LxWsSecurityType.HASH) {
-            return new LxWsSecurityHash(debugId, configuration, socket, user, password);
+            return new LxWsSecurityHash(debugId, handlerApi, socket, user, password);
         } else {
-            return new LxWsSecurityToken(debugId, configuration, socket, user, password);
+            return new LxWsSecurityToken(debugId, handlerApi, socket, user, password);
         }
     }
 

@@ -21,81 +21,60 @@ import java.nio.ByteOrder;
  * @author Pawel Pieczul - initial contribution
  *
  */
-class LxWsStateUpdateEvent {
-    private LxUuid uuid;
-    @SuppressWarnings("unused")
-    private LxUuid iconUuid;
-    private Double value;
-    private String text;
-    private int size = 0;
+public class LxWsStateUpdateEvent {
+    private final LxUuid uuid;
+    private Object updateValue;
+    private final int size;
 
     /**
      * Create new state update event from binary message
      *
-     * @param isValueEvent
-     *            true if this event updates double value, false if it updates text message
-     * @param data
-     *            buffer with binary message received from Miniserver
-     * @param offsetParam
-     *            offset in buffer where event is expected
+     * @param isValueEvent true if this event updates double value, false if it updates text message
+     * @param data         buffer with binary message received from Miniserver
+     * @param offset       offset in buffer where event is expected
      */
-    LxWsStateUpdateEvent(boolean isValueEvent, byte data[], int offsetParam) throws IndexOutOfBoundsException {
-        int offset = offsetParam;
+    LxWsStateUpdateEvent(boolean isValueEvent, byte data[], int offset) throws IndexOutOfBoundsException {
         uuid = new LxUuid(data, offset);
-        offset += 16;
-
+        int idx = offset + 16;
         if (isValueEvent) {
-            value = ByteBuffer.wrap(data, offset, 8).order(ByteOrder.LITTLE_ENDIAN).getDouble();
+            updateValue = ByteBuffer.wrap(data, idx, 8).order(ByteOrder.LITTLE_ENDIAN).getDouble();
             size = 24;
             return;
         }
 
-        iconUuid = new LxUuid(data, offset);
-        offset += 16;
+        // unused today: iconUuid = new LxUuid(data, idx);
+        idx += 16;
 
-        int textLen = ByteBuffer.wrap(data, offset, 4).order(ByteOrder.LITTLE_ENDIAN).getInt();
-        offset += 4;
+        int textLen = ByteBuffer.wrap(data, idx, 4).order(ByteOrder.LITTLE_ENDIAN).getInt();
+        idx += 4;
 
-        text = new String(data, offset, textLen);
+        updateValue = new String(data, idx, textLen);
         size = 36 + (textLen % 4 > 0 ? textLen + 4 - (textLen % 4) : textLen);
     }
 
     /**
      * Get UUID of this state
      *
-     * @return
-     *         UUID of this state
+     * @return UUID of this state
      */
-    LxUuid getUuid() {
+    public LxUuid getUuid() {
         return uuid;
     }
 
     /**
      * Get current value of this state
      *
-     * @return
-     *         current value of the state or null if state has no value
+     * @return current value of the state or null if state has no value
      */
-    Double getValue() {
-        return value;
-    }
-
-    /**
-     * Get current text value of this state
-     *
-     * @return
-     *         current text value of this state
-     */
-    String getText() {
-        return text;
+    public Object getUpdateValue() {
+        return updateValue;
     }
 
     /**
      * Get size of binary representation of state update event in bytes, as received from Loxone Miniserver
      * Used to traverse a binary buffer with more than one state update events
      *
-     * @return
-     *         size of event in binary buffer, in bytes
+     * @return size of event in binary buffer, in bytes
      */
     int getSize() {
         return size;

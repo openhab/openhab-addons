@@ -10,24 +10,28 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.loxone.internal.core;
+package org.openhab.binding.loxone.internal.controls;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openhab.binding.loxone.internal.core.LxControl.LxControlInstance;
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
+import org.openhab.binding.loxone.internal.controls.LxControl.LxControlInstance;
+import org.openhab.binding.loxone.internal.core.LxCategory;
+import org.openhab.binding.loxone.internal.core.LxContainer;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
+import org.openhab.binding.loxone.internal.core.LxUuid;
 
 /**
  * A factory of controls of Loxone Miniserver.
  * It creates various types of control objects based on control type received from Miniserver.
  *
- * @author Pawel Pieczul
+ * @author Pawel Pieczul - initial contribution
  *
  */
-class LxControlFactory {
+public class LxControlFactory {
     static {
-        controls = new HashMap<>();
+        CONTROLS = new HashMap<>();
         add(new LxControlDimmer.Factory());
         add(new LxControlInfoOnlyAnalog.Factory());
         add(new LxControlInfoOnlyDigital.Factory());
@@ -41,38 +45,32 @@ class LxControlFactory {
         add(new LxControlTimedSwitch.Factory());
     }
 
-    private static Map<String, LxControlInstance> controls;
+    private static final Map<String, LxControlInstance> CONTROLS;
 
     /**
      * Create a {@link LxControl} object for a control received from the Miniserver
      *
-     * @param client
-     *            websocket client to facilitate communication with Miniserver
-     * @param uuid
-     *            UUID of the control to be created
-     * @param json
-     *            JSON describing the control as received from the Miniserver
-     * @param room
-     *            Room that this control belongs to
-     * @param category
-     *            Category that this control belongs to
-     * @return
-     *         created control object or null if error
+     * @param handlerApi thing handler object representing the Miniserver
+     * @param uuid       UUID of the control to be created
+     * @param json       JSON describing the control as received from the Miniserver
+     * @param room       Room that this control belongs to
+     * @param category   Category that this control belongs to
+     * @return created control object or null if error
      */
-    static LxControl createControl(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room,
-            LxCategory category) {
+    public static LxControl createControl(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json,
+            LxContainer room, LxCategory category) {
         if (json == null || json.type == null || json.name == null) {
             return null;
         }
         String type = json.type.toLowerCase();
-        LxControlInstance control = controls.get(type);
+        LxControlInstance control = CONTROLS.get(type);
         if (control != null) {
-            return control.create(client, uuid, json, room, category);
+            return control.create(handlerApi, uuid, json, room, category);
         }
         return null;
     }
 
     private static void add(LxControlInstance control) {
-        controls.put(control.getType(), control);
+        CONTROLS.put(control.getType(), control);
     }
 }

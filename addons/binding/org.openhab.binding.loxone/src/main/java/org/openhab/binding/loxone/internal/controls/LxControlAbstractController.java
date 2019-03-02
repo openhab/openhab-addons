@@ -10,15 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.loxone.internal.core;
+package org.openhab.binding.loxone.internal.controls;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
+import org.openhab.binding.loxone.internal.core.LxCategory;
+import org.openhab.binding.loxone.internal.core.LxContainer;
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
+import org.openhab.binding.loxone.internal.core.LxUuid;
 
 /**
  * A class that represents controllers, which contain sub-controls, which are also {@link LxControl}
+ * For example: (@link LxControlLightController} or {@link LxControlLightControllerV2}
  *
  * @author Pawel Pieczul - initial contribution
  *
@@ -27,37 +32,29 @@ abstract class LxControlAbstractController extends LxControl {
     /**
      * Create controller object.
      *
-     * @param client
-     *            communication client used to send commands to the Miniserver
-     * @param uuid
-     *            controller's UUID
-     * @param json
-     *            JSON describing the control as received from the Miniserver
-     * @param room
-     *            room to which controller belongs
-     * @param category
-     *            category to which controller belongs
+     * @param handlerApi thing handler object representing the Miniserver
+     * @param uuid       controller's UUID
+     * @param json       JSON describing the control as received from the Miniserver
+     * @param room       room to which controller belongs
+     * @param category   category to which controller belongs
      */
-    LxControlAbstractController(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room,
+    LxControlAbstractController(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
             LxCategory category) {
-        super(client, uuid, json, room, category);
+        super(handlerApi, uuid, json, room, category);
     }
 
     /**
      * Update Miniserver's controller in runtime.
      *
-     * @param json
-     *            JSON describing the control as received from the Miniserver
-     * @param room
-     *            New room that this control belongs to
-     * @param category
-     *            New category that this control belongs to
+     * @param json     JSON describing the control as received from the Miniserver
+     * @param room     New room that this control belongs to
+     * @param category New category that this control belongs to
      */
     @Override
-    void update(LxJsonControl json, LxContainer room, LxCategory category) {
+    public void update(LxJsonControl json, LxContainer room, LxCategory category) {
         super.update(json, room, category);
 
-        for (LxControl control : subControls.values()) {
+        for (LxControl control : getSubControls().values()) {
             control.uuid.setUpdate(false);
         }
         if (json.subControls != null) {
@@ -66,24 +63,24 @@ abstract class LxControlAbstractController extends LxControl {
                 subControl.room = json.room;
                 subControl.cat = json.cat;
                 LxUuid uuid = new LxUuid(subControl.uuidAction);
-                if (subControls.containsKey(uuid)) {
-                    subControls.get(uuid).update(subControl, room, category);
+                if (getSubControls().containsKey(uuid)) {
+                    getSubControls().get(uuid).update(subControl, room, category);
                 } else {
-                    LxControl control = LxControlFactory.createControl(socketClient, uuid, subControl, room, category);
+                    LxControl control = LxControlFactory.createControl(handlerApi, uuid, subControl, room, category);
                     if (control != null) {
-                        subControls.put(control.uuid, control);
+                        getSubControls().put(control.uuid, control);
                     }
                 }
             }
         }
         List<LxUuid> toRemove = new ArrayList<>();
-        for (LxControl control : subControls.values()) {
+        for (LxControl control : getSubControls().values()) {
             if (!control.uuid.getUpdate()) {
                 toRemove.add(control.uuid);
             }
         }
         for (LxUuid id : toRemove) {
-            subControls.remove(id);
+            getSubControls().remove(id);
         }
     }
 }

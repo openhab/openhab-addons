@@ -50,17 +50,13 @@ public enum LxOfflineReason {
     /**
      * Connection attempt failed (before authentication)
      */
-    CONNECT_FAILED,
-    /**
-     * Repeat connection immediately (for example to retry with different authorization scheme)
-     */
-    REPEAT_CONNECTION;
+    CONNECT_FAILED;
 
     /**
      * Converts Miniserver status code to offline reason
      *
      * @param code
-     *            status code received in message response from the Miniserver
+     *                 status code received in message response from the Miniserver
      * @return
      *         converted offline reason
      */

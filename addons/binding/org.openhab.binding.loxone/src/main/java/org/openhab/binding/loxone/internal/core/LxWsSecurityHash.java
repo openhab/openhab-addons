@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxJsonResponse.LxJsonSubResponse;
-import org.openhab.binding.loxone.internal.core.LxServer.Configuration;
 import org.openhab.binding.loxone.internal.core.LxWsClient.LxWebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,24 +31,19 @@ class LxWsSecurityHash extends LxWsSecurity {
     private static final String CMD_GET_KEY = "jdev/sys/getkey";
     private static final String CMD_AUTHENTICATE = "authenticate/";
 
-    private Logger logger = LoggerFactory.getLogger(LxWsSecurityHash.class);
+    private final Logger logger = LoggerFactory.getLogger(LxWsSecurityHash.class);
 
     /**
      * Create a hash-based authentication instance.
      *
-     * @param debugId
-     *            instance of the client used for debugging purposes only
-     * @param configuration
-     *            configuration object for getting and setting custom properties (e.g. token)
-     * @param socket
-     *            websocket to perform communication with Miniserver
-     * @param user
-     *            user to authenticate
-     * @param password
-     *            password to authenticate
+     * @param debugId    instance of the client used for debugging purposes only
+     * @param handlerApi API to the thing handler
+     * @param socket     websocket to perform communication with Miniserver
+     * @param user       user to authenticate
+     * @param password   password to authenticate
      */
-    LxWsSecurityHash(int debugId, Configuration configuration, LxWebSocket socket, String user, String password) {
-        super(debugId, configuration, socket, user, password);
+    LxWsSecurityHash(int debugId, LxServerHandlerApi handlerApi, LxWebSocket socket, String user, String password) {
+        super(debugId, handlerApi, socket, user, password);
     }
 
     @Override
