@@ -43,7 +43,8 @@ import org.osgi.service.component.annotations.Reference;
  * @author markus7017 - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.magentatv", service = ThingHandlerFactory.class)
+@Component(service = { ThingHandlerFactory.class,
+        MagentaTVHandlerFactory.class }, immediate = true, configurationPid = "binding." + BINDING_ID)
 public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RECEIVER);
     private final MagentaTVLogger logger = new MagentaTVLogger(MagentaTVHandlerFactory.class, "Factory");
@@ -54,8 +55,8 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
 
     protected class MagentaTVDevice {
         protected String udn = "";
-        protected String mac = "";
-        protected String deviceId = "";
+        protected @Nullable String mac = "";
+        protected @Nullable String deviceId = "";
         protected String ipAddress = "";
         // protected ThingUID uid = new ThingUID();
         protected Map<String, Object> properties = new HashMap<String, Object>();
@@ -134,7 +135,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                     // new device
                     String mac = StringUtils.substringAfterLast(discoveredUDN, "-");
                     String ipAddress = discoveryProperties.get(PROPERTY_IP).toString();
-                    dev = addNewDevice(discoveredUDN, mac, ipAddress, discoveryProperties, null);
+                    dev = addNewDevice(discoveredUDN, null, ipAddress, mac, discoveryProperties, null);
                 }
             }
         } catch (Exception e) {
@@ -153,14 +154,44 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
      */
     @SuppressWarnings({ "null", "unused" })
     public void registerDevice(String udn, String deviceId, String ipAddress, MagentaTVHandler handler) {
-        logger.trace("Register new device, UDN={}, deviceId={}", udn, deviceId);
+        logger.trace("Register new device, UDN={}, deviceId={}, ipAddress={}", udn, deviceId, ipAddress);
 
         MagentaTVDevice dev = deviceList.get(udn.toUpperCase());
         if (dev == null) {
-            addNewDevice(udn, deviceId, ipAddress, null, handler);
+            addNewDevice(udn, deviceId, ipAddress, null, null, handler);
         } else {
             logger.trace("Device with UDN {} is already registered", udn);
         }
+    }
+
+    private MagentaTVDevice addNewDevice(String udn, @Nullable String deviceId, String ipAddress,
+            @Nullable String macAddress, @Nullable Map<String, Object> discoveryProperties,
+            @Nullable MagentaTVHandler handler) {
+
+        String mac = "";
+        if (macAddress == null) {
+            // build MAC from UDN
+            mac = StringUtils.substringAfterLast(udn, "-");
+        } else {
+            mac = macAddress;
+        }
+        MagentaTVDevice dev = new MagentaTVDevice();
+        synchronized (deviceList) {
+            dev.udn = udn.toUpperCase();
+            dev.mac = mac.toUpperCase();
+            if (deviceId != null) {
+                dev.deviceId = deviceId.toUpperCase();
+            }
+            dev.ipAddress = ipAddress;
+            if (discoveryProperties != null) {
+                dev.properties = discoveryProperties;
+            }
+            dev.thingHandler = handler; // maybe null for new discovered devices
+            deviceList.put(dev.udn, dev);
+        }
+        logger.debug("Device added (UDN={} ,deviceId={}, ipAddress={}, macAddress={}), now {} devices.", udn, deviceId,
+                ipAddress, mac, deviceList.size());
+        return dev;
     }
 
     /**
@@ -178,28 +209,6 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
         } // if
     } // removeDevice()
 
-    private MagentaTVDevice addNewDevice(String udn, String deviceId, String ipAddress,
-            @Nullable Map<String, Object> discoveryProperties, @Nullable MagentaTVHandler handler) {
-
-        // build MAC from UDN
-        String mac = StringUtils.substringAfterLast(udn, "-");
-        MagentaTVDevice dev = new MagentaTVDevice();
-        synchronized (deviceList) {
-            dev.udn = udn.toUpperCase();
-            dev.mac = mac.toUpperCase();
-            dev.deviceId = deviceId;
-            dev.ipAddress = ipAddress;
-            if (discoveryProperties != null) {
-                dev.properties = discoveryProperties;
-            }
-            dev.thingHandler = handler; // maybe null for new discovered devices
-            deviceList.put(dev.udn, dev);
-        }
-        logger.debug("Device added (UDN={} ,deviceId={}, macAddress={}), now {} devices.", udn, deviceId, mac,
-                deviceList.size());
-        return dev;
-    }
-
     /**
      * Lookup a device in the table by an id (this could be the UDN, the MAC
      * address, the IP address or a unique device ID)
@@ -209,10 +218,13 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
      */
     private @Nullable MagentaTVDevice lookupDevice(String uniqueId) {
         MagentaTVDevice dev = null;
+        logger.trace("Lookup device, uniqueId={}", uniqueId);
+        int i = 0;
         for (String key : deviceList.keySet()) {
             synchronized (deviceList) {
                 dev = deviceList.get(key);
-                logger.trace("Check device: deviceId={}, UDN={}, macAddress={}", dev.deviceId, dev.udn, dev.mac);
+                logger.trace("Devies[{}]: deviceId={}, UDN={}, ipAddress={}, macAddress={}", i++, dev.deviceId, dev.udn,
+                        dev.ipAddress, dev.mac);
                 if (dev.deviceId.equalsIgnoreCase(uniqueId) || dev.udn.equalsIgnoreCase(uniqueId)
                         || dev.ipAddress.equals(uniqueId) || dev.mac.equalsIgnoreCase(uniqueId)) {
                     return dev;
@@ -247,11 +259,16 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
      * @param pairingCode    Pairng code computed by the receiver
      * @return true: thing handler was called, false: failed, e.g. unknown device
      */
-    public boolean notifyPairingResult(String notifyDeviceId, String pairingCode) {
+    @SuppressWarnings("null")
+    public boolean notifyPairingResult(String notifyDeviceId, String ipAddress, String pairingCode) {
         try {
-            logger.trace("notifyPairingResult: check {} devices for id '{}'", deviceList.size(), notifyDeviceId);
-            MagentaTVDevice dev = lookupDevice(notifyDeviceId);
+            logger.trace("PairingResult: Check {} devices for id '{}'", deviceList.size(), notifyDeviceId);
+            MagentaTVDevice dev = lookupDevice(ipAddress);
             if ((dev != null) && (dev.thingHandler != null)) {
+                if (dev.deviceId == null) {
+                    logger.trace("deviceId {} assigned for ipAddress {}", notifyDeviceId, ipAddress);
+                    dev.deviceId = notifyDeviceId;
+                }
                 dev.thingHandler.onPairingResult(pairingCode);
                 return true;
             }

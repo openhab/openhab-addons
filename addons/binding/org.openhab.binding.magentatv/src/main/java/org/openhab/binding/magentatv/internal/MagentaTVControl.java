@@ -235,7 +235,7 @@ public class MagentaTVControl {
      */
     public boolean sendPairingRequest() throws Exception {
 
-        logger.info(" Send Pairing Request for device '{}' (deviceID='{}', type='{}', userID='{}')",
+        logger.info("Send Pairing Request for device '{}' (deviceID='{}', type='{}', userID='{}')",
                 thingConfig.getFriendlyName(), thingConfig.getTerminalID(), DEF_FRIENDLY_NAME, thingConfig.getUserID());
         String soapBody = MessageFormat.format(PAIRING_SOAP_BODY, thingConfig.getTerminalID(), DEF_FRIENDLY_NAME,
                 thingConfig.getUserID());

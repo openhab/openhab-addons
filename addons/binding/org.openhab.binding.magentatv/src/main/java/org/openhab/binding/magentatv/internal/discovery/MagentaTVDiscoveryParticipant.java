@@ -71,6 +71,10 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
                         device.getDetails().getFriendlyName(), device.getIdentity().getUdn().getIdentifierString(),
                         device.getDetails().getModelDetails().getModelName(),
                         device.getDetails().getModelDetails().getModelNumber());
+                if (handlerFactory == null) {
+                    logger.error("handlerFactory not yet initialized!");
+                    return null;
+                }
 
                 Map<String, Object> properties = new HashMap<>();
                 properties.put(PROPERTY_VENDOR,

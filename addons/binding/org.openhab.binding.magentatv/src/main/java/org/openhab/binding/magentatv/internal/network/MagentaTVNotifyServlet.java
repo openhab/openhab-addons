@@ -115,7 +115,7 @@ public class MagentaTVNotifyServlet extends HttpServlet {
                 String pairingCode = data.substring(data.indexOf(NOTIFY_PAIRING_CODE) + NOTIFY_PAIRING_CODE.length(),
                         data.indexOf("</messageBody>"));
                 logger.debug("Pairing code {} received for deviceID {}", pairingCode, deviceId);
-                if (!handlerFactory.notifyPairingResult(deviceId, pairingCode)) {
+                if (!handlerFactory.notifyPairingResult(deviceId, ipAddress, pairingCode)) {
                     logger.trace("Pairing data='{}'", data);
                 }
             } else {

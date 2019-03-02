@@ -105,102 +105,91 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     @Override
     public void initialize() {
 
-        String errorMessage = "";
-        try {
-            // TODO: Initialize the handler.
-            // The framework requires you to return from this method quickly. Also, before leaving this method a thing
-            // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in
-            // case you can decide it directly.
-            // In case you can not decide the thing status directly (e.g. for long running connection handshake using
-            // WAN
-            // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in
-            // the
-            // background.
-
-            // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-            // the framework is then able to reuse the resources from the thing handler initialization.
-            // we set this upfront to reliably check status updates in unit tests.
-            updateStatus(ThingStatus.UNKNOWN);
-
-            // Example for background initialization:
-            // All relevant parameters will be derived from the thing config
-            // the final result will be saved to the thing properties and can be viewed in
-            // PaperUI
-            thingConfig.initializeConfig(getConfig().getProperties());
-            if (thingConfig.getUDN().isEmpty()) {
-                // get UDN from device name
-                String uid = this.getThing().getUID().getAsString();
-                String udn = StringUtils.substringAfterLast(uid, ":");
-                thingConfig.setUDN(udn);
-            }
-            if (thingConfig.getMacAddress().isEmpty()) {
-                // get MAC address from UDN (last 12 digits)
-                String macAddress = StringUtils.substringAfterLast(thingConfig.getUDN(), "_");
-                if (macAddress.isEmpty()) {
-                    macAddress = StringUtils.substringAfterLast(thingConfig.getUDN(), "-");
+        // The framework requires you to return from this method quickly. For that the initialization itself is executed
+        // asynchronously
+        updateStatus(ThingStatus.UNKNOWN);
+        scheduler.execute(() -> {
+            String errorMessage = "";
+            try {
+                // Example for background initialization:
+                // All relevant parameters will be derived from the thing config
+                // the final result will be saved to the thing properties and can be viewed in
+                // PaperUI
+                thingConfig.initializeConfig(getConfig().getProperties());
+                if (thingConfig.getUDN().isEmpty()) {
+                    // get UDN from device name
+                    String uid = this.getThing().getUID().getAsString();
+                    String udn = StringUtils.substringAfterLast(uid, ":");
+                    thingConfig.setUDN(udn);
                 }
-                thingConfig.setMacAddress(macAddress);
-            }
+                if (thingConfig.getMacAddress().isEmpty()) {
+                    // get MAC address from UDN (last 12 digits)
+                    String macAddress = StringUtils.substringAfterLast(thingConfig.getUDN(), "_");
+                    if (macAddress.isEmpty()) {
+                        macAddress = StringUtils.substringAfterLast(thingConfig.getUDN(), "-");
+                    }
+                    thingConfig.setMacAddress(macAddress);
+                }
 
-            control = new MagentaTVControl(this.thingConfig, network);
-            Map<String, Object> discoveredProperties = handlerFactory.getDiscoveredProperties(thingConfig.getUDN());
-            if (discoveredProperties != null) {
-                thingConfig.updateConfig(discoveredProperties); // get network parameters from control
-            }
+                control = new MagentaTVControl(this.thingConfig, network);
+                Map<String, Object> discoveredProperties = handlerFactory.getDiscoveredProperties(thingConfig.getUDN());
+                if (discoveredProperties != null) {
+                    thingConfig.updateConfig(discoveredProperties); // get network parameters from control
+                }
 
-            // If userID is empty and credentials are given the Telekom OAuth service is
-            // used to query the userID
-            if (thingConfig.getUserID().isEmpty() && !thingConfig.getAccountName().isEmpty()
-                    && !thingConfig.getAccountName().equals("***") && !thingConfig.getAccountPassword().isEmpty()
-                    && !thingConfig.getAccountPassword().equals("***")) {
-                // run OAuth authentication, this finally provides the userID
-                // if successful replace credentials in the thing config with the userID
-                logger.debug("AuthenticateUser");
-                String name = thingConfig.getAccountName();
-                String password = thingConfig.getAccountPassword();
+                // If userID is empty and credentials are given the Telekom OAuth service is
+                // used to query the userID
+                if (thingConfig.getUserID().isEmpty() && !thingConfig.getAccountName().isEmpty()
+                        && !thingConfig.getAccountName().equals("***") && !thingConfig.getAccountPassword().isEmpty()
+                        && !thingConfig.getAccountPassword().equals("***")) {
+                    // run OAuth authentication, this finally provides the userID
+                    // if successful replace credentials in the thing config with the userID
+                    logger.debug("AuthenticateUser");
+                    String name = thingConfig.getAccountName();
+                    String password = thingConfig.getAccountPassword();
 
-                String userID = control.authenticateUser(name, password);
-                if (!userID.isEmpty()) {
-                    thingConfig.setUserID(userID);
+                    String userID = control.authenticateUser(name, password);
+                    if (!userID.isEmpty()) {
+                        thingConfig.setUserID(userID);
 
-                    // Update thing configuration (persistent) - remove credentials, add userID
-                    Configuration configuration = this.getConfig();
-                    configuration.remove(PROPERTY_ACCT_NAME);
-                    configuration.remove(PROPERTY_ACCT_PWD);
-                    configuration.remove(PROPERTY_USERID);
-                    configuration.put(PROPERTY_ACCT_NAME, "***");
-                    configuration.put(PROPERTY_ACCT_PWD, "***");
-                    configuration.put(PROPERTY_USERID, userID);
-                    thingConfig.setAccountName("");
-                    thingConfig.setAccountPassword("");
-                    this.updateConfiguration(configuration);
+                        // Update thing configuration (persistent) - remove credentials, add userID
+                        Configuration configuration = this.getConfig();
+                        configuration.remove(PROPERTY_ACCT_NAME);
+                        configuration.remove(PROPERTY_ACCT_PWD);
+                        configuration.remove(PROPERTY_USERID);
+                        configuration.put(PROPERTY_ACCT_NAME, "***");
+                        configuration.put(PROPERTY_ACCT_PWD, "***");
+                        configuration.put(PROPERTY_USERID, userID);
+                        thingConfig.setAccountName("");
+                        thingConfig.setAccountPassword("");
+                        this.updateConfiguration(configuration);
+                    }
+                }
+
+                thingConfig.updateConfig(control.getConfig().getProperties()); // get network parameters from control
+
+                if (thingConfig.getUserID().isEmpty()) {
+                    errorMessage = "No userID nor account data given -> unable to pair";
+                } else {
+                    connectReceiver(); // throws exception on error
+                    // change to ThingStatus.ONLINE will be done when the pairing result is received
+                    // (see onPairingResult())
+                    // this.updateStatus(ThingStatus.ONLINE);
+                }
+            } catch (ConnectException e) {
+                errorMessage = "Connection to the receiver failed:, check if stb is powered on: " + e.getMessage();
+            } catch (IOException e) {
+                errorMessage = "Network I/O failed: " + e.getMessage();
+            } catch (Exception e) {
+                errorMessage = "Unable to initialize thing: " + e.getMessage();
+            } finally {
+                if (!errorMessage.isEmpty()) {
+                    logger.error("Initialization failed for device '{}' ({}): {}", thingConfig.getFriendlyName(),
+                            thingConfig.getTerminalID(), errorMessage);
+                    setOnlineState(ThingStatus.OFFLINE, errorMessage);
                 }
             }
-
-            thingConfig.updateConfig(control.getConfig().getProperties()); // get network parameters from control
-
-            if (thingConfig.getUserID().isEmpty()) {
-                errorMessage = "No userID nor account data given -> unable to pair";
-            } else {
-                connectReceiver(); // throws exception on error
-                // change to ThingStatus.ONLINE will be done when the pairing result is received
-                // (see onPairingResult())
-                // this.updateStatus(ThingStatus.ONLINE);
-            }
-        } catch (ConnectException e) {
-            errorMessage = "Connection to the receiver failed:, check if stb is powered on: " + e.getMessage();
-        } catch (IOException e) {
-            errorMessage = "Network I/O failed: " + e.getMessage();
-        } catch (Exception e) {
-            errorMessage = "Unable to initialize thing: " + e.getMessage();
-        } finally {
-            if (!errorMessage.isEmpty()) {
-                logger.error("Initialization failed for device '{}' ({}): {}", thingConfig.getFriendlyName(),
-                        thingConfig.getTerminalID(), errorMessage);
-                setOnlineState(ThingStatus.OFFLINE, errorMessage);
-            }
-        }
-
+        });
     }
 
     /**
