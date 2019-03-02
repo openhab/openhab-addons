@@ -125,7 +125,7 @@ public class ThirdGenerationHandler extends BaseThingHandler {
     public void dispose() {
         if (refreshScheduler != null) {
             refreshScheduler.cancel(true);
-			refreshScheduler = null;
+            refreshScheduler = null;
         }
         super.dispose();
     }
@@ -175,15 +175,19 @@ public class ThirdGenerationHandler extends BaseThingHandler {
                 return;
             }
             if (updateMessageContentResponse.getStatus() == 401) {
-                // session not valid (timed out?)
-                logger.info("Session expired");
+                // session not valid (timed out? device rebooted?)
+                logger.info("Session expired - performing retry");
                 authenticate();
                 // Retry
                 updateMessageContentResponse = ThirdGenerationHttpHelper.executeHttpPost(httpClient, config.url,
                         PROCESSDATA, updateMessageJsonArray, sessionId);
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException e) {
             // Communication problem
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_HTTP);
+            return;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_HTTP);
             return;
         }
@@ -206,6 +210,7 @@ public class ThirdGenerationHandler extends BaseThingHandler {
                 updateChannelValue(channel.channelUID, channel.dataType, valueAsDouble);
             }
         }
+        updateStatus(ThingStatus.ONLINE);
     }
 
     /**
@@ -292,10 +297,6 @@ public class ThirdGenerationHandler extends BaseThingHandler {
      * for fix)
      */
     private final void authenticate() {
-        if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            return;
-        }
         // Create random numbers
         String clientNonce = ThirdGenerationEncryptionHelper.createClientNonce();
         // Perform first step of authentication
