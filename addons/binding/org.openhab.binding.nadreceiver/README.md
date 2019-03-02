@@ -1,6 +1,8 @@
 # <bindingName> Binding
 
-If you own a NAD receiver such as the T758v3 (together with the BluOS module in that case) and your device is connected to your internal network, this binding is potentially for you. This binding connects to your NAD receiver using the Telnet protocol and exchanging text messages with it. Theoretically all NAD receivers should support this protocol. My old T756 even already supported it via a MDC module having a LAN interface.
+If you own a NAD receiver such as the T758v3 (together with the BluOS module in that case) and your device is connected to your internal network, this binding is potentially for you.<br />
+This binding connects to your NAD receiver using the Telnet protocol and exchanging text messages with it. Theoretically all NAD receivers should support this protocol.<br />
+My old T756 even already supported it via a MDC module having a LAN interface.
 
 ## Supported Things
 
@@ -13,7 +15,8 @@ For the moment only one ``Thing`` that should support all NAD receivers (e.g. T7
 
 ## Discovery
 
-_Currently no discovery implemented (not sure how to do it). You have to know your NAD receiver IP address but this shouldn't be a big deal if you are reading these lines ;-) _
+_Currently no discovery implemented (not sure how to do it)_<br />
+_You have to know your NAD receiver IP address but this shouldn't be a big deal if you are reading these lines ;-) _
 
 ## Binding Configuration
 
@@ -30,7 +33,7 @@ Several ``Thing`` configuration
  * maxSources (optional, default:9) - Maximum number of sources over which the binding iterates (from 1 to maxSources), it might differ depending on your receiver 
 
 ```
-Thing nadreceiver:receiver:t758v3 [hostname="192.168.1.103" port="23" reconnectInterval="5" heartbeatInterval="5" maxSources="9"]
+Thing nadreceiver:receiver:t758v3 [hostname="192.168.1.103", port="23", reconnectInterval="5", heartbeatInterval="5", maxSources="9"]
 ```
 Configuration via PaperUI is probably much faster and easier, but manual configuration as above is also possible.
 
@@ -38,11 +41,11 @@ Configuration via PaperUI is probably much faster and easier, but manual configu
 
 Currently supported channels:
 
- * model - Text of the model name returned by the receiver (e.g. T758)
- * power - Power status (ON or OFF)
- * mute - Mute status (ON or OFF)
- * volume - Dimmer of the volume (From 0% to 100%, corresponds to -99dB to 11dB)
- * source - Currently selected source on the receiver (Note that only "enabled" sources on the receiver are shown in the options list)
+ * ``model`` - Text of the model name returned by the receiver (e.g. T758)
+ * ``power`` - Power status (ON or OFF)
+ * ``mute`` - Mute status (ON or OFF)
+ * ``volume`` - Dimmer of the volume (From 0% to 100%, corresponds to -99dB to 11dB)
+ * ``source`` - Currently selected source on the receiver (Note that only "enabled" sources on the receiver are shown in the options list)
  
 ## Full Example
 
@@ -66,12 +69,13 @@ String NAD_Source	"Source"		(GroupNad)	{channel="nadreceiver:receiver:t758v3:sou
 
 ```
 
-_ With this configuration you will have a group of items (``GroupNad``) grouping all currently supported channels. Note that the group is also under another general group (``GroupLivingRoom``)_
+_With this configuration you will have a group of items (``GroupNad``) grouping all currently supported channels._<br />
+_Note that the group is also under another general group (``GroupLivingRoom``)_
 
 ## Example of usage
 
-_For my own purpose, I use this binding to enable a smart power plug powering my amplifier (It doesn't have any useful standby mode). I save 11W consumption with this method! The idea is to trigger power ON and power OFF to enable/disable the smart power plug._
-
+_For my own purpose, I use this binding to enable a smart power plug powering my amplifier (It doesn't have any useful standby mode)._<br />
+_I save 11W consumption with this method! The idea is to trigger power ON and power OFF to enable/disable the smart power plug._<br />
 _With this binding and a mystorm binding I created following rules : _ (file ``*.rules``)
 
 ```
