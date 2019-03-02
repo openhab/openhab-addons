@@ -49,10 +49,10 @@ public final class F730Channels extends BaseChannels {
     // Compressor
     public static final Channel CH_43181 = INSTANCE.addChannel(
             new QuantityChannel("43181", "Chargepump speed", ChannelGroup.COMPRESSOR, SmartHomeUnits.PERCENT));
-    public static final Channel CH_43424 = INSTANCE.addChannel(
-            new QuantityChannel("43424", "EB100-EP14 Tot. HW op.time compr", ChannelGroup.COMPRESSOR, SIUnits.HOUR));
-    public static final Channel CH_43420 = INSTANCE.addChannel(
-            new QuantityChannel("43420", "EB100-EP14 Tot. op.time compr", ChannelGroup.COMPRESSOR, SIUnits.HOUR));
+    public static final Channel CH_43424 = INSTANCE.addChannel(new QuantityChannel("43424",
+            "EB100-EP14 Tot. HW op.time compr", ChannelGroup.COMPRESSOR, SmartHomeUnits.HOUR));
+    public static final Channel CH_43420 = INSTANCE.addChannel(new QuantityChannel("43420",
+            "EB100-EP14 Tot. op.time compr", ChannelGroup.COMPRESSOR, SmartHomeUnits.HOUR));
     public static final Channel CH_43416 = INSTANCE
             .addChannel(new Channel("43416", "EB100-EP14 Compressor starts", ChannelGroup.COMPRESSOR));
     public static final Channel CH_40022 = INSTANCE.addChannel(new QuantityChannel("40022", "EB100-EP14-BT17 Suction",
