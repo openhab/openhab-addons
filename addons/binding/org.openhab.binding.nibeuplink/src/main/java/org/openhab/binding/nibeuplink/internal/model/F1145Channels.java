@@ -48,17 +48,16 @@ public final class F1145Channels extends BaseChannels {
     public static final Channel CH_44302 = INSTANCE
             .addChannel(new QuantityChannel("44302", "Heat Meter - Cooling Cpr EP14", ChannelGroup.GENERAL,
                     ScaleFactor.DIV_10, MetricPrefix.KILO(SmartHomeUnits.WATT_HOUR)));
-    public static final Channel CH_44270 = INSTANCE
-            .addChannel(new QuantityChannel("44270", "Calculated Cooling Supply Temperature S1", ChannelGroup.GENERAL,
-                    ScaleFactor.DIV_10, SIUnits.CELSIUS));
+    public static final Channel CH_44270 = INSTANCE.addChannel(new QuantityChannel("44270",
+            "Calculated Cooling Supply Temperature S1", ChannelGroup.GENERAL, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final Channel CH_43103 = INSTANCE
             .addChannel(new Channel("43103", "HPAC state", ChannelGroup.GENERAL));
 
     // Compressor
-    public static final Channel CH_43424 = INSTANCE.addChannel(
-            new QuantityChannel("43424", "EB100-EP14 Tot. HW op.time compr", ChannelGroup.COMPRESSOR, SIUnits.HOUR));
-    public static final Channel CH_43420 = INSTANCE.addChannel(
-            new QuantityChannel("43420", "EB100-EP14 Tot. op.time compr", ChannelGroup.COMPRESSOR, SIUnits.HOUR));
+    public static final Channel CH_43424 = INSTANCE.addChannel(new QuantityChannel("43424",
+            "EB100-EP14 Tot. HW op.time compr", ChannelGroup.COMPRESSOR, SmartHomeUnits.HOUR));
+    public static final Channel CH_43420 = INSTANCE.addChannel(new QuantityChannel("43420",
+            "EB100-EP14 Tot. op.time compr", ChannelGroup.COMPRESSOR, SmartHomeUnits.HOUR));
     public static final Channel CH_43416 = INSTANCE
             .addChannel(new Channel("43416", "EB100-EP14 Compressor starts", ChannelGroup.COMPRESSOR));
     public static final Channel CH_40022 = INSTANCE.addChannel(new QuantityChannel("40022", "EB100-EP14-BT17 Suction",
@@ -73,8 +72,8 @@ public final class F1145Channels extends BaseChannels {
             "EB100-EP14-BT10 Brine In Temperature", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final Channel CH_40016 = INSTANCE.addChannel(new QuantityChannel("40016",
             "EB100-EP14-BT11 Brine Out Temperature", ChannelGroup.COMPRESSOR, ScaleFactor.DIV_10, SIUnits.CELSIUS));
-    public static final Channel CH_43439 = INSTANCE.addChannel(new QuantityChannel("43439",
-            "EP14-GP2 Brine Pump Speed", ChannelGroup.COMPRESSOR, SmartHomeUnits.PERCENT));
+    public static final Channel CH_43439 = INSTANCE.addChannel(
+            new QuantityChannel("43439", "EP14-GP2 Brine Pump Speed", ChannelGroup.COMPRESSOR, SmartHomeUnits.PERCENT));
 
     // Airsupply
     public static final Channel CH_40025 = INSTANCE.addChannel(new QuantityChannel("40025", "BT20 Exhaust air temp. 1",
