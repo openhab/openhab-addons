@@ -79,12 +79,12 @@ public final class VVM320Channels extends BaseChannels {
             new QuantityChannel("44396", "EB101 Speed charge pump", ChannelGroup.COMPRESSOR, SmartHomeUnits.PERCENT));
     public static final Channel CH_44703 = INSTANCE
             .addChannel(new Channel("44703", "EB101-EP14 Defrosting Outdoor Unit", ChannelGroup.COMPRESSOR));
-    public static final Channel CH_44073 = INSTANCE.addChannel(
-            new QuantityChannel("44073", "EB101-EP14 Tot. HW op.time compr", ChannelGroup.COMPRESSOR, SIUnits.HOUR));
+    public static final Channel CH_44073 = INSTANCE.addChannel(new QuantityChannel("44073",
+            "EB101-EP14 Tot. HW op.time compr", ChannelGroup.COMPRESSOR, SmartHomeUnits.HOUR));
     public static final Channel CH_40737 = INSTANCE.addChannel(new QuantityChannel("40737",
-            "EB101-EP14 Tot. Cooling op.time compr", ChannelGroup.COMPRESSOR, SIUnits.HOUR));
-    public static final Channel CH_44071 = INSTANCE.addChannel(
-            new QuantityChannel("44071", "EB101-EP14 Tot. op.time compr", ChannelGroup.COMPRESSOR, SIUnits.HOUR));
+            "EB101-EP14 Tot. Cooling op.time compr", ChannelGroup.COMPRESSOR, SmartHomeUnits.HOUR));
+    public static final Channel CH_44071 = INSTANCE.addChannel(new QuantityChannel("44071",
+            "EB101-EP14 Tot. op.time compr", ChannelGroup.COMPRESSOR, SmartHomeUnits.HOUR));
     public static final Channel CH_44069 = INSTANCE
             .addChannel(new Channel("44069", "EB101-EP14 Compressor starts", ChannelGroup.COMPRESSOR));
     public static final Channel CH_44061 = INSTANCE.addChannel(new QuantityChannel("44061", "EB101-EP14-BT17 Suction",
