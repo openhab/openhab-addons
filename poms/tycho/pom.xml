@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab</groupId>
+    <artifactId>pom-tycho</artifactId>
+    <version>2.5.0-SNAPSHOT</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>org.openhab</groupId>
+  <artifactId>pom-addons2</artifactId>
+  <version>2.5.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>openHAB 2 Add-ons</name>
+
+  <description>This is the open Home Automation Bus (openHAB)</description>
+
+  <organization>
+    <name>openHAB.org</name>
+    <url>http://www.openhab.org</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>Eclipse Public License 2.0</name>
+      <url>https://www.eclipse.org/legal/epl-2.0/</url>
+    </license>
+  </licenses>
+
+  <modules>
+    <module>../../addons</module>
+  </modules>
+
+  <scm>
+    <connection>scm:git:${scm.gitBaseUrl}/openhab2-addons.git</connection>
+    <developerConnection>scm:git:${scm.gitBaseUrl}/openhab2-addons.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://github.com/openhab/openhab2-addons</url>
+  </scm>
+
+  <issueManagement>
+    <system>Github</system>
+    <url>https://github.com/openhab/openhab2-addons/issues</url>
+  </issueManagement>
+
+  <distributionManagement>
+    <repository>
+      <id>bintray</id>
+      <url>https://api.bintray.com/maven/openhab/mvn/openhab2-addons/;publish=1</url>
+    </repository>
+    <snapshotRepository>
+      <id>jfrog</id>
+      <url>https://openhab.jfrog.io/openhab/libs-snapshot-local</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <properties>
+    <ohc.version>2.5.0-SNAPSHOT</ohc.version>
+  </properties>
+
+  <repositories>
+
+    <!-- releases -->
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>jcenter</id>
+      <name>JCenter Repository</name>
+      <url>https://jcenter.bintray.com/</url>
+    </repository>
+
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>openhab-artifactory-release</id>
+      <name>JFrog Artifactory Repository</name>
+      <url>https://openhab.jfrog.io/openhab/libs-release</url>
+    </repository>
+
+    <!-- snapshots -->
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+      <id>openhab-artifactory-snapshot</id>
+      <name>JFrog Artifactory Repository</name>
+      <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
+    </repository>
+
+    <!-- openHAB dependencies p2 repository -->
+    <repository>
+      <id>p2-openhab-deps-repo</id>
+      <url>https://dl.bintray.com/openhab/p2/openhab-deps-repo/${ohdr.version}</url>
+      <layout>p2</layout>
+    </repository>
+
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>jcenter</id>
+      <name>JCenter Repository</name>
+      <url>https://jcenter.bintray.com/</url>
+    </pluginRepository>
+    <pluginRepository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>artifactory</id>
+      <name>JFrog Artifactory Repository</name>
+      <url>https://openhab.jfrog.io/openhab/libs-release</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.openhab.tools.sat</groupId>
+          <artifactId>sat-plugin</artifactId>
+          <version>{sat.version}</version>
+          <configuration>
+            <checkstyleProperties>${basedirRoot}/../tools/checkstyle.properties</checkstyleProperties>
+            <checkstyleFilter>${basedirRoot}/../tools/checkstyle_suppressions.xml</checkstyleFilter>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.commonjava.maven.plugins</groupId>
+        <artifactId>directory-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
