@@ -18,13 +18,9 @@ import static org.junit.Assert.assertThat;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.junit.Test;
-import org.openhab.binding.homematic.internal.converter.ConverterException;
-import org.openhab.binding.homematic.internal.converter.ConverterFactory;
-import org.openhab.binding.homematic.internal.converter.TypeConverter;
 import org.openhab.binding.homematic.internal.converter.type.AbstractTypeConverter;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 
@@ -94,7 +90,7 @@ public class ConvertFromBindingTest extends BaseConverterTest {
         assertThat(((QuantityType<?>) convertedState).getDimension(),
                 is(QuantityDimension.NONE.divide(QuantityDimension.TIME)));
         assertThat(((QuantityType<?>) convertedState).intValue(), is(50000));
-        assertThat(((QuantityType<?>) convertedState).toUnit(SIUnits.HERTZ).intValue(), is(50));
+        assertThat(((QuantityType<?>) convertedState).toUnit(SmartHomeUnits.HERTZ).intValue(), is(50));
 
         floatQuantityDp.setValue(0.7);
         floatQuantityDp.setUnit("100%");
