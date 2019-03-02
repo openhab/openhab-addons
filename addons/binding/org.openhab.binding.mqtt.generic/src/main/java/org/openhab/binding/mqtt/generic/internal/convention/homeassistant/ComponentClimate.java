@@ -17,8 +17,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 
-import com.google.gson.Gson;
-
 /**
  * A MQTT climate component, following the https://www.home-assistant.io/components/climate.mqtt/ specification.
  *
@@ -39,8 +37,8 @@ public class ComponentClimate extends AbstractComponent<ComponentClimate.Config>
     }
 
     public ComponentClimate(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
-        super(thing, haID, configJSON, gson, Config.class);
+            @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
+        super(thing, haID, configJSON, Config.class);
         throw new UnsupportedOperationException("Component:Climate not supported yet");
     }
 

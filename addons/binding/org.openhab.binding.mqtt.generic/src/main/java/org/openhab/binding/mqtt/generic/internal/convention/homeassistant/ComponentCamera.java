@@ -18,8 +18,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.ImageValue;
 
-import com.google.gson.Gson;
-
 /**
  * A MQTT camera, following the https://www.home-assistant.io/components/camera.mqtt/ specification.
  *
@@ -43,8 +41,8 @@ public class ComponentCamera extends AbstractComponent<ComponentCamera.Config> {
     };
 
     public ComponentCamera(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
-        super(thing, haID, configJSON, gson, Config.class);
+            @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
+        super(thing, haID, configJSON, Config.class);
 
         ImageValue value = new ImageValue();
         channels.put(cameraChannelID, new CChannel(this, cameraChannelID, value, //

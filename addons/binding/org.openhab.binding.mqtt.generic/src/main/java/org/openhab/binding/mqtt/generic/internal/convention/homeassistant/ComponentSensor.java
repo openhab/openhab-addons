@@ -18,8 +18,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.TextValue;
 
-import com.google.gson.Gson;
-
 /**
  * A MQTT sensor, following the https://www.home-assistant.io/components/sensor.mqtt/ specification.
  *
@@ -46,8 +44,8 @@ public class ComponentSensor extends AbstractComponent<ComponentSensor.Config> {
     };
 
     public ComponentSensor(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
-        super(thing, haID, configJSON, gson, Config.class);
+            @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
+        super(thing, haID, configJSON, Config.class);
 
         if (config.force_update) {
             throw new UnsupportedOperationException("Component:Sensor does not support forced updates");

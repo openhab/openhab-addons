@@ -35,6 +35,7 @@ import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.CChann
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.CFactory;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents.ComponentDiscovered;
+import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HAConfigTypeAdapterFactory;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HaID;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HandlerConfiguration;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelState;
@@ -44,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Handles HomeAssistant MQTT object things. Such an HA Object can have multiple HA Components with different instances
@@ -93,7 +95,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         this.channelTypeProvider = channelTypeProvider;
         this.attributeReceiveTimeout = attributeReceiveTimeout;
         this.delayedProcessing = new DelayedBatchProcessing<>(attributeReceiveTimeout, this, scheduler);
-        this.discoverComponents = new DiscoverComponents(thing.getUID(), scheduler, this, gson);
+        this.discoverComponents = new DiscoverComponents(thing.getUID(), scheduler, this);
     }
 
     @SuppressWarnings({ "null", "unused" })

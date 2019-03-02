@@ -40,21 +40,21 @@ public class HAConfigurationTests {
                 + "    \"val_tpl\":\"{{value_json.POWER}}\",\n" //
                 + "    \"pl_off\":\"OFF\",\n" //
                 + "    \"pl_on\":\"ON\",\n" //
-                + "    \"avty_t\":\"~tele/LWT\",\n" //
+                + "    \"avty_t\":\"tele/LWT/~\",\n" //
                 + "    \"pl_avail\":\"Online\",\n" //
                 + "    \"pl_not_avail\":\"Offline\",\n" //
                 + "    \"uniq_id\":\"86C9AC_RL_1\",\n" //
                 + "    \"device\":{\n" //
-                + "        \"identifiers\":[\"86C9AC\"],\n" //
+                + "        \"ids\":[\"86C9AC\"],\n" //
                 + "        \"name\":\"Licht Dachterasse\",\n" //
-                + "        \"model\":\"Sonoff TH\",\n" //
-                + "        \"sw_version\":\"6.4.1(release-sensors)\",\n" //
-                + "        \"manufacturer\":\"Tasmota\"\n" //
+                + "        \"mdl\":\"Sonoff TH\",\n" //
+                + "        \"sw\":\"6.4.1(release-sensors)\",\n" //
+                + "        \"mf\":\"Tasmota\"\n" //
                 + "    },\n" //
                 + "    \"~\":\"sonoff-2476/\"\n" //
                 + "}";
 
-        HAConfiguration config = HAConfiguration.fromString(json, gson);
+        HAConfiguration config = HAConfiguration.FACTORY.fromString(json);
 
         assertThat(config.name, is("Licht Dachterasse"));
         assertThat(config.device, is(notNullValue()));
@@ -85,7 +85,7 @@ public class HAConfigurationTests {
                 + "    ]\n" //
                 + "}";
 
-        HAConfiguration config = HAConfiguration.fromString(json, gson, ComponentFan.Config.class);
+        HAConfiguration config = HAConfiguration.FACTORY.fromString(json, ComponentFan.Config.class);
         assertThat(config.name, is("Bedroom Fan"));
 
     }

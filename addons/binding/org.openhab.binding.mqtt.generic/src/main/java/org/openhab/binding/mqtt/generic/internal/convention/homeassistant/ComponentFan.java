@@ -18,8 +18,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.OnOffValue;
 
-import com.google.gson.Gson;
-
 /**
  * A MQTT Fan component, following the https://www.home-assistant.io/components/fan.mqtt/ specification.
  *
@@ -46,8 +44,8 @@ public class ComponentFan extends AbstractComponent<ComponentFan.Config> {
     };
 
     public ComponentFan(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener updateListener, Gson gson) {
-        super(thing, haID, configJSON, gson, Config.class);
+            @Nullable ChannelStateUpdateListener updateListener) {
+        super(thing, haID, configJSON, Config.class);
 
         OnOffValue value = new OnOffValue(config.payload_on, config.payload_off);
         channels.put(switchChannelID, new CChannel(this, switchChannelID, value, //

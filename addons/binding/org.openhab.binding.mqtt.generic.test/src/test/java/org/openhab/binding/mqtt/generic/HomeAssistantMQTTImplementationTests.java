@@ -56,8 +56,6 @@ import org.osgi.service.cm.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * A full implementation test, that starts the embedded MQTT broker and publishes a homeassistant MQTT discovery device
  * tree.
@@ -159,7 +157,7 @@ public class HomeAssistantMQTTImplementationTests extends JavaOSGiTest {
 
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
         DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing,
-                scheduler, channelStateUpdateListener, new Gson()));
+                scheduler, channelStateUpdateListener));
 
         // The DiscoverComponents object calls ComponentDiscovered callbacks.
         // In the following implementation we add the found component to the `haComponents` map

@@ -27,8 +27,6 @@ import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * Responsible for subscribing to the HomeAssistant MQTT components wildcard topic, either
  * in a time limited discovery mode or as a background discovery.
@@ -43,7 +41,6 @@ public class DiscoverComponents implements MqttMessageSubscriber {
     private final @Nullable ChannelStateUpdateListener updateListener;
 
     protected final CompletableFuture<@Nullable Void> discoverFinishedFuture = new CompletableFuture<>();
-    private final Gson gson;
 
     private @Nullable ScheduledFuture<?> stopDiscoveryFuture;
     private WeakReference<@Nullable MqttBrokerConnection> connectionRef = new WeakReference<>(null);
@@ -67,11 +64,10 @@ public class DiscoverComponents implements MqttMessageSubscriber {
      * @param channelStateUpdateListener Channel update listener. Usually the handler.
      */
     public DiscoverComponents(ThingUID thingUID, ScheduledExecutorService scheduler,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
+            @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
         this.thingUID = thingUID;
         this.scheduler = scheduler;
         this.updateListener = channelStateUpdateListener;
-        this.gson = gson;
     }
 
     @Override
@@ -81,7 +77,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         }
         HaID haID = new HaID(topic);
         String config = new String(payload);
-        AbstractComponent<?> component = CFactory.createComponent(thingUID, haID, config, updateListener, gson);
+        AbstractComponent<?> component = CFactory.createComponent(thingUID, haID, config, updateListener);
         if (component != null) {
             logger.trace("Found HomeAssistant thing {} component {}", haID.objectID, haID.component);
             if (discoveredListener != null) {

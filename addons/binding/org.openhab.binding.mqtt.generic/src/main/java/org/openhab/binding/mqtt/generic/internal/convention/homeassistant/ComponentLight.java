@@ -27,8 +27,6 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.ColorValue;
 
-import com.google.gson.Gson;
-
 /**
  * A MQTT light, following the https://www.home-assistant.io/components/light.mqtt/ specification.
  *
@@ -100,8 +98,8 @@ public class ComponentLight extends AbstractComponent<ComponentLight.Config> imp
     private final @Nullable ChannelStateUpdateListener channelStateUpdateListener;
 
     public ComponentLight(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
-        super(thing, haID, configJSON, gson, Config.class);
+            @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
+        super(thing, haID, configJSON, Config.class);
         this.channelStateUpdateListener = channelStateUpdateListener;
         ColorValue value = new ColorValue(true, config.payload_on, config.payload_off, 100);
 

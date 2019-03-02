@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -28,8 +29,55 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Jochen Klein - Initial contribution
  */
+
 @NonNullByDefault
 public abstract class HAConfiguration {
+
+    public static final Factory FACTORY = new Factory();
+
+    public static class Factory {
+
+        private final Gson gson;
+
+        private Factory() {
+            this.gson = new GsonBuilder().registerTypeAdapterFactory(HAConfigTypeAdapterFactory.INSTANCE).create();
+        }
+
+        /**
+         * This class is needed, to be able to parse only the common base attributes.
+         * Without this, {@link HAConfiguration} cannot be instantiated, as it is abstract.
+         * This is needed during the discovery.
+         */
+        private static class Config extends HAConfiguration {
+            public Config() {
+                super("private");
+            }
+        }
+
+        /**
+         * Parse the configJSON into a subclass of {@link HAConfiguration}
+         *
+         * @param configJSON
+         * @param gson
+         * @param clazz
+         * @return configuration object
+         */
+        public <C extends HAConfiguration> C fromString(final String configJSON, final Class<C> clazz) {
+            return gson.fromJson(configJSON, clazz);
+        }
+
+        /**
+         * Parse the base properties of the configJSON into a {@link HAConfiguration}
+         *
+         * @param configJSON
+         * @param gson
+         * @return configuration object
+         */
+        public HAConfiguration fromString(final String configJSON) {
+            return fromString(configJSON, Config.class);
+        }
+
+    }
 
     public String name;
 
@@ -45,41 +93,6 @@ public abstract class HAConfiguration {
 
     @SerializedName(value = "~")
     protected String tilde = "";
-
-    /**
-     * This class is needed, to be able to parse only the common base attributes.
-     * Without this, {@link HAConfiguration} cannot be instantiated, as it is abstract.
-     * This is needed during the discovery.
-     */
-    private static class Config extends HAConfiguration {
-        public Config() {
-            super("private");
-        }
-    }
-
-    /**
-     * Parse the configJSON into a subclass of {@link HAConfiguration}
-     *
-     * @param configJSON
-     * @param gson
-     * @param clazz
-     * @return configuration object
-     */
-    public static <C extends HAConfiguration> C fromString(final String configJSON, final Gson gson,
-            final Class<C> clazz) {
-        return gson.fromJson(configJSON, clazz);
-    }
-
-    /**
-     * Parse the base properties of the configJSON into a {@link HAConfiguration}
-     *
-     * @param configJSON
-     * @param gson
-     * @return configuration object
-     */
-    public static HAConfiguration fromString(final String configJSON, final Gson gson) {
-        return fromString(configJSON, gson, Config.class);
-    }
 
     protected HAConfiguration(String defaultName) {
         this.name = defaultName;
