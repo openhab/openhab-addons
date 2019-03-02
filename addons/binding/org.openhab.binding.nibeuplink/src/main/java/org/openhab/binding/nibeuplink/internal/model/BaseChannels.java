@@ -104,7 +104,7 @@ public class BaseChannels extends AbstractChannels {
     public static final Channel CH_40012 = INSTANCE.addChannel(new QuantityChannel("40012",
             "EB100-EP14-BT3 Return temp", ChannelGroup.BASE, ScaleFactor.DIV_10, SIUnits.CELSIUS));
     public static final Channel CH_40072 = INSTANCE.addChannel(new QuantityChannel("40072", "BF1 EP14 Flow",
-            ChannelGroup.BASE, ScaleFactor.DIV_10, SIUnits.LITRE.divide(SIUnits.METRE)));
+            ChannelGroup.BASE, ScaleFactor.DIV_10, SmartHomeUnits.LITRE.divide(SIUnits.METRE)));
     public static final Channel CH_43437 = INSTANCE.addChannel(
             new QuantityChannel("43437", "Supply Pump Speed EP14", ChannelGroup.BASE, SmartHomeUnits.PERCENT));
     public static final Channel CH_40079 = INSTANCE.addChannel(new QuantityChannel("40079", "EB100-BE3 Current",
@@ -117,8 +117,8 @@ public class BaseChannels extends AbstractChannels {
             .addChannel(new SwitchChannel("10033", "Int. el.add. blocked", ChannelGroup.BASE));
 
     // additional heater
-    public static final Channel CH_43081 = INSTANCE.addChannel(
-            new QuantityChannel("43081", "Tot. op.time add.", ChannelGroup.BASE, ScaleFactor.DIV_10, SIUnits.HOUR));
+    public static final Channel CH_43081 = INSTANCE.addChannel(new QuantityChannel("43081", "Tot. op.time add.",
+            ChannelGroup.BASE, ScaleFactor.DIV_10, SmartHomeUnits.HOUR));
     public static final Channel CH_43084 = INSTANCE.addChannel(new QuantityChannel("43084", "Int. el.add. Power",
             ChannelGroup.BASE, ScaleFactor.DIV_100, MetricPrefix.KILO(SmartHomeUnits.WATT)));
     public static final Channel CH_47212 = INSTANCE.addChannel(new QuantityChannel("47212", "Max int add. power",
