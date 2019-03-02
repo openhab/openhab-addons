@@ -123,19 +123,18 @@ Group weatherDay6 "Weather in 6 days"
 
 // ----------------- meteoblue ITEMS -------------------------------------------
 DateTime todayForecastDate  "Forecast for [%1$tY/%1$tm/%1$td]"  <calendar>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#forecastDate"}
-String todayPCode    "Pictocode [%d]"  <iday>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#condition"}
-String todayCond     "Condition [%s]"  <iday>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#condition"}
-String todayIcon     "Icon [%s]"       (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#icon"}
+String todayCond     "Condition [%s]"  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#condition"}
+Image todayIcon     "Icon"       (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#icon"}
 Number todayUV       "UV Index [%d]"  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#UVIndex"}
-Number:Temperature  todayTempL  "Low Temp [%.2f °F]"   <temperature>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#minTemperature"}
-Number:Temperature  todayTempH  "High Temp [%.2f °F]"  <temperature>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#maxTemperature"}
+Number:Temperature  todayTempL  "Low Temp [%.2f Â°F]"   <temperature>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#minTemperature"}
+Number:Temperature  todayTempH  "High Temp [%.2f Â°F]"  <temperature>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#maxTemperature"}
 Number todayHumM     "Mean Humidity [%d %%]"  <humidity>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#relativeHumidityMean"}
 Number todayPrecPr   "Prec. Prob. [%d %%]"  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#precipitationProbability"}
 Number:Length todayPrec     "Total Prec. [%.2f in]"  <rain>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#precipitation"}
 Number:Length todayRain     "Rainfall [%.2f in]"  <rain>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#convectivePrecipitation"}
 Image  todayRainArea "Rain area"   <rain>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#rainArea"}
-Number todaySnowF    "Snow fraction [%.2f]"  <climate>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#snowFraction"}
-Number:Length  todaySnow     "Snowfall [%.2f in]"  <rain>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#snowFall"}
+Number todaySnowF    "Snow fraction [%.2f]"  <snow>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#snowFraction"}
+Number:Length  todaySnow     "Snowfall [%.2f in]"  <snow>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#snowFall"}
 Number:Pressure  todayPressL   "Low Pressure [%d %unit%]"   <pressure>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#minSeaLevelPressure"}
 Number:Pressure  todayPressH   "High Pressure [%d %unit%]"  <pressure>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#maxSeaLevelPressure"}
 Number todayWindDir   "Wind Direction [%d]"  <wind>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#windDirection"}
