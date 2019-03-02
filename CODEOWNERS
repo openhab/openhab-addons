@@ -101,6 +101,7 @@
 /addons/binding/org.openhab.binding.mqtt.generic/ @davidgraeff
 /addons/binding/org.openhab.binding.mqtt.generic.test/ @davidgraeff
 /addons/binding/org.openhab.binding.mqtt.test/ @davidgraeff
+/addons/binding/org.openhab.binding.nanoleaf/ @raepple
 /addons/binding/org.openhab.binding.neato/ @jjlauterbach
 /addons/binding/org.openhab.binding.neeo/ @tmrobert8
 /addons/binding/org.openhab.binding.nest/ @wborn
@@ -155,6 +156,7 @@
 /addons/binding/org.openhab.binding.somfytahoma/ @octa22
 /addons/binding/org.openhab.binding.sonos/ @kgoderis @lolodomo
 /addons/binding/org.openhab.binding.sonyaudio/ @freke
+/addons/binding/org.openhab.binding.spotify/ @Hilbrand
 /addons/binding/org.openhab.binding.squeezebox/ @digitaldan @mhilbush
 /addons/binding/org.openhab.binding.synopanalyzer/ @clinique
 /addons/binding/org.openhab.binding.systeminfo/ @svilenvul
