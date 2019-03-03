@@ -1009,6 +1009,11 @@
         <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.picotts/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-voice-pollytts" description="Polly Text-to-Speech" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.pollytts/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-voice-voicerss" description="VoiceRSS Text-to-Speech" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.voicerss/${project.version}</bundle>
