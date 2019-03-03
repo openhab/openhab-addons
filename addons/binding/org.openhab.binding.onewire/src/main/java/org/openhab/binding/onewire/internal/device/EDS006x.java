@@ -33,8 +33,8 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.Util;
-import org.openhab.binding.onewire.internal.handler.OwBaseBridgeHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
+import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
 
 /**
@@ -69,39 +69,19 @@ public class EDS006x extends AbstractOwDevice {
                     new OwChannelConfig(CHANNEL_LIGHT, CHANNEL_TYPE_UID_LIGHT))
             .collect(Collectors.toSet());
 
-    private final OwDeviceParameterMap temperatureParameter = new OwDeviceParameterMap() {
-        {
-            set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/temperature"));
-        }
-    };
-
-    private final OwDeviceParameterMap humidityParameter = new OwDeviceParameterMap() {
-        {
-            set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/humidity"));
-        }
-    };
-
-    private final OwDeviceParameterMap pressureParameter = new OwDeviceParameterMap() {
-        {
-            set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/pressure"));
-        }
-    };
-
-    private final OwDeviceParameterMap lightParameter = new OwDeviceParameterMap() {
-        {
-            set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/light"));
-        }
-    };
+    private OwserverDeviceParameter temperatureParameter = new OwserverDeviceParameter("/temperature");
+    private OwserverDeviceParameter humidityParameter = new OwserverDeviceParameter("/humidity");
+    private OwserverDeviceParameter pressureParameter = new OwserverDeviceParameter("/pressure");
+    private OwserverDeviceParameter lightParameter = new OwserverDeviceParameter("/light");
 
     public EDS006x(SensorId sensorId, OwSensorType sensorType, OwBaseThingHandler callback) {
         super(sensorId, callback);
 
         String sensorTypeName = sensorType.name();
-        temperatureParameter.set(THING_TYPE_OWSERVER,
-                new OwserverDeviceParameter("/" + sensorTypeName + "/temperature"));
-        humidityParameter.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/" + sensorTypeName + "/humidity"));
-        pressureParameter.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/" + sensorTypeName + "/pressure"));
-        lightParameter.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/" + sensorTypeName + "/light"));
+        temperatureParameter = new OwserverDeviceParameter("/" + sensorTypeName + "/temperature");
+        humidityParameter = new OwserverDeviceParameter("/" + sensorTypeName + "/humidity");
+        pressureParameter = new OwserverDeviceParameter("/" + sensorTypeName + "/pressure");
+        lightParameter = new OwserverDeviceParameter("/" + sensorTypeName + "/light");
     }
 
     @Override
@@ -110,7 +90,7 @@ public class EDS006x extends AbstractOwDevice {
     }
 
     @Override
-    public void refresh(OwBaseBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
+    public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
         if (isConfigured) {
             if (enabledChannels.contains(CHANNEL_TEMPERATURE) || enabledChannels.contains(CHANNEL_HUMIDITY)
                     || enabledChannels.contains(CHANNEL_ABSOLUTE_HUMIDITY)
