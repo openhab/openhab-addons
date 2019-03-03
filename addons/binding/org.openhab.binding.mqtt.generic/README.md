@@ -263,7 +263,7 @@ Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
 demo2.things:
 
 ```xtend
-mqtt:broker:WorkBroker "Work Broker" [ host="localhost", port="1883", secure=false, username="openhabian", password="ohmqtt", clientID="WORKOPENHAB24" ]
+Bridge mqtt:broker:WorkBroker "Work Broker" [ host="localhost", port="1883", secure=false, username="openhabian", password="ohmqtt", clientID="WORKOPENHAB24" ]
 
 Thing mqtt:topic:WorkBroker:WorkSonoff "Work Sonoff" (mqtt:broker:WorkBroker) @ "Home" {
     Channels:
@@ -328,7 +328,7 @@ when
       Channel "mqtt:broker:myUnsecureBroker:myTriggerChannel" triggered
 then
     val parts = receivedEvent.split("#")
-    sendCommand(parts.get(0), parts.get(1)
+    sendCommand(parts.get(0), parts.get(1))
 end
 ```
 
