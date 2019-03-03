@@ -93,7 +93,7 @@ public class BasicMultisensorThingHandler extends OwBaseThingHandler {
     }
 
     @Override
-    public void updateSensorProperties(OwBaseBridgeHandler bridgeHandler) throws OwException {
+    public void updateSensorProperties(OwserverBridgeHandler bridgeHandler) throws OwException {
         Map<String, String> properties = editProperties();
         sensorType = bridgeHandler.getType(sensorId);
 
