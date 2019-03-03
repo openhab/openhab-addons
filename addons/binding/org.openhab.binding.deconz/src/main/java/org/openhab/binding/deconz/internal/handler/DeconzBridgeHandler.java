@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.deconz.internal.handler;
 
+import static org.openhab.binding.deconz.internal.BindingConstants.*;
+
 import java.net.SocketTimeoutException;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,7 +33,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.net.http.WebSocketFactory;
-import org.openhab.binding.deconz.internal.BindingConstants;
 import org.openhab.binding.deconz.internal.discovery.ThingDiscoveryService;
 import org.openhab.binding.deconz.internal.dto.ApiKeyMessage;
 import org.openhab.binding.deconz.internal.dto.BridgeFullState;
@@ -56,7 +57,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketConnectionListener {
     private final Logger logger = LoggerFactory.getLogger(DeconzBridgeHandler.class);
-    private @NonNullByDefault({}) ThingDiscoveryService thingDiscoveryService;
+    private @Nullable ThingDiscoveryService thingDiscoveryService;
     private final WebSocketConnection websocket;
     private final AsyncHttpClient http;
     private DeconzBridgeConfig config = new DeconzBridgeConfig();
@@ -111,7 +112,6 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      */
     private void parseAPIKeyResponse(AsyncHttpClient.Result r) {
         if (r.getResponseCode() == 403) {
-
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Allow authentification for 3rd party apps. Trying again in " + String.valueOf(POLL_FREQUENCY_SEC)
                             + " seconds");
@@ -124,7 +124,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             }
             config.apikey = response[0].success.username;
             Configuration configuration = editConfiguration();
-            configuration.put(BindingConstants.CONFIG_APIKEY, config.apikey);
+            configuration.put(CONFIG_APIKEY, config.apikey);
             updateConfiguration(configuration);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for configuration");
             requestFullState();
@@ -157,7 +157,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         if (config.apikey == null) {
             return;
         }
-        String url = BindingConstants.url(config.host, config.apikey, null, null);
+        String url = url(config.host, config.apikey, null, null);
 
         http.get(url, config.timeout).thenApply(this::parseBridgeFullStateResponse).exceptionally(e -> {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -236,7 +236,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
     private CompletableFuture<?> requestApiKey() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Requesting API Key");
         stopTimer();
-        String url = BindingConstants.url(config.host, null, null, null);
+        String url = url(config.host, null, null, null);
         return http.post(url, "{\"devicetype\":\"openHAB\"}", config.timeout).thenAccept(this::parseAPIKeyResponse)
                 .exceptionally(e -> {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
