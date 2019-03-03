@@ -186,6 +186,12 @@
 		<label>Loxone Dimmer</label>
 		<description>Loxone's dimmer control</description>
 	</channel-type>
+	
+	<channel-type id="colorPickerTypeId">
+        <item-type>Color</item-type>
+        <label>Loxone ColorPicker</label>
+        <description>Loxone's Color Picker V2 control</description>
+    </channel-type>
 
 </thing:thing-descriptions>
 

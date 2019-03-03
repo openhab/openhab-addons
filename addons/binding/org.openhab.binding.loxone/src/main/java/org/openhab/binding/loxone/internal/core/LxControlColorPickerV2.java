@@ -163,7 +163,7 @@ public class LxControlColorPickerV2 extends LxControl {
                 // we have a temp(brightness,kelvin) pattern
                 hsbColor = TemperatureHSBType.fromBrightnessTemperature(valueMatcher.group(1));
             }
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             // an error happened during HSBType creation, we return null
             hsbColor = null;
         }
