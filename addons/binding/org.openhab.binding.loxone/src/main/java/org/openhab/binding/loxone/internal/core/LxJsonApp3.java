@@ -13,6 +13,7 @@
 package org.openhab.binding.loxone.internal.core;
 
 import java.util.Map;
+
 import com.google.gson.JsonElement;
 
 /**
@@ -59,6 +60,9 @@ public class LxJsonApp3 {
                 public String on;
             }
 
+            public Double min;
+            public Double max;
+            public Double step;
             public LxJsonText text;
             public String format;
             public int movementScene;

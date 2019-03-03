@@ -140,6 +140,12 @@
 		<state readOnly="true" />
 	</channel-type>
 
+    <channel-type id="numberTypeId">
+        <item-type>Number</item-type>
+        <label>Loxone Virtual Input Information</label>
+        <description>Loxone's Virtual Inputs.</description>
+    </channel-type>
+
 	<channel-type id="roNumberTypeId">
 		<item-type>Number</item-type>
 		<label>Loxone State Read-only Information</label>

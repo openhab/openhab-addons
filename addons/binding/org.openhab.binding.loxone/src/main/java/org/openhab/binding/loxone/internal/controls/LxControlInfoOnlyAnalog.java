@@ -66,16 +66,11 @@ public class LxControlInfoOnlyAnalog extends LxControl {
     /**
      * Create InfoOnlyAnalog control object.
      *
-     * @param handlerApi
-     *                       thing handler object representing the Miniserver
-     * @param uuid
-     *                       control's UUID
-     * @param json
-     *                       JSON describing the control as received from the Miniserver
-     * @param room
-     *                       room to which control belongs
-     * @param category
-     *                       category to which control belongs
+     * @param handlerApi thing handler object representing the Miniserver
+     * @param uuid       control's UUID
+     * @param json       JSON describing the control as received from the Miniserver
+     * @param room       room to which control belongs
+     * @param category   category to which control belongs
      */
     LxControlInfoOnlyAnalog(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
             LxCategory category) {
@@ -91,12 +86,9 @@ public class LxControlInfoOnlyAnalog extends LxControl {
     /**
      * Update Miniserver's control in runtime.
      *
-     * @param json
-     *                     JSON describing the control as received from the Miniserver
-     * @param room
-     *                     New room that this control belongs to
-     * @param category
-     *                     New category that this control belongs to
+     * @param json     JSON describing the control as received from the Miniserver
+     * @param room     New room that this control belongs to
+     * @param category New category that this control belongs to
      */
     @Override
     public void update(LxJsonControl json, LxContainer room, LxCategory category) {
