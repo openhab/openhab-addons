@@ -29,7 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
-import org.openhab.binding.onewire.internal.handler.OwBaseBridgeHandler;
+import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,13 +42,13 @@ public class OwDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(OwDiscoveryService.class);
 
-    private final OwBaseBridgeHandler owBridgeHandler;
+    private final OwserverBridgeHandler owBridgeHandler;
 
     Map<SensorId, OwDiscoveryItem> owDiscoveryItems = new HashMap<>();
     Set<SensorId> associatedSensors = new HashSet<>();
     ThingUID bridgeUID;
 
-    public OwDiscoveryService(OwBaseBridgeHandler owBridgeHandler) {
+    public OwDiscoveryService(OwserverBridgeHandler owBridgeHandler) {
         super(SUPPORTED_THING_TYPES, 60, false);
         this.owBridgeHandler = owBridgeHandler;
         logger.debug("registering discovery service for {}", owBridgeHandler);

@@ -28,8 +28,8 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
-import org.openhab.binding.onewire.internal.handler.OwBaseBridgeHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
+import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,11 +49,7 @@ public class DS18x20 extends AbstractOwDevice {
 
     private final Logger logger = LoggerFactory.getLogger(DS18x20.class);
 
-    private final OwDeviceParameterMap temperatureParamater = new OwDeviceParameterMap() {
-        {
-            set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/temperature"));
-        }
-    };
+    private OwserverDeviceParameter temperatureParameter = new OwserverDeviceParameter("/temperature");
 
     private boolean ignorePOR = false;
 
@@ -69,10 +65,10 @@ public class DS18x20 extends AbstractOwDevice {
         if (temperatureChannel != null) {
             Configuration channelConfiguration = temperatureChannel.getConfiguration();
             if (channelConfiguration.containsKey(CONFIG_RESOLUTION)) {
-                temperatureParamater.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter(
-                        "/temperature" + (String) channelConfiguration.get(CONFIG_RESOLUTION)));
+                temperatureParameter = new OwserverDeviceParameter(
+                        "/temperature" + (String) channelConfiguration.get(CONFIG_RESOLUTION));
             } else {
-                temperatureParamater.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/temperature"));
+                temperatureParameter = new OwserverDeviceParameter("/temperature");
             }
             if (channelConfiguration.containsKey(CONFIG_IGNORE_POR)) {
                 ignorePOR = (Boolean) channelConfiguration.get(CONFIG_IGNORE_POR);
@@ -87,10 +83,10 @@ public class DS18x20 extends AbstractOwDevice {
     }
 
     @Override
-    public void refresh(OwBaseBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
+    public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
         if (isConfigured && enabledChannels.contains(CHANNEL_TEMPERATURE)) {
             QuantityType<Temperature> temperature = new QuantityType<Temperature>(
-                    (DecimalType) bridgeHandler.readDecimalType(sensorId, temperatureParamater), SIUnits.CELSIUS);
+                    (DecimalType) bridgeHandler.readDecimalType(sensorId, temperatureParameter), SIUnits.CELSIUS);
             logger.trace("read temperature {} from {}", temperature, sensorId);
             if (ignorePOR && (Double.compare(temperature.doubleValue(), 85.0) == 0)) {
                 logger.trace("ignored POR value from sensor {}", sensorId);

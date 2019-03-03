@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
-import org.openhab.binding.onewire.internal.handler.OwBaseBridgeHandler;
+import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 
 /**
  * The {@link DS2438Configuration} is a helper class for the multisensor thing configuration
@@ -41,7 +41,7 @@ public class DS2438Configuration {
 
     private final Map<SensorId, OwSensorType> associatedSensors = new HashMap<>();
 
-    public DS2438Configuration(OwBaseBridgeHandler bridgeHandler, SensorId sensorId) throws OwException {
+    public DS2438Configuration(OwserverBridgeHandler bridgeHandler, SensorId sensorId) throws OwException {
         OwSensorType sensorType = bridgeHandler.getType(sensorId);
         if (sensorType != OwSensorType.DS2438) {
             throw new OwException("sensor " + sensorId.getId() + " is not a DS2438!");

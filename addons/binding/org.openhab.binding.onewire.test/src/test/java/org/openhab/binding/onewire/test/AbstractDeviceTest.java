@@ -34,7 +34,7 @@ import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.device.AbstractOwDevice;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
-import org.openhab.binding.onewire.internal.handler.OwBaseBridgeHandler;
+import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 
 /**
@@ -48,7 +48,7 @@ public abstract class AbstractDeviceTest {
     protected AbstractOwDevice testDevice;
 
     protected OwBaseThingHandler mockThingHandler;
-    protected OwBaseBridgeHandler mockBridgeHandler;
+    protected OwserverBridgeHandler mockBridgeHandler;
 
     protected Thing mockThing;
     protected InOrder inOrder;
@@ -57,7 +57,7 @@ public abstract class AbstractDeviceTest {
 
     public void setupMocks(ThingTypeUID thingTypeUID) {
         mockThingHandler = mock(OwBaseThingHandler.class);
-        mockBridgeHandler = mock(OwBaseBridgeHandler.class);
+        mockBridgeHandler = mock(OwserverBridgeHandler.class);
         mockThing = mock(Thing.class);
 
         inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);

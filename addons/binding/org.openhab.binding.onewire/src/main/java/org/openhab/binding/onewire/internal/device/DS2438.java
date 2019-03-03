@@ -38,8 +38,8 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.Util;
-import org.openhab.binding.onewire.internal.handler.OwBaseBridgeHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
+import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,35 +124,11 @@ public class DS2438 extends AbstractOwDevice {
     private LightSensorType lightSensorType = LightSensorType.ELABNET_V1;
     private CurrentSensorType currentSensorType = CurrentSensorType.INTERNAL;
 
-    private final OwDeviceParameterMap temperatureParameter = new OwDeviceParameterMap() {
-        {
-            set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/temperature"));
-        }
-    };
-
-    private final OwDeviceParameterMap humidityParameter = new OwDeviceParameterMap() {
-        {
-            set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/humidity"));
-        }
-    };
-
-    private final OwDeviceParameterMap voltageParameter = new OwDeviceParameterMap() {
-        {
-            set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/VAD"));
-        }
-    };
-
-    private final OwDeviceParameterMap currentParamater = new OwDeviceParameterMap() {
-        {
-            set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/vis"));
-        }
-    };
-
-    private final OwDeviceParameterMap supplyVoltageParameter = new OwDeviceParameterMap() {
-        {
-            set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/VDD"));
-        }
-    };
+    private final OwserverDeviceParameter temperatureParameter = new OwserverDeviceParameter("/temperature");
+    private OwserverDeviceParameter humidityParameter = new OwserverDeviceParameter("/humidity");
+    private final OwserverDeviceParameter voltageParameter = new OwserverDeviceParameter("/VAD");
+    private final OwserverDeviceParameter currentParamater = new OwserverDeviceParameter("/vis");
+    private final OwserverDeviceParameter supplyVoltageParameter = new OwserverDeviceParameter("/VDD");
 
     public DS2438(SensorId sensorId, OwBaseThingHandler callback) {
         super(sensorId, callback);
@@ -166,10 +142,9 @@ public class DS2438 extends AbstractOwDevice {
         if (humidityChannel != null) {
             Configuration channelConfiguration = humidityChannel.getConfiguration();
             if (channelConfiguration.get(CONFIG_HUMIDITY) != null) {
-                humidityParameter.set(THING_TYPE_OWSERVER,
-                        new OwserverDeviceParameter((String) channelConfiguration.get(CONFIG_HUMIDITY)));
+                humidityParameter = new OwserverDeviceParameter((String) channelConfiguration.get(CONFIG_HUMIDITY));
             } else {
-                humidityParameter.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/humidity"));
+                humidityParameter = new OwserverDeviceParameter("/humidity");
             }
         }
 
@@ -177,7 +152,7 @@ public class DS2438 extends AbstractOwDevice {
     }
 
     @Override
-    public void refresh(OwBaseBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
+    public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
         if (isConfigured) {
             double Vcc = 5.0;
 

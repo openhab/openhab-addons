@@ -23,8 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
-import org.openhab.binding.onewire.internal.handler.OwBaseBridgeHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
+import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
 
 /**
@@ -39,11 +39,7 @@ public class DS2423 extends AbstractOwDevice {
                     new OwChannelConfig(CHANNEL_COUNTER1, CHANNEL_TYPE_UID_COUNTER, "Counter 1"))
             .collect(Collectors.toSet());
 
-    private final OwDeviceParameterMap counterParameter = new OwDeviceParameterMap() {
-        {
-            set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/counters.ALL"));
-        }
-    };
+    private final OwserverDeviceParameter counterParameter = new OwserverDeviceParameter("/counters.ALL");
 
     public DS2423(SensorId sensorId, OwBaseThingHandler callback) {
         super(sensorId, callback);
@@ -55,7 +51,7 @@ public class DS2423 extends AbstractOwDevice {
     }
 
     @Override
-    public void refresh(OwBaseBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
+    public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
         if (isConfigured) {
             List<State> states = bridgeHandler.readDecimalTypeArray(sensorId, counterParameter);
 

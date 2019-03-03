@@ -29,8 +29,8 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.Util;
-import org.openhab.binding.onewire.internal.handler.OwBaseBridgeHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
+import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
 
 /**
@@ -48,16 +48,8 @@ public class DS1923 extends AbstractOwDevice {
                     new OwChannelConfig(CHANNEL_DEWPOINT, CHANNEL_TYPE_UID_TEMPERATURE))
             .collect(Collectors.toSet());
 
-    private final OwDeviceParameterMap temperatureParameter = new OwDeviceParameterMap() {
-        {
-            set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/temperature"));
-        }
-    };
-    private final OwDeviceParameterMap humidityParameterR = new OwDeviceParameterMap() {
-        {
-            set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/humidity"));
-        }
-    };
+    private final OwserverDeviceParameter temperatureParameter = new OwserverDeviceParameter("/temperature");
+    private final OwserverDeviceParameter humidityParameter = new OwserverDeviceParameter("/humidity");
 
     public DS1923(SensorId sensorId, OwBaseThingHandler callback) {
         super(sensorId, callback);
@@ -69,7 +61,7 @@ public class DS1923 extends AbstractOwDevice {
     }
 
     @Override
-    public void refresh(OwBaseBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
+    public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
         if (isConfigured) {
             if (enabledChannels.contains(CHANNEL_TEMPERATURE) || enabledChannels.contains(CHANNEL_HUMIDITY)
                     || enabledChannels.contains(CHANNEL_ABSOLUTE_HUMIDITY)
@@ -81,7 +73,7 @@ public class DS1923 extends AbstractOwDevice {
                 if (enabledChannels.contains(CHANNEL_HUMIDITY) || enabledChannels.contains(CHANNEL_ABSOLUTE_HUMIDITY)
                         || enabledChannels.contains(CHANNEL_DEWPOINT)) {
                     QuantityType<Dimensionless> humidity = new QuantityType<Dimensionless>(
-                            (DecimalType) bridgeHandler.readDecimalType(sensorId, humidityParameterR),
+                            (DecimalType) bridgeHandler.readDecimalType(sensorId, humidityParameter),
                             SmartHomeUnits.PERCENT);
 
                     if (enabledChannels.contains(CHANNEL_HUMIDITY)) {

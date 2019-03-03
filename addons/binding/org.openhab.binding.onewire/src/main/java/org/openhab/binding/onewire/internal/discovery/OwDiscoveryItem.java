@@ -27,7 +27,7 @@ import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.OwPageBuffer;
 import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
-import org.openhab.binding.onewire.internal.handler.OwBaseBridgeHandler;
+import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +50,7 @@ public class OwDiscoveryItem {
 
     private final Map<SensorId, OwSensorType> associatedSensors = new HashMap<>();
 
-    public OwDiscoveryItem(OwBaseBridgeHandler bridgeHandler, SensorId sensorId) throws OwException {
+    public OwDiscoveryItem(OwserverBridgeHandler bridgeHandler, SensorId sensorId) throws OwException {
         this.sensorId = sensorId;
         sensorType = bridgeHandler.getType(sensorId);
         switch (sensorType) {

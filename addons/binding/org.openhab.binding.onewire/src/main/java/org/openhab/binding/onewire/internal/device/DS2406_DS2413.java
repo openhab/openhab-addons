@@ -44,23 +44,13 @@ public class DS2406_DS2413 extends AbstractDigitalOwDevice {
     @Override
     public void configureChannels() throws OwException {
         ioConfig.clear();
+        ioConfig.add(new DigitalIoConfig(callback.getThing(), 0, new OwserverDeviceParameter("/sensed.A"),
+                new OwserverDeviceParameter("/PIO.A")));
+        ioConfig.add(new DigitalIoConfig(callback.getThing(), 1, new OwserverDeviceParameter("/sensed.B"),
+                new OwserverDeviceParameter("/PIO.B")));
 
-        OwDeviceParameterMap inParam = new OwDeviceParameterMap();
-        OwDeviceParameterMap outParam = new OwDeviceParameterMap();
-
-        inParam.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/sensed.A"));
-        outParam.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/PIO.A"));
-        ioConfig.add(new DigitalIoConfig(callback.getThing(), 0, inParam, outParam));
-
-        inParam = new OwDeviceParameterMap();
-        outParam = new OwDeviceParameterMap();
-
-        inParam.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/sensed.B"));
-        outParam.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/PIO.B"));
-        ioConfig.add(new DigitalIoConfig(callback.getThing(), 1, inParam, outParam));
-
-        fullInParam.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/sensed.BYTE"));
-        fullOutParam.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/PIO.BYTE"));
+        fullInParam = new OwserverDeviceParameter("/sensed.BYTE");
+        fullOutParam = new OwserverDeviceParameter("/PIO.BYTE");
 
         super.configureChannels();
     }
