@@ -56,6 +56,7 @@ import org.openhab.binding.loxone.internal.config.LoxoneMiniserverConfig;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
 import org.openhab.binding.loxone.internal.core.LxControl;
+import org.openhab.binding.loxone.internal.core.LxControlBurglarAlarm;
 import org.openhab.binding.loxone.internal.core.LxControlDimmer;
 import org.openhab.binding.loxone.internal.core.LxControlInfoOnlyAnalog;
 import org.openhab.binding.loxone.internal.core.LxControlInfoOnlyDigital;
@@ -108,9 +109,9 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      * Create {@link LoxoneMiniserverHandler} object
      *
      * @param thing
-     *            Thing object that creates the handler
+     *                     Thing object that creates the handler
      * @param provider
-     *            state description provider service
+     *                     state description provider service
      */
     public LoxoneMiniserverHandler(Thing thing, LoxoneDynamicStateDescriptionProvider provider) {
         super(thing);
@@ -248,6 +249,18 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                     radio.setOutput(((DecimalType) command).intValue());
                 }
                 return;
+            }
+
+            if (control instanceof LxControlBurglarAlarm) {
+                LxControlBurglarAlarm alarm = (LxControlBurglarAlarm) control;
+
+                if (command instanceof OnOffType) {
+                    if ((OnOffType) command == OnOffType.ON) {
+                        alarm.on();
+                    } else {
+                        alarm.off();
+                    }
+                }
             }
             logger.debug("Incompatible operation on control {}", control.getUuid());
         } catch (IOException e) {
@@ -463,19 +476,19 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      * Create and add a new channel to the channels list.
      *
      * @param channels
-     *            list of channels to add the channel to
+     *                               list of channels to add the channel to
      * @param itemType
-     *            item type for the channel
+     *                               item type for the channel
      * @param typeId
-     *            channel type ID for the channel
+     *                               channel type ID for the channel
      * @param channelId
-     *            channel ID
+     *                               channel ID
      * @param channelLabel
-     *            channel label
+     *                               channel label
      * @param channelDescription
-     *            channel description
+     *                               channel description
      * @param tags
-     *            tags for the channel or null if no tags needed
+     *                               tags for the channel or null if no tags needed
      * @return
      *         true if channel was created and added to the list
      */
@@ -501,7 +514,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      * types of states they support.
      *
      * @param control
-     *            control object to create a channel for
+     *                    control object to create a channel for
      * @return
      *         created list of {@link Channel} object
      */
@@ -578,6 +591,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             addChannel(channels, "String", roTextTypeId, id, label, "Text state", tags);
         } else if (control instanceof LxControlDimmer) {
             addChannel(channels, "Dimmer", dimmerTypeId, id, label, "Dimmer", tags);
+        } else if (control instanceof LxControlBurglarAlarm) {
+            addChannel(channels, "Switch", switchTypeId, id, label, "Alarm", tags);
         }
         return channels;
     }
@@ -586,9 +601,9 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      * Add tags that can be used by homekit transport and Alexa openHAB skill
      *
      * @param tags
-     *            collection to add tags to
+     *                    collection to add tags to
      * @param control
-     *            control object for which the tags are to be identified
+     *                    control object for which the tags are to be identified
      */
     private void addChannelTags(Set<String> tags, LxControl control) {
         if (control instanceof LxControlSwitch) {
@@ -604,9 +619,9 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      * Update thing's states for all channels associated with the control
      *
      * @param channelId
-     *            first channel for the control
+     *                      first channel for the control
      * @param control
-     *            control to update states for
+     *                      control to update states for
      */
     private void updateChannelStates(ChannelUID channelId, LxControl control) {
         if (control instanceof LxControlSwitch) {
@@ -687,6 +702,15 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
             if (value != null) {
                 updateState(channelId, new StringType(value));
             }
+        } else if (control instanceof LxControlBurglarAlarm) {
+            Double value = ((LxControlBurglarAlarm) control).getState();
+            if (value != null) {
+                if (value == 1.0) {
+                    updateState(channelId, OnOffType.ON);
+                } else if (value == 0) {
+                    updateState(channelId, OnOffType.OFF);
+                }
+            }
         }
     }
 
@@ -695,17 +719,17 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      * string. A previous description, if existed, will be replaced.
      *
      * @param channelUID
-     *            channel UID
+     *                       channel UID
      * @param format
-     *            format string to present the value
+     *                       format string to present the value
      * @param readOnly
-     *            true if this control does not accept commands
+     *                       true if this control does not accept commands
      * @param options
-     *            collection of options, where key is option ID (number in reality) and value is option name
+     *                       collection of options, where key is option ID (number in reality) and value is option name
      * @param minimum
-     *            minimum value an option ID can have
+     *                       minimum value an option ID can have
      * @param maximum
-     *            maximum value an option ID can have
+     *                       maximum value an option ID can have
      */
     private void setStateDescription(ChannelUID channelUID, String format, boolean readOnly,
             Map<String, String> options, BigDecimal minimum, BigDecimal maximum) {
@@ -724,7 +748,7 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      * Based on channel ID, return corresponding {@link LxControl} object
      *
      * @param channelUID
-     *            channel ID of the control to find
+     *                       channel ID of the control to find
      * @return
      *         control corresponding to the channel ID or null if not found
      */
@@ -736,10 +760,10 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
      * Build channel ID for a control, based on control's UUID, thing's UUID and index of the channel for the control
      *
      * @param control
-     *            control to build the channel ID for
+     *                    control to build the channel ID for
      * @param index
-     *            index of a channel within control (0 for primary channel)
-     *            all indexes greater than 0 will have -index added to the channel ID
+     *                    index of a channel within control (0 for primary channel)
+     *                    all indexes greater than 0 will have -index added to the channel ID
      * @return
      *         channel ID for the control and index
      */
