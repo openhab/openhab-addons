@@ -68,7 +68,7 @@ public class A5_20_04 extends _4BSMessage {
             }
         }
 
-        return 50; // 50 %
+        return 25; // 25 %
     }
 
     private byte getTsp(Hashtable<String, State> currentState) {

@@ -327,24 +327,24 @@
 		<category>thermostat</category>
 	</channel-type>
 
-	<channel-type id="measurementControl">
+	<channel-type id="measurementControl" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Measurement control</label>
 		<description>Enables or disables temperature measurement on the device.</description>
 		<category>thermostat</category>
 	</channel-type>
 
-	<channel-type id="displayOrientation">
+	<channel-type id="displayOrientation" advanced="true">
 		<item-type>Number</item-type>
 		<label>Display orientation</label>
 		<description>Orientation of the display.</description>
 		<category>thermostat</category>
 		<state>
 			<options>
-				<option value="0">0Â°</option>
-				<option value="90">90Â°</option>
-				<option value="180">180Â°</option>
-				<option value="270">270Â°</option>
+				<option value="0">0°</option>
+				<option value="90">90°</option>
+				<option value="180">180°</option>
+				<option value="270">270°</option>
 			</options>
 		</state>
 	</channel-type>
@@ -379,7 +379,7 @@
 		<state min="0" max="63" />
 	</channel-type>
 
-	<channel-type id="serviceCommand">
+	<channel-type id="serviceCommand" advanced="true">
 		<item-type>Number</item-type>
 		<label>Service command</label>
 		<description>Command to be sent to actuator</description>
