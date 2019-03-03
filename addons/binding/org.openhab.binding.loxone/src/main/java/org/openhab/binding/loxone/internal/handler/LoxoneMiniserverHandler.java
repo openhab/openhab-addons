@@ -260,7 +260,39 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                     } else {
                         alarm.off();
                     }
+                } else if (command instanceof StringType) {
+                    StringType stringType = (StringType) command;
+
+                    if (stringType.toString() != null) {
+                        switch (stringType.toString().toLowerCase()) {
+                            case "quit":
+                                alarm.quit();
+                                break;
+                            case "delayedon":
+                                alarm.delayedOn();
+                                break;
+                            case "delayedon/0":
+                                alarm.delayedOnWithoutMovement();
+                                break;
+                            case "delayedon/1":
+                                alarm.delayedOnWithMovement();
+                                break;
+                            case "on/0":
+                                alarm.onWithoutMovement();
+                                break;
+                            case "on/1":
+                                alarm.onWithMovement();
+                                break;
+                            case "dismv/0":
+                                alarm.disableMovement();
+                                break;
+                            case "dismv/1":
+                                alarm.enableMovement();
+                                break;
+                        }
+                    }
                 }
+                return;
             }
             logger.debug("Incompatible operation on control {}", control.getUuid());
         } catch (IOException e) {
