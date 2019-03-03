@@ -55,5 +55,5 @@ Number:Pressure         pressure    "Air Pressure [%.0f %unit%]"     { channel="
 
 // Examples of converting units
 Number:Acceleration      acceleration_ms "Acceleration z [%.2f m/s²]" { channel="bluetooth:ruuvitag:hci0:beacon:accelerationz" }
-Number:Acceleration      acceleration_g  "Acceleration z (g-force) [%.2f g]" { channel="bluetooth:ruuvitag:hci0:beacon:accelerationz" }
+Number:Acceleration      acceleration_g  "Acceleration z (g-force) [%.2f gₙ]" { channel="bluetooth:ruuvitag:hci0:beacon:accelerationz" }
 ```

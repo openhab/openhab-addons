@@ -16,15 +16,11 @@ import static org.openhab.binding.bluetooth.ruuvitag.RuuviTagBindingConstants.*;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
-import javax.measure.UnitConverter;
-import javax.measure.quantity.Acceleration;
-import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -39,10 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import fi.tkgwf.ruuvi.common.bean.RuuviMeasurement;
 import fi.tkgwf.ruuvi.common.parser.impl.AnyDataFormatParser;
-import tec.uom.se.format.SimpleUnitFormat;
-import tec.uom.se.function.LogConverter;
-import tec.uom.se.function.MultiplyConverter;
-import tec.uom.se.unit.TransformedUnit;
 
 /**
  * The {@link RuuviTagHandler} is responsible for handling commands, which are
@@ -52,20 +44,6 @@ import tec.uom.se.unit.TransformedUnit;
  */
 @NonNullByDefault
 public class RuuviTagHandler extends BeaconBluetoothHandler {
-    private static final double METRE_PER_SQUARE_SECOND_TO_STANDARD_GRAVITY = 9.80665;
-    private static final UnitConverter DIVIDE_BY_TEN = new MultiplyConverter(10).inverse();
-    private static final UnitConverter EXP_BASE_TEN = new LogConverter(10).inverse();
-
-    private static final Unit<Acceleration> STANDARD_GRAVITY = new TransformedUnit<>("g",
-            SmartHomeUnits.METRE_PER_SQUARE_SECOND, new MultiplyConverter(METRE_PER_SQUARE_SECOND_TO_STANDARD_GRAVITY));
-    private static final Unit<Power> DECIBEL_MILLIWATTS = new TransformedUnit<>("dBm",
-            MetricPrefix.MILLI(SmartHomeUnits.WATT), EXP_BASE_TEN.concatenate(DIVIDE_BY_TEN));
-
-    static {
-        // Register the custom units labels
-        SimpleUnitFormat.getInstance().label(STANDARD_GRAVITY, "g");
-        SimpleUnitFormat.getInstance().label(DECIBEL_MILLIWATTS, "dBm");
-    }
 
     private final Logger logger = LoggerFactory.getLogger(RuuviTagHandler.class);
     private final AnyDataFormatParser parser = new AnyDataFormatParser();
@@ -99,15 +77,15 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
                     switch (channelUID.getId()) {
                         case CHANNEL_ID_ACCELERATIONX:
                             atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                    ruuvitagData.getAccelerationX(), STANDARD_GRAVITY);
+                                    ruuvitagData.getAccelerationX(), SmartHomeUnits.STANDARD_GRAVITY);
                             break;
                         case CHANNEL_ID_ACCELERATIONY:
                             atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                    ruuvitagData.getAccelerationY(), STANDARD_GRAVITY);
+                                    ruuvitagData.getAccelerationY(), SmartHomeUnits.STANDARD_GRAVITY);
                             break;
                         case CHANNEL_ID_ACCELERATIONZ:
                             atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                    ruuvitagData.getAccelerationZ(), STANDARD_GRAVITY);
+                                    ruuvitagData.getAccelerationZ(), SmartHomeUnits.STANDARD_GRAVITY);
                             break;
                         case CHANNEL_ID_BATTERY:
                             atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
@@ -139,7 +117,7 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
                             break;
                         case CHANNEL_ID_TX_POWER:
                             atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getTxPower(),
-                                    DECIBEL_MILLIWATTS);
+                                    SmartHomeUnits.DECIBEL_MILLIWATTS);
                             break;
                     }
                 }

@@ -22,11 +22,7 @@ Import-Package:
  org.openhab.binding.bluetooth,
  org.openhab.binding.bluetooth.discovery,
  org.openhab.binding.bluetooth.notification,
- org.slf4j,
- tec.uom.lib.common.function,
- tec.uom.se.format,
- tec.uom.se.function,
- tec.uom.se.unit
+ org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: 
  org.openhab.binding.bluetooth.ruuvitag,
