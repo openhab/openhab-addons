@@ -1,6 +1,6 @@
 # <bindingName> MagentaTV Binding (aka Entertain TV)
 <hr>
-<b>Release: 2.5.1pre</b>
+<b>Release: 2.5-pre2</b>
 <hr>
 <p>
 
