@@ -14,7 +14,11 @@ package org.openhab.binding.deconz.internal.discovery;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,23 +42,37 @@ import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
  */
 @NonNullByDefault
 public class ThingDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR,
+                    THING_TYPE_CONSUMPTION_SENSOR, THING_TYPE_LIGHT_SENSOR, THING_TYPE_TEMPERATURE_SENSOR,
+                    THING_TYPE_HUMIDITY_SENSOR, THING_TYPE_PRESSURE_SENSOR, THING_TYPE_SWITCH,
+                    THING_TYPE_OPENCLOSE_SENSOR, THING_TYPE_WATERLEAKAGE_SENSOR).collect(Collectors.toSet()));
 
-    private @NonNullByDefault({}) DeconzBridgeHandler handler;
+    private @Nullable DeconzBridgeHandler handler;
+    private @Nullable ScheduledFuture<?> scanningJob;
 
     public ThingDiscoveryService() {
-        super(Stream.of(THING_TYPE_PRESENCE_SENSOR, THING_TYPE_POWER_SENSOR, THING_TYPE_CONSUMPTION_SENSOR,
-                THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_SWITCH, THING_TYPE_LIGHT_SENSOR, THING_TYPE_TEMPERATURE_SENSOR,
-                THING_TYPE_HUMIDITY_SENSOR, THING_TYPE_PRESSURE_SENSOR, THING_TYPE_OPENCLOSE_SENSOR,
-                THING_TYPE_WATERLEAKAGE_SENSOR).collect(Collectors.toSet()), 0, true);
+        super(SUPPORTED_THING_TYPES_UIDS, 30);
     }
 
-    /**
-     *
-     * Perform a new bridge full state request.
-     */
     @Override
     protected void startScan() {
         handler.requestFullState();
+    }
+
+    @Override
+    protected void startBackgroundDiscovery() {
+        if (scanningJob == null || scanningJob.isCancelled()) {
+            scanningJob = scheduler.scheduleWithFixedDelay(this::startScan, 0, 5, TimeUnit.MINUTES);
+        }
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        if (scanningJob != null && !scanningJob.isCancelled()) {
+            scanningJob.cancel(true);
+            scanningJob = null;
+        }
     }
 
     /**
@@ -86,7 +104,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
         } else if (sensor.type.contains("ZHAOpenClose")) { // ZHAOpenClose
             thingTypeUID = THING_TYPE_OPENCLOSE_SENSOR;
         } else if (sensor.type.contains("ZHAWater")) { // ZHAWater
-            thingTypeUID = THING_TYPE_OPENCLOSE_SENSOR;
+            thingTypeUID = THING_TYPE_WATERLEAKAGE_SENSOR;
         } else {
             return;
         }
@@ -102,13 +120,20 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = (DeconzBridgeHandler) handler;
-        this.handler.setDiscoveryService(this);
+        if (handler instanceof DeconzBridgeHandler) {
+            this.handler = (DeconzBridgeHandler) handler;
+            this.handler.setDiscoveryService(this);
+        }
     }
 
     @Override
-    public ThingHandler getThingHandler() {
+    public @Nullable ThingHandler getThingHandler() {
         return handler;
+    }
+
+    @Override
+    public void activate() {
+        super.activate(null);
     }
 
     @Override
