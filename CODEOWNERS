@@ -228,6 +228,7 @@
 /addons/voice/org.openhab.voice.mactts.test/ @kaikreuzer
 /addons/voice/org.openhab.voice.marytts/ @kaikreuzer
 /addons/voice/org.openhab.voice.picotts/ @FlorianSW
+/addons/voice/org.openhab.voice.pollytts/ @hillmanr
 /addons/voice/org.openhab.voice.voicerss/ @JochenHiller
 
 # PLEASE HELP ADDING FURTHER LINES HERE!
