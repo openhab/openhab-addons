@@ -317,7 +317,9 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     }
 
     public void sendUrl(String url) {
-        webSocketRemote.sendSourceApp("org.tizen.browser", false);
+        String processedUrl = url.replace("/", "\\/");
+        webSocketRemote.sendSourceApp("org.tizen.browser", false, processedUrl);
+    }
     }
 
     public List<String> getAppList() {

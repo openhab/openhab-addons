@@ -143,10 +143,17 @@ class WebSocketRemote extends WebSocketBase {
             params.data.action_type = deepLink ? "DEEP_LINK" : "NATIVE_LAUNCH";
         }
 
+        public JSONSourceApp(String appName, boolean deepLink, String metaTag) {
+            params.data.appId = appName;
+            params.data.action_type = deepLink ? "DEEP_LINK" : "NATIVE_LAUNCH";
+            params.data.metaTag = metaTag;
+        }
+
         static class Params {
             static class Data {
                 String appId;
                 String action_type;
+                String metaTag;
             }
 
             String event = "ed.apps.launch";
@@ -162,6 +169,10 @@ class WebSocketRemote extends WebSocketBase {
 
     public void sendSourceApp(String appName, boolean deepLink) {
         sendCommand(remoteControllerWebSocket.gson.toJson(new JSONSourceApp(appName, deepLink)));
+    }
+
+    public void sendSourceApp(String appName, boolean deepLink, String metaTag) {
+        sendCommand(remoteControllerWebSocket.gson.toJson(new JSONSourceApp(appName, deepLink, metaTag)));
     }
 
     static class JSONRemoteControl {
