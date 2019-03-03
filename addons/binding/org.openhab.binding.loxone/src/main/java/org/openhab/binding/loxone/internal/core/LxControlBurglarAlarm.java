@@ -18,16 +18,16 @@ public class LxControlBurglarAlarm extends LxControl implements LxControlStateLi
         }
     }
 
-    private static final String CMD_DELAYED_ON = "delayedon";
-    private static final String CMD_DELAYED_ON_WITHOUT_MOVEMENT = "delayedon/0";
-    private static final String CMD_DELAYED_ON_WITH_MOVEMENT = "delayedon/1";
-    private static final String CMD_DISABLE_MOVEMENT = "dismv/0";
-    private static final String CMD_ENABLE_MOVEMENT = "dismv/1";
-    private static final String CMD_OFF = "off";
-    private static final String CMD_ON = "on";
-    private static final String CMD_ON_WITHOUT_MOVEMENT = "on/0";
-    private static final String CMD_ON_WITH_MOVEMENT = "on/1";
-    private static final String CMD_QUIT = "quit";
+    public static final String CMD_DELAYED_ON = "delayedon";
+    public static final String CMD_DELAYED_ON_WITHOUT_MOVEMENT = "delayedon/0";
+    public static final String CMD_DELAYED_ON_WITH_MOVEMENT = "delayedon/1";
+    public static final String CMD_DISABLE_MOVEMENT = "dismv/0";
+    public static final String CMD_ENABLE_MOVEMENT = "dismv/1";
+    public static final String CMD_OFF = "off";
+    public static final String CMD_ON = "on";
+    public static final String CMD_ON_WITHOUT_MOVEMENT = "on/0";
+    public static final String CMD_ON_WITH_MOVEMENT = "on/1";
+    public static final String CMD_QUIT = "quit";
 
     /**
      * A name by which Miniserver refers to burglar alarm controls

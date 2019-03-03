@@ -265,28 +265,28 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
 
                     if (stringType.toString() != null) {
                         switch (stringType.toString().toLowerCase()) {
-                            case "quit":
+                            case LxControlBurglarAlarm.CMD_QUIT:
                                 alarm.quit();
                                 break;
-                            case "delayedon":
+                            case LxControlBurglarAlarm.CMD_DELAYED_ON:
                                 alarm.delayedOn();
                                 break;
-                            case "delayedon/0":
+                            case LxControlBurglarAlarm.CMD_DELAYED_ON_WITHOUT_MOVEMENT:
                                 alarm.delayedOnWithoutMovement();
                                 break;
-                            case "delayedon/1":
+                            case LxControlBurglarAlarm.CMD_DELAYED_ON_WITH_MOVEMENT:
                                 alarm.delayedOnWithMovement();
                                 break;
-                            case "on/0":
+                            case LxControlBurglarAlarm.CMD_ON_WITHOUT_MOVEMENT:
                                 alarm.onWithoutMovement();
                                 break;
-                            case "on/1":
+                            case LxControlBurglarAlarm.CMD_ON_WITH_MOVEMENT:
                                 alarm.onWithMovement();
                                 break;
-                            case "dismv/0":
+                            case LxControlBurglarAlarm.CMD_DISABLE_MOVEMENT:
                                 alarm.disableMovement();
                                 break;
-                            case "dismv/1":
+                            case LxControlBurglarAlarm.CMD_ENABLE_MOVEMENT:
                                 alarm.enableMovement();
                                 break;
                         }
