@@ -1,6 +1,6 @@
 **Installing the bundle**
 
-Before you install the bundle make sure that the ESH UPnP support is installed. This happens if you install a binding, which uses UPnP discovery (like the Philips HUE bundle), or manually (because the Magenta TV binding ist not yet part of the standard openHAB distribution).
+Before you install the bundle make sure that the ESH UPnP support is installed. This happens if you install a binding, which uses UPnP discovery (like the Philips HUE bundle), or manually (because the Magenta TV binding is not yet part of the standard openHAB distribution).
 
 open OH console and run bundle:list, you should see something like
 

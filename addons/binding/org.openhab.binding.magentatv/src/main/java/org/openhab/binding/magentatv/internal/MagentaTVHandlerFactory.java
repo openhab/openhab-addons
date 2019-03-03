@@ -52,6 +52,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
 
     private final MagentaTVNetwork network = new MagentaTVNetwork();
     private @Nullable MagentaTVPoweroffListener upnpListener;
+    private boolean notifyServletInitialized = false;
 
     protected class MagentaTVDevice {
         protected String udn = "";
@@ -225,8 +226,9 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                 dev = deviceList.get(key);
                 logger.trace("Devies[{}]: deviceId={}, UDN={}, ipAddress={}, macAddress={}", i++, dev.deviceId, dev.udn,
                         dev.ipAddress, dev.mac);
-                if (dev.deviceId.equalsIgnoreCase(uniqueId) || dev.udn.equalsIgnoreCase(uniqueId)
-                        || dev.ipAddress.equals(uniqueId) || dev.mac.equalsIgnoreCase(uniqueId)) {
+                if (((dev.deviceId != null) && dev.deviceId.equalsIgnoreCase(uniqueId))
+                        || dev.udn.equalsIgnoreCase(uniqueId) || dev.ipAddress.equals(uniqueId)
+                        || ((dev.mac != null) && dev.mac.equalsIgnoreCase(uniqueId))) {
                     return dev;
                 } // if
             }
@@ -252,6 +254,15 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
+    public boolean getNotifyServletStatus() {
+        return notifyServletInitialized;
+    }
+
+    public void setNotifyServletStatus(boolean newStatus) {
+        logger.debug("NotifyServlet started");
+        this.notifyServletInitialized = newStatus;
+    }
+
     /**
      * We received the pairing resuled (by the Norify servlet)
      *
@@ -262,7 +273,8 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
     @SuppressWarnings("null")
     public boolean notifyPairingResult(String notifyDeviceId, String ipAddress, String pairingCode) {
         try {
-            logger.trace("PairingResult: Check {} devices for id '{}'", deviceList.size(), notifyDeviceId);
+            logger.trace("PairingResult: Check {} devices for id {}, ipAddress {}", deviceList.size(), notifyDeviceId,
+                    ipAddress);
             MagentaTVDevice dev = lookupDevice(ipAddress);
             if ((dev != null) && (dev.thingHandler != null)) {
                 if (dev.deviceId == null) {

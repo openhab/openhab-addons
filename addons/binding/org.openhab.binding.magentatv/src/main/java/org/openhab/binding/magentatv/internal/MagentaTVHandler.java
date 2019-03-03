@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.json.Json;
@@ -35,8 +36,6 @@ import javax.json.JsonValue;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -59,14 +58,15 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  *
  * @author Markus Michels (markus7017) - Initial contribution
  */
-@NonNullByDefault
 public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListener {
     private final MagentaTVLogger logger = new MagentaTVLogger(MagentaTVHandler.class, "Handler");
     private final MagentaTVConfiguration thingConfig = new MagentaTVConfiguration();
-    private @Nullable MagentaTVNetwork network;
-    private @Nullable MagentaTVControl control;
-    private @Nullable MagentaTVHandlerFactory handlerFactory;
+    private MagentaTVNetwork network;
+    private MagentaTVControl control;
+    private MagentaTVHandlerFactory handlerFactory;
 
+    private volatile int idRefresh = 0;
+    private ScheduledFuture<?> pairingWatchdogJob;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     /**
@@ -107,6 +107,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
 
         // The framework requires you to return from this method quickly. For that the initialization itself is executed
         // asynchronously
+        logger.debug("Initialize Thing...");
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
             String errorMessage = "";
@@ -171,10 +172,23 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 if (thingConfig.getUserID().isEmpty()) {
                     errorMessage = "No userID nor account data given -> unable to pair";
                 } else {
-                    connectReceiver(); // throws exception on error
-                    // change to ThingStatus.ONLINE will be done when the pairing result is received
-                    // (see onPairingResult())
-                    // this.updateStatus(ThingStatus.ONLINE);
+                    // wait for NotifyServlet to initialze
+                    if (!handlerFactory.getNotifyServletStatus()) {
+                        logger.debug("Waiting on NotifyServlet to start...");
+                        int iRetries = 30;
+                        while ((iRetries-- > 0) && !handlerFactory.getNotifyServletStatus()) {
+                            logger.trace("Waiting for init, {} sec remaining", iRetries);
+                            Thread.sleep(1000);
+                        }
+                        if ((iRetries <= 0) && !handlerFactory.getNotifyServletStatus()) {
+                            errorMessage = "Can't initialize, NotifyServlet not started!";
+                        }
+                    } else {
+                        connectReceiver(); // throws exception on error
+                        // change to ThingStatus.ONLINE will be done when the pairing result is received
+                        // (see onPairingResult())
+                        // this.updateStatus(ThingStatus.ONLINE);
+                    }
                 }
             } catch (ConnectException e) {
                 errorMessage = "Connection to the receiver failed:, check if stb is powered on: " + e.getMessage();
@@ -197,7 +211,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      *
      * @param property map to copy
      */
-    @SuppressWarnings("null")
     public void updateThingProperties(Map<String, Object> properties) {
         // update thing properties
         Map<String, String> map = new HashMap<String, String>();
@@ -217,7 +230,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      * @param command    - the actual command (could be instance of StringType,
      *                       DecimalType or OnOffType)
      */
-    @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
@@ -298,7 +310,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      *
      * @throws Exception something failed
      */
-    @SuppressWarnings("null")
     private void connectReceiver() throws Exception {
         if ((control != null) && control.checkDev()) {
             thingConfig.updateConfig(control.getConfig().getProperties()); // get description data
@@ -309,6 +320,16 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             logger.debug("Thing successfully initialized, pairing...");
             control.sendPairingRequest();
             updateThingProperties(thingConfig.getProperties());
+
+            // check for pairing for timeout
+            final int iRefresh = ++idRefresh;
+            pairingWatchdogJob = scheduler.schedule(() -> {
+                if (iRefresh == idRefresh) { // Make a best effort to not run multiple deferred refresh
+                    if (thingConfig.getVerificationCode().isEmpty()) {
+                        setOnlineState(ThingStatus.OFFLINE, "Timeout on pairing request!");
+                    }
+                }
+            }, 15, TimeUnit.SECONDS);
         }
     }
 
@@ -349,7 +370,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      * @param channel new channel
      * @return true:ok, false: failed
      */
-    @SuppressWarnings("null")
     public boolean selectChannel(String channel) throws Exception {
         logger.info("Select channel {}", channel);
         for (int i = 0; i < channel.length(); i++) {
@@ -368,7 +388,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      * Update device status (poll Rachio Cloud) in addition webhooks are used to get
      * events (if callbackUrl is configured)
      */
-    @SuppressWarnings("null")
     public void renewEventSubscription() {
         if (control == null) {
             return;
@@ -437,7 +456,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         }
     }
 
-    @SuppressWarnings("null")
     @Override
     public void onPairingResult(@NonNull String pairingCode) throws Exception {
         if (control != null) {
@@ -457,6 +475,9 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                     setOnlineState(ThingStatus.ONLINE, "");
                     logger.info("Pairing completed for device '{}' ({}), Thing now ONLINE",
                             thingConfig.getFriendlyName(), thingConfig.getTerminalID());
+
+                    logger.trace("Pairing successful, stop watchdog");
+                    cancelPairingCheck(); // stop timeout check
                 }
             }
         } else {
@@ -492,7 +513,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      * sample 2: {"new_play_mode":4,
      * "playBackState":1,"mediaType":1,"mediaCode":"3479"}
      */
-    @SuppressWarnings("null")
     @Override
     public void onStbEvent(@NonNull String jsonEvent) {
         logger.trace("Process STB event for device {}, json='{}'", thingConfig.getFriendlyName(), jsonEvent);
@@ -620,13 +640,19 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     @Override
     public void dispose() {
         scheduler.shutdownNow();
+        cancelPairingCheck();
         if (handlerFactory != null) {
             handlerFactory.removeDevice(thingConfig.getTerminalID());
         }
         super.dispose();
     }
 
-    @SuppressWarnings({ "null", "unused" })
+    private void cancelPairingCheck() {
+        if (pairingWatchdogJob != null) {
+            pairingWatchdogJob.cancel(true);
+        }
+    }
+
     private String getJString(JsonObject json, String key, String defaultString) {
         if (json != null) {
             return json.containsKey(key) ? json.getString(key) : defaultString;
@@ -634,7 +660,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         return defaultString;
     }
 
-    @SuppressWarnings({ "null", "unused" })
     private int getJInt(JsonObject json, String key, int defaultInt) {
         if (json != null) {
             return json.containsKey(key) ? json.getInt(key) : defaultInt;

@@ -92,7 +92,6 @@ public class MagentaTVNotifyServlet extends HttpServlet {
      *
      *
      */
-    @SuppressWarnings("null")
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
         String data = inputStreamToString(request);
@@ -168,10 +167,9 @@ public class MagentaTVNotifyServlet extends HttpServlet {
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
     public void setMagentaTVHandlerFactory(MagentaTVHandlerFactory handlerFactory) {
-        if (handlerFactory != null) {
-            this.handlerFactory = handlerFactory;
-            logger.debug("HandlerFactory bound to NotifyServlet");
-        }
+        logger.debug("HandlerFactory bound to NotifyServlet");
+        this.handlerFactory = handlerFactory;
+        handlerFactory.setNotifyServletStatus(true);
     }
 
     public void unsetMagentaTVHandlerFactory(MagentaTVHandlerFactory handlerFactory) {
@@ -181,6 +179,7 @@ public class MagentaTVNotifyServlet extends HttpServlet {
     @Reference
     public void setHttpService(HttpService httpService) {
         this.httpService = httpService;
+        logger.debug("httpService bound to NotifyServlet");
     }
 
     public void unsetHttpService(HttpService httpService) {
