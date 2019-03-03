@@ -1037,28 +1037,24 @@ The 1.x modbus configuration to be updated defined 4 slaves:
 
     tcp.slave1.connection=192.168.2.9:502
     tcp.slave1.type=coil
-    tcp.slave1.id=1
     tcp.slave1.start=12288
     tcp.slave1.length=128
     tcp.slave1.updateunchangeditems=false
 
     tcp.slave2.connection=192.168.2.9:502
     tcp.slave2.type=holding
-    tcp.slave2.id=2
     tcp.slave2.start=12338
     tcp.slave2.length=100
     tcp.slave2.updateunchangeditems=false
 
     tcp.slave3.connection=192.168.2.9:502
     tcp.slave3.type=holding
-    tcp.slave3.id=3
     tcp.slave3.start=12438
     tcp.slave3.length=100
     tcp.slave3.updateunchangeditems=false
 
     tcp.slave4.connection=192.168.2.9:502
     tcp.slave4.type=holding
-    tcp.slave4.id=4
     tcp.slave4.start=12538
     tcp.slave4.length=100
     tcp.slave4.updateunchangeditems=false
@@ -1072,7 +1068,7 @@ Level one defines a `Bridge` for every modbus device that is to be addressed.
 The 1.x configuration in this example only addresses one device, so there will be one top level bridge.
 
 ```
-Bridge modbus:tcp:wago [ host="192.168.2.9", port=502, id=1 ] {
+Bridge modbus:tcp:wago [ host="192.168.2.9", port=502 ] {
 
 }
 ```
@@ -1208,7 +1204,7 @@ For other Item types use the respective replace strings.
 
 That way you can update even a large amount of Item definitions in only a few steps.
 
-The definition of `autoupdate` is optional; please refer to ##autoupdate to check whether you need it or not.
+The definition of `autoupdate` is optional; please refer to [`autoupdate`](#autoupdate-parameter-with-items) to check whether you need it or not.
 
 Continue to add `data` `Thing`s for all your other Items the same way and link them to your Items.
 
