@@ -499,25 +499,25 @@ Var_1.sendCommand(RefreshType.REFRESH)
 If you want to see what's going on in the binding, switch the loglevel to DEBUG in the Karaf console
 
 ```shell
-log:set DEBUG org.openhab.binding.homematic
+log:set DEBUG org.eclipse.smarthome.binding.homematic
 ```
 
 If you want to see even more, switch to TRACE to also see the gateway request/response data
 
 ```shell
-log:set TRACE org.openhab.binding.homematic
+log:set TRACE org.eclipse.smarthome.binding.homematic
 ```
 
 Set the logging back to normal
 
 ```shell
-log:set INFO org.openhab.binding.homematic
+log:set INFO org.eclipse.smarthome.binding.homematic
 ```
 
 To identify problems, i need a full startup TRACE log
 
 ```shell
-stop org.openhab.binding.homematic
-log:set TRACE org.openhab.binding.homematic
-start org.openhab.binding.homematic
+stop org.eclipse.smarthome.binding.homematic
+log:set TRACE org.eclipse.smarthome.binding.homematic
+start org.eclipse.smarthome.binding.homematic
 ```
