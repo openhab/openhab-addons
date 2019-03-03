@@ -4,10 +4,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.internal.tools.JsonReaderDelegate;
 
 import com.google.gson.stream.JsonReader;
 
+/**
+ * JsonReader which will replace specific names.
+ *
+ * @author Jochen Klein - Initial contribution
+ */
+@NonNullByDefault
 public class MappingJsonReader extends JsonReaderDelegate {
 
     private static final Map<String, String> ABBREVIATIONS = new HashMap<>();
@@ -143,10 +150,20 @@ public class MappingJsonReader extends JsonReaderDelegate {
 
     private final Map<String, String> mapping;
 
+    /**
+     *
+     * @param delegate
+     * @return return a JsonReader which replaces all config abbreviations
+     */
     public static MappingJsonReader getConfigMapper(JsonReader delegate) {
         return new MappingJsonReader(JsonReaderDelegate.getDelegate(delegate), ABBREVIATIONS);
     }
 
+    /**
+     *
+     * @param delegate
+     * @return return a JsonReader which replaces all config.device abbreviations
+     */
     public static MappingJsonReader getDeviceMapper(JsonReader delegate) {
         return new MappingJsonReader(JsonReaderDelegate.getDelegate(delegate), DEVICE_ABBREVIATIONS);
     }

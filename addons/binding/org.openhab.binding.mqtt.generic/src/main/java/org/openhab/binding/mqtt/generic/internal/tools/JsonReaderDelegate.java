@@ -3,11 +3,27 @@ package org.openhab.binding.mqtt.generic.internal.tools;
 import java.io.IOException;
 import java.io.StringReader;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
+/**
+ * JsonReader delegate.
+ *
+ * This class allows to overwrite parts of the {@link JsonReader} functionality
+ *
+ * @author Jochen Klein - Initial contribution
+ */
+@NonNullByDefault
 public class JsonReaderDelegate extends JsonReader {
 
+    /**
+     *
+     * @param in
+     * @return the original {@link JsonReader} after removing all {@link JsonReaderDelegate}s
+     */
     public static JsonReader getDelegate(final JsonReader in) {
         JsonReader current = in;
         while (current instanceof JsonReaderDelegate) {
@@ -19,6 +35,7 @@ public class JsonReaderDelegate extends JsonReader {
     private final JsonReader delegate;
 
     public JsonReaderDelegate(JsonReader delegate) {
+        /* super class demands a Reader. This will never be used as all requests are forwarded to the delegate */
         super(new StringReader(""));
         this.delegate = delegate;
     }
@@ -49,7 +66,7 @@ public class JsonReaderDelegate extends JsonReader {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         return delegate.equals(obj);
     }
 

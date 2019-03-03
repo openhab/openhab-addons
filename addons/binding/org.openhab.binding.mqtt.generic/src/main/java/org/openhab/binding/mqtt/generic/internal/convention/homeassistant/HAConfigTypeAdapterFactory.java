@@ -26,6 +26,19 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
+/**
+ * This a Gson type adapter factory.
+ *
+ * It will create a type adapter for every class derived from {@link HAConfiguration} and ensures,
+ * that abbreviated names are replaces with their long versions during the read.
+ *
+ * In elements, whose name end in'_topic' '~' replacement is performed.
+ *
+ * The adapters also handle {@link HAConfiguration.Device}
+ *
+ * @author Jochen Klein- Initial contribution
+ */
+
 @NonNullByDefault
 public class HAConfigTypeAdapterFactory implements TypeAdapterFactory {
 
@@ -46,8 +59,16 @@ public class HAConfigTypeAdapterFactory implements TypeAdapterFactory {
         return null;
     }
 
+    /**
+     * Handle {@link HAConfiguration}
+     *
+     * @param gson
+     * @param type
+     * @return
+     */
     private <T> TypeAdapter<T> createHAConfig(Gson gson, TypeToken<T> type) {
 
+        /* The delegate is the 'default' adapter */
         final TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
 
         return new TypeAdapter<T>() {
@@ -57,7 +78,9 @@ public class HAConfigTypeAdapterFactory implements TypeAdapterFactory {
                 if (in == null) {
                     return null;
                 }
+                /* read the object using the default adapter, but translate the names in the reader */
                 T result = delegate.read(MappingJsonReader.getConfigMapper(in));
+                /* do the '~' expansion afterwards */
                 expandTidleInTopics(HAConfiguration.class.cast(result));
                 return result;
             }
@@ -71,6 +94,7 @@ public class HAConfigTypeAdapterFactory implements TypeAdapterFactory {
 
     private <T> TypeAdapter<T> createHADevice(Gson gson, TypeToken<T> type) {
 
+        /* The delegate is the 'default' adapter */
         final TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
 
         return new TypeAdapter<T>() {
@@ -80,6 +104,7 @@ public class HAConfigTypeAdapterFactory implements TypeAdapterFactory {
                 if (in == null) {
                     return null;
                 }
+                /* read the object using the default adapter, but translate the names in the reader */
                 T result = delegate.read(MappingJsonReader.getDeviceMapper(in));
                 return result;
             }
