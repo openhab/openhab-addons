@@ -1068,7 +1068,7 @@ Level one defines a `Bridge` for every modbus device that is to be addressed.
 The 1.x configuration in this example only addresses one device, so there will be one top level bridge.
 
 ```
-Bridge modbus:tcp:wago [ host="192.168.2.9", port=502, id=1 ] {
+Bridge modbus:tcp:wago [ host="192.168.2.9", port=502 ] {
 
 }
 ```
