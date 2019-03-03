@@ -5,10 +5,13 @@ Scrapes the web interface of the inverter for the metrics of the supported chann
 ![Kostal Pico](doc/kostalpico.jpg)
 
 ## Supported Things
+
 ### first generation devices (PIKO)
+
 Tested with Kostal Inverter PIKO but might work with other inverters from kostal too.
 
 ### third generation devices (PIKO IQ / PLENTICORE plus)
+
 This implementation was tested for the current KOSTAL PIKO PLENTICORE plus and PIKO IQ devices.
 All of these devices contain the same communication board (SCB = <u>S</u>mart<u>C</u>onnection<u>B</u>oard)
 
@@ -33,7 +36,9 @@ Others may be supported (like future devices using the same SCB or offering the 
 None
 
 ## Channels
+
 ### first generation devices (PIKO)
+
 -   acPower
 -   totalEnergy
 -   dayEnergy
@@ -125,7 +130,9 @@ statisticYieldYear                          Yield of the photovoltaic plant this
 ```
 
 ## Thing Configuration
+
 ### first generation devices (PIKO)
+
 demo.things
 
 ```
@@ -137,6 +144,7 @@ In case it is offline you should see an error message.
 You optionally can define a `userName` and a `password` parameter if the access to the webinterface is protected and a desired `refreshInterval` (the time interval between updates, default 60 seconds).
 
 ### third generation devices (PIKO IQ / PLENTICORE plus)
+
 All third generation inverters require to define 3 mandatory configuration parameters:
 
 ```
@@ -155,7 +163,9 @@ Thing kostalinverter:PLENTICOREPLUS100WITHBATTERY:MyPlentiCore100WithBattery [ u
 ```
 
 ## Items
+
 ### first generation devices (PIKO)
+
 demo.items:
 
 ```
@@ -166,6 +176,7 @@ String SolarStatus "Solar status [%s]" <energy> { channel="kostalinverter:kostal
 ```
 
 ### third generation devices (PIKO IQ / PLENTICORE plus)
+
 demo.items:
 
 ```
