@@ -66,7 +66,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
     // set by implementation when bridge is ready
     protected boolean refreshable = false;
 
-    protected ScheduledFuture<?> refreshTask = scheduler.scheduleWithFixedDelay(() -> refresh(), 1, 1000,
+    protected ScheduledFuture<?> refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, 1, 1000,
             TimeUnit.MILLISECONDS);
 
     // thing update
@@ -124,7 +124,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
         });
 
         if (refreshTask.isCancelled()) {
-            refreshTask = scheduler.scheduleWithFixedDelay(() -> refresh(), 1, 1000, TimeUnit.MILLISECONDS);
+            refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, 1, 1000, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -265,7 +265,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
     /**
      * read a single decimal value from a sensor
      *
-     * @param sensorId sensorId the sensor's full ID
+     * @param sensorId the sensor's full ID
      * @param parameter device parameters needed for this request
      * @return a DecimalType
      * @throws OwException
@@ -279,7 +279,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
     /**
      * read a BitSet value from a sensor
      *
-     * @param sensorId sensorId the sensor's full ID
+     * @param sensorId the sensor's full ID
      * @param parameter device parameters needed for this request
      * @return a BitSet
      * @throws OwException
@@ -291,7 +291,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
     /**
      * read an array of decimal values from a sensor
      *
-     * @param sensorId sensorId the sensor's full ID
+     * @param sensorId the sensor's full ID
      * @param parameter device parameters needed for this request
      * @return a list of DecimalType values
      * @throws OwException
@@ -305,7 +305,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
     /**
      * read a string from a sensor
      *
-     * @param sensorId sensorId the sensor's full ID
+     * @param sensorId the sensor's full ID
      * @param parameter device parameters needed for this request
      * @return a String
      * @throws OwException
@@ -319,7 +319,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
     /**
      * writes a DecimalType to the sensor
      *
-     * @param sensorId sensorId the sensor's full ID
+     * @param sensorId the sensor's full ID
      * @param parameter device parameters needed for this request
      * @throws OwException
      */
@@ -333,7 +333,7 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
     /**
      * writes a BitSet to the sensor
      *
-     * @param sensorId sensorId the sensor's full ID
+     * @param sensorId the sensor's full ID
      * @param parameter device parameters needed for this request
      * @throws OwException
      */
@@ -345,7 +345,6 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
      * returns if this bridge is refreshable
      *
      * @return true if implementation reports communication ready
-     * @throws OwException
      */
     public boolean isRefreshable() {
         return refreshable;
