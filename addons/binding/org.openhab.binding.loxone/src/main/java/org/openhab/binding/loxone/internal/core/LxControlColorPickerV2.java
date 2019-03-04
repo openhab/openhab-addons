@@ -80,7 +80,13 @@ public class LxControlColorPickerV2 extends LxControl {
      * @param hsb the color to set
      */
     public void setColor(HSBType hsb) {
-        socketClient.sendAction(uuid, "hsv(" + hsb.toString() + ")");
+        HSBType currentColor = getColor();
+
+        if (currentColor == null || !currentColor.toString().equals(hsb.toString())) {
+            // only update the color when it changed
+            // this prevents a mood switch in the Light Controller when the color did not change anyway
+            socketClient.sendAction(uuid, "hsv(" + hsb.toString() + ")");
+        }
     }
 
     /**
