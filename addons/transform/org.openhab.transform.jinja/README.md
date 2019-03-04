@@ -22,7 +22,13 @@ Given the value
 {"Time":"2019-01-05T22:45:12","AM2301":{"Temperature":4.7,"Humidity":93.7},"TempUnit":"C"}
 ```
 
-the template `{{value_json['AM2301'].Temperature}}` extracts the string `4.7`.
+the template
+
+::: v-pre
+`{{value_json['AM2301'].Temperature}}`
+:::
+
+extracts the string `4.7`.
 
 ## Further Reading
 
