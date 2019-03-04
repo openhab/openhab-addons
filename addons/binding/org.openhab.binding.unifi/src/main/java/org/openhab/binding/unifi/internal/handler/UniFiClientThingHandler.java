@@ -124,6 +124,9 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
                 // mgb: lastSeen should keep the last state no matter what
                 state = UnDefType.NULL;
                 break;
+            case CHANNEL_RECONNECT:
+                state = OnOffType.OFF;
+                break;
         }
         return state;
     }
@@ -248,6 +251,10 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
                 }
                 break;
 
+            // :reconnect
+            case CHANNEL_RECONNECT:
+                // nop - read-only channel
+                break;
         }
         return state;
     }
@@ -259,6 +266,9 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
             case CHANNEL_BLOCKED:
                 handleBlockedCommand(client, channelUID, command);
                 break;
+            case CHANNEL_RECONNECT:
+                handleReconnectCommand(client, channelUID, command);
+                break;
             default:
                 logger.warn("Ignoring unsupported command = {} for channel = {}", command, channelUID);
         }
@@ -268,6 +278,19 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
             throws UniFiException {
         if (command instanceof OnOffType) {
             client.block(command == OnOffType.ON);
+        } else {
+            logger.warn("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
+                    command, channelUID);
+        }
+    }
+
+    private void handleReconnectCommand(UniFiClient client, ChannelUID channelUID, Command command)
+            throws UniFiException {
+        if (command instanceof OnOffType) {
+            if (command == OnOffType.ON) {
+                client.reconnect();
+                updateState(channelUID, OnOffType.OFF);
+            }
         } else {
             logger.warn("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
                     command, channelUID);

@@ -62,6 +62,7 @@
 			<channel id="ap" typeId="ap" />
 			<channel id="essid" typeId="essid" />
 			<channel id="rssi" typeId="rssi" />
+			<channel id="reconnect" typeId="reconnect" />
 		</channels>
 
 		<representation-property>cid</representation-property>
@@ -151,6 +152,12 @@
 		<item-type>Switch</item-type>
 		<label>Blocked</label>
 		<description>Is device blocked</description>
+	</channel-type>
+
+	<channel-type id="reconnect">
+		<item-type>Switch</item-type>
+		<label>Reconnect</label>
+		<description>Forces a client to reconnect</description>
 	</channel-type>
 
 </thing:thing-descriptions>

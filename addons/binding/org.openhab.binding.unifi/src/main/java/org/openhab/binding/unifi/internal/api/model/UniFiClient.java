@@ -114,6 +114,8 @@ public abstract class UniFiClient {
         controller.block(this, blocked);
     }
 
+    public void reconnect() throws UniFiException {
+        controller.reconnect(this);
     }
 
     @Override

@@ -37,6 +37,7 @@ public class UniFiBindingConstants {
     public static final String CHANNEL_UPTIME = "uptime";
     public static final String CHANNEL_LAST_SEEN = "lastSeen";
     public static final String CHANNEL_BLOCKED = "blocked";
+    public static final String CHANNEL_RECONNECT = "reconnect";
 
     // List of additional wired client channels
     // ..coming soon..
