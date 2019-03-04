@@ -22,11 +22,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -64,8 +61,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UniFiControllerThingHandler extends BaseBridgeHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(UniFiBindingConstants.THING_TYPE_CONTROLLER).collect(Collectors.toSet());
+    public static boolean supportsThingType(ThingTypeUID thingTypeUID) {
+        return UniFiBindingConstants.THING_TYPE_CONTROLLER.equals(thingTypeUID);
+    }
 
     private static final String STATUS_DESCRIPTION_COMMUNICATION_ERROR = "Error communicating with the UniFi controller";
 

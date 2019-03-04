@@ -19,9 +19,6 @@ import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
 
 import java.util.Calendar;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -59,8 +56,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UniFiClientThingHandler extends BaseThingHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(UniFiBindingConstants.THING_TYPE_WIRELESS_CLIENT).collect(Collectors.toSet());
+    public static boolean supportsThingType(ThingTypeUID thingTypeUID) {
+        return UniFiBindingConstants.THING_TYPE_WIRELESS_CLIENT.equals(thingTypeUID);
+    }
 
     private final Logger logger = LoggerFactory.getLogger(UniFiClientThingHandler.class);
 
