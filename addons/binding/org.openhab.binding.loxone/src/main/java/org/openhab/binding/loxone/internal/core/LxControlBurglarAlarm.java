@@ -1,9 +1,32 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.loxone.internal.core;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 
+/**
+ * Loxone Control that controls the Burglar Alarm
+ *
+ * @author Michael Mattan - Initial contribution
+ *
+ */
 public class LxControlBurglarAlarm extends LxControl implements LxControlStateListener {
 
     static class Factory extends LxControlInstance {
@@ -18,16 +41,16 @@ public class LxControlBurglarAlarm extends LxControl implements LxControlStateLi
         }
     }
 
-    public static final String CMD_DELAYED_ON = "delayedon";
-    public static final String CMD_DELAYED_ON_WITHOUT_MOVEMENT = "delayedon/0";
-    public static final String CMD_DELAYED_ON_WITH_MOVEMENT = "delayedon/1";
+    private static final String CMD_DELAYED_ON = "delayedon";
+    private static final String CMD_DELAYED_ON_WITHOUT_MOVEMENT = "delayedon/0";
+    private static final String CMD_DELAYED_ON_WITH_MOVEMENT = "delayedon/1";
     public static final String CMD_DISABLE_MOVEMENT = "dismv/0";
     public static final String CMD_ENABLE_MOVEMENT = "dismv/1";
-    public static final String CMD_OFF = "off";
-    public static final String CMD_ON = "on";
-    public static final String CMD_ON_WITHOUT_MOVEMENT = "on/0";
-    public static final String CMD_ON_WITH_MOVEMENT = "on/1";
-    public static final String CMD_QUIT = "quit";
+    private static final String CMD_OFF = "off";
+    private static final String CMD_ON = "on";
+    private static final String CMD_ON_WITHOUT_MOVEMENT = "on/0";
+    private static final String CMD_ON_WITH_MOVEMENT = "on/1";
+    private static final String CMD_QUIT = "quit";
 
     /**
      * A name by which Miniserver refers to burglar alarm controls
@@ -84,10 +107,51 @@ public class LxControlBurglarAlarm extends LxControl implements LxControlStateLi
      */
     public static final String STATE_DISABLED_MOVE = "disabledMove";
 
+    private List<LxControlBurglarAlarmCommand> commands = new ArrayList<>();
+
     LxControlBurglarAlarm(LxWsClient client, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
         super(client, uuid, json, room, category);
 
-        addStateListener(STATE_ARMED, this);
+        this.addSubControls();
+    }
+
+    /**
+     * a map of commands with their corresponding label
+     *
+     * @return the available command mappings
+     */
+    private Map<String, String> getCommandMappings() {
+        Map<String, String> commands = new HashMap<>();
+
+        commands.put(CMD_DELAYED_ON_WITHOUT_MOVEMENT, "Delayed On");
+        commands.put(CMD_DELAYED_ON_WITHOUT_MOVEMENT, "Delayed On / Without movement detection");
+        commands.put(CMD_DELAYED_ON_WITH_MOVEMENT, "Delayed On / With movement detection");
+        commands.put(CMD_ON_WITHOUT_MOVEMENT, "On / Without movement detection");
+        commands.put(CMD_ON_WITH_MOVEMENT, "On / With movement detection");
+        commands.put(CMD_QUIT, "Acknowledge alarm");
+
+        return commands;
+    }
+
+    /**
+     * Get a list of available commands for the Burglar Alarm
+     *
+     * @return the list of burglar alarms
+     */
+    private void addSubControls() {
+        List<LxControlBurglarAlarmCommand> commands = this.getCommandMappings().entrySet().stream().map(e -> {
+            LxJsonControl json = new LxJsonApp3().new LxJsonControl();
+            json.name = e.getValue();
+            json.type = "command-" + e.getKey();
+
+            LxUuid commandUuid = new LxUuid(this.getUuid().toString() + "-" + json.type);
+            return new LxControlBurglarAlarmCommand(commandUuid, json, this.getRoom(), this.getCategory(), e.getKey(),
+                    e.getValue(), this);
+        }).collect(Collectors.toList());
+
+        for (LxControlBurglarAlarmCommand command : commands) {
+            this.subControls.put(command.getUuid(), command);
+        }
     }
 
     /**
@@ -103,57 +167,13 @@ public class LxControlBurglarAlarm extends LxControl implements LxControlStateLi
     }
 
     /**
-     * Set alarm to ON with movement
+     * performs the given command on the burglar alarm controller
      *
+     * @param command the command to perform
      * @throws IOException
      */
-    public void onWithMovement() throws IOException {
-        socketClient.sendAction(uuid, CMD_ON_WITH_MOVEMENT);
-    }
-
-    /**
-     * Set alarm to ON without movement
-     *
-     * @throws IOException
-     */
-    public void onWithoutMovement() throws IOException {
-        socketClient.sendAction(uuid, CMD_ON_WITHOUT_MOVEMENT);
-    }
-
-    /**
-     * Set alarm delayed ON
-     * <p>
-     * Sends a command to operate the switch.
-     *
-     * @throws IOException
-     *                         when something went wrong with communication
-     */
-    public void delayedOn() throws IOException {
-        socketClient.sendAction(uuid, CMD_DELAYED_ON);
-    }
-
-    /**
-     * Set alarm delayed ON without movement
-     * <p>
-     * Sends a command to operate the switch.
-     *
-     * @throws IOException
-     *                         when something went wrong with communication
-     */
-    public void delayedOnWithoutMovement() throws IOException {
-        socketClient.sendAction(uuid, CMD_DELAYED_ON_WITHOUT_MOVEMENT);
-    }
-
-    /**
-     * Set alarm delayed ON with movement
-     * <p>
-     * Sends a command to operate the switch.
-     *
-     * @throws IOException
-     *                         when something went wrong with communication
-     */
-    public void delayedOnWithMovement() throws IOException {
-        socketClient.sendAction(uuid, CMD_DELAYED_ON_WITH_MOVEMENT);
+    public void executeCommand(String command) throws IOException {
+        socketClient.sendAction(uuid, command);
     }
 
     /**
@@ -166,19 +186,6 @@ public class LxControlBurglarAlarm extends LxControl implements LxControlStateLi
      */
     public void off() throws IOException {
         socketClient.sendAction(uuid, CMD_OFF);
-    }
-
-    /**
-     * Acknowledge alarm
-     *
-     * <p>
-     * Sends a command to operate the alarm.
-     *
-     * @throws IOException
-     *                         when something went wrong with communication
-     */
-    public void quit() throws IOException {
-        socketClient.sendAction(uuid, CMD_QUIT);
     }
 
     /**

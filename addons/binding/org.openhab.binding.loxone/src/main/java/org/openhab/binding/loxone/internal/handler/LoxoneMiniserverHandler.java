@@ -57,6 +57,7 @@ import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
 import org.openhab.binding.loxone.internal.core.LxControl;
 import org.openhab.binding.loxone.internal.core.LxControlBurglarAlarm;
+import org.openhab.binding.loxone.internal.core.LxControlBurglarAlarmCommand;
 import org.openhab.binding.loxone.internal.core.LxControlDimmer;
 import org.openhab.binding.loxone.internal.core.LxControlInfoOnlyAnalog;
 import org.openhab.binding.loxone.internal.core.LxControlInfoOnlyDigital;
@@ -251,6 +252,19 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                 return;
             }
 
+            if (control instanceof LxControlBurglarAlarmCommand) {
+                LxControlBurglarAlarmCommand alarmCommand = (LxControlBurglarAlarmCommand) control;
+
+                if (command instanceof OnOffType) {
+                    if ((OnOffType) command == OnOffType.ON) {
+                        alarmCommand.on();
+                    } else {
+                        // when we switch off, w
+                        alarmCommand.off();
+                    }
+                }
+            }
+
             if (control instanceof LxControlBurglarAlarm) {
                 LxControlBurglarAlarm alarm = (LxControlBurglarAlarm) control;
 
@@ -261,28 +275,12 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
                         alarm.off();
                     }
                 } else if (command instanceof StringType) {
+                    // we have some commands for which we don't have an Item created
+                    // but we expose them through the rules
                     StringType stringType = (StringType) command;
 
                     if (stringType.toString() != null) {
                         switch (stringType.toString().toLowerCase()) {
-                            case LxControlBurglarAlarm.CMD_QUIT:
-                                alarm.quit();
-                                break;
-                            case LxControlBurglarAlarm.CMD_DELAYED_ON:
-                                alarm.delayedOn();
-                                break;
-                            case LxControlBurglarAlarm.CMD_DELAYED_ON_WITHOUT_MOVEMENT:
-                                alarm.delayedOnWithoutMovement();
-                                break;
-                            case LxControlBurglarAlarm.CMD_DELAYED_ON_WITH_MOVEMENT:
-                                alarm.delayedOnWithMovement();
-                                break;
-                            case LxControlBurglarAlarm.CMD_ON_WITHOUT_MOVEMENT:
-                                alarm.onWithoutMovement();
-                                break;
-                            case LxControlBurglarAlarm.CMD_ON_WITH_MOVEMENT:
-                                alarm.onWithMovement();
-                                break;
                             case LxControlBurglarAlarm.CMD_DISABLE_MOVEMENT:
                                 alarm.disableMovement();
                                 break;
@@ -570,6 +568,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
 
         if (control instanceof LxControlMood) {
             controlName = "Mood / " + controlName;
+        } else if (control instanceof LxControlBurglarAlarmCommand) {
+            controlName = ((LxControlBurglarAlarmCommand) control).getCommandName();
         }
         if (roomName != null) {
             label = roomName + " / " + controlName;
@@ -624,6 +624,8 @@ public class LoxoneMiniserverHandler extends BaseThingHandler implements LxServe
         } else if (control instanceof LxControlDimmer) {
             addChannel(channels, "Dimmer", dimmerTypeId, id, label, "Dimmer", tags);
         } else if (control instanceof LxControlBurglarAlarm) {
+            addChannel(channels, "Switch", switchTypeId, id, label, "Alarm", tags);
+        } else if (control instanceof LxControlBurglarAlarmCommand) {
             addChannel(channels, "Switch", switchTypeId, id, label, "Alarm", tags);
         }
         return channels;
