@@ -87,30 +87,15 @@ public class ChannelParams {
     }
 
     public boolean isDirectionBoth() {
-        if (direction != null) {
-            if (DIRECTION_READ_WRITE.equals(direction)) {
-                return true;
-            }
-        }
-        return false;
+        return direction != null && DIRECTION_READ_WRITE.equals(direction);
     }
 
     public boolean isDirectionReadOnly() {
-        if (direction != null) {
-            if (DIRECTION_READ_ONLY.equals(direction)) {
-                return true;
-            }
-        }
-        return false;
+        return direction != null && DIRECTION_READ_ONLY.equals(direction);
     }
 
     public boolean isDirectionWriteOnly() {
-        if (direction != null) {
-            if (DIRECTION_WRITE_ONLY.equals(direction)) {
-                return true;
-            }
-        }
-        return false;
+        return direction != null && DIRECTION_WRITE_ONLY.equals(direction);
     }
 
     public String getCommandToReact() {

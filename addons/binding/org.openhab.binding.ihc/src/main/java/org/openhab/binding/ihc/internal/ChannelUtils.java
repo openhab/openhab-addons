@@ -77,38 +77,41 @@ public class ChannelUtils {
         if (projectFile != null) {
             try {
                 NodeList nodes = projectFile.getElementsByTagName("product_dataline");
-
-                for (int i = 0; i < nodes.getLength(); i++) {
-                    Element node = (Element) nodes.item(i);
-                    addChannelsFromProjectFile(thing, node.getElementsByTagName("dataline_input"), "Switch", "input",
-                            CHANNEL_TYPE_SWITCH, thingChannels);
-                    addChannelsFromProjectFile(thing, node.getElementsByTagName("dataline_output"), "Switch", "output",
-                            CHANNEL_TYPE_SWITCH, thingChannels);
-                    addChannelsFromProjectFile(thing, node.getElementsByTagName("resource_temperature"), "Number",
-                            "temperature", CHANNEL_TYPE_NUMBER, thingChannels);
-                    addChannelsFromProjectFile(thing, node.getElementsByTagName("resource_humidity_level"), "Number",
-                            "humidity", CHANNEL_TYPE_NUMBER, thingChannels);
+                if (nodes != null) {
+                    for (int i = 0; i < nodes.getLength(); i++) {
+                        Element node = (Element) nodes.item(i);
+                        addChannelsFromProjectFile(thing, node.getElementsByTagName("dataline_input"), "Switch",
+                                "input", CHANNEL_TYPE_SWITCH, thingChannels);
+                        addChannelsFromProjectFile(thing, node.getElementsByTagName("dataline_output"), "Switch",
+                                "output", CHANNEL_TYPE_SWITCH, thingChannels);
+                        addChannelsFromProjectFile(thing, node.getElementsByTagName("resource_temperature"), "Number",
+                                "temperature", CHANNEL_TYPE_NUMBER, thingChannels);
+                        addChannelsFromProjectFile(thing, node.getElementsByTagName("resource_humidity_level"),
+                                "Number", "humidity", CHANNEL_TYPE_NUMBER, thingChannels);
+                    }
                 }
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 LOGGER.warn("Error occured when adding channels, reason: {}", e.getMessage(), e);
             }
 
             try {
                 NodeList nodes = projectFile.getElementsByTagName("product_airlink");
-                addRFDeviceChannels(thing, nodes, thingChannels);
+                if (nodes != null) {
+                    addRFDeviceChannels(thing, nodes, thingChannels);
 
-                for (int i = 0; i < nodes.getLength(); i++) {
-                    Element node = (Element) nodes.item(i);
-                    addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_input"), "Switch", "input",
-                            CHANNEL_TYPE_SWITCH, thingChannels);
-                    addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_output"), "Switch", "output",
-                            CHANNEL_TYPE_SWITCH, thingChannels);
-                    addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_relay"), "Switch", "output",
-                            CHANNEL_TYPE_SWITCH, thingChannels);
-                    addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_dimming"), "Dimmer", "output",
-                            CHANNEL_TYPE_SWITCH, thingChannels);
+                    for (int i = 0; i < nodes.getLength(); i++) {
+                        Element node = (Element) nodes.item(i);
+                        addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_input"), "Switch", "input",
+                                CHANNEL_TYPE_SWITCH, thingChannels);
+                        addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_output"), "Switch",
+                                "output", CHANNEL_TYPE_SWITCH, thingChannels);
+                        addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_relay"), "Switch",
+                                "output", CHANNEL_TYPE_SWITCH, thingChannels);
+                        addChannelsFromProjectFile(thing, node.getElementsByTagName("airlink_dimming"), "Dimmer",
+                                "output", CHANNEL_TYPE_SWITCH, thingChannels);
+                    }
                 }
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 LOGGER.warn("Error occured when adding channels, reason: {}", e.getMessage(), e);
             }
         } else {
@@ -133,7 +136,7 @@ public class ChannelUtils {
     }
 
     private static void addRFDeviceChannels(Thing thing, NodeList nodes, List<Channel> thingChannels) {
-        try {
+        if (thing != null && nodes != null && thingChannels != null) {
             for (int i = 0; i < nodes.getLength(); i++) {
                 Element element = (Element) nodes.item(i);
                 Long serialNumber = Long.parseLong(element.getAttribute("serialnumber").replace("_0x", ""), 16);
@@ -164,9 +167,6 @@ public class ChannelUtils {
                     addOrUpdateChannel(channel, thingChannels);
                 }
             }
-
-        } catch (Exception e) {
-            LOGGER.warn("Error occured when adding RF channels, reason: {}", e.getMessage(), e);
         }
     }
 
