@@ -22,6 +22,10 @@ package org.openhab.binding.unifi.internal.api.model;
  */
 public class UniFiUnknownClient extends UniFiClient {
 
+    public UniFiUnknownClient(UniFiController controller) {
+        super(controller);
+    }
+
     @Override
     public Boolean isWired() {
         return null; // mgb: no is_wired property in the json

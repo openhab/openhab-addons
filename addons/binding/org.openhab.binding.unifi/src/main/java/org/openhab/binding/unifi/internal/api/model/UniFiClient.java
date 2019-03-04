@@ -15,6 +15,7 @@ package org.openhab.binding.unifi.internal.api.model;
 import java.util.Calendar;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.openhab.binding.unifi.internal.api.UniFiException;
 import org.openhab.binding.unifi.internal.api.util.UniFiTidyLowerCaseStringDeserializer;
 import org.openhab.binding.unifi.internal.api.util.UniFiTimestampDeserializer;
 
@@ -25,8 +26,11 @@ import com.google.gson.annotations.SerializedName;
  * The {@link UniFiClient} is the base data model for any (wired or wireless) connected to a UniFi network.
  *
  * @author Matthew Bowman - Initial contribution
+ * @author Patrik Wimnell - Blocking / Unblocking client support
  */
 public abstract class UniFiClient {
+
+    protected final transient UniFiController controller;
 
     @SerializedName("_id")
     protected String id;
@@ -52,14 +56,12 @@ public abstract class UniFiClient {
 
     protected boolean blocked;
 
-    protected UniFiDevice device;
+    protected UniFiClient(UniFiController controller) {
+        this.controller = controller;
+    }
 
     public String getId() {
         return id;
-    }
-
-    public String getSiteId() {
-        return siteId;
     }
 
     public String getMac() {
@@ -86,12 +88,8 @@ public abstract class UniFiClient {
         return lastSeen;
     }
 
-    public UniFiDevice getDevice() {
-        return device;
-    }
-
-    public void setDevice(UniFiDevice device) {
-        this.device = device;
+    public boolean isBlocked() {
+        return blocked;
     }
 
     public abstract Boolean isWired();
@@ -100,21 +98,29 @@ public abstract class UniFiClient {
         return BooleanUtils.negate(isWired());
     }
 
-    public abstract String getDeviceMac();
+    protected abstract String getDeviceMac();
 
-    public boolean isBlocked() {
-        return this.blocked;
+    public UniFiSite getSite() {
+        return controller.getSite(siteId);
     }
 
-    public void setBlocked(boolean value) {
-        this.blocked = value;
+    public UniFiDevice getDevice() {
+        return controller.getDevice(getDeviceMac());
+    }
+
+    // Functional API
+
+    public void block(boolean blocked) throws UniFiException {
+        controller.block(this, blocked);
+    }
+
     }
 
     @Override
     public String toString() {
         return String.format(
                 "UniFiClient{mac: '%s', ip: '%s', hostname: '%s', alias: '%s', wired: %b, blocked: %b, device: %s}",
-                mac, ip, hostname, alias, isWired(), blocked, device);
+                mac, ip, hostname, alias, isWired(), blocked, getDevice());
     }
 
 }

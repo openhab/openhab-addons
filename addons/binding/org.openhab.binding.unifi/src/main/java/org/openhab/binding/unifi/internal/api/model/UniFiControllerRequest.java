@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.unifi.internal.api;
+package org.openhab.binding.unifi.internal.api.model;
 
 import java.net.ConnectException;
 import java.net.UnknownHostException;
@@ -37,6 +37,13 @@ import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpURI;
 import org.eclipse.jetty.http.MimeTypes;
+import org.openhab.binding.unifi.internal.api.UniFiCommunicationException;
+import org.openhab.binding.unifi.internal.api.UniFiException;
+import org.openhab.binding.unifi.internal.api.UniFiExpiredSessionException;
+import org.openhab.binding.unifi.internal.api.UniFiInvalidCredentialsException;
+import org.openhab.binding.unifi.internal.api.UniFiInvalidHostException;
+import org.openhab.binding.unifi.internal.api.UniFiNotAuthorizedException;
+import org.openhab.binding.unifi.internal.api.UniFiSSLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,6 +141,8 @@ public class UniFiControllerRequest<T> {
                 throw new UniFiInvalidCredentialsException("Invalid Credentials");
             case HttpStatus.UNAUTHORIZED_401:
                 throw new UniFiExpiredSessionException("Expired Credentials");
+            case HttpStatus.FORBIDDEN_403:
+                throw new UniFiNotAuthorizedException("Unauthorized Access");
             default:
                 throw new UniFiException("Unknown HTTP status code " + status + " returned by the controller");
         }

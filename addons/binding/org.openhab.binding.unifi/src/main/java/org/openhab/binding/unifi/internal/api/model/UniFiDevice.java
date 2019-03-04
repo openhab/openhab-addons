@@ -26,6 +26,8 @@ import com.google.gson.annotations.SerializedName;
  */
 public class UniFiDevice {
 
+    protected final transient UniFiController controller;
+
     @SerializedName("_id")
     private String id;
 
@@ -38,7 +40,9 @@ public class UniFiDevice {
 
     private String siteId;
 
-    private UniFiSite site;
+    public UniFiDevice(UniFiController controller) {
+        this.controller = controller;
+    }
 
     public String getId() {
         return id;
@@ -56,20 +60,12 @@ public class UniFiDevice {
         return mac;
     }
 
-    public String getSiteId() {
-        return siteId;
-    }
-
     public UniFiSite getSite() {
-        return site;
-    }
-
-    public void setSite(UniFiSite site) {
-        this.site = site;
+        return controller.getSite(siteId);
     }
 
     @Override
     public String toString() {
-        return String.format("UniFiDevice{mac: '%s', name: '%s', model: '%s', site: %s}", mac, name, model, site);
+        return String.format("UniFiDevice{mac: '%s', name: '%s', model: '%s', site: %s}", mac, name, model, getSite());
     }
 }
