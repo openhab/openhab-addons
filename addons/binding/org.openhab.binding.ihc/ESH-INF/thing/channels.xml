@@ -22,7 +22,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="switch-channel">
+	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Generic Switch</label>
 		<description>Generic switch channel</description>
@@ -56,7 +56,7 @@
 			</parameter>
 		</config-description>
 	</channel-type>
-	<channel-type id="contact-channel">
+	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Generic Contact</label>
 		<description>Generic contact channel</description>
@@ -72,7 +72,7 @@
 			</parameter>
 		</config-description>
 	</channel-type>
-	<channel-type id="number-channel">
+	<channel-type id="number">
 		<item-type>Number</item-type>
 		<label>Generic Number</label>
 		<description>Generic number channel</description>
@@ -102,7 +102,7 @@
 			</parameter>
 		</config-description>
 	</channel-type>
-	<channel-type id="dimmer-channel">
+	<channel-type id="dimmer">
 		<item-type>Dimmer</item-type>
 		<label>Generic Dimmer</label>
 		<description>Generic dimmer channel</description>
@@ -132,7 +132,7 @@
 			</parameter>
 		</config-description>
 	</channel-type>
-	<channel-type id="datetime-channel">
+	<channel-type id="datetime">
 		<item-type>DateTime</item-type>
 		<label>Generic Datetime</label>
 		<description>Generic datetime channel</description>
@@ -162,7 +162,7 @@
 			</parameter>
 		</config-description>
 	</channel-type>
-	<channel-type id="string-channel">
+	<channel-type id="string">
 		<item-type>String</item-type>
 		<label>Generic String</label>
 		<description>Generic string channel</description>
@@ -192,7 +192,7 @@
 			</parameter>
 		</config-description>
 	</channel-type>
-	<channel-type id="rollershutter-channel">
+	<channel-type id="rollershutter">
 		<item-type>RollerShutter</item-type>
 		<label>Generic Roller Shutter</label>
 		<description>Generic roller shutter channel</description>
@@ -223,7 +223,7 @@
 		</config-description>
 	</channel-type>
 
-	<channel-type id="rf-device-low-battery-channel">
+	<channel-type id="rf-device-low-battery">
 		<item-type>Switch</item-type>
 		<label>RF device low battery warning</label>
 		<description>RF device low battery warning.</description>
@@ -236,7 +236,7 @@
 			</parameter>
 		</config-description>
 	</channel-type>
-	<channel-type id="rf-device-signal-strength-channel">
+	<channel-type id="rf-device-signal-strength">
 		<item-type>String</item-type>
 		<label>RF device signal strength</label>
 		<description>RF device signal strength.</description>

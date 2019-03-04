@@ -46,18 +46,18 @@ User can manually add other channels or disable channel auto generation and add 
 
 List of supported channel types.
 
-| Channel Type ID                   | Item Type     | Description                                                                                                                               | Supported channel parameters                                |
-| --------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| switch-channel                    | Switch        | Generic switch channel.                                                                                                                   | resourceId, direction, commandToReact, pulseWidth, inverted |
-| contact-channel                   | Contact       | Generic contact channel.                                                                                                                  | resourceId, inverted                                        |
-| number-channel                    | Number        | Generic number channel.                                                                                                                   | resourceId, direction, commandToReact, pulseWidth           |
-| dimmer-channel                    | Dimmer        | Generic dimmer channel.                                                                                                                   | resourceId, direction, commandToReact, pulseWidth           |
-| datetime-channel                  | DateTime      | Generic datetime channel.                                                                                                                 | resourceId, direction, commandToReact, pulseWidth           |
-| string-channel                    | String        | Generic string (enum) channel.                                                                                                            | resourceId, direction, commandToReact, pulseWidth           |
-| rollershutter-channel             | RollerShutter | Generic rollershutter channel.                                                                                                            | resourceId, direction, commandToReact, pulseWidth           |
-| rf-device-low-battery-channel     | Switch        | RF device low battery warning.                                                                                                            | serialNumber                                                |
-| rf-device-signal-strength-channel | String        | RF device signal strength.                                                                                                                | serialNumber                                                |
-| push-button-trigger               | Trigger       | Push button trigger channel. Possible trigger events: PRESSED, RELEASED, SHORT_PRESS, LONG_PRESS and value as a duration in milliseconds. | resourceId, longPressTime                                   |
+| Channel Type              | Item Type     | Description                                                                                                                               | Supported channel parameters                                |
+| ------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| switch                    | Switch        | Generic switch channel.                                                                                                                   | resourceId, direction, commandToReact, pulseWidth, inverted |
+| contact                   | Contact       | Generic contact channel.                                                                                                                  | resourceId, inverted                                        |
+| number                    | Number        | Generic number channel.                                                                                                                   | resourceId, direction, commandToReact, pulseWidth           |
+| dimmer                    | Dimmer        | Generic dimmer channel.                                                                                                                   | resourceId, direction, commandToReact, pulseWidth           |
+| datetime                  | DateTime      | Generic datetime channel.                                                                                                                 | resourceId, direction, commandToReact, pulseWidth           |
+| string                    | String        | Generic string (enum) channel.                                                                                                            | resourceId, direction, commandToReact, pulseWidth           |
+| rollershutter             | RollerShutter | Generic rollershutter channel.                                                                                                            | resourceId, direction, commandToReact, pulseWidth           |
+| rf-device-low-battery     | Switch        | RF device low battery warning.                                                                                                            | serialNumber                                                |
+| rf-device-signal-strength | String        | RF device signal strength.                                                                                                                | serialNumber                                                |
+| push-button-trigger       | Trigger       | Push button trigger channel. Possible trigger events: PRESSED, RELEASED, SHORT_PRESS, LONG_PRESS and value as a duration in milliseconds. | resourceId, longPressTime                                   |
 
 Channel parameters:
 
@@ -85,16 +85,16 @@ Resource id _0x3f4d14 is 0x3f4d14 in hexadecimal format, which is 4148500 in dec
 
 Mapping table between data types:
 
-| IHC / ELKO data type    | openHAB item type | Channel type                     | Resource id from project file                                                                                                              |
-|-------------------------|-------------------|----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
-| WSFloatingPointValue    | Number            | number-channel                   | <resource_temperature id="_0x3f4d14" …>                                                                                                    |
-| WSIntegerValue          | Number, Dimmer    | number-channel, dimmer-channel   | <airlink_dimming id="_0x3ec5d" …>, <resource_integer id="_0x97e20b" …>, <resource_counter id="_0x97df0c" …>                                |
-| WSBooleanValue          | Switch, Contact   | switch-channel, contact-channel  | <dataline_input id="_0x3f295a" …>, <dataline_output id="_0x3ce35b" …>, <airlink_input id="_0x5b555c" …>, <resource_flag id="_0x97e00a" …>  |
-| WSTimerValue            | Number            | number-channel                   | <resource_timer id="_0x97de10" …>                                                                                                          |
-| WSWeekdayValue          | Number            | number-channel                   | <resource_weekday id="_0x97e109" …>                                                                                                        |
-| WSEnumValue             | String, Number    | string-channel, number-channel   | <resource_enum id="_0x98050f" …>                                                                                                           |
-| WSDateValue             | DateTime          | datetime-channel                 | <resource_date id="_0x97dd0e" …>                                                                                                           |
-| WSTimeValue             | DateTime          | datetime-channel                 | <resource_time id="_0x97db0d" …>                                                                                                           |
+| IHC / ELKO data type    | openHAB item type | Channel type     | Resource id from project file                                                                                                              |
+|-------------------------|-------------------|------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| WSFloatingPointValue    | Number            | number           | <resource_temperature id="_0x3f4d14" …>                                                                                                    |
+| WSIntegerValue          | Number, Dimmer    | number, dimmer   | <airlink_dimming id="_0x3ec5d" …>, <resource_integer id="_0x97e20b" …>, <resource_counter id="_0x97df0c" …>                                |
+| WSBooleanValue          | Switch, Contact   | switch, contact  | <dataline_input id="_0x3f295a" …>, <dataline_output id="_0x3ce35b" …>, <airlink_input id="_0x5b555c" …>, <resource_flag id="_0x97e00a" …>  |
+| WSTimerValue            | Number            | number           | <resource_timer id="_0x97de10" …>                                                                                                          |
+| WSWeekdayValue          | Number            | number           | <resource_weekday id="_0x97e109" …>                                                                                                        |
+| WSEnumValue             | String, Number    | string, number   | <resource_enum id="_0x98050f" …>                                                                                                           |
+| WSDateValue             | DateTime          | datetime         | <resource_date id="_0x97dd0e" …>                                                                                                           |
+| WSTimeValue             | DateTime          | datetime         | <resource_time id="_0x97db0d" …>                                                                                                           |
 
 ## Profiles
 
@@ -150,19 +150,19 @@ Will send TOGGLE (ON/OFF) command to Dimmer test item when short button press is
 ```xtend
 ihc:controller:elko [ hostname="192.168.1.2", username="openhab", password="secret", timeout=5000, loadProjectFile=true, createChannelsAutomatically=false ] {
     Channels:
-        Type switch-channel                : my_test_switch  "My Test Switch"          [ resourceId=3988827 ]
-        Type contact-channel               : my_test_contact "My Test Contact"         [ resourceId=3988827 ]
-        Type number-channel                : my_test_number  "My Test Number"          [ resourceId=3988827, direction="ReadOnly" ]
-        Type rf-device-low-battery-channel : my_low_battery  "My Low Battery Warning"  [ serialNumber=123456789 ]
-        Type push-button-trigger           : my_test_trigger "My Test Trigger"         [ resourceId=3988827, longPressTime=1000 ]
+        Type switch                : my_test_switch  "My Test Switch"          [ resourceId=3988827 ]
+        Type contact               : my_test_contact "My Test Contact"         [ resourceId=3988827 ]
+        Type number                : my_test_number  "My Test Number"          [ resourceId=3988827, direction="ReadOnly" ]
+        Type rf-device-low-battery : my_low_battery  "My Low Battery Warning"  [ serialNumber=123456789 ]
+        Type push-button-trigger   : my_test_trigger "My Test Trigger"         [ resourceId=3988827, longPressTime=1000 ]
         
-        Type dimmer-channel                : inc_resource        "Increase resource"   [ resourceId=9000001, direction="WriteOnly", commandToReact="INCREASE", pulseWidth=300 ]
-        Type dimmer-channel                : dec_resource        "Decrease resource"   [ resourceId=9000002, direction="WriteOnly", commandToReact="DECREASE", pulseWidth=300 ]
+        Type dimmer                : inc_resource        "Increase resource"   [ resourceId=9000001, direction="WriteOnly", commandToReact="INCREASE", pulseWidth=300 ]
+        Type dimmer                : dec_resource        "Decrease resource"   [ resourceId=9000002, direction="WriteOnly", commandToReact="DECREASE", pulseWidth=300 ]
 
-        Type number-channel                : readonly_resource   "Read only resource"  [ resourceId=1212121, direction="ReadOnly" ]
-        Type number-channel                : write1_resource     "Write 1 resource"    [ resourceId=1111111, direction="WriteOnly", commandToReact="1", pulseWidth=300 ]
-        Type number-channel                : write2_resource     "Write 2 resource"    [ resourceId=2222222, direction="WriteOnly", commandToReact="2", pulseWidth=300 ]
-        Type number-channel                : write3_resource     "Write 3 resource"    [ resourceId=3333333, direction="WriteOnly", commandToReact="3", pulseWidth=300 ]
+        Type number                : readonly_resource   "Read only resource"  [ resourceId=1212121, direction="ReadOnly" ]
+        Type number                : write1_resource     "Write 1 resource"    [ resourceId=1111111, direction="WriteOnly", commandToReact="1", pulseWidth=300 ]
+        Type number                : write2_resource     "Write 2 resource"    [ resourceId=2222222, direction="WriteOnly", commandToReact="2", pulseWidth=300 ]
+        Type number                : write3_resource     "Write 3 resource"    [ resourceId=3333333, direction="WriteOnly", commandToReact="3", pulseWidth=300 ]
 }
 ```
 

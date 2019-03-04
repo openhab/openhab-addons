@@ -54,15 +54,15 @@ public class IhcBindingConstants {
     public static final String CHANNEL_TYPE_CONTROLLER_UPTIME = "controller-uptime";
     public static final String CHANNEL_TYPE_CONTROLLER_TIME = "controller-time";
 
-    public static final String CHANNEL_TYPE_NUMBER = "number-channel";
-    public static final String CHANNEL_TYPE_SWITCH = "switch-channel";
-    public static final String CHANNEL_TYPE_CONTACT = "contact-channel";
-    public static final String CHANNEL_TYPE_DIMMER = "dimmer-channel";
-    public static final String CHANNEL_TYPE_DATETIME = "datetime-channel";
-    public static final String CHANNEL_TYPE_STRING = "string-channel";
-    public static final String CHANNEL_TYPE_ROLLERSHUTTER = "rollershutter-channel";
-    public static final String CHANNEL_TYPE_RF_SIGNAL_STRENGTH = "rf-device-signal-strength-channel";
-    public static final String CHANNEL_TYPE_RF_LOW_BATTERY = "rf-device-low-battery-channel";
+    public static final String CHANNEL_TYPE_NUMBER = "number";
+    public static final String CHANNEL_TYPE_SWITCH = "switch";
+    public static final String CHANNEL_TYPE_CONTACT = "contact";
+    public static final String CHANNEL_TYPE_DIMMER = "dimmer";
+    public static final String CHANNEL_TYPE_DATETIME = "datetime";
+    public static final String CHANNEL_TYPE_STRING = "string";
+    public static final String CHANNEL_TYPE_ROLLERSHUTTER = "rollershutter";
+    public static final String CHANNEL_TYPE_RF_SIGNAL_STRENGTH = "rf-device-signal-strength";
+    public static final String CHANNEL_TYPE_RF_LOW_BATTERY = "rf-device-low-battery";
     public static final String CHANNEL_TYPE_PUSH_BUTTON_TRIGGER = "push-button-trigger";
 
     // List of all channel parameters
