@@ -27,9 +27,9 @@ public class UniFiControllerThingConfig {
 
     private int port = 8443;
 
-    private String username;
+    private String username = "";
 
-    private String password;
+    private String password = "";
 
     private int refresh = 10;
 

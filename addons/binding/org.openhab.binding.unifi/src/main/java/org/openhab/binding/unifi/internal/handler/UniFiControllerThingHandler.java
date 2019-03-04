@@ -65,7 +65,7 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(UniFiControllerThingHandler.class);
 
-    private @Nullable UniFiControllerThingConfig config;
+    private UniFiControllerThingConfig config = new UniFiControllerThingConfig();
 
     private @Nullable volatile UniFiController controller; /* mgb: volatile because accessed from multiple threads */
 

@@ -59,7 +59,7 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
 
     private final Logger logger = LoggerFactory.getLogger(UniFiClientThingHandler.class);
 
-    private volatile @Nullable UniFiClientThingConfig config; /* mgb: volatile because accessed from multiple threads */
+    private UniFiClientThingConfig config = new UniFiClientThingConfig();
 
     public UniFiClientThingHandler(Thing thing) {
         super(thing);
