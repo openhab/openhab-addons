@@ -38,7 +38,7 @@ All devices support some of the following channels:
 |`brightness` | `Dimmer` | This channel supports adjusting the brightness value, it is available on `dolphin` and `ceiling`.|
 |`color` | `Color` | This channel supports color control, it is available on `wonder` and `stripe`.|
 |`colorTemperature` | `Dimmer` | This channel supports adjusting the color temperature, it is available on `wonder` and `stripe` and `ceiling`.|
-|`command` | `String` | This channel sends command directly to device, it is available on all Yeelight Things.|
+|`command` | `String` | This channel sends a command directly to the device, it is available on all Yeelight Things.|
 
 ## Full Example
 
@@ -68,3 +68,5 @@ end
 ```
 
 Note that `set_power` is the command, then a separator `;` must be used. `\"on\",\"smooth\",2000` are the parameters.
+
+Full list of commands be found [here](https://www.yeelight.com/download/Yeelight_Inter-Operation_Spec.pdf).

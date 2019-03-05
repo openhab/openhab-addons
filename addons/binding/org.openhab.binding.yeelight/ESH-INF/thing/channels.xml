@@ -38,12 +38,12 @@
 			<tag>ColorTemperature</tag>
 		</tags>
 	</channel-type>
-    
-    <!-- Command Channel -->
+
+	<!-- Command Channel -->
 	<channel-type id="command">
 		<item-type>String</item-type>
 		<label>Command</label>
-		<description>Send command directly to bulb. For advanced user only.</description>
+		<description>Send a command directly to the device. For advanced user only.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

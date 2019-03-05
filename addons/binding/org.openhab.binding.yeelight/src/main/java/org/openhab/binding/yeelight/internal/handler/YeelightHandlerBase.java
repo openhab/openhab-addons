@@ -195,7 +195,6 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
                 }
                 break;
             case CHANNEL_COMMAND:
-                // logger.info(logInfo, command);
                 if (!command.toString().isEmpty()) {
                     String[] tokens = command.toString().split(";");
                     String methodAction = tokens[0];
