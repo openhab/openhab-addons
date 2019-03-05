@@ -50,7 +50,7 @@ public abstract class UniFiCache<T> extends HashMap<String, T> {
 
     public static final String PREFIX_NAME = "name";
 
-    private final Logger logger = LoggerFactory.getLogger(UniFiCache.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private String[] prefixes;
 
