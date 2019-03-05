@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.opendaikin;
+package org.openhab.binding.opendaikin.internal;
 
 import java.util.Collections;
 import java.util.HashSet;

@@ -32,7 +32,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.opendaikin.OpenDaikinBindingConstants;
+import org.openhab.binding.opendaikin.internal.OpenDaikinBindingConstants;
 import org.openhab.binding.opendaikin.internal.OpenDaikinWebTargets;
 import org.openhab.binding.opendaikin.internal.config.OpenDaikinConfiguration;
 import org.osgi.service.component.annotations.Component;

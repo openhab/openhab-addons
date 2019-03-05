@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.opendaikin.handler;
+package org.openhab.binding.opendaikin.internal.handler;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -30,7 +30,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.opendaikin.OpenDaikinBindingConstants;
+import org.openhab.binding.opendaikin.internal.OpenDaikinBindingConstants;
 import org.openhab.binding.opendaikin.internal.OpenDaikinCommunicationException;
 import org.openhab.binding.opendaikin.internal.OpenDaikinWebTargets;
 import org.openhab.binding.opendaikin.internal.api.ControlInfo;

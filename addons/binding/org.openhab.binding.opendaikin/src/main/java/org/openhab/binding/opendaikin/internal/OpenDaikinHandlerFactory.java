@@ -19,8 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.opendaikin.OpenDaikinBindingConstants;
-import org.openhab.binding.opendaikin.handler.OpenDaikinAcUnitHandler;
+import org.openhab.binding.opendaikin.internal.handler.OpenDaikinAcUnitHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**

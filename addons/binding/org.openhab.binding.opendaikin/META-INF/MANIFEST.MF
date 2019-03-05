@@ -7,9 +7,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.opendaikin;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Export-Package: 
- org.openhab.binding.opendaikin,
- org.openhab.binding.opendaikin.handler
 Import-Package: 
  javax.ws.rs.client,
  javax.ws.rs.core,
@@ -24,6 +21,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.openhab.binding.opendaikin,
- org.openhab.binding.opendaikin.handler,
+ org.openhab.binding.opendaikin.internal.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
