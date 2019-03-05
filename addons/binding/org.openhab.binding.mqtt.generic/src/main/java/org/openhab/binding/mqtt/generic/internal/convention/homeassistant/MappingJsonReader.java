@@ -178,5 +178,4 @@ public class MappingJsonReader extends JsonReaderDelegate {
         String name = super.nextName();
         return mapping.getOrDefault(name, name);
     }
-
 }

@@ -40,7 +40,7 @@ public abstract class HAConfiguration {
         private final Gson gson;
 
         private Factory() {
-            this.gson = new GsonBuilder().registerTypeAdapterFactory(HAConfigTypeAdapterFactory.INSTANCE).create();
+            this.gson = new GsonBuilder().registerTypeAdapterFactory(new HAConfigTypeAdapterFactory()).create();
         }
 
         /**

@@ -20,8 +20,6 @@ import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * A factory to create HomeAssistant MQTT components. Those components are specified at:
  * https://www.home-assistant.io/docs/mqtt/discovery/
@@ -83,7 +81,7 @@ public class CFactory {
      * @return A HA MQTT Component
      */
     public static @Nullable AbstractComponent<?> createComponent(String basetopic, Channel channel,
-            @Nullable ChannelStateUpdateListener updateListener, Gson gson) {
+            @Nullable ChannelStateUpdateListener updateListener) {
         HaID haID = new HaID(basetopic, channel.getUID());
         ThingUID thingUID = channel.getUID().getThingUID();
         String configJSON = (String) channel.getConfiguration().get("config");

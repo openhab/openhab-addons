@@ -70,7 +70,7 @@ public class HAConfigurationTests {
     }
 
     @Test
-    public void testTidleSubstritution() {
+    public void testTildeSubstritution() {
         String json = "{\n"//
                 + "    \"name\":\"A\",\n" //
                 + "    \"icon\":\"2\",\n" //

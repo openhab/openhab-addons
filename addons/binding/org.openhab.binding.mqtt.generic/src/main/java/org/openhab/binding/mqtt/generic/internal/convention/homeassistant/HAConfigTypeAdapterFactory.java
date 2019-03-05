@@ -42,8 +42,6 @@ import com.google.gson.stream.JsonWriter;
 @NonNullByDefault
 public class HAConfigTypeAdapterFactory implements TypeAdapterFactory {
 
-    public final static HAConfigTypeAdapterFactory INSTANCE = new HAConfigTypeAdapterFactory();
-
     @Override
     @Nullable
     public <T> TypeAdapter<T> create(@Nullable Gson gson, @Nullable TypeToken<T> type) {

@@ -35,7 +35,6 @@ import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.CChann
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.CFactory;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents.ComponentDiscovered;
-import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HAConfigTypeAdapterFactory;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HaID;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HandlerConfiguration;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelState;
@@ -43,9 +42,6 @@ import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelTypeProvider
 import org.openhab.binding.mqtt.generic.internal.tools.DelayedBatchProcessing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * Handles HomeAssistant MQTT object things. Such an HA Object can have multiple HA Components with different instances
@@ -73,7 +69,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     protected final DelayedBatchProcessing<AbstractComponent<?>> delayedProcessing;
     protected final DiscoverComponents discoverComponents;
 
-    private final Gson gson;
     protected final Map<String, AbstractComponent<?>> haComponents = new HashMap<>();
 
     protected HandlerConfiguration config = new HandlerConfiguration();
@@ -91,7 +86,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     public HomeAssistantThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider, int subscribeTimeout,
             int attributeReceiveTimeout) {
         super(thing, subscribeTimeout);
-        this.gson = new GsonBuilder().registerTypeAdapterFactory(HAConfigTypeAdapterFactory.INSTANCE).create();
         this.channelTypeProvider = channelTypeProvider;
         this.attributeReceiveTimeout = attributeReceiveTimeout;
         this.delayedProcessing = new DelayedBatchProcessing<>(attributeReceiveTimeout, this, scheduler);
@@ -120,7 +114,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             if (component != null) {
                 continue;
             } else {
-                component = CFactory.createComponent(config.basetopic, channel, this, gson);
+                component = CFactory.createComponent(config.basetopic, channel, this);
             }
             if (component != null) {
                 haComponents.put(component.uid().getId(), component);
