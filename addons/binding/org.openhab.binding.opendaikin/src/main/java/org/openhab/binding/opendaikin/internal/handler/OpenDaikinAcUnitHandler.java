@@ -17,12 +17,15 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.quantity.Temperature;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -203,12 +206,8 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
     }
 
     private void updateTempState(String channel, double temp) {
-        DecimalType tempToUpdateWith;
-        if (useFahrenheitForChannel(channel)) {
-            tempToUpdateWith = new DecimalType(cToF(temp));
-        } else {
-            tempToUpdateWith = new DecimalType(temp);
-        }
+        QuantityType<Temperature> tempToUpdateWith = new QuantityType<Temperature>(new DecimalType(temp),
+                SIUnits.CELSIUS);
 
         updateState(channel, tempToUpdateWith);
     }

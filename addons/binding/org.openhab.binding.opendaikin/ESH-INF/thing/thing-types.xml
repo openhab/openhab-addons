@@ -39,48 +39,27 @@
 	</channel-type>
 
 	<channel-type id="acunit-settemp">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Set Point</label>
-		<description>The set point in degrees Celsius or Fahrenheit</description>
+		<description>The set point temperature</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °" step="0.5" />
-		<config-description>
-			<parameter name="useFahrenheit" type="boolean" required="false">
-				<label>Use Fahrenheit</label>
-				<description>Whether to use Fahrenheit or Celsius</description>
-				<default>false</default>
-			</parameter>
-		</config-description>
+		<state pattern="%.1f %unit%" step="0.5" />
 	</channel-type>
 
 	<channel-type id="acunit-indoortemp">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Indoor Temperature</label>
-		<description>The indoor temperature in degrees Celsius or Fahrenheit</description>
+		<description>The indoor temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °" step="0.5" />
-		<config-description>
-			<parameter name="useFahrenheit" type="boolean" required="false">
-				<label>Use Fahrenheit</label>
-				<description>Whether to use Fahrenheit or Celsius</description>
-				<default>false</default>
-			</parameter>
-		</config-description>
+		<state readOnly="true" pattern="%.1f %unit%" step="0.5" />
 	</channel-type>
 
 	<channel-type id="acunit-outdoortemp">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Outdoor Temperature</label>
-		<description>The outdoor temperature in degrees Celsius or Fahrenheit</description>
+		<description>The outdoor temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °" step="0.5" />
-		<config-description>
-			<parameter name="useFahrenheit" type="boolean" required="false">
-				<label>Use Fahrenheit</label>
-				<description>Whether to use Fahrenheit or Celsius</description>
-				<default>false</default>
-			</parameter>
-		</config-description>
+		<state readOnly="true" pattern="%.1f %unit%" step="0.5" />
 	</channel-type>
 
 	<channel-type id="acunit-humidity" advanced="true">

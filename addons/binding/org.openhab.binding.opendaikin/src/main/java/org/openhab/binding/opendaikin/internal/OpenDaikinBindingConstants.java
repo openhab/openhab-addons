@@ -13,7 +13,6 @@
 package org.openhab.binding.opendaikin.internal;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -47,6 +46,4 @@ public class OpenDaikinBindingConstants {
     public static final String SETTING_USE_FAHRENHEIT = "useFahrenheit";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AC_UNIT);
-    }
-
 }

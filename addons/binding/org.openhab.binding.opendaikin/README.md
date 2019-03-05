@@ -17,7 +17,7 @@ This addon will broadcast messages on your local network looking for Daikin air 
 
 ## Channels
 
-For channels that use temperatures, the default is to use Celsius. This can be changed via a configuration on the individual channels. When in Celsius mode, the temperature has a precision of one half degree. When using Fahrenheit, only whole degrees are used. Internally, the Daikin system uses Celsius so all Fahrenheit numbers are converted and rounded.
+The temperature channels have a precision of one half degree Celsius.
 
 | Channel Name | Description |
 |--------------|---------------------------------------------------------------------------------------------|
@@ -42,20 +42,20 @@ daikin.items:
 
 ```
 Switch DaikinACUnit_Power { channel="opendaikin:ac_unit:living_room_ac:power" }
-Number DaikinACUnit_SetPointF { channel="opendaikin:ac_unit:living_room_ac:setpoint,useFahrenheit=true" }
+Number:Temperature DaikinACUnit_SetPoint { channel="opendaikin:ac_unit:living_room_ac:setpoint" }
 String DaikinACUnit_Mode { channel="opendaikin:ac_unit:living_room_ac:mode" }
 String DaikinACUnit_Fan { channel="opendaikin:ac_unit:living_room_ac:fanspeed" }
-Number DaikinACUnit_IndoorTemperatureF { channel="opendaikin:ac_unit:living_room_ac:indoortemp,useFahrenheit=true" }
-Number DaikinACUnit_OutdoorTemperatureF { channel="opendaikin:ac_unit:living_room_ac:outdoortemp,useFahrenheit=true" }
+Number:Temperature DaikinACUnit_IndoorTemperature { channel="opendaikin:ac_unit:living_room_ac:indoortemp" }
+Number:Temperature DaikinACUnit_OutdoorTemperature { channel="opendaikin:ac_unit:living_room_ac:outdoortemp" }
 ```
 
 daikin.sitemap:
 
 ```
 Switch item=DaikinACUnit_Power
-Setpoint item=DaikinACUnit_SetPointF visibility=[DaikinACUnit_Power==ON]
+Setpoint item=DaikinACUnit_SetPoint visibility=[DaikinACUnit_Power==ON]
 Selection item=DaikinACUnit_Mode mappings=["AUTO"="Auto", "DEHUMIDIFIER"="Dehumidifier", "COLD"="Cold", "HEAT"="Heat", "FAN"="Fan"] visibility=[DaikinACUnit_Power==ON]
 Selection item=DaikinACUnit_Fan mappings=["AUTO"="Auto", "SILENCE"="Silence", "LEVEL_1"="Level 1", "LEVEL_2"="Level 2", "LEVEL_3"="Level 3", "LEVEL_4"="Level 4", "LEVEL_5"="Level 5"] visibility=[DaikinACUnit_Power==ON]
-Text item=DaikinACUnit_IndoorTemperatureF
-Text item=DaikinACUnit_OutdoorTemperatureF
+Text item=DaikinACUnit_IndoorTemperature
+Text item=DaikinACUnit_OutdoorTemperature
 ```
