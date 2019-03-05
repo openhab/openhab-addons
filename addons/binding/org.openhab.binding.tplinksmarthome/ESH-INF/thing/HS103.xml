@@ -6,7 +6,7 @@
 
 	<thing-type id="hs103">
 		<label>HS103</label>
-		<description>TP-Link HS103 Smart Wi-Fi Plug Mini</description>
+		<description>TP-Link HS103 Smart Wi-Fi Plug Lite</description>
 		<category>PowerOutlet</category>
 
 		<channels>

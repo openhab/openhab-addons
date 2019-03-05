@@ -126,7 +126,7 @@ Switching, Brightness and Color is done using the `color` channel.
 * Switch On/Off
 * Wi-Fi signal strength (rssi)
 
-### HS103 Smart Wi-Fi Plug Mini
+### HS103 Smart Wi-Fi Plug Lite
 
 * Switch On/Off
 * Wi-Fi signal strength (rssi)
