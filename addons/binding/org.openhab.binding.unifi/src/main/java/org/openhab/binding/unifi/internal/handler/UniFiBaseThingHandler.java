@@ -97,7 +97,7 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
                         try {
                             handleCommand(entity, channelUID, command);
                         } catch (UniFiException e) {
-                            logger.error("Unexpected error handling command = {} for channel = {} : {}", command,
+                            logger.warn("Unexpected error handling command = {} for channel = {} : {}", command,
                                     channelUID, e.getMessage());
                         }
                     }
