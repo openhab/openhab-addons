@@ -192,7 +192,7 @@ public class UniFiController {
         return new UniFiControllerRequest<T>(responseType, gson, httpClient, host, port);
     }
 
-    private <T> T executeRequest(UniFiControllerRequest<T> request) throws UniFiException {
+    private <T> @Nullable T executeRequest(UniFiControllerRequest<T> request) throws UniFiException {
         T result;
         try {
             result = request.execute();
@@ -210,10 +210,12 @@ public class UniFiController {
         UniFiControllerRequest<UniFiSite[]> req = newRequest(UniFiSite[].class);
         req.setPath("/api/self/sites");
         UniFiSite[] sites = executeRequest(req);
-        logger.debug("Found {} UniFi Site(s): {}", sites.length, lazyFormatAsList(sites));
         UniFiSiteCache cache = new UniFiSiteCache();
-        for (UniFiSite site : sites) {
-            cache.put(site);
+        if (sites != null) {
+            logger.debug("Found {} UniFi Site(s): {}", sites.length, lazyFormatAsList(sites));
+            for (UniFiSite site : sites) {
+                cache.put(site);
+            }
         }
         return cache;
     }
@@ -231,10 +233,12 @@ public class UniFiController {
         UniFiControllerRequest<UniFiDevice[]> req = newRequest(UniFiDevice[].class);
         req.setPath("/api/s/" + site.getName() + "/stat/device");
         UniFiDevice[] devices = executeRequest(req);
-        logger.debug("Found {} UniFi Device(s): {}", devices.length, lazyFormatAsList(devices));
         UniFiDeviceCache cache = new UniFiDeviceCache();
-        for (UniFiDevice device : devices) {
-            cache.put(device);
+        if (devices != null) {
+            logger.debug("Found {} UniFi Device(s): {}", devices.length, lazyFormatAsList(devices));
+            for (UniFiDevice device : devices) {
+                cache.put(device);
+            }
         }
         return cache;
     }
@@ -252,10 +256,12 @@ public class UniFiController {
         UniFiControllerRequest<UniFiClient[]> req = newRequest(UniFiClient[].class);
         req.setPath("/api/s/" + site.getName() + "/stat/sta");
         UniFiClient[] clients = executeRequest(req);
-        logger.debug("Found {} UniFi Client(s): {}", clients.length, lazyFormatAsList(clients));
         UniFiClientCache cache = new UniFiClientCache();
-        for (UniFiClient client : clients) {
-            cache.put(client);
+        if (clients != null) {
+            logger.debug("Found {} UniFi Client(s): {}", clients.length, lazyFormatAsList(clients));
+            for (UniFiClient client : clients) {
+                cache.put(client);
+            }
         }
         return cache;
     }
@@ -274,10 +280,12 @@ public class UniFiController {
         req.setPath("/api/s/" + site.getName() + "/stat/alluser");
         req.setQueryParameter("within", 168); // scurb: Changed to 7 days.
         UniFiClient[] clients = executeRequest(req);
-        logger.debug("Found {} UniFi Insights(s): {}", clients.length, lazyFormatAsList(clients));
         UniFiClientCache cache = new UniFiClientCache();
-        for (UniFiClient client : clients) {
-            cache.put(client);
+        if (clients != null) {
+            logger.debug("Found {} UniFi Insights(s): {}", clients.length, lazyFormatAsList(clients));
+            for (UniFiClient client : clients) {
+                cache.put(client);
+            }
         }
         return cache;
     }
