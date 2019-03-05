@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.opendaikin;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,14 +42,11 @@ public class OpenDaikinBindingConstants {
     public static final String CHANNEL_AC_FAN_SPEED = "fanspeed";
     public static final String CHANNEL_AC_FAN_DIR = "fandir";
     public static final String CHANNEL_HUMIDITY = "humidity";
-    
-    // Name for the setting that determines if we use Fahrenheit or Celsius 
+
+    // Name for the setting that determines if we use Fahrenheit or Celsius
     public static final String SETTING_USE_FAHRENHEIT = "useFahrenheit";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
-
-    static {
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_AC_UNIT);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AC_UNIT);
     }
 
 }

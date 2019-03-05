@@ -23,17 +23,19 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.net.NetUtil;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.opendaikin.OpenDaikinBindingConstants;
 import org.openhab.binding.opendaikin.internal.OpenDaikinWebTargets;
 import org.openhab.binding.opendaikin.internal.config.OpenDaikinConfiguration;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
  *
  */
+@Component(service = DiscoveryService.class)
 public class OpenDaikinACUnitDiscoveryService extends AbstractDiscoveryService {
     private static final String UDP_PACKET_CONTENTS = "DAIKIN_UDP/common/basic_info";
     private static final int REMOTE_UDP_PORT = 30050;
@@ -52,7 +55,7 @@ public class OpenDaikinACUnitDiscoveryService extends AbstractDiscoveryService {
     private final Runnable scanner;
     private ScheduledFuture<?> backgroundFuture;
 
-    private DiscoveryServiceCallback discoveryServiceCallback;
+    private Client client = ClientBuilder.newClient();
 
     public OpenDaikinACUnitDiscoveryService() {
         super(Collections.singleton(OpenDaikinBindingConstants.THING_TYPE_AC_UNIT), 600, true);
@@ -122,7 +125,7 @@ public class OpenDaikinACUnitDiscoveryService extends AbstractDiscoveryService {
 
             String host = incomingPacket.getAddress().toString().substring(1);
             logger.debug("Received packet from {}", host);
-            new OpenDaikinWebTargets(ClientBuilder.newClient(), host).getControlInfo();
+            new OpenDaikinWebTargets(client, host).getControlInfo();
 
             ThingUID thingUID = new ThingUID(OpenDaikinBindingConstants.THING_TYPE_AC_UNIT, host.replace('.', '_'));
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
@@ -145,6 +148,7 @@ public class OpenDaikinACUnitDiscoveryService extends AbstractDiscoveryService {
             try {
                 addresses.add(InetAddress.getByName(broadcastAddress));
             } catch (UnknownHostException e) {
+                logger.debug("Error broadcasting to {}", broadcastAddress, e);
             }
         }
 

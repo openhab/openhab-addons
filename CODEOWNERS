@@ -118,6 +118,7 @@
 /addons/binding/org.openhab.binding.onewiregpio/ @aogorek
 /addons/binding/org.openhab.binding.onewire.test/ @J-N-K
 /addons/binding/org.openhab.binding.onkyo/ @pail23 @paulianttila
+/addons/binding/org.openhab.binding.opendaikin/ @caffineehacker
 /addons/binding/org.openhab.binding.opensprinkler/ @CrackerStealth
 /addons/binding/org.openhab.binding.openuv/ @clinique
 /addons/binding/org.openhab.binding.openweathermap/ @cweitkamp

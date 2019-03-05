@@ -195,7 +195,7 @@ public class ControlInfo {
     private static Optional<Double> parseDouble(String value) {
         try {
             return Optional.of(Double.parseDouble(value));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             return Optional.empty();
         }
     }
