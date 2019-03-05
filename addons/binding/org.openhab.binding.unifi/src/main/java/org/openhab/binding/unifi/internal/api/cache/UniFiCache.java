@@ -14,6 +14,7 @@ package org.openhab.binding.unifi.internal.api.cache;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -30,9 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Matthew Bowman - Initial contribution
  */
-public abstract class UniFiCache<T> extends HashMap<String, T> {
-
-    private static final long serialVersionUID = 1L;
+public abstract class UniFiCache<T> {
 
     private static final String SEPARATOR = ":";
 
@@ -52,19 +51,20 @@ public abstract class UniFiCache<T> extends HashMap<String, T> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private Map<String, T> map = new HashMap<>();
+
     private String[] prefixes;
 
     protected UniFiCache(String... prefixes) {
         this.prefixes = prefixes;
     }
 
-    @Override
     public final T get(Object id) {
         T value = null;
         for (String prefix : prefixes) {
             String key = prefix + SEPARATOR + id;
-            if (super.containsKey(key)) {
-                value = super.get(key);
+            if (map.containsKey(key)) {
+                value = map.get(key);
                 logger.trace("Cache HIT : '{}' -> {}", key, value);
                 break;
             } else {
@@ -79,14 +79,17 @@ public abstract class UniFiCache<T> extends HashMap<String, T> {
             String suffix = getSuffix(value, prefix);
             if (StringUtils.isNotBlank(suffix)) {
                 String key = prefix + SEPARATOR + suffix;
-                super.put(key, value);
+                map.put(key, value);
             }
         }
     }
 
-    @Override
+    public final void putAll(UniFiCache<T> cache) {
+        map.putAll(cache.map);
+    }
+
     public final Collection<T> values() {
-        return super.values().stream().distinct().collect(Collectors.toList());
+        return map.values().stream().distinct().collect(Collectors.toList());
     }
 
     protected abstract String getSuffix(T value, String prefix);

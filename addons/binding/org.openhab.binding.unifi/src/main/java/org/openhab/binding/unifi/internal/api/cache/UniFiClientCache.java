@@ -25,8 +25,6 @@ import org.openhab.binding.unifi.internal.api.model.UniFiClient;
  */
 public class UniFiClientCache extends UniFiCache<UniFiClient> {
 
-    private static final long serialVersionUID = 1L;
-
     public UniFiClientCache() {
         super(PREFIX_MAC, PREFIX_IP, PREFIX_HOSTNAME, PREFIX_ALIAS);
     }
