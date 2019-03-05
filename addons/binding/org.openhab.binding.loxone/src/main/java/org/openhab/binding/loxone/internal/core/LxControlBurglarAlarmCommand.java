@@ -53,4 +53,8 @@ public class LxControlBurglarAlarmCommand extends LxControlSwitch {
         this.alarm.off();
     }
 
+    public String getCommandName() {
+        return this.commandName;
+    }
+
 }
