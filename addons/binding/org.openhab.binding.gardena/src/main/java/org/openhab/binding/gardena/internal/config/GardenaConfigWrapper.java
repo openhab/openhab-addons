@@ -20,29 +20,14 @@ import com.google.gson.annotations.SerializedName;
  * @author Gerhard Riegler - Initial contribution
  */
 public class GardenaConfigWrapper {
-
-    @SerializedName(value = "sessions")
-    private GardenaConfig config;
+    @SerializedName("data")
+    private GardenaConfigDataWrapper dataWrapper;
 
     public GardenaConfigWrapper() {
     }
 
     public GardenaConfigWrapper(GardenaConfig config) {
-        this.config = config;
-    }
-
-    /**
-     * Returns the config.
-     */
-    public GardenaConfig getConfig() {
-        return config;
-    }
-
-    /**
-     * Sets the config.
-     */
-    public void setConfig(GardenaConfig config) {
-        this.config = config;
+        this.dataWrapper = new GardenaConfigDataWrapper(config);
     }
 
 }

@@ -54,13 +54,13 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author David Graeff - Initial contribution
  *
- * @param <TYPE> Any object
+ * @param <T> Any object
  */
 @NonNullByDefault
-public class ChildMap<TYPE> {
-    protected Map<String, TYPE> map = new TreeMap<>();
+public class ChildMap<T> {
+    protected Map<String, T> map = new TreeMap<>();
 
-    public Stream<TYPE> stream() {
+    public Stream<T> stream() {
         return map.values().stream();
     }
 
@@ -79,13 +79,13 @@ public class ChildMap<TYPE> {
      * @return Complete successfully if all "addedAction" complete successfully, otherwise complete exceptionally.
      */
     public CompletableFuture<@Nullable Void> apply(String[] childIDs,
-            final Function<TYPE, CompletableFuture<Void>> addedAction, final Function<String, TYPE> supplyNewChild,
-            final Consumer<TYPE> removedCallback) {
+            final Function<T, CompletableFuture<Void>> addedAction, final Function<String, T> supplyNewChild,
+            final Consumer<T> removedCallback) {
 
         Set<String> arrayValues = Stream.of(childIDs).collect(Collectors.toSet());
 
         // Add all entries to the map, that are not in there yet.
-        final Map<String, TYPE> newSubnodes = arrayValues.stream().filter(entry -> !this.map.containsKey(entry))
+        final Map<String, T> newSubnodes = arrayValues.stream().filter(entry -> !this.map.containsKey(entry))
                 .collect(Collectors.toMap(k -> k, k -> supplyNewChild.apply(k)));
         this.map.putAll(newSubnodes);
 
@@ -116,7 +116,7 @@ public class ChildMap<TYPE> {
      * @param key The id
      * @return The item
      */
-    public TYPE get(@Nullable String key) {
+    public T get(@Nullable String key) {
         return map.get(key);
     }
 
@@ -133,7 +133,7 @@ public class ChildMap<TYPE> {
      * @param key The ID
      * @param value The subnode object
      */
-    public void put(String key, TYPE value) {
+    public void put(String key, T value) {
         map.put(key, value);
     }
 }

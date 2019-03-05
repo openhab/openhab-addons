@@ -33,6 +33,10 @@ public class NibeHeatPumpBindingConstants {
     public final static ThingTypeUID THING_TYPE_F1X45_SERIAL = new ThingTypeUID(BINDING_ID, "f1x45-serial");
     public final static ThingTypeUID THING_TYPE_F1X45_SIMULATOR = new ThingTypeUID(BINDING_ID, "f1x45-simulator");
 
+    public final static ThingTypeUID THING_TYPE_F1X55_UDP = new ThingTypeUID(BINDING_ID, "f1x55-udp");
+    public final static ThingTypeUID THING_TYPE_F1X55_SERIAL = new ThingTypeUID(BINDING_ID, "f1x55-serial");
+    public final static ThingTypeUID THING_TYPE_F1X55_SIMULATOR = new ThingTypeUID(BINDING_ID, "f1x55-simulator");
+
     public final static ThingTypeUID THING_TYPE_F750_UDP = new ThingTypeUID(BINDING_ID, "f750-udp");
     public final static ThingTypeUID THING_TYPE_F750_SERIAL = new ThingTypeUID(BINDING_ID, "f750-serial");
     public final static ThingTypeUID THING_TYPE_F750_SIMULATOR = new ThingTypeUID(BINDING_ID, "f750-simulator");
@@ -45,7 +49,8 @@ public class NibeHeatPumpBindingConstants {
      * Presents all supported thing types by NibeHeatPump binding.
      */
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_F1X45_UDP,
-            THING_TYPE_F1X45_SERIAL, THING_TYPE_F1X45_SIMULATOR, THING_TYPE_F750_UDP, THING_TYPE_F750_SERIAL,
+            THING_TYPE_F1X45_SERIAL, THING_TYPE_F1X45_SIMULATOR, THING_TYPE_F1X55_UDP,
+            THING_TYPE_F1X55_SERIAL, THING_TYPE_F1X55_SIMULATOR, THING_TYPE_F750_UDP, THING_TYPE_F750_SERIAL,
             THING_TYPE_F750_SIMULATOR, THING_TYPE_F470_UDP, THING_TYPE_F470_SERIAL, THING_TYPE_F470_SIMULATOR)
             .collect(Collectors.toSet());
 }

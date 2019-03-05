@@ -791,7 +791,7 @@ public class EchoHandler extends BaseThingHandler {
             @Nullable JsonNotificationSound @Nullable [] alarmSounds,
             @Nullable List<JsonMusicProvider> musicProviders) {
         try {
-            this.logger.debug("Handle updateState {}", this.getThing().getUID().getAsString());
+            this.logger.debug("Handle updateState {}", this.getThing().getUID());
 
             if (deviceNotificationState != null) {
                 noticationVolumeLevel = deviceNotificationState.volumeLevel;
@@ -809,16 +809,16 @@ public class EchoHandler extends BaseThingHandler {
                 this.musicProviders = musicProviders;
             }
             if (!setDeviceAndUpdateThingState(accountHandler, device, null)) {
-                this.logger.debug("Handle updateState {} aborted: Not online", this.getThing().getUID().getAsString());
+                this.logger.debug("Handle updateState {} aborted: Not online", this.getThing().getUID());
                 return;
             }
             if (device == null) {
-                this.logger.debug("Handle updateState {} aborted: No device", this.getThing().getUID().getAsString());
+                this.logger.debug("Handle updateState {} aborted: No device", this.getThing().getUID());
                 return;
             }
 
             if (this.disableUpdate) {
-                this.logger.debug("Handle updateState {} aborted: Disabled", this.getThing().getUID().getAsString());
+                this.logger.debug("Handle updateState {} aborted: Disabled", this.getThing().getUID());
                 return;
             }
             Connection connection = this.findConnection();
@@ -1123,7 +1123,7 @@ public class EchoHandler extends BaseThingHandler {
             }
 
         } catch (Exception e) {
-            this.logger.debug("Handle updateState {} failed: {}", this.getThing().getUID().getAsString(), e);
+            this.logger.debug("Handle updateState {} failed: {}", this.getThing().getUID(), e);
 
             disableUpdate = false;
             throw e; // Rethrow same exception

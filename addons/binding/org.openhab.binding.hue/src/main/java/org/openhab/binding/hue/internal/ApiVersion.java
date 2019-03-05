@@ -26,7 +26,7 @@ public class ApiVersion {
     private final int minor;
     private final int micro;
 
-    private static final Pattern versionPattern = Pattern.compile("^([0-9]+)\\.([0-9]+)(\\.([0-9]+))?$");
+    private static final Pattern VERSION_PATTERN = Pattern.compile("^([0-9]+)\\.([0-9]+)(\\.([0-9]+))?$");
 
     public ApiVersion(int major, int minor, int micro) {
         this.major = major;
@@ -35,9 +35,8 @@ public class ApiVersion {
     }
 
     public static ApiVersion of(String version) {
-        Matcher matcher = versionPattern.matcher(version);
+        Matcher matcher = VERSION_PATTERN.matcher(version);
         if (matcher.matches()) {
-
             int major = Integer.parseInt(matcher.group(1));
             int minor = Integer.parseInt(matcher.group(2));
             String microString = matcher.group(4);

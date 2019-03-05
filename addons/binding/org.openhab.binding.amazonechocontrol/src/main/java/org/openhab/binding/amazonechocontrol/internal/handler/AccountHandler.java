@@ -400,7 +400,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         JsonNotificationResponse[] notifications;
         ZonedDateTime timeStamp = ZonedDateTime.now();
         try {
-            notifications = connection.notifications();
+            notifications = currentConnection.notifications();
         } catch (IOException | URISyntaxException e) {
             logger.debug("refreshNotifications failed {}", e);
             return;

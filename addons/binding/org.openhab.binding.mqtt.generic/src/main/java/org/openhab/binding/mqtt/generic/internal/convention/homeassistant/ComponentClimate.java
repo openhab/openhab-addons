@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -28,15 +27,21 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentClimate extends AbstractComponent {
+public class ComponentClimate extends AbstractComponent<ComponentClimate.Config> {
+
+    /**
+     * Configuration class for MQTT component
+     */
+    static class Config extends HAConfiguration {
+        Config() {
+            super("MQTT HVAC");
+        }
+    }
+
     public ComponentClimate(ThingUID thing, HaID haID, String configJSON,
             @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
-        super(thing, haID, configJSON, gson);
+        super(thing, haID, configJSON, gson, Config.class);
         throw new UnsupportedOperationException("Component:Climate not supported yet");
     }
 
-    @Override
-    public @NonNull String name() {
-        return "Climate";
-    }
 }

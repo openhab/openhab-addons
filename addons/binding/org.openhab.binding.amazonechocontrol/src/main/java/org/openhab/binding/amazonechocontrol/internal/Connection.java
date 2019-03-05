@@ -47,8 +47,6 @@ import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jsoup.Jsoup;
-import org.jsoup.helper.StringUtil;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncementContent;
@@ -470,7 +468,7 @@ public class Connection {
                 if (customHeaders != null) {
                     for (String key : customHeaders.keySet()) {
                         String value = customHeaders.get(key);
-                        if (!StringUtil.isBlank(value)) {
+                        if (StringUtils.isNotEmpty(value)) {
                             connection.setRequestProperty(key, value);
                         }
                     }
@@ -1039,7 +1037,7 @@ public class Connection {
         content.display.body = text;
         if (text.startsWith("<speak>") && text.endsWith("</speak>")) {
             content.speak.type = "ssml";
-            String plainText = Jsoup.parse(text).text();
+            String plainText = text.replaceAll("<[^>]+>", "");
             content.display.body = plainText;
         } else {
             content.display.body = text;
@@ -1239,7 +1237,7 @@ public class Connection {
     }
 
     public JsonAutomation[] getRoutines() throws IOException, URISyntaxException {
-        String json = makeRequestAndReturnString(alexaServer + "/api/behaviors/automations");
+        String json = makeRequestAndReturnString(alexaServer + "/api/behaviors/automations?limit=2000");
         JsonAutomation[] result = parseJson(json, JsonAutomation[].class);
         return result;
     }

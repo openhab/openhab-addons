@@ -97,6 +97,7 @@ Bridge hue:bridge:1 [ ipAddress="192.168.0.64", userName="qwertzuiopasdfghjklyxc
 | Parameter             | Description                                                                                                                                                                                                                              |
 |-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ipAddress             | Network address of the Hue bridge. **Mandatory**                                                                                                                                                                                         |
+| port                  |  Port of the Hue bridge. Optional, default value is 80 or 443, derived from protocol, otherwise user-defined.                                                                                                                            |
 | userName              | Name of a registered Hue bridge user, that allows to access the API. **Mandatory**                                                                                                                                                       |
 | pollingInterval       | Seconds between fetching light values from the Hue bridge. Optional, the default value is 10 (min="1", step="1").                                                                                                                        |
 | sensorPollingInterval | Milliseconds between fetching sensor-values from the Hue bridge. A higher value means more delay for the sensor values, but a too low value can cause congestion on the bridge. Optional, the default value is 500 (min="50", step="1"). |
@@ -115,9 +116,11 @@ or
 ```
 0107 motion-sensor "Motion Sensor" @ "Entrance" [ sensorId="4" ]
 ```
+
 You can freely choose the thing identifier (such as motion-sensor), its name (such as "Motion Sensor") and the location (such as "Entrance"). The name will then be used e.g. by Paper UI to show the item.
 
 The following device types also have an optional configuration value to specify the fade time in milliseconds for the transition to a new state:
+
 * Dimmable Light
 * Dimmable Plug-in Unit
 * Colour Light

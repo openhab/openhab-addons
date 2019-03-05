@@ -42,7 +42,7 @@ public class YeelightCeilingHandler extends YeelightHandlerBase {
     protected void updateUI(DeviceStatus status) {
         super.updateUI(status);
         if (status.isPowerOff()) {
-            updateState(YeelightBindingConstants.CHANNEL_BRIGHTNESS, new PercentType(0));
+            updateState(YeelightBindingConstants.CHANNEL_BRIGHTNESS, PercentType.ZERO);
         } else {
             updateState(YeelightBindingConstants.CHANNEL_BRIGHTNESS, new PercentType(status.getBrightness()));
             updateState(YeelightBindingConstants.CHANNEL_COLOR_TEMPERATURE,
