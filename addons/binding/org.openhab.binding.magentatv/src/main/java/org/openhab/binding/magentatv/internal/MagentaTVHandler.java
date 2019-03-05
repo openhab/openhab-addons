@@ -350,7 +350,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 updateState(CHANNEL_POWER, OnOffType.ON);
             } else {
                 if (!errorMessage.isEmpty()) {
-                    logger.error("Communication Error - {}, switch Thing offline");
+                    logger.error("Communication Error - {}, switch Thing offline", errorMessage);
                     updateStatus(newStatus, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
                 } else {
                     updateStatus(newStatus);

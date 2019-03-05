@@ -336,6 +336,27 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
 
     }
 
+    /*
+     * @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+     * public void setMagentaTVNotifyServlet(MagentaTVNotifyServlet notifyServlet) {
+     * if (notifyServletInitialized == false) {
+     * notifyServletInitialized = true;
+     * logger.debug("NotifyServlet bound to HandlerFactory");
+     * } else {
+     * logger.error("NotifyServlet was restarted!");
+     * }
+     * }
+     * 
+     * public void unsetMagentaTVNotifyServlet(MagentaTVNotifyServlet notifyServlet) {
+     * if (notifyServletInitialized == true) {
+     * logger.debug("NotifyServlet was restarted");
+     * notifyServletInitialized = false;
+     * } else {
+     * logger.debug("NotifyServlet was unbound from HandlerFactory!");
+     * }
+     * }
+     */
+
     @Reference
     protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
         this.networkAddressService = networkAddressService;

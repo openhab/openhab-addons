@@ -139,9 +139,9 @@ public class MagentaTVNotifyServlet extends HttpServlet {
 
         } catch (Exception e) {
             if (data != null) {
-                logger.error("Exception processing callback: {} ({}), data='{}'", e.getMessage(), e.getClass(), data);
+                logger.error("Exception: {} ({}), data='{}'", e.getMessage(), e.getClass(), data);
             } else {
-                logger.error("Exception processing callback: {} ({})", e.getMessage(), e.getClass());
+                logger.error("Exception: {} ({})", e.getMessage(), e.getClass());
             }
         } finally {
             setHeaders(resp);
@@ -169,10 +169,15 @@ public class MagentaTVNotifyServlet extends HttpServlet {
     public void setMagentaTVHandlerFactory(MagentaTVHandlerFactory handlerFactory) {
         logger.debug("HandlerFactory bound to NotifyServlet");
         this.handlerFactory = handlerFactory;
-        handlerFactory.setNotifyServletStatus(true);
+        if (handlerFactory != null) {
+            handlerFactory.setNotifyServletStatus(true);
+        }
     }
 
     public void unsetMagentaTVHandlerFactory(MagentaTVHandlerFactory handlerFactory) {
+        if (handlerFactory != null) {
+            handlerFactory.setNotifyServletStatus(false);
+        }
         this.handlerFactory = null;
     }
 
