@@ -26,7 +26,6 @@ import com.google.gson.InstanceCreator;
  *
  * @author Matthew Bowman - Initial contribution
  */
-
 public class UniFiSiteInstanceCreator implements InstanceCreator<UniFiSite> {
 
     private final UniFiController controller;
