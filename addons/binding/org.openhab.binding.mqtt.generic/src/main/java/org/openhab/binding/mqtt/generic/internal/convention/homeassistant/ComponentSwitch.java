@@ -27,19 +27,16 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentSwitch extends AbstractComponent {
+public class ComponentSwitch extends AbstractComponent<ComponentSwitch.Config> {
     public static final String switchChannelID = "switch"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config {
-        protected String name = "MQTT Switch";
-        protected String icon = "";
-        protected int qos = 1;
-        protected boolean retain = true;
-        protected @Nullable String value_template;
-        protected @Nullable String unique_id;
+    static class Config extends HAConfiguration {
+        Config() {
+            super("MQTT Switch");
+        }
 
         protected boolean optimistic = false;
 
@@ -49,18 +46,11 @@ public class ComponentSwitch extends AbstractComponent {
         protected @Nullable String command_topic;
         protected String payload_on = "true";
         protected String payload_off = "false";
-
-        protected @Nullable String availability_topic;
-        protected String payload_available = "online";
-        protected String payload_not_available = "offline";
     };
-
-    protected Config config = new Config();
 
     public ComponentSwitch(ThingUID thing, HaID haID, String configJSON,
             @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
-        super(thing, haID, configJSON, gson);
-        config = gson.fromJson(configJSON, Config.class);
+        super(thing, haID, configJSON, gson, Config.class);
 
         // We do not support all HomeAssistant quirks
         if (config.optimistic && StringUtils.isNotBlank(config.state_topic)) {

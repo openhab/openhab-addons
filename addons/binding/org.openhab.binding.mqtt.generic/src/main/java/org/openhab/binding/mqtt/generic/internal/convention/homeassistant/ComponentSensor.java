@@ -26,19 +26,16 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentSensor extends AbstractComponent {
+public class ComponentSensor extends AbstractComponent<ComponentSensor.Config> {
     public static final String sensorChannelID = "sensor"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config {
-        protected String name = "MQTT Sensor";
-        protected String icon = "";
-        protected int qos = 1;
-        protected boolean retain = true;
-        protected @Nullable String value_template;
-        protected @Nullable String unique_id;
+    static class Config extends HAConfiguration {
+        Config() {
+            super("MQTT Sensor");
+        }
 
         protected String unit_of_measurement = "";
         protected @Nullable String device_class;
@@ -46,18 +43,11 @@ public class ComponentSensor extends AbstractComponent {
         protected int expire_after = 0;
 
         protected String state_topic = "";
-
-        protected @Nullable String availability_topic;
-        protected String payload_available = "online";
-        protected String payload_not_available = "offline";
     };
-
-    protected Config config = new Config();
 
     public ComponentSensor(ThingUID thing, HaID haID, String configJSON,
             @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
-        super(thing, haID, configJSON, gson);
-        config = gson.fromJson(configJSON, Config.class);
+        super(thing, haID, configJSON, gson, Config.class);
 
         if (config.force_update) {
             throw new UnsupportedOperationException("Component:Sensor does not support forced updates");

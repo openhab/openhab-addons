@@ -28,19 +28,16 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentFan extends AbstractComponent {
+public class ComponentFan extends AbstractComponent<ComponentFan.Config> {
     public static final String switchChannelID = "fan"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config {
-        protected String name = "MQTT fan";
-        protected String icon = "";
-        protected int qos = 1;
-        protected boolean retain = true;
-        protected @Nullable String state_value_template;
-        protected @Nullable String unique_id;
+    static class Config extends HAConfiguration {
+        Config() {
+            super("MQTT Fan");
+        }
 
         protected @Nullable String state_topic;
         protected String command_topic = "";
@@ -48,20 +45,12 @@ public class ComponentFan extends AbstractComponent {
         protected String payload_off = "OFF";
     };
 
-    protected Config config = new Config();
-
     public ComponentFan(ThingUID thing, HaID haID, String configJSON,
             @Nullable ChannelStateUpdateListener updateListener, Gson gson) {
-        super(thing, haID, configJSON, gson);
-        config = gson.fromJson(configJSON, Config.class);
+        super(thing, haID, configJSON, gson, Config.class);
 
         OnOffValue value = new OnOffValue(config.payload_on, config.payload_off);
         channels.put(switchChannelID, new CChannel(this, switchChannelID, value, //
                 config.state_topic, config.command_topic, config.name, "", updateListener));
-    }
-
-    @Override
-    public String name() {
-        return config.name;
     }
 }

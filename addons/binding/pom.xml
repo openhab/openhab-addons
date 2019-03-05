@@ -113,6 +113,7 @@
     <module>org.openhab.binding.mqtt.generic.test</module>
     <module>org.openhab.binding.mqtt.test</module>
     <module>org.openhab.binding.nadreceiver</module>
+    <module>org.openhab.binding.nanoleaf</module>
     <module>org.openhab.binding.neato</module>
     <module>org.openhab.binding.neeo</module>
     <module>org.openhab.binding.netatmo</module>
@@ -167,6 +168,7 @@
     <module>org.openhab.binding.somfytahoma</module>
     <module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.sonyaudio</module>
+    <module>org.openhab.binding.spotify</module>
     <module>org.openhab.binding.squeezebox</module>
     <module>org.openhab.binding.synopanalyzer</module>
     <module>org.openhab.binding.systeminfo</module>

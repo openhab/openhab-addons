@@ -453,12 +453,18 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.mqtt.generic/${project.version}</bundle>
     </feature>
 
-	<feature name="openhab-binding-nadreceiver" description="NAD Receiver Binding" version="${project.version}">
+	  <feature name="openhab-binding-nadreceiver" description="NAD Receiver Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-		<feature>openhab-transport-serial</feature>
+        <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.nadreceiver/${project.version}</bundle>
     </feature>
 	
+    <feature name="openhab-binding-nanoleaf" description="Nanoleaf Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-mdns</feature>        
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.nanoleaf/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-neato" description="Neato Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.neato/${project.version}</bundle>
@@ -715,6 +721,12 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.sonyaudio/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-spotify" description="Spotify Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-http</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.spotify/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-squeezebox" description="Squeezebox Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
@@ -930,6 +942,11 @@
         <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.javascript/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-transformation-jinja" description="Jinja Transformation" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.jinja/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-transformation-jsonpath" description="JSONPath Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle dependency="true">mvn:com.jayway.jsonpath/json-path/2.1.0</bundle>
@@ -989,6 +1006,11 @@
     <feature name="openhab-voice-picotts" description="Pico Text-to-Speech" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.picotts/${project.version}</bundle>
+    </feature>
+
+    <feature name="openhab-voice-pollytts" description="Polly Text-to-Speech" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.pollytts/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-voice-voicerss" description="VoiceRSS Text-to-Speech" version="${project.version}">
