@@ -23,6 +23,12 @@ import com.google.gson.annotations.SerializedName;
  */
 public class UniFiSite {
 
+    private final transient UniFiController controller;
+
+    public UniFiSite(UniFiController controller) {
+        this.controller = controller;
+    }
+
     @SerializedName("_id")
     private String id;
 
