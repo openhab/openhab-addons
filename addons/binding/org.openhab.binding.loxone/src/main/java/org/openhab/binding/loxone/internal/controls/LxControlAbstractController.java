@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
@@ -53,10 +50,7 @@ abstract class LxControlAbstractController extends LxControl {
     @Override
     public void update(LxJsonControl json, LxContainer room, LxCategory category) {
         super.update(json, room, category);
-
-        for (LxControl control : getSubControls().values()) {
-            control.uuid.setUpdate(false);
-        }
+        getSubControls().values().forEach(c -> c.uuid.setUpdate(false));
         if (json.subControls != null) {
             for (LxJsonControl subControl : json.subControls.values()) {
                 // recursively create a subcontrol as a new control
@@ -73,14 +67,6 @@ abstract class LxControlAbstractController extends LxControl {
                 }
             }
         }
-        List<LxUuid> toRemove = new ArrayList<>();
-        for (LxControl control : getSubControls().values()) {
-            if (!control.uuid.getUpdate()) {
-                toRemove.add(control.uuid);
-            }
-        }
-        for (LxUuid id : toRemove) {
-            getSubControls().remove(id);
-        }
+        getSubControls().entrySet().removeIf(e -> !e.getValue().uuid.getUpdate());
     }
 }

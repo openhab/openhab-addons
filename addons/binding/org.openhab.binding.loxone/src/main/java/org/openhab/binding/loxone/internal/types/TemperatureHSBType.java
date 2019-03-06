@@ -26,6 +26,8 @@ import org.eclipse.smarthome.core.library.types.HSBType;
  */
 public class TemperatureHSBType extends HSBType {
 
+    private static final long serialVersionUID = -2821122730407485795L;
+
     public static HSBType fromBrightnessTemperature(String value) {
         List<String> constituents = Arrays.stream(value.split(",")).map(in -> in.trim()).collect(Collectors.toList());
 
