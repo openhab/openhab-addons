@@ -176,7 +176,8 @@ String MagentaTV_RunStatus "Run Status"     {channel="magentatv:receiver:e8dbce3
 </table>
 
 <b>Sitemap:</b><p>
-t.b.d.<p>
+- please contribute an example
+<p>
 
 <b>magentatv.rules</b><p>
 Due to the fact the POWER is a toggle button and the binding can't detect the current status, which could lead into the situation that you want to power on the receiver as part of a scene, but due to the fact that it is already ON you switch it off. We spend some time to fiddle out a better handling and find a way to detect a network message when the receiver gets powered off (MR4xx only). In this case MagentaTV_Power is switch to OFF.<p>
