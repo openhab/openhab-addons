@@ -1342,7 +1342,8 @@ public class Connection {
     public void playMusicVoiceCommand(Device device, String providerId, String voiceCommand)
             throws IOException, URISyntaxException {
         JsonPlaySearchPhraseOperationPayload payload = new JsonPlaySearchPhraseOperationPayload();
-        payload.customerId = device.deviceOwnerCustomerId;
+        payload.customerId = (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                : this.accountCustomerId);
         payload.locale = "ALEXA_CURRENT_LOCALE";
         payload.musicProviderId = providerId;
         payload.searchPhrase = voiceCommand;
