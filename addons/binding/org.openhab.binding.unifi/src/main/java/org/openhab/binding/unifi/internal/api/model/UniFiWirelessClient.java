@@ -32,6 +32,10 @@ public class UniFiWirelessClient extends UniFiClient {
 
     private Integer rssi;
 
+    public UniFiWirelessClient(UniFiController controller) {
+        super(controller);
+    }
+
     @Override
     public Boolean isWired() {
         return false;

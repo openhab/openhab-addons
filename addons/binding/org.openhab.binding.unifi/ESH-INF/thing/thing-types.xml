@@ -57,10 +57,12 @@
 			<channel id="ipAddress" typeId="ipAddress" />
 			<channel id="uptime" typeId="uptime" />
 			<channel id="lastSeen" typeId="lastSeen" />
+			<channel id="blocked" typeId="blocked" />
 			<!-- additional wireless client channels -->
 			<channel id="ap" typeId="ap" />
 			<channel id="essid" typeId="essid" />
 			<channel id="rssi" typeId="rssi" />
+			<channel id="reconnect" typeId="reconnect" />
 		</channels>
 
 		<representation-property>cid</representation-property>
@@ -144,6 +146,18 @@
 		<label>Received Signal Strength Indicator</label>
 		<description>Received Signal Strength Indicator (RSSI) of the wireless client</description>
 		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="blocked">
+		<item-type>Switch</item-type>
+		<label>Blocked</label>
+		<description>Is device blocked</description>
+	</channel-type>
+
+	<channel-type id="reconnect">
+		<item-type>Switch</item-type>
+		<label>Reconnect</label>
+		<description>Forces a client to reconnect</description>
 	</channel-type>
 
 </thing:thing-descriptions>

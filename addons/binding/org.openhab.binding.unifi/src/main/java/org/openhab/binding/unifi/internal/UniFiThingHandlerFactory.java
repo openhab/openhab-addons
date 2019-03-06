@@ -12,10 +12,6 @@
  */
 package org.openhab.binding.unifi.internal;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -40,11 +36,6 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.unifi", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .concat(UniFiControllerThingHandler.SUPPORTED_THING_TYPES_UIDS.stream(),
-                    UniFiClientThingHandler.SUPPORTED_THING_TYPES_UIDS.stream())
-            .collect(Collectors.toSet());
-
     private HttpClient httpClient;
 
     public UniFiThingHandlerFactory() {
@@ -59,15 +50,16 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return UniFiControllerThingHandler.supportsThingType(thingTypeUID)
+                || UniFiClientThingHandler.supportsThingType(thingTypeUID);
     }
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (UniFiControllerThingHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+        if (UniFiControllerThingHandler.supportsThingType(thingTypeUID)) {
             return new UniFiControllerThingHandler((Bridge) thing, httpClient);
-        } else if (UniFiClientThingHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+        } else if (UniFiClientThingHandler.supportsThingType(thingTypeUID)) {
             return new UniFiClientThingHandler(thing);
         }
         return null;

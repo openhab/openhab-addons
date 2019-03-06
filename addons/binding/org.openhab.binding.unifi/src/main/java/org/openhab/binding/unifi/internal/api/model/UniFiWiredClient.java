@@ -23,6 +23,10 @@ public class UniFiWiredClient extends UniFiClient {
 
     private String swMac;
 
+    public UniFiWiredClient(UniFiController controller) {
+        super(controller);
+    }
+
     @Override
     public Boolean isWired() {
         return true;

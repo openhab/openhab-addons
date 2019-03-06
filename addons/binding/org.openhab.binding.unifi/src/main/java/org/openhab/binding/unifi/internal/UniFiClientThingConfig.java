@@ -23,9 +23,9 @@ import org.openhab.binding.unifi.internal.handler.UniFiClientThingHandler;
  */
 public class UniFiClientThingConfig {
 
-    private String cid;
+    private String cid = "";
 
-    private String site;
+    private String site = "";
 
     private int considerHome = 180;
 
