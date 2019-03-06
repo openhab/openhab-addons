@@ -140,11 +140,11 @@
 		<state readOnly="true" />
 	</channel-type>
 
-    <channel-type id="numberTypeId">
-        <item-type>Number</item-type>
-        <label>Loxone Virtual Input Information</label>
-        <description>Loxone's Virtual Inputs.</description>
-    </channel-type>
+	<channel-type id="numberTypeId">
+		<item-type>Number</item-type>
+		<label>Loxone Virtual Input Information</label>
+		<description>Loxone's Virtual Inputs.</description>
+	</channel-type>
 
 	<channel-type id="roNumberTypeId">
 		<item-type>Number</item-type>
@@ -191,6 +191,12 @@
 		<item-type>Dimmer</item-type>
 		<label>Loxone Dimmer</label>
 		<description>Loxone's dimmer control</description>
+	</channel-type>
+
+	<channel-type id="colorPickerTypeId">
+		<item-type>Color</item-type>
+		<label>Loxone ColorPicker</label>
+		<description>Loxone's Color Picker V2 control</description>
 	</channel-type>
 
 </thing:thing-descriptions>
