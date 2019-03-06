@@ -76,7 +76,8 @@ public class A5_20_04 extends _4BSMessage {
 
         int value = 20; // 20 °C
 
-        if ((current != null) && (current instanceof DecimalType)) {
+        if ((current != null) && (current instanceof QuantityType)) {
+            @SuppressWarnings("unchecked")
             QuantityType<Temperature> raw = current.as(QuantityType.class);
 
             if (raw != null) {
