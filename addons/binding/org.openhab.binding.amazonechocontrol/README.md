@@ -23,6 +23,8 @@ It provides features to control and view the current state of echo devices:
 - start playing music by providing the voice command as text (Works with all music providers)
 - get last spoken voice command
 - change the volume of the alarm
+- change the equalizer settings
+- get information about the next alarm, reminder and timer
 
 Some ideas what you can do in your home by using rules and other openHAB controlled devices:
 
@@ -37,6 +39,8 @@ Some ideas what you can do in your home by using rules and other openHAB control
 - Have different flash briefing in the morning and evening
 - Let alexa say 'welcome' to you if you open the door
 - Implement own handling for voice commands in a rule
+- Change the equalizer settings depending on the bluetooth connection
+- Turn on a light on your alexa alarm time
 
 ## Note
 
@@ -100,6 +104,9 @@ It will be configured at runtime by using the save channel to store the current 
 |-----------------------|-------------|-------------|------------|------------------------------------------------------------------------------------------
 | player                | Player      | R/W         | echo, echoshow, echospot, wha | Control the music player  (Supported commands: PLAY or ON, PAUSE or OFF, NEXT, PREVIOUS, REWIND, FASTFORWARD)                                                                                               
 | volume                | Dimmer      | R/W         | echo, echoshow, echospot      | Control the volume                                                                                            
+| equalizerTreble       | Number      | R/W         | echo, echoshow, echospot      | Control the treble (value from -6 to 6)                                                                                            
+| equalizerMidrange     | Number      | R/W         | echo, echoshow, echospot      | Control the midrange (value from -6 to 6)                                                                                            
+| equalizerBass         | Number      | R/W         | echo, echoshow, echospot      | Control the bass (value from -6 to 6)                                                                                            
 | shuffle               | Switch      | R/W         | echo, echoshow, echospot, wha | Shuffle play if applicable, e.g. playing a playlist     
 | imageUrl              | String      | R           | echo, echoshow, echospot, wha | Url of the album image or radio station logo     
 | title                 | String      | R           | echo, echoshow, echospot, wha | Title of the current media     
@@ -115,11 +122,16 @@ It will be configured at runtime by using the save channel to store the current 
 | amazonMusicPlayListId | String      | W         | echo, echoshow, echospot, wha | Write Only! Start playing of a Amazon Music playlist by specifying it's id od stops playing if a empty string was provided. Selection will only work in PaperUI
 | amazonMusic           | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used Amazon Music song (works after at least one song was started after the openhab start)
 | remind                | String      | R/W         | echo, echoshow, echospot      | Write Only! Speak the reminder and sends a notification to the Alexa app (Currently the reminder is played and notified two times, this seems to be a bug in the amazon software)
-| startRoutine          | String      | W         | echo, echoshow, echospot      | Write Only! Type in what you normally say to Alexa without the preceding "Alexa," 
+| nextReminder          | DateTime    | R           | echo, echoshow, echospot      | Next reminder on the device
+| playAlarmSound        | String      | W           | echo, echoshow, echospot      | Write Only! Plays ans Alarm sound
+| nextAlarm             | DateTime    | R           | echo, echoshow, echospot      | Next alarm on the device
+| nextMusicAlarm        | DateTime    | R           | echo, echoshow, echospot      | Next music alarm on the device
+| nextTimer             | DateTime    | R           | echo, echoshow, echospot      | Next timer on the device
+| startRoutine          | String      | W           | echo, echoshow, echospot      | Write Only! Type in what you normally say to Alexa without the preceding "Alexa," 
 | musicProviderId       | String      | R/W         | echo, echoshow, echospot      | Current Music provider
 | playMusicVoiceCommand | String      | W         | echo, echoshow, echospot      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles' 
 | startCommand          | String      | W         | echo, echoshow, echospot      | Write Only! Used to start anything. Available options: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing and FlashBriefing.<FlahshbriefingDeviceID> (Note: The options are case sensitive)
-| textToSpeech          | String      | W         | echo, echoshow, echospot      | Write Only! Write some text to this channel and alexa will speak it 
+| textToSpeech          | String      | W         | echo, echoshow, echospot      | Write Only! Write some text to this channel and alexa will speak it. It is possible to use plain text or SSML: e.g. `<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human.</amazon:effect></speak>`
 | textToSpeechVolume    | Dimmer      | R/W       | echo, echoshow, echospot      | Volume of the textToSpeech channel, if 0 the current volume will be used
 | lastVoiceCommand      | String      | R/W         | echo, echoshow, echospot      | Last voice command spoken to the device. Writing to the channel starts voice output.
 | mediaProgress         | Dimmer      | R/W         | echo, echoshow, echospot      | Media progress in percent 
@@ -169,6 +181,9 @@ Group Alexa_Living_Room <player>
 // Player control
 Player Echo_Living_Room_Player                "Player"                                (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:player"}
 Dimmer Echo_Living_Room_Volume                "Volume [%.0f %%]" <soundvolume>        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:volume"}
+Number Echo_Living_Room_Treble                "Treble"                                (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:equalizerTreble"}
+Number Echo_Living_Room_Midrange              "Midrange"                              (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:equalizerMidrange"}
+Number Echo_Living_Room_Bass                  "Bass"                                  (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:equalizerBass"}
 Switch Echo_Living_Room_Shuffle               "Shuffle"                               (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:shuffle"}
 
 // Media channels
@@ -213,6 +228,11 @@ Switch Echo_Living_Room_AscendingAlarm    "Ascending alarm"                     
 
 // Feedbacks
 String Echo_Living_Room_LastVoiceCommand          "Last voice command"                (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:lastVoiceCommand"}
+DateTime Echo_Living_Room_NextReminder             "Next reminder"                     (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextReminder"}
+DateTime Echo_Living_Room_NextAlarm                "Next alarm"                        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextAlarm"}
+DateTime Echo_Living_Room_NextMusicAlarm           "Next music alarm"                  (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextMusicAlarm"}
+DateTime Echo_Living_Room_NextTimer                "Next timer"                        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextTimer"}
+
 
 // Flashbriefings
 Switch FlashBriefing_Technical_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"} 
@@ -232,6 +252,10 @@ sitemap amazonechocontrol label="Echo Devices"
         Frame label="Alexa" {
             Default   item=Echo_Living_Room_Player
             Slider    item=Echo_Living_Room_Volume
+            Setpoint  item=Echo_Living_Room_Volume   minValue=0  maxValue=100 step=5
+            Setpoint  item=Echo_Living_Room_Treble   minValue=-6 maxValue=6   step=1
+            Setpoint  item=Echo_Living_Room_Midrange minValue=-6 maxValue=6   step=1
+            Setpoint  item=Echo_Living_Room_Bass     minValue=-6 maxValue=6   step=1
             Slider    item=Echo_Living_Room_MediaProgress
             Text      item=Echo_Living_Room_MediaProgressTime
             Text      item=Echo_Living_Room_MediaLength
@@ -304,6 +328,17 @@ when
     Item Door_Contact changed to OPEN
 then
     Echo_Living_Room_TTS.sendCommand('Hello World')
+end
+```
+
+You can also use [SSML](https://docs.aws.amazon.com/polly/latest/dg/supported-ssml.html) to provide a better voice experience
+
+```php
+rule "Say welcome if the door opens"
+when
+    Item Door_Contact changed to OPEN
+then
+    Echo_Living_Room_TTS.sendCommand('<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human.</amazon:effect>.Can you believe it?</speak>')
 end
 ```
 

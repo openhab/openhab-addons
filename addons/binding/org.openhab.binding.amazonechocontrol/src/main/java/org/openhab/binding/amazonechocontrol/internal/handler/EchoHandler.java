@@ -16,17 +16,27 @@ import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBi
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.measure.quantity.Time;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
@@ -47,6 +57,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
+import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.HttpException;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity.Description;
@@ -54,9 +65,11 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm.A
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.PairedDevice;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushNotificationChange;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushVolumeChange;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState.DeviceNotificationState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonEqualizer;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState.QueueEntry;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMusicProvider;
@@ -86,6 +99,7 @@ public class EchoHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
     private Gson gson = new Gson();
     private @Nullable Device device;
+    private Set<String> capabilities = new HashSet<>();
     private @Nullable AccountHandler account;
     private @Nullable ScheduledFuture<?> updateStateJob;
     private @Nullable ScheduledFuture<?> ignoreVolumeChange;
@@ -100,6 +114,7 @@ public class EchoHandler extends BaseThingHandler {
     private boolean isPaused = false;
     private int lastKnownVolume = 25;
     private int textToSpeechVolume = 0;
+    private @Nullable JsonEqualizer lastKnownEqualizer = null;
     private @Nullable BluetoothState bluetoothState;
     private boolean disableUpdate = false;
     private boolean updateRemind = true;
@@ -149,6 +164,10 @@ public class EchoHandler extends BaseThingHandler {
             return false;
         }
         this.device = device;
+        String[] capabilities = device.capabilities;
+        if (capabilities != null) {
+            this.capabilities = Stream.of(capabilities).filter(Objects::nonNull).collect(Collectors.toSet());
+        }
         if (!device.online) {
             updateStatus(ThingStatus.OFFLINE);
             return false;
@@ -366,6 +385,14 @@ public class EchoHandler extends BaseThingHandler {
                 }
 
             }
+            // equalizer commands
+            if (channelId.equals(CHANNEL_EQUALIZER_BASS) || channelId.equals(CHANNEL_EQUALIZER_MIDRANGE)
+                    || channelId.equals(CHANNEL_EQUALIZER_TREBLE)) {
+                if (handleEqualizerCommands(channelId, command, connection, device)) {
+                    waitForUpdate = -1;
+                }
+            }
+
             // shuffle command
             if (channelId.equals(CHANNEL_SHUFFLE)) {
                 if (command instanceof OnOffType) {
@@ -638,6 +665,7 @@ public class EchoHandler extends BaseThingHandler {
             };
             if (command instanceof RefreshType) {
                 waitForUpdate = 0;
+                account.forceCheckData();
             }
             if (waitForUpdate == 0) {
                 doRefresh.run();
@@ -651,6 +679,41 @@ public class EchoHandler extends BaseThingHandler {
         }
     }
 
+    private boolean handleEqualizerCommands(String channelId, Command command, Connection connection, Device device)
+            throws URISyntaxException {
+        if (command instanceof RefreshType) {
+            this.lastKnownEqualizer = null;
+        }
+        if (command instanceof DecimalType) {
+            DecimalType value = (DecimalType) command;
+            if (this.lastKnownEqualizer == null) {
+                updateEqualizerState();
+            }
+            JsonEqualizer lastKnownEqualizer = this.lastKnownEqualizer;
+            if (lastKnownEqualizer != null) {
+                JsonEqualizer newEqualizerSetting = lastKnownEqualizer.createClone();
+                if (channelId.equals(CHANNEL_EQUALIZER_BASS)) {
+                    newEqualizerSetting.bass = value.intValue();
+                }
+                if (channelId.equals(CHANNEL_EQUALIZER_MIDRANGE)) {
+                    newEqualizerSetting.mid = value.intValue();
+                }
+                if (channelId.equals(CHANNEL_EQUALIZER_TREBLE)) {
+                    newEqualizerSetting.treble = value.intValue();
+                }
+                try {
+                    connection.SetEqualizer(device, newEqualizerSetting);
+                    return true;
+                } catch (HttpException | IOException | ConnectionException e) {
+                    logger.debug("Update equalizer failed {}", e);
+                    this.lastKnownEqualizer = null;
+                }
+
+            }
+        }
+        return false;
+    }
+
     private void startTextToSpeech(Connection connection, Device device, String text)
             throws IOException, URISyntaxException {
         if (textToSpeechVolume != 0) {
@@ -661,7 +724,11 @@ public class EchoHandler extends BaseThingHandler {
             }
             this.ignoreVolumeChange = scheduler.schedule(this::stopIgnoreVolumeChange, 2000, TimeUnit.MILLISECONDS);
         }
-        connection.textToSpeech(device, text, textToSpeechVolume, lastKnownVolume);
+        if (text.startsWith("<speak>") && text.endsWith("</speak>")) {
+            connection.sendAnnouncement(device, text, null, textToSpeechVolume, lastKnownVolume);
+        } else {
+            connection.textToSpeech(device, text, textToSpeechVolume, lastKnownVolume);
+        }
     }
 
     private void stopCurrentNotification() {
@@ -757,6 +824,10 @@ public class EchoHandler extends BaseThingHandler {
             Connection connection = this.findConnection();
             if (connection == null) {
                 return;
+            }
+
+            if (this.lastKnownEqualizer == null) {
+                updateEqualizerState();
             }
 
             PlayerInfo playerInfo = null;
@@ -1059,6 +1130,44 @@ public class EchoHandler extends BaseThingHandler {
         }
     }
 
+    private void updateEqualizerState() {
+        if (!this.capabilities.contains("SOUND_SETTINGS")) {
+            return;
+        }
+
+        Connection connection = findConnection();
+        if (connection == null) {
+            return;
+        }
+        Device device = findDevice();
+        if (device == null) {
+            return;
+        }
+        Integer bass;
+        Integer midrange;
+        Integer treble;
+        try {
+            JsonEqualizer equalizer = connection.getEqualizer(device);
+            bass = equalizer.bass;
+            midrange = equalizer.mid;
+            treble = equalizer.treble;
+            this.lastKnownEqualizer = equalizer;
+        } catch (IOException | URISyntaxException | HttpException | ConnectionException e) {
+            logger.debug("Get equalizer failes {}", e);
+            return;
+        }
+        if (bass != null) {
+            updateState(CHANNEL_EQUALIZER_BASS, new DecimalType(bass));
+        }
+        if (midrange != null) {
+            updateState(CHANNEL_EQUALIZER_MIDRANGE, new DecimalType(midrange));
+        }
+        if (treble != null) {
+            updateState(CHANNEL_EQUALIZER_TREBLE, new DecimalType(treble));
+        }
+
+    }
+
     private void updateMediaProgress() {
         updateMediaProgress(false);
     }
@@ -1095,6 +1204,9 @@ public class EchoHandler extends BaseThingHandler {
         Description description = pushActivity.ParseDescription();
         if (StringUtils.isEmpty(description.firstUtteranceId)
                 || StringUtils.startsWithIgnoreCase(description.firstUtteranceId, "TextClient:")) {
+            return;
+        }
+        if (StringUtils.isEmpty(description.firstStreamId)) {
             return;
         }
         String spokenText = description.summary;
@@ -1141,7 +1253,7 @@ public class EchoHandler extends BaseThingHandler {
                 }
                 break;
             case "PUSH_EQUALIZER_STATE_CHANGE":
-                // Currently ignored
+                updateEqualizerState();
                 break;
             default:
                 AccountHandler account = this.account;
@@ -1151,5 +1263,68 @@ public class EchoHandler extends BaseThingHandler {
                     updateState(account, device, null, null, null, null, null, null);
                 }
         }
+    }
+
+    public void updateNotifications(ZonedDateTime currentTime, ZonedDateTime now,
+            @Nullable JsonCommandPayloadPushNotificationChange pushPayload, JsonNotificationResponse[] notifications) {
+        Device device = this.device;
+        if (device == null) {
+            return;
+        }
+
+        ZonedDateTime nextReminder = null;
+        ZonedDateTime nextAlarm = null;
+        ZonedDateTime nextMusicAlarm = null;
+        ZonedDateTime nextTimer = null;
+        for (JsonNotificationResponse notification : notifications) {
+            if (StringUtils.equals(notification.deviceSerialNumber, device.serialNumber)) {
+                // notification for this device
+                if (StringUtils.equals(notification.status, "ON")) {
+                    if ("Reminder".equals(notification.type)) {
+                        String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
+                        ZonedDateTime alarmTime = ZonedDateTime
+                                .parse(notification.originalDate + "T" + notification.originalTime + offset);
+                        if (StringUtils.isNotBlank(notification.recurringPattern) && alarmTime.isBefore(now)) {
+                            continue; // Ignore recurring entry if alarm time is before now
+                        }
+                        if (nextReminder == null || alarmTime.isBefore(nextReminder)) {
+                            nextReminder = alarmTime;
+                        }
+                    } else if ("Timer".equals(notification.type)) {
+                        // use remaining time
+                        ZonedDateTime alarmTime = currentTime.plus(notification.remainingTime, ChronoUnit.MILLIS);
+                        if (nextTimer == null || alarmTime.isBefore(nextTimer)) {
+                            nextTimer = alarmTime;
+                        }
+                    } else if ("Alarm".equals(notification.type)) {
+                        String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
+                        ZonedDateTime alarmTime = ZonedDateTime
+                                .parse(notification.originalDate + "T" + notification.originalTime + offset);
+                        if (StringUtils.isNotBlank(notification.recurringPattern) && alarmTime.isBefore(now)) {
+                            continue; // Ignore recurring entry if alarm time is before now
+                        }
+                        if (nextAlarm == null || alarmTime.isBefore(nextAlarm)) {
+                            nextAlarm = alarmTime;
+                        }
+                    } else if ("MusicAlarm".equals(notification.type)) {
+                        String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
+                        ZonedDateTime alarmTime = ZonedDateTime
+                                .parse(notification.originalDate + "T" + notification.originalTime + offset);
+                        if (StringUtils.isNotBlank(notification.recurringPattern) && alarmTime.isBefore(now)) {
+                            continue; // Ignore recurring entry if alarm time is before now
+                        }
+                        if (nextMusicAlarm == null || alarmTime.isBefore(nextMusicAlarm)) {
+                            nextMusicAlarm = alarmTime;
+                        }
+                    }
+                }
+            }
+        }
+
+        updateState(CHANNEL_NEXT_REMINDER, nextReminder == null ? UnDefType.UNDEF : new DateTimeType(nextReminder));
+        updateState(CHANNEL_NEXT_ALARM, nextAlarm == null ? UnDefType.UNDEF : new DateTimeType(nextAlarm));
+        updateState(CHANNEL_NEXT_MUSIC_ALARM,
+                nextMusicAlarm == null ? UnDefType.UNDEF : new DateTimeType(nextMusicAlarm));
+        updateState(CHANNEL_NEXT_TIMER, nextTimer == null ? UnDefType.UNDEF : new DateTimeType(nextTimer));
     }
 }

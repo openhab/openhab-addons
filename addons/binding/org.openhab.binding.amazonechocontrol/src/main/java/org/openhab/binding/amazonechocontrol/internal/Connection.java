@@ -63,6 +63,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificati
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonEnabledFeeds;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonEqualizer;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonExchangeTokenResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonExchangeTokenResponse.Cookie;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
@@ -72,6 +73,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationRequ
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSounds;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationsResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaySearchPhraseOperationPayload;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayValidationResult;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState;
@@ -1021,7 +1023,7 @@ public class Connection {
         executeSequenceCommand(null, "Alexa.Notifications.SendMobilePush", parameters);
     }
 
-    public void sendAnnouncement(Device device, String text, @Nullable String title)
+    public void sendAnnouncement(Device device, String text, @Nullable String title, int ttsVolume, int standardVolume)
             throws IOException, URISyntaxException {
         Map<String, Object> parameters = new Hashtable<String, Object>();
         parameters.put("expireAfter", "PT5S");
@@ -1033,6 +1035,13 @@ public class Connection {
             content.display.title = title;
         }
         content.display.body = text;
+        if (text.startsWith("<speak>") && text.endsWith("</speak>")) {
+            content.speak.type = "ssml";
+            String plainText = text.replaceAll("<[^>]+>", "");
+            content.display.body = plainText;
+        } else {
+            content.display.body = text;
+        }
         content.speak.value = text;
 
         contentArray[0] = content;
@@ -1043,47 +1052,53 @@ public class Connection {
         target.customerId = device.deviceOwnerCustomerId;
         TargetDevice[] devices = new TargetDevice[1];
         TargetDevice deviceTarget = target.new TargetDevice();
+        deviceTarget.deviceSerialNumber = device.serialNumber;
+        deviceTarget.deviceTypeId = device.deviceType;
         devices[0] = deviceTarget;
         target.devices = devices;
         parameters.put("target", target);
 
-        String customerId = device.deviceOwnerCustomerId;
+        String accountCustomerId = this.accountCustomerId;
+        String customerId = StringUtils.isEmpty(accountCustomerId) ? device.deviceOwnerCustomerId : accountCustomerId;
+
         if (customerId != null) {
             parameters.put("customerId", customerId);
         }
-        executeSequenceCommand(null, "AlexaAnnouncement", parameters);
+        executeSequenceCommandWithVolume(device, "AlexaAnnouncement", parameters, ttsVolume, standardVolume);
     }
 
     public void textToSpeech(Device device, String text, int ttsVolume, int standardVolume)
             throws IOException, URISyntaxException {
+        Map<String, Object> parameters = new Hashtable<>();
+        parameters.put("textToSpeak", text);
+        executeSequenceCommandWithVolume(device, "Alexa.Speak", parameters, ttsVolume, standardVolume);
+    }
 
+    private void executeSequenceCommandWithVolume(@Nullable Device device, String command,
+            @Nullable Map<String, Object> parameters, int ttsVolume, int standardVolume)
+            throws IOException, URISyntaxException {
         if (ttsVolume != 0) {
 
             JsonArray nodesToExecute = new JsonArray();
 
-            Map<String, Object> parameters = new Hashtable<String, Object>();
-
+            Map<String, Object> volumeParameters = new Hashtable<>();
             // add tts volume
-            parameters.clear();
-            parameters.put("value", ttsVolume);
-            nodesToExecute.add(createExecutionNode(device, "Alexa.DeviceControls.Volume", parameters));
+            volumeParameters.clear();
+            volumeParameters.put("value", ttsVolume);
+            nodesToExecute.add(createExecutionNode(device, "Alexa.DeviceControls.Volume", volumeParameters));
 
-            // add tts
-            parameters.clear();
-            parameters.put("textToSpeak", text);
-            nodesToExecute.add(createExecutionNode(device, "Alexa.Speak", parameters));
+            // add command
+            nodesToExecute.add(createExecutionNode(device, command, parameters));
 
             // add volume
-            parameters.clear();
-            parameters.put("value", standardVolume);
-            nodesToExecute.add(createExecutionNode(device, "Alexa.DeviceControls.Volume", parameters));
+            volumeParameters.clear();
+            volumeParameters.put("value", standardVolume);
+            nodesToExecute.add(createExecutionNode(device, "Alexa.DeviceControls.Volume", volumeParameters));
 
             executeSequenceNodes(nodesToExecute);
 
         } else {
-            Map<String, Object> parameters = new Hashtable<String, Object>();
-            parameters.put("textToSpeak", text);
-            executeSequenceCommand(device, "Alexa.Speak", parameters);
+            executeSequenceCommand(device, command, parameters);
         }
     }
 
@@ -1256,6 +1271,16 @@ public class Connection {
         return new JsonNotificationSound[0];
     }
 
+    public JsonNotificationResponse[] notifications() throws IOException, URISyntaxException {
+        String response = makeRequestAndReturnString(alexaServer + "/api/notifications");
+        JsonNotificationsResponse result = parseJson(response, JsonNotificationsResponse.class);
+        JsonNotificationResponse[] notifications = result.notifications;
+        if (notifications == null) {
+            return new JsonNotificationResponse[0];
+        }
+        return notifications;
+    }
+
     public JsonNotificationResponse notification(Device device, String type, @Nullable String label,
             @Nullable JsonNotificationSound sound) throws IOException, URISyntaxException {
         Date date = new Date(new Date().getTime());
@@ -1361,5 +1386,17 @@ public class Connection {
 
         String postData = gson.toJson(startRoutineRequest);
         makeRequest("POST", alexaServer + "/api/behaviors/preview", postData, true, true, null);
+    }
+
+    public JsonEqualizer getEqualizer(Device device) throws IOException, URISyntaxException {
+        String json = makeRequestAndReturnString(
+                alexaServer + "/api/equalizer/" + device.serialNumber + "/" + device.deviceType);
+        return parseJson(json, JsonEqualizer.class);
+    }
+
+    public void SetEqualizer(Device device, JsonEqualizer settings) throws IOException, URISyntaxException {
+        String postData = gson.toJson(settings);
+        makeRequest("POST", alexaServer + "/api/equalizer/" + device.serialNumber + "/" + device.deviceType, postData,
+                true, true, null);
     }
 }

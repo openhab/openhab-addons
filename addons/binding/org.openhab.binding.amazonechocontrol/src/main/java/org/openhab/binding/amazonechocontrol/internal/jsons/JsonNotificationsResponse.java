@@ -16,27 +16,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link JsonActivity} encapsulate the GSON data of the sequence command AlexaAnnouncement for sending
- * announcements
+ * The {@link JsonNotificationsResponse} encapsulate the GSON data for the result of a notifications request
  *
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
-public class JsonAnnouncementContent {
-
-    public String locale = "";
-    public final Display display = new Display();
-    public final Speak speak = new Speak();
-
-    public class Display {
-        public @Nullable String title;
-        public @Nullable String body;
-
-    }
-
-    public class Speak {
-        public String type = "text";
-        public @Nullable String value;
-
-    }
+public class JsonNotificationsResponse {
+    public JsonNotificationResponse @Nullable [] notifications;
 }
