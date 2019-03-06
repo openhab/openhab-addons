@@ -153,25 +153,25 @@ Thing Magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX "MagentaTV" [ udn=
 <table>
 <tr><b>magentatv.items</b><p></tr>
 <tr><b># MagentaTV Control</b><br>
-Switch MagentaTV_Power        "Power"       {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:power"}<br>
-Switch MagentaTV_ChannelUp   "Channel +"    {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:channelUp"}<br>
-Switch MagentaTV_ChannelDown "Channel -"    {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:channelDown"}<br>
-Switch MagentaTV_ChannelUp   "Volume +"     {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:volumeUp"}<br>
-Switch MagentaTV_ChannelDown "Volume -"     {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:volumeDown"}<br>
-String MagentaTV_ChannelDown "Key"          {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:key"}<br>
+Switch MagentaTV_Power        "Power"        {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:control#power"}<br>
+Switch MagentaTV_ChannelUp    "Channel +"    {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:control#channelUp"}<br>
+Switch MagentaTV_ChannelDown  "Channel -"    {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:control#channelDown"}<br>
+Switch MagentaTV_VolumeUp     "Volume +"     {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:control#volumeUp"}<br>
+Switch MagentaTV_VolumeDown   "Volume -"     {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:control#volumeDown"}<br>
+String MagentaTV_Key          "Key"          {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:control#key"}<br>
 </tr><p>
 <tr><b># MagentaTV Program Information</b><br>
-String MagentaTV_ProgTitle  "Program Title" {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:programTitle"}<br>
-String MagentaTV_ProgText   "Description"   {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:programText"}<br>
-String MagentaTV_ProgText   "Start Time"    {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:programStart"}<br>
-String MagentaTV_ProgText   "Duration"      {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:programDuration"}<br>
-String MagentaTV_ProgText   "Position"      {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:programPosition"}<br>
+String MagentaTV_ProgTitle   "Program Title" {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:program#programTitle"}<br>
+String MagentaTV_ProgDescr   "Description"   {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:program#programText"}<br>
+String MagentaTV_ProgStart   "Start Time"    {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:program#programStart"}<br>
+String MagentaTV_ProgDur     "Duration"      {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:program#programDuration"}<br>
+String MagentaTV_ProgPos     "Position"      {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:program#programPosition"}<br>
 </tr><p>
 <tr><b># MagentaTV Play Status</b><br>
-Number MagentaTV_Channel   "Channel"        {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:channel"}<br>
-Number MagentaTV_ChCode    "Channel Code"   {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:channelCode"}<br>
-String MagentaTV_PlayMode  "Play Mode"      {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:playMode"}<br>
-String MagentaTV_RunStatus "Run Status"     {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:runStatus"}<br>
+Number MagentaTV_Channel   "Channel"        {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:status#channel"}<br>
+Number MagentaTV_ChCode    "Channel Code"   {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:status#channelCode"}<br>
+String MagentaTV_PlayMode  "Play Mode"      {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:status#playMode"}<br>
+String MagentaTV_RunStatus "Run Status"     {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:status#runStatus"}<br>
 </tr><p>
 </table>
 
@@ -179,5 +179,15 @@ String MagentaTV_RunStatus "Run Status"     {channel="magentatv:receiver:e8dbce3
 t.b.d.<p>
 
 <b>magentatv.rules</b><p>
-t.b.d.<p>
+Due to the fact the POWER is a toggle button and the binding can't detect the current status, which could lead into the situation that you want to power on the receiver as part of a scene, but due to the fact that it is already ON you switch it off. We spend some time to fiddle out a better handling and find a way to detect a network message when the receiver gets powered off (MR4xx only). In this case MagentaTV_Power is switch to OFF.<p>
+This said you could use the following
+        if (MagentaTV_Power.state != ON) {
+            sendCommand(MagentaTV_Power, ON)
+        }
+to switch it ON (within a scene) and 
+        if (MagentaTV_Power.state != OFF) {
+            sendCommand(MagentaTV_Power, OFF)
+        }
+to switch it off.<p>
+Maybe after an openHAB restart you need to make sure that OH and receiver are in sync, because the binding can't read the power status on startup.
 <p>
