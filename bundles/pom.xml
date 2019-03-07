@@ -19,6 +19,7 @@
 
   <modules>
     <module>org.openhab.binding.astro</module>
+    <module>org.openhab.binding.avmfritz</module>
   </modules>
 
   <build>
