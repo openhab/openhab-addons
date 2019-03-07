@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.core.Configuration;
@@ -162,11 +163,11 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                     config.enoceanId);
 
             if (eep.isValid()) {
-                Stream<Channel> stream = getLinkedChannels().stream();
+                Supplier<Stream<Channel>> streamSupplier = () -> getLinkedChannels().stream();
                 byte[] senderId = msg.getSenderId();
 
                 // try to interpret received message for all linked channels
-                stream.filter(stateFilter(receivingEEPType, senderId)).forEach(channel -> {
+                streamSupplier.get().filter(stateFilter(receivingEEPType, senderId)).forEach(channel -> {
                     ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
 
                     String channelTypeId = (channelTypeUID != null) ? channelTypeUID.getId() : "";
@@ -183,7 +184,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                     }
                 });
 
-                stream.filter(triggerFilter(receivingEEPType, senderId)).forEach(channel -> {
+                streamSupplier.get().filter(triggerFilter(receivingEEPType, senderId)).forEach(channel -> {
                     ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
 
                     String channelTypeId = (channelTypeUID != null) ? channelTypeUID.getId() : "";
