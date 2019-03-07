@@ -19,6 +19,7 @@
 
   <modules>
     <module>org.openhab.binding.astro.tests</module>
+    <module>org.openhab.binding.avmfritz.tests</module>
   </modules>
 
   <profiles>
