@@ -19,8 +19,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.OnOffValue;
 
-import com.google.gson.Gson;
-
 /**
  * A MQTT switch, following the https://www.home-assistant.io/components/switch.mqtt/ specification.
  *
@@ -49,8 +47,8 @@ public class ComponentSwitch extends AbstractComponent<ComponentSwitch.Config> {
     };
 
     public ComponentSwitch(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
-        super(thing, haID, configJSON, gson, Config.class);
+            @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
+        super(thing, haID, configJSON, Config.class);
 
         // We do not support all HomeAssistant quirks
         if (config.optimistic && StringUtils.isNotBlank(config.state_topic)) {

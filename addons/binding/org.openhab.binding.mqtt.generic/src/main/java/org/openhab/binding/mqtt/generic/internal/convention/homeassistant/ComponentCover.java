@@ -18,8 +18,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.RollershutterValue;
 
-import com.google.gson.Gson;
-
 /**
  * A MQTT Cover component, following the https://www.home-assistant.io/components/cover.mqtt/ specification.
  *
@@ -47,8 +45,8 @@ public class ComponentCover extends AbstractComponent<ComponentCover.Config> {
     }
 
     public ComponentCover(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener updateListener, Gson gson) {
-        super(thing, haID, configJSON, gson, Config.class);
+            @Nullable ChannelStateUpdateListener updateListener) {
+        super(thing, haID, configJSON, Config.class);
 
         RollershutterValue value = new RollershutterValue(config.payload_open, config.payload_close,
                 config.payload_stop);

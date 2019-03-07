@@ -18,8 +18,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.TextValue;
 
-import com.google.gson.Gson;
-
 /**
  * A MQTT alarm control panel, following the https://www.home-assistant.io/components/alarm_control_panel.mqtt/
  * specification.
@@ -60,8 +58,8 @@ public class ComponentAlarmControlPanel extends AbstractComponent<ComponentAlarm
     };
 
     public ComponentAlarmControlPanel(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
-        super(thing, haID, configJSON, gson, Config.class);
+            @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
+        super(thing, haID, configJSON, Config.class);
 
         final String[] state_enum = { config.state_disarmed, config.state_armed_home, config.state_armed_away,
                 config.state_pending, config.state_triggered };

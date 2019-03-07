@@ -43,8 +43,6 @@ import org.openhab.binding.mqtt.generic.internal.tools.DelayedBatchProcessing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * Handles HomeAssistant MQTT object things. Such an HA Object can have multiple HA Components with different instances
  * of those Components. This handler auto-discovers all available Components and Component Instances and
@@ -71,7 +69,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     protected final DelayedBatchProcessing<AbstractComponent<?>> delayedProcessing;
     protected final DiscoverComponents discoverComponents;
 
-    private final Gson gson = new Gson();
     protected final Map<String, AbstractComponent<?>> haComponents = new HashMap<>();
 
     protected HandlerConfiguration config = new HandlerConfiguration();
@@ -92,7 +89,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         this.channelTypeProvider = channelTypeProvider;
         this.attributeReceiveTimeout = attributeReceiveTimeout;
         this.delayedProcessing = new DelayedBatchProcessing<>(attributeReceiveTimeout, this, scheduler);
-        this.discoverComponents = new DiscoverComponents(thing.getUID(), scheduler, this, gson);
+        this.discoverComponents = new DiscoverComponents(thing.getUID(), scheduler, this);
     }
 
     @SuppressWarnings({ "null", "unused" })
@@ -117,7 +114,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             if (component != null) {
                 continue;
             } else {
-                component = CFactory.createComponent(config.basetopic, channel, this, gson);
+                component = CFactory.createComponent(config.basetopic, channel, this);
             }
             if (component != null) {
                 haComponents.put(component.uid().getId(), component);

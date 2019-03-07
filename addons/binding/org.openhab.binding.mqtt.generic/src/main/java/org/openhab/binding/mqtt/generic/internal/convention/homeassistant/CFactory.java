@@ -20,8 +20,6 @@ import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * A factory to create HomeAssistant MQTT components. Those components are specified at:
  * https://www.home-assistant.io/docs/mqtt/discovery/
@@ -44,29 +42,29 @@ public class CFactory {
      * @return A HA MQTT Component
      */
     public static @Nullable AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener updateListener, Gson gson) {
+            @Nullable ChannelStateUpdateListener updateListener) {
         try {
             switch (haID.component) {
                 case "alarm_control_panel":
-                    return new ComponentAlarmControlPanel(thingUID, haID, configJSON, updateListener, gson);
+                    return new ComponentAlarmControlPanel(thingUID, haID, configJSON, updateListener);
                 case "binary_sensor":
-                    return new ComponentBinarySensor(thingUID, haID, configJSON, updateListener, gson);
+                    return new ComponentBinarySensor(thingUID, haID, configJSON, updateListener);
                 case "camera":
-                    return new ComponentCamera(thingUID, haID, configJSON, updateListener, gson);
+                    return new ComponentCamera(thingUID, haID, configJSON, updateListener);
                 case "cover":
-                    return new ComponentCover(thingUID, haID, configJSON, updateListener, gson);
+                    return new ComponentCover(thingUID, haID, configJSON, updateListener);
                 case "fan":
-                    return new ComponentFan(thingUID, haID, configJSON, updateListener, gson);
+                    return new ComponentFan(thingUID, haID, configJSON, updateListener);
                 case "climate":
-                    return new ComponentClimate(thingUID, haID, configJSON, updateListener, gson);
+                    return new ComponentClimate(thingUID, haID, configJSON, updateListener);
                 case "light":
-                    return new ComponentLight(thingUID, haID, configJSON, updateListener, gson);
+                    return new ComponentLight(thingUID, haID, configJSON, updateListener);
                 case "lock":
-                    return new ComponentLock(thingUID, haID, configJSON, updateListener, gson);
+                    return new ComponentLock(thingUID, haID, configJSON, updateListener);
                 case "sensor":
-                    return new ComponentSensor(thingUID, haID, configJSON, updateListener, gson);
+                    return new ComponentSensor(thingUID, haID, configJSON, updateListener);
                 case "switch":
-                    return new ComponentSwitch(thingUID, haID, configJSON, updateListener, gson);
+                    return new ComponentSwitch(thingUID, haID, configJSON, updateListener);
             }
         } catch (UnsupportedOperationException e) {
             logger.warn("Not supported", e);
@@ -83,7 +81,7 @@ public class CFactory {
      * @return A HA MQTT Component
      */
     public static @Nullable AbstractComponent<?> createComponent(String basetopic, Channel channel,
-            @Nullable ChannelStateUpdateListener updateListener, Gson gson) {
+            @Nullable ChannelStateUpdateListener updateListener) {
         HaID haID = new HaID(basetopic, channel.getUID());
         ThingUID thingUID = channel.getUID().getThingUID();
         String configJSON = (String) channel.getConfiguration().get("config");
@@ -91,6 +89,6 @@ public class CFactory {
             logger.warn("Provided channel does not have a 'config' configuration key!");
             return null;
         }
-        return createComponent(thingUID, haID, configJSON, updateListener, gson);
+        return createComponent(thingUID, haID, configJSON, updateListener);
     }
 }

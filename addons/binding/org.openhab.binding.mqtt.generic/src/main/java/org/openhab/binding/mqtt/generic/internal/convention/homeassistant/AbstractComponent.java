@@ -32,8 +32,6 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelTypeProvider;
 
-import com.google.gson.Gson;
-
 /**
  * A HomeAssistant component is comparable to an ESH channel group.
  * It has a name and consists of multiple channels.
@@ -64,14 +62,14 @@ public abstract class AbstractComponent<C extends HAConfiguration> {
      * @param configJson The configuration string
      * @param gson A Gson instance
      */
-    public AbstractComponent(ThingUID thing, HaID haID, String configJson, Gson gson, Class<C> clazz) {
+    public AbstractComponent(ThingUID thing, HaID haID, String configJson, Class<C> clazz) {
         this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID,
                 haID.getChannelGroupTypeID());
         this.channelGroupUID = new ChannelGroupUID(thing, haID.getChannelGroupID());
         this.haID = haID;
 
         this.configJson = configJson;
-        this.config = HAConfiguration.fromString(configJson, gson, clazz);
+        this.config = HAConfiguration.FACTORY.fromString(configJson, clazz);
         this.configHash = configJson.hashCode();
     }
 

@@ -38,8 +38,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link HomeAssistantDiscovery} is responsible for discovering device nodes that follow the
  * Home Assistant MQTT discovery convention (https://www.home-assistant.io/docs/mqtt/discovery/).
@@ -52,7 +50,6 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantDiscovery.class);
     protected final Map<String, Set<String>> componentsPerThingID = new TreeMap<>();
     private @Nullable ScheduledFuture<?> future;
-    private final Gson gson = new Gson();
 
     public static final Map<String, String> HA_COMP_TO_NAME = new TreeMap<>();
     {
@@ -73,6 +70,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     public HomeAssistantDiscovery() {
         super(Stream.of(MqttBindingConstants.HOMEASSISTANT_MQTT_THING).collect(Collectors.toSet()), 3, true,
                 BASE_TOPIC + "/#");
+
     }
 
     @NonNullByDefault({})
@@ -152,7 +150,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         final String componentNames = components.stream().map(c -> HA_COMP_TO_NAME.getOrDefault(c, c))
                 .collect(Collectors.joining(","));
 
-        HAConfiguration config = HAConfiguration.fromString(new String(payload, StandardCharsets.UTF_8), gson);
+        HAConfiguration config = HAConfiguration.FACTORY.fromString(new String(payload, StandardCharsets.UTF_8));
 
         Map<String, Object> properties = new HashMap<>();
         properties.put("objectid", topicParts.objectID);
