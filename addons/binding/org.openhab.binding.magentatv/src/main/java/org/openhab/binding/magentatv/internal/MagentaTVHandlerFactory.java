@@ -1,8 +1,8 @@
 /**
- * Copyright (c) 2014,2019 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
+ * information.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -56,8 +56,8 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
 
     protected class MagentaTVDevice {
         protected String udn = "";
-        protected @Nullable String mac = "";
-        protected @Nullable String deviceId = "";
+        protected String mac = "";
+        protected String deviceId = "";
         protected String ipAddress = "";
         // protected ThingUID uid = new ThingUID();
         protected Map<String, Object> properties = new HashMap<String, Object>();
@@ -176,11 +176,12 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
         } else {
             mac = macAddress;
         }
+
         MagentaTVDevice dev = new MagentaTVDevice();
         synchronized (deviceList) {
             dev.udn = udn.toUpperCase();
             dev.mac = mac.toUpperCase();
-            if (deviceId != null) {
+            if ((deviceId != null) && !deviceId.isEmpty()) {
                 dev.deviceId = deviceId.toUpperCase();
             }
             dev.ipAddress = ipAddress;
@@ -206,9 +207,9 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
             synchronized (deviceList) {
                 logger.trace("Device with UDN {} removed from table, new site={}", dev.udn, deviceList.size());
                 deviceList.remove(dev.udn);
-            } // synchronized
-        } // if
-    } // removeDevice()
+            }
+        }
+    }
 
     /**
      * Lookup a device in the table by an id (this could be the UDN, the MAC
@@ -226,11 +227,10 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                 dev = deviceList.get(key);
                 logger.trace("Devies[{}]: deviceId={}, UDN={}, ipAddress={}, macAddress={}", i++, dev.deviceId, dev.udn,
                         dev.ipAddress, dev.mac);
-                if (((dev.deviceId != null) && dev.deviceId.equalsIgnoreCase(uniqueId))
-                        || dev.udn.equalsIgnoreCase(uniqueId) || dev.ipAddress.equals(uniqueId)
-                        || ((dev.mac != null) && dev.mac.equalsIgnoreCase(uniqueId))) {
+                if (dev.udn.equalsIgnoreCase(uniqueId) || dev.ipAddress.equalsIgnoreCase(uniqueId)
+                        || dev.deviceId.equalsIgnoreCase(uniqueId) || dev.mac.equalsIgnoreCase(uniqueId)) {
                     return dev;
-                } // if
+                }
             }
         }
         return null;
@@ -277,7 +277,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                     ipAddress);
             MagentaTVDevice dev = lookupDevice(ipAddress);
             if ((dev != null) && (dev.thingHandler != null)) {
-                if (dev.deviceId == null) {
+                if ((dev.deviceId == null) || dev.deviceId.isEmpty()) {
                     logger.trace("deviceId {} assigned for ipAddress {}", notifyDeviceId, ipAddress);
                     dev.deviceId = notifyDeviceId;
                 }
@@ -285,7 +285,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                 return true;
             }
 
-            logger.error("Received pairingCode {} for unregistered device {}!", pairingCode, notifyDeviceId);
+            logger.error("Received pairingCode {} for unregistered device {}!", pairingCode, ipAddress);
         } catch (Exception e) {
             logger.error("Unable to process pairing result for deviceID '{}': {} ({})", notifyDeviceId, e.getMessage(),
                     e.getClass());
@@ -335,27 +335,6 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
         }
 
     }
-
-    /*
-     * @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
-     * public void setMagentaTVNotifyServlet(MagentaTVNotifyServlet notifyServlet) {
-     * if (notifyServletInitialized == false) {
-     * notifyServletInitialized = true;
-     * logger.debug("NotifyServlet bound to HandlerFactory");
-     * } else {
-     * logger.error("NotifyServlet was restarted!");
-     * }
-     * }
-     * 
-     * public void unsetMagentaTVNotifyServlet(MagentaTVNotifyServlet notifyServlet) {
-     * if (notifyServletInitialized == true) {
-     * logger.debug("NotifyServlet was restarted");
-     * notifyServletInitialized = false;
-     * } else {
-     * logger.debug("NotifyServlet was unbound from HandlerFactory!");
-     * }
-     * }
-     */
 
     @Reference
     protected void setNetworkAddressService(NetworkAddressService networkAddressService) {

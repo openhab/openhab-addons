@@ -1,4 +1,5 @@
 # <bindingName> MagentaTV Binding (aka Entertain TV)
+
 <hr>
 <b>Release: 2.5-pre2</b>
 <hr>
@@ -148,30 +149,37 @@ In addition you could send any key code in the 0xXXXX format. Refer to <a href="
 
 <b>magentatv.things:</b><p>
 
-Thing Magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX "MagentaTV" [ udn="e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX", modelId="MR401B", ipAddress="192.168.1.1", port="8081", accounName="markus7017@t-online.de", accountPassword="thispassword"]<p>
+Thing magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx "MagentaTV" [
+udn="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+modelId="MR401B",
+ipAddress="xxx.xxx.xxx.xxx", 
+port="8081",
+accountName="xxxxxx.xxxx@t-online.de",
+accountPassword="xxxxxxxxxx"
+]
 
 <table>
 <tr><b>magentatv.items</b><p></tr>
 <tr><b># MagentaTV Control</b><br>
-Switch MagentaTV_Power        "Power"        {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:control#power"}<br>
-Switch MagentaTV_ChannelUp    "Channel +"    {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:control#channelUp"}<br>
-Switch MagentaTV_ChannelDown  "Channel -"    {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:control#channelDown"}<br>
-Switch MagentaTV_VolumeUp     "Volume +"     {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:control#volumeUp"}<br>
-Switch MagentaTV_VolumeDown   "Volume -"     {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:control#volumeDown"}<br>
-String MagentaTV_Key          "Key"          {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:control#key"}<br>
+Switch MagentaTV_Power        "Power"        {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#power"}<br>
+Switch MagentaTV_ChannelUp    "Channel +"    {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#channelUp"}<br>
+Switch MagentaTV_ChannelDown  "Channel -"    {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#channelDown"}<br>
+Switch MagentaTV_VolumeUp     "Volume +"     {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#volumeUp"}<br>
+Switch MagentaTV_VolumeDown   "Volume -"     {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#volumeDown"}<br>
+String MagentaTV_Key          "Key"          {channel="magentatv:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#key"}<br>
 </tr><p>
 <tr><b># MagentaTV Program Information</b><br>
-String MagentaTV_ProgTitle   "Program Title" {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:program#programTitle"}<br>
-String MagentaTV_ProgDescr   "Description"   {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:program#programText"}<br>
-String MagentaTV_ProgStart   "Start Time"    {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:program#programStart"}<br>
-String MagentaTV_ProgDur     "Duration"      {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:program#programDuration"}<br>
-String MagentaTV_ProgPos     "Position"      {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:program#programPosition"}<br>
+String MagentaTV_ProgTitle   "Program Title" {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:program#programTitle"}<br>
+String MagentaTV_ProgDescr   "Description"   {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:program#programText"}<br>
+String MagentaTV_ProgStart   "Start Time"    {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:program#programStart"}<br>
+String MagentaTV_ProgDur     "Duration"      {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:program#programDuration"}<br>
+String MagentaTV_ProgPos     "Position"      {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:program#programPosition"}<br>
 </tr><p>
 <tr><b># MagentaTV Play Status</b><br>
-Number MagentaTV_Channel   "Channel"        {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:status#channel"}<br>
-Number MagentaTV_ChCode    "Channel Code"   {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:status#channelCode"}<br>
-String MagentaTV_PlayMode  "Play Mode"      {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:status#playMode"}<br>
-String MagentaTV_RunStatus "Run Status"     {channel="magentatv:receiver:e8dbce32-64c8-51b5-a712-XXXXXXXXXXXX:status#runStatus"}<br>
+Number MagentaTV_Channel   "Channel"         {channel="magentatv:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:status#channel"}<br>
+Number MagentaTV_ChCode    "Channel Code"    {channel="magentatv:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:status#channelCode"}<br>
+String MagentaTV_PlayMode  "Play Mode"       {channel="magentatv:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:status#playMode"}<br>
+String MagentaTV_RunStatus "Run Status"      {channel="magentatv:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:status#runStatus"}<br>
 </tr><p>
 </table>
 
