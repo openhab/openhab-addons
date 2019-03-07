@@ -11,6 +11,7 @@
 
 		<channels>
 			<channel id="brightness" typeId="system.brightness" />
+			<channel id="led" typeId="led" />
 			<channel id="rssi" typeId="rssi" />
 		</channels>
 
