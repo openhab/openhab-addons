@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelConfigBuilder;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelState;
+import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateTransformation;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.Value;
 
@@ -69,7 +70,7 @@ public class CChannel {
             @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
         this.channelUID = new ChannelUID(component.channelGroupUID, channelID);
         channelTypeUID = component.haID.getChannelTypeID(channelID);
-        channelState = new ChannelState(ChannelConfigBuilder.create().withRetain(true).withStateTopic(state_topic)
+        channelState = new ChannelState(ChannelConfigBuilder.create().withRetain(false).withStateTopic(state_topic)
                 .withCommandTopic(command_topic).build(), channelUID, valueState, channelStateUpdateListener);
 
         if (StringUtils.isBlank(state_topic)) {
@@ -85,5 +86,9 @@ public class CChannel {
         configuration.put("config", component.configJson);
         channel = ChannelBuilder.create(channelUID, channelState.getItemType()).withType(channelTypeUID)
                 .withKind(type.getKind()).withLabel(label).withConfiguration(configuration).build();
+    }
+
+    public void addTransformationOut(ChannelStateTransformation transformation) {
+        channelState.addTransformationOut(transformation);
     }
 }

@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -57,9 +60,21 @@ public class ComponentSwitch extends AbstractComponent<ComponentSwitch.Config> {
             throw new UnsupportedOperationException("Component:Switch does not support forced optimistic mode");
         }
 
-        channels.put(switchChannelID,
-                new CChannel(this, switchChannelID, new OnOffValue(config.state_on, config.state_off),
-                        config.state_topic, config.command_topic, config.name, "", channelStateUpdateListener));
+        CChannel switchChannel = new CChannel(this, switchChannelID, new OnOffValue(config.state_on, config.state_off),
+                config.state_topic, config.command_topic, config.name, "", channelStateUpdateListener);
+
+        Map<String, String> map = new HashMap<>();
+        if (!StringUtils.equals(config.state_on, config.payload_on)) {
+            map.put(config.state_on, config.payload_on);
+        }
+        if (!StringUtils.equals(config.state_off, config.payload_off)) {
+            map.put(config.state_off, config.payload_off);
+        }
+        if (!map.isEmpty()) {
+            switchChannel.addTransformationOut(new MapChannelStateTransformation(map));
+        }
+
+        channels.put(switchChannelID, switchChannel);
     }
 
     @Override

@@ -48,6 +48,7 @@ public class ThingChannelConstants {
     final public static ChannelTypeUID unknownChannel = new ChannelTypeUID(BINDING_ID, "unknown");
 
     final public static ChannelUID textChannelUID = new ChannelUID(testGenericThing, "mytext");
+    final public static ChannelUID onOffChannelUID = new ChannelUID(testGenericThing, "onoff");
 
     final public static String jsonPathJSON = "{ \"device\": { \"status\": { \"temperature\": 23.2 }}}";
     final public static String jsonPathPattern = "$.device.status.temperature";

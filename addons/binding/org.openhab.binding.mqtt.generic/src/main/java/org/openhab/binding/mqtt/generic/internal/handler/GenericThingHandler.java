@@ -36,7 +36,7 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelConfig;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelState;
-import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateTransformation;
+import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateTransformationImpl;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.internal.generic.TransformationServiceProvider;
@@ -130,13 +130,13 @@ public class GenericThingHandler extends AbstractMQTTThingHandler implements Cha
         // Incoming value transformations
         transformations = channelConfig.transformationPattern.split("∩");
         Stream.of(transformations).filter(t -> StringUtils.isNotBlank(t))
-                .map(t -> new ChannelStateTransformation(t, transformationServiceProvider))
+                .map(t -> new ChannelStateTransformationImpl(t, transformationServiceProvider))
                 .forEach(t -> state.addTransformation(t));
 
         // Outgoing value transformations
         transformations = channelConfig.transformationPatternOut.split("∩");
         Stream.of(transformations).filter(t -> StringUtils.isNotBlank(t))
-                .map(t -> new ChannelStateTransformation(t, transformationServiceProvider))
+                .map(t -> new ChannelStateTransformationImpl(t, transformationServiceProvider))
                 .forEach(t -> state.addTransformationOut(t));
 
         return state;

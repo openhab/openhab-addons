@@ -13,17 +13,22 @@
 package org.openhab.binding.mqtt.generic.internal.generic;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.openhab.binding.mqtt.generic.internal.handler.ThingChannelConstants.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledExecutorService;
 
 import javax.naming.ConfigurationException;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -36,10 +41,6 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.openhab.binding.mqtt.generic.internal.generic.ChannelState;
-import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateTransformation;
-import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelStateDescriptionProvider;
-import org.openhab.binding.mqtt.generic.internal.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.internal.handler.GenericThingHandler;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 
@@ -110,7 +111,9 @@ public class ChannelStateTransformationTests {
 
         thingHandler.initialize();
         ChannelState channelConfig = thingHandler.getChannelState(textChannelUID);
-        assertThat(channelConfig.transformationsIn.get(0).pattern, is(jsonPathPattern));
+        ChannelStateTransformation transformation = channelConfig.transformationsIn.get(0);
+        assertThat(transformation, instanceOf(ChannelStateTransformationImpl.class));
+        assertThat(((ChannelStateTransformationImpl) transformation).pattern, is(jsonPathPattern));
     }
 
     @SuppressWarnings("null")
@@ -124,12 +127,42 @@ public class ChannelStateTransformationTests {
 
         ChannelStateTransformation transformation = channelConfig.transformationsIn.get(0);
 
-        byte payload[] = jsonPathJSON.getBytes();
-        assertThat(transformation.pattern, is(jsonPathPattern));
+        assertThat(transformation, instanceOf(ChannelStateTransformationImpl.class));
+        assertThat(((ChannelStateTransformationImpl) transformation).pattern, is(jsonPathPattern));
         // Test process message
+        byte payload[] = jsonPathJSON.getBytes();
         channelConfig.processMessage(channelConfig.getStateTopic(), payload);
 
         verify(callback).stateUpdated(eq(textChannelUID), argThat(arg -> "23.2".equals(arg.toString())));
         assertThat(channelConfig.getCache().getChannelState().toString(), is("23.2"));
     }
+
+    @SuppressWarnings("null")
+    @Test
+    public void processChannelWithOutgoing() throws Exception {
+        thingHandler.initialize();
+        ChannelState channelState = thingHandler.getChannelState(onOffChannelUID);
+        channelState.setChannelStateUpdateListener(thingHandler);
+
+        MqttBrokerConnection connection = mock(MqttBrokerConnection.class);
+        channelState.start(connection, mock(ScheduledExecutorService.class), 0);
+
+        channelState.publishValue(OnOffType.ON);
+        verify(connection).publish(any(), OnOffType.ON.name().getBytes(), 1, false);
+
+        channelState.publishValue(OnOffType.OFF);
+        verify(connection).publish(any(), OnOffType.OFF.name().getBytes(), 1, false);
+
+        Map<String, String> map = new HashMap<>();
+        map.put(OnOffType.ON.name(), "an");
+        map.put(OnOffType.OFF.name(), "aus");
+
+        channelState.publishValue(OnOffType.ON);
+        verify(connection).publish(any(), "an".getBytes(), 1, false);
+
+        channelState.publishValue(OnOffType.OFF);
+        verify(connection).publish(any(), "aus".getBytes(), 1, false);
+
+    }
+
 }
