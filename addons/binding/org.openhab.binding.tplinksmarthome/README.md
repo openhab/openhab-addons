@@ -6,6 +6,65 @@ This binding adds support to control TP-Link Smart Home Devices from your local 
 
 The following TP-Link Smart Devices are supported:
 
+### HS100 Smart Wi-Fi Plug
+
+* Switch On/Off
+* Led On/Off
+* Wi-Fi signal strength (rssi)
+
+### HS103 Smart Wi-Fi Plug Lite
+
+* Switch On/Off
+* Led On/Off
+* Wi-Fi signal strength (rssi)
+
+### HS105 Smart Wi-Fi Plug
+
+* Switch On/Off
+* Led On/Off
+* Wi-Fi signal strength (rssi)
+
+### HS107 Smart Wi-Fi Plug, 2-Outlets
+
+Not supported yet.
+
+### HS110 Smart Wi-Fi Plug
+
+* Switch On/Off
+* Energy readings
+* Led On/Off
+* Wi-Fi signal strength (rssi)
+
+### HS200 Smart Wi-Fi Switch
+
+* Switch On/Off
+* Led On/Off
+* Wi-Fi signal strength (rssi)
+
+### HS210 Smart Wi-Fi Light Switch 3-Way Kit
+
+* Switch On/Off
+* Led On/Off
+* Wi-Fi signal strength (rssi)
+
+### HS220 Smart Wi-Fi Light Switch, Dimmer
+
+* Switch On/Off
+* Adjust the brightness
+* Led On/Off
+* Wi-Fi signal strength (rssi)
+
+Use the brightness channel on the HS220 with a Switch item can be used to switch the device on and off.
+It won't change the brightness value.
+
+The default refresh for switch devices is set to 1 second. So it polls the switch for status changes.
+If you don't use the switch manually often, you can set it to a higher refresh.
+The refresh is only relevant to detect manual using the switch.
+Switching via openHAB activates the switch directly.
+
+### HS300 Smart Wi-Fi Power Strip
+
+Not supported yet.
 
 ### KB100 Kasa Smart Light Bulb
 
@@ -30,7 +89,16 @@ Switching, Brightness and Color is done using the `color` channel.
 ### KP100 Kasa Wi-Fi Smart Plug - Slim Edition
 
 * Switch On/Off
+* Led On/Off
 * Wi-Fi signal strength (rssi)
+
+### KP200 Smart Wi-Fi Power Outlet, 2-Sockets
+
+Not supported yet.
+
+### KP400 Smart Outdoor Plug
+
+Not supported yet.
 
 ### LB100 Smart Wi-Fi LED Bulb with Dimmable Light
 
@@ -121,51 +189,6 @@ Switching and Brightness is done using the `brightness` channel.
 
 Switching, Brightness and Color is done using the `color` channel.
 
-### HS100 Smart Wi-Fi Plug
-
-* Switch On/Off
-* Wi-Fi signal strength (rssi)
-
-### HS103 Smart Wi-Fi Plug Lite
-
-* Switch On/Off
-* Wi-Fi signal strength (rssi)
-
-### HS105 Smart Wi-Fi Plug
-
-* Switch On/Off
-* Wi-Fi signal strength (rssi)
-
-### HS110 Smart Wi-Fi Plug
-
-* Switch On/Off
-* Energy readings
-* Wi-Fi signal strength (rssi)
-
-### HS200 Smart Wi-Fi Switch
-
-* Switch On/Off
-* Wi-Fi signal strength (rssi)
-
-### HS210 Smart Wi-Fi Light Switch 3-Way Kit
-
-* Switch On/Off
-* Wi-Fi signal strength (rssi)
-
-### HS220 Smart Wi-Fi Light Switch, Dimmer
-
-* Switch On/Off
-* Adjust the brightness
-* Wi-Fi signal strength (rssi)
-
-Use the brightness channel on the HS220 with a Switch item can be used to switch the device on and off.
-It won't change the brightness value.
-
-The default refresh for switch devices is set to 1 second. So it polls the switch for status changes.
-If you don't use the switch manually often, you can set it to a higher refresh.
-The refresh is only relevant to detect manual using the switch.
-Switching via openHAB activates the switch directly.
-
 ### RE270K AC750 Wi-Fi Range Extender with Smart Plug
 
 * Switch On/Off (readonly)
@@ -218,35 +241,36 @@ Either `deviceId` or `ipAddress` must be set.
 
 All devices support some of the following channels:
 
-| Channel Type ID  | Item Type | Description                                        | Thing types supporting this channel                           |
-|------------------|-----------|----------------------------------------------------|---------------------------------------------------------------|
-| switch           | Switch    | Switch the Smart Home device on or off.            | KP100, HS100, HS103, HS105, HS110, HS200, HS210, RE270K, RE370K      |
-| brightness       | Dimmer    | Set the brightness of Smart Home device or dimmer. | HS220, KB100, LB100, LB110, LB120, LB200, HS220, KL110, KL120 |
-| colorTemperature | Dimmer    | Set the color temperature of Smart Home light.     | KB130, LB120, LB130, LB230, KL120, KL130                      |
-| color            | Color     | Set the color of the Smart Home light.             | KB130, LB130, LB230, KL130                                    |
-| power            | Number    | Actual energy usage in Watt.                       | HS110, LBxxx, KLxxx                                           |
-| eneryUsage       | Number    | Energy Usage in kWh.                               | HS110                                                         |
-| current          | Number    | Actual current usage in Ampere.                    | HS110                                                         |
-| voltage          | Number    | Actual voltage usage in Volt.                      | HS110                                                         |
-| rssi             | Number    | Wi-Fi signal strength indicator in dBm.            | All                                                           |
+| Channel Type ID  | Item Type | Description                                        | Thing types supporting this channel                             |
+|------------------|-----------|----------------------------------------------------|-----------------------------------------------------------------|
+| switch           | Switch    | Switch the Smart Home device on or off.            | HS100, HS103, HS105, HS110, HS200, HS210, KP100, RE270K, RE370K |
+| brightness       | Dimmer    | Set the brightness of Smart Home device or dimmer. | HS220, KB100, KL110, KL120, LB100, LB110, LB120, LB200          |
+| colorTemperature | Dimmer    | Set the color temperature of Smart Home light.     | KB130, KL120, KL130, LB120, LB130, LB230                        |
+| color            | Color     | Set the color of the Smart Home light.             | KB130, KL130, LB130, LB230                                      |
+| power            | Number    | Actual energy usage in Watt.                       | HS110, KLxxx, LBxxx                                             |
+| eneryUsage       | Number    | Energy Usage in kWh.                               | HS110                                                           |
+| current          | Number    | Actual current usage in Ampere.                    | HS110                                                           |
+| voltage          | Number    | Actual voltage usage in Volt.                      | HS110                                                           |
+| led              | Switch    | Switch the status led on the device on or off.     | HS100, HS103, HS105, HS110, HS200, HS210, HS220, KP100          |
+| rssi             | Number    | Wi-Fi signal strength indicator in dBm.            | All                                                             |
 
 ## Full Example
 
 ### tplinksmarthome.things:
 
 ```
-tplinksmarthome:hs100:home "Living Room"        [ deviceId="00000000000000000000000000000001", refresh=60 ]
-tplinksmarthome:lb110:home "Living Room Bulb 1" [ deviceId="00000000000000000000000000000002", refresh=60, transitionPeriod=2500 ]
-tplinksmarthome:lb130:home "Living Room Bulb 2" [ deviceId="00000000000000000000000000000003", refresh=60, transitionPeriod=2500 ]
+tplinksmarthome:hs100:tv    "Living Room"        [ deviceId="00000000000000000000000000000001", refresh=60 ]
+tplinksmarthome:lb110:bulb1 "Living Room Bulb 1" [ deviceId="00000000000000000000000000000002", refresh=60, transitionPeriod=2500 ]
+tplinksmarthome:lb130:bulb2 "Living Room Bulb 2" [ deviceId="00000000000000000000000000000003", refresh=60, transitionPeriod=2500 ]
 ```
 
 ### tplinksmarthome.items:
 
 ```
-Switch   TP_L_Switch  "Switch"                             { channel="tplinksmarthome:hs100:home:switch" }
-Number   TP_L_RSSI    "Signal [%d] dB"            <signal> { channel="tplinksmarthome:hs100:home:rssi" }
-Dimmer   TP_LB_Bulb   "Dimmer [%d %%]"            <slider> { channel="tplinksmarthome:lb110:home:brightness" }
-Dimmer   TP_LB_ColorT "Color Temperature [%d] %%" <slider> { channel="tplinksmarthome:lb130:home:colorTemperature" }
-Color    TP_LB_Color  "Color"                     <slider> { channel="tplinksmarthome:lb130:home:color" }
-Switch   TP_LB_ColorS "Switch"                             { channel="tplinksmarthome:lb130:home:color" }
+Switch   TP_L_Switch  "Switch"                             { channel="tplinksmarthome:hs100:tv:switch" }
+Number   TP_L_RSSI    "Signal [%d] dB"            <signal> { channel="tplinksmarthome:hs100:tv:rssi" }
+Dimmer   TP_LB_Bulb   "Dimmer [%d %%]"            <slider> { channel="tplinksmarthome:lb110:bulb1:brightness" }
+Dimmer   TP_LB_ColorT "Color Temperature [%d] %%" <slider> { channel="tplinksmarthome:lb130:bulb2:colorTemperature" }
+Color    TP_LB_Color  "Color"                     <slider> { channel="tplinksmarthome:lb130:bulb2:color" }
+Switch   TP_LB_ColorS "Switch"                             { channel="tplinksmarthome:lb130:bulb2:color" }
 ```
