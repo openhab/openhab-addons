@@ -1,9 +1,8 @@
-# <bindingName> MagentaTV Binding (aka Entertain TV)
 
-<hr>
-<b>Release: 2.5-pre2</b>
-<hr>
-<p>
+
+# MagentaTV Binding (aka Entertain TV)
+
+## Release: 2.5-pre3
 
 This Binding allows controlling the Deutsche Telekom Magenta TV receiver series Media Receiver MR4xx and MR2xx (Telekom NGTV / Huawei Envision platform). 
 The Binding does NOT support MR3xx/1xx (old Entertain system based on Microsoft technology)!
@@ -15,12 +14,12 @@ This include device discovery, sending keys from the remote and also receiving p
 
 ### Supported Models
 
-- Deutsche Telekom Media Receiver MR401B - fully supported
-- Deutsche Telekom Media Receiver MR201  - fully supported
-- Deutsche Telekom Media Receiver MR400  - supported with minor restrictions (POWER key)
-- Deutsche Telekom Media Receiver MR200  - supported with minor restrictions (POWER key)
-- Deutsche Telekom Media Receiver MR3xx  - NOT supported (different platform)
-- Deutsche Telekom Media Receiver MR1xx  - NOT supported (different platform)
+* Deutsche Telekom Media Receiver MR401B - fully supported
+* Deutsche Telekom Media Receiver MR201  - fully supported
+* Deutsche Telekom Media Receiver MR400  - supported with minor restrictions (POWER key)
+* Deutsche Telekom Media Receiver MR200  - supported with minor restrictions (POWER key)
+* Deutsche Telekom Media Receiver MR3xx  - NOT supported (different platform)
+* Deutsche Telekom Media Receiver MR1xx  - NOT supported (different platform)
 
 
 ### Receiver Standby Mode
@@ -30,12 +29,11 @@ Standby - full standby, receiver active all the time
 Suspend/Resume - The receiver goes to sleep mode, but could be awaked by a Wake-on-LAN packet
 Shutdown - Powering off will shutdown the receiver, can be awaked only with the power button
 
-## Supported Things
+### Supported Things
 
-<table>
-<tr><td>Thing</td><td>Type</td><td>Description</td></tr>
-<tr><td>receiver</td><td>Thing</td><td>A MagentaTV Receiver, the binding supports multiple receivers.</td></tr>
-</table>
+| Thing    | Type                                                           |
+| ---------| -------------------------------------------------------------- |
+| receiver | A MagentaTV Receiver, the binding supports multiple receivers. |
 
 
 ## Discovery
@@ -44,12 +42,14 @@ The auto discovery starts when the binding is loaded. UPnP will be used to disco
 
 # Thing Configuration
 
-<b>Using PaperUI</b>
+## Using PaperUI
 
 Once the thing will be added from the Inbox in PaperUI you'll need your T-Online credentials to query the userID. Open the thing configuration and enter the credentials:
 
-- Account Name: you T-Online user id, e.g. test7017@t-online.de
-- Account Password: the password for your Telekom account. 
+```
+Account Name    : you T-Online user id, e.g. test7017@t-online.de
+Account Password: the password for your Telekom account. 
+```
 
 For security reasons the credentials will be automatically deleted from the thing configuration (replaced with '***' in the thing config) after the initial authentication process. The openHAB instance needs access to the Internet to perform that operation, which can be disabled afterwards.
 
@@ -57,98 +57,92 @@ One the userID has been obtained from the Telekom portal the binding initiates t
 
 For now the binding selects the first matching network interface, which is not a tunnel, dialup, loopback interface. Check localIP in the properties to see if the right one was selected. A future version of the binding will use the IP address from PaperUI-Configuration-System-Network Settings.
 
-<b>Manually -  .things</b><p>
+## Manual configuration
 
-<table>
-<tr><td>Parameter</td><td>Description</td></tr>
-<tr><td>udn</td><td>UPnP Unique Device Name - a hexadecimal ID, which includes the 12 digit MAC address at the end (parsed by the binding to get the receiver's MAC)</td></tr>
-<tr><td>modelId</td><td>Type of Media Receiver:<br>DMS_TPB: MR400, MR200<br>MR401B: MR401B, MR201</td></tr>
-<tr><td>ipAddress</td><td>IP address of the receiver, usually discovered by UPnP</td></tr>
-<tr><td>port</td><td>Port to reach the remote service, usually 8081 for the MR401/MR201 or 49152 for MR400/200</td></tr>
-<tr><td>accountName</td><td>T-Online account name, should be the registered e-mail address</td></tr>
-<tr><td>accountPassword</td><td>T-Online password for the account.</td></tr>
-<tr><td></td><td></td></tr>
-</table>
+### Thing Parameters
+
+| Parameter |Description |
+| ----------| -------------------------------------------------------------------- |
+| udn | UPnP Unique Device Name - a hexadecimal ID, which includes the 12 digit MAC address at the end (parsed by the binding to get the receiver's MAC) |
+| modelId | Type of Media Receiver:<br>DMS_TPB: MR400, MR200<br>MR401B: MR401B, MR201 |
+| ipAddress | IP address of the receiver, usually discovered by UPnP |
+| port | Port to reach the remote service, usually 8081 for the MR401/MR201 or 49152 for MR400/200 |
+| accountName | T-Online account name, should be the registered e-mail address |
+| accountPassword | T-Online password for the account |
+
 
 ## Channels
 
-Channels controlling the receiver:
+| Group | Channel | Description |
+| ----- | -------| ------------------------------------------------------------ |
+| control | power       | Switching the channel simulates pressing the power button (same as sending "POWER" to the key channel). The receiver doesn't offer ON and OFF, but just toggles the power state. For that it's tricky to ensure the power state. Maybe some future versions will use some kind of testing to determine the current state. |
+| | channelUp   |Switch one channel up (same as sending "CHUP" to the key channel) |
+| | channelDown |Switch one channel down (same as sending "CHDOWN" to the key channel) |
+| | volumeUp    | Increase volume (same as sending "VOLUP" to the key channel) |
+| | volumeDown  |Decrease volume (same as sending "VOLDOWN" to the key channel) |
+| | key         | Updates to this channel simulate a "key pressed" to the receiver. Those include Menu, EPG etc. (see below) |
+| status | channel     | Changing this channel can be used to simulate entering the channel number on the remote - digit by digit, e.g. 10 will be send as '1' and '0' key. ||
+| | channelCode | The channel code from the EPG |
+| | playMode | Current play mode - this info is not reliable |
+| |  runStatus |
+| program | programTitle |Title of the running program or video being played |
+| | programText | Some description |
+| | programStart |Time when the program started |
+| | programDuration | Remaining time, usually not updated for TV program | 
+| | programPosition | Position within a movie (0 for regular programs). |
 
-<table style="width:100%">
-<tr align="left"><th>Channel</th><th>Description</th></tr>
-<tr><td>power</td><td>Switching the channel simulates pressing the power button (same as sending "POWER" to the key channel). The receiver doesn't offer ON and OFF, but just toggles the power state. For that it's tricky to ensure the power state. Maybe some future versions will use some kind of testing to determine the current state. </td></tr>
-<tr><td>Channel</td><td>Changing this channel can be used to simulate entering the channel number on the remote digit by digit, e.g. 10 will be send as '1' and '0' key.</td></tr>
-<tr><td>Channel Up</td><td>Switch one channel up (same as sending "CHUP" to the key channel).</td></tr>
-<tr><td>Channel Down</td><td>Switch one channel down (same as sending "CHDOWN" to the key channel).</td></tr>
-<tr><td>Volume Up</td><td>Increase volume (same as sending "VOLUP" to the key channel).</td></tr>
-<tr><td>Volume Down</td><td>Decrease volume (same as sending "VOLDOWN" to the key channel).</td></tr>
-<tr><td>key</td><td>Updates to this channel simulate a "key pressed" to the receiver. Those include Menu, EPG etc. (see below)</td></tr>
-</table>
+Channels receiving event information when changing the channel or playing a video:
 
+## Supported Key Code (channel key)
+| Key | Description |
+| ---- | -----------|
+| POWER| Power on/off the receiver (check standby mode) |
+| 0..9 | Key 0..9 |
+| DELETE | Delete key (text edit) |
+| ENTER | Enter/Select key |
+| RED | Special Actions: red |
+| GREEN | Special Actions:green |
+| YELLOW | Special Actions: yellow |
+| BLUE | Special Actions:blue |
+| EPG | Electronic Program Guide |
+| OPTION | Display options |
+| UP | Up arrow |
+| DOWN | Down arrow |
+| LEFT | Left arrow |
+| RIGHT | Right arrow |
+| OK | OK button |
+| BACK | Return to last menu |
+| EXIT | Exit menu |
+| MENU | Menu |
+| INFO | Display information |
+| FAV | Display favorites |
+| VOLUP | Volume up |
+| VOLDOWN | Volume down |
+| MUTE | Mute speakers |
+| CHUP | Channel up |
+| CHDOWN | Channel down |
+| PLAY | Play | 
+| PAUSE | Play | 
+| STOP | Stop playing |
+| RECORD | Start recording |
+| REWIND | Rewind |
+| FORWARD | Forward |
+| LASTCH | Last chapter |
+| NEXTCH | Next chapter |
+| PIP | Activate Program-in-Program |
+| PGUP | Page up |
+| PGDOWN | Page down |
+| PAIR | Re-pair with the receiver |
 
-Channels receiving event information when chaning the channel or playing a video:
-
-<table style="width:100%">
-<tr align="left"><th>Channel</th><th>Description</th></tr>
-<tr><td>program</td><td>Title of the running program or video being played.</td></tr>
-<tr><td>description</td><td>This could be a textual description of the content, the title of the episode etc.</td></tr>
-<tr><td>startTime</td><td>Time when the program started.</td></tr>
-<tr><td>duration</td><td>Duration of the program.</td></tr>
-<tr><td>playPosition</td><td>Position within a video (0 for regular programs).</td></tr>
-<tr><td>playMode</td><td>Current play mode - this info is not reliable.</td></tr>
-</table>
-
-
-The following keys are supported (channel key):
-
-<table style="width:100%">
-<tr align="left"><th>Key</td><th>Description</th></tr>
-<tr><td>POWER</td><td>Power on/off the receiver (check standby mode)
-<tr><td>0..9</td><td>Key 0..9</td></tr>
-<tr><td>DELETE</td><td>Delete key (text edit)</td></tr>
-<tr><td>ENTER</td><td>Enter/Select key</td></tr>
-<tr><td>RED</td><td>Special Actions: red</td></tr>
-<tr><td>GREEN</td><td>Special Actions:green</td></tr>
-<tr><td>YELLOW</td><td>Special Actions: yellow</td></tr>
-<tr><td>BLUE</td><td>Special Actions:blue</td></tr>
-<tr><td>EPG</td><td>Electronic Program Guide</td></tr>
-<tr><td>OPTION</td><td>Display options</td></tr>
-<tr><td>UP</td><td>Up arrow</td></tr>
-<tr><td>DOWN</td><td>Down arrow</td></tr>
-<tr><td>LEFT</td><td>Left arrow</td></tr>
-<tr><td>RIGHT</td><td>Right arrow</td></tr>
-<tr><td>OK</td><td>OK button</td></tr>
-<tr><td>BACK</td><td>Return to last menu</td></tr>
-<tr><td>EXIT</td><td>Exit menu</td></tr>
-<tr><td>MENU</td><td>Menu</td></tr>
-<tr><td>INFO</td><td>Display information</td></tr>
-<tr><td>FAV</td><td>Display favorites</td></tr>
-<tr><td>VOLUP</td><td>Volume up</td></tr>
-<tr><td>VOLDOWN</td><td>Volume down</td></tr>
-<tr><td>MUTE</td><td>Mute speakers</td></tr>
-<tr><td>CHUP</td><td>Channel up</td></tr>
-<tr><td>CHDOWN</td><td>Channel down</td></tr>
-<tr><td>PLAY</td><td>Play</td><td>
-<tr><td>PAUSE</td><td>Play</td><td>
-<tr><td>STOP</td><td>Stop playing</td></tr>
-<tr><td>RECORD</td><td>Start recording</td></tr>
-<tr><td>REWIND</td><td>Rewind</td></tr>
-<tr><td>FORWARD</td><td>Forward</td></tr>
-<tr><td>LASTCH</td><td>Last chapter</td></tr>
-<tr><td>NEXTCH</td><td>Next chapter</td></tr>
-<tr><td>PIP</td><td>Activate Program-in-Program</td></tr>
-<tr><td>PGUP</td><td>Page up</td></tr>
-<tr><td>PGDOWN</td><td>Page down</td></tr>
-<tr><td>PAIR</td><td>Re-pair with the receiver</td></tr>
-</table>
-
-In addition you could send any key code in the 0xXXXX format. Refer to <a href="http://support.huawei.com/hedex/pages/DOC1100366313CEH0713H/01/DOC1100366313CEH0713H/01/resources/dsv_hdx_idp/DSV/en/en-us_topic_0094619112.html">Key Codes for magenta/Huawei Media Receiver</a>
+In addition you could send any key code in the 0xHHHH format., refer to
+<a href="http://support.huawei.com/hedex/pages/DOC1100366313CEH0713H/01/DOC1100366313CEH0713H/01/resources/dsv_hdx_idp/DSV/en/en-us_topic_0094619112.html">Key Codes for Magenta/Huawei Media Receiver</a>
 
 
 ## Full Configuraton Example
 
-<b>magentatv.things:</b><p>
+### magentatv.things
 
+```
 Thing magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx "MagentaTV" [
 udn="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
 modelId="MR401B",
@@ -157,46 +151,53 @@ port="8081",
 accountName="xxxxxx.xxxx@t-online.de",
 accountPassword="xxxxxxxxxx"
 ]
+```
 
-<table>
-<tr><b>magentatv.items</b><p></tr>
-<tr><b># MagentaTV Control</b><br>
+### magentatv.items
+
+```
+# MagentaTV Control</b><br>
 Switch MagentaTV_Power        "Power"        {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#power"}<br>
 Switch MagentaTV_ChannelUp    "Channel +"    {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#channelUp"}<br>
 Switch MagentaTV_ChannelDown  "Channel -"    {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#channelDown"}<br>
 Switch MagentaTV_VolumeUp     "Volume +"     {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#volumeUp"}<br>
 Switch MagentaTV_VolumeDown   "Volume -"     {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#volumeDown"}<br>
 String MagentaTV_Key          "Key"          {channel="magentatv:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#key"}<br>
-</tr><p>
-<tr><b># MagentaTV Program Information</b><br>
+
+# MagentaTV Program Information</b><br>
 String MagentaTV_ProgTitle   "Program Title" {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:program#programTitle"}<br>
 String MagentaTV_ProgDescr   "Description"   {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:program#programText"}<br>
 String MagentaTV_ProgStart   "Start Time"    {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:program#programStart"}<br>
 String MagentaTV_ProgDur     "Duration"      {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:program#programDuration"}<br>
 String MagentaTV_ProgPos     "Position"      {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:program#programPosition"}<br>
-</tr><p>
-<tr><b># MagentaTV Play Status</b><br>
+
+# MagentaTV Play Status</b><br>
 Number MagentaTV_Channel   "Channel"         {channel="magentatv:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:status#channel"}<br>
 Number MagentaTV_ChCode    "Channel Code"    {channel="magentatv:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:status#channelCode"}<br>
 String MagentaTV_PlayMode  "Play Mode"       {channel="magentatv:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:status#playMode"}<br>
 String MagentaTV_RunStatus "Run Status"      {channel="magentatv:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:status#runStatus"}<br>
-</tr><p>
-</table>
+```
 
-<b>Sitemap:</b><p>
-- please contribute an example
-<p>
+### sitemap
+```
+please contribute an example
+```
 
-<b>magentatv.rules</b><p>
-Due to the fact the POWER is a toggle button and the binding can't detect the current status, which could lead into the situation that you want to power on the receiver as part of a scene, but due to the fact that it is already ON you switch it off. We spend some time to fiddle out a better handling and find a way to detect a network message when the receiver gets powered off (MR4xx only). In this case MagentaTV_Power is switch to OFF.<p>
+### magentatv.rules
+Due to the fact the POWER is a toggle button and the binding can't detect the current status, which could lead into the situation that you want to power on the receiver as part of a scene, but due to the fact that it is already ON you switch it off. We spend some time to fiddle out a better handling and find a way to detect a network message when the receiver gets powered off (MR4xx only). In this case MagentaTV_Power is switch to OFF.
+
 This said you could use the following
+```
         if (MagentaTV_Power.state != ON) {
             sendCommand(MagentaTV_Power, ON)
         }
+```
 to switch it ON (within a scene) and 
+```
         if (MagentaTV_Power.state != OFF) {
             sendCommand(MagentaTV_Power, OFF)
         }
-to switch it off.<p>
+```
+to switch it off.
+
 Maybe after an openHAB restart you need to make sure that OH and receiver are in sync, because the binding can't read the power status on startup.
-<p>
