@@ -15,11 +15,7 @@ package org.openhab.binding.loxone.internal.controls;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.controls.LxControl.LxControlInstance;
-import org.openhab.binding.loxone.internal.core.LxCategory;
-import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.openhab.binding.loxone.internal.core.LxUuid;
 
 /**
@@ -51,23 +47,15 @@ public class LxControlFactory {
 
     /**
      * Create a {@link LxControl} object for a control received from the Miniserver
-     *
-     * @param handlerApi thing handler object representing the Miniserver
-     * @param uuid       UUID of the control to be created
-     * @param json       JSON describing the control as received from the Miniserver
-     * @param room       Room that this control belongs to
-     * @param category   Category that this control belongs to
+     * 
+     * @param uuid UUID of the control to create
+     * @param type control type
      * @return created control object or null if error
      */
-    public static LxControl createControl(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json,
-            LxContainer room, LxCategory category) {
-        if (json == null || json.type == null || json.name == null) {
-            return null;
-        }
-        String type = json.type.toLowerCase();
-        LxControlInstance control = CONTROLS.get(type);
+    public static LxControl createControl(LxUuid uuid, String type) {
+        LxControlInstance control = CONTROLS.get(type.toLowerCase());
         if (control != null) {
-            return control.create(handlerApi, uuid, json, room, category);
+            return control.create(uuid);
         }
         return null;
     }

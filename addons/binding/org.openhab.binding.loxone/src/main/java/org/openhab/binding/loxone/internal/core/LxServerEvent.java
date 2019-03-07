@@ -41,7 +41,7 @@ public class LxServerEvent {
      */
     SERVER_OFFLINE,
     /**
-     * Received configuration of Miniserver. There is a {@link LxJsonApp3} object associated.
+     * Received configuration of Miniserver. There is a {@link LxConfig} object associated.
      */
     RECEIVED_CONFIG,
     /**

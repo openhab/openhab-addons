@@ -31,7 +31,6 @@ import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.openhab.binding.loxone.internal.core.LxUuid;
 
 /**
@@ -44,9 +43,8 @@ public class LxControlRadio extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
-        LxControl create(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-                LxCategory category) {
-            return new LxControlRadio(handlerApi, uuid, json, room, category);
+        LxControl create(LxUuid uuid) {
+            return new LxControlRadio(uuid);
         }
 
         @Override
@@ -77,42 +75,25 @@ public class LxControlRadio extends LxControl {
 
     private List<StateOption> outputs = new ArrayList<>();
 
-    /**
-     * Create radio-button control object.
-     *
-     * @param handlerApi thing handler object representing the Miniserver
-     * @param uuid       radio-button's UUID
-     * @param json       JSON describing the control as received from the Miniserver
-     * @param room       room to which radio-button belongs
-     * @param category   category to which control belongs
-     */
-    LxControlRadio(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-            LxCategory category) {
-        super(handlerApi, uuid, json, room, category);
+    @Override
+    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
+        super.initialize(api, room, category);
         // add both channel and state description (all needed configuration is available)
         addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RADIO_BUTTON), defaultChannelId,
                 defaultChannelLabel, "Radio button", tags);
+        if (details != null && details.outputs != null) {
+            outputs = details.outputs.entrySet().stream().map(e -> new StateOption(e.getKey(), e.getValue()))
+                    .collect(Collectors.toList());
+        }
+        if (details != null && details.allOff != null) {
+            outputs.add(new StateOption("0", details.allOff));
+        }
         addChannelStateDescription(defaultChannelId, new StateDescription(BigDecimal.ZERO,
                 new BigDecimal(MAX_RADIO_OUTPUTS), BigDecimal.ONE, null, false, outputs));
     }
 
-    /**
-     * Update Miniserver's control in runtime.
-     *
-     * @param json     JSON describing the control as received from the Miniserver
-     * @param room     New room that this control belongs to
-     * @param category New category that this control belongs to
-     */
-    @Override
-    public void update(LxJsonControl json, LxContainer room, LxCategory category) {
-        super.update(json, room, category);
-        if (json.details.outputs != null) {
-            json.details.outputs.entrySet().stream().map(e -> new StateOption(e.getKey(), e.getValue()))
-                    .collect(Collectors.toList());
-        }
-        if (json.details != null && json.details.allOff != null) {
-            outputs.add(new StateOption("0", json.details.allOff));
-        }
+    LxControlRadio(LxUuid uuid) {
+        super(uuid);
     }
 
     @Override

@@ -27,7 +27,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.openhab.binding.loxone.internal.core.LxUuid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,9 +55,8 @@ public class LxControlJalousie extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
-        LxControl create(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-                LxCategory category) {
-            return new LxControlJalousie(handlerApi, uuid, json, room, category);
+        LxControl create(LxUuid uuid) {
+            return new LxControlJalousie(uuid);
         }
 
         @Override
@@ -117,23 +115,20 @@ public class LxControlJalousie extends LxControl {
 
     private final Logger logger = LoggerFactory.getLogger(LxControlJalousie.class);
 
-    private final ChannelUID shadeChannelId = getChannelId(1);
-    private final ChannelUID autoShadeChannelId = getChannelId(2);
+    private ChannelUID shadeChannelId;
+    private ChannelUID autoShadeChannelId;
 
     private Double targetPosition;
 
-    /**
-     * Create jalousie control object.
-     *
-     * @param handlerApi thing handler object representing the Miniserver
-     * @param uuid       jalousie's UUID
-     * @param json       JSON describing the control as received from the Miniserver
-     * @param room       room to which jalousie belongs
-     * @param category   category to which jalousie belongs
-     */
-    LxControlJalousie(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-            LxCategory category) {
-        super(handlerApi, uuid, json, room, category);
+    LxControlJalousie(LxUuid uuid) {
+        super(uuid);
+    }
+
+    @Override
+    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
+        super.initialize(api, room, category);
+        shadeChannelId = getChannelId(1);
+        autoShadeChannelId = getChannelId(2);
         addChannel("Rollershutter", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_ROLLERSHUTTER),
                 defaultChannelId, defaultChannelLabel, "Rollershutter", tags);
         addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH), shadeChannelId,

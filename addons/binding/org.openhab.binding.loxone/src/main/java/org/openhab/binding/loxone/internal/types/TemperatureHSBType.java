@@ -52,7 +52,7 @@ public class TemperatureHSBType extends HSBType {
      * @param x        the number to map
      * @param fromLow  the lower bound of the value's current range
      * @param fromHigh the upper bound of the value's current range
-     * @param toLower  the lower bound of the value's target range
+     * @param toLow    the lower bound of the value's target range
      * @param toHigh   the upper bound of the value's target range
      * @return the mapped value
      */

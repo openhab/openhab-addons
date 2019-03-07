@@ -26,21 +26,16 @@ import org.openhab.binding.loxone.internal.controls.LxControl;
  *
  */
 public class LxContainer {
-    private final LxUuid uuid;
-    private final Set<LxControl> controls = new HashSet<>();
-    private String name;
+
+    private LxUuid uuid; // set by JSON deserialization
+    private String name; // set by JSON deserialization
+    private final Set<LxControl> controls;
 
     /**
      * Create a new container with given uuid and name
-     *
-     * @param uuid
-     *                 UUID of the container as received from the Miniserver
-     * @param name
-     *                 name of the container as received from the Miniserver
      */
-    public LxContainer(LxUuid uuid, String name) {
-        this.uuid = uuid;
-        this.name = name;
+    LxContainer() {
+        controls = new HashSet<>();
     }
 
     /**
@@ -64,31 +59,12 @@ public class LxContainer {
     }
 
     /**
-     * Update container's name
+     * Add a new control to this container
      *
-     * @param name
-     *                 a new name of the container
+     * @param control control to be added
      */
-    public void setName(String name) {
-        this.name = name;
-        uuid.setUpdate(true);
-    }
-
-    /**
-     * Add a new control to this container or mark existing control's and container's UUIDs as updated.
-     *
-     * @param control control to be added or updated
-     */
-    public void addOrUpdateControl(LxControl control) {
-        uuid.setUpdate(true);
-        for (LxControl c : controls) {
-            if (control.equals(c)) {
-                c.getUuid().setUpdate(true);
-                return;
-            }
-        }
+    public void addControl(LxControl control) {
         controls.add(control);
-        control.getUuid().setUpdate(true);
     }
 
     /**

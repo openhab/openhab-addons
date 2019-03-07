@@ -25,7 +25,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.openhab.binding.loxone.internal.core.LxUuid;
 
 /**
@@ -44,9 +43,8 @@ public class LxControlTimedSwitch extends LxControlPushbutton {
 
     static class Factory extends LxControlInstance {
         @Override
-        LxControl create(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-                LxCategory category) {
-            return new LxControlTimedSwitch(handlerApi, uuid, json, room, category);
+        LxControl create(LxUuid uuid) {
+            return new LxControlTimedSwitch(uuid);
         }
 
         @Override
@@ -67,20 +65,16 @@ public class LxControlTimedSwitch extends LxControlPushbutton {
      * otherwise it will count down from deactivationDelayTotal
      */
     private static final String STATE_DEACTIVATION_DELAY = "deactivationdelay";
-    private final ChannelUID deactivationChannelId = getChannelId(1);
+    private ChannelUID deactivationChannelId;
 
-    /**
-     * Create timed switch control object.
-     *
-     * @param handlerApi thing handler object representing the Miniserver
-     * @param uuid       switch's UUID
-     * @param json       JSON describing the control as received from the Miniserver
-     * @param room       room to which switch belongs
-     * @param category   category to which switch belongs
-     */
-    LxControlTimedSwitch(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-            LxCategory category) {
-        super(handlerApi, uuid, json, room, category);
+    LxControlTimedSwitch(LxUuid uuid) {
+        super(uuid);
+    }
+
+    @Override
+    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
+        super.initialize(api, room, category);
+        deactivationChannelId = getChannelId(1);
         addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_NUMBER), deactivationChannelId,
                 defaultChannelLabel + " / Deactivation Delay", "Deactivation Delay", null);
     }
@@ -105,11 +99,6 @@ public class LxControlTimedSwitch extends LxControlPushbutton {
         return null;
     }
 
-    /**
-     * Get current value of the timed switch'es state.
-     *
-     * @return ON/OFF or null if not defined
-     */
     @Override
     public OnOffType getState() {
         /**

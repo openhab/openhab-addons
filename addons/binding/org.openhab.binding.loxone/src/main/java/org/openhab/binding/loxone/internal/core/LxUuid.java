@@ -12,8 +12,14 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 
 /**
  * Unique identifier of an object on Loxone Miniserver.
@@ -27,7 +33,18 @@ import java.nio.ByteOrder;
 public class LxUuid {
     private final String uuid;
     private final String uuidOriginal;
-    private boolean updated;
+
+    public static final JsonDeserializer<LxUuid> DESERIALIZER = new JsonDeserializer<LxUuid>() {
+        @Override
+        public LxUuid deserialize(JsonElement json, Type type, JsonDeserializationContext context)
+                throws JsonParseException {
+            String uuid = json.getAsString();
+            if (uuid != null) {
+                return new LxUuid(uuid);
+            }
+            return null;
+        }
+    };
 
     /**
      * Create a new {@link LxUuid} object from an UUID on a Miniserver.
@@ -51,7 +68,6 @@ public class LxUuid {
     }
 
     private String init(String uuid) {
-        updated = true;
         return uuidOriginal.replaceAll("[^a-zA-Z0-9-]", "-").toUpperCase();
     }
 
@@ -85,26 +101,7 @@ public class LxUuid {
      *
      * @return original string for the UUID
      */
-
     public String getOriginalString() {
         return uuidOriginal;
-    }
-
-    /**
-     * Indicate the object corresponding to UUID has recently been updated.
-     *
-     * @param updated true if object has been updated
-     */
-    public void setUpdate(boolean updated) {
-        this.updated = updated;
-    }
-
-    /**
-     * See if the object corresponding to UUID has been recently updated.
-     *
-     * @return true if object was updated
-     */
-    public boolean getUpdate() {
-        return updated;
     }
 }

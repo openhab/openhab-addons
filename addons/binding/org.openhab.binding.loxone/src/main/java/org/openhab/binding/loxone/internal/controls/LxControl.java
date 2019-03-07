@@ -13,6 +13,7 @@
 package org.openhab.binding.loxone.internal.controls;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,13 +33,18 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.openhab.binding.loxone.internal.core.LxUuid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * A control of Loxone Miniserver.
@@ -50,7 +56,7 @@ import com.google.gson.JsonElement;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public abstract class LxControl {
+public class LxControl {
 
     /**
      * This class is used to instantiate a particular control object by the {@link LxControlFactory}
@@ -61,16 +67,11 @@ public abstract class LxControl {
     abstract static class LxControlInstance {
         /**
          * Creates an instance of a particular control class.
-         *
-         * @param handlerApi thing handler object representing the Miniserver
-         * @param uuid       UUID of this control
-         * @param json       JSON describing the control as received from the Miniserver
-         * @param room       Room that this control belongs to
-         * @param category   Category that this control belongs to
+         * 
+         * @param uuid UUID of the control object to be created
          * @return a newly created control object
          */
-        abstract LxControl create(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-                LxCategory category);
+        abstract LxControl create(LxUuid uuid);
 
         /**
          * Return a type name for this control.
@@ -80,69 +81,130 @@ public abstract class LxControl {
         abstract String getType();
     }
 
-    final LxServerHandlerApi handlerApi;
-    final LxUuid uuid;
-    final ChannelUID defaultChannelId;
-    final String defaultChannelLabel;
+    /**
+     * This class describes additional parameters of a control received from the Miniserver
+     *
+     * @author Pawel Pieczul - initial contribution
+     *
+     */
+    class LxControlDetails {
+        Double min;
+        Double max;
+        Double step;
+        String format;
+        String allOff;
+        Map<String, String> outputs;
+    }
+
+    /*
+     * Parameters parsed from the JSON configuration file during deserialization
+     */
+    LxUuid uuid;
+    LxControlDetails details;
+    private String name;
+    private LxUuid roomUuid;
+    private LxUuid categoryUuid;
+    private Map<LxUuid, LxControl> subControls;
+    private final Map<String, LxControlState> states;
+
+    /*
+     * Parameters set when finalizing {@link LxConfig} object setup. They will be null right after constructing object.
+     */
+    String defaultChannelLabel;
+    ChannelUID defaultChannelId;
+    LxServerHandlerApi handlerApi;
+    private LxContainer room;
+    private LxCategory category;
+    private ThingUID thingId;
+
+    /*
+     * Parameters set when object is connected to the openHAB by the binding handler
+     */
     final Set<String> tags = new HashSet<>();
     final List<Channel> channels = new ArrayList<>();
 
-    private LxContainer room;
-    private LxCategory category;
-    private String name;
+    private final transient Logger logger;
+    static final Gson DEFAULT_GSON = new Gson();
 
-    private final ThingUID thingId;
-    private final Logger logger = LoggerFactory.getLogger(LxControl.class);
-    private final Map<LxUuid, LxControl> subControls = new HashMap<>();
-    private final Map<String, LxControlState> states = new HashMap<>();
-
-    /**
-     * Create a Miniserver's control object.
-     *
-     * @param handlerApi thing handler object representing the Miniserver
-     * @param uuid       UUID of this control
-     * @param json       JSON describing the control as received from the Miniserver
-     * @param room       Room that this control belongs to
-     * @param category   Category that this control belongs to
+    /*
+     * JSON deserialization routine, called during parsing configuration by the GSON library
      */
-    LxControl(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category) {
-        logger.trace("Creating new LxControl: {}", json.type);
+    public static final JsonDeserializer<LxControl> DESERIALIZER = new JsonDeserializer<LxControl>() {
+        @Override
+        public LxControl deserialize(JsonElement json, Type type, JsonDeserializationContext context)
+                throws JsonParseException {
+            JsonObject parent = json.getAsJsonObject();
+            String controlName = parent.get("name").getAsString();
+            String controlType = parent.get("type").getAsString();
+            LxUuid uuid = deserializeObject(parent, "uuidAction", LxUuid.class, context);
+            if (controlName == null || controlType == null || uuid == null) {
+                throw new JsonParseException("Control name/type/uuid is null.");
+            }
+            LxControl control = LxControlFactory.createControl(uuid, controlType);
+            if (control == null) {
+                return null;
+            }
+            control.name = controlName;
+            control.roomUuid = deserializeObject(parent, "room", LxUuid.class, context);
+            control.categoryUuid = deserializeObject(parent, "cat", LxUuid.class, context);
+            control.details = deserializeObject(parent, "details", LxControlDetails.class, context);
+            control.subControls = deserializeObject(parent, "subControls", new TypeToken<Map<LxUuid, LxControl>>() {
+            }.getType(), context);
+
+            JsonObject states = parent.getAsJsonObject("states");
+            if (states != null) {
+                states.entrySet().forEach(entry -> {
+                    // temperature state of intelligent home controller object is the only
+                    // one that has state represented as an array, as this is not implemented
+                    // yet, we will skip this state
+                    JsonElement element = entry.getValue();
+                    if (element != null && !(element instanceof JsonArray)) {
+                        String value = element.getAsString();
+                        if (value != null) {
+                            String name = entry.getKey().toLowerCase();
+                            control.states.put(name, new LxControlState(new LxUuid(value), name, control));
+                        }
+                    }
+                });
+            }
+            return control;
+        }
+    };
+
+    private static <T> T deserializeObject(JsonObject parent, String name, Type type,
+            JsonDeserializationContext context) {
+        JsonElement element = parent.get(name);
+        if (element != null) {
+            return context.deserialize(element, type);
+        }
+        return null;
+    }
+
+    LxControl(LxUuid uuid) {
+        logger = LoggerFactory.getLogger(LxControl.class);
         this.uuid = uuid;
-        this.handlerApi = handlerApi;
-        thingId = handlerApi.getThingId();
-        defaultChannelId = getChannelId(0);
-
-        update(json, room, category);
-
-        String label = getLabel();
-        if (label == null) {
-            // Each control on a Miniserver must have a name defined, but in case this is a subject
-            // of some malicious data attack, we'll prevent null pointer exception
-            label = "Undefined name";
-        }
-        String roomName = room != null ? room.getName() : null;
-        if (roomName != null) {
-            label = roomName + " / " + label;
-        }
-        defaultChannelLabel = label;
+        states = new HashMap<>();
     }
 
     /**
-     * A method that executes commands by the control.
+     * A method that executes commands by the control. To be overridden by child classes.
      *
      * @param channelId channel Id for the command
      * @param command   value of the command to perform
      * @throws IOException in case of communication error with the Miniserver
      */
-    public abstract void handleCommand(ChannelUID channelId, Command command) throws IOException;
+    public void handleCommand(ChannelUID channelId, Command command) throws IOException {
+    }
 
     /**
-     * Provides actual state value for the specified channel
+     * Provides actual state value for the specified channel. To be overridden by child classes.
      *
      * @param channelId channel ID to get state for
      * @return state if the channel value or null if no value available
      */
-    public abstract State getChannelState(ChannelUID channelId);
+    public State getChannelState(ChannelUID channelId) {
+        return null;
+    }
 
     /**
      * Call when control is no more needed - unlink it from containers
@@ -232,55 +294,54 @@ public abstract class LxControl {
     }
 
     /**
-     * Update Miniserver's control in runtime.
+     * Initialize Miniserver's control in runtime. Each class that implements {@link LxControl} should override this
+     * method and call it as a first step in the overridden implementation. Then it should add all runtime data, like
+     * channels and any fields that derive their value from the parsed JSON configuration.
+     * Before this method is called during configuration parsing, the control object must not be used.
      *
-     * @param json     JSON describing the control as received from the Miniserver
-     * @param room     New room that this control belongs to
-     * @param category New category that this control belongs to
+     * @param api      object to communicate with thing handler
+     * @param room     A room that this control and its subcontrols belong to
+     * @param category A category that this control and its subcontrols belong to
      */
-    public void update(LxJsonControl json, LxContainer room, LxCategory category) {
-        logger.trace("Updating LxControl: {}", json.type);
+    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
+        logger.debug("Initializing LxControl: {}", uuid);
 
-        this.name = json.name;
-        this.room = room;
-        this.category = category;
-        uuid.setUpdate(true);
+        if (handlerApi != null) {
+            logger.error("Error, attempt to initialize control that is already initialized: {}", uuid);
+            return;
+        }
+        handlerApi = api;
+        thingId = handlerApi.getThingId();
+        defaultChannelId = getChannelId(0);
+
+        if (subControls == null) {
+            subControls = new HashMap<>();
+        }
+
         if (room != null) {
-            room.addOrUpdateControl(this);
+            this.room = room;
+            room.addControl(this);
         }
+
         if (category != null) {
-            category.addOrUpdateControl(this);
+            this.category = category;
+            category.addControl(this);
         }
 
-        // retrieve all states from the configuration
-        if (json.states != null) {
-            logger.trace("Reading states for LxControl: {}", json.type);
-
-            for (Map.Entry<String, JsonElement> jsonState : json.states.entrySet()) {
-                JsonElement element = jsonState.getValue();
-                if (element instanceof JsonArray) {
-                    // temperature state of intelligent home controller object is the only
-                    // one that has state represented as an array, as this is not implemented
-                    // yet, we will skip this state
-                    continue;
-                }
-                String value = element.getAsString();
-                if (value != null) {
-                    LxUuid id = new LxUuid(value);
-                    String name = jsonState.getKey().toLowerCase();
-                    LxControlState state = states.get(name);
-                    if (state == null) {
-                        logger.trace("New state for LxControl {}: {}", json.type, name);
-                        state = new LxControlState(id, name, this);
-                    } else {
-                        logger.trace("Existing state for LxControl {}: {}", json.type, name);
-                        state.getUuid().setUpdate(true);
-                        state.setName(name);
-                    }
-                    states.put(name, state);
-                }
-            }
+        String label = getLabel();
+        if (label == null) {
+            // Each control on a Miniserver must have a name defined, but in case this is a subject
+            // of some malicious data attack, we'll prevent null pointer exception
+            label = "Undefined name";
         }
+        String roomName = room != null ? room.getName() : null;
+        if (roomName != null) {
+            label = roomName + " / " + label;
+        }
+        defaultChannelLabel = label;
+
+        // Propagate to all subcontrols of this control object
+        subControls.values().forEach(c -> c.initialize(api, room, category));
     }
 
     /**
@@ -299,6 +360,14 @@ public abstract class LxControl {
      */
     LxCategory getCategory() {
         return category;
+    }
+
+    public LxUuid getRoomUuid() {
+        return roomUuid;
+    }
+
+    public LxUuid getCategoryUuid() {
+        return categoryUuid;
     }
 
     /**
@@ -371,6 +440,10 @@ public abstract class LxControl {
      * @return channel ID for the control and index
      */
     ChannelUID getChannelId(int index) {
+        if (thingId == null) {
+            logger.error("Attempt to get control's channel ID with not finalized configuration!: {}", index);
+            return null;
+        }
         String controlId = uuid.toString();
         if (index > 0) {
             controlId += "-" + index;
@@ -390,6 +463,10 @@ public abstract class LxControl {
      */
     void addChannel(String itemType, ChannelTypeUID typeId, ChannelUID channelId, String channelLabel,
             String channelDescription, Set<String> tags) {
+        if (channelLabel == null || channelDescription == null) {
+            logger.error("Attempt to add channel with not finalized configuration!: {}", channelId);
+            return;
+        }
         ChannelBuilder builder = ChannelBuilder.create(channelId, itemType).withType(typeId).withLabel(channelLabel)
                 .withDescription(channelDescription + " : " + channelLabel);
         if (tags != null) {
@@ -406,7 +483,11 @@ public abstract class LxControl {
      * @param description channel state description
      */
     void addChannelStateDescription(ChannelUID channelId, StateDescription description) {
-        handlerApi.setChannelStateDescription(channelId, description);
+        if (handlerApi == null) {
+            logger.error("Attempt to set channel state description with not finalized configuration!: {}", channelId);
+        } else {
+            handlerApi.setChannelStateDescription(channelId, description);
+        }
     }
 
     /**
@@ -416,6 +497,10 @@ public abstract class LxControl {
      * @throws IOException when communication error with Miniserver occurs
      */
     void sendAction(String action) throws IOException {
-        handlerApi.sendAction(uuid, action);
+        if (handlerApi == null) {
+            logger.error("Attempt to send command with not finalized configuration!: {}", action);
+        } else {
+            handlerApi.sendAction(uuid, action);
+        }
     }
 }

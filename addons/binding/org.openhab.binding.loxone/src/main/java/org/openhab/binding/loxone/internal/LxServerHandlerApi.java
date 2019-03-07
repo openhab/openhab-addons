@@ -23,8 +23,6 @@ import org.openhab.binding.loxone.internal.controls.LxControl;
 import org.openhab.binding.loxone.internal.core.LxServerEvent;
 import org.openhab.binding.loxone.internal.core.LxUuid;
 
-import com.google.gson.Gson;
-
 /**
  * This is the interface to the Miniserver thing handler that can be used by the {@link LxControl} objects.
  *
@@ -90,13 +88,6 @@ public interface LxServerHandlerApi {
      * @return thing ID
      */
     ThingUID getThingId();
-
-    /**
-     * Obtain a gson object for reuse.
-     *
-     * @return gson object
-     */
-    Gson getGson();
 
     /**
      * Set configuration settings for the thing.

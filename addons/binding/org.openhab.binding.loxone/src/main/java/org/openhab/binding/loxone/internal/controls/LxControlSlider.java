@@ -27,7 +27,6 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.openhab.binding.loxone.internal.core.LxUuid;
 
 /**
@@ -45,9 +44,8 @@ public class LxControlSlider extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
-        LxControl create(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-                LxCategory category) {
-            return new LxControlSlider(handlerApi, uuid, json, room, category);
+        LxControl create(LxUuid uuid) {
+            return new LxControlSlider(uuid);
         }
 
         @Override
@@ -76,48 +74,30 @@ public class LxControlSlider extends LxControl {
     private String format;
     private Double currentValue;
 
-    /**
-     * Create slider control object.
-     *
-     * @param handlerApi thing handler object representing the Miniserver
-     * @param uuid       dimmer's UUID
-     * @param json       JSON describing the control as received from the Miniserver
-     * @param room       room to which dimmer belongs
-     * @param category   category to which dimmer belongs
-     */
-    LxControlSlider(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-            LxCategory category) {
-        super(handlerApi, uuid, json, room, category);
+    LxControlSlider(LxUuid uuid) {
+        super(uuid);
+    }
+
+    @Override
+    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
+        super.initialize(api, room, category);
         addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_NUMBER), defaultChannelId,
                 defaultChannelLabel, "Slider", tags);
-        // format should have been updated by the super class constructor calling update() below
+        if (details != null) {
+            format = details.format;
+            if (details.min != null) {
+                minValue = details.min;
+            }
+            if (details.max != null) {
+                maxValue = details.max;
+            }
+            if (details.step != null) {
+                stepValue = details.step;
+            }
+        }
         if (format != null) {
             addChannelStateDescription(defaultChannelId, new StateDescription(new BigDecimal(minValue),
                     new BigDecimal(maxValue), new BigDecimal(stepValue), format, false, null));
-        }
-    }
-
-    /**
-     * Update Miniserver's control in runtime.
-     *
-     * @param json     JSON describing the control as received from the Miniserver
-     * @param room     New room that this control belongs to
-     * @param category New category that this control belongs to
-     */
-    @Override
-    public void update(LxJsonControl json, LxContainer room, LxCategory category) {
-        super.update(json, room, category);
-        if (json.details != null) {
-            format = json.details.format;
-            if (json.details.min != null) {
-                minValue = json.details.min;
-            }
-            if (json.details.max != null) {
-                maxValue = json.details.max;
-            }
-            if (json.details.step != null) {
-                stepValue = json.details.step;
-            }
         }
     }
 

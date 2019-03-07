@@ -40,7 +40,9 @@ import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.openhab.binding.loxone.internal.LxBindingConfiguration;
+import org.openhab.binding.loxone.internal.LxServerHandler;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
+import org.openhab.binding.loxone.internal.controls.LxControl;
 import org.openhab.binding.loxone.internal.core.LxJsonResponse.LxJsonCfgApi;
 import org.openhab.binding.loxone.internal.core.LxJsonResponse.LxJsonSubResponse;
 import org.openhab.binding.loxone.internal.core.LxServerEvent.EventType;
@@ -48,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 
@@ -80,7 +83,7 @@ public class LxWsClient {
     private WebSocketClient wsClient;
     private ClientState state = ClientState.IDLE;
 
-    private final Gson gson = new Gson();
+    private final Gson gson;
     private final Lock stateMachineLock = new ReentrantLock();
     private final Logger logger = LoggerFactory.getLogger(LxWsClient.class);
 
@@ -235,6 +238,11 @@ public class LxWsClient {
         password = cfg.password;
         securityType = LxWsSecurityType.getType(cfg.authMethod);
 
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(LxUuid.class, LxUuid.DESERIALIZER);
+        builder.registerTypeAdapter(LxControl.class, LxControl.DESERIALIZER);
+        gson = builder.create();
+
         if (cfg.keepAlivePeriod > 0 && cfg.keepAlivePeriod != keepAlivePeriod) {
             logger.debug("[{}] Changing keepAlivePeriod to {}", debugId, cfg.keepAlivePeriod);
             keepAlivePeriod = cfg.keepAlivePeriod;
@@ -314,8 +322,8 @@ public class LxWsClient {
     }
 
     /**
-     * Disconnect from the websocket with provided reason. This method is called from {@link LxServer} level and also
-     * from unsuccessful connect attempt.
+     * Disconnect from the websocket with provided reason. This method is called from {@link LxServerHandler} level and
+     * also from unsuccessful connect attempt.
      * After calling this method, client is ready to perform a new connection request with {@link #connect()}.
      *
      * @param reason text describing reason for disconnection
@@ -350,7 +358,7 @@ public class LxWsClient {
 
     /**
      * Close websocket session from within {@link LxWsClient}, without stopping the client.
-     * To close session from {@link LxServer} level, use {@link #disconnect()}
+     * To close session from {@link LxServerHandler} level, use {@link #disconnect()}
      *
      * @param reason reason for closing the websocket
      */
@@ -381,10 +389,10 @@ public class LxWsClient {
     }
 
     /**
-     * Notify {@link LxServer} about server going offline and close websocket session from within
+     * Notify {@link LxServerHandler} about server going offline and close websocket session from within
      * {@link LxWsClient},
      * without stopping the client.
-     * To close session from {@link LxServer} level, use {@link #disconnect()}
+     * To close session from {@link LxServerHandler} level, use {@link #disconnect()}
      *
      * @param reasonCode reason code for server going offline
      * @param reasonText reason text (description) for server going offline
@@ -659,11 +667,12 @@ public class LxWsClient {
                     case UPDATING_CONFIGURATION:
                         try {
                             stopResponseTimeout();
-                            LxJsonApp3 config = gson.fromJson(msg, LxJsonApp3.class);
+                            LxConfig config = gson.fromJson(msg, LxConfig.class);
                             if (config.msInfo != null) {
                                 config.msInfo.swVersion = swVersion;
                                 config.msInfo.macAddress = macAddress;
                             }
+                            config.finalize(handlerApi);
                             logger.debug("[{}] Received configuration from server", debugId);
                             notifyMaster(EventType.RECEIVED_CONFIG, null, config);
                             setClientState(ClientState.RUNNING);
@@ -672,6 +681,7 @@ public class LxWsClient {
                                 notifyAndClose(LxOfflineReason.COMMUNICATION_ERROR, "Failed to enable state updates.");
                             }
                         } catch (JsonParseException e) {
+                            logger.debug("[{}] Exception JSON parsing: {}", debugId, e.getMessage());
                             notifyAndClose(LxOfflineReason.INTERNAL_ERROR, "Error processing received configuration");
                         }
                         break;

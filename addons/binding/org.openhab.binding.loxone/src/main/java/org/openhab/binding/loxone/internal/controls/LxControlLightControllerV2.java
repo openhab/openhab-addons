@@ -35,9 +35,6 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
-import org.openhab.binding.loxone.internal.core.LxJsonMood;
 import org.openhab.binding.loxone.internal.core.LxUuid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,13 +60,12 @@ import com.google.gson.JsonSyntaxException;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlLightControllerV2 extends LxControlAbstractController {
+public class LxControlLightControllerV2 extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
-        LxControl create(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-                LxCategory category) {
-            return new LxControlLightControllerV2(handlerApi, uuid, json, room, category);
+        LxControl create(LxUuid uuid) {
+            return new LxControlLightControllerV2(uuid);
         }
 
         @Override
@@ -113,7 +109,7 @@ public class LxControlLightControllerV2 extends LxControlAbstractController {
      */
     private static final String CMD_REMOVE_MOOD = "removeMood";
 
-    private final Logger logger = LoggerFactory.getLogger(LxControlLightControllerV2.class);
+    private final transient Logger logger = LoggerFactory.getLogger(LxControlLightControllerV2.class);
 
     // Following commands are not supported:
     // moveFavoriteMood, moveAdditionalMood, moveMood, addToFavoriteMood, removeFromFavoriteMood, learn, delete
@@ -123,22 +119,18 @@ public class LxControlLightControllerV2 extends LxControlAbstractController {
     private Integer minMoodId;
     private Integer maxMoodId;
 
-    /**
-     * Create lighting controller v2 object.
-     *
-     * @param handlerApi thing handler object representing the Miniserver
-     * @param uuid       controller's UUID
-     * @param json       JSON describing the control as received from the Miniserver
-     * @param room       room to which controller belongs
-     * @param category   category to which controller belongs
-     */
-    LxControlLightControllerV2(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-            LxCategory category) {
-        super(handlerApi, uuid, json, room, category);
+    LxControlLightControllerV2(LxUuid uuid) {
+        super(uuid);
+    }
+
+    @Override
+    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
+        super.initialize(api, room, category);
         // add only channel, state description will be added later when a control state update message is received
         addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_LIGHT_CTRL), defaultChannelId,
                 defaultChannelLabel, "Light controller V2", tags);
         // sub-controls of this control have been created when update() method was called by the super class constructor
+
     }
 
     @Override
@@ -184,7 +176,7 @@ public class LxControlLightControllerV2 extends LxControlAbstractController {
                 onMoodsListChange((String) value);
             } else if (STATE_ACTIVE_MOODS_LIST.equals(stateName) && value instanceof String) {
                 // this state can be received before list of moods, but it contains a valid list of IDs
-                Integer[] array = handlerApi.getGson().fromJson((String) value, Integer[].class);
+                Integer[] array = DEFAULT_GSON.fromJson((String) value, Integer[].class);
                 activeMoods = Arrays.asList(array);
                 // update all moods states - this will force update of channels too
                 moodList.values().forEach(mood -> mood.onStateChange(null));
@@ -250,26 +242,23 @@ public class LxControlLightControllerV2 extends LxControlAbstractController {
      * @throws JsonSyntaxException error parsing json structure
      */
     private void onMoodsListChange(String text) throws JsonSyntaxException {
-        LxJsonMood[] array = handlerApi.getGson().fromJson(text, LxJsonMood[].class);
+        LxControlMood[] array = DEFAULT_GSON.fromJson(text, LxControlMood[].class);
         Map<LxUuid, LxControlMood> newMoodList = new HashMap<>();
         minMoodId = null;
         maxMoodId = null;
-        LxJsonControl json = new LxJsonApp3().new LxJsonControl();
-        for (LxJsonMood mood : array) {
-            if (mood.id != null && mood.name != null) {
-                logger.debug("Adding mood {} (name={}, isUsed={}, t5={}, static={}", mood.id, mood.name, mood.isUsed,
-                        mood.isT5Controlled, mood.isStatic);
-                json.name = mood.name;
+        for (LxControlMood mood : array) {
+            Integer id = mood.getId();
+            if (id != null && mood.getName() != null) {
+                logger.debug("Adding mood {} (id={}, name={})", id, mood.getName());
                 // mood-UUID = <controller-UUID>-M<mood-ID>
-                LxUuid moodUuid = new LxUuid(uuid.toString() + "-M" + mood.id);
-                LxControlMood control = new LxControlMood(handlerApi, moodUuid, json, getRoom(), getCategory(), mood.id,
-                        mood.isStatic, this);
-                newMoodList.put(moodUuid, control);
-                if (minMoodId == null || minMoodId > mood.id) {
-                    minMoodId = mood.id;
+                LxUuid moodUuid = new LxUuid(getUuid().toString() + "-M" + id);
+                mood.initialize(handlerApi, getRoom(), getCategory(), this, moodUuid);
+                newMoodList.put(moodUuid, mood);
+                if (minMoodId == null || minMoodId > id) {
+                    minMoodId = id;
                 }
-                if (maxMoodId == null || maxMoodId < mood.id) {
-                    maxMoodId = mood.id;
+                if (maxMoodId == null || maxMoodId < id) {
+                    maxMoodId = id;
                 }
             }
         }

@@ -30,7 +30,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.openhab.binding.loxone.internal.core.LxUuid;
 import org.openhab.binding.loxone.internal.types.TemperatureHSBType;
 
@@ -49,9 +48,8 @@ public class LxControlColorPickerV2 extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
-        LxControl create(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-                LxCategory category) {
-            return new LxControlColorPickerV2(handlerApi, uuid, json, room, category);
+        LxControl create(LxUuid uuid) {
+            return new LxControlColorPickerV2(uuid);
         }
 
         @Override
@@ -70,18 +68,13 @@ public class LxControlColorPickerV2 extends LxControl {
      */
     private static final String STATE_COLOR = "color";
 
-    /**
-     * Create color picker control object.
-     *
-     * @param handlerApi thing handler object representing the Miniserver
-     * @param uuid       dimmer's UUID
-     * @param json       JSON describing the control as received from the Miniserver
-     * @param room       room to which dimmer belongs
-     * @param category   category to which dimmer belongs
-     */
-    LxControlColorPickerV2(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-            LxCategory category) {
-        super(handlerApi, uuid, json, room, category);
+    LxControlColorPickerV2(LxUuid uuid) {
+        super(uuid);
+    }
+
+    @Override
+    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
+        super.initialize(api, room, category);
         addChannel("Color", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_COLORPICKER), defaultChannelId,
                 defaultChannelLabel, "Color Picker", tags);
     }

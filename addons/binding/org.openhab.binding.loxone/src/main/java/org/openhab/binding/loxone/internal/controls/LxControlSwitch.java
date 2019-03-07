@@ -24,7 +24,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.openhab.binding.loxone.internal.core.LxUuid;
 
 /**
@@ -43,9 +42,8 @@ public class LxControlSwitch extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
-        LxControl create(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-                LxCategory category) {
-            return new LxControlSwitch(handlerApi, uuid, json, room, category);
+        LxControl create(LxUuid uuid) {
+            return new LxControlSwitch(uuid);
         }
 
         @Override
@@ -73,18 +71,13 @@ public class LxControlSwitch extends LxControl {
      */
     private static final String CMD_OFF = "Off";
 
-    /**
-     * Create switch control object.
-     *
-     * @param handlerApi thing handler object representing the Miniserver
-     * @param uuid       switch's UUID
-     * @param json       JSON describing the control as received from the Miniserver
-     * @param room       room to which switch belongs
-     * @param category   category to which switch belongs
-     */
-    LxControlSwitch(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-            LxCategory category) {
-        super(handlerApi, uuid, json, room, category);
+    LxControlSwitch(LxUuid uuid) {
+        super(uuid);
+    }
+
+    @Override
+    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
+        super.initialize(api, room, category);
         if (category != null && category.getType() == LxCategory.CategoryType.LIGHTS) {
             tags.add("Lighting");
         }

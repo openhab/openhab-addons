@@ -25,7 +25,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.openhab.binding.loxone.internal.core.LxUuid;
 
 /**
@@ -43,9 +42,8 @@ public class LxControlDimmer extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
-        LxControl create(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-                LxCategory category) {
-            return new LxControlDimmer(handlerApi, uuid, json, room, category);
+        LxControl create(LxUuid uuid) {
+            return new LxControlDimmer(uuid);
         }
 
         @Override
@@ -74,18 +72,13 @@ public class LxControlDimmer extends LxControl {
      */
     private static final String CMD_OFF = "Off";
 
-    /**
-     * Create dimmer control object.
-     *
-     * @param handlerApi thing handler object representing the Miniserver
-     * @param uuid       dimmer's UUID
-     * @param json       JSON describing the control as received from the Miniserver
-     * @param room       room to which dimmer belongs
-     * @param category   category to which dimmer belongs
-     */
-    LxControlDimmer(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-            LxCategory category) {
-        super(handlerApi, uuid, json, room, category);
+    LxControlDimmer(LxUuid uuid) {
+        super(uuid);
+    }
+
+    @Override
+    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
+        super.initialize(api, room, category);
         addChannel("Dimmer", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_DIMMER), defaultChannelId,
                 defaultChannelLabel, "Dimmer", tags);
     }

@@ -31,7 +31,6 @@ import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.openhab.binding.loxone.internal.core.LxUuid;
 
 /**
@@ -46,13 +45,12 @@ import org.openhab.binding.loxone.internal.core.LxUuid;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlLightController extends LxControlAbstractController {
+public class LxControlLightController extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
-        LxControl create(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-                LxCategory category) {
-            return new LxControlLightController(handlerApi, uuid, json, room, category);
+        LxControl create(LxUuid uuid) {
+            return new LxControlLightController(uuid);
         }
 
         @Override
@@ -99,22 +97,17 @@ public class LxControlLightController extends LxControlAbstractController {
 
     private List<StateOption> sceneNames = new ArrayList<>();
 
-    /**
-     * Create lighting controller object.
-     *
-     * @param handlerApi thing handler object representing the Miniserver
-     * @param uuid       controller's UUID
-     * @param json       JSON describing the control as received from the Miniserver
-     * @param room       room to which controller belongs
-     * @param category   category to which controller belongs
-     */
-    LxControlLightController(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-            LxCategory category) {
-        super(handlerApi, uuid, json, room, category);
+    LxControlLightController(LxUuid uuid) {
+        super(uuid);
+    }
+
+    @Override
+    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
+        super.initialize(api, room, category);
         // add only channel, state description will be added later when a control state update message is received
         addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_LIGHT_CTRL), defaultChannelId,
                 defaultChannelLabel, "Light controller", tags);
-        // sub-controls of this control have been created when update() method was called by super class constructor
+        // sub-controls of this control have been created when update() method was called by super class
     }
 
     @Override

@@ -17,10 +17,6 @@ import java.io.IOException;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.core.LxCategory;
-import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.openhab.binding.loxone.internal.core.LxUuid;
 
 /**
@@ -35,9 +31,8 @@ public class LxControlPushbutton extends LxControlSwitch {
 
     static class Factory extends LxControlInstance {
         @Override
-        LxControl create(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-                LxCategory category) {
-            return new LxControlPushbutton(handlerApi, uuid, json, room, category);
+        LxControl create(LxUuid uuid) {
+            return new LxControlPushbutton(uuid);
         }
 
         @Override
@@ -55,18 +50,8 @@ public class LxControlPushbutton extends LxControlSwitch {
      */
     private static final String CMD_PULSE = "Pulse";
 
-    /**
-     * Create pushbutton control object.
-     *
-     * @param handlerApi thing handler object representing the Miniserver
-     * @param uuid       switch's UUID
-     * @param json       JSON describing the control as received from the Miniserver
-     * @param room       room to which switch belongs
-     * @param category   category to which switch belongs
-     */
-    LxControlPushbutton(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-            LxCategory category) {
-        super(handlerApi, uuid, json, room, category);
+    LxControlPushbutton(LxUuid uuid) {
+        super(uuid);
     }
 
     @Override

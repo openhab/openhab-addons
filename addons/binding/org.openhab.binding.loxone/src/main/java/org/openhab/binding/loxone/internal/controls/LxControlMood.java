@@ -18,38 +18,79 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.openhab.binding.loxone.internal.core.LxUuid;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents a mood belonging to a {@link LxControlMood} object.
  * A mood is effectively a switch. When the switch is set to ON, mood is active and mixed into a set of active
  * moods.
+ * A mood is deserialized using a default gson, not like {@link LxControl} which has a proprietary deserialization
+ * method.
  *
  * @author Pawel Pieczul - initial contribution
  *
  */
 class LxControlMood extends LxControlSwitch {
-    private final Integer moodId;
-    private final LxControlLightControllerV2 controller;
+
+    /**
+     * An ID that uniquely identifies this mood (e.g. inside activeMoods)
+     */
+    @SerializedName("id")
+    private Integer moodId;
+
+    /**
+     * Bitmask that tells if the mood is used for a specific purpose in the logic.
+     * If it’s not used, it can be removed without affecting the logic on the Miniserver.
+     * 0: not used
+     * 1: this mood is activated by a movement event
+     * 2: a T5 or other inputs activate/deactivate this mood
+     */
+    @SerializedName("used")
+    private Integer isUsed;
+
+    /**
+     * Whether or not this mood can be controlled with a t5 input
+     */
+    @SerializedName("t5")
+    private Boolean isT5Controlled;
+
+    /**
+     * If a mood is marked as static it cannot be deleted or modified in any way.
+     * But it can be moved within and between favorite and additional lists.
+     */
+    @SerializedName("static")
+    private Boolean isStatic;
+
+    private LxControlLightControllerV2 controller;
 
     /**
      * Create a control representing a single mood of a light controller V2.
      *
-     * @param handlerApi thing handler object representing the Miniserver
-     * @param uuid       controller's UUID
-     * @param json       JSON describing the control as received from the Miniserver
-     * @param room       room to which mood belongs
-     * @param category   category to which mood belongs
-     * @param moodId     mood ID within the controller (received from the Miniserver)
-     * @param isStatic   true if this mood is static and can't be deleted or modified in any way
-     * @param controller light controller that this mood belongs to
+     * @param uuid UUID of this mood control
      */
-    LxControlMood(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room, LxCategory category,
-            Integer moodId, Boolean isStatic, LxControlLightControllerV2 controller) {
-        super(handlerApi, uuid, json, room, category);
-        this.moodId = moodId;
+    LxControlMood(LxUuid uuid) {
+        super(uuid);
+    }
+
+    /**
+     * This constructor will be called by the default JSON deserialization
+     */
+    LxControlMood() {
+        super(null);
+    }
+
+    @Override
+    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
+        super.initialize(api, room, category);
+    }
+
+    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category,
+            LxControlLightControllerV2 controller, LxUuid uuid) {
+        this.uuid = uuid;
         this.controller = controller;
+        super.initialize(api, room, category);
         // the 'all off' mood can't be operated as a switch, but needs to be present on the moods list for the
         // lighting controller
         // currently the API does not give a hint how to figure out the 'all off' mood
@@ -82,7 +123,9 @@ class LxControlMood extends LxControlSwitch {
      */
     @Override
     void on() throws IOException {
-        controller.addMood(moodId);
+        if (controller != null) {
+            controller.addMood(moodId);
+        }
     }
 
     /**
@@ -92,7 +135,9 @@ class LxControlMood extends LxControlSwitch {
      */
     @Override
     void off() throws IOException {
-        controller.removeMood(moodId);
+        if (controller != null) {
+            controller.removeMood(moodId);
+        }
     }
 
     /**
@@ -102,7 +147,7 @@ class LxControlMood extends LxControlSwitch {
      */
     @Override
     OnOffType getState() {
-        if (controller.isMoodOk(moodId)) {
+        if (controller != null && controller.isMoodOk(moodId)) {
             if (controller.isMoodActive(moodId)) {
                 return OnOffType.ON;
             }

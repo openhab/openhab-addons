@@ -20,7 +20,6 @@ import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,12 +45,8 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.binding.loxone.internal.controls.LxControl;
-import org.openhab.binding.loxone.internal.controls.LxControlFactory;
 import org.openhab.binding.loxone.internal.controls.LxControlState;
-import org.openhab.binding.loxone.internal.core.LxCategory;
-import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
+import org.openhab.binding.loxone.internal.core.LxConfig;
 import org.openhab.binding.loxone.internal.core.LxOfflineReason;
 import org.openhab.binding.loxone.internal.core.LxServerEvent;
 import org.openhab.binding.loxone.internal.core.LxServerEvent.EventType;
@@ -60,8 +55,6 @@ import org.openhab.binding.loxone.internal.core.LxWsClient;
 import org.openhab.binding.loxone.internal.core.LxWsStateUpdateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * Representation of a Loxone Miniserver. It is an openHAB {@link Thing}, which is used to communicate with
@@ -72,7 +65,6 @@ import com.google.gson.Gson;
 public class LxServerHandler extends BaseThingHandler implements LxServerHandlerApi {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MINISERVER);
     private final Logger logger = LoggerFactory.getLogger(LxServerHandler.class);
-    private final Gson gson = new Gson();
 
     private LxDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
     private LxWsClient socketClient;
@@ -85,8 +77,6 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     // Data structures
     private final Map<LxUuid, LxControl> controls = new HashMap<>();
     private final Map<ChannelUID, LxControl> channels = new HashMap<>();
-    private final Map<LxUuid, LxContainer> rooms = new HashMap<>();
-    private final Map<LxUuid, LxCategory> categories = new HashMap<>();
 
     // Map of state UUID to a map of control UUID and state objects
     // State with a unique UUID can be configured in many controls and each control can even have a different name of
@@ -210,8 +200,6 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         dynamicStateDescriptionProvider.removeAllDescriptions();
         controls.clear();
         channels.clear();
-        rooms.clear();
-        categories.clear();
         states.clear();
         queue.clear();
     }
@@ -286,11 +274,6 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     }
 
     @Override
-    public Gson getGson() {
-        return gson;
-    }
-
-    @Override
     public String getSetting(String name) {
         Object value = getConfig().get(name);
         return (value instanceof String) ? (String) value : null;
@@ -311,12 +294,8 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
      *
      * @param config json with configuration received from the Miniserver
      */
-    private void updateConfig(LxJsonApp3 config) {
+    private void updateConfig(LxConfig config) {
         logger.debug("[{}] Updating configuration from Miniserver", debugId);
-        invalidateMap(rooms);
-        invalidateMap(categories);
-        invalidateMap(controls);
-        invalidateMap(states);
 
         if (config.msInfo != null) {
             logger.trace("[{}] updating global config", debugId);
@@ -332,32 +311,10 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
             logger.warn("[{}] missing global configuration msInfo on Loxone", debugId);
         }
 
-        // create internal structures based on configuration file
-        if (config.rooms != null) {
-            logger.trace("[{}] creating rooms", debugId);
-            config.rooms.values().forEach(room -> addOrUpdateRoom(new LxUuid(room.uuid), room.name));
-        }
-        if (config.cats != null) {
-            logger.trace("[{}] creating categories", debugId);
-            config.cats.values().forEach(cat -> addOrUpdateCategory(new LxUuid(cat.uuid), cat.name, cat.type));
-        }
         if (config.controls != null) {
-            logger.trace("[{}] creating controls", debugId);
-            config.controls.values().forEach(ctrl -> {
-                // create a new control or update existing one
-                try {
-                    addOrUpdateControl(ctrl);
-                } catch (Exception e) {
-                    logger.error("[{}] exception creating control {}: {}", debugId, ctrl.name, e);
-                }
-            });
+            logger.trace("[{}] creating controls in handler.", debugId);
+            config.controls.values().forEach(ctrl -> addControlStructures(ctrl));
         }
-        // remove items that do not exist anymore in Miniserver
-        logger.trace("[{}] removing unused objects", debugId);
-        removeUnusedFromMap(rooms);
-        removeUnusedFromMap(categories);
-        removeUnusedFromMap(controls);
-        removeUnusedFromMap(states);
 
         // merge control channels and update thing
         List<Channel> channels = new ArrayList<>();
@@ -390,119 +347,17 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     }
 
     /**
-     * Removes all entries from a map, that do not have the 'updated' flag set on UUID key
-     *
-     * @param     <T> any type of container used in the map
-     * @param map map to remove entries from
-     */
-    private <T> void removeUnusedFromMap(Map<LxUuid, T> map) {
-        for (Iterator<Map.Entry<LxUuid, T>> it = map.entrySet().iterator(); it.hasNext();) {
-            Map.Entry<LxUuid, T> entry = it.next();
-            if (!entry.getKey().getUpdate()) {
-                it.remove();
-                if (entry.getValue() instanceof LxControl) {
-                    LxControl control = (LxControl) entry.getValue();
-                    control.getChannels().forEach(channel -> {
-                        ChannelUID id = channel.getUID();
-                        channels.remove(id);
-                        dynamicStateDescriptionProvider.removeDescription(id);
-                    });
-                    control.dispose();
-                }
-            }
-        }
-    }
-
-    /**
-     * Sets all entries in a map to not updated
-     *
-     * @param map map to invalidate entries in
-     */
-    private void invalidateMap(Map<LxUuid, ?> map) {
-        map.keySet().forEach(k -> k.setUpdate(false));
-    }
-
-    /**
-     * Add a room to the server, if a room with the same UUID already exists, update it with the new name.
-     *
-     * @param id   UUID of the room to add
-     * @param name name of the room to add
-     * @return room object (either newly created or already existing) or null if wrong parameters
-     */
-    private LxContainer addOrUpdateRoom(LxUuid id, String name) {
-        LxContainer r = rooms.get(id);
-        if (r != null) {
-            r.setName(name);
-            return r;
-        }
-        LxContainer nr = new LxContainer(id, name);
-        rooms.put(id, nr);
-        return nr;
-    }
-
-    /**
-     * Add a new category or update and return existing one with same UUID
-     *
-     * @param id   UUID of the category to add or update
-     * @param name name of the category
-     * @param type type of the category
-     * @return newly added category or already existing and updated, null if wrong parameters/configuration
-     */
-    private LxCategory addOrUpdateCategory(LxUuid id, String name, String type) {
-        LxCategory c = categories.get(id);
-        if (c != null) {
-            c.setName(name);
-            c.setType(type);
-            return c;
-        }
-        LxCategory nc = new LxCategory(id, name, type);
-        categories.put(id, nc);
-        return nc;
-    }
-
-    /**
-     * Add a new control, its states, subcontrols and channels or update and return existing one with the same UUID
-     *
-     * @param json JSON original object of this control to get extra parameters
-     */
-    private void addOrUpdateControl(LxJsonControl json) {
-        if (json == null || json.uuidAction == null || json.name == null || json.type == null) {
-            return;
-        }
-
-        LxUuid categoryId = null;
-        if (json.cat != null) {
-            categoryId = new LxUuid(json.cat);
-        }
-        LxUuid roomId = null;
-        if (json.room != null) {
-            roomId = new LxUuid(json.room);
-        }
-        LxContainer room = rooms.get(roomId);
-        LxCategory category = categories.get(categoryId);
-
-        LxUuid id = new LxUuid(json.uuidAction);
-        LxControl control = controls.get(id);
-        if (control != null) {
-            control.update(json, room, category);
-        } else {
-            control = LxControlFactory.createControl(this, id, json, room, category);
-        }
-        if (control != null) {
-            addControlStructures(control);
-        }
-    }
-
-    /**
-     * Add a new control, its states, subcontrols and channels.
+     * Add a new control, its states, subcontrols and channels to the handler structures.
+     * Handler maintains maps of all controls (main controls + subcontrols), all channels for all controls and all
+     * states to match received openHAB commands and state updates from the Miniserver. States also contain links to
+     * possibly multiple control objects, as many controls can share the same state with the same state uuid.
      *
      * @param control a created control object to be added
      */
     private void addControlStructures(LxControl control) {
         LxUuid uuid = control.getUuid();
-        logger.debug("[{}] Adding control: {}, {}", debugId, uuid, control.getName());
+        logger.debug("[{}] Adding control to handler: {}, {}", debugId, uuid, control.getName());
         control.getStates().values().forEach(state -> {
-            state.getUuid().setUpdate(true);
             Map<LxUuid, LxControlState> perUuid = states.get(state.getUuid());
             if (perUuid == null) {
                 perUuid = new HashMap<>();
@@ -513,7 +368,6 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         controls.put(control.getUuid(), control);
         control.getChannels().forEach(channel -> channels.put(channel.getUID(), control));
         control.getSubControls().values().forEach(subControl -> addControlStructures(subControl));
-        uuid.setUpdate(true);
     }
 
     /**
@@ -600,7 +454,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
             logger.trace("[{}] Server received event: {}", debugId, event);
             switch (event) {
                 case RECEIVED_CONFIG:
-                    LxJsonApp3 config = (LxJsonApp3) wsMsg.getObject();
+                    LxConfig config = (LxConfig) wsMsg.getObject();
                     if (config != null) {
                         updateConfig(config);
                     } else {

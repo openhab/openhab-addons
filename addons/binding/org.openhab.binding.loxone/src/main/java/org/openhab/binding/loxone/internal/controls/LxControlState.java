@@ -47,7 +47,6 @@ public class LxControlState {
         this.uuid = uuid;
         this.name = name;
         this.control = control;
-        uuid.setUpdate(true);
     }
 
     /**
@@ -62,12 +61,11 @@ public class LxControlState {
     /**
      * Sets current value of the control's state
      *
-     * @param value     current state's value to set
-     * @param textValue current state's text value to set
+     * @param value current state's value to set
      */
     public void setStateValue(Object value) {
-        logger.debug("State set ({},{}) control ({},{}) value={}", uuid, name, control.uuid, control.getName(), value);
-        uuid.setUpdate(true);
+        logger.debug("State set ({},{}) control ({},{}) value={}", uuid, name, control.getUuid(), control.getName(),
+                value);
         if (value != null && !value.equals(this.stateValue)) {
             this.stateValue = value;
             control.onStateChange(this);
@@ -110,6 +108,5 @@ public class LxControlState {
      */
     void setName(String name) {
         this.name = name;
-        uuid.setUpdate(true);
     }
 }

@@ -11,6 +11,8 @@ Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  com.google.gson,
  com.google.gson.annotations,
+ com.google.gson.reflect,
+ com.google.gson.stream,
  org.apache.commons.codec,
  org.apache.commons.codec.binary,
  org.eclipse.jdt.annotation;resolution:=optional,

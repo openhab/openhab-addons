@@ -25,7 +25,6 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxJsonApp3.LxJsonControl;
 import org.openhab.binding.loxone.internal.core.LxUuid;
 
 /**
@@ -41,9 +40,8 @@ public class LxControlInfoOnlyAnalog extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
-        LxControl create(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-                LxCategory category) {
-            return new LxControlInfoOnlyAnalog(handlerApi, uuid, json, room, category);
+        LxControl create(LxUuid uuid) {
+            return new LxControlInfoOnlyAnalog(uuid);
         }
 
         @Override
@@ -61,43 +59,22 @@ public class LxControlInfoOnlyAnalog extends LxControl {
      */
     private static final String STATE_VALUE = "value";
 
-    private String format;
-
-    /**
-     * Create InfoOnlyAnalog control object.
-     *
-     * @param handlerApi thing handler object representing the Miniserver
-     * @param uuid       control's UUID
-     * @param json       JSON describing the control as received from the Miniserver
-     * @param room       room to which control belongs
-     * @param category   category to which control belongs
-     */
-    LxControlInfoOnlyAnalog(LxServerHandlerApi handlerApi, LxUuid uuid, LxJsonControl json, LxContainer room,
-            LxCategory category) {
-        // super constructor will call update() and populate format
-        super(handlerApi, uuid, json, room, category);
-        addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_ANALOG), defaultChannelId,
-                defaultChannelLabel, "Analog virtual state", tags);
-        if (format != null) {
-            addChannelStateDescription(defaultChannelId, new StateDescription(null, null, null, format, true, null));
-        }
+    LxControlInfoOnlyAnalog(LxUuid uuid) {
+        super(uuid);
     }
 
-    /**
-     * Update Miniserver's control in runtime.
-     *
-     * @param json     JSON describing the control as received from the Miniserver
-     * @param room     New room that this control belongs to
-     * @param category New category that this control belongs to
-     */
     @Override
-    public void update(LxJsonControl json, LxContainer room, LxCategory category) {
-        super.update(json, room, category);
-        if (json.details != null && json.details.format != null) {
-            format = json.details.format;
+    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
+        super.initialize(api, room, category);
+        addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_ANALOG), defaultChannelId,
+                defaultChannelLabel, "Analog virtual state", tags);
+        String format;
+        if (details != null && details.format != null) {
+            format = details.format;
         } else {
             format = "%.1f";
         }
+        addChannelStateDescription(defaultChannelId, new StateDescription(null, null, null, format, true, null));
     }
 
     @Override
