@@ -83,8 +83,8 @@ These dynamic channels require the following parameters:
 |---------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Region Name   | String   | Region name. If the region is configured in the tracker app as well use the same name. Distance channels can also be defined as binding only regions (not configured in trackers) |
 | Region center | Location | Region center location                                                                                                                                                            |
-| Region Radius | Integer  | Geofence radius in meter                                                                                                                                                                 |
-| Accuracy Threshold | Integer  | Location accuracy threshold in meters (0 to disable)                                                                                                                                                                 |
+| Region Radius | Integer  | Geofence radius                                                                                                                                                                 |
+| Accuracy Threshold | Integer  | Location accuracy threshold (0 to disable)                                                                                                                                                                 |
 
 Distance values will be updated each time a GPS location log record is received from the tracker if the accuracy is below the threshold or if the threshold is disabled.
 
