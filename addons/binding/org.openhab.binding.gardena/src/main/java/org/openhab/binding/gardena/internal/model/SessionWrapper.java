@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Gerhard Riegler - Initial contribution
  */
 public class SessionWrapper {
-    @SerializedName(value = "sessions")
+    @SerializedName("data")
     private Session session;
 
     public SessionWrapper() {

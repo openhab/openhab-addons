@@ -12,28 +12,7 @@
  */
 package org.openhab.binding.robonect.internal.handler;
 
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_ERROR_CODE;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_ERROR_DATE;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_ERROR_MESSAGE;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_HEALTH_HUM;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_HEALTH_TEMP;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_JOB;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_LAST_ERROR_CODE;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_LAST_ERROR_DATE;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_LAST_ERROR_MESSAGE;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_MOWER_NAME;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_MOWER_START;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_MOWER_STATUS_OFFLINE_TRIGGER;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_STATUS;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_STATUS_BATTERY;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_STATUS_DURATION;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_STATUS_HOURS;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_STATUS_MODE;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_TIMER_NEXT_TIMER;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_TIMER_STATUS;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.CHANNEL_WLAN_SIGNAL;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.PROPERTY_COMMENT;
-import static org.openhab.binding.robonect.internal.RobonectBindingConstants.PROPERTY_COMPILED;
+import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -42,8 +21,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.google.gson.JsonSyntaxException;
-
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -51,6 +28,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -75,6 +53,8 @@ import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * The {@link RobonectHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -98,7 +78,6 @@ public class RobonectHandler extends BaseThingHandler {
         this.httpClient = httpClient;
     }
 
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
@@ -121,7 +100,7 @@ public class RobonectHandler extends BaseThingHandler {
                     updateName((StringType) command);
                 } else {
                     logger.debug("Got name update of type {} but StringType is expected.",
-                        command.getClass().getName());
+                            command.getClass().getName());
                 }
                 break;
 
@@ -130,7 +109,7 @@ public class RobonectHandler extends BaseThingHandler {
                     setMowerMode(command);
                 } else {
                     logger.debug("Got job remote start update of type {} but StringType is expected.",
-                        command.getClass().getName());
+                            command.getClass().getName());
                 }
                 break;
 
@@ -139,7 +118,7 @@ public class RobonectHandler extends BaseThingHandler {
                     handleStartStop((OnOffType) command);
                 } else {
                     logger.debug("Got stopped update of type {} but OnOffType is expected.",
-                        command.getClass().getName());
+                            command.getClass().getName());
                 }
                 break;
 
@@ -147,24 +126,23 @@ public class RobonectHandler extends BaseThingHandler {
                 if (command instanceof OnOffType) {
                     handleJobCommand(channelUID, command);
                 } else {
-                    logger.debug("Got job update of type {} but OnOffType is expected.",
-                        command.getClass().getName());
+                    logger.debug("Got job update of type {} but OnOffType is expected.", command.getClass().getName());
                 }
                 break;
         }
     }
 
     private void handleJobCommand(ChannelUID channelUID, Command command) {
-        JobChannelConfig jobConfig = getThing().getChannel(channelUID.getId()).getConfiguration().as(
-                JobChannelConfig.class);
+        JobChannelConfig jobConfig = getThing().getChannel(channelUID.getId()).getConfiguration()
+                .as(JobChannelConfig.class);
         if (command == OnOffType.ON) {
-            robonectClient.startJob(new RobonectClient.JobSettings().withAfterMode(
-                ModeCommand.Mode.valueOf(jobConfig.getAfterMode())).withRemoteStart(
-                    ModeCommand.RemoteStart.valueOf(jobConfig.getRemoteStart())).withDuration(
-                    jobConfig.getDuration()));
+            robonectClient.startJob(
+                    new RobonectClient.JobSettings().withAfterMode(ModeCommand.Mode.valueOf(jobConfig.getAfterMode()))
+                            .withRemoteStart(ModeCommand.RemoteStart.valueOf(jobConfig.getRemoteStart()))
+                            .withDuration(jobConfig.getDuration()));
         } else if (command == OnOffType.OFF) {
-            robonectClient.stopJob(new RobonectClient.JobSettings().withAfterMode(
-                    ModeCommand.Mode.valueOf(jobConfig.getAfterMode())));
+            robonectClient.stopJob(
+                    new RobonectClient.JobSettings().withAfterMode(ModeCommand.Mode.valueOf(jobConfig.getAfterMode())));
         }
     }
 
@@ -201,7 +179,6 @@ public class RobonectHandler extends BaseThingHandler {
             refreshMowerInfo();
         }
     }
-
 
     private void logErrorFromResponse(RobonectAnswer result) {
         if (!result.isSuccessful()) {
@@ -250,14 +227,16 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_MOWER_NAME, new StringType(info.getName()));
             updateState(CHANNEL_STATUS_BATTERY, new DecimalType(info.getStatus().getBattery()));
             updateState(CHANNEL_STATUS, new DecimalType(info.getStatus().getStatus().getStatusCode()));
-            updateState(CHANNEL_STATUS_DURATION, new QuantityType<>(info.getStatus().getDuration(), SIUnits.SECOND));
-            updateState(CHANNEL_STATUS_HOURS, new QuantityType<>(info.getStatus().getHours(), SIUnits.HOUR));
+            updateState(CHANNEL_STATUS_DURATION,
+                    new QuantityType<>(info.getStatus().getDuration(), SmartHomeUnits.SECOND));
+            updateState(CHANNEL_STATUS_HOURS, new QuantityType<>(info.getStatus().getHours(), SmartHomeUnits.HOUR));
             updateState(CHANNEL_STATUS_MODE, new StringType(info.getStatus().getMode().name()));
             updateState(CHANNEL_MOWER_START, info.getStatus().isStopped() ? OnOffType.OFF : OnOffType.ON);
             if (info.getHealth() != null) {
                 updateState(CHANNEL_HEALTH_TEMP,
-                    new QuantityType<>(info.getHealth().getTemperature(), SIUnits.CELSIUS));
-                updateState(CHANNEL_HEALTH_HUM, new QuantityType(info.getHealth().getHumidity(), SIUnits.PERCENT));
+                        new QuantityType<>(info.getHealth().getTemperature(), SIUnits.CELSIUS));
+                updateState(CHANNEL_HEALTH_HUM,
+                        new QuantityType(info.getHealth().getHumidity(), SmartHomeUnits.PERCENT));
             }
             if (info.getTimer() != null) {
                 if (info.getTimer().getNext() != null) {
@@ -314,7 +293,7 @@ public class RobonectHandler extends BaseThingHandler {
             updateProperties(properties);
         } else {
             logger.debug("Could not retrieve mower version info. Robonect error response message: {}",
-                info.getErrorMessage());
+                    info.getErrorMessage());
         }
     }
 
@@ -327,7 +306,7 @@ public class RobonectHandler extends BaseThingHandler {
             }
         } else {
             logger.debug("Could not retrieve mower error list. Robonect error response message: {}",
-                errorList.getErrorMessage());
+                    errorList.getErrorMessage());
         }
     }
 
@@ -361,7 +340,6 @@ public class RobonectHandler extends BaseThingHandler {
         pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollInterval, TimeUnit.SECONDS);
 
     }
-
 
     @Override
     public void dispose() {

@@ -42,15 +42,13 @@ public class DS2405 extends AbstractDigitalOwDevice {
 
     @Override
     public void configureChannels() throws OwException {
-        OwDeviceParameterMap inParam = new OwDeviceParameterMap();
-        OwDeviceParameterMap outParam = new OwDeviceParameterMap();
-        inParam.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("uncached/", "/sensed"));
-        outParam.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/PIO"));
+        OwserverDeviceParameter inParam = new OwserverDeviceParameter("uncached/", "/sensed");
+        OwserverDeviceParameter outParam = new OwserverDeviceParameter("/PIO");
 
         ioConfig.add(new DigitalIoConfig(callback.getThing(), 0, inParam, outParam));
 
-        fullInParam.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("uncached/", "/sensed"));
-        fullOutParam.set(THING_TYPE_OWSERVER, new OwserverDeviceParameter("/PIO"));
+        fullInParam = inParam;
+        fullOutParam = outParam;
 
         super.configureChannels();
     }

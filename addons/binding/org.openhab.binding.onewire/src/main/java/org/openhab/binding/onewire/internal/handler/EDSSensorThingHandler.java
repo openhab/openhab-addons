@@ -62,7 +62,7 @@ public class EDSSensorThingHandler extends OwBaseThingHandler {
     }
 
     @Override
-    public void updateSensorProperties(OwBaseBridgeHandler bridgeHandler) throws OwException {
+    public void updateSensorProperties(OwserverBridgeHandler bridgeHandler) throws OwException {
         Map<String, String> properties = editProperties();
 
         OwPageBuffer pages = bridgeHandler.readPages(sensorId);

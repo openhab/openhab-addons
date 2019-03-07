@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the UniFi binding.
  *
  * @author Matthew Bowman - Initial contribution
+ * @author Patrik Wimnell - Blocking / Unblocking client support
  */
 public class UniFiBindingConstants {
 
@@ -36,6 +37,8 @@ public class UniFiBindingConstants {
     public static final String CHANNEL_IP_ADDRESS = "ipAddress";
     public static final String CHANNEL_UPTIME = "uptime";
     public static final String CHANNEL_LAST_SEEN = "lastSeen";
+    public static final String CHANNEL_BLOCKED = "blocked";
+    public static final String CHANNEL_RECONNECT = "reconnect";
 
     // List of additional wired client channels
     // ..coming soon..

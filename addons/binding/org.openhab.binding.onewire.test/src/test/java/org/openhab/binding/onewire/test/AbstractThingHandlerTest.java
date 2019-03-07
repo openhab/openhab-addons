@@ -36,7 +36,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
 import org.openhab.binding.onewire.internal.OwException;
-import org.openhab.binding.onewire.internal.handler.OwBaseBridgeHandler;
+import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 
 /**
@@ -61,10 +61,10 @@ public abstract class AbstractThingHandlerTest extends JavaTest {
     protected ThingHandlerCallback bridgeHandlerCallback;
 
     @Mock
-    protected OwBaseBridgeHandler bridgeHandler;
+    protected OwserverBridgeHandler bridgeHandler;
 
     @Mock
-    protected OwBaseBridgeHandler secondBridgeHandler;
+    protected OwserverBridgeHandler secondBridgeHandler;
 
     protected List<Channel> channels = new ArrayList<Channel>();
 

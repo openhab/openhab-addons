@@ -20,6 +20,7 @@ This binding can discover the supported Onkyo AV Receivers. At the moment only t
 -   TX-NR515
 -   TX-NR525
 -   TX-NR535
+-   TX-NR545
 -   TX-NR555
 -   TX-NR575
 -   TX-NR575E
