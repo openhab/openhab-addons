@@ -48,16 +48,11 @@ import org.apache.commons.codec.binary.Hex;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.id.InstanceUUID;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.core.LxJsonResponse.LxJsonKeySalt;
-import org.openhab.binding.loxone.internal.core.LxJsonResponse.LxJsonSubResponse;
-import org.openhab.binding.loxone.internal.core.LxJsonResponse.LxJsonToken;
 import org.openhab.binding.loxone.internal.core.LxWsClient.LxWebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * A token-based authentication algorithm with AES-256 encryption and decryption.
@@ -79,6 +74,35 @@ import com.google.gson.JsonSyntaxException;
  *
  */
 class LxWsSecurityToken extends LxWsSecurity {
+    /**
+     * A sub-response value structure that is received as a response to get key-salt request command sent to the
+     * Miniserver during authentication procedure.
+     *
+     * @author Pawel Pieczul - initial contribution
+     *
+     */
+    private class LxResponseKeySalt {
+        String key;
+        String salt;
+    }
+
+    /**
+     * A sub-response value structure that is received as a response to token request or token update command sent to
+     * the Miniserver during authentication procedure.
+     *
+     * @author Pawel Pieczul - initial contribution
+     *
+     */
+    private class LxResponseToken {
+        String token;
+        Integer validUntil;
+        Boolean unsecurePass;
+        @SuppressWarnings("unused")
+        String key;
+        @SuppressWarnings("unused")
+        Integer tokenRights;
+    }
+
     // length of salt used for encrypting commands
     private static final int SALT_BYTES = 16;
     // after salt aged or reached max use count, a new salt will be generated
@@ -98,9 +122,9 @@ class LxWsSecurityToken extends LxWsSecurity {
     // AES encryption random initialization vector length
     private static final int IV_LENGTH_BYTES = 16;
 
+    public static final String CMD_GET_KEY_AND_SALT = "jdev/sys/getkey2/";
     private static final String CMD_GET_PUBLIC_KEY = "jdev/sys/getPublicKey";
     private static final String CMD_KEY_EXCHANGE = "jdev/sys/keyexchange/";
-    private static final String CMD_GET_KEY_AND_SALT = "jdev/sys/getkey2/";
     private static final String CMD_REQUEST_TOKEN = "jdev/sys/gettoken/";
     private static final String CMD_GET_KEY = "jdev/sys/getkey";
     private static final String CMD_AUTH_WITH_TOKEN = "authwithtoken/";
@@ -148,16 +172,16 @@ class LxWsSecurityToken extends LxWsSecurity {
             return false;
         }
         if ((token == null || token.isEmpty()) && (password == null || password.isEmpty())) {
-            return setError(LxOfflineReason.UNAUTHORIZED, "Enter password to acquire token.");
+            return setError(LxErrorCode.USER_UNAUTHORIZED, "Enter password to acquire token.");
         }
         // Get Miniserver's public key - must be over http, not websocket
         String msg = socket.httpGet(CMD_GET_PUBLIC_KEY);
-        LxJsonSubResponse resp = socket.getSubResponse(msg);
+        LxResponse resp = socket.getResponse(msg);
         if (resp == null) {
-            return setError(LxOfflineReason.COMMUNICATION_ERROR, "Get public key failed - null response.");
+            return setError(LxErrorCode.COMMUNICATION_ERROR, "Get public key failed - null response.");
         }
         // RSA cipher to encrypt our AES-256 key using Miniserver's public key
-        Cipher rsaCipher = getRsaCipher(resp.value.getAsString());
+        Cipher rsaCipher = getRsaCipher(resp.getValueAsString());
         if (rsaCipher == null) {
             return false;
         }
@@ -266,7 +290,7 @@ class LxWsSecurityToken extends LxWsSecurity {
             encryptionReady = false;
             tokenRefreshRetryCount = TOKEN_REFRESH_RETRY_COUNT;
             if (Cipher.getMaxAllowedKeyLength("AES") < 256) {
-                return setError(LxOfflineReason.INTERNAL_ERROR,
+                return setError(LxErrorCode.INTERNAL_ERROR,
                         "Enable Java cryptography unlimited strength (see binding doc).");
             }
             // generate a random key for the session
@@ -287,11 +311,11 @@ class LxWsSecurityToken extends LxWsSecurity {
             token = handlerApi.getSetting(SETTINGS_TOKEN);
             logger.debug("[{}] Retrieved token value: {}", debugId, token);
         } catch (InvalidParameterException e) {
-            return setError(LxOfflineReason.INTERNAL_ERROR, "Invalid parameter: " + e.getMessage());
+            return setError(LxErrorCode.INTERNAL_ERROR, "Invalid parameter: " + e.getMessage());
         } catch (NoSuchAlgorithmException e) {
-            return setError(LxOfflineReason.INTERNAL_ERROR, "AES not supported on platform.");
+            return setError(LxErrorCode.INTERNAL_ERROR, "AES not supported on platform.");
         } catch (InvalidKeyException | NoSuchPaddingException | InvalidAlgorithmParameterException e) {
-            return setError(LxOfflineReason.INTERNAL_ERROR, "AES cipher initialization failed.");
+            return setError(LxErrorCode.INTERNAL_ERROR, "AES cipher initialization failed.");
         }
         return true;
     }
@@ -309,7 +333,7 @@ class LxWsSecurityToken extends LxWsSecurity {
             logger.debug("[{}] Initialized RSA public key cipher", debugId);
             return cipher;
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeySpecException e) {
-            setError(LxOfflineReason.INTERNAL_ERROR, "Exception enabling RSA cipher: " + e.getMessage());
+            setError(LxErrorCode.INTERNAL_ERROR, "Exception enabling RSA cipher: " + e.getMessage());
             return null;
         }
     }
@@ -321,12 +345,12 @@ class LxWsSecurityToken extends LxWsSecurity {
             logger.debug("[{}] Generated session key: {}", debugId, Hex.encodeHexString(sessionKey));
             return sessionKey;
         } catch (IllegalBlockSizeException | BadPaddingException e) {
-            setError(LxOfflineReason.INTERNAL_ERROR, "Exception encrypting session key: " + e.getMessage());
+            setError(LxErrorCode.INTERNAL_ERROR, "Exception encrypting session key: " + e.getMessage());
             return null;
         }
     }
 
-    private String hashCredentials(LxJsonKeySalt keySalt) {
+    private String hashCredentials(LxResponseKeySalt keySalt) {
         try {
             MessageDigest msgDigest = MessageDigest.getInstance("SHA-1");
             String pwdHashStr = password + ":" + keySalt.salt;
@@ -342,16 +366,15 @@ class LxWsSecurityToken extends LxWsSecurity {
 
     private boolean acquireToken() {
         // Get Miniserver hash key and salt - this command should be encrypted
-        LxJsonSubResponse resp = socket.sendCmdWithResp(CMD_GET_KEY_AND_SALT + user, true, true);
+        LxResponse resp = socket.sendCmdWithResp(CMD_GET_KEY_AND_SALT + user, true, true);
         if (!checkResponse(resp)) {
             return setError(null, "Hash key/salt get failed.");
         }
-        LxJsonKeySalt keySalt;
-        try {
-            keySalt = socket.getGson().fromJson(resp.value, LxJsonKeySalt.class);
-        } catch (JsonSyntaxException e) {
-            return setError(null, "Error parsing hash key/salt json: " + resp.value);
+        LxResponseKeySalt keySalt = resp.getValueAs(LxResponseKeySalt.class);
+        if (keySalt == null) {
+            return setError(null, "Error parsing hash key/salt json: " + resp.getValueAsString());
         }
+
         logger.debug("[{}] Hash key: {}, salt: {}", debugId, keySalt.key, keySalt.salt);
         // Hash user name, password, key and salt
         String hash = hashCredentials(keySalt);
@@ -365,21 +388,18 @@ class LxWsSecurityToken extends LxWsSecurity {
         if (!checkResponse(resp)) {
             return setError(null, "Request token failed.");
         }
-        if (resp.value == null) {
-            return setError(LxOfflineReason.INTERNAL_ERROR, "Token response value is null.");
-        }
 
         try {
-            LxJsonToken tokenResponse = parseTokenResponse(resp.value);
+            LxResponseToken tokenResponse = parseTokenResponse(resp);
             if (tokenResponse == null) {
                 return false;
             }
             token = tokenResponse.token;
             if (token == null) {
-                return setError(LxOfflineReason.INTERNAL_ERROR, "Received null token.");
+                return setError(LxErrorCode.INTERNAL_ERROR, "Received null token.");
             }
         } catch (JsonParseException e) {
-            return setError(LxOfflineReason.INTERNAL_ERROR, "Error parsing token response: " + e.getMessage());
+            return setError(LxErrorCode.INTERNAL_ERROR, "Error parsing token response: " + e.getMessage());
         }
         persistToken();
         logger.debug("[{}] Token acquired.", debugId);
@@ -391,27 +411,27 @@ class LxWsSecurityToken extends LxWsSecurity {
         if (hash == null) {
             return false;
         }
-        LxJsonSubResponse resp = socket.sendCmdWithResp(CMD_AUTH_WITH_TOKEN + hash + "/" + user, true, true);
+        LxResponse resp = socket.sendCmdWithResp(CMD_AUTH_WITH_TOKEN + hash + "/" + user, true, true);
         if (!checkResponse(resp)) {
-            if (reason == LxOfflineReason.UNAUTHORIZED) {
+            if (reason == LxErrorCode.USER_UNAUTHORIZED) {
                 token = null;
                 persistToken();
                 return setError(null, "Enter password to generate a new token.");
             }
-            return setError(null, "Token-based authentication failed with code: " + resp.code);
+            return setError(null, "Token-based authentication failed with code: " + resp.getResponseCodeNumber());
         }
-        parseTokenResponse(resp.value);
+        parseTokenResponse(resp);
         return true;
     }
 
     private String hashToken() {
-        LxJsonSubResponse resp = socket.sendCmdWithResp(CMD_GET_KEY, true, true);
+        LxResponse resp = socket.sendCmdWithResp(CMD_GET_KEY, true, true);
         if (!checkResponse(resp)) {
             setError(null, "Get key command failed.");
             return null;
         }
         try {
-            String hashKey = resp.value.getAsString();
+            String hashKey = resp.getValueAsString();
             // here is a difference to the API spec, which says the string to hash is "user:token", but this is "token"
             String hash = hashString(token, hashKey);
             if (hash == null) {
@@ -419,7 +439,7 @@ class LxWsSecurityToken extends LxWsSecurity {
             }
             return hash;
         } catch (ClassCastException | IllegalStateException e) {
-            setError(LxOfflineReason.INTERNAL_ERROR, "Error parsing Miniserver key.");
+            setError(LxErrorCode.INTERNAL_ERROR, "Error parsing Miniserver key.");
             return null;
         }
     }
@@ -433,12 +453,10 @@ class LxWsSecurityToken extends LxWsSecurity {
         handlerApi.setSettings(properties);
     }
 
-    private LxJsonToken parseTokenResponse(JsonElement response) {
-        LxJsonToken tokenResponse;
-        try {
-            tokenResponse = socket.getGson().fromJson(response, LxJsonToken.class);
-        } catch (JsonParseException e) {
-            setError(LxOfflineReason.INTERNAL_ERROR, "Error parsing token response: " + e.getMessage());
+    private LxResponseToken parseTokenResponse(LxResponse response) {
+        LxResponseToken tokenResponse = response.getValueAs(LxResponseToken.class);
+        if (tokenResponse == null) {
+            setError(LxErrorCode.INTERNAL_ERROR, "Error parsing token response.");
             return null;
         }
         Boolean unsecurePass = tokenResponse.unsecurePass;
@@ -487,10 +505,10 @@ class LxWsSecurityToken extends LxWsSecurity {
             tokenRefreshTimer = null;
             String hash = hashToken();
             if (hash != null) {
-                LxJsonSubResponse resp = socket.sendCmdWithResp(CMD_REFRESH_TOKEN + hash + "/" + user, true, true);
+                LxResponse resp = socket.sendCmdWithResp(CMD_REFRESH_TOKEN + hash + "/" + user, true, true);
                 if (checkResponse(resp)) {
                     logger.debug("[{}] Successful token refresh.", debugId);
-                    parseTokenResponse(resp.value);
+                    parseTokenResponse(resp);
                     return;
                 }
             }

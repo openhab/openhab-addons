@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.loxone.internal.core;
 
+import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Objects;
 
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.controls.LxControl;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -56,5 +60,22 @@ public class LxConfig {
             LxCategory category = categories.get(c.getCategoryUuid());
             c.initialize(api, room, category);
         });
+    }
+
+    public static <T> T deserializeObject(JsonObject parent, String name, Type type,
+            JsonDeserializationContext context) {
+        JsonElement element = parent.get(name);
+        if (element != null) {
+            return context.deserialize(element, type);
+        }
+        return null;
+    }
+
+    public static String deserializeString(JsonObject parent, String name) {
+        JsonElement element = parent.get(name);
+        if (element != null) {
+            return element.getAsString();
+        }
+        return null;
     }
 }

@@ -13,7 +13,6 @@
 package org.openhab.binding.loxone.internal.core;
 
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.core.LxJsonResponse.LxJsonSubResponse;
 import org.openhab.binding.loxone.internal.core.LxWsClient.LxWebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,15 +49,15 @@ class LxWsSecurityHash extends LxWsSecurity {
     boolean execute() {
         logger.debug("[{}] Starting hash-based authentication.", debugId);
         if (password == null || password.isEmpty()) {
-            return setError(LxOfflineReason.UNAUTHORIZED, "Enter password for hash-based authentication.");
+            return setError(LxErrorCode.USER_UNAUTHORIZED, "Enter password for hash-based authentication.");
         }
-        LxJsonSubResponse resp = socket.sendCmdWithResp(CMD_GET_KEY, true, false);
+        LxResponse resp = socket.sendCmdWithResp(CMD_GET_KEY, true, false);
         if (!checkResponse(resp)) {
             return false;
         }
-        String hash = hashString(user + ":" + password, resp.value.getAsString());
+        String hash = hashString(user + ":" + password, resp.getValueAsString());
         if (hash == null) {
-            return setError(LxOfflineReason.INTERNAL_ERROR, "Error hashing credentials.");
+            return setError(LxErrorCode.INTERNAL_ERROR, "Error hashing credentials.");
         }
         String cmd = CMD_AUTHENTICATE + hash;
         if (!checkResponse(socket.sendCmdWithResp(cmd, true, false))) {

@@ -56,10 +56,10 @@ public class LxServerEvent {
     }
 
     private final EventType event;
-    private final LxOfflineReason reason;
+    private final LxErrorCode reason;
     private final Object object;
 
-    public LxServerEvent(EventType event, LxOfflineReason reason, Object object) {
+    public LxServerEvent(EventType event, LxErrorCode reason, Object object) {
         this.event = event;
         this.reason = reason;
         this.object = object;
@@ -81,7 +81,7 @@ public class LxServerEvent {
      * @return
      *         reason for going offline
      */
-    public LxOfflineReason getOfflineReason() {
+    public LxErrorCode getOfflineReason() {
         return reason;
     }
 

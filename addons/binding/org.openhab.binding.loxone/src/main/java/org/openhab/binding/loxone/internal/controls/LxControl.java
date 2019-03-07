@@ -32,12 +32,12 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
+import org.openhab.binding.loxone.internal.core.LxConfig;
 import org.openhab.binding.loxone.internal.core.LxContainer;
 import org.openhab.binding.loxone.internal.core.LxUuid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -67,7 +67,7 @@ public class LxControl {
     abstract static class LxControlInstance {
         /**
          * Creates an instance of a particular control class.
-         * 
+         *
          * @param uuid UUID of the control object to be created
          * @return a newly created control object
          */
@@ -124,7 +124,6 @@ public class LxControl {
     final List<Channel> channels = new ArrayList<>();
 
     private final transient Logger logger;
-    static final Gson DEFAULT_GSON = new Gson();
 
     /*
      * JSON deserialization routine, called during parsing configuration by the GSON library
@@ -134,9 +133,9 @@ public class LxControl {
         public LxControl deserialize(JsonElement json, Type type, JsonDeserializationContext context)
                 throws JsonParseException {
             JsonObject parent = json.getAsJsonObject();
-            String controlName = parent.get("name").getAsString();
-            String controlType = parent.get("type").getAsString();
-            LxUuid uuid = deserializeObject(parent, "uuidAction", LxUuid.class, context);
+            String controlName = LxConfig.deserializeString(parent, "name");
+            String controlType = LxConfig.deserializeString(parent, "type");
+            LxUuid uuid = LxConfig.deserializeObject(parent, "uuidAction", LxUuid.class, context);
             if (controlName == null || controlType == null || uuid == null) {
                 throw new JsonParseException("Control name/type/uuid is null.");
             }
@@ -145,11 +144,12 @@ public class LxControl {
                 return null;
             }
             control.name = controlName;
-            control.roomUuid = deserializeObject(parent, "room", LxUuid.class, context);
-            control.categoryUuid = deserializeObject(parent, "cat", LxUuid.class, context);
-            control.details = deserializeObject(parent, "details", LxControlDetails.class, context);
-            control.subControls = deserializeObject(parent, "subControls", new TypeToken<Map<LxUuid, LxControl>>() {
-            }.getType(), context);
+            control.roomUuid = LxConfig.deserializeObject(parent, "room", LxUuid.class, context);
+            control.categoryUuid = LxConfig.deserializeObject(parent, "cat", LxUuid.class, context);
+            control.details = LxConfig.deserializeObject(parent, "details", LxControlDetails.class, context);
+            control.subControls = LxConfig.deserializeObject(parent, "subControls",
+                    new TypeToken<Map<LxUuid, LxControl>>() {
+                    }.getType(), context);
 
             JsonObject states = parent.getAsJsonObject("states");
             if (states != null) {
@@ -170,15 +170,6 @@ public class LxControl {
             return control;
         }
     };
-
-    private static <T> T deserializeObject(JsonObject parent, String name, Type type,
-            JsonDeserializationContext context) {
-        JsonElement element = parent.get(name);
-        if (element != null) {
-            return context.deserialize(element, type);
-        }
-        return null;
-    }
 
     LxControl(LxUuid uuid) {
         logger = LoggerFactory.getLogger(LxControl.class);

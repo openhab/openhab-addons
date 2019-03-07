@@ -24,7 +24,6 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.core.LxJsonResponse.LxJsonSubResponse;
 import org.openhab.binding.loxone.internal.core.LxWsClient.LxWebSocket;
 
 /**
@@ -42,7 +41,7 @@ abstract class LxWsSecurity {
     final LxWebSocket socket;
     final LxServerHandlerApi handlerApi;
 
-    LxOfflineReason reason;
+    LxErrorCode reason;
     String details;
     boolean cancel = false;
 
@@ -69,12 +68,12 @@ abstract class LxWsSecurity {
      * Initiate user authentication. This method will return immediately and authentication will be done in a separate
      * thread asynchronously. On successful or unsuccessful completion, a provided callback will be called with
      * information about failed reason and details of failure. In case of success, the reason value will be
-     * {@link LxOfflineReason#NONE}
+     * {@link LxErrorCode#OK}
      * Only one authentication can run in parallel and must be performed sequentially (create no more threads).
      *
      * @param doneCallback callback to execute when authentication is finished or failed
      */
-    void authenticate(BiConsumer<LxOfflineReason, String> doneCallback) {
+    void authenticate(BiConsumer<LxErrorCode, String> doneCallback) {
         Runnable init = () -> {
             authenticationLock.lock();
             try {
@@ -107,15 +106,15 @@ abstract class LxWsSecurity {
      * Check a response received from the Miniserver for errors, interpret it and store the results in class fields.
      *
      * @param response response received from the Miniserver
-     * @return {@link LxOfflineReason#NONE} when response is correct or a specific {@link LxOfflineReason}
+     * @return {@link LxErrorCode#OK} when response is correct or a specific {@link LxErrorCode}
      */
-    boolean checkResponse(LxJsonSubResponse response) {
-        if (response == null || cancel) {
-            reason = LxOfflineReason.COMMUNICATION_ERROR;
+    boolean checkResponse(LxResponse response) {
+        if (response == null || response.subResponse == null || cancel) {
+            reason = LxErrorCode.COMMUNICATION_ERROR;
             return false;
         }
-        reason = LxOfflineReason.getReason(response.code);
-        return (reason == LxOfflineReason.NONE);
+        reason = LxErrorCode.getErrorCode(response.getResponseCodeNumber());
+        return (reason == LxErrorCode.OK);
     }
 
     /**
@@ -127,6 +126,9 @@ abstract class LxWsSecurity {
      * @return hashed string or null if failed
      */
     String hashString(String string, String hashKeyHex) {
+        if (string == null || hashKeyHex == null) {
+            return null;
+        }
         try {
             byte[] hashKeyBytes = Hex.decodeHex(hashKeyHex.toCharArray());
             SecretKeySpec signKey = new SecretKeySpec(hashKeyBytes, "HmacSHA1");
@@ -171,7 +173,7 @@ abstract class LxWsSecurity {
      * @param details details of the failure
      * @return always false
      */
-    boolean setError(LxOfflineReason reason, String details) {
+    boolean setError(LxErrorCode reason, String details) {
         if (reason != null) {
             this.reason = reason;
         }

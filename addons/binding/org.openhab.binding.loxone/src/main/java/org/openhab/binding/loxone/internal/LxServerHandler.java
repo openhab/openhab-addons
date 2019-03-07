@@ -47,7 +47,7 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.binding.loxone.internal.controls.LxControl;
 import org.openhab.binding.loxone.internal.controls.LxControlState;
 import org.openhab.binding.loxone.internal.core.LxConfig;
-import org.openhab.binding.loxone.internal.core.LxOfflineReason;
+import org.openhab.binding.loxone.internal.core.LxErrorCode;
 import org.openhab.binding.loxone.internal.core.LxServerEvent;
 import org.openhab.binding.loxone.internal.core.LxServerEvent.EventType;
 import org.openhab.binding.loxone.internal.core.LxUuid;
@@ -178,7 +178,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         threadLock.lock();
         try {
             if (monitorThread != null) {
-                LxServerEvent event = new LxServerEvent(EventType.CLIENT_CLOSING, LxOfflineReason.NONE, null);
+                LxServerEvent event = new LxServerEvent(EventType.CLIENT_CLOSING, LxErrorCode.OK, null);
                 try {
                     queue.put(event);
                 } catch (InterruptedException e) {
@@ -474,7 +474,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
                     updateStatus(ThingStatus.ONLINE);
                     break;
                 case SERVER_OFFLINE:
-                    LxOfflineReason reason = wsMsg.getOfflineReason();
+                    LxErrorCode reason = wsMsg.getOfflineReason();
                     String details = null;
                     if (wsMsg.getObject() instanceof String) {
                         details = (String) wsMsg.getObject();
@@ -492,7 +492,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
             return true;
         }
 
-        private void processOfflineReason(LxOfflineReason reason, String details) {
+        private void processOfflineReason(LxErrorCode reason, String details) {
             switch (reason) {
                 case TOO_MANY_FAILED_LOGIN_ATTEMPTS:
                     // assume credentials are wrong, do not re-attempt connections
@@ -502,12 +502,12 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Too many failed login attempts - stopped trying");
                     break;
-                case UNAUTHORIZED:
+                case USER_UNAUTHORIZED:
                     waitTime = userErrorDelay;
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             details != null ? details : "User authentication error (invalid user name or password)");
                     break;
-                case AUTHENTICATION_TIMEOUT:
+                case USER_AUTHENTICATION_TIMEOUT:
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "User authentication timeout");
                     break;
@@ -523,10 +523,15 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             details != null ? "Internal error (" + details + ")" : "Internal error");
                     break;
-                case IDLE_TIMEOUT:
+                case WEBSOCKET_IDLE_TIMEOUT:
                     logger.warn("Idle timeout from Loxone Miniserver - adjust keepalive settings");
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Timeout due to no activity");
+                    break;
+                case ERROR_CODE_MISSING:
+                    logger.warn("No error code available from the Miniserver");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Unknown reason - error code missing");
                     break;
                 default:
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown reason");

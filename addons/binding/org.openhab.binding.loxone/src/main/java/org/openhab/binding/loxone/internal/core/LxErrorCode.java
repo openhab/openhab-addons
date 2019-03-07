@@ -18,15 +18,15 @@ package org.openhab.binding.loxone.internal.core;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public enum LxOfflineReason {
+public enum LxErrorCode {
     /**
-     * No reason at all - should be reachable
+     * No error at all
      */
-    NONE,
+    OK,
     /**
      * User name or password incorrect or user not authorized
      */
-    UNAUTHORIZED,
+    USER_UNAUTHORIZED,
     /**
      * Too many failed login attempts and server's temporary ban of the user
      */
@@ -38,11 +38,11 @@ public enum LxOfflineReason {
     /**
      * Timeout of user authentication procedure
      */
-    AUTHENTICATION_TIMEOUT,
+    USER_AUTHENTICATION_TIMEOUT,
     /**
      * No activity from Miniserver's client
      */
-    IDLE_TIMEOUT,
+    WEBSOCKET_IDLE_TIMEOUT,
     /**
      * Internal error, sign of something wrong with the program
      */
@@ -50,28 +50,33 @@ public enum LxOfflineReason {
     /**
      * Connection attempt failed (before authentication)
      */
-    CONNECT_FAILED;
+    WEBSOCKET_CONNECT_FAILED,
+    /**
+     * Error code is missing - reason for failure is unknown
+     */
+    ERROR_CODE_MISSING;
 
     /**
-     * Converts Miniserver status code to offline reason
+     * Converts Miniserver status code to enumerated error value
      *
-     * @param code
-     *                 status code received in message response from the Miniserver
-     * @return
-     *         converted offline reason
+     * @param code status code received in message response from the Miniserver
+     * @return converted error code
      */
-    static LxOfflineReason getReason(int code) {
+    static LxErrorCode getErrorCode(Integer code) {
+        if (code == null) {
+            return LxErrorCode.ERROR_CODE_MISSING;
+        }
         switch (code) {
             case 420:
-                return LxOfflineReason.AUTHENTICATION_TIMEOUT;
+                return LxErrorCode.USER_AUTHENTICATION_TIMEOUT;
             case 401:
-                return LxOfflineReason.UNAUTHORIZED;
+                return LxErrorCode.USER_UNAUTHORIZED;
             case 4003:
-                return LxOfflineReason.TOO_MANY_FAILED_LOGIN_ATTEMPTS;
+                return LxErrorCode.TOO_MANY_FAILED_LOGIN_ATTEMPTS;
             case 1001:
-                return LxOfflineReason.IDLE_TIMEOUT;
+                return LxErrorCode.WEBSOCKET_IDLE_TIMEOUT;
             case 200:
-                return LxOfflineReason.NONE;
+                return LxErrorCode.OK;
             default:
                 return COMMUNICATION_ERROR;
         }

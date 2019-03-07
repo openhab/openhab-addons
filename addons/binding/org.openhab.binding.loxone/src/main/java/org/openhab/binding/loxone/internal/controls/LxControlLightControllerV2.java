@@ -36,6 +36,7 @@ import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
 import org.openhab.binding.loxone.internal.core.LxUuid;
+import org.openhab.binding.loxone.internal.core.LxWsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,7 +177,7 @@ public class LxControlLightControllerV2 extends LxControl {
                 onMoodsListChange((String) value);
             } else if (STATE_ACTIVE_MOODS_LIST.equals(stateName) && value instanceof String) {
                 // this state can be received before list of moods, but it contains a valid list of IDs
-                Integer[] array = DEFAULT_GSON.fromJson((String) value, Integer[].class);
+                Integer[] array = LxWsClient.DEFAULT_GSON.fromJson((String) value, Integer[].class);
                 activeMoods = Arrays.asList(array);
                 // update all moods states - this will force update of channels too
                 moodList.values().forEach(mood -> mood.onStateChange(null));
@@ -242,7 +243,7 @@ public class LxControlLightControllerV2 extends LxControl {
      * @throws JsonSyntaxException error parsing json structure
      */
     private void onMoodsListChange(String text) throws JsonSyntaxException {
-        LxControlMood[] array = DEFAULT_GSON.fromJson(text, LxControlMood[].class);
+        LxControlMood[] array = LxWsClient.DEFAULT_GSON.fromJson(text, LxControlMood[].class);
         Map<LxUuid, LxControlMood> newMoodList = new HashMap<>();
         minMoodId = null;
         maxMoodId = null;

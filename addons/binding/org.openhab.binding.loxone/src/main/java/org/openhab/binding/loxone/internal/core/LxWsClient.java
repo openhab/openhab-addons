@@ -43,8 +43,7 @@ import org.openhab.binding.loxone.internal.LxBindingConfiguration;
 import org.openhab.binding.loxone.internal.LxServerHandler;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.controls.LxControl;
-import org.openhab.binding.loxone.internal.core.LxJsonResponse.LxJsonCfgApi;
-import org.openhab.binding.loxone.internal.core.LxJsonResponse.LxJsonSubResponse;
+import org.openhab.binding.loxone.internal.core.LxResponse.LxSubResponse;
 import org.openhab.binding.loxone.internal.core.LxServerEvent.EventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +51,6 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * Websocket client facilitating communication with Loxone Miniserver.
@@ -63,6 +61,8 @@ import com.google.gson.JsonSyntaxException;
  *
  */
 public class LxWsClient {
+    public static final Gson DEFAULT_GSON = new Gson();
+
     private final LxServerHandlerApi handlerApi;
     private final InetAddress host;
     private final int port;
@@ -164,6 +164,17 @@ public class LxWsClient {
          * Unknown header
          */
         UNKNOWN
+    }
+
+    /**
+     * A sub-response value structure that is received as a response to config API HTTP request sent to the Miniserver.
+     *
+     * @author Pawel Pieczul - initial contribution
+     *
+     */
+    private class LxResponseCfgApi {
+        String snr;
+        String version;
     }
 
     /**
@@ -281,15 +292,12 @@ public class LxWsClient {
 
             String message = socket.httpGet(CMD_CFG_API);
             if (message != null) {
-                LxJsonSubResponse response = socket.getSubResponse(message);
-                if (response != null && response.code == 200 && response.value != null) {
-                    try {
-                        LxJsonCfgApi cfgApi = gson.fromJson(response.value.getAsString(), LxJsonCfgApi.class);
+                LxResponse resp = socket.getResponse(message);
+                if (resp != null) {
+                    LxResponseCfgApi cfgApi = resp.getValueAs(LxResponseCfgApi.class);
+                    if (cfgApi != null) {
                         swVersion = cfgApi.version;
                         macAddress = cfgApi.snr;
-                    } catch (JsonSyntaxException | NumberFormatException e) {
-                        logger.debug("[{}] Error parsing API config response: {}, {}", debugId, response,
-                                e.getMessage());
                     }
                 } else {
                     logger.debug("[{}] Http get null or error in reponse for API config request.", debugId);
@@ -397,7 +405,7 @@ public class LxWsClient {
      * @param reasonCode reason code for server going offline
      * @param reasonText reason text (description) for server going offline
      */
-    private void notifyAndClose(LxOfflineReason reasonCode, String reasonText) {
+    private void notifyAndClose(LxErrorCode reasonCode, String reasonText) {
         notifyMaster(EventType.SERVER_OFFLINE, reasonCode, reasonText);
         close(reasonText);
     }
@@ -412,12 +420,12 @@ public class LxWsClient {
     public void sendAction(LxUuid id, String operation) throws IOException {
         String command = CMD_ACTION + id.getOriginalString() + "/" + operation;
         logger.debug("[{}] Sending command {}", debugId, command);
-        LxJsonSubResponse response = socket.sendCmdWithResp(command, true, true);
+        LxResponse response = socket.sendCmdWithResp(command, true, true);
         if (response == null) {
             throw new IOException("Error sending command " + command);
         }
-        if (response.code != 200) {
-            throw new IOException("Received response with error code " + response.code + " to command " + command);
+        if (!response.isResponseOk()) {
+            throw new IOException("Received response is not ok to command " + command);
         }
     }
 
@@ -460,7 +468,7 @@ public class LxWsClient {
         stateMachineLock.lock();
         try {
             logger.debug("[{}] Miniserver response timeout", debugId);
-            notifyMaster(EventType.SERVER_OFFLINE, LxOfflineReason.COMMUNICATION_ERROR,
+            notifyMaster(EventType.SERVER_OFFLINE, LxErrorCode.COMMUNICATION_ERROR,
                     "Miniserver response timeout occured");
             disconnect();
         } finally {
@@ -487,10 +495,10 @@ public class LxWsClient {
      * @param reason reason for the event (applicable to server OFFLINE event}
      * @param object additional data for the event (text message for OFFLINE event, data for state changes)
      */
-    private void notifyMaster(EventType event, LxOfflineReason reason, Object object) {
-        LxOfflineReason localReason;
+    private void notifyMaster(EventType event, LxErrorCode reason, Object object) {
+        LxErrorCode localReason;
         if (reason == null) {
-            localReason = LxOfflineReason.NONE;
+            localReason = LxErrorCode.OK;
         } else {
             localReason = reason;
         }
@@ -510,8 +518,9 @@ public class LxWsClient {
         private ScheduledFuture<?> keepAlive;
         private LxWsBinaryHeader header;
         private LxWsSecurity security;
+        private String awaitingCommand;
+        private LxResponse awaitedResponse;
         private boolean syncRequest;
-        private LxJsonSubResponse commandResponse;
         private final Lock responseLock = new ReentrantLock();
         private final Condition responseAvailable = responseLock.newCondition();
 
@@ -535,7 +544,7 @@ public class LxWsClient {
 
                 security = LxWsSecurity.create(securityType, swVersion, debugId, handlerApi, socket, user, password);
                 security.authenticate((result, details) -> {
-                    if (result == LxOfflineReason.NONE) {
+                    if (result == LxErrorCode.OK) {
                         authenticated();
                     } else {
                         notifyAndClose(result, details);
@@ -561,12 +570,12 @@ public class LxWsClient {
                 } else if (state != ClientState.IDLE) {
                     responseLock.lock();
                     try {
-                        commandResponse = null;
+                        awaitedResponse.subResponse = null;
                         responseAvailable.signalAll();
                     } finally {
                         responseLock.unlock();
                     }
-                    notifyMaster(EventType.SERVER_OFFLINE, LxOfflineReason.getReason(statusCode), reason);
+                    notifyMaster(EventType.SERVER_OFFLINE, LxErrorCode.getErrorCode(statusCode), reason);
                 }
                 setClientState(ClientState.IDLE);
             } finally {
@@ -678,11 +687,11 @@ public class LxWsClient {
                             setClientState(ClientState.RUNNING);
                             notifyMaster(EventType.SERVER_ONLINE, null, null);
                             if (sendCmdWithResp(CMD_ENABLE_UPDATES, false, false) == null) {
-                                notifyAndClose(LxOfflineReason.COMMUNICATION_ERROR, "Failed to enable state updates.");
+                                notifyAndClose(LxErrorCode.COMMUNICATION_ERROR, "Failed to enable state updates.");
                             }
                         } catch (JsonParseException e) {
                             logger.debug("[{}] Exception JSON parsing: {}", debugId, e.getMessage());
-                            notifyAndClose(LxOfflineReason.INTERNAL_ERROR, "Error processing received configuration");
+                            notifyAndClose(LxErrorCode.INTERNAL_ERROR, "Error processing received configuration");
                         }
                         break;
                     case CLOSING:
@@ -694,19 +703,15 @@ public class LxWsClient {
             }
         }
 
-        LxJsonSubResponse getSubResponse(String msg) {
+        LxResponse getResponse(String msg) {
             try {
-                LxJsonSubResponse subResp = gson.fromJson(msg, LxJsonResponse.class).subResponse;
-                if (subResp == null) {
-                    logger.debug("[{}] Miniserver response subresponse is null: {}", debugId, msg);
+                LxResponse resp = gson.fromJson(msg, LxResponse.class);
+                if (!resp.isResponseOk()) {
+                    logger.debug("[{}] Miniserver response is not ok: {}", debugId, msg);
                     return null;
                 }
-                if (subResp.control == null) {
-                    logger.debug("[{}] Miniserver response control is null: {}", debugId, msg);
-                    return null;
-                }
-                return subResp;
-            } catch (JsonSyntaxException e) {
+                return resp;
+            } catch (JsonParseException e) {
                 logger.debug("[{}] Miniserver response JSON parsing error: {}, {}", debugId, msg, e.getMessage());
                 return null;
             }
@@ -754,7 +759,7 @@ public class LxWsClient {
         /**
          * Sends a command to the Miniserver and encrypts it if command can be encrypted and encryption is available.
          * Request can be synchronous or asynchronous. There is always a response expected to the command, that is a
-         * standard command response as defined in {@link LxJsonSubResponse}. Such commands are the majority of commands
+         * standard command response as defined in {@link LxSubResponse}. Such commands are the majority of commands
          * used for performing actions on the controls and for executing authentication procedure.
          * A synchronous command must not be sent from the websocket thread or it will cause a deadlock.
          * An asynchronous command request returns immediately, but the returned value will not contain valid data until
@@ -770,32 +775,35 @@ public class LxWsClient {
          * @param encrypt true if command can be encrypted
          * @return response received (for sync command) or to be received (for async), null if error occurred
          */
-        LxJsonSubResponse sendCmdWithResp(String command, boolean sync, boolean encrypt) {
+        LxResponse sendCmdWithResp(String command, boolean sync, boolean encrypt) {
             responseLock.lock();
             try {
-                if (commandResponse != null) {
+                if (awaitedResponse != null || awaitingCommand != null) {
                     logger.warn("[{}] Command not sent, previous command not finished: {}", debugId, command);
                     return null;
                 }
                 if (!sendCmdNoResp(command, encrypt)) {
                     return null;
                 }
-                commandResponse = new LxJsonSubResponse();
-                commandResponse.control = command;
-                LxJsonSubResponse response = commandResponse;
+                LxResponse resp = new LxResponse();
+                awaitingCommand = command;
+                awaitedResponse = resp;
                 syncRequest = sync;
                 if (sync) {
                     if (!responseAvailable.await(responseTimeout, TimeUnit.SECONDS)) {
-                        commandResponse = null;
+                        awaitedResponse = null;
+                        awaitingCommand = null;
                         responseTimeout();
                         return null;
                     }
-                    commandResponse = null;
+                    awaitedResponse = null;
+                    awaitingCommand = null;
                 }
-                return response;
+                return resp;
             } catch (InterruptedException e) {
                 logger.debug("[{}] Interrupted waiting for response: {}", debugId, command);
-                commandResponse = null;
+                awaitedResponse = null;
+                awaitingCommand = null;
                 return null;
             } finally {
                 responseLock.unlock();
@@ -806,7 +814,7 @@ public class LxWsClient {
          * Sends a command to the Miniserver and encrypts it if command can be encrypted and encryption is available.
          * The request is asynchronous and no response is expected. It can be used to send commands from the websocket
          * thread or commands for which the responses are not following the standard format defined in
-         * {@link LxJsonSubResponse}.
+         * {@link LxSubResponse}.
          * If the caller expects the non-standard response it should manage its reception and the response timeout.
          *
          * @param command command to send to the Miniserver
@@ -839,7 +847,7 @@ public class LxWsClient {
 
         /**
          * Process a Miniserver's response to a command. The response is in plain text format as received from the
-         * websocket, but is expected to follow the standard format defined in {@link LxJsonSubResponse}.
+         * websocket, but is expected to follow the standard format defined in {@link LxSubResponse}.
          * If there is a thread waiting for the response (on a synchronous command request), the thread will be
          * released.
          * Only one requester is expected to wait for the response at a time - commands must be sent sequentially - a
@@ -850,13 +858,13 @@ public class LxWsClient {
          * @param message websocket message with the response
          */
         private void processResponse(String message) {
-            LxJsonSubResponse subResp = getSubResponse(message);
-            if (subResp == null) {
+            LxResponse resp = getResponse(message);
+            if (resp == null) {
                 return;
             }
             logger.debug("[{}] Response: {}", debugId, message.trim());
-            String control = subResp.control.trim();
-            control = security.decryptControl(subResp.control);
+            String control = resp.getCommand().trim();
+            control = security.decryptControl(control);
             // for some reason the responses to some commands starting with jdev begin with dev, not jdev
             // this seems to be a bug in the Miniserver
             if (control.startsWith("dev/")) {
@@ -864,29 +872,23 @@ public class LxWsClient {
             }
             responseLock.lock();
             try {
-                if (commandResponse == null) {
+                if (awaitedResponse == null || awaitingCommand == null) {
                     logger.warn("[{}] Received response, but awaiting none.", debugId);
                     return;
                 }
-                String awaitedControl = commandResponse.control;
-                if (awaitedControl == null) {
-                    logger.warn("[{}] Malformed awaiting response structure - no control.", debugId);
-                    commandResponse = null;
-                    return;
+                if (!awaitingCommand.equals(control)) {
+                    logger.warn("[{}] Waiting for another response: {}", debugId, awaitingCommand);
                 }
-                if (!awaitedControl.equals(control)) {
-                    logger.warn("[{}] Waiting for another response: {}", debugId, awaitedControl);
-                }
-                commandResponse.code = subResp.code;
-                commandResponse.value = subResp.value;
+                awaitedResponse.subResponse = resp.subResponse;
                 if (syncRequest) {
-                    logger.debug("[{}] Releasing command sender with response: {}, {}, {}", debugId, control,
-                            subResp.code, subResp.value);
+                    logger.debug("[{}] Releasing command sender with response: {}, {}", debugId, control,
+                            resp.getResponseCodeNumber());
                     responseAvailable.signal();
                 } else {
-                    logger.debug("[{}] Reponse to asynchronous request: {}, {}, {}", debugId, control, subResp.code,
-                            subResp.value);
-                    commandResponse = null;
+                    logger.debug("[{}] Reponse to asynchronous request: {}, {}", debugId, control,
+                            resp.getResponseCodeNumber());
+                    awaitedResponse = null;
+                    awaitingCommand = null;
                 }
             } finally {
                 responseLock.unlock();
@@ -906,7 +908,7 @@ public class LxWsClient {
                     startResponseTimeout();
                     startKeepAlive();
                 } else {
-                    notifyAndClose(LxOfflineReason.INTERNAL_ERROR, "Error sending get config command.");
+                    notifyAndClose(LxErrorCode.INTERNAL_ERROR, "Error sending get config command.");
                 }
             } finally {
                 stateMachineLock.unlock();
