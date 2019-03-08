@@ -20,6 +20,8 @@ import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * A factory to create HomeAssistant MQTT components. Those components are specified at:
  * https://www.home-assistant.io/docs/mqtt/discovery/
@@ -42,29 +44,31 @@ public class CFactory {
      * @return A HA MQTT Component
      */
     public static @Nullable AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener updateListener) {
+            @Nullable ChannelStateUpdateListener updateListener, Gson gson) {
+        ComponentConfiguration config = new ComponentConfiguration(thingUID, haID, configJSON, gson)
+                .withListerner(updateListener);
         try {
             switch (haID.component) {
                 case "alarm_control_panel":
-                    return new ComponentAlarmControlPanel(thingUID, haID, configJSON, updateListener);
+                    return new ComponentAlarmControlPanel(config);
                 case "binary_sensor":
-                    return new ComponentBinarySensor(thingUID, haID, configJSON, updateListener);
+                    return new ComponentBinarySensor(config);
                 case "camera":
-                    return new ComponentCamera(thingUID, haID, configJSON, updateListener);
+                    return new ComponentCamera(config);
                 case "cover":
-                    return new ComponentCover(thingUID, haID, configJSON, updateListener);
+                    return new ComponentCover(config);
                 case "fan":
-                    return new ComponentFan(thingUID, haID, configJSON, updateListener);
+                    return new ComponentFan(config);
                 case "climate":
-                    return new ComponentClimate(thingUID, haID, configJSON, updateListener);
+                    return new ComponentClimate(config);
                 case "light":
-                    return new ComponentLight(thingUID, haID, configJSON, updateListener);
+                    return new ComponentLight(config);
                 case "lock":
-                    return new ComponentLock(thingUID, haID, configJSON, updateListener);
+                    return new ComponentLock(config);
                 case "sensor":
-                    return new ComponentSensor(thingUID, haID, configJSON, updateListener);
+                    return new ComponentSensor(config);
                 case "switch":
-                    return new ComponentSwitch(thingUID, haID, configJSON, updateListener);
+                    return new ComponentSwitch(config);
             }
         } catch (UnsupportedOperationException e) {
             logger.warn("Not supported", e);
@@ -81,7 +85,7 @@ public class CFactory {
      * @return A HA MQTT Component
      */
     public static @Nullable AbstractComponent<?> createComponent(String basetopic, Channel channel,
-            @Nullable ChannelStateUpdateListener updateListener) {
+            @Nullable ChannelStateUpdateListener updateListener, Gson gson) {
         HaID haID = new HaID(basetopic, channel.getUID());
         ThingUID thingUID = channel.getUID().getThingUID();
         String configJSON = (String) channel.getConfiguration().get("config");
@@ -89,6 +93,51 @@ public class CFactory {
             logger.warn("Provided channel does not have a 'config' configuration key!");
             return null;
         }
-        return createComponent(thingUID, haID, configJSON, updateListener);
+        return createComponent(thingUID, haID, configJSON, updateListener, gson);
+    }
+
+    protected static class ComponentConfiguration {
+        private ThingUID thingUID;
+        private HaID haID;
+        private String configJSON;
+        private @Nullable ChannelStateUpdateListener updateListener;
+        private Gson gson;
+
+        protected ComponentConfiguration(ThingUID thingUID, HaID haID, String configJSON, Gson gson) {
+            this.thingUID = thingUID;
+            this.haID = haID;
+            this.configJSON = configJSON;
+            this.gson = gson;
+        }
+
+        public ComponentConfiguration withListerner(@Nullable ChannelStateUpdateListener updateListener) {
+            this.updateListener = updateListener;
+            return this;
+        }
+
+        public ThingUID getThingUID() {
+            return thingUID;
+        }
+
+        public HaID getHaID() {
+            return haID;
+        }
+
+        public String getConfigJSON() {
+            return configJSON;
+        }
+
+        @Nullable
+        public ChannelStateUpdateListener getUpdateListener() {
+            return updateListener;
+        }
+
+        public Gson getGson() {
+            return gson;
+        }
+
+        public <C extends HAConfiguration> C getConfig(Class<C> clazz) {
+            return HAConfiguration.fromString(configJSON, gson, clazz);
+        }
     }
 }

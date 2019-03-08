@@ -13,9 +13,6 @@
 package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.ImageValue;
 
 /**
@@ -40,13 +37,12 @@ public class ComponentCamera extends AbstractComponent<ComponentCamera.Config> {
         protected String topic = "";
     };
 
-    public ComponentCamera(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
-        super(thing, haID, configJSON, Config.class);
+    public ComponentCamera(CFactory.ComponentConfiguration builder) {
+        super(builder, Config.class);
 
         ImageValue value = new ImageValue();
         channels.put(cameraChannelID, new CChannel(this, cameraChannelID, value, //
-                config.topic, null, config.name, "", channelStateUpdateListener));
+                config.topic, null, config.name, "", builder.getUpdateListener()));
     }
 
 }

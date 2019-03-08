@@ -14,8 +14,6 @@ package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.TextValue;
 
 /**
@@ -57,25 +55,24 @@ public class ComponentAlarmControlPanel extends AbstractComponent<ComponentAlarm
         protected String payload_arm_away = "ARM_AWAY";
     };
 
-    public ComponentAlarmControlPanel(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
-        super(thing, haID, configJSON, Config.class);
+    public ComponentAlarmControlPanel(CFactory.ComponentConfiguration builder) {
+        super(builder, Config.class);
 
         final String[] state_enum = { config.state_disarmed, config.state_armed_home, config.state_armed_away,
                 config.state_pending, config.state_triggered };
         channels.put(stateChannelID, new CChannel(this, stateChannelID, new TextValue(state_enum), config.state_topic,
-                null, config.name, "", channelStateUpdateListener));
+                null, config.name, "", builder.getUpdateListener()));
 
         channels.put(switchDisarmChannelID,
                 new CChannel(this, switchDisarmChannelID, new TextValue(new String[] { config.payload_disarm }),
-                        config.state_topic, null, config.name, "", channelStateUpdateListener));
+                        config.state_topic, null, config.name, "", builder.getUpdateListener()));
 
         channels.put(switchArmHomeChannelID,
                 new CChannel(this, switchArmHomeChannelID, new TextValue(new String[] { config.payload_arm_home }),
-                        config.state_topic, null, config.name, "", channelStateUpdateListener));
+                        config.state_topic, null, config.name, "", builder.getUpdateListener()));
 
         channels.put(switchArmAwayChannelID,
                 new CChannel(this, switchArmAwayChannelID, new TextValue(new String[] { config.payload_arm_away }),
-                        config.state_topic, null, config.name, "", channelStateUpdateListener));
+                        config.state_topic, null, config.name, "", builder.getUpdateListener()));
     }
 }

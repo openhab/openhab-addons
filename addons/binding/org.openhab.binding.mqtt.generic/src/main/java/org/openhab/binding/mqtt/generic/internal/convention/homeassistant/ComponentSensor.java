@@ -14,8 +14,6 @@ package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.TextValue;
 
 /**
@@ -43,16 +41,15 @@ public class ComponentSensor extends AbstractComponent<ComponentSensor.Config> {
         protected String state_topic = "";
     };
 
-    public ComponentSensor(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
-        super(thing, haID, configJSON, Config.class);
+    public ComponentSensor(CFactory.ComponentConfiguration builder) {
+        super(builder, Config.class);
 
         if (config.force_update) {
             throw new UnsupportedOperationException("Component:Sensor does not support forced updates");
         }
 
         channels.put(sensorChannelID, new CChannel(this, sensorChannelID, new TextValue(), config.state_topic, null,
-                config.name, config.unit_of_measurement, channelStateUpdateListener));
+                config.name, config.unit_of_measurement, builder.getUpdateListener()));
     }
 
     @Override

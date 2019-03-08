@@ -14,8 +14,6 @@ package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.RollershutterValue;
 
 /**
@@ -44,13 +42,12 @@ public class ComponentCover extends AbstractComponent<ComponentCover.Config> {
         protected String payload_stop = "STOP";
     }
 
-    public ComponentCover(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener updateListener) {
-        super(thing, haID, configJSON, Config.class);
+    public ComponentCover(CFactory.ComponentConfiguration builder) {
+        super(builder, Config.class);
 
         RollershutterValue value = new RollershutterValue(config.payload_open, config.payload_close,
                 config.payload_stop);
         channels.put(switchChannelID, new CChannel(this, switchChannelID, value, //
-                config.state_topic, config.command_topic, config.name, "", updateListener));
+                config.state_topic, config.command_topic, config.name, "", builder.getUpdateListener()));
     }
 }

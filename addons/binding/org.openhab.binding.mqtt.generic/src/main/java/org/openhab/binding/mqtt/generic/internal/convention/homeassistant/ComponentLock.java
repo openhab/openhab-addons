@@ -15,8 +15,6 @@ package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.OnOffValue;
 
 /**
@@ -44,9 +42,8 @@ public class ComponentLock extends AbstractComponent<ComponentLock.Config> {
         protected @Nullable String command_topic;
     };
 
-    public ComponentLock(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
-        super(thing, haID, configJSON, Config.class);
+    public ComponentLock(CFactory.ComponentConfiguration builder) {
+        super(builder, Config.class);
 
         // We do not support all HomeAssistant quirks
         if (config.optimistic && StringUtils.isNotBlank(config.state_topic)) {
@@ -55,7 +52,7 @@ public class ComponentLock extends AbstractComponent<ComponentLock.Config> {
 
         channels.put(switchChannelID,
                 new CChannel(this, switchChannelID, new OnOffValue(config.payload_lock, config.payload_unlock),
-                        config.state_topic, config.command_topic, config.name, "", channelStateUpdateListener));
+                        config.state_topic, config.command_topic, config.name, "", builder.getUpdateListener()));
     }
 
     @Override

@@ -20,7 +20,6 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
@@ -97,10 +96,9 @@ public class ComponentLight extends AbstractComponent<ComponentLight.Config> imp
     protected CChannel brightnessChannel;
     private final @Nullable ChannelStateUpdateListener channelStateUpdateListener;
 
-    public ComponentLight(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
-        super(thing, haID, configJSON, Config.class);
-        this.channelStateUpdateListener = channelStateUpdateListener;
+    public ComponentLight(CFactory.ComponentConfiguration builder) {
+        super(builder, Config.class);
+        this.channelStateUpdateListener = builder.getUpdateListener();
         ColorValue value = new ColorValue(true, config.payload_on, config.payload_off, 100);
 
         // Create three MQTT subscriptions and use this class object as update listener

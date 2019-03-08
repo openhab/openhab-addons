@@ -18,7 +18,12 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 public class HAConfigurationTests {
+
+    private Gson gson = new GsonBuilder().registerTypeAdapterFactory(new HAConfigTypeAdapterFactory()).create();
 
     @Test
     public void testAbbreviations() {
@@ -46,7 +51,7 @@ public class HAConfigurationTests {
                 + "    \"~\":\"D/\"\n" //
                 + "}";
 
-        HAConfiguration config = HAConfiguration.FACTORY.fromString(json);
+        HAConfiguration config = HAConfiguration.fromString(json, gson);
 
         assertThat(config.name, is("A"));
         assertThat(config.icon, is("2"));
@@ -98,7 +103,7 @@ public class HAConfigurationTests {
                 + "    \"~\":\"D/\"\n" //
                 + "}";
 
-        ComponentSwitch.Config config = HAConfiguration.FACTORY.fromString(json, ComponentSwitch.Config.class);
+        ComponentSwitch.Config config = HAConfiguration.fromString(json, gson, ComponentSwitch.Config.class);
 
         assertThat(config.availability_topic, is("D/E"));
         assertThat(config.state_topic, is("O/D/"));
@@ -129,7 +134,7 @@ public class HAConfigurationTests {
                 + "    ]\n" //
                 + "}";
 
-        ComponentFan.Config config = HAConfiguration.FACTORY.fromString(json, ComponentFan.Config.class);
+        ComponentFan.Config config = HAConfiguration.fromString(json, gson, ComponentFan.Config.class);
         assertThat(config.name, is("Bedroom Fan"));
 
     }

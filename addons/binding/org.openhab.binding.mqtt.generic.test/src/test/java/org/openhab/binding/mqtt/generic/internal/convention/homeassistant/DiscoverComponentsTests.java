@@ -31,6 +31,9 @@ import org.mockito.Mock;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.generic.internal.handler.ThingChannelConstants;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
  * Tests the {@link DiscoverComponents} class.
  *
@@ -61,8 +64,10 @@ public class DiscoverComponentsTests extends JavaOSGiTest {
         // Create a scheduler
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
 
+        Gson gson = new GsonBuilder().registerTypeAdapterFactory(new HAConfigTypeAdapterFactory()).create();
+
         DiscoverComponents discover = spy(
-                new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing, scheduler, null));
+                new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing, scheduler, null, gson));
 
         discover.startDiscovery(connection, 50, new HaID("homeassistant", "object", "node", "component"), discovered)
                 .get(100, TimeUnit.MILLISECONDS);

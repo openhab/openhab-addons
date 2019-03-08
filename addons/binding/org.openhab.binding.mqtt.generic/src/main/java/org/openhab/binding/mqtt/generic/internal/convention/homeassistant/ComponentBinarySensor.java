@@ -14,8 +14,6 @@ package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.OnOffValue;
 
 /**
@@ -45,9 +43,8 @@ public class ComponentBinarySensor extends AbstractComponent<ComponentBinarySens
         protected String payload_off = "OFF";
     };
 
-    public ComponentBinarySensor(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener) {
-        super(thing, haID, configJSON, Config.class);
+    public ComponentBinarySensor(CFactory.ComponentConfiguration builder) {
+        super(builder, Config.class);
 
         if (config.force_update) {
             throw new UnsupportedOperationException("Component:Sensor does not support forced updates");
@@ -55,7 +52,8 @@ public class ComponentBinarySensor extends AbstractComponent<ComponentBinarySens
 
         channels.put(sensorChannelID,
                 new CChannel(this, sensorChannelID, new OnOffValue(config.payload_on, config.payload_off),
-                        config.state_topic, null, config.name, config.unit_of_measurement, channelStateUpdateListener));
+                        config.state_topic, null, config.name, config.unit_of_measurement,
+                        builder.getUpdateListener()));
     }
 
 }

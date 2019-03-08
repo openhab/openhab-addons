@@ -48,6 +48,7 @@ import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.Abstra
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.ComponentSwitch;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents.ComponentDiscovered;
+import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HAConfigTypeAdapterFactory;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HaID;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelTypeProvider;
@@ -55,6 +56,9 @@ import org.openhab.binding.mqtt.generic.internal.handler.ThingChannelConstants;
 import org.osgi.service.cm.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * A full implementation test, that starts the embedded MQTT broker and publishes a homeassistant MQTT discovery device
@@ -154,10 +158,11 @@ public class HomeAssistantMQTTImplementationTests extends JavaOSGiTest {
         MqttChannelTypeProvider channelTypeProvider = mock(MqttChannelTypeProvider.class);
 
         final Map<String, AbstractComponent<?>> haComponents = new HashMap<String, AbstractComponent<?>>();
+        Gson gson = new GsonBuilder().registerTypeAdapterFactory(new HAConfigTypeAdapterFactory()).create();
 
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
         DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing,
-                scheduler, channelStateUpdateListener));
+                scheduler, channelStateUpdateListener, gson));
 
         // The DiscoverComponents object calls ComponentDiscovered callbacks.
         // In the following implementation we add the found component to the `haComponents` map

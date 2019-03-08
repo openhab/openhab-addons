@@ -20,8 +20,9 @@ import com.google.gson.stream.JsonToken;
 public class JsonReaderDelegate extends JsonReader {
 
     /**
+     * Retrieve the 'original' {@link JsonReader} after removing all {@link JsonReaderDelegate}s
      *
-     * @param in
+     * @param in the current {@link JsonReader}
      * @return the original {@link JsonReader} after removing all {@link JsonReaderDelegate}s
      */
     public static JsonReader getDelegate(final JsonReader in) {

@@ -36,9 +36,8 @@ import com.google.gson.stream.JsonWriter;
  *
  * The adapters also handle {@link HAConfiguration.Device}
  *
- * @author Jochen Klein- Initial contribution
+ * @author Jochen Klein - Initial contribution
  */
-
 @NonNullByDefault
 public class HAConfigTypeAdapterFactory implements TypeAdapterFactory {
 

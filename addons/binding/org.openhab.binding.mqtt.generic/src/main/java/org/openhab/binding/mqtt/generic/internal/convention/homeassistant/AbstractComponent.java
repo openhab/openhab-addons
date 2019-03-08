@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelGroupUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.type.ChannelDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelDefinitionBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
@@ -62,14 +61,14 @@ public abstract class AbstractComponent<C extends HAConfiguration> {
      * @param configJson The configuration string
      * @param gson A Gson instance
      */
-    public AbstractComponent(ThingUID thing, HaID haID, String configJson, Class<C> clazz) {
+    public AbstractComponent(CFactory.ComponentConfiguration builder, Class<C> clazz) {
+        this.haID = builder.getHaID();
         this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID,
                 haID.getChannelGroupTypeID());
-        this.channelGroupUID = new ChannelGroupUID(thing, haID.getChannelGroupID());
-        this.haID = haID;
+        this.channelGroupUID = new ChannelGroupUID(builder.getThingUID(), haID.getChannelGroupID());
 
-        this.configJson = configJson;
-        this.config = HAConfiguration.FACTORY.fromString(configJson, clazz);
+        this.configJson = builder.getConfigJSON();
+        this.config = builder.getConfig(clazz);
         this.configHash = configJson.hashCode();
     }
 
