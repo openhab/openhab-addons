@@ -195,145 +195,143 @@ Items:
 
 ```
 /* Network information*/
-String Network_AdapterName          { channel="systeminfo:computer:work:network#networkDisplayName" }
-String Network_Name                 { channel="systeminfo:computer:work:network#networkName" }
-String Network_IP                   { channel="systeminfo:computer:work:network#ip" }
-String Network_Mac                  { channel="systeminfo:computer:work:network#mac" }
-Number Network_DataSent             { channel="systeminfo:computer:work:network#dataSent" }
-Number Network_DataRecevied         { channel="systeminfo:computer:work:network#dataReceived" }
-Number Network_PacketsSent          { channel="systeminfo:computer:work:network#packetsSent" }
-Number Network_PacketsRecevied      { channel="systeminfo:computer:work:network#packetsReceived" }
+String Network_AdapterName        "Adapter name"        <network>        { channel="systeminfo:computer:work:network#networkDisplayName" }
+String Network_Name               "Name"                <network>        { channel="systeminfo:computer:work:network#networkName" }
+String Network_IP                 "IP address"          <network>        { channel="systeminfo:computer:work:network#ip" }
+String Network_Mac                "Mac address"         <network>        { channel="systeminfo:computer:work:network#mac" }
+Number Network_DataSent           "Data sent"           <flowpipe>       { channel="systeminfo:computer:work:network#dataSent" }
+Number Network_DataReceived       "Data received"       <returnpipe>     { channel="systeminfo:computer:work:network#dataReceived" }
+Number Network_PacketsSent        "Packets sent"        <flowpipe>       { channel="systeminfo:computer:work:network#packetsSent" }
+Number Network_PacketsReceived    "Packets received"    <returnpipe>     { channel="systeminfo:computer:work:network#packetsReceived" }
 
 /* CPU information*/
-String CPU_Name                     { channel="systeminfo:computer:work:cpu#name" }
-String CPU_Description              { channel="systeminfo:computer:work:cpu#description" }
-Number CPU_Load                     { channel="systeminfo:computer:work:cpu#load"}
-Number CPU_Load1                    { channel="systeminfo:computer:work:cpu#load1" }
-Number CPU_Load5                    { channel="systeminfo:computer:work:cpu#load5" }
-Number CPU_Load15                   { channel="systeminfo:computer:work:cpu#load15" }
-Number CPU_Threads                  { channel="systeminfo:computer:work:cpu#threads" }
-Number CPU_Uptime                   { channel="systeminfo:computer:work:cpu#uptime" }
+String CPU_Name                   "Name"                <none>           { channel="systeminfo:computer:work:cpu#name" }
+String CPU_Description            "Description"         <none>           { channel="systeminfo:computer:work:cpu#description" }
+Number CPU_Load                   "Load"                <none>           { channel="systeminfo:computer:work:cpu#load"}
+Number CPU_Load1                  "Load (1 min)"        <none>           { channel="systeminfo:computer:work:cpu#load1" }
+Number CPU_Load5                  "Load (5 min)"        <none>           { channel="systeminfo:computer:work:cpu#load5" }
+Number CPU_Load15                 "Load (15 min)"       <none>           { channel="systeminfo:computer:work:cpu#load15" }
+Number CPU_Threads                "Threads"             <none>           { channel="systeminfo:computer:work:cpu#threads" }
+Number CPU_Uptime                 "Uptime"              <time>           { channel="systeminfo:computer:work:cpu#uptime" }
 
 /* Drive information*/
-String Drive_Name                    { channel="systeminfo:computer:work:drive#name" }
-String Drive_Model                   { channel="systeminfo:computer:work:drive#model" }
-String Drive_Serial                  { channel="systeminfo:computer:work:drive#serial" }
+String Drive_Name                 "Name"                <none>           { channel="systeminfo:computer:work:drive#name" }
+String Drive_Model                "Model"               <none>           { channel="systeminfo:computer:work:drive#model" }
+String Drive_Serial               "Serial"              <none>           { channel="systeminfo:computer:work:drive#serial" }
 
 /* Storage information*/
-String Storage_Name                  { channel="systeminfo:computer:work:storage#name" }
-String Storage_Type                  { channel="systeminfo:computer:work:storage#type" }
-String Storage_Description           { channel="systeminfo:computer:work:storage#description" }
-Number Storage_Available             { channel="systeminfo:computer:work:storage#available" }
-Number Storage_Used                  { channel="systeminfo:computer:work:storage#used" }
-Number Storage_Total                 { channel="systeminfo:computer:work:storage#total" }
-Number Storage_Available_Percent     { channel="systeminfo:computer:work:storage#availablePercent" }
-Number Storage_Used_Percent          { channel="systeminfo:computer:work:storage#usedPercent" }
+String Storage_Name               "Name"                <none>           { channel="systeminfo:computer:work:storage#name" }
+String Storage_Type               "Type"                <none>           { channel="systeminfo:computer:work:storage#type" }
+String Storage_Description        "Description"         <none>           { channel="systeminfo:computer:work:storage#description" }
+Number Storage_Available          "Available"           <none>           { channel="systeminfo:computer:work:storage#available" }
+Number Storage_Used               "Used"                <none>           { channel="systeminfo:computer:work:storage#used" }
+Number Storage_Total              "Total"               <none>           { channel="systeminfo:computer:work:storage#total" }
+Number Storage_Available_Percent  "Available (%)"       <none>           { channel="systeminfo:computer:work:storage#availablePercent" }
+Number Storage_Used_Percent       "Used (%)"            <none>           { channel="systeminfo:computer:work:storage#usedPercent" }
 
 /* Memory information*/
-Number Memory_Available              { channel="systeminfo:computer:work:memory#available" }
-Number Memory_Used                   { channel="systeminfo:computer:work:memory#used" }
-Number Memory_Total                  { channel="systeminfo:computer:work:memory#total" }
-Number Memory_Available_Percent      { channel="systeminfo:computer:work:memory#availablePercent" }
-Number Memory_Used_Percent           { channel="systeminfo:computer:work:memory#usedPercent" }
+Number Memory_Available           "Available"           <none>           { channel="systeminfo:computer:work:memory#available" }
+Number Memory_Used                "Used"                <none>           { channel="systeminfo:computer:work:memory#used" }
+Number Memory_Total               "Total"               <none>           { channel="systeminfo:computer:work:memory#total" }
+Number Memory_Available_Percent   "Available (%)"       <none>           { channel="systeminfo:computer:work:memory#availablePercent" }
+Number Memory_Used_Percent        "Used (%)"            <none>           { channel="systeminfo:computer:work:memory#usedPercent" }
 
 /* Swap memory information*/
-Number Swap_Available                { channel="systeminfo:computer:work:swap#available" }
-Number Swap_Used                     { channel="systeminfo:computer:work:swap#used" }
-Number Swap_Total                    { channel="systeminfo:computer:work:swap#total" }
-Number Swap_Available_Percent        { channel="systeminfo:computer:work:swap#availablePercent" }
-Number Swap_Used_Percent             { channel="systeminfo:computer:work:swap#usedPercent" }
+Number Swap_Available             "Available"           <none>           { channel="systeminfo:computer:work:swap#available" }
+Number Swap_Used                  "Used"                <none>           { channel="systeminfo:computer:work:swap#used" }
+Number Swap_Total                 "Total"               <none>           { channel="systeminfo:computer:work:swap#total" }
+Number Swap_Available_Percent     "Available (%)"       <none>           { channel="systeminfo:computer:work:swap#availablePercent" }
+Number Swap_Used_Percent          "Used (%)"            <none>           { channel="systeminfo:computer:work:swap#usedPercent" }
 
 /* Battery information*/
-String Battery_Name                  { channel="systeminfo:computer:work:battery#name" }
-Number Battery_RemainingCapacity     { channel="systeminfo:computer:work:battery#remainingCapacity" }
-Number Battery_RemainingTime         { channel="systeminfo:computer:work:battery#remainingTime" }
+String Battery_Name               "Name"                <batterylevel>   { channel="systeminfo:computer:work:battery#name" }
+Number Battery_RemainingCapacity  "Remaining Capacity"  <batterylevel>   { channel="systeminfo:computer:work:battery#remainingCapacity" }
+Number Battery_RemainingTime      "Remaining Time"      <batterylevel>   { channel="systeminfo:computer:work:battery#remainingTime" }
 
 /* Display information*/
-String Display_Description           { channel="systeminfo:computer:work:display#information" }
+String Display_Description        "Display description" <screen>         { channel="systeminfo:computer:work:display#information" }
 
 /* Sensors information*/
-Number Sensor_CPUTemp                { channel="systeminfo:computer:work:sensors#cpuTemp" }
-Number Sensor_CPUVoltage             { channel="systeminfo:computer:work:sensors#cpuVoltage" }
-Number Sensor_FanSpeed               { channel="systeminfo:computer:work:sensors#fanSpeed" }
+Number Sensor_CPUTemp             "CPU Temperature"     <temperature>    { channel="systeminfo:computer:work:sensors#cpuTemp" }
+Number Sensor_CPUVoltage          "CPU Voltage"         <energy>         { channel="systeminfo:computer:work:sensors#cpuVoltage" }
+Number Sensor_FanSpeed            "Fan speed"           <fan>            { channel="systeminfo:computer:work:sensors#fanSpeed" }
 
 /* Process information*/
-Number Process_load                  { channel="systeminfo:computer:work:process#load" }
-Number Process_used                  { channel="systeminfo:computer:work:process#used" }
-String Process_name                  { channel="systeminfo:computer:work:process#name" }
-Number Process_threads               { channel="systeminfo:computer:work:process#threads" }
-String Process_path                  { channel="systeminfo:computer:work:process#path" }
+Number Process_load               "Load"                <none>           { channel="systeminfo:computer:work:process#load" }
+Number Process_used               "Used"                <none>           { channel="systeminfo:computer:work:process#used" }
+String Process_name               "Name"                <none>           { channel="systeminfo:computer:work:process#name" }
+Number Process_threads            "Threads"             <none>           { channel="systeminfo:computer:work:process#threads" }
+String Process_path               "Path"                <none>           { channel="systeminfo:computer:work:process#path" }
 ```
 
 Sitemap:
 
 ```
-    Frame label=Admin {
-        Text label="SystemInfo" {
-            Text label="Network Information" {
-                Default item=Network_AdapterName
-                Default item=Network_Name
-                Default item=Network_IP
-                Default item=Network_Mac
-                Default item=Network_DataSent
-                Default item=Network_DataRecevied
-                Default item=Network_PacketsSent
-                Default item=Network_PacketsRecevied
-            }
-            Text label="CPU information" {
-                Default item=CPU_Name
-                Default item=CPU_Description
-                Default item=CPU_Load
-                Default item=CPU_Load1
-                Default item=CPU_Load5
-                Default item=CPU_Load15
-                Default item=CPU_Threads
-                Default item=CPU_Uptime
-            }
-            Text label="Drive information" {
-                Default item=Drive_Name
-                Default item=Drive_Model
-                Default item=Drive_Serial
-            }
-            Text label="Storage Information" {
-                Default item=Storage_Name
-                Default item=Storage_Type
-                Default item=Storage_Description
-                Default item=Storage_Available
-                Default item=Storage_Used
-                Default item=Storage_Total
-                Default item=Storage_Available_Percent
-                Default item=Storage_Used_Percent
-            }
-            Text label="Memory Information" {
-                Default item=Memory_Available
-                Default item=Memory_Used
-                Default item=Memory_Total
-                Default item=Memory_Available_Percent
-                Default item=Memory_Used_Percent
-            }
-            Text label="Swap Memory Information" {
-                Default item=Swap_Available
-                Default item=Swap_Used
-                Default item=Swap_Total
-                Default item=Swap_Available_Percent
-                Default item=Swap_Used_Percent
-            }
-            Text label="Battery&Display&Sensor Information" {
-                Default item=Battery_Name
-                Default item=Battery_RemainingCapacity
-                Default item=Battery_RemainingTime
-                Default item=Display_Description
-                Default item=Sensor_CPUTemp
-                Default item=Sensor_CPUVoltage
-                Default item=Sensor_FanSpeed
-            }
-            Text label="Process Information" {
-                Default item=Process_load
-                Default item=Process_used
-                Default item=Process_name
-                Default item=Process_threads
-                Default item=Process_path
-            }
-        }
+Text label="Systeminfo" {
+    Frame label="Network Information" {
+        Default item=Network_AdapterName
+        Default item=Network_Name
+        Default item=Network_IP
+        Default item=Network_Mac
+        Default item=Network_DataSent
+        Default item=Network_DataReceived
+        Default item=Network_PacketsSent
+        Default item=Network_PacketsReceived
     }
+    Frame label="CPU Information" {
+        Default item=CPU_Name
+        Default item=CPU_Description
+        Default item=CPU_Load
+        Default item=CPU_Load1
+        Default item=CPU_Load5
+        Default item=CPU_Load15
+        Default item=CPU_Threads
+        Default item=CPU_Uptime
+    }
+    Frame label="Drive Information" {
+        Default item=Drive_Name
+        Default item=Drive_Model
+        Default item=Drive_Serial
+    }
+    Frame label="Storage Information" {
+        Default item=Storage_Name
+        Default item=Storage_Type
+        Default item=Storage_Description
+        Default item=Storage_Available
+        Default item=Storage_Used
+        Default item=Storage_Total
+        Default item=Storage_Available_Percent
+        Default item=Storage_Used_Percent
+    }
+    Frame label="Memory Information" {
+        Default item=Memory_Available
+        Default item=Memory_Used
+        Default item=Memory_Total
+        Default item=Memory_Available_Percent
+        Default item=Memory_Used_Percent
+    }
+    Frame label="Swap Memory Information" {
+        Default item=Swap_Available
+        Default item=Swap_Used
+        Default item=Swap_Total
+        Default item=Swap_Available_Percent
+        Default item=Swap_Used_Percent
+    }
+    Frame label="Battery, Display and Sensor Information" {
+        Default item=Battery_Name
+        Default item=Battery_RemainingCapacity
+        Default item=Battery_RemainingTime
+        Default item=Display_Description
+        Default item=Sensor_CPUTemp
+        Default item=Sensor_CPUVoltage
+        Default item=Sensor_FanSpeed
+    }
+    Frame label="Process Information" {
+        Default item=Process_load
+        Default item=Process_used
+        Default item=Process_name
+        Default item=Process_threads
+        Default item=Process_path
+    }
+}
 ```
