@@ -23,10 +23,8 @@ import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
@@ -75,12 +73,11 @@ public class LxControlColorPickerV2 extends LxControl {
     @Override
     public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
         super.initialize(api, room, category);
-        addChannel("Color", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_COLORPICKER), defaultChannelId,
-                defaultChannelLabel, "Color Picker", tags);
+        addChannel("Color", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_COLORPICKER), defaultChannelLabel,
+                "Color Picker", tags, this::handleCommands, this::getColor);
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelId, Command command) throws IOException {
+    private void handleCommands(Command command) throws IOException {
         if (command instanceof HSBType) {
             setColor((HSBType) command);
         } else if (command instanceof OnOffType) {
@@ -100,14 +97,6 @@ public class LxControlColorPickerV2 extends LxControl {
                 increaseDecreaseBrightness(-1);
             }
         }
-    }
-
-    @Override
-    public State getChannelState(ChannelUID channelId) {
-        if (defaultChannelId.equals(channelId)) {
-            return getColor();
-        }
-        return null;
     }
 
     /**

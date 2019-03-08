@@ -25,7 +25,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
@@ -79,8 +78,8 @@ public class LxControlRadio extends LxControl {
     public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
         super.initialize(api, room, category);
         // add both channel and state description (all needed configuration is available)
-        addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RADIO_BUTTON), defaultChannelId,
-                defaultChannelLabel, "Radio button", tags);
+        ChannelUID id = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RADIO_BUTTON),
+                defaultChannelLabel, "Radio button", tags, this::handleCommands, this::getChannelState);
         if (details != null && details.outputs != null) {
             outputs = details.outputs.entrySet().stream().map(e -> new StateOption(e.getKey(), e.getValue()))
                     .collect(Collectors.toList());
@@ -88,16 +87,15 @@ public class LxControlRadio extends LxControl {
         if (details != null && details.allOff != null) {
             outputs.add(new StateOption("0", details.allOff));
         }
-        addChannelStateDescription(defaultChannelId, new StateDescription(BigDecimal.ZERO,
-                new BigDecimal(MAX_RADIO_OUTPUTS), BigDecimal.ONE, null, false, outputs));
+        addChannelStateDescription(id, new StateDescription(BigDecimal.ZERO, new BigDecimal(MAX_RADIO_OUTPUTS),
+                BigDecimal.ONE, null, false, outputs));
     }
 
     LxControlRadio(LxUuid uuid) {
         super(uuid);
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelId, Command command) throws IOException {
+    private void handleCommands(Command command) throws IOException {
         if (command instanceof OnOffType) {
             if ((OnOffType) command == OnOffType.OFF) {
                 setOutput(0);
@@ -107,16 +105,13 @@ public class LxControlRadio extends LxControl {
         }
     }
 
-    @Override
-    public State getChannelState(ChannelUID channelId) {
-        if (defaultChannelId.equals(channelId)) {
-            Double output = getStateDoubleValue(STATE_ACTIVE_OUTPUT);
-            if (output != null && output >= 0 && output <= MAX_RADIO_OUTPUTS) {
-                return new DecimalType(output);
-            }
+    private DecimalType getChannelState() {
+        Double output = getStateDoubleValue(STATE_ACTIVE_OUTPUT);
+        if (output != null && output >= 0 && output <= MAX_RADIO_OUTPUTS) {
+            return new DecimalType(output);
         }
         return null;
-    }
+    };
 
     /**
      * Set radio-button control's active output

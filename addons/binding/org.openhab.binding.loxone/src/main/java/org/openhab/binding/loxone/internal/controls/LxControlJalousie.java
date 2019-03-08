@@ -20,10 +20,8 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
@@ -114,10 +112,6 @@ public class LxControlJalousie extends LxControl {
     private static final String CMD_NO_AUTO = "NoAuto";
 
     private final Logger logger = LoggerFactory.getLogger(LxControlJalousie.class);
-
-    private ChannelUID shadeChannelId;
-    private ChannelUID autoShadeChannelId;
-
     private Double targetPosition;
 
     LxControlJalousie(LxUuid uuid) {
@@ -127,70 +121,68 @@ public class LxControlJalousie extends LxControl {
     @Override
     public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
         super.initialize(api, room, category);
-        shadeChannelId = getChannelId(1);
-        autoShadeChannelId = getChannelId(2);
         addChannel("Rollershutter", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_ROLLERSHUTTER),
-                defaultChannelId, defaultChannelLabel, "Rollershutter", tags);
-        addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH), shadeChannelId,
-                defaultChannelLabel + " / Shade", "Rollershutter shading", null);
-        addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH), autoShadeChannelId,
-                defaultChannelLabel + " / Auto Shade", "Rollershutter automatic shading", null);
+                defaultChannelLabel, "Rollershutter", tags, this::handleOperateCommands, this::getOperateState);
+        addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH),
+                defaultChannelLabel + " / Shade", "Rollershutter shading", null, this::handleShadeCommands,
+                () -> OnOffType.OFF);
+        addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH),
+                defaultChannelLabel + " / Auto Shade", "Rollershutter automatic shading", null,
+                this::handleAutoShadeCommands, this::getAutoShadeState);
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelId, Command command) throws IOException {
-        if (defaultChannelId.equals(channelId)) {
-            if (command instanceof PercentType) {
-                moveToPosition(((PercentType) command).doubleValue() / 100);
-            } else if (command instanceof UpDownType) {
-                if ((UpDownType) command == UpDownType.UP) {
-                    sendAction(CMD_FULL_UP);
-                } else {
-                    sendAction(CMD_FULL_DOWN);
-                }
-            } else if (command instanceof StopMoveType) {
-                if ((StopMoveType) command == StopMoveType.STOP) {
-                    sendAction(CMD_STOP);
-                }
+    private void handleOperateCommands(Command command) throws IOException {
+        if (command instanceof PercentType) {
+            moveToPosition(((PercentType) command).doubleValue() / 100);
+        } else if (command instanceof UpDownType) {
+            if ((UpDownType) command == UpDownType.UP) {
+                sendAction(CMD_FULL_UP);
+            } else {
+                sendAction(CMD_FULL_DOWN);
             }
-        } else if (shadeChannelId.equals(channelId)) {
-            if (command instanceof OnOffType) {
-                if ((OnOffType) command == OnOffType.ON) {
-                    sendAction(CMD_SHADE);
-                }
-            }
-        } else if (autoShadeChannelId.equals(channelId)) {
-            if (command instanceof OnOffType) {
-                if ((OnOffType) command == OnOffType.ON) {
-                    sendAction(CMD_AUTO);
-                } else {
-                    sendAction(CMD_NO_AUTO);
-                }
+        } else if (command instanceof StopMoveType) {
+            if ((StopMoveType) command == StopMoveType.STOP) {
+                sendAction(CMD_STOP);
             }
         }
-    }
+    };
 
-    @Override
-    public State getChannelState(ChannelUID channelId) {
-        if (defaultChannelId.equals(channelId)) {
-            Double value = getStateDoubleValue(STATE_POSITION);
-            if (value != null && value >= 0 && value <= 1) {
-                // state UP or DOWN from Loxone indicates blinds are moving up or down
-                // state UP in openHAB means blinds are fully up (0%) and DOWN means fully down (100%)
-                // so we will update only position and not up or down states
-                return new PercentType((int) (value * 100));
-            }
-        } else if (shadeChannelId.equals(channelId)) {
-            // this channel is used to trigger shading only
-            return OnOffType.OFF;
-        } else if (autoShadeChannelId.equals(channelId)) {
-            Double value = getStateDoubleValue(STATE_AUTO_ACTIVE);
-            if (value != null) {
-                return value == 1.0 ? OnOffType.ON : OnOffType.OFF;
-            }
+    private PercentType getOperateState() {
+        Double value = getStateDoubleValue(STATE_POSITION);
+        if (value != null && value >= 0 && value <= 1) {
+            // state UP or DOWN from Loxone indicates blinds are moving up or down
+            // state UP in openHAB means blinds are fully up (0%) and DOWN means fully down (100%)
+            // so we will update only position and not up or down states
+            return new PercentType((int) (value * 100));
         }
         return null;
-    }
+    };
+
+    private void handleShadeCommands(Command command) throws IOException {
+        if (command instanceof OnOffType) {
+            if ((OnOffType) command == OnOffType.ON) {
+                sendAction(CMD_SHADE);
+            }
+        }
+    };
+
+    private void handleAutoShadeCommands(Command command) throws IOException {
+        if (command instanceof OnOffType) {
+            if ((OnOffType) command == OnOffType.ON) {
+                sendAction(CMD_AUTO);
+            } else {
+                sendAction(CMD_NO_AUTO);
+            }
+        }
+    };
+
+    private OnOffType getAutoShadeState() {
+        Double value = getStateDoubleValue(STATE_AUTO_ACTIVE);
+        if (value != null) {
+            return value == 1.0 ? OnOffType.ON : OnOffType.OFF;
+        }
+        return null;
+    };
 
     /**
      * Monitor jalousie position against desired target position and stop it if target position is reached.

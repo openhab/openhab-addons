@@ -96,6 +96,26 @@ public class LxControl {
         Map<String, String> outputs;
     }
 
+    @FunctionalInterface
+    interface CommandCallback {
+        abstract void handleCommand(Command cmd) throws IOException;
+    }
+
+    @FunctionalInterface
+    interface StateCallback {
+        abstract State getChannelState();
+    }
+
+    private class Callbacks {
+        CommandCallback commandCallback;
+        StateCallback stateCallback;
+
+        Callbacks(CommandCallback cC, StateCallback sC) {
+            commandCallback = cC;
+            stateCallback = sC;
+        }
+    }
+
     /*
      * Parameters parsed from the JSON configuration file during deserialization
      */
@@ -111,7 +131,6 @@ public class LxControl {
      * Parameters set when finalizing {@link LxConfig} object setup. They will be null right after constructing object.
      */
     String defaultChannelLabel;
-    ChannelUID defaultChannelId;
     LxServerHandlerApi handlerApi;
     private LxContainer room;
     private LxCategory category;
@@ -121,9 +140,11 @@ public class LxControl {
      * Parameters set when object is connected to the openHAB by the binding handler
      */
     final Set<String> tags = new HashSet<>();
-    final List<Channel> channels = new ArrayList<>();
+    private final List<Channel> channels = new ArrayList<>();
+    private final Map<ChannelUID, Callbacks> callbacks = new HashMap<>();
 
     private final transient Logger logger;
+    private int numberOfChannels = 0;
 
     /*
      * JSON deserialization routine, called during parsing configuration by the GSON library
@@ -178,22 +199,30 @@ public class LxControl {
     }
 
     /**
-     * A method that executes commands by the control. To be overridden by child classes.
+     * A method that executes commands by the control. It delegates command execution to a registered callback method.
      *
      * @param channelId channel Id for the command
      * @param command   value of the command to perform
      * @throws IOException in case of communication error with the Miniserver
      */
-    public void handleCommand(ChannelUID channelId, Command command) throws IOException {
+    public final void handleCommand(ChannelUID channelId, Command command) throws IOException {
+        Callbacks c = callbacks.get(channelId);
+        if (c != null && c.commandCallback != null) {
+            c.commandCallback.handleCommand(command);
+        }
     }
 
     /**
-     * Provides actual state value for the specified channel. To be overridden by child classes.
+     * Provides actual state value for the specified channel. It delegates execution to a registered callback method.
      *
      * @param channelId channel ID to get state for
      * @return state if the channel value or null if no value available
      */
-    public State getChannelState(ChannelUID channelId) {
+    public final State getChannelState(ChannelUID channelId) {
+        Callbacks c = callbacks.get(channelId);
+        if (c != null && c.stateCallback != null) {
+            return c.stateCallback.getChannelState();
+        }
         return null;
     }
 
@@ -303,7 +332,6 @@ public class LxControl {
         }
         handlerApi = api;
         thingId = handlerApi.getThingId();
-        defaultChannelId = getChannelId(0);
 
         if (subControls == null) {
             subControls = new HashMap<>();
@@ -424,46 +452,35 @@ public class LxControl {
     }
 
     /**
-     * Build channel ID for the control, based on control's UUID, thing's UUID and index of the channel for the control
-     *
-     * @param index index of a channel within control (0 for primary channel) all indexes greater than 0 will have
-     *                  -index added to the channel ID
-     * @return channel ID for the control and index
-     */
-    ChannelUID getChannelId(int index) {
-        if (thingId == null) {
-            logger.error("Attempt to get control's channel ID with not finalized configuration!: {}", index);
-            return null;
-        }
-        String controlId = uuid.toString();
-        if (index > 0) {
-            controlId += "-" + index;
-        }
-        return new ChannelUID(thingId, controlId);
-    }
-
-    /**
-     * Create a new channel and add it to the control.
+     * Create a new channel and add it to the control. Channel ID is assigned automatically in the order of calls to
+     * this method, see (@link LxControl#getChannelId}.
      *
      * @param itemType           item type for the channel
      * @param typeId             channel type ID for the channel
-     * @param channelId          channel ID
      * @param channelLabel       channel label
      * @param channelDescription channel description
      * @param tags               tags for the channel or null if no tags needed
+     * @param commandCallback    {@link LxControl} child class method that will be called when command is received
+     * @param stateCallback      {@link LxControl} child class method that will be called to get state value
+     * @return channel ID of the added channel (can be used to later set state description to it)
      */
-    void addChannel(String itemType, ChannelTypeUID typeId, ChannelUID channelId, String channelLabel,
-            String channelDescription, Set<String> tags) {
+    ChannelUID addChannel(String itemType, ChannelTypeUID typeId, String channelLabel, String channelDescription,
+            Set<String> tags, CommandCallback commandCallback, StateCallback stateCallback) {
         if (channelLabel == null || channelDescription == null) {
-            logger.error("Attempt to add channel with not finalized configuration!: {}", channelId);
-            return;
+            logger.error("Attempt to add channel with not finalized configuration!: {}", channelLabel);
+            return null;
         }
+        ChannelUID channelId = getChannelId(numberOfChannels++);
         ChannelBuilder builder = ChannelBuilder.create(channelId, itemType).withType(typeId).withLabel(channelLabel)
                 .withDescription(channelDescription + " : " + channelLabel);
         if (tags != null) {
             builder.withDefaultTags(tags);
         }
         channels.add(builder.build());
+        if (commandCallback != null || stateCallback != null) {
+            callbacks.put(channelId, new Callbacks(commandCallback, stateCallback));
+        }
+        return channelId;
     }
 
     /**
@@ -494,4 +511,34 @@ public class LxControl {
             handlerApi.sendAction(uuid, action);
         }
     }
+
+    /**
+     * Remove all channels from the control. This method is used by child classes that may decide to stop exposing any
+     * channels, for example by {@link LxControlMood}, which is based on {@link LxControlSwitch}, but sometime does not
+     * expose anything to the user.
+     */
+    void removeAllChannels() {
+        channels.clear();
+        callbacks.clear();
+    }
+
+    /**
+     * Build channel ID for the control, based on control's UUID, thing's UUID and index of the channel for the control
+     *
+     * @param index index of a channel within control (0 for primary channel) all indexes greater than 0 will have
+     *                  -index added to the channel ID
+     * @return channel ID for the control and index
+     */
+    private ChannelUID getChannelId(int index) {
+        if (thingId == null) {
+            logger.error("Attempt to get control's channel ID with not finalized configuration!: {}", index);
+            return null;
+        }
+        String controlId = uuid.toString();
+        if (index > 0) {
+            controlId += "-" + index;
+        }
+        return new ChannelUID(thingId, controlId);
+    }
+
 }

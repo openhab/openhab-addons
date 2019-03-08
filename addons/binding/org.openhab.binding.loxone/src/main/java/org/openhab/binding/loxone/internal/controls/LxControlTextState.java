@@ -14,12 +14,8 @@ package org.openhab.binding.loxone.internal.controls;
 
 import static org.openhab.binding.loxone.internal.LxBindingConstants.*;
 
-import java.io.IOException;
-
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
@@ -65,22 +61,14 @@ public class LxControlTextState extends LxControl {
     @Override
     public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
         super.initialize(api, room, category);
-        addChannel("String", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_TEXT), defaultChannelId,
-                defaultChannelLabel, "Text state", tags);
+        addChannel("String", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_TEXT), defaultChannelLabel,
+                "Text state", tags, null, this::getState);
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelId, Command command) throws IOException {
-        // no commands to handle
-    }
-
-    @Override
-    public State getChannelState(ChannelUID channelId) {
-        if (defaultChannelId.equals(channelId)) {
-            String value = getStateTextValue(STATE_TEXT_AND_ICON);
-            if (value != null) {
-                return new StringType(value);
-            }
+    private State getState() {
+        String value = getStateTextValue(STATE_TEXT_AND_ICON);
+        if (value != null) {
+            return new StringType(value);
         }
         return null;
     }

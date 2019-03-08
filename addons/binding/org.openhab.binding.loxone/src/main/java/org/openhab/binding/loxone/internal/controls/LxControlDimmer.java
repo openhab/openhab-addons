@@ -18,10 +18,8 @@ import java.io.IOException;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
@@ -79,12 +77,11 @@ public class LxControlDimmer extends LxControl {
     @Override
     public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
         super.initialize(api, room, category);
-        addChannel("Dimmer", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_DIMMER), defaultChannelId,
-                defaultChannelLabel, "Dimmer", tags);
+        addChannel("Dimmer", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_DIMMER), defaultChannelLabel,
+                "Dimmer", tags, this::handleCommands, this::getChannelState);
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelId, Command command) throws IOException {
+    private void handleCommands(Command command) throws IOException {
         if (command instanceof OnOffType) {
             if (command == OnOffType.ON) {
                 sendAction(CMD_ON);
@@ -97,13 +94,10 @@ public class LxControlDimmer extends LxControl {
         }
     }
 
-    @Override
-    public State getChannelState(ChannelUID channelId) {
-        if (defaultChannelId.equals(channelId)) {
-            Double value = mapLoxoneToOH(getStateDoubleValue(STATE_POSITION));
-            if (value != null && value >= 0 && value <= 100) {
-                return new PercentType(value.intValue());
-            }
+    private PercentType getChannelState() {
+        Double value = mapLoxoneToOH(getStateDoubleValue(STATE_POSITION));
+        if (value != null && value >= 0 && value <= 100) {
+            return new PercentType(value.intValue());
         }
         return null;
     }

@@ -25,7 +25,6 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
@@ -96,6 +95,7 @@ public class LxControlLightController extends LxControl {
     private static final int SCENE_ALL_ON = 9;
 
     private List<StateOption> sceneNames = new ArrayList<>();
+    private ChannelUID channelId;
 
     LxControlLightController(LxUuid uuid) {
         super(uuid);
@@ -105,13 +105,12 @@ public class LxControlLightController extends LxControl {
     public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
         super.initialize(api, room, category);
         // add only channel, state description will be added later when a control state update message is received
-        addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_LIGHT_CTRL), defaultChannelId,
-                defaultChannelLabel, "Light controller", tags);
+        channelId = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_LIGHT_CTRL),
+                defaultChannelLabel, "Light controller", tags, this::handleCommands, this::getChannelState);
         // sub-controls of this control have been created when update() method was called by super class
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelId, Command command) throws IOException {
+    private void handleCommands(Command command) throws IOException {
         if (command instanceof OnOffType) {
             if ((OnOffType) command == OnOffType.ON) {
                 sendAction(CMD_ON);
@@ -134,23 +133,20 @@ public class LxControlLightController extends LxControl {
         }
     }
 
-    @Override
-    public State getChannelState(ChannelUID channelId) {
-        if (defaultChannelId.equals(channelId)) {
-            Double value = getStateDoubleValue(STATE_ACTIVE_SCENE);
-            if (value != null && value >= 0 && value < NUM_OF_SCENES) {
-                return new DecimalType(value);
-            }
+    private DecimalType getChannelState() {
+        Double value = getStateDoubleValue(STATE_ACTIVE_SCENE);
+        if (value != null && value >= 0 && value < NUM_OF_SCENES) {
+            return new DecimalType(value);
         }
         return null;
-    }
+    };
 
     /**
      * Get scene names from new state value received from the Miniserver
      */
     @Override
     public void onStateChange(LxControlState state) {
-        if (STATE_SCENE_LIST.equals(state.getName())) {
+        if (STATE_SCENE_LIST.equals(state.getName()) && channelId != null) {
             Object value = state.getStateValue();
             if (value instanceof String) {
                 sceneNames.clear();
@@ -162,7 +158,7 @@ public class LxControlLightController extends LxControl {
                         sceneNames.add(new StateOption(params[0], params[1]));
                     }
                 }
-                addChannelStateDescription(defaultChannelId, new StateDescription(BigDecimal.ZERO,
+                addChannelStateDescription(channelId, new StateDescription(BigDecimal.ZERO,
                         new BigDecimal(NUM_OF_SCENES - 1), BigDecimal.ONE, null, false, sceneNames));
             }
         } else {

@@ -81,8 +81,8 @@ public class LxControlSlider extends LxControl {
     @Override
     public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
         super.initialize(api, room, category);
-        addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_NUMBER), defaultChannelId,
-                defaultChannelLabel, "Slider", tags);
+        ChannelUID id = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_NUMBER),
+                defaultChannelLabel, "Slider", tags, this::handleCommands, this::getChannelState);
         if (details != null) {
             format = details.format;
             if (details.min != null) {
@@ -96,13 +96,12 @@ public class LxControlSlider extends LxControl {
             }
         }
         if (format != null) {
-            addChannelStateDescription(defaultChannelId, new StateDescription(new BigDecimal(minValue),
-                    new BigDecimal(maxValue), new BigDecimal(stepValue), format, false, null));
+            addChannelStateDescription(id, new StateDescription(new BigDecimal(minValue), new BigDecimal(maxValue),
+                    new BigDecimal(stepValue), format, false, null));
         }
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelId, Command command) throws IOException {
+    private void handleCommands(Command command) throws IOException {
         if (command instanceof DecimalType) {
             Double value = ((DecimalType) command).doubleValue();
             if (value > maxValue) {
@@ -114,16 +113,12 @@ public class LxControlSlider extends LxControl {
         }
     }
 
-    @Override
-    public State getChannelState(ChannelUID channelId) {
-        if (defaultChannelId.equals(channelId)) {
-            if (currentValue != null) {
-                return new DecimalType(currentValue);
-            }
-            return UnDefType.UNDEF;
+    private State getChannelState() {
+        if (currentValue != null) {
+            return new DecimalType(currentValue);
         }
-        return null;
-    }
+        return UnDefType.UNDEF;
+    };
 
     @Override
     public void onStateChange(LxControlState state) {

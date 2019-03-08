@@ -97,7 +97,7 @@ class LxControlMood extends LxControlSwitch {
         // empirically this is the only mood that is not editable by the user and has a static flag set on
         // we will assume that the only static mood is 'all off' mood
         if (isStatic != null && isStatic) {
-            channels.clear();
+            removeAllChannels();
         }
     }
 
@@ -146,7 +146,7 @@ class LxControlMood extends LxControlSwitch {
      * @return 1 if mood is active and 0 otherwise
      */
     @Override
-    OnOffType getState() {
+    OnOffType getSwitchState() {
         if (controller != null && controller.isMoodOk(moodId)) {
             if (controller.isMoodActive(moodId)) {
                 return OnOffType.ON;

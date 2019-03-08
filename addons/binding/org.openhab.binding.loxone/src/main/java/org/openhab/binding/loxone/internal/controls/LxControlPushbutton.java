@@ -15,7 +15,6 @@ package org.openhab.binding.loxone.internal.controls;
 import java.io.IOException;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.loxone.internal.core.LxUuid;
 
@@ -55,7 +54,7 @@ public class LxControlPushbutton extends LxControlSwitch {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelId, Command command) throws IOException {
+    void handleSwitchCommands(Command command) throws IOException {
         if (command instanceof OnOffType) {
             if ((OnOffType) command == OnOffType.ON) {
                 sendAction(CMD_PULSE);

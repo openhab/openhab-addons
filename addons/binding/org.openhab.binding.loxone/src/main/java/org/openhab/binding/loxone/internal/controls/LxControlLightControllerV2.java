@@ -119,6 +119,7 @@ public class LxControlLightControllerV2 extends LxControl {
     private List<Integer> activeMoods = new ArrayList<>();
     private Integer minMoodId;
     private Integer maxMoodId;
+    private ChannelUID channelId;
 
     LxControlLightControllerV2(LxUuid uuid) {
         super(uuid);
@@ -128,14 +129,13 @@ public class LxControlLightControllerV2 extends LxControl {
     public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
         super.initialize(api, room, category);
         // add only channel, state description will be added later when a control state update message is received
-        addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_LIGHT_CTRL), defaultChannelId,
-                defaultChannelLabel, "Light controller V2", tags);
+        channelId = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_LIGHT_CTRL),
+                defaultChannelLabel, "Light controller V2", tags, this::handleCommands, this::getChannelState);
         // sub-controls of this control have been created when update() method was called by the super class constructor
 
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelId, Command command) throws IOException {
+    private void handleCommands(Command command) throws IOException {
         if (command instanceof UpDownType) {
             if ((UpDownType) command == UpDownType.UP) {
                 sendAction(CMD_NEXT_MOOD);
@@ -150,18 +150,13 @@ public class LxControlLightControllerV2 extends LxControl {
         }
     }
 
-    @Override
-    public State getChannelState(ChannelUID channelId) {
-        if (defaultChannelId.equals(channelId)) {
-            // update the single mood channel state
-            if (activeMoods.size() == 1) {
-                return new DecimalType(activeMoods.get(0));
-            } else {
-                return UnDefType.UNDEF;
-            }
+    private State getChannelState() {
+        // update the single mood channel state
+        if (activeMoods.size() == 1) {
+            return new DecimalType(activeMoods.get(0));
         }
-        return null;
-    }
+        return UnDefType.UNDEF;
+    };
 
     /**
      * Get configured and active moods from a new state value received from the Miniserver
@@ -264,11 +259,11 @@ public class LxControlLightControllerV2 extends LxControl {
             }
         }
 
-        if (minMoodId != null && maxMoodId != null) {
+        if (channelId != null && minMoodId != null && maxMoodId != null) {
             // convert all moods to options list for state description
             List<StateOption> optionsList = newMoodList.values().stream()
                     .map(mood -> new StateOption(mood.getId().toString(), mood.getName())).collect(Collectors.toList());
-            addChannelStateDescription(defaultChannelId, new StateDescription(new BigDecimal(minMoodId),
+            addChannelStateDescription(channelId, new StateDescription(new BigDecimal(minMoodId),
                     new BigDecimal(maxMoodId), BigDecimal.ONE, null, false, optionsList));
         }
 

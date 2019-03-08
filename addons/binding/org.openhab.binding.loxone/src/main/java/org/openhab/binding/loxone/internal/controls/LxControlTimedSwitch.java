@@ -14,13 +14,9 @@ package org.openhab.binding.loxone.internal.controls;
 
 import static org.openhab.binding.loxone.internal.LxBindingConstants.*;
 
-import java.io.IOException;
-
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
@@ -65,7 +61,6 @@ public class LxControlTimedSwitch extends LxControlPushbutton {
      * otherwise it will count down from deactivationDelayTotal
      */
     private static final String STATE_DEACTIVATION_DELAY = "deactivationdelay";
-    private ChannelUID deactivationChannelId;
 
     LxControlTimedSwitch(LxUuid uuid) {
         super(uuid);
@@ -74,33 +69,21 @@ public class LxControlTimedSwitch extends LxControlPushbutton {
     @Override
     public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
         super.initialize(api, room, category);
-        deactivationChannelId = getChannelId(1);
-        addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_NUMBER), deactivationChannelId,
-                defaultChannelLabel + " / Deactivation Delay", "Deactivation Delay", null);
+        addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_NUMBER),
+                defaultChannelLabel + " / Deactivation Delay", "Deactivation Delay", null, null,
+                this::getDeactivationState);
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelId, Command command) throws IOException {
-        if (defaultChannelId.equals(channelId)) {
-            super.handleCommand(channelId, command);
-        }
-    }
-
-    @Override
-    public State getChannelState(ChannelUID channelId) {
-        if (defaultChannelId.equals(channelId)) {
-            return super.getChannelState(channelId);
-        } else if (deactivationChannelId.equals(channelId)) {
-            Double deactivationValue = getStateDoubleValue(STATE_DEACTIVATION_DELAY);
-            if (deactivationValue != null) {
-                return new DecimalType(deactivationValue);
-            }
+    private State getDeactivationState() {
+        Double deactivationValue = getStateDoubleValue(STATE_DEACTIVATION_DELAY);
+        if (deactivationValue != null) {
+            return new DecimalType(deactivationValue);
         }
         return null;
     }
 
     @Override
-    public OnOffType getState() {
+    OnOffType getSwitchState() {
         /**
          * 0 = the output is turned off
          * -1 = the output is permanently on

@@ -17,10 +17,8 @@ import static org.openhab.binding.loxone.internal.LxBindingConstants.*;
 import java.io.IOException;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
 import org.openhab.binding.loxone.internal.core.LxContainer;
@@ -81,12 +79,11 @@ public class LxControlSwitch extends LxControl {
         if (category != null && category.getType() == LxCategory.CategoryType.LIGHTS) {
             tags.add("Lighting");
         }
-        addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH), defaultChannelId,
-                defaultChannelLabel, "Switch", tags);
+        addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH), defaultChannelLabel,
+                "Switch", tags, this::handleSwitchCommands, this::getSwitchState);
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelId, Command command) throws IOException {
+    void handleSwitchCommands(Command command) throws IOException {
         if (command instanceof OnOffType) {
             if ((OnOffType) command == OnOffType.ON) {
                 on();
@@ -94,14 +91,6 @@ public class LxControlSwitch extends LxControl {
                 off();
             }
         }
-    }
-
-    @Override
-    public State getChannelState(ChannelUID channelId) {
-        if (defaultChannelId.equals(channelId)) {
-            return getState();
-        }
-        return null;
     }
 
     /**
@@ -137,7 +126,7 @@ public class LxControlSwitch extends LxControl {
      *
      * @return ON/OFF or null if undefined
      */
-    OnOffType getState() {
+    OnOffType getSwitchState() {
         Double value = getStateDoubleValue(STATE_ACTIVE);
         if (value != null) {
             if (value == 1.0) {

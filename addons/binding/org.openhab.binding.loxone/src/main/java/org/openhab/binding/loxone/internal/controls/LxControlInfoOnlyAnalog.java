@@ -14,13 +14,9 @@ package org.openhab.binding.loxone.internal.controls;
 
 import static org.openhab.binding.loxone.internal.LxBindingConstants.*;
 
-import java.io.IOException;
-
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.core.LxCategory;
@@ -66,30 +62,22 @@ public class LxControlInfoOnlyAnalog extends LxControl {
     @Override
     public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
         super.initialize(api, room, category);
-        addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_ANALOG), defaultChannelId,
-                defaultChannelLabel, "Analog virtual state", tags);
+        ChannelUID id = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_ANALOG),
+                defaultChannelLabel, "Analog virtual state", tags, null, this::getChannelState);
         String format;
         if (details != null && details.format != null) {
             format = details.format;
         } else {
             format = "%.1f";
         }
-        addChannelStateDescription(defaultChannelId, new StateDescription(null, null, null, format, true, null));
+        addChannelStateDescription(id, new StateDescription(null, null, null, format, true, null));
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelId, Command command) throws IOException {
-        // no commands to handle
-    }
-
-    @Override
-    public State getChannelState(ChannelUID channelId) {
-        if (defaultChannelId.equals(channelId)) {
-            Double value = getStateDoubleValue(STATE_VALUE);
-            if (value != null) {
-                return new DecimalType(value);
-            }
+    private DecimalType getChannelState() {
+        Double value = getStateDoubleValue(STATE_VALUE);
+        if (value != null) {
+            return new DecimalType(value);
         }
         return null;
-    }
+    };
 }
