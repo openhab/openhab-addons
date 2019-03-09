@@ -61,14 +61,14 @@ public abstract class AbstractComponent<C extends HAConfiguration> {
      * @param configJson The configuration string
      * @param gson A Gson instance
      */
-    public AbstractComponent(CFactory.ComponentConfiguration builder, Class<C> clazz) {
-        this.haID = builder.getHaID();
+    public AbstractComponent(CFactory.ComponentConfiguration componentConfiguration, Class<C> clazz) {
+        this.haID = componentConfiguration.getHaID();
         this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID,
                 haID.getChannelGroupTypeID());
-        this.channelGroupUID = new ChannelGroupUID(builder.getThingUID(), haID.getChannelGroupID());
+        this.channelGroupUID = new ChannelGroupUID(componentConfiguration.getThingUID(), haID.getChannelGroupID());
 
-        this.configJson = builder.getConfigJSON();
-        this.config = builder.getConfig(clazz);
+        this.configJson = componentConfiguration.getConfigJSON();
+        this.config = componentConfiguration.getConfig(clazz);
         this.configHash = configJson.hashCode();
     }
 

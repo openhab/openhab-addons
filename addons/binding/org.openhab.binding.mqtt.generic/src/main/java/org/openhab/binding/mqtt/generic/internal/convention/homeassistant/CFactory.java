@@ -45,30 +45,30 @@ public class CFactory {
      */
     public static @Nullable AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID, String configJSON,
             @Nullable ChannelStateUpdateListener updateListener, Gson gson) {
-        ComponentConfiguration config = new ComponentConfiguration(thingUID, haID, configJSON, gson)
+        ComponentConfiguration componentConfiguration = new ComponentConfiguration(thingUID, haID, configJSON, gson)
                 .withListerner(updateListener);
         try {
             switch (haID.component) {
                 case "alarm_control_panel":
-                    return new ComponentAlarmControlPanel(config);
+                    return new ComponentAlarmControlPanel(componentConfiguration);
                 case "binary_sensor":
-                    return new ComponentBinarySensor(config);
+                    return new ComponentBinarySensor(componentConfiguration);
                 case "camera":
-                    return new ComponentCamera(config);
+                    return new ComponentCamera(componentConfiguration);
                 case "cover":
-                    return new ComponentCover(config);
+                    return new ComponentCover(componentConfiguration);
                 case "fan":
-                    return new ComponentFan(config);
+                    return new ComponentFan(componentConfiguration);
                 case "climate":
-                    return new ComponentClimate(config);
+                    return new ComponentClimate(componentConfiguration);
                 case "light":
-                    return new ComponentLight(config);
+                    return new ComponentLight(componentConfiguration);
                 case "lock":
-                    return new ComponentLock(config);
+                    return new ComponentLock(componentConfiguration);
                 case "sensor":
-                    return new ComponentSensor(config);
+                    return new ComponentSensor(componentConfiguration);
                 case "switch":
-                    return new ComponentSwitch(config);
+                    return new ComponentSwitch(componentConfiguration);
             }
         } catch (UnsupportedOperationException e) {
             logger.warn("Not supported", e);

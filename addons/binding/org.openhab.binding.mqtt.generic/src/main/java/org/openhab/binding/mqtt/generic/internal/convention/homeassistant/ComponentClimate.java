@@ -33,8 +33,8 @@ public class ComponentClimate extends AbstractComponent<ComponentClimate.Config>
         }
     }
 
-    public ComponentClimate(CFactory.ComponentConfiguration builder) {
-        super(builder, Config.class);
+    public ComponentClimate(CFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, Config.class);
         throw new UnsupportedOperationException("Component:Climate not supported yet");
     }
 

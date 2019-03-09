@@ -44,8 +44,8 @@ public class ComponentSwitch extends AbstractComponent<ComponentSwitch.Config> {
         protected String payload_off = "false";
     };
 
-    public ComponentSwitch(CFactory.ComponentConfiguration builder) {
-        super(builder, Config.class);
+    public ComponentSwitch(CFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, Config.class);
 
         // We do not support all HomeAssistant quirks
         if (config.optimistic && StringUtils.isNotBlank(config.state_topic)) {
@@ -54,7 +54,8 @@ public class ComponentSwitch extends AbstractComponent<ComponentSwitch.Config> {
 
         channels.put(switchChannelID,
                 new CChannel(this, switchChannelID, new OnOffValue(config.state_on, config.state_off),
-                        config.state_topic, config.command_topic, config.name, "", builder.getUpdateListener()));
+                        config.state_topic, config.command_topic, config.name, "",
+                        componentConfiguration.getUpdateListener()));
     }
 
     @Override

@@ -41,11 +41,11 @@ public class ComponentFan extends AbstractComponent<ComponentFan.Config> {
         protected String payload_off = "OFF";
     };
 
-    public ComponentFan(CFactory.ComponentConfiguration builder) {
-        super(builder, Config.class);
+    public ComponentFan(CFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, Config.class);
 
         OnOffValue value = new OnOffValue(config.payload_on, config.payload_off);
         channels.put(switchChannelID, new CChannel(this, switchChannelID, value, //
-                config.state_topic, config.command_topic, config.name, "", builder.getUpdateListener()));
+                config.state_topic, config.command_topic, config.name, "", componentConfiguration.getUpdateListener()));
     }
 }

@@ -42,8 +42,8 @@ public class ComponentLock extends AbstractComponent<ComponentLock.Config> {
         protected @Nullable String command_topic;
     };
 
-    public ComponentLock(CFactory.ComponentConfiguration builder) {
-        super(builder, Config.class);
+    public ComponentLock(CFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, Config.class);
 
         // We do not support all HomeAssistant quirks
         if (config.optimistic && StringUtils.isNotBlank(config.state_topic)) {
@@ -52,7 +52,8 @@ public class ComponentLock extends AbstractComponent<ComponentLock.Config> {
 
         channels.put(switchChannelID,
                 new CChannel(this, switchChannelID, new OnOffValue(config.payload_lock, config.payload_unlock),
-                        config.state_topic, config.command_topic, config.name, "", builder.getUpdateListener()));
+                        config.state_topic, config.command_topic, config.name, "",
+                        componentConfiguration.getUpdateListener()));
     }
 
     @Override

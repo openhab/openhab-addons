@@ -55,24 +55,24 @@ public class ComponentAlarmControlPanel extends AbstractComponent<ComponentAlarm
         protected String payload_arm_away = "ARM_AWAY";
     };
 
-    public ComponentAlarmControlPanel(CFactory.ComponentConfiguration builder) {
-        super(builder, Config.class);
+    public ComponentAlarmControlPanel(CFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, Config.class);
 
         final String[] state_enum = { config.state_disarmed, config.state_armed_home, config.state_armed_away,
                 config.state_pending, config.state_triggered };
         channels.put(stateChannelID, new CChannel(this, stateChannelID, new TextValue(state_enum), config.state_topic,
-                null, config.name, "", builder.getUpdateListener()));
+                null, config.name, "", componentConfiguration.getUpdateListener()));
 
         channels.put(switchDisarmChannelID,
                 new CChannel(this, switchDisarmChannelID, new TextValue(new String[] { config.payload_disarm }),
-                        config.state_topic, null, config.name, "", builder.getUpdateListener()));
+                        config.state_topic, null, config.name, "", componentConfiguration.getUpdateListener()));
 
         channels.put(switchArmHomeChannelID,
                 new CChannel(this, switchArmHomeChannelID, new TextValue(new String[] { config.payload_arm_home }),
-                        config.state_topic, null, config.name, "", builder.getUpdateListener()));
+                        config.state_topic, null, config.name, "", componentConfiguration.getUpdateListener()));
 
         channels.put(switchArmAwayChannelID,
                 new CChannel(this, switchArmAwayChannelID, new TextValue(new String[] { config.payload_arm_away }),
-                        config.state_topic, null, config.name, "", builder.getUpdateListener()));
+                        config.state_topic, null, config.name, "", componentConfiguration.getUpdateListener()));
     }
 }
