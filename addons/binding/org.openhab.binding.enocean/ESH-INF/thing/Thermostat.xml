@@ -29,6 +29,7 @@
 				<options>
 					<option value="A5_20_04">Heating radiator valve actuating drive with feed and room temperature measurement, local set point control and display</option>
 				</options>
+				<default>"A5_20_04"</default>
 				<limitToOptions>true</limitToOptions>
 				<required>true</required>
 			</parameter>

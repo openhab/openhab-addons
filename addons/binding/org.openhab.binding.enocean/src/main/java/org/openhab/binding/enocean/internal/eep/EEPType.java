@@ -110,6 +110,7 @@ import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Switching;
 import org.openhab.binding.enocean.internal.eep.A5_3F.A5_3F_7F_EltakoFSB;
 import org.openhab.binding.enocean.internal.eep.Base.PTM200Message;
 import org.openhab.binding.enocean.internal.eep.Base.UTEResponse;
+import org.openhab.binding.enocean.internal.eep.Base._4BSTeachInVariation3Response;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_00;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_01;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_02;
@@ -151,6 +152,7 @@ public enum EEPType {
     Undef(RORG.Unknown, 0, 0, false, null, null, 0),
 
     UTEResponse(RORG.UTE, 0, 0, false, UTEResponse.class, null),
+    _4BSTeachInVariation3Response(RORG._4BS, 0, 0, false, _4BSTeachInVariation3Response.class, null),
 
     GenericRPS(RORG.RPS, 0xFF, 0xFF, false, GenericRPS.class, THING_TYPE_GENERICTHING, CHANNEL_GENERIC_SWITCH,
             CHANNEL_GENERIC_ROLLERSHUTTER, CHANNEL_GENERIC_DIMMER, CHANNEL_GENERIC_NUMBER, CHANNEL_GENERIC_STRING,
@@ -579,7 +581,7 @@ public enum EEPType {
             }
         }
 
-        throw new IllegalArgumentException(String.format("EEP with id {} could not be found", receivingEEPId));
+        throw new IllegalArgumentException(String.format("EEP with id %s could not be found", receivingEEPId));
     }
 
     public static EEPType getType(Class<? extends EEP> eepClass) {
@@ -589,7 +591,7 @@ public enum EEPType {
             }
         }
 
-        throw new IllegalArgumentException(String.format("EEP with class {} could not be found", eepClass));
+        throw new IllegalArgumentException(String.format("EEP with class %s could not be found", eepClass.getName()));
     }
 
     public static EEPType getType(RORG rorg, int func, int type, int manufId) {

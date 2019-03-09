@@ -194,8 +194,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                 transceiver.ShutDown();
             }
 
-            transceiver = new EnOceanSerialTransceiver((String) getThing().getConfiguration().get(PATH), this,
-                    scheduler, serialPortManager);
+            transceiver = new EnOceanSerialTransceiver((String) c.get(PATH), this, scheduler, serialPortManager);
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "opening serial port...");
             transceiver.Initialize();

@@ -27,7 +27,6 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
 /**
@@ -36,7 +35,7 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
  *
  * @author Dominik Vorreiter - Initial contribution
  */
-public class A5_20_04 extends _4BSMessage {
+public class A5_20_04 extends A5_20 {
 
     public A5_20_04(ERP1Message packet) {
         super(packet);
