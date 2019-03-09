@@ -121,7 +121,7 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
     openclosesensor     livingroom-window       "Livingroom Window"         [ id="5" ]
     switch              livingroom-hue-tap      "Livingroom Hue Tap"        [ id="6" ]
     waterleakagesensor  basement-water-leakage  "Basement Water Leakage"    [ id="7" ]
-    alarmesensor        basement-alarm          "Basement Alarm Sensor"     [ id="8" ]
+    alarmsensor         basement-alarm          "Basement Alarm Sensor"     [ id="8" ]
 }
 ```
 
