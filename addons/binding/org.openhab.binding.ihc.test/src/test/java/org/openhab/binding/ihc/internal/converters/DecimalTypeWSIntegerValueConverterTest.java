@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.Type;
 import org.junit.Test;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSIntegerValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 
@@ -28,7 +29,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 public class DecimalTypeWSIntegerValueConverterTest {
 
     @Test
-    public void testConversion() {
+    public void testConversion() throws ConversionException {
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
 
         val = convertFromOHType(val, new DecimalType(2), new ConverterAdditionalInfo(null, false));
@@ -39,27 +40,27 @@ public class DecimalTypeWSIntegerValueConverterTest {
         assertEquals(new DecimalType(2), type);
     }
 
-    @Test(expected = NumberFormatException.class)
-    public void testMinExceed() {
+    @Test(expected = ConversionException.class)
+    public void testMinExceed() throws ConversionException {
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
         val = convertFromOHType(val, new DecimalType(-101.5), new ConverterAdditionalInfo(null, false));
     }
 
-    @Test(expected = NumberFormatException.class)
-    public void testMaxExceed() {
+    @Test(expected = ConversionException.class)
+    public void testMaxExceed() throws ConversionException {
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
         val = convertFromOHType(val, new DecimalType(101.5), new ConverterAdditionalInfo(null, false));
     }
 
     private WSIntegerValue convertFromOHType(WSIntegerValue IHCvalue, Type OHval,
-            ConverterAdditionalInfo converterAdditionalInfo) {
+            ConverterAdditionalInfo converterAdditionalInfo) throws ConversionException {
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(IHCvalue.getClass(),
                 DecimalType.class);
         return (WSIntegerValue) converter.convertFromOHType(OHval, IHCvalue, converterAdditionalInfo);
     }
 
     private DecimalType convertFromResourceValue(WSIntegerValue IHCvalue,
-            ConverterAdditionalInfo converterAdditionalInfo) {
+            ConverterAdditionalInfo converterAdditionalInfo) throws ConversionException {
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(IHCvalue.getClass(),
                 DecimalType.class);
         return (DecimalType) converter.convertFromResourceValue(IHCvalue, converterAdditionalInfo);

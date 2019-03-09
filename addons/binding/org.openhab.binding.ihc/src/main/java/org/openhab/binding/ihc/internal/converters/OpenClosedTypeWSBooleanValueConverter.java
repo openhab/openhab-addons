@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.ihc.internal.converters;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 
 /**
@@ -23,14 +25,14 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 public class OpenClosedTypeWSBooleanValueConverter implements Converter<WSBooleanValue, OpenClosedType> {
 
     @Override
-    public OpenClosedType convertFromResourceValue(WSBooleanValue from, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public OpenClosedType convertFromResourceValue(@NonNull WSBooleanValue from,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         return from.booleanValue() ^ convertData.getInverted() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
     }
 
     @Override
-    public WSBooleanValue convertFromOHType(OpenClosedType from, WSBooleanValue value,
-            ConverterAdditionalInfo convertData) throws NumberFormatException {
+    public WSBooleanValue convertFromOHType(@NonNull OpenClosedType from, @NonNull WSBooleanValue value,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         value.setValue(from == OpenClosedType.OPEN ^ convertData.getInverted());
         return value;
     }

@@ -123,8 +123,10 @@ public class ProjectFileUtils {
                         return true;
                     }
                 }
-            } catch (Exception e) {
-                // do nothing, but return false
+            } catch (RuntimeException e) {
+                LOGGER.debug("Error occured during project file date comparasion, reason {}.", e.getMessage(), e);
+                // There is no documentation available for XML content. This is part of inessential feature, so do
+                // nothing, but return false
             }
         }
         return false;
@@ -137,7 +139,7 @@ public class ProjectFileUtils {
      * @return enum dictionary.
      */
     public static HashMap<Integer, ArrayList<IhcEnumValue>> parseEnums(Document doc) {
-        HashMap<Integer, ArrayList<IhcEnumValue>> enumDictionary = new HashMap<Integer, ArrayList<IhcEnumValue>>();
+        HashMap<Integer, ArrayList<IhcEnumValue>> enumDictionary = new HashMap<>();
         if (doc != null) {
             NodeList nodes = doc.getElementsByTagName("enum_definition");
 

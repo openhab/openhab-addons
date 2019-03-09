@@ -24,7 +24,7 @@ import org.openhab.binding.ihc.internal.ws.projectfile.IhcEnumValue;
  */
 public class EnumDictionary {
 
-    private HashMap<Integer, ArrayList<IhcEnumValue>> enumDictionary = new HashMap<Integer, ArrayList<IhcEnumValue>>();
+    private HashMap<Integer, ArrayList<IhcEnumValue>> enumDictionary = new HashMap<>();
 
     public EnumDictionary(HashMap<Integer, ArrayList<IhcEnumValue>> enums) {
         this.enumDictionary = enums;
@@ -33,10 +33,10 @@ public class EnumDictionary {
     /**
      * Returns all possible enumerated values for corresponding enum type.
      *
-     * @param typedefId Enum type definition identifier.
+     * @param typeDefinititonId Enum type definition identifier.
      * @return list of enum values.
      */
-    public ArrayList<IhcEnumValue> getEnumValues(int typedefId) {
-        return enumDictionary.get(typedefId);
+    public ArrayList<IhcEnumValue> getEnumValues(int typeDefinititonId) {
+        return enumDictionary.get(typeDefinititonId);
     }
 }

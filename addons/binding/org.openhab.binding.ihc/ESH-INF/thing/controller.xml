@@ -34,7 +34,7 @@
 				<description>Network/IP address of the IHC / ELKO controller without https prefix, but can contain TCP port if default port is not used</description>
 			</parameter>
 			<parameter name="username" type="text" required="true">
-				<label>User name</label>
+				<label>User Name</label>
 				<description>User name to login to the IHC / ELKO controller.</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
@@ -53,7 +53,7 @@
 				<default>true</default>
 			</parameter>
 			<parameter name="createChannelsAutomatically" type="boolean" required="false">
-				<label>Create channels automatically</label>
+				<label>Create Channels Automatically</label>
 				<description>Create channels automatically from project file. Project file loading parameter should be enabled as well.</description>
 				<default>true</default>
 			</parameter>

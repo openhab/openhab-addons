@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.ihc.internal.converters;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.projectfile.IhcEnumValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSEnumValue;
 
@@ -24,14 +26,14 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSEnumValue;
 public class StringTypeWSEnumValueConverter implements Converter<WSEnumValue, StringType> {
 
     @Override
-    public StringType convertFromResourceValue(WSEnumValue from, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public StringType convertFromResourceValue(@NonNull WSEnumValue from, @NonNull ConverterAdditionalInfo convertData)
+            throws ConversionException {
         return new StringType(from.getEnumName());
     }
 
     @Override
-    public WSEnumValue convertFromOHType(StringType from, WSEnumValue value, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public WSEnumValue convertFromOHType(@NonNull StringType from, @NonNull WSEnumValue value,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         if (convertData.getEnumValues() != null) {
             boolean found = false;
             for (IhcEnumValue item : convertData.getEnumValues()) {
@@ -43,11 +45,11 @@ public class StringTypeWSEnumValueConverter implements Converter<WSEnumValue, St
                 }
             }
             if (!found) {
-                throw new NumberFormatException("Can't find enum value for string " + value.toString());
+                throw new ConversionException("Can't find enum value for string " + value.toString());
             }
             return value;
         } else {
-            throw new NumberFormatException("Enum list is null");
+            throw new ConversionException("Enum list is null");
         }
     }
 }

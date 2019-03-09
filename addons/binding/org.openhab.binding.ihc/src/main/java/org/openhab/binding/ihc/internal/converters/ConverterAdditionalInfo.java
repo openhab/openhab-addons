@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.ihc.internal.converters;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.openhab.binding.ihc.internal.ws.projectfile.IhcEnumValue;
 
@@ -22,15 +22,15 @@ import org.openhab.binding.ihc.internal.ws.projectfile.IhcEnumValue;
  * @author Pauli Anttila - Initial contribution
  */
 public class ConverterAdditionalInfo {
-    private ArrayList<IhcEnumValue> enumValues;
+    private List<IhcEnumValue> enumValues;
     private Boolean inverted;
 
-    public ConverterAdditionalInfo(ArrayList<IhcEnumValue> enumValues, Boolean inverted) {
+    public ConverterAdditionalInfo(List<IhcEnumValue> enumValues, Boolean inverted) {
         this.enumValues = enumValues;
         this.inverted = inverted;
     }
 
-    public ArrayList<IhcEnumValue> getEnumValues() {
+    public List<IhcEnumValue> getEnumValues() {
         return enumValues;
     }
 

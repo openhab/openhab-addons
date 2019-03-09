@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.ihc.internal.converters;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 
 /**
@@ -23,14 +25,14 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 public class UpDownTypeWSBooleanValueConverter implements Converter<WSBooleanValue, UpDownType> {
 
     @Override
-    public UpDownType convertFromResourceValue(WSBooleanValue from, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public UpDownType convertFromResourceValue(@NonNull WSBooleanValue from,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         return from.booleanValue() ^ convertData.getInverted() ? UpDownType.UP : UpDownType.DOWN;
     }
 
     @Override
-    public WSBooleanValue convertFromOHType(UpDownType from, WSBooleanValue value, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public WSBooleanValue convertFromOHType(@NonNull UpDownType from, @NonNull WSBooleanValue value,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         value.setValue(from == UpDownType.UP ^ convertData.getInverted());
         return value;
     }

@@ -33,7 +33,7 @@
 				<description></description>
 			</parameter>
 			<parameter name="direction" type="text" required="false">
-				<label>Channel direction</label>
+				<label>Channel Direction</label>
 				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
 				<default>ReadWrite</default>
 				<options>
@@ -43,15 +43,15 @@
 				</options>
 			</parameter>
 			<parameter name="commandToReact" type="text" required="false">
-				<label>Command to react</label>
+				<label>Command To React</label>
 				<description>Command to react. If not defined, channel react to all commands.</description>
 			</parameter>
 			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
-				<label>Pulse width</label>
+				<label>Pulse Width</label>
 				<description>Pulse width in milliseconds. If defined, binding send pulse rather than command value to IHC controller.</description>
 			</parameter>
 			<parameter name="inverted" type="boolean" required="false">
-				<label>Inverted signal</label>
+				<label>Inverted Signal</label>
 				<description>OpenHAB state is inverted compared to IHC output/input signal</description>
 			</parameter>
 		</config-description>
@@ -67,7 +67,7 @@
 				<description></description>
 			</parameter>
 			<parameter name="inverted" type="boolean" required="false">
-				<label>Inverted signal</label>
+				<label>Inverted Signal</label>
 				<description>OpenHAB state is inverted compared to IHC output/input signal</description>
 			</parameter>
 		</config-description>
@@ -83,7 +83,7 @@
 				<description></description>
 			</parameter>
 			<parameter name="direction" type="text" required="false">
-				<label>Channel direction</label>
+				<label>Channel Direction</label>
 				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
 				<default>ReadWrite</default>
 				<options>
@@ -93,11 +93,11 @@
 				</options>
 			</parameter>
 			<parameter name="commandToReact" type="text" required="false">
-				<label>Command to react</label>
+				<label>Command To React</label>
 				<description>Command to react. If not defined, channel react to all commands.</description>
 			</parameter>
 			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
-				<label>Pulse width</label>
+				<label>Pulse Width</label>
 				<description>If defined, binding send pulse rather than command value to IHC controller.</description>
 			</parameter>
 		</config-description>
@@ -113,7 +113,7 @@
 				<description></description>
 			</parameter>
 			<parameter name="direction" type="text" required="false">
-				<label>Channel direction</label>
+				<label>Channel Direction</label>
 				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
 				<default>ReadWrite</default>
 				<options>
@@ -123,11 +123,11 @@
 				</options>
 			</parameter>
 			<parameter name="commandToReact" type="text" required="false">
-				<label>Command to react</label>
+				<label>Command To React</label>
 				<description>Command to react. If not defined, channel react to all commands.</description>
 			</parameter>
 			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
-				<label>Pulse width</label>
+				<label>Pulse Width</label>
 				<description>If defined, binding send pulse rather than command value to IHC controller.</description>
 			</parameter>
 		</config-description>
@@ -143,7 +143,7 @@
 				<description></description>
 			</parameter>
 			<parameter name="direction" type="text" required="false">
-				<label>Channel direction</label>
+				<label>Channel Direction</label>
 				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
 				<default>ReadWrite</default>
 				<options>
@@ -153,11 +153,11 @@
 				</options>
 			</parameter>
 			<parameter name="commandToReact" type="text" required="false">
-				<label>Command to react</label>
+				<label>Command To React</label>
 				<description>Command to react. If not defined, channel react to all commands.</description>
 			</parameter>
 			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
-				<label>Pulse width</label>
+				<label>Pulse Width</label>
 				<description>If defined, binding send pulse rather than command value to IHC controller.</description>
 			</parameter>
 		</config-description>
@@ -173,7 +173,7 @@
 				<description></description>
 			</parameter>
 			<parameter name="direction" type="text" required="false">
-				<label>Channel direction</label>
+				<label>Channel Direction</label>
 				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
 				<default>ReadWrite</default>
 				<options>
@@ -183,11 +183,11 @@
 				</options>
 			</parameter>
 			<parameter name="commandToReact" type="text" required="false">
-				<label>Command to react</label>
+				<label>Command To React</label>
 				<description>Command to react. If not defined, channel react to all commands.</description>
 			</parameter>
 			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
-				<label>Pulse width</label>
+				<label>Pulse Width</label>
 				<description>If defined, binding send pulse rather than command value to IHC controller.</description>
 			</parameter>
 		</config-description>
@@ -203,7 +203,7 @@
 				<description></description>
 			</parameter>
 			<parameter name="direction" type="text" required="false">
-				<label>Channel direction</label>
+				<label>Channel Direction</label>
 				<description>Direction of the channel. By default, channel is synchronized in both directions.</description>
 				<default>ReadWrite</default>
 				<options>
@@ -213,11 +213,11 @@
 				</options>
 			</parameter>
 			<parameter name="commandToReact" type="text" required="false">
-				<label>Command to react</label>
+				<label>Command To React</label>
 				<description>Command to react. If not defined, channel react to all commands.</description>
 			</parameter>
 			<parameter name="pulseWidth" type="integer" required="false" min="0" max="4000" step="100" unit="ms">
-				<label>Pulse width</label>
+				<label>Pulse Width</label>
 				<description>If defined, binding send pulse rather than command value to IHC controller.</description>
 			</parameter>
 		</config-description>
@@ -225,20 +225,20 @@
 
 	<channel-type id="rf-device-low-battery">
 		<item-type>Switch</item-type>
-		<label>RF device low battery warning</label>
+		<label>RF Device Low Battery Warning</label>
 		<description>RF device low battery warning.</description>
 		<category>Battery</category>
 		<state readOnly="true"></state>
 		<config-description>
 			<parameter name="serialNumber" type="integer" required="true">
-				<label>Serial number of RF device in decimal format.</label>
-				<description></description>
+				<label>RF Device Serial Number</label>
+				<description>Serial Number of RF device in decimal format.</description>
 			</parameter>
 		</config-description>
 	</channel-type>
 	<channel-type id="rf-device-signal-strength">
 		<item-type>String</item-type>
-		<label>RF device signal strength</label>
+		<label>RF Device Signal Strength</label>
 		<description>RF device signal strength.</description>
 		<category>QualityOfService</category>
 		<state readOnly="true" min="0" max="4">
@@ -252,15 +252,15 @@
 		</state>
 		<config-description>
 			<parameter name="serialNumber" type="integer" required="true">
-				<label>Serial number of RF device in decimal format.</label>
-				<description></description>
+				<label>RF Device Serial Number</label>
+				<description>Serial number of RF device in decimal format.</description>
 			</parameter>
 		</config-description>
 	</channel-type>
 
 	<channel-type id="push-button-trigger">
 		<kind>trigger</kind>
-		<label>Push button trigger channel</label>
+		<label>Push Button Trigger Channel</label>
 		<event>
 			<options>
 				<option value="PRESSED">Pressed</option>
@@ -275,7 +275,7 @@
 				<description></description>
 			</parameter>
 			<parameter name="longPressTime" type="integer" required="true" step="1000" min="0" max="5000" unit="ms">
-				<label>Long press time</label>
+				<label>Long Press Time</label>
 				<description>Long press time in milliseconds.</description>
 				<default>1000</default>
 			</parameter>

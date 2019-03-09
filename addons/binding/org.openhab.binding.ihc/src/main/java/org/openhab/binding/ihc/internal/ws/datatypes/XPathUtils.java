@@ -15,6 +15,7 @@ package org.openhab.binding.ihc.internal.ws.datatypes;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
 import javax.xml.namespace.NamespaceContext;
@@ -62,7 +63,7 @@ public class XPathUtils {
 
     public static String parseXMLValue(String xml, String xpathExpression)
             throws IOException, XPathExpressionException {
-        try (InputStream is = new ByteArrayInputStream(xml.getBytes("UTF8"))) {
+        try (InputStream is = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8.name()))) {
             XPath xpath = XPathFactory.newInstance().newXPath();
             InputSource inputSource = new InputSource(is);
 
@@ -88,7 +89,7 @@ public class XPathUtils {
     }
 
     public static NodeList parseList(String xml, String xpathExpression) throws XPathExpressionException, IOException {
-        try (InputStream is = new ByteArrayInputStream(xml.getBytes("UTF8"))) {
+        try (InputStream is = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8.name()))) {
             XPath xpath = XPathFactory.newInstance().newXPath();
             InputSource inputSource = new InputSource(is);
             xpath.setNamespaceContext(ihcNamespaceContext);

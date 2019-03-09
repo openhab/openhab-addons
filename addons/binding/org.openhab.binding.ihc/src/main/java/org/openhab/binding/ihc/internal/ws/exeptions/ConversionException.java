@@ -13,26 +13,26 @@
 package org.openhab.binding.ihc.internal.ws.exeptions;
 
 /**
- * Exception for handling communication errors to controller.
+ * Exception for conversion errors.
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class IhcExecption extends Exception {
+public class ConversionException extends Exception {
 
-    private static final long serialVersionUID = -8048415193494625295L;
+    private static final long serialVersionUID = 1;
 
-    public IhcExecption() {
+    public ConversionException() {
     }
 
-    public IhcExecption(String message) {
+    public ConversionException(String message) {
         super(message);
     }
 
-    public IhcExecption(String message, Throwable cause) {
+    public ConversionException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public IhcExecption(Throwable cause) {
+    public ConversionException(Throwable cause) {
         super(cause);
     }
 }

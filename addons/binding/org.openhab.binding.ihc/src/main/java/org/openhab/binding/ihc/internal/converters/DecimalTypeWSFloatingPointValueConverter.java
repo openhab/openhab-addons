@@ -15,7 +15,9 @@ package org.openhab.binding.ihc.internal.converters;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSFloatingPointValue;
 
 /**
@@ -26,21 +28,21 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSFloatingPointValue;
 public class DecimalTypeWSFloatingPointValueConverter implements Converter<WSFloatingPointValue, DecimalType> {
 
     @Override
-    public DecimalType convertFromResourceValue(WSFloatingPointValue from, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public DecimalType convertFromResourceValue(@NonNull WSFloatingPointValue from,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         double d = from.getFloatingPointValue();
         BigDecimal bd = new BigDecimal(d).setScale(2, RoundingMode.HALF_EVEN);
         return new DecimalType(bd);
     }
 
     @Override
-    public WSFloatingPointValue convertFromOHType(DecimalType from, WSFloatingPointValue value,
-            ConverterAdditionalInfo convertData) throws NumberFormatException {
+    public WSFloatingPointValue convertFromOHType(@NonNull DecimalType from, @NonNull WSFloatingPointValue value,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         if (from.doubleValue() >= value.getMinimumValue() && from.doubleValue() <= value.getMaximumValue()) {
             value.setFloatingPointValue(from.doubleValue());
             return value;
         } else {
-            throw new NumberFormatException("Value is not between accetable limits (min=" + value.getMinimumValue()
+            throw new ConversionException("Value is not between acceptable limits (min=" + value.getMinimumValue()
                     + ", max=" + value.getMaximumValue() + ")");
         }
     }

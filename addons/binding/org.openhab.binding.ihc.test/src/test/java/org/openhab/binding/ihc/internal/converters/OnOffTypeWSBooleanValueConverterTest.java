@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.Type;
 import org.junit.Test;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 
@@ -28,7 +29,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 public class OnOffTypeWSBooleanValueConverterTest {
 
     @Test
-    public void testOn() {
+    public void testOn() throws ConversionException {
         final boolean inverted = false;
         WSBooleanValue val = new WSBooleanValue(12345);
 
@@ -41,7 +42,7 @@ public class OnOffTypeWSBooleanValueConverterTest {
     }
 
     @Test
-    public void testOff() {
+    public void testOff() throws ConversionException {
         final boolean inverted = false;
 
         WSBooleanValue val = new WSBooleanValue(12345);
@@ -54,7 +55,7 @@ public class OnOffTypeWSBooleanValueConverterTest {
     }
 
     @Test
-    public void testOnInverted() {
+    public void testOnInverted() throws ConversionException {
         final boolean inverted = true;
 
         WSBooleanValue val = new WSBooleanValue(12345);
@@ -67,7 +68,7 @@ public class OnOffTypeWSBooleanValueConverterTest {
     }
 
     @Test
-    public void testOffInverted() {
+    public void testOffInverted() throws ConversionException {
         final boolean inverted = true;
 
         WSBooleanValue val = new WSBooleanValue(12345);
@@ -80,14 +81,14 @@ public class OnOffTypeWSBooleanValueConverterTest {
     }
 
     private WSBooleanValue convertFromOHType(WSBooleanValue IHCvalue, Type OHval,
-            ConverterAdditionalInfo converterAdditionalInfo) {
+            ConverterAdditionalInfo converterAdditionalInfo) throws ConversionException {
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(IHCvalue.getClass(),
                 OnOffType.class);
         return (WSBooleanValue) converter.convertFromOHType(OHval, IHCvalue, converterAdditionalInfo);
     }
 
-    private OnOffType convertFromResourceValue(WSBooleanValue IHCvalue,
-            ConverterAdditionalInfo converterAdditionalInfo) {
+    private OnOffType convertFromResourceValue(WSBooleanValue IHCvalue, ConverterAdditionalInfo converterAdditionalInfo)
+            throws ConversionException {
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(IHCvalue.getClass(),
                 OnOffType.class);
         return (OnOffType) converter.convertFromResourceValue(IHCvalue, converterAdditionalInfo);

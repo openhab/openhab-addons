@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.types.Type;
 import org.junit.Test;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSDateValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 
@@ -28,7 +29,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 public class DateTimeTypeWSDateValueConverterTest {
 
     @Test
-    public void testConversion() {
+    public void testConversion() throws ConversionException {
         final DateTimeType dateTimeType = new DateTimeType("2000-12-30T00:00:00");
         WSDateValue val = new WSDateValue(12345);
 
@@ -43,14 +44,14 @@ public class DateTimeTypeWSDateValueConverterTest {
     }
 
     private WSDateValue convertFromOHType(WSDateValue IHCvalue, Type OHval,
-            ConverterAdditionalInfo converterAdditionalInfo) {
+            ConverterAdditionalInfo converterAdditionalInfo) throws ConversionException {
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(IHCvalue.getClass(),
                 DateTimeType.class);
         return (WSDateValue) converter.convertFromOHType(OHval, IHCvalue, converterAdditionalInfo);
     }
 
-    private DateTimeType convertFromResourceValue(WSDateValue IHCvalue,
-            ConverterAdditionalInfo converterAdditionalInfo) {
+    private DateTimeType convertFromResourceValue(WSDateValue IHCvalue, ConverterAdditionalInfo converterAdditionalInfo)
+            throws ConversionException {
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(IHCvalue.getClass(),
                 DateTimeType.class);
         return (DateTimeType) converter.convertFromResourceValue(IHCvalue, converterAdditionalInfo);

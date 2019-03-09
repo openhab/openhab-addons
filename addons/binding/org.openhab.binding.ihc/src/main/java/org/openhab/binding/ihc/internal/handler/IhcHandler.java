@@ -62,6 +62,7 @@ import org.openhab.binding.ihc.internal.ws.datatypes.WSProjectInfo;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSRFDevice;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSSystemInfo;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSTimeManagerSettings;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 import org.openhab.binding.ihc.internal.ws.projectfile.IhcEnumValue;
 import org.openhab.binding.ihc.internal.ws.projectfile.ProjectFileUtils;
@@ -103,7 +104,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     private ScheduledFuture<?> notificationsRequestReminder;
 
     /** Holds local IHC / ELKO project file */
-    Document projectFile;
+    private Document projectFile;
 
     /**
      * Store current state of the controller, use to recognize when controller
@@ -244,19 +245,22 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
     private void refreshChannel(ChannelUID channelUID) {
         logger.debug("REFRESH channel {}", channelUID);
-        try {
-            ChannelParams params = new ChannelParams(thing.getChannel(channelUID.getId()));
-            logger.debug("Channel params: {}", params);
-            if (params.isDirectionWriteOnly()) {
-                logger.warn("Write only channel, skip refresh command to {}", channelUID);
-                return;
+        Channel channel = thing.getChannel(channelUID.getId());
+        if (channel != null) {
+            try {
+                ChannelParams params = new ChannelParams(channel);
+                logger.debug("Channel params: {}", params);
+                if (params.isDirectionWriteOnly()) {
+                    logger.warn("Write only channel, skip refresh command to {}", channelUID);
+                    return;
+                }
+                WSResourceValue value = ihc.resourceQuery(params.getResourceId());
+                resourceValueUpdateReceived(value);
+            } catch (IhcExecption e) {
+                logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage(), e);
+            } catch (ConversionException e) {
+                logger.warn("Channel param error, reason: {}.", e.getMessage(), e);
             }
-            WSResourceValue value = ihc.resourceQuery(params.getResourceId());
-            resourceValueUpdateReceived(value);
-        } catch (IhcExecption e) {
-            logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage());
-        } catch (IllegalArgumentException e) {
-            logger.warn("Can't find resource id, reason:  {}", e.getMessage());
         }
     }
 
@@ -278,7 +282,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_STATE), new StringType(value));
         } catch (IhcExecption e) {
-            logger.warn("Controller state information fetch failed, reason:  {}", e.getMessage());
+            logger.warn("Controller state information fetch failed, reason:  {}", e.getMessage(), e);
         }
     }
 
@@ -312,7 +316,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             properties.put(PROPERTY_PROJECT_NUMBER, projectInfo.getProjectNumber());
             updateProperties(properties);
         } catch (IhcExecption e) {
-            logger.warn("Controller information fetch failed, reason:  {}", e.getMessage());
+            logger.warn("Controller information fetch failed, reason:  {}", e.getMessage(), e);
         }
     }
 
@@ -324,7 +328,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_UPTIME),
                     new DecimalType((double) systemInfo.getUptime() / 1000));
         } catch (IhcExecption e) {
-            logger.warn("Controller uptime information fetch failed, reason:  {}", e.getMessage());
+            logger.warn("Controller uptime information fetch failed, reason: {}.", e.getMessage(), e);
         }
     }
 
@@ -337,14 +341,14 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     .withZoneSameInstant(ZoneId.systemDefault());
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_TIME), new DateTimeType(time));
         } catch (IhcExecption e) {
-            logger.warn("Controller uptime information fetch failed, reason:  {}", e.getMessage());
+            logger.warn("Controller uptime information fetch failed, reason: {}.", e.getMessage(), e);
         }
     }
 
     private void updateResourceChannel(ChannelUID channelUID, Command command) {
-        try {
-            Channel channel = thing.getChannel(channelUID.getId());
-            if (channel != null) {
+        Channel channel = thing.getChannel(channelUID.getId());
+        if (channel != null) {
+            try {
                 ChannelParams params = new ChannelParams(channel);
                 logger.debug("Channel params: {}", params);
                 if (params.isDirectionReadOnly()) {
@@ -352,16 +356,16 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     return;
                 }
                 updateChannel(channelUID, params, command);
+            } catch (IhcExecption e) {
+                logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage(), e);
+            } catch (ConversionException e) {
+                logger.debug("Conversion error for channel {}, reason: {}.", channelUID, e.getMessage(), e);
             }
-        } catch (IhcExecption e) {
-            logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage());
-        } catch (IllegalArgumentException e) {
-            logger.warn("Can't find resource id, reason:  {}", e.getMessage());
         }
     }
 
     private void updateChannel(ChannelUID channelUID, ChannelParams params, Command command)
-            throws IllegalArgumentException, IhcExecption {
+            throws IhcExecption, ConversionException {
         if (params.getCommandToReact() != null) {
             if (command.toString().equals(params.getCommandToReact())) {
                 logger.debug("Command '{}' equal to channel reaction parameter '{}', execute it", command,
@@ -383,7 +387,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     }
 
     private void sendNormalCommand(ChannelUID channelUID, ChannelParams params, Command command, WSResourceValue value)
-            throws IhcExecption {
+            throws IhcExecption, ConversionException {
         logger.debug("Send command '{}' to resource '{}'", command, value.getResourceID());
         ConverterAdditionalInfo converterAdditionalInfo = new ConverterAdditionalInfo(getEnumValues(value),
                 params.isInverted());
@@ -404,17 +408,19 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     }
 
     private void sendPulseCommand(ChannelUID channelUID, ChannelParams params, WSResourceValue value,
-            Integer pulseWidth) throws IhcExecption {
+            Integer pulseWidth) throws IhcExecption, ConversionException {
         logger.debug("Send {}ms pulse to resource: {}", pulseWidth, value.getResourceID());
         logger.debug("Channel params: {}", params);
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(value.getClass(),
                 OnOffType.class);
         ConverterAdditionalInfo converterAdditionalInfo = new ConverterAdditionalInfo(null, params.isInverted());
 
+        WSResourceValue valOn = converter.convertFromOHType(OnOffType.ON, value, converterAdditionalInfo);
+        WSResourceValue valOff = converter.convertFromOHType(OnOffType.OFF, value, converterAdditionalInfo);
+
         // set resource to ON
-        WSResourceValue val = converter.convertFromOHType(OnOffType.ON, value, converterAdditionalInfo);
-        logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), val);
-        if (updateResource(val)) {
+        logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), valOn);
+        if (updateResource(valOn)) {
             scheduler.submit(() -> {
                 // sleep a while
                 try {
@@ -424,14 +430,14 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     // do nothing
                 }
                 // set resource back to OFF
-                WSResourceValue v = converter.convertFromOHType(OnOffType.OFF, value, converterAdditionalInfo);
-                logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), v);
+
+                logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), valOff);
                 try {
-                    if (!updateResource(v)) {
-                        logger.warn("Channel {} update to resource '{}' failed.", channelUID, v);
+                    if (!updateResource(valOff)) {
+                        logger.warn("Channel {} update to resource '{}' failed.", channelUID, valOff);
                     }
                 } catch (IhcExecption e) {
-                    logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage());
+                    logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage(), e);
                 }
             });
         } else {
@@ -447,7 +453,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         try {
             result = ihc.resourceUpdate(value);
         } catch (IhcExecption e) {
-            logger.warn("Value could not be updated - retrying one time: {}", e.getMessage());
+            logger.warn("Value could not be updated - retrying one time: {}.", e.getMessage(), e);
             result = ihc.resourceUpdate(value);
         }
         return result;
@@ -471,18 +477,21 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 break;
 
             default:
-                try {
-                    ChannelParams params = new ChannelParams(thing.getChannel(channelUID.getId()));
-                    if (params.getResourceId() != null) {
-                        if (!linkedResourceIds.contains(params.getResourceId())) {
-                            logger.debug("New channel '{}' found, resource id '{}'", channelUID.getAsString(),
-                                    params.getResourceId());
-                            linkedResourceIds.add(params.getResourceId());
-                            updateNotificationsRequestReminder();
+                Channel channel = thing.getChannel(channelUID.getId());
+                if (channel != null) {
+                    try {
+                        ChannelParams params = new ChannelParams(channel);
+                        if (params.getResourceId() != null) {
+                            if (!linkedResourceIds.contains(params.getResourceId())) {
+                                logger.debug("New channel '{}' found, resource id '{}'", channelUID.getAsString(),
+                                        params.getResourceId());
+                                linkedResourceIds.add(params.getResourceId());
+                                updateNotificationsRequestReminder();
+                            }
                         }
+                    } catch (ConversionException e) {
+                        logger.warn("Channel param error, reason: {}.", e.getMessage(), e);
                     }
-                } catch (IllegalArgumentException e) {
-                    logger.warn("Can't find resource id, reason:  {}", e.getMessage());
                 }
         }
     }
@@ -498,14 +507,17 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 break;
 
             default:
-                try {
-                    ChannelParams params = new ChannelParams(thing.getChannel(channelUID.getId()));
-                    if (params.getResourceId() != null) {
-                        linkedResourceIds.removeIf(c -> c.equals(params.getResourceId()));
-                        updateNotificationsRequestReminder();
+                Channel channel = thing.getChannel(channelUID.getId());
+                if (channel != null) {
+                    try {
+                        ChannelParams params = new ChannelParams(channel);
+                        if (params.getResourceId() != null) {
+                            linkedResourceIds.removeIf(c -> c.equals(params.getResourceId()));
+                            updateNotificationsRequestReminder();
+                        }
+                    } catch (ConversionException e) {
+                        logger.warn("Channel param error, reason: {}.", e.getMessage(), e);
                     }
-                } catch (IllegalArgumentException e) {
-                    logger.warn("Can't find resource id, reason:  {}", e.getMessage());
                 }
         }
     }
@@ -551,7 +563,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     projectFile = ProjectFileUtils.readFromFile(filePath);
                 } catch (IhcExecption e) {
                     logger.debug("Error occured when read project file from file '{}', reason {}", filePath,
-                            e.getMessage());
+                            e.getMessage(), e);
                     loadProject = true;
                 }
             }
@@ -570,7 +582,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     ProjectFileUtils.saveToFile(filePath, data);
                 } catch (IhcExecption e) {
                     logger.warn("Error occured when trying to write data to file '{}', reason {}", filePath,
-                            e.getMessage());
+                            e.getMessage(), e);
                 }
                 projectFile = ProjectFileUtils.converteBytesToDocument(data);
             }
@@ -596,19 +608,21 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     private void printChannels(List<Channel> thingChannels) {
         if (logger.isDebugEnabled()) {
             thingChannels.forEach(channel -> {
-                String resourceId;
-                try {
-                    Object id = channel.getConfiguration().get(PARAM_RESOURCE_ID);
-                    resourceId = id != null ? "0x" + Integer.toHexString(((BigDecimal) id).intValue()) : "";
-                } catch (IllegalArgumentException e) {
-                    resourceId = "";
+                if (channel != null) {
+                    String resourceId;
+                    try {
+                        Object id = channel.getConfiguration().get(PARAM_RESOURCE_ID);
+                        resourceId = id != null ? "0x" + Integer.toHexString(((BigDecimal) id).intValue()) : "";
+                    } catch (IllegalArgumentException e) {
+                        resourceId = "";
+                    }
+
+                    String channelType = channel.getAcceptedItemType() != null ? channel.getAcceptedItemType() : "";
+                    String channelLabel = channel.getLabel() != null ? channel.getLabel() : "";
+
+                    logger.debug("Channel: {}", String.format("%-55s | %-10s | %-10s | %s", channel.getUID(),
+                            resourceId, channelType, channelLabel));
                 }
-
-                String channelType = channel.getAcceptedItemType() != null ? channel.getAcceptedItemType() : "";
-                String channelLabel = channel.getLabel() != null ? channel.getLabel() : "";
-
-                logger.debug("Channel: {}", String.format("%-55s | %-10s | %-10s | %s", channel.getUID(), resourceId,
-                        channelType, channelLabel));
             });
         }
     }
@@ -643,7 +657,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
     @Override
     public void errorOccured(IhcExecption e) {
-        logger.warn("Error occurred on communication to IHC controller: {}", e.getMessage());
+        logger.warn("Error occurred on communication to IHC controller: {}", e.getMessage(), e);
         logger.debug("Reconnection request");
         setReconnectRequest(true);
     }
@@ -687,9 +701,13 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         logger.debug("resourceValueUpdateReceived: {}", value);
 
         thing.getChannels().forEach(channel -> {
-            ChannelParams params = new ChannelParams(channel);
-            if (params.getResourceId() != null && params.getResourceId().intValue() == value.getResourceID()) {
-                updateChannelState(channel, params, value);
+            try {
+                ChannelParams params = new ChannelParams(channel);
+                if (params.getResourceId() != null && params.getResourceId().intValue() == value.getResourceID()) {
+                    updateChannelState(channel, params, value);
+                }
+            } catch (ConversionException e) {
+                logger.warn("Channel param error, reason: {}.", e.getMessage(), e);
             }
         });
 
@@ -713,9 +731,9 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                             State state = (State) converter.convertFromResourceValue(value,
                                     new ConverterAdditionalInfo(null, params.isInverted()));
                             updateState(channel.getUID(), state);
-                        } catch (NumberFormatException e) {
-                            logger.debug("Can't convert resource value '{}' to item type {}", value,
-                                    channel.getAcceptedItemType());
+                        } catch (ConversionException e) {
+                            logger.debug("Can't convert resource value '{}' to item type {}, reason: {}.", value,
+                                    channel.getAcceptedItemType(), e.getMessage(), e);
                         }
                 }
             }
@@ -742,30 +760,34 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
     private void updateTriggers(int resourceId, Duration duration) {
         thing.getChannels().forEach(channel -> {
-            ChannelParams params = new ChannelParams(channel);
-            if (params.getResourceId() != null && params.getResourceId().intValue() == resourceId) {
-                if (params.getChannelTypeId() != null) {
-                    switch (params.getChannelTypeId()) {
-                        case CHANNEL_TYPE_PUSH_BUTTON_TRIGGER:
-                            logger.debug("Update trigger channel '{}', channel params: {}", channel.getUID().getId(),
-                                    params);
-                            if (duration.toMillis() == 0) {
-                                triggerChannel(channel.getUID().getId(), EVENT_PRESSED);
-                                createLongPressTask(channel.getUID().getId(), params.getLongPressTime());
-                            } else {
-                                cancelLongPressTask(channel.getUID().getId());
-                                triggerChannel(channel.getUID().getId(), EVENT_RELEASED);
-                                triggerChannel(channel.getUID().getId(), String.valueOf(duration.toMillis()));
-                                ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration,
-                                        params.getLongPressTime(), MAX_LONG_PRESS_IN_MS);
-                                logger.debug("resourceId={}, ButtonPressDurationDetector={}", resourceId, button);
-                                if (button.isShortPress()) {
-                                    triggerChannel(channel.getUID().getId(), EVENT_SHORT_PRESS);
+            try {
+                ChannelParams params = new ChannelParams(channel);
+                if (params.getResourceId() != null && params.getResourceId().intValue() == resourceId) {
+                    if (params.getChannelTypeId() != null) {
+                        switch (params.getChannelTypeId()) {
+                            case CHANNEL_TYPE_PUSH_BUTTON_TRIGGER:
+                                logger.debug("Update trigger channel '{}', channel params: {}",
+                                        channel.getUID().getId(), params);
+                                if (duration.toMillis() == 0) {
+                                    triggerChannel(channel.getUID().getId(), EVENT_PRESSED);
+                                    createLongPressTask(channel.getUID().getId(), params.getLongPressTime());
+                                } else {
+                                    cancelLongPressTask(channel.getUID().getId());
+                                    triggerChannel(channel.getUID().getId(), EVENT_RELEASED);
+                                    triggerChannel(channel.getUID().getId(), String.valueOf(duration.toMillis()));
+                                    ButtonPressDurationDetector button = new ButtonPressDurationDetector(duration,
+                                            params.getLongPressTime(), MAX_LONG_PRESS_IN_MS);
+                                    logger.debug("resourceId={}, ButtonPressDurationDetector={}", resourceId, button);
+                                    if (button.isShortPress()) {
+                                        triggerChannel(channel.getUID().getId(), EVENT_SHORT_PRESS);
+                                    }
+                                    break;
                                 }
-                                break;
-                            }
+                        }
                     }
                 }
+            } catch (ConversionException e) {
+                logger.warn("Channel param error, reason:  {}", e.getMessage(), e);
             }
         });
     }
@@ -806,28 +828,32 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
                 devs.forEach(dev -> {
                     thing.getChannels().forEach(channel -> {
-                        ChannelParams params = new ChannelParams(channel);
-                        if (params.getSerialNumber() != null
-                                && params.getSerialNumber().longValue() == dev.getSerialNumber()) {
-                            String channelId = channel.getUID().getId();
-                            if (params.getChannelTypeId() != null) {
-                                switch (params.getChannelTypeId()) {
-                                    case CHANNEL_TYPE_RF_LOW_BATTERY:
-                                        updateState(channelId,
-                                                dev.getBatteryLevel() == 1 ? OnOffType.OFF : OnOffType.ON);
-                                        break;
-                                    case CHANNEL_TYPE_RF_SIGNAL_STRENGTH:
-                                        int signalLevel = new SignalLevelConverter(dev.getSignalStrength())
-                                                .getSystemWideSignalLevel();
-                                        updateState(channelId, new StringType(String.valueOf(signalLevel)));
-                                        break;
+                        try {
+                            ChannelParams params = new ChannelParams(channel);
+                            if (params.getSerialNumber() != null
+                                    && params.getSerialNumber().longValue() == dev.getSerialNumber()) {
+                                String channelId = channel.getUID().getId();
+                                if (params.getChannelTypeId() != null) {
+                                    switch (params.getChannelTypeId()) {
+                                        case CHANNEL_TYPE_RF_LOW_BATTERY:
+                                            updateState(channelId,
+                                                    dev.getBatteryLevel() == 1 ? OnOffType.OFF : OnOffType.ON);
+                                            break;
+                                        case CHANNEL_TYPE_RF_SIGNAL_STRENGTH:
+                                            int signalLevel = new SignalLevelConverter(dev.getSignalStrength())
+                                                    .getSystemWideSignalLevel();
+                                            updateState(channelId, new StringType(String.valueOf(signalLevel)));
+                                            break;
+                                    }
                                 }
                             }
+                        } catch (ConversionException e) {
+                            logger.warn("Channel param error, reason:  {}", e.getMessage(), e);
                         }
                     });
                 });
             } catch (IhcExecption e) {
-                logger.debug("Error occured when fetching RF device information, reason: : {} ", e.getMessage());
+                logger.debug("Error occured when fetching RF device information, reason: : {} ", e.getMessage(), e);
                 return;
             }
         }
@@ -842,7 +868,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 connect();
                 setReconnectRequest(false);
             } catch (IhcExecption e) {
-                logger.debug("Can't open connection to controller", e.getMessage());
+                logger.debug("Can't open connection to controller", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 setReconnectRequest(true);
                 return;
@@ -861,10 +887,15 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     private Set<Integer> getAllLinkedChannelsResourceIds() {
         Set<Integer> resourceIds = Collections.synchronizedSet(new HashSet<>());
         resourceIds.addAll(this.getThing().getChannels().stream().filter(c -> isLinked(c.getUID())).map(c -> {
-            ChannelParams params = new ChannelParams(c);
-            logger.debug("Linked channel '{}' found, resource id '{}'", c.getUID().getAsString(),
-                    params.getResourceId());
-            return params.getResourceId();
+            try {
+                ChannelParams params = new ChannelParams(c);
+                logger.debug("Linked channel '{}' found, resource id '{}'", c.getUID().getAsString(),
+                        params.getResourceId());
+                return params.getResourceId();
+            } catch (ConversionException e) {
+                logger.warn("Channel param error, reason: {}.", e.getMessage(), e);
+                return null;
+            }
         }).filter(c -> c != null && c != 0).collect(Collectors.toSet()));
         return resourceIds;
     }

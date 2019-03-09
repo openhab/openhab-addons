@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.Type;
 import org.junit.Test;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 
@@ -28,7 +29,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 public class DecimalTypeWSBooleanValueConverterTest {
 
     @Test
-    public void testOn() {
+    public void testOn() throws ConversionException {
         final boolean inverted = false;
         WSBooleanValue val = new WSBooleanValue(12345);
 
@@ -41,7 +42,7 @@ public class DecimalTypeWSBooleanValueConverterTest {
     }
 
     @Test
-    public void testOff() {
+    public void testOff() throws ConversionException {
         final boolean inverted = false;
 
         WSBooleanValue val = new WSBooleanValue(12345);
@@ -54,14 +55,14 @@ public class DecimalTypeWSBooleanValueConverterTest {
     }
 
     private WSBooleanValue convertFromOHType(WSBooleanValue IHCvalue, Type OHval,
-            ConverterAdditionalInfo converterAdditionalInfo) {
+            ConverterAdditionalInfo converterAdditionalInfo) throws ConversionException {
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(IHCvalue.getClass(),
                 DecimalType.class);
         return (WSBooleanValue) converter.convertFromOHType(OHval, IHCvalue, converterAdditionalInfo);
     }
 
     private DecimalType convertFromResourceValue(WSBooleanValue IHCvalue,
-            ConverterAdditionalInfo converterAdditionalInfo) {
+            ConverterAdditionalInfo converterAdditionalInfo) throws ConversionException {
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(IHCvalue.getClass(),
                 DecimalType.class);
         return (DecimalType) converter.convertFromResourceValue(IHCvalue, converterAdditionalInfo);

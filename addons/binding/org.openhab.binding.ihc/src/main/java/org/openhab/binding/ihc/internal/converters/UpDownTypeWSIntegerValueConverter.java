@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.ihc.internal.converters;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSIntegerValue;
 
 /**
@@ -23,14 +25,14 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSIntegerValue;
 public class UpDownTypeWSIntegerValueConverter implements Converter<WSIntegerValue, UpDownType> {
 
     @Override
-    public UpDownType convertFromResourceValue(WSIntegerValue from, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public UpDownType convertFromResourceValue(@NonNull WSIntegerValue from,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         return from.getInteger() > 0 ^ convertData.getInverted() ? UpDownType.UP : UpDownType.DOWN;
     }
 
     @Override
-    public WSIntegerValue convertFromOHType(UpDownType from, WSIntegerValue value, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public WSIntegerValue convertFromOHType(@NonNull UpDownType from, @NonNull WSIntegerValue value,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         int newVal = from == UpDownType.UP ? 1 : 0;
 
         if (convertData.getInverted()) {
@@ -40,7 +42,7 @@ public class UpDownTypeWSIntegerValueConverter implements Converter<WSIntegerVal
             value.setInteger(newVal);
             return value;
         } else {
-            throw new NumberFormatException("Value is not between accetable limits (min=" + value.getMinimumValue()
+            throw new ConversionException("Value is not between acceptable limits (min=" + value.getMinimumValue()
                     + ", max=" + value.getMaximumValue() + ")");
         }
     }

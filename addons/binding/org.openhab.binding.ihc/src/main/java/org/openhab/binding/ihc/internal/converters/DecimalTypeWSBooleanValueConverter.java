@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.ihc.internal.converters;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 
 /**
@@ -23,14 +25,14 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 public class DecimalTypeWSBooleanValueConverter implements Converter<WSBooleanValue, DecimalType> {
 
     @Override
-    public DecimalType convertFromResourceValue(WSBooleanValue from, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public DecimalType convertFromResourceValue(@NonNull WSBooleanValue from,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         return new DecimalType(from.booleanValue() ? 1 : 0);
     }
 
     @Override
-    public WSBooleanValue convertFromOHType(DecimalType from, WSBooleanValue value, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public WSBooleanValue convertFromOHType(@NonNull DecimalType from, @NonNull WSBooleanValue value,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         value.setValue(from.intValue() > 0);
         return value;
     }

@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.ihc.internal.converters;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSWeekdayValue;
 
 /**
@@ -23,14 +25,14 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSWeekdayValue;
 public class DecimalTypeWSWeekdayValueConverter implements Converter<WSWeekdayValue, DecimalType> {
 
     @Override
-    public DecimalType convertFromResourceValue(WSWeekdayValue from, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public DecimalType convertFromResourceValue(@NonNull WSWeekdayValue from,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         return new DecimalType(from.getWeekdayNumber());
     }
 
     @Override
-    public WSWeekdayValue convertFromOHType(DecimalType from, WSWeekdayValue value, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public WSWeekdayValue convertFromOHType(@NonNull DecimalType from, @NonNull WSWeekdayValue value,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         value.setWeekdayNumber(from.intValue());
         return value;
     }

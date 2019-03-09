@@ -14,6 +14,8 @@ package org.openhab.binding.ihc.internal.ws.http;
 
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -81,16 +83,16 @@ public class IhcConnectionPool {
         TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
 
             @Override
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+            public X509Certificate[] getAcceptedIssuers() {
                 return null;
             }
 
             @Override
-            public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+            public void checkClientTrusted(X509Certificate[] certs, String authType) {
             }
 
             @Override
-            public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+            public void checkServerTrusted(X509Certificate[] certs, String authType) {
                 logger.trace("Trusting server cert: " + certs[0].getIssuerDN());
             }
         } };
@@ -100,7 +102,7 @@ public class IhcConnectionPool {
         try {
             // Controller supports only SSLv3 and TLSv1
             sslContext = SSLContext.getInstance("TLSv1");
-            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            sslContext.init(null, trustAllCerts, new SecureRandom());
         } catch (NoSuchAlgorithmException e) {
             logger.warn("Exception", e);
         } catch (KeyManagementException e) {

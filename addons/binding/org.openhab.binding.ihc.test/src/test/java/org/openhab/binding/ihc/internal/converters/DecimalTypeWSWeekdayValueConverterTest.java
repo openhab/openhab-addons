@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.Type;
 import org.junit.Test;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSWeekdayValue;
 
@@ -28,7 +29,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSWeekdayValue;
 public class DecimalTypeWSWeekdayValueConverterTest {
 
     @Test
-    public void testConversion() {
+    public void testConversion() throws ConversionException {
         WSWeekdayValue val = new WSWeekdayValue(12345);
 
         val = convertFromOHType(val, new DecimalType(6), new ConverterAdditionalInfo(null, false));
@@ -40,14 +41,14 @@ public class DecimalTypeWSWeekdayValueConverterTest {
     }
 
     private WSWeekdayValue convertFromOHType(WSWeekdayValue IHCvalue, Type OHval,
-            ConverterAdditionalInfo converterAdditionalInfo) {
+            ConverterAdditionalInfo converterAdditionalInfo) throws ConversionException {
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(IHCvalue.getClass(),
                 DecimalType.class);
         return (WSWeekdayValue) converter.convertFromOHType(OHval, IHCvalue, converterAdditionalInfo);
     }
 
     private DecimalType convertFromResourceValue(WSWeekdayValue IHCvalue,
-            ConverterAdditionalInfo converterAdditionalInfo) {
+            ConverterAdditionalInfo converterAdditionalInfo) throws ConversionException {
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(IHCvalue.getClass(),
                 DecimalType.class);
         return (DecimalType) converter.convertFromResourceValue(IHCvalue, converterAdditionalInfo);

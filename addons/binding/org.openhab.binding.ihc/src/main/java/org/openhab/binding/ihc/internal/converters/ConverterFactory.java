@@ -60,7 +60,7 @@ public enum ConverterFactory {
 
         @Override
         public int hashCode() {
-            return new String(ihcType.getClass().toString() + openhabType.getClass().toString()).hashCode();
+            return ihcType.getClass().hashCode() + openhabType.getClass().hashCode();
         }
 
         @Override

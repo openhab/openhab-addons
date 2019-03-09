@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.ihc.internal.converters;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 
 /**
@@ -23,14 +25,14 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 public class OnOffTypeWSBooleanValueConverter implements Converter<WSBooleanValue, OnOffType> {
 
     @Override
-    public OnOffType convertFromResourceValue(WSBooleanValue from, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public OnOffType convertFromResourceValue(@NonNull WSBooleanValue from,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         return from.booleanValue() ^ convertData.getInverted() ? OnOffType.ON : OnOffType.OFF;
     }
 
     @Override
-    public WSBooleanValue convertFromOHType(OnOffType from, WSBooleanValue value, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public WSBooleanValue convertFromOHType(@NonNull OnOffType from, @NonNull WSBooleanValue value,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         value.setValue(from == OnOffType.ON ^ convertData.getInverted());
         return value;
     }

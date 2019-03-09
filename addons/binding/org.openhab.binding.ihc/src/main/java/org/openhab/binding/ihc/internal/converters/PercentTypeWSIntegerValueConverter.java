@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.ihc.internal.converters;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSIntegerValue;
 
 /**
@@ -23,19 +25,19 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSIntegerValue;
 public class PercentTypeWSIntegerValueConverter implements Converter<WSIntegerValue, PercentType> {
 
     @Override
-    public PercentType convertFromResourceValue(WSIntegerValue from, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public PercentType convertFromResourceValue(@NonNull WSIntegerValue from,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         return new PercentType(from.getInteger());
     }
 
     @Override
-    public WSIntegerValue convertFromOHType(PercentType from, WSIntegerValue value, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public WSIntegerValue convertFromOHType(@NonNull PercentType from, @NonNull WSIntegerValue value,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         if (from.intValue() >= value.getMinimumValue() && from.intValue() <= value.getMaximumValue()) {
             value.setInteger(from.intValue());
             return value;
         } else {
-            throw new NumberFormatException("Value is not between accetable limits (min=" + value.getMinimumValue()
+            throw new ConversionException("Value is not between acceptable limits (min=" + value.getMinimumValue()
                     + ", max=" + value.getMaximumValue() + ")");
         }
     }

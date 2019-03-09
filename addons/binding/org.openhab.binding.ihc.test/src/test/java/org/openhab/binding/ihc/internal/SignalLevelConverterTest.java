@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.ihc.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -25,48 +25,26 @@ public class SignalLevelConverterTest {
 
     @Test
     public void checkSignalLevelConverter() {
-
         // IHC signal levels are between 0-18.
-        for (int i = 0; i <= 18; i++) {
-            int signalLevel = new SignalLevelConverter(i).getSystemWideSignalLevel();
-            switch (i) {
-                case 0:
-                case 1:
-                    assertEquals(0, signalLevel);
-                    break;
 
-                case 2:
-                case 3:
-                case 4:
-                    assertEquals(1, signalLevel);
-                    break;
-
-                case 5:
-                case 6:
-                case 7:
-                case 8:
-                    assertEquals(2, signalLevel);
-                    break;
-
-                case 9:
-                case 10:
-                case 11:
-                case 12:
-                case 13:
-                    assertEquals(3, signalLevel);
-                    break;
-
-                case 14:
-                case 15:
-                case 16:
-                case 17:
-                case 18:
-                    assertEquals(4, signalLevel);
-                    break;
-
-                default:
-                    fail("Illegal state");
-            }
-        }
+        assertEquals(0, new SignalLevelConverter(0).getSystemWideSignalLevel());
+        assertEquals(0, new SignalLevelConverter(1).getSystemWideSignalLevel());
+        assertEquals(1, new SignalLevelConverter(2).getSystemWideSignalLevel());
+        assertEquals(1, new SignalLevelConverter(3).getSystemWideSignalLevel());
+        assertEquals(1, new SignalLevelConverter(4).getSystemWideSignalLevel());
+        assertEquals(2, new SignalLevelConverter(5).getSystemWideSignalLevel());
+        assertEquals(2, new SignalLevelConverter(6).getSystemWideSignalLevel());
+        assertEquals(2, new SignalLevelConverter(7).getSystemWideSignalLevel());
+        assertEquals(2, new SignalLevelConverter(8).getSystemWideSignalLevel());
+        assertEquals(3, new SignalLevelConverter(9).getSystemWideSignalLevel());
+        assertEquals(3, new SignalLevelConverter(10).getSystemWideSignalLevel());
+        assertEquals(3, new SignalLevelConverter(11).getSystemWideSignalLevel());
+        assertEquals(3, new SignalLevelConverter(12).getSystemWideSignalLevel());
+        assertEquals(3, new SignalLevelConverter(13).getSystemWideSignalLevel());
+        assertEquals(4, new SignalLevelConverter(14).getSystemWideSignalLevel());
+        assertEquals(4, new SignalLevelConverter(15).getSystemWideSignalLevel());
+        assertEquals(4, new SignalLevelConverter(16).getSystemWideSignalLevel());
+        assertEquals(4, new SignalLevelConverter(17).getSystemWideSignalLevel());
+        assertEquals(4, new SignalLevelConverter(18).getSystemWideSignalLevel());
     }
 }

@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Type;
 import org.junit.Test;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSIntegerValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 
@@ -28,7 +29,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 public class UpDownTypeWSIntegerValueConverterTest {
 
     @Test
-    public void testOpen() {
+    public void testOpen() throws ConversionException {
         final boolean inverted = false;
         WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
 
@@ -41,7 +42,7 @@ public class UpDownTypeWSIntegerValueConverterTest {
     }
 
     @Test
-    public void testClosed() {
+    public void testClosed() throws ConversionException {
         final boolean inverted = false;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
@@ -54,7 +55,7 @@ public class UpDownTypeWSIntegerValueConverterTest {
     }
 
     @Test
-    public void testOpenInverted() {
+    public void testOpenInverted() throws ConversionException {
         final boolean inverted = true;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
@@ -67,7 +68,7 @@ public class UpDownTypeWSIntegerValueConverterTest {
     }
 
     @Test
-    public void testClosedInverted() {
+    public void testClosedInverted() throws ConversionException {
         final boolean inverted = true;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
@@ -80,14 +81,14 @@ public class UpDownTypeWSIntegerValueConverterTest {
     }
 
     private WSIntegerValue convertFromOHType(WSIntegerValue IHCvalue, Type OHval,
-            ConverterAdditionalInfo converterAdditionalInfo) {
+            ConverterAdditionalInfo converterAdditionalInfo) throws ConversionException {
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(IHCvalue.getClass(),
                 UpDownType.class);
         return (WSIntegerValue) converter.convertFromOHType(OHval, IHCvalue, converterAdditionalInfo);
     }
 
     private UpDownType convertFromResourceValue(WSIntegerValue IHCvalue,
-            ConverterAdditionalInfo converterAdditionalInfo) {
+            ConverterAdditionalInfo converterAdditionalInfo) throws ConversionException {
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(IHCvalue.getClass(),
                 UpDownType.class);
         return (UpDownType) converter.convertFromResourceValue(IHCvalue, converterAdditionalInfo);

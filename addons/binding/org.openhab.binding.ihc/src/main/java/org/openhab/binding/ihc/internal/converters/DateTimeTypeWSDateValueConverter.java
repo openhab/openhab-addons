@@ -17,7 +17,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSDateValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSTimeValue;
 
@@ -29,15 +31,15 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSTimeValue;
 public class DateTimeTypeWSDateValueConverter implements Converter<WSDateValue, DateTimeType> {
 
     @Override
-    public DateTimeType convertFromResourceValue(WSDateValue from, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public DateTimeType convertFromResourceValue(@NonNull WSDateValue from,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         Calendar cal = dateTimeToCalendar(from, null);
         return new DateTimeType(ZonedDateTime.ofInstant(cal.toInstant(), TimeZone.getDefault().toZoneId()));
     }
 
     @Override
-    public WSDateValue convertFromOHType(DateTimeType from, WSDateValue value, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public WSDateValue convertFromOHType(@NonNull DateTimeType from, @NonNull WSDateValue value,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         Calendar cal = GregorianCalendar.from(from.getZonedDateTime());
         short year = (short) cal.get(Calendar.YEAR);
         byte month = (byte) (cal.get(Calendar.MONTH) + 1);

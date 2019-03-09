@@ -14,6 +14,7 @@ package org.openhab.binding.ihc.internal.ws.http;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -71,16 +72,9 @@ public abstract class IhcHttpsClient {
         setRequestProperty(requestProperties);
         try {
             return sendQ(query, timeout);
-        } catch (NoHttpResponseException e) {
+        } catch (NoHttpResponseException | SocketTimeoutException e) {
             try {
                 logger.debug("No response received, resend query");
-                return sendQ(query, timeout);
-            } catch (IOException ee) {
-                throw new IhcExecption(ee);
-            }
-        } catch (SocketTimeoutException e) {
-            try {
-                logger.debug("Timeout received, resend query");
                 return sendQ(query, timeout);
             } catch (IOException ee) {
                 throw new IhcExecption(ee);
@@ -92,7 +86,7 @@ public abstract class IhcHttpsClient {
 
     private String sendQ(String query, int timeout)
             throws ClientProtocolException, IOException, NoHttpResponseException {
-        postReq.setEntity(new StringEntity(query, "UTF-8"));
+        postReq.setEntity(new StringEntity(query, StandardCharsets.UTF_8.name()));
         postReq.addHeader("content-type", "text/xml");
 
         int requestId = 0;

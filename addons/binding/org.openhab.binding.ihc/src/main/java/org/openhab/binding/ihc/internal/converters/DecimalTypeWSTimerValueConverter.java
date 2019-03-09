@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.ihc.internal.converters;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSTimerValue;
 
 /**
@@ -23,14 +25,14 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSTimerValue;
 public class DecimalTypeWSTimerValueConverter implements Converter<WSTimerValue, DecimalType> {
 
     @Override
-    public DecimalType convertFromResourceValue(WSTimerValue from, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public DecimalType convertFromResourceValue(@NonNull WSTimerValue from,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         return new DecimalType(from.getMilliseconds());
     }
 
     @Override
-    public WSTimerValue convertFromOHType(DecimalType from, WSTimerValue value, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public WSTimerValue convertFromOHType(@NonNull DecimalType from, @NonNull WSTimerValue value,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         value.setMilliseconds(from.longValue());
         return value;
     }

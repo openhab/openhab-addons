@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Type;
 import org.junit.Test;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.projectfile.IhcEnumValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSEnumValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
@@ -31,7 +32,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 public class StringTypeWSEnumValueConverterTest {
 
     @Test
-    public void test() {
+    public void test() throws ConversionException {
         ArrayList<IhcEnumValue> enumValues = new ArrayList<>();
         enumValues.add(new IhcEnumValue(101, "testA"));
         enumValues.add(new IhcEnumValue(102, "testB"));
@@ -51,13 +52,14 @@ public class StringTypeWSEnumValueConverterTest {
     }
 
     private WSEnumValue convertFromOHType(WSEnumValue IHCvalue, Type OHval,
-            ConverterAdditionalInfo converterAdditionalInfo) {
+            ConverterAdditionalInfo converterAdditionalInfo) throws ConversionException {
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(IHCvalue.getClass(),
                 StringType.class);
         return (WSEnumValue) converter.convertFromOHType(OHval, IHCvalue, converterAdditionalInfo);
     }
 
-    private StringType convertFromResourceValue(WSEnumValue IHCvalue, ConverterAdditionalInfo converterAdditionalInfo) {
+    private StringType convertFromResourceValue(WSEnumValue IHCvalue, ConverterAdditionalInfo converterAdditionalInfo)
+            throws ConversionException {
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(IHCvalue.getClass(),
                 StringType.class);
         return (StringType) converter.convertFromResourceValue(IHCvalue, converterAdditionalInfo);

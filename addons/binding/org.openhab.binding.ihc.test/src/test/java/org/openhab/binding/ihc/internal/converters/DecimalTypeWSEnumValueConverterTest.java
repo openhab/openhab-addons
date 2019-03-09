@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.Type;
 import org.junit.Test;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSEnumValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 
@@ -28,7 +29,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 public class DecimalTypeWSEnumValueConverterTest {
 
     @Test
-    public void testConversion() {
+    public void testConversion() throws ConversionException {
         WSEnumValue val = new WSEnumValue(12345, 100, 0, "testB");
 
         val = convertFromOHType(val, new DecimalType(2), new ConverterAdditionalInfo(null, false));
@@ -42,14 +43,14 @@ public class DecimalTypeWSEnumValueConverterTest {
     }
 
     private WSEnumValue convertFromOHType(WSEnumValue IHCvalue, Type OHval,
-            ConverterAdditionalInfo converterAdditionalInfo) {
+            ConverterAdditionalInfo converterAdditionalInfo) throws ConversionException {
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(IHCvalue.getClass(),
                 DecimalType.class);
         return (WSEnumValue) converter.convertFromOHType(OHval, IHCvalue, converterAdditionalInfo);
     }
 
-    private DecimalType convertFromResourceValue(WSEnumValue IHCvalue,
-            ConverterAdditionalInfo converterAdditionalInfo) {
+    private DecimalType convertFromResourceValue(WSEnumValue IHCvalue, ConverterAdditionalInfo converterAdditionalInfo)
+            throws ConversionException {
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(IHCvalue.getClass(),
                 DecimalType.class);
         return (DecimalType) converter.convertFromResourceValue(IHCvalue, converterAdditionalInfo);

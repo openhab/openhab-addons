@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.ihc.internal.config.ChannelParams;
 import org.openhab.binding.ihc.internal.handler.IhcHandler;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -46,9 +47,13 @@ public class ChannelUtils {
         Set<Integer> resourceIds = new HashSet<>();
 
         thing.getChannels().forEach(c -> {
-            ChannelParams params = new ChannelParams(c);
-            if (params.getResourceId() != null && params.getResourceId() != 0) {
-                resourceIds.add(params.getResourceId());
+            try {
+                ChannelParams params = new ChannelParams(c);
+                if (params.getResourceId() != null && params.getResourceId() != 0) {
+                    resourceIds.add(params.getResourceId());
+                }
+            } catch (ConversionException e) {
+                LOGGER.warn("Channel param error, reason: {}.", e.getMessage(), e);
             }
         });
 
@@ -59,15 +64,19 @@ public class ChannelUtils {
         Set<Integer> resourceIds = new HashSet<>();
 
         thing.getChannels().forEach(c -> {
-            ChannelParams params = new ChannelParams(c);
-            if (params.getChannelTypeId() != null) {
-                switch (params.getChannelTypeId()) {
-                    case CHANNEL_TYPE_PUSH_BUTTON_TRIGGER:
-                        if (params.getResourceId() != null && params.getResourceId() != 0) {
-                            resourceIds.add(params.getResourceId());
-                        }
-                        break;
+            try {
+                ChannelParams params = new ChannelParams(c);
+                if (params.getChannelTypeId() != null) {
+                    switch (params.getChannelTypeId()) {
+                        case CHANNEL_TYPE_PUSH_BUTTON_TRIGGER:
+                            if (params.getResourceId() != null && params.getResourceId() != 0) {
+                                resourceIds.add(params.getResourceId());
+                            }
+                            break;
+                    }
                 }
+            } catch (ConversionException e) {
+                LOGGER.warn("Channel param error, reason: {}.", e.getMessage(), e);
             }
         });
         return resourceIds;

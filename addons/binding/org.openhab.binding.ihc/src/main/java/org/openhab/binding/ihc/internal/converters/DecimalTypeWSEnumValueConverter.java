@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.ihc.internal.converters;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSEnumValue;
 
 /**
@@ -23,14 +25,14 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSEnumValue;
 public class DecimalTypeWSEnumValueConverter implements Converter<WSEnumValue, DecimalType> {
 
     @Override
-    public DecimalType convertFromResourceValue(WSEnumValue from, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public DecimalType convertFromResourceValue(@NonNull WSEnumValue from, @NonNull ConverterAdditionalInfo convertData)
+            throws ConversionException {
         return new DecimalType(from.getEnumValueID());
     }
 
     @Override
-    public WSEnumValue convertFromOHType(DecimalType from, WSEnumValue value, ConverterAdditionalInfo convertData)
-            throws NumberFormatException {
+    public WSEnumValue convertFromOHType(@NonNull DecimalType from, @NonNull WSEnumValue value,
+            @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         value.setEnumValueID(from.intValue());
         return value;
     }

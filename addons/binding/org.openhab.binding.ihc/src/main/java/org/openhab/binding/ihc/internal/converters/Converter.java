@@ -12,13 +12,18 @@
  */
 package org.openhab.binding.ihc.internal.converters;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
+
 /**
  * IHC / ELKO <-> openHAB data type converter interface.
  *
  * @author Pauli Anttila - Initial contribution
  */
 public interface Converter<R, T> {
-    T convertFromResourceValue(R from, ConverterAdditionalInfo convertData) throws NumberFormatException;
+    T convertFromResourceValue(@NonNull R from, @NonNull ConverterAdditionalInfo convertData)
+            throws ConversionException;
 
-    R convertFromOHType(T from, R value, ConverterAdditionalInfo convertData) throws NumberFormatException;
+    R convertFromOHType(@NonNull T from, @NonNull R value, @NonNull ConverterAdditionalInfo convertData)
+            throws ConversionException;
 }

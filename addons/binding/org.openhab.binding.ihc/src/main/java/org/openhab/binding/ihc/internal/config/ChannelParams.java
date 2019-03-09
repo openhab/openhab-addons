@@ -16,9 +16,12 @@ import static org.openhab.binding.ihc.internal.IhcBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 
 /**
  * Class for holding channel parameterization.
@@ -36,11 +39,7 @@ public class ChannelParams {
     private Long serialNumber;
     private Integer longPressTime;
 
-    public ChannelParams(Channel channel) throws IllegalArgumentException {
-        if (channel == null) {
-            throw new IllegalArgumentException("Channel can't be null");
-        }
-
+    public ChannelParams(@NonNull Channel channel) throws ConversionException {
         ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
         if (channelTypeUID != null) {
             channelTypeId = channelTypeUID.getId();
@@ -125,48 +124,32 @@ public class ChannelParams {
         return longPressTime;
     }
 
-    private Boolean getChannelParameterAsBoolean(Object value) throws IllegalArgumentException {
-        if (value != null) {
-            try {
-                return ((Boolean) value).booleanValue();
-            } catch (ClassCastException | NumberFormatException e) {
-                throw new IllegalArgumentException(e.getMessage());
-            }
-        }
-        return null;
+    private static Boolean getChannelParameterAsBoolean(Object value) throws ConversionException {
+        return convert(value, (v) -> (Boolean) v);
     }
 
-    private Integer getChannelParameterAsInteger(Object value) throws IllegalArgumentException {
-        if (value != null) {
-            try {
-                return ((BigDecimal) value).intValue();
-            } catch (ClassCastException | NumberFormatException e) {
-                throw new IllegalArgumentException(e.getMessage());
-            }
-        }
-        return null;
+    private Integer getChannelParameterAsInteger(Object value) throws ConversionException {
+        return convert(value, (v) -> ((BigDecimal) v).intValue());
     }
 
-    private Long getChannelParameterAsLong(Object value) throws IllegalArgumentException {
-        if (value != null) {
-            try {
-                return ((BigDecimal) value).longValue();
-            } catch (ClassCastException | NumberFormatException e) {
-                throw new IllegalArgumentException(e.getMessage());
-            }
-        }
-        return null;
+    private Long getChannelParameterAsLong(Object value) throws ConversionException {
+        return convert(value, (v) -> ((BigDecimal) v).longValue());
     }
 
-    private String getChannelParameterAsString(Object value) throws IllegalArgumentException {
-        if (value != null) {
-            try {
-                return (String) value;
-            } catch (ClassCastException e) {
-                throw new IllegalArgumentException(e.getMessage());
-            }
+    private String getChannelParameterAsString(Object value) throws ConversionException {
+        return convert(value, (v) -> (String) v);
+    }
+
+    private static <T> T convert(Object value, Function<Object, T> f) throws ConversionException {
+        if (value == null) {
+            return null;
         }
-        return null;
+
+        try {
+            return f.apply(value);
+        } catch (ClassCastException e) {
+            throw new ConversionException(String.format("Failed to convert, reason %s.", e.getMessage()), e);
+        }
     }
 
     @Override
