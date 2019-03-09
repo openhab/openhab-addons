@@ -401,9 +401,11 @@ class LxWsSecurityToken extends LxWsSecurity {
         } catch (JsonParseException e) {
             return setError(LxErrorCode.INTERNAL_ERROR, "Error parsing token response: " + e.getMessage());
         }
+
         persistToken();
         logger.debug("[{}] Token acquired.", debugId);
         return true;
+
     }
 
     private boolean useToken() {
@@ -418,7 +420,7 @@ class LxWsSecurityToken extends LxWsSecurity {
                 persistToken();
                 return setError(null, "Enter password to generate a new token.");
             }
-            return setError(null, "Token-based authentication failed with code: " + resp.getResponseCodeNumber());
+            return setError(null, "Token-based authentication failed.");
         }
         parseTokenResponse(resp);
         return true;

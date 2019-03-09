@@ -23,10 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -47,14 +46,15 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.binding.loxone.internal.controls.LxControl;
 import org.openhab.binding.loxone.internal.controls.LxControlState;
 import org.openhab.binding.loxone.internal.core.LxConfig;
+import org.openhab.binding.loxone.internal.core.LxConfig.LxServerInfo;
 import org.openhab.binding.loxone.internal.core.LxErrorCode;
-import org.openhab.binding.loxone.internal.core.LxServerEvent;
-import org.openhab.binding.loxone.internal.core.LxServerEvent.EventType;
 import org.openhab.binding.loxone.internal.core.LxUuid;
 import org.openhab.binding.loxone.internal.core.LxWsClient;
-import org.openhab.binding.loxone.internal.core.LxWsStateUpdateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Representation of a Loxone Miniserver. It is an openHAB {@link Thing}, which is used to communicate with
@@ -74,6 +74,9 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     private int userErrorDelay = 60;
     private int comErrorDelay = 30;
 
+    // initial delay to initiate connection
+    private int reconnectDelay = firstConDelay;
+
     // Data structures
     private final Map<LxUuid, LxControl> controls = new HashMap<>();
     private final Map<ChannelUID, LxControl> channels = new HashMap<>();
@@ -87,8 +90,10 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     // Services
     private int debugId = 0;
     private Thread monitorThread;
+    private final Gson gson;
     private final Lock threadLock = new ReentrantLock();
-    private final BlockingQueue<LxServerEvent> queue = new LinkedBlockingQueue<>();
+    private final Condition connectDelay = threadLock.newCondition();
+    private final Condition sessionActive = threadLock.newCondition();
     private static AtomicInteger staticDebugId = new AtomicInteger(1);
 
     /**
@@ -104,6 +109,10 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         } else {
             logger.warn("Dynamic state description provider is null");
         }
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(LxUuid.class, LxUuid.DESERIALIZER);
+        builder.registerTypeAdapter(LxControl.class, LxControl.DESERIALIZER);
+        gson = builder.create();
     }
 
     /*
@@ -155,13 +164,15 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
             logger.debug("[{}] Changing comErrorDelay to {}", debugId, cfg.comErrorDelay);
             comErrorDelay = cfg.comErrorDelay;
         }
-
         try {
             socketClient = new LxWsClient(debugId, this, cfg);
             threadLock.lock();
+            if (debugId > 1) {
+                reconnectDelay = 0;
+            }
             try {
                 if (monitorThread == null) {
-                    monitorThread = new LxServerThread();
+                    monitorThread = new LxServerThread(debugId);
                     monitorThread.start();
                 }
             } finally {
@@ -175,33 +186,26 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     @Override
     public void dispose() {
         logger.debug("[{}] Disposing of thing", debugId);
+        Thread thread;
         threadLock.lock();
         try {
+            thread = monitorThread;
             if (monitorThread != null) {
-                LxServerEvent event = new LxServerEvent(EventType.CLIENT_CLOSING, LxErrorCode.OK, null);
-                try {
-                    queue.put(event);
-                } catch (InterruptedException e) {
-                    monitorThread.interrupt();
-                }
-                try {
-                    monitorThread.join(5000);
-                } catch (InterruptedException e) {
-                    logger.warn("[{}] Waiting for thread termination interrupted.", debugId);
-                }
+                monitorThread.interrupt();
                 monitorThread = null;
-            } else {
-                logger.debug("[{}] Thing dispose - no thread", debugId);
             }
+            clearConfiguration();
         } finally {
             threadLock.unlock();
         }
-        socketClient = null;
-        dynamicStateDescriptionProvider.removeAllDescriptions();
-        controls.clear();
-        channels.clear();
-        states.clear();
-        queue.clear();
+        if (thread != null) {
+            try {
+                thread.join(5000);
+            } catch (InterruptedException e) {
+                logger.warn("[{}] Waiting for thread termination interrupted.", debugId);
+            }
+        }
+        logger.debug("[{}] Disposing of thing ended", debugId);
     }
 
     /*
@@ -258,17 +262,6 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     }
 
     @Override
-    public boolean sendEvent(LxServerEvent event) {
-        try {
-            queue.put(event);
-            return true;
-        } catch (InterruptedException e) {
-            logger.debug("[{}] Interrupted queue operation", debugId);
-            return false;
-        }
-    }
-
-    @Override
     public ThingUID getThingId() {
         return getThing().getUID();
     }
@@ -286,40 +279,146 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         updateConfiguration(config);
     }
 
-    /**
-     * Parses received configuration, updates thing properties and creates appropriate room, category and control
-     * objects. Creates channels and registers channel state descriptions in the provider.
-     * This call does not purge previous configuration, but updates existing objects and removes objects which don't
-     * exist anymore in the Miniserver.
-     *
-     * @param config json with configuration received from the Miniserver
-     */
-    private void updateConfig(LxConfig config) {
-        logger.debug("[{}] Updating configuration from Miniserver", debugId);
+    @Override
+    public void setMiniserverConfig(String message, LxWsClient.LxResponseCfgApi cfgApi) {
+        logger.debug("[{}] Setting configuration from Miniserver", debugId);
+        clearConfiguration();
 
-        if (config.msInfo != null) {
-            logger.trace("[{}] updating global config", debugId);
-            Thing thing = getThing();
-            thing.setProperty(MINISERVER_PROPERTY_MINISERVER_NAME, buildName(config.msInfo.msName));
-            thing.setProperty(MINISERVER_PROPERTY_PROJECT_NAME, buildName(config.msInfo.projectName));
-            thing.setProperty(MINISERVER_PROPERTY_CLOUD_ADDRESS, buildName(config.msInfo.remoteUrl));
-            thing.setProperty(MINISERVER_PROPERTY_PHYSICAL_LOCATION, buildName(config.msInfo.location));
-            thing.setProperty(Thing.PROPERTY_FIRMWARE_VERSION, buildName(config.msInfo.swVersion));
-            thing.setProperty(Thing.PROPERTY_SERIAL_NUMBER, buildName(config.msInfo.serialNr));
-            thing.setProperty(Thing.PROPERTY_MAC_ADDRESS, buildName(config.msInfo.macAddress));
-        } else {
+        LxConfig config = gson.fromJson(message, LxConfig.class);
+        if (config.msInfo == null) {
             logger.warn("[{}] missing global configuration msInfo on Loxone", debugId);
+            config.msInfo = config.new LxServerInfo();
         }
+
+        LxServerInfo info = config.msInfo;
+        if (cfgApi != null) {
+            // documentation claims values received in CFG API structure are more important than those from the config
+            // JSON and should be used to determine the right software version running on Miniserver
+            if (cfgApi.version != null) {
+                info.swVersion = cfgApi.version;
+            }
+            if (cfgApi.snr != null) {
+                info.macAddress = cfgApi.snr;
+            }
+        }
+        config.finalize(this);
+
+        logger.trace("[{}] setting global config", debugId);
+        Thing thing = getThing();
+        thing.setProperty(MINISERVER_PROPERTY_MINISERVER_NAME, buildName(info.msName));
+        thing.setProperty(MINISERVER_PROPERTY_PROJECT_NAME, buildName(info.projectName));
+        thing.setProperty(MINISERVER_PROPERTY_CLOUD_ADDRESS, buildName(info.remoteUrl));
+        thing.setProperty(MINISERVER_PROPERTY_PHYSICAL_LOCATION, buildName(info.location));
+        thing.setProperty(Thing.PROPERTY_FIRMWARE_VERSION, buildName(info.swVersion));
+        thing.setProperty(Thing.PROPERTY_SERIAL_NUMBER, buildName(info.serialNr));
+        thing.setProperty(Thing.PROPERTY_MAC_ADDRESS, buildName(info.macAddress));
 
         if (config.controls != null) {
             logger.trace("[{}] creating controls in handler.", debugId);
             config.controls.values().forEach(ctrl -> addControlStructures(ctrl));
+        } else {
+            logger.warn("[{}] no controls received in Miniserver configuration.", debugId);
         }
 
         // merge control channels and update thing
         List<Channel> channels = new ArrayList<>();
         controls.values().forEach(control -> channels.addAll(control.getChannels()));
         addThingChannels(channels, true);
+    }
+
+    @Override
+    public void setOffline(LxErrorCode code, String reason) {
+        ThingStatus status = getThing().getStatus();
+        if (status == ThingStatus.OFFLINE) {
+            logger.debug("[{}] received offline request with code {}, but thing already offline.", debugId, code);
+            return;
+        }
+        switch (code) {
+            case TOO_MANY_FAILED_LOGIN_ATTEMPTS:
+                // assume credentials are wrong, do not re-attempt connections any time soon
+                // expect a new instance will have to be initialized with corrected configuration
+                setReconnectDelay(60 * 60 * 24 * 7);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Too many failed login attempts - stopped trying");
+                break;
+            case USER_UNAUTHORIZED:
+                setReconnectDelay(userErrorDelay);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        reason != null ? reason : "User authentication error (invalid user name or password)");
+                break;
+            case USER_AUTHENTICATION_TIMEOUT:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "User authentication timeout");
+                break;
+            case COMMUNICATION_ERROR:
+                setReconnectDelay(comErrorDelay);
+                String text = "Error communicating with Miniserver";
+                if (reason != null) {
+                    text += " (" + reason + ")";
+                }
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, text);
+                break;
+            case INTERNAL_ERROR:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        reason != null ? "Internal error (" + reason + ")" : "Internal error");
+                break;
+            case WEBSOCKET_IDLE_TIMEOUT:
+                logger.warn("Idle timeout from Loxone Miniserver - adjust keepalive settings");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Timeout due to no activity");
+                break;
+            case ERROR_CODE_MISSING:
+                logger.warn("No error code available from the Miniserver");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Unknown reason - error code missing");
+                break;
+            default:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown reason");
+                break;
+        }
+        threadLock.lock();
+        try {
+            sessionActive.signalAll();
+        } finally {
+            threadLock.unlock();
+        }
+    }
+
+    @Override
+    public void setOnline() {
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void updateStateValue(LxUuid uuid, Object value) {
+        Map<LxUuid, LxControlState> perStateUuid = states.get(uuid);
+        if (perStateUuid != null) {
+            perStateUuid.forEach((controlUuid, state) -> {
+                state.setStateValue(value);
+            });
+        }
+    }
+
+    /**
+     * Sets value for the delay before websocket connect attempt
+     *
+     * @param delay number of seconds to wait
+     */
+    private void setReconnectDelay(int delay) {
+        threadLock.lock();
+        try {
+            reconnectDelay = delay;
+        } finally {
+            threadLock.unlock();
+        }
+    }
+
+    /**
+     * Remove all channel-related configuration.
+     */
+    private void clearConfiguration() {
+        controls.clear();
+        channels.clear();
+        states.clear();
+        dynamicStateDescriptionProvider.removeAllDescriptions();
     }
 
     /**
@@ -402,141 +501,56 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     }
 
     /**
-     * Thread that performs and supervises communication with the Miniserver.
-     * <p>
-     * It will try to maintain the connection as long as possible, handling errors and interruptions. There are two
-     * reasons when this thread will terminate and stop connecting to the Miniserver:
-     * when it receives close command from supervisor (thing handler) or when Miniserver locks out user due to too
-     * many unsuccessful login attempts.
+     * Thread that maintains connection to the Miniserver.
+     * It will periodically attempt to connect and if failed, wait a configured amount of time.
+     * If connection succeeds, it will sleep until the session is terminated. Then it will wait and try to reconnect
+     * again.
      *
      * @author Pawel Pieczul - initial contribution
      *
      */
     private class LxServerThread extends Thread {
-        private boolean running = true;
-        // initial delay to initiate connection
-        private int waitTime = firstConDelay;
+        private int debugId = 0;
+
+        LxServerThread(int id) {
+            debugId = id;
+        }
 
         @Override
         public void run() {
             logger.debug("[{}] Thread starting", debugId);
+            threadLock.lock();
             try {
-                boolean connected = false;
-                while (running) {
-                    while (!connected) {
-                        LxServerEvent wsMsg;
-                        do {
-                            wsMsg = queue.poll(waitTime, TimeUnit.SECONDS);
-                            if (wsMsg != null) {
-                                processMessage(wsMsg);
-                            }
-                        } while (wsMsg != null);
-                        logger.debug("[{}] Server connecting to websocket", debugId);
-                        connected = socketClient.connect();
-                        if (!connected) {
-                            waitTime = connectErrDelay;
+                while (!isInterrupted()) {
+                    try {
+                        if (reconnectDelay > 0) {
+                            logger.debug("[{}] Delaying connect request by {} seconds.", debugId, reconnectDelay);
+                            connectDelay.await(reconnectDelay, TimeUnit.SECONDS);
+                        }
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                    logger.debug("[{}] Server connecting to websocket", debugId);
+                    if (!socketClient.connect()) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Failed to connect to Miniserver's WebSocket");
+                        reconnectDelay = connectErrDelay;
+                    } else {
+                        logger.debug("[{}] Sleeping indefinitely waiting for need to reconnect.", debugId);
+                        try {
+                            sessionActive.await();
+                        } catch (InterruptedException e) {
+                            break;
                         }
                     }
-                    while (connected) {
-                        LxServerEvent wsMsg = queue.take();
-                        connected = processMessage(wsMsg);
-                    }
                 }
-            } catch (InterruptedException e) {
-                logger.debug("[{}] Server thread interrupted, terminating", debugId);
+                logger.debug("[{}] Stopping reconnect attempts permanently", debugId);
+                socketClient.disconnect(LxErrorCode.OK, "Thing handler going down.");
+                socketClient = null;
+            } finally {
+                threadLock.unlock();
             }
             logger.debug("[{}] Thread ending", debugId);
-            socketClient.disconnect();
-        }
-
-        private boolean processMessage(LxServerEvent wsMsg) {
-            EventType event = wsMsg.getEvent();
-            logger.trace("[{}] Server received event: {}", debugId, event);
-            switch (event) {
-                case RECEIVED_CONFIG:
-                    LxConfig config = (LxConfig) wsMsg.getObject();
-                    if (config != null) {
-                        updateConfig(config);
-                    } else {
-                        logger.debug("[{}] Server failed processing received configuration", debugId);
-                    }
-                    break;
-                case STATE_UPDATE:
-                    LxWsStateUpdateEvent update = (LxWsStateUpdateEvent) wsMsg.getObject();
-                    Map<LxUuid, LxControlState> perStateUuid = states.get(update.getUuid());
-                    if (perStateUuid != null) {
-                        perStateUuid.forEach((controlUuid, state) -> {
-                            state.setStateValue(update.getUpdateValue());
-                        });
-                    }
-                    break;
-                case SERVER_ONLINE:
-                    updateStatus(ThingStatus.ONLINE);
-                    break;
-                case SERVER_OFFLINE:
-                    LxErrorCode reason = wsMsg.getOfflineReason();
-                    String details = null;
-                    if (wsMsg.getObject() instanceof String) {
-                        details = (String) wsMsg.getObject();
-                    }
-                    logger.debug("[{}] Websocket goes OFFLINE, reason {} : {}.", debugId, reason, details);
-                    processOfflineReason(reason, details);
-                    return false;
-                case CLIENT_CLOSING:
-                    running = false;
-                    return false;
-                default:
-                    logger.debug("[{}] Received unknown request {}", debugId, wsMsg.getEvent().name());
-                    break;
-            }
-            return true;
-        }
-
-        private void processOfflineReason(LxErrorCode reason, String details) {
-            switch (reason) {
-                case TOO_MANY_FAILED_LOGIN_ATTEMPTS:
-                    // assume credentials are wrong, do not re-attempt connections
-                    // close thread and expect a new LxServer object will have to be re-created
-                    // with corrected configuration
-                    running = false;
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Too many failed login attempts - stopped trying");
-                    break;
-                case USER_UNAUTHORIZED:
-                    waitTime = userErrorDelay;
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            details != null ? details : "User authentication error (invalid user name or password)");
-                    break;
-                case USER_AUTHENTICATION_TIMEOUT:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "User authentication timeout");
-                    break;
-                case COMMUNICATION_ERROR:
-                    waitTime = comErrorDelay;
-                    String text = "Error communicating with Miniserver";
-                    if (details != null) {
-                        text += " (" + details + ")";
-                    }
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, text);
-                    break;
-                case INTERNAL_ERROR:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            details != null ? "Internal error (" + details + ")" : "Internal error");
-                    break;
-                case WEBSOCKET_IDLE_TIMEOUT:
-                    logger.warn("Idle timeout from Loxone Miniserver - adjust keepalive settings");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Timeout due to no activity");
-                    break;
-                case ERROR_CODE_MISSING:
-                    logger.warn("No error code available from the Miniserver");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Unknown reason - error code missing");
-                    break;
-                default:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown reason");
-                    break;
-            }
         }
     }
 }

@@ -20,8 +20,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.binding.loxone.internal.controls.LxControl;
-import org.openhab.binding.loxone.internal.core.LxServerEvent;
+import org.openhab.binding.loxone.internal.core.LxErrorCode;
 import org.openhab.binding.loxone.internal.core.LxUuid;
+import org.openhab.binding.loxone.internal.core.LxWsClient;
 
 /**
  * This is the interface to the Miniserver thing handler that can be used by the {@link LxControl} objects.
@@ -74,14 +75,6 @@ public interface LxServerHandlerApi {
     void sendAction(LxUuid id, String operation) throws IOException;
 
     /**
-     * Sends an event to the thing handler.
-     *
-     * @param event event to send
-     * @return false when error sending event
-     */
-    boolean sendEvent(LxServerEvent event);
-
-    /**
      * Obtain a thing ID of the handler.
      * Used by control objects to build channel IDs.
      *
@@ -105,4 +98,29 @@ public interface LxServerHandlerApi {
      * @return value of the setting
      */
     String getSetting(String name);
+
+    /**
+     * Parses received configuration, updates thing properties and creates appropriate objects and channels.
+     * This call will remove any prior channel configuration.
+     *
+     * @param message configuration message received from the Miniserver
+     * @param cfgApi  additional configuration structure if retrieved during connection setup
+     */
+    void setMiniserverConfig(String message, LxWsClient.LxResponseCfgApi cfgApi);
+
+    /**
+     * Set thing status to offline and assume the connection to the Miniserver is stopped.
+     *
+     * @param code   error code why we are going offline
+     * @param reason details of the reason for going offline
+     */
+    void setOffline(LxErrorCode code, String reason);
+
+    /**
+     * Set thing status to online and assume the connection is established to the Miniserver.
+     */
+    void setOnline();
+
+    void updateStateValue(LxUuid uuid, Object value);
+
 }

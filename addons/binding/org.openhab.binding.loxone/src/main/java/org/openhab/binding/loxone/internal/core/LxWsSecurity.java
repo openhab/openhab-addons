@@ -113,7 +113,7 @@ abstract class LxWsSecurity {
             reason = LxErrorCode.COMMUNICATION_ERROR;
             return false;
         }
-        reason = LxErrorCode.getErrorCode(response.getResponseCodeNumber());
+        reason = response.getResponseCode();
         return (reason == LxErrorCode.OK);
     }
 

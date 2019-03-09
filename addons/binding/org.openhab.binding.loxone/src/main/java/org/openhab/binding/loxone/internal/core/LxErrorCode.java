@@ -48,10 +48,6 @@ public enum LxErrorCode {
      */
     INTERNAL_ERROR,
     /**
-     * Connection attempt failed (before authentication)
-     */
-    WEBSOCKET_CONNECT_FAILED,
-    /**
      * Error code is missing - reason for failure is unknown
      */
     ERROR_CODE_MISSING;
@@ -64,19 +60,19 @@ public enum LxErrorCode {
      */
     static LxErrorCode getErrorCode(Integer code) {
         if (code == null) {
-            return LxErrorCode.ERROR_CODE_MISSING;
+            return ERROR_CODE_MISSING;
         }
         switch (code) {
             case 420:
-                return LxErrorCode.USER_AUTHENTICATION_TIMEOUT;
+                return USER_AUTHENTICATION_TIMEOUT;
             case 401:
-                return LxErrorCode.USER_UNAUTHORIZED;
+                return USER_UNAUTHORIZED;
             case 4003:
-                return LxErrorCode.TOO_MANY_FAILED_LOGIN_ATTEMPTS;
+                return TOO_MANY_FAILED_LOGIN_ATTEMPTS;
             case 1001:
-                return LxErrorCode.WEBSOCKET_IDLE_TIMEOUT;
+                return WEBSOCKET_IDLE_TIMEOUT;
             case 200:
-                return LxErrorCode.OK;
+                return OK;
             default:
                 return COMMUNICATION_ERROR;
         }

@@ -73,7 +73,7 @@ public class LxDynamicStateDescriptionProvider implements DynamicStateDescriptio
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
         StateDescription description = descriptions.get(channel.getUID());
-        logger.debug("Providing state description for channel {}", channel.getUID());
+        logger.trace("Providing state description for channel {}", channel.getUID());
         return description;
     }
 }

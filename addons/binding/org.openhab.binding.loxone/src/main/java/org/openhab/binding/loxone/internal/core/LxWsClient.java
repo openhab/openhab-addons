@@ -20,6 +20,8 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -40,16 +42,11 @@ import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.openhab.binding.loxone.internal.LxBindingConfiguration;
-import org.openhab.binding.loxone.internal.LxServerHandler;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.controls.LxControl;
-import org.openhab.binding.loxone.internal.core.LxResponse.LxSubResponse;
-import org.openhab.binding.loxone.internal.core.LxServerEvent.EventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 
 /**
@@ -76,15 +73,14 @@ public class LxWsClient {
     private int maxBinMsgSize = 3 * 1024; // 3 MB
     private int maxTextMsgSize = 512; // 512 KB
 
-    private String swVersion;
-    private String macAddress;
+    private LxResponseCfgApi cfgApi;
     private ScheduledFuture<?> timeout;
-    private LxWebSocket socket;
-    private WebSocketClient wsClient;
-    private ClientState state = ClientState.IDLE;
+    private LxErrorCode offlineCode;
+    private String offlineReason;
 
-    private final Gson gson;
-    private final Lock stateMachineLock = new ReentrantLock();
+    private final LxWebSocket socket;
+    private final WebSocketClient wsClient;
+    private final Lock webSocketLock = new ReentrantLock();
     private final Logger logger = LoggerFactory.getLogger(LxWsClient.class);
 
     private static final ScheduledExecutorService SCHEDULER = ThreadPoolManager
@@ -96,39 +92,6 @@ public class LxWsClient {
     private static final String CMD_ENABLE_UPDATES = "jdev/sps/enablebinstatusupdate";
     private static final String CMD_GET_APP_CONFIG = "data/LoxAPP3.json";
     private static final String CMD_CFG_API = "jdev/cfg/api";
-
-    /**
-     * Internal state of the websocket client.
-     *
-     * @author Pawel Pieczul - initial contribution
-     *
-     */
-    private enum ClientState {
-        /**
-         * Waiting for connection request
-         */
-        IDLE,
-        /**
-         * Connection requested, waiting for confirmation
-         */
-        CONNECTING,
-        /**
-         * Connection confirmed and established
-         */
-        CONNECTED,
-        /**
-         * Waiting for Miniserver's configuration
-         */
-        UPDATING_CONFIGURATION,
-        /**
-         * Ready to send commands and receive state updates
-         */
-        RUNNING,
-        /**
-         * Received internal request to shutdown
-         */
-        CLOSING
-    }
 
     /**
      * Type of a binary message received from the Miniserver
@@ -172,9 +135,9 @@ public class LxWsClient {
      * @author Pawel Pieczul - initial contribution
      *
      */
-    private class LxResponseCfgApi {
-        String snr;
-        String version;
+    public class LxResponseCfgApi {
+        public String snr;
+        public String version;
     }
 
     /**
@@ -249,11 +212,6 @@ public class LxWsClient {
         password = cfg.password;
         securityType = LxWsSecurityType.getType(cfg.authMethod);
 
-        GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(LxUuid.class, LxUuid.DESERIALIZER);
-        builder.registerTypeAdapter(LxControl.class, LxControl.DESERIALIZER);
-        gson = builder.create();
-
         if (cfg.keepAlivePeriod > 0 && cfg.keepAlivePeriod != keepAlivePeriod) {
             logger.debug("[{}] Changing keepAlivePeriod to {}", debugId, cfg.keepAlivePeriod);
             keepAlivePeriod = cfg.keepAlivePeriod;
@@ -270,6 +228,9 @@ public class LxWsClient {
             logger.debug("[{}] Changing maxTextMsgSize to {}", debugId, cfg.maxTextMsgSize);
             maxTextMsgSize = cfg.maxTextMsgSize;
         }
+
+        socket = new LxWebSocket();
+        wsClient = new WebSocketClient();
     }
 
     /**
@@ -279,28 +240,25 @@ public class LxWsClient {
      * @return true if connection request initiated correctly, false if not
      */
     public boolean connect() {
-        logger.trace("[{}] connect() websocket", debugId);
-        stateMachineLock.lock();
+        logger.debug("[{}] connect() websocket", debugId);
+        webSocketLock.lock();
         try {
-            if (state != ClientState.IDLE) {
-                close("Attempt to connect a websocket in non-idle state: " + state);
-                return false;
-            }
+            offlineCode = null;
+            offlineReason = null;
 
-            socket = new LxWebSocket();
-            wsClient = new WebSocketClient();
-
+            /*
+             * Try to read CfgApi structure from the miniserver. It contains serial number and SW version. If it can't
+             * be read this is not a fatal issue, we will assume most recent SW version running.
+             */
             String message = socket.httpGet(CMD_CFG_API);
             if (message != null) {
                 LxResponse resp = socket.getResponse(message);
                 if (resp != null) {
-                    LxResponseCfgApi cfgApi = resp.getValueAs(LxResponseCfgApi.class);
-                    if (cfgApi != null) {
-                        swVersion = cfgApi.version;
-                        macAddress = cfgApi.snr;
-                    }
+                    String anotherJson = resp.getValueAsString();
+                    cfgApi = DEFAULT_GSON.fromJson(anotherJson, LxResponseCfgApi.class);
                 } else {
                     logger.debug("[{}] Http get null or error in reponse for API config request.", debugId);
+                    cfgApi = null;
                 }
             } else {
                 logger.debug("[{}] Http get failed for API config request.", debugId);
@@ -308,106 +266,55 @@ public class LxWsClient {
 
             try {
                 wsClient.start();
-
                 URI target = new URI("ws://" + host.getHostAddress() + ":" + port + SOCKET_URL);
                 ClientUpgradeRequest request = new ClientUpgradeRequest();
                 request.setSubProtocols("remotecontrol");
-
                 startResponseTimeout();
-                wsClient.connect(socket, target, request);
-                setClientState(ClientState.CONNECTING);
-
                 logger.debug("[{}] Connecting to server : {} ", debugId, target);
+                wsClient.connect(socket, target, request);
                 return true;
             } catch (Exception e) {
-                setClientState(ClientState.IDLE);
-                close("Connection to websocket failed : " + e.getMessage());
+                logger.debug("[{}] Error starting websocket client: {}", debugId, e.getMessage());
+                try {
+                    wsClient.stop();
+                } catch (Exception e2) {
+                    logger.debug("[{}] Error stopping websocket client: {}", debugId, e2.getMessage());
+                }
                 return false;
             }
         } finally {
-            stateMachineLock.unlock();
+            webSocketLock.unlock();
         }
     }
 
     /**
-     * Disconnect from the websocket with provided reason. This method is called from {@link LxServerHandler} level and
-     * also from unsuccessful connect attempt.
-     * After calling this method, client is ready to perform a new connection request with {@link #connect()}.
-     *
-     * @param reason text describing reason for disconnection
+     * Disconnect websocket session - initiated from this end.
+     * 
+     * @param code   error code for disconnecting the websocket
+     * @param reason reason for disconnecting the websocket
      */
-    private void disconnect(String reason) {
-        logger.trace("[{}] disconnect() websocket : {}", debugId, reason);
-        stateMachineLock.lock();
+    public void disconnect(LxErrorCode code, String reason) {
+        logger.trace("[{}] disconnect the websocket: {}, {}", debugId, code, reason);
+        webSocketLock.lock();
         try {
-            if (wsClient != null) {
-                try {
-                    close(reason);
-                    wsClient.stop();
-                    wsClient = null;
-                } catch (Exception e) {
-                    logger.debug("[{}] Failed to stop websocket client, message = {}", debugId, e.getMessage());
-                }
-            } else {
-                logger.debug("[{}] Attempt to disconnect websocket client, but wsClient == null", debugId);
+            // in case the disconnection happens from both connection ends, store and pass only the first reason
+            if (offlineCode == null) {
+                offlineCode = code;
+                offlineReason = reason;
             }
-        } finally {
-            stateMachineLock.unlock();
-        }
-    }
-
-    /**
-     * Disconnect from the websocket.
-     * After calling this method, client is ready to perform a new connection request with {@link #connect()}.
-     */
-    public void disconnect() {
-        disconnect("Disconnecting websocket client");
-    }
-
-    /**
-     * Close websocket session from within {@link LxWsClient}, without stopping the client.
-     * To close session from {@link LxServerHandler} level, use {@link #disconnect()}
-     *
-     * @param reason reason for closing the websocket
-     */
-    private void close(String reason) {
-        logger.trace("[{}] close() websocket", debugId);
-        stateMachineLock.lock();
-        try {
             stopResponseTimeout();
-            if (socket != null) {
-                if (socket.session != null) {
-                    if (state != ClientState.IDLE) {
-                        logger.debug("[{}] Closing websocket session, reason : {}", debugId, reason);
-                        setClientState(ClientState.CLOSING);
-                    } else {
-                        logger.debug("[{}] Closing websocket, state already IDLE.", debugId);
-                    }
-                    socket.session.close(StatusCode.NORMAL, reason);
-                } else {
-                    logger.debug("[{}] Closing websocket, but no session, reason : {}", debugId, reason);
-                    setClientState(ClientState.IDLE);
-                }
+            if (socket.session != null) {
+                socket.session.close(StatusCode.NORMAL, reason);
             } else {
-                logger.debug("[{}] Closing websocket, but socket = null", debugId);
+                logger.debug("[{}] Disconnecting websocket, but no session, reason : {}", debugId, reason);
+                handlerApi.setOffline(LxErrorCode.COMMUNICATION_ERROR, reason);
             }
+            wsClient.stop();
+        } catch (Exception e) {
+            logger.debug("[{}] Exception disconnecting the websocket: ", e.getMessage());
         } finally {
-            stateMachineLock.unlock();
+            webSocketLock.unlock();
         }
-    }
-
-    /**
-     * Notify {@link LxServerHandler} about server going offline and close websocket session from within
-     * {@link LxWsClient},
-     * without stopping the client.
-     * To close session from {@link LxServerHandler} level, use {@link #disconnect()}
-     *
-     * @param reasonCode reason code for server going offline
-     * @param reasonText reason text (description) for server going offline
-     */
-    private void notifyAndClose(LxErrorCode reasonCode, String reasonText) {
-        notifyMaster(EventType.SERVER_OFFLINE, reasonCode, reasonText);
-        close(reasonText);
     }
 
     /**
@@ -430,26 +337,6 @@ public class LxWsClient {
     }
 
     /**
-     * Returns {@link Gson} object so it can be reused without creating a new instance.
-     *
-     * @return Gson object for reuse
-     */
-    Gson getGson() {
-        return gson;
-    }
-
-    /**
-     * Sets a new websocket client state.
-     * The caller must take care of thread synchronization.
-     *
-     * @param state new state to set
-     */
-    private void setClientState(LxWsClient.ClientState state) {
-        logger.debug("[{}] changing client state to: {}", debugId, state);
-        this.state = state;
-    }
-
-    /**
      * Start a timer to wait for a Miniserver response to an action sent from the binding.
      * When timer expires, connection is removed and server error is reported. Further connection attempt can be made
      * later by the upper layer.
@@ -465,15 +352,8 @@ public class LxWsClient {
      * Called when response timeout occurred.
      */
     private void responseTimeout() {
-        stateMachineLock.lock();
-        try {
-            logger.debug("[{}] Miniserver response timeout", debugId);
-            notifyMaster(EventType.SERVER_OFFLINE, LxErrorCode.COMMUNICATION_ERROR,
-                    "Miniserver response timeout occured");
-            disconnect();
-        } finally {
-            stateMachineLock.unlock();
-        }
+        logger.debug("[{}] Miniserver response timeout", debugId);
+        disconnect(LxErrorCode.COMMUNICATION_ERROR, "Miniserver response timeout occured");
     }
 
     /**
@@ -481,29 +361,11 @@ public class LxWsClient {
      * The caller must take care of thread synchronization.
      */
     private void stopResponseTimeout() {
-        logger.trace("[{}] stopping response timeout in state {}", debugId, state);
+        logger.trace("[{}] stopping response timeout", debugId);
         if (timeout != null) {
             timeout.cancel(true);
             timeout = null;
         }
-    }
-
-    /**
-     * Sends an event to a thing handler thread object
-     *
-     * @param event  event that happened
-     * @param reason reason for the event (applicable to server OFFLINE event}
-     * @param object additional data for the event (text message for OFFLINE event, data for state changes)
-     */
-    private void notifyMaster(EventType event, LxErrorCode reason, Object object) {
-        LxErrorCode localReason;
-        if (reason == null) {
-            localReason = LxErrorCode.OK;
-        } else {
-            localReason = reason;
-        }
-        LxServerEvent sync = new LxServerEvent(event, localReason, object);
-        handlerApi.sendEvent(sync);
     }
 
     /**
@@ -523,16 +385,12 @@ public class LxWsClient {
         private boolean syncRequest;
         private final Lock responseLock = new ReentrantLock();
         private final Condition responseAvailable = responseLock.newCondition();
+        private boolean awaitingConfiguration = false;
 
         @OnWebSocketConnect
         public void onConnect(Session session) {
-            stateMachineLock.lock();
+            webSocketLock.lock();
             try {
-                if (state != ClientState.CONNECTING) {
-                    logger.debug("[{}] Unexpected connect received on websocket in state {}", debugId, state);
-                    return;
-                }
-
                 WebSocketPolicy policy = session.getPolicy();
                 policy.setMaxBinaryMessageSize(maxBinMsgSize * 1024);
                 policy.setMaxTextMessageSize(maxTextMsgSize * 1024);
@@ -540,52 +398,66 @@ public class LxWsClient {
                 logger.debug("[{}] Websocket connected (maxBinMsgSize={}, maxTextMsgSize={})", debugId,
                         policy.getMaxBinaryMessageSize(), policy.getMaxTextMessageSize());
                 this.session = session;
-                setClientState(ClientState.CONNECTED);
-
-                security = LxWsSecurity.create(securityType, swVersion, debugId, handlerApi, socket, user, password);
+                security = LxWsSecurity.create(securityType, cfgApi != null ? cfgApi.version : null, debugId,
+                        handlerApi, socket, user, password);
                 security.authenticate((result, details) -> {
                     if (result == LxErrorCode.OK) {
                         authenticated();
                     } else {
-                        notifyAndClose(result, details);
+                        disconnect(result, details);
                     }
                 });
             } finally {
-                stateMachineLock.unlock();
+                webSocketLock.unlock();
             }
         }
 
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {
-            stateMachineLock.lock();
+            String reasonToPass;
+            LxErrorCode codeToPass;
+            webSocketLock.lock();
             try {
-                logger.debug("[{}] Websocket connection in state {} closed with code {} reason : {}", debugId, state,
-                        statusCode, reason);
+                logger.debug("[{}] Websocket connection closed with code {} reason : {}", debugId, statusCode, reason);
                 if (security != null) {
                     security.cancel();
                 }
                 stopKeepAlive();
-                if (state == ClientState.CLOSING) {
-                    session = null;
-                } else if (state != ClientState.IDLE) {
-                    responseLock.lock();
-                    try {
-                        awaitedResponse.subResponse = null;
-                        responseAvailable.signalAll();
-                    } finally {
-                        responseLock.unlock();
-                    }
-                    notifyMaster(EventType.SERVER_OFFLINE, LxErrorCode.getErrorCode(statusCode), reason);
+                session = null;
+                // This callback is called when connection is terminated by either end.
+                // If there is already a reason for disconnection, pass it unchanged.
+                // Otherwise try to interpret the remote end reason.
+                if (offlineCode != null) {
+                    codeToPass = offlineCode;
+                    reasonToPass = offlineReason;
+                } else {
+                    codeToPass = LxErrorCode.getErrorCode(statusCode);
+                    reasonToPass = reason;
                 }
-                setClientState(ClientState.IDLE);
+
             } finally {
-                stateMachineLock.unlock();
+                webSocketLock.unlock();
             }
+
+            // Release any requester waiting for message response
+            responseLock.lock();
+            try {
+                if (awaitedResponse != null) {
+                    awaitedResponse.subResponse = null;
+                }
+                responseAvailable.signalAll();
+            } finally {
+                responseLock.unlock();
+            }
+            handlerApi.setOffline(codeToPass, reasonToPass);
         }
 
         @OnWebSocketError
         public void onError(Throwable error) {
             logger.debug("[{}] Websocket error : {}", debugId, error.getMessage());
+            // We do nothing. This callback may be called at various connection stages and indicates something wrong
+            // with the connection mostly on the protocol level. It will be caught by other activities - connection will
+            // be closed of timeouts will detect its inactivity.
         }
 
         @OnWebSocketMessage
@@ -596,11 +468,8 @@ public class LxWsClient {
                 String s = Hex.encodeHexString(data);
                 logger.trace("[{}] Binary message: length {}: {}", debugId, length, s);
             }
-            stateMachineLock.lock();
+            webSocketLock.lock();
             try {
-                if (state != ClientState.RUNNING) {
-                    return;
-                }
                 // websocket will receive header and data in turns as two separate binary messages
                 if (header == null) {
                     // header expected now
@@ -624,18 +493,23 @@ public class LxWsClient {
                         case EVENT_TABLE_OF_VALUE_STATES:
                             stopResponseTimeout();
                             while (length > 0) {
-                                LxWsStateUpdateEvent event = new LxWsStateUpdateEvent(true, data, offset);
-                                offset += event.getSize();
-                                length -= event.getSize();
-                                notifyMaster(EventType.STATE_UPDATE, null, event);
+                                Double value = ByteBuffer.wrap(data, offset + 16, 8).order(ByteOrder.LITTLE_ENDIAN)
+                                        .getDouble();
+                                handlerApi.updateStateValue(new LxUuid(data, offset), value);
+                                offset += 24;
+                                length -= 24;
                             }
                             break;
                         case EVENT_TABLE_OF_TEXT_STATES:
                             while (length > 0) {
-                                LxWsStateUpdateEvent event = new LxWsStateUpdateEvent(false, data, offset);
-                                offset += event.getSize();
-                                length -= event.getSize();
-                                notifyMaster(EventType.STATE_UPDATE, null, event);
+                                // unused today at (offset + 16): iconUuid
+                                int textLen = ByteBuffer.wrap(data, offset + 32, 4).order(ByteOrder.LITTLE_ENDIAN)
+                                        .getInt();
+                                String value = new String(data, offset + 36, textLen);
+                                int size = 36 + (textLen % 4 > 0 ? textLen + 4 - (textLen % 4) : textLen);
+                                handlerApi.updateStateValue(new LxUuid(data, offset), value);
+                                offset += size;
+                                length -= size;
                             }
                             break;
                         case KEEPALIVE_RESPONSE:
@@ -649,63 +523,46 @@ public class LxWsClient {
             } catch (IndexOutOfBoundsException e) {
                 logger.debug("[{}] malformed binary message received, discarded", debugId);
             } finally {
-                stateMachineLock.unlock();
+                webSocketLock.unlock();
             }
         }
 
         @OnWebSocketMessage
         public void onMessage(String msg) {
-            stateMachineLock.lock();
+            webSocketLock.lock();
             try {
                 if (logger.isTraceEnabled()) {
                     String trace = msg;
                     if (trace.length() > 100) {
                         trace = msg.substring(0, 100);
                     }
-                    logger.trace("[{}] received message in state {}: {}", debugId, state, trace);
+                    logger.trace("[{}] received message: {}", debugId, trace);
                 }
-                switch (state) {
-                    case IDLE:
-                    case CONNECTING:
-                        logger.debug("[{}] Unexpected message received by websocket in state {}", debugId, state);
-                        break;
-                    case CONNECTED:
-                    case RUNNING:
-                        processResponse(msg);
-                        break;
-                    case UPDATING_CONFIGURATION:
-                        try {
-                            stopResponseTimeout();
-                            LxConfig config = gson.fromJson(msg, LxConfig.class);
-                            if (config.msInfo != null) {
-                                config.msInfo.swVersion = swVersion;
-                                config.msInfo.macAddress = macAddress;
-                            }
-                            config.finalize(handlerApi);
-                            logger.debug("[{}] Received configuration from server", debugId);
-                            notifyMaster(EventType.RECEIVED_CONFIG, null, config);
-                            setClientState(ClientState.RUNNING);
-                            notifyMaster(EventType.SERVER_ONLINE, null, null);
-                            if (sendCmdWithResp(CMD_ENABLE_UPDATES, false, false) == null) {
-                                notifyAndClose(LxErrorCode.COMMUNICATION_ERROR, "Failed to enable state updates.");
-                            }
-                        } catch (JsonParseException e) {
-                            logger.debug("[{}] Exception JSON parsing: {}", debugId, e.getMessage());
-                            notifyAndClose(LxErrorCode.INTERNAL_ERROR, "Error processing received configuration");
-                        }
-                        break;
-                    case CLOSING:
-                    default:
-                        break;
+                if (awaitingConfiguration) {
+                    awaitingConfiguration = false;
+                    stopResponseTimeout();
+                    handlerApi.setMiniserverConfig(msg, cfgApi);
+                    handlerApi.setOnline();
+                    if (sendCmdWithResp(CMD_ENABLE_UPDATES, false, false) == null) {
+                        disconnect(LxErrorCode.COMMUNICATION_ERROR, "Failed to enable state updates.");
+                    }
+                } else {
+                    processResponse(msg);
                 }
             } finally {
-                stateMachineLock.unlock();
+                webSocketLock.unlock();
             }
         }
 
+        /**
+         * Parse received message into a response structure. Check basic correctness of the response.
+         *
+         * @param msg received response message
+         * @return parsed response message
+         */
         LxResponse getResponse(String msg) {
             try {
-                LxResponse resp = gson.fromJson(msg, LxResponse.class);
+                LxResponse resp = DEFAULT_GSON.fromJson(msg, LxResponse.class);
                 if (!resp.isResponseOk()) {
                     logger.debug("[{}] Miniserver response is not ok: {}", debugId, msg);
                     return null;
@@ -715,15 +572,6 @@ public class LxWsClient {
                 logger.debug("[{}] Miniserver response JSON parsing error: {}, {}", debugId, msg, e.getMessage());
                 return null;
             }
-        }
-
-        /**
-         * Returns {@link Gson} object so it can be reused without creating a new instance.
-         *
-         * @return Gson object for reuse
-         */
-        Gson getGson() {
-            return LxWsClient.this.getGson();
         }
 
         /**
@@ -758,21 +606,23 @@ public class LxWsClient {
 
         /**
          * Sends a command to the Miniserver and encrypts it if command can be encrypted and encryption is available.
-         * Request can be synchronous or asynchronous. There is always a response expected to the command, that is a
-         * standard command response as defined in {@link LxSubResponse}. Such commands are the majority of commands
+         * Request can be synchronous or asynchronous. There is always a response expected to the command, and it is a
+         * standard command response as defined in {@link LxResponse}. Such commands are the majority of commands
          * used for performing actions on the controls and for executing authentication procedure.
-         * A synchronous command must not be sent from the websocket thread or it will cause a deadlock.
-         * An asynchronous command request returns immediately, but the returned value will not contain valid data until
-         * the response is received. Asynchronous request can be sent from the websocket thread.
-         * There can be only one command sent which awaits response per websocket connection,
-         * whether this is synchronous or asynchronous command (this is how Loxone Miniserver behaves).
+         * A synchronous command must not be sent from the websocket thread (from websocket callback methods) or it will
+         * cause a deadlock.
+         * An asynchronous command request returns immediately, but the returned value will not contain valid data in
+         * the subResponse structure until a response is received. Asynchronous request can be sent from the websocket
+         * thread. There can be only one command sent which awaits response per websocket connection,
+         * whether this is synchronous or asynchronous command (this seems how Loxone Miniserver behaves, as it does not
+         * have any unique identifier to match commands to responses).
          * For synchronous commands this is ensured naturally, for asynchronous the caller must manage it.
          * If this method is called before a response to the previous command is received, it will return error and not
          * send the command.
          *
          * @param command command to send to the Miniserver
          * @param sync    true is synchronous request, false if ansynchronous
-         * @param encrypt true if command can be encrypted
+         * @param encrypt true if command can be encrypted (does not mean it will)
          * @return response received (for sync command) or to be received (for async), null if error occurred
          */
         LxResponse sendCmdWithResp(String command, boolean sync, boolean encrypt) {
@@ -812,20 +662,19 @@ public class LxWsClient {
 
         /**
          * Sends a command to the Miniserver and encrypts it if command can be encrypted and encryption is available.
-         * The request is asynchronous and no response is expected. It can be used to send commands from the websocket
-         * thread or commands for which the responses are not following the standard format defined in
-         * {@link LxSubResponse}.
+         * The request is asynchronous and no response is expected (but it can arrive). It can be used to send commands
+         * from the websocket thread or commands for which the responses are not following the standard format defined
+         * in {@link LxResponse}.
          * If the caller expects the non-standard response it should manage its reception and the response timeout.
          *
          * @param command command to send to the Miniserver
-         * @param encrypt true if command can be encrypted
-         * @return true if command was sent (no information if it was received)
+         * @param encrypt true if command can be encrypted (does not mean it will)
+         * @return true if command was sent (no information if it was received by the remote end)
          */
         private boolean sendCmdNoResp(String command, boolean encrypt) {
-            stateMachineLock.lock();
+            webSocketLock.lock();
             try {
-                if (session != null && state != ClientState.IDLE && state != ClientState.CONNECTING
-                        && state != ClientState.CLOSING) {
+                if (session != null) {
                     String encrypted = encrypt ? security.encrypt(command) : command;
                     logger.debug("[{}] Sending encrypted string: {}", debugId, command);
                     logger.debug("[{}] Encrypted: {}", debugId, encrypted);
@@ -837,19 +686,20 @@ public class LxWsClient {
                         return false;
                     }
                 } else {
-                    logger.debug("[{}] NOT sending command, state {}: {}", debugId, state, command);
+                    logger.debug("[{}] NOT sending command: {}", debugId, command);
                     return false;
                 }
             } finally {
-                stateMachineLock.unlock();
+                webSocketLock.unlock();
             }
         }
 
         /**
          * Process a Miniserver's response to a command. The response is in plain text format as received from the
-         * websocket, but is expected to follow the standard format defined in {@link LxSubResponse}.
+         * websocket, but is expected to follow the standard format defined in {@link LxResponse}.
          * If there is a thread waiting for the response (on a synchronous command request), the thread will be
-         * released.
+         * released. Otherwise the response will be copied into the response object provided to the asynchronous
+         * requester when the command was sent.
          * Only one requester is expected to wait for the response at a time - commands must be sent sequentially - a
          * command can be sent only after a response to the previous command was received, whether it was sent
          * synchronously or asynchronously.
@@ -901,17 +751,17 @@ public class LxWsClient {
          */
         private void authenticated() {
             logger.debug("[{}] Websocket authentication successfull.", debugId);
-            stateMachineLock.lock();
+            webSocketLock.lock();
             try {
-                setClientState(ClientState.UPDATING_CONFIGURATION);
+                awaitingConfiguration = true;
                 if (sendCmdNoResp(CMD_GET_APP_CONFIG, false)) {
                     startResponseTimeout();
                     startKeepAlive();
                 } else {
-                    notifyAndClose(LxErrorCode.INTERNAL_ERROR, "Error sending get config command.");
+                    disconnect(LxErrorCode.INTERNAL_ERROR, "Error sending get config command.");
                 }
             } finally {
-                stateMachineLock.unlock();
+                webSocketLock.unlock();
             }
         }
 
@@ -921,18 +771,15 @@ public class LxWsClient {
          */
         private void startKeepAlive() {
             keepAlive = SCHEDULER.scheduleWithFixedDelay(() -> {
-                stateMachineLock.lock();
+                webSocketLock.lock();
                 try {
-                    if (state == ClientState.CLOSING || state == ClientState.IDLE || state == ClientState.CONNECTING) {
-                        stopKeepAlive();
-                    } else {
-                        logger.debug("[{}] sending keepalive message", debugId);
-                        if (!sendCmdNoResp(CMD_KEEPALIVE, false)) {
-                            logger.debug("[{}] error sending keepalive message", debugId);
-                        }
+                    stopKeepAlive();
+                    logger.debug("[{}] sending keepalive message", debugId);
+                    if (!sendCmdNoResp(CMD_KEEPALIVE, false)) {
+                        logger.debug("[{}] error sending keepalive message", debugId);
                     }
                 } finally {
-                    stateMachineLock.unlock();
+                    webSocketLock.unlock();
                 }
             }, keepAlivePeriod, keepAlivePeriod, TimeUnit.SECONDS);
         }
@@ -942,7 +789,7 @@ public class LxWsClient {
          * The caller must take care of thread synchronization.
          */
         private void stopKeepAlive() {
-            logger.trace("[{}] stopping keepalives in state {}", debugId, state);
+            logger.trace("[{}] stopping keepalives", debugId);
             if (keepAlive != null) {
                 keepAlive.cancel(true);
                 keepAlive = null;
