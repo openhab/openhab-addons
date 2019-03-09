@@ -32,8 +32,6 @@ Go to Preferences/Connection and set:
   * Device ID is not important. Set it to e.g. phone
   * Tracker ID - This id identifies the tracker as a thing. This must be unique for each tracker connected to the same openHAB instance (e.g. family members).
 
-![Image](doc/owntracks_setup.png)
-
 ### GPSLogger
 
 Install [GPSLogger for Android](https://play.google.com/store/apps/details?id=com.mendhak.gpslogger) on your device.
