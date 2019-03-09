@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: CBus Binding
 Bundle-SymbolicName: org.openhab.binding.cbus;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: 
@@ -12,6 +12,7 @@ Import-Package:
  com.google.common.base,
  com.google.common.collect,
  org.eclipse.jetty.util.thread,
+ org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.common,
