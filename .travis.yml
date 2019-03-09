@@ -6,17 +6,12 @@ jdk: oraclejdk8
 before_install: echo "MAVEN_OPTS='-Xms1g -Xmx2g -XX:PermSize=512m -XX:MaxPermSize=1g'" > ~/.mavenrc
 
 install:
-  - echo 'set -e' > .build.sh
-  - echo 'cd poms/tycho; mvn clean install -B -DskipChecks=true -DskipTests=true -V 1> .build.stdout 2> .build.stderr; cd ../..' >> .build.sh
-  - echo 'cd poms/bnd; mvn clean install -B -DskipChecks=true -DskipTests=true -V 1> .build.stdout 2> .build.stderr; cd ../..' >> .build.sh
+  - echo 'mvn clean install -B -DskipChecks=true -DskipTests=true -V 1> .build.stdout 2> .build.stderr' > .build.sh
   - chmod 0755 .build.sh
 script:
   - travis_wait 60 ./.build.sh
 after_success:
-  - tail -n  200 poms/tycho/.build.stdout
-  - tail -n  200 poms/bnd/.build.stdout
+  - tail -n  200 .build.stdout
 after_failure:
-  - tail -n  300 poms/tycho/.build.stderr
-  - tail -n 2000 poms/tycho/.build.stdout
-  - tail -n  300 poms/bnd/.build.stderr
-  - tail -n 2000 poms/bnd/.build.stdout
+  - tail -n  300 .build.stderr
+  - tail -n 2000 .build.stdout
