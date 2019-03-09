@@ -7,36 +7,18 @@
   <packaging>pom</packaging>
   <name>openHAB 2 Add-ons</name>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.3</version>
-        <executions>
-          <execution>
-            <id>entering-module</id>
-            <phase>validate</phase>
-            <configuration>
-              <tasks>
-                <echo>Hello!</echo>
-                <echo>We are in the process to change the headless build system.</echo>
-                <echo>In the transition phase (while not all bundles has been migrated)</echo>
-                <echo>you need to trigger the separate builds yourself.</echo>
-                <echo>The non migrated stuff is part of "poms/tycho".</echo>
-                <echo>the non migrated stuff is part of "poms/bnd".</echo>
-                <echo>Execute something similar to:</echo>
-                <echo>cd poms/tycho; mvn clean install; cd ../..</echo>
-                <echo>cd poms/bnd; mvn clean install; cd ../..</echo>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+  <!--
+    Hello!
+    We are in the process to change the headless build system.
+
+    In the transition phase (while not all bundles have been migrated):
+     * the non-migrated bundles are part of "poms/tycho"
+     * the migrated bundles are part of "poms/bnd"
+  -->
+
+  <modules>
+    <module>poms/tycho</module>
+    <module>poms/bnd</module>
+  </modules>
 
 </project>
