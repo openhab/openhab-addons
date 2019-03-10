@@ -108,6 +108,13 @@ Dimmers can optionally be configured to specify a default fade in and fade out t
 These are used for ON and OFF commands, respectively, and default to 1 second if not set.
 Commands using a specific percent value will use a default fade time of 0.25 seconds.
 
+Dimmers also support the optional advanced parameters `onLevel` and `onToLast`.
+The `onLevel` parameter specifies the level to which the dimmer will go when sent an ON command.
+It defaults to 100.
+The `onToLast` parameter is a boolean that defaults to false.
+If set to "true", the dimmer will go to its last non-zero level when sent an ON command.
+If the last non-zero level cannot be determined, the value of `onLevel` will be used instead.
+
 A **dimmer** thing has a single channel *lightlevel* with type Dimmer and category DimmableLight.
 
 Thing configuration file example:
