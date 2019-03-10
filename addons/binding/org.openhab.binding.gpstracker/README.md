@@ -1,19 +1,18 @@
 # GPSTracker Binding
 
-This binding allows you to connect mobile GPS tracker applications to openHAB and process GPS location reports.
-Currently two applications are supported:
+This binding allows you to connect mobile GPS tracker applications to openHAB and process GPS location reports. Currently two applications are supported:
 
 * [OwnTracks](https://owntracks.org/booklet/) - iOS, Android
 * [GPSLogger](https://gpslogger.app/) - Android
 
-GPS location reports are sent to openHAB using HTTP protocol.
-Please be aware that this communication uses the public network so make sure your openHAB installation is [secured](https://www.openhab.org/docs/installation/security.html#encrypted-communication) (but accessible from public internet through myopenhab.org or using a reverse proxy)
-and you configured HTTP**S** access in tracking applications.
+GPS location reports are sent to openHAB using HTTP.
+Please be aware that this communication uses the public network so make sure your openHAB installation is [secured](https://www.openhab.org/docs/installation/security.html#encrypted-communication) (but accessible from public internet through myopenhab.org or using a reverse proxy) and you configured HTTP**S** access in tracking applications.
+The easiest way to achieve this is to use the [openHAB Cloud Connector](https://www.openhab.org/addons/integrations/openhabcloud/) in conjunction with [myopenHAB.org](http://www.myopenhab.org/).
 
 The binding can process two message types received from trackers:
 
 * **Location** - This is a simple location report with coordinates extended with some extra information about the tracker (e.g. tracker device battery level). [OwnTracks, GPSLogger]
-* **Transition** - This report is based on regions defined in tracker application only. A message is sent every time the tracker enters or leaves a region. [OwnTracks only]
+* **Transition** - This report is based on regions defined in tracker application only. A message is sent every time the tracker enters or leaves a region. [OwnTracks only] See "Distance Channel and Presence Switch" how this behavior can be achieved with openHAB's on-board tools.
 
 ## Configuration
 
@@ -24,52 +23,34 @@ Install [OwnTracks for Android](https://play.google.com/store/apps/details?id=or
 Go to Preferences/Connection and set:
 
 * **Mode** - select Private HTTP
-* **Host** - **https://<your.ip.address>/gpstracker/owntracks** or **https://home.myopenhab.org/gpstracker/owntracks**
+* **Host**
+  * https://<your.ip.address>/gpstracker/owntracks or
+  * https://home.myopenhab.org/gpstracker/owntracks
 * **Identification**
   * Turn Authentication ON
-  * Set username and password to be able to reach your openHAB server (myopenhab.org credential, if choosen as URL)
+  * Set username and password to be able to reach your openHAB server (myopenhab.org credential, if choosen as host)
   * Device ID is not important. Set it to e.g. phone
-  * Tracker ID - This id identifies the tracker as a thing. I use initials here.
-
-![Image](doc/owntracks_setup.png)
+  * Tracker ID - This id identifies the tracker as a thing. This must be unique for each tracker connected to the same openHAB instance (e.g. family members).
 
 ### GPSLogger
 
 Install [GPSLogger for Android](https://play.google.com/store/apps/details?id=com.mendhak.gpslogger) on your device.
 After the launch, go to General Options.
-Enable Start on boot-up and Start on app launch.
+Enable **Start on boot-up** and **Start on app launch**.
 
-![Image](doc/gpslogger_1.png)
+Go to *Logging details* and enable **Log to custom URL**.
+If you only want to use GPSLogger for this binding, you can disable all other "*Log to*" entries.
+Right after enabling, the app takes you to the *Log to custom URL* settings:
 
-Go to Logging details and disable Log to GPX, Log to KML and Log to NMEA.
-Enable Log to custom URL.
-
-![Image](doc/gpslogger_2.png)
-
-Right after enabling, the app takes you to the Log to custom URL settings and modify:
-
-* **URL** - Set URL to **https://\<username\>:\<password\>@<your.ip.address>/gpstracker/gpslogger** by replacing <???> with values matching your setup. It’s HIGHLY recommended to use SSL/TLS.
-* **HTTP Body** - Type in the following JSON:
-
-```
-{
-    "_type":"location",
-    "lat":%LAT,
-    "lon":%LON,
-    "tid":"XY",
-    "acc":%ACC,
-    "batt":%BATT,
-    "tst":%TIMESTAMP
-}
-```
-
-**Note**: The value of "tid" is the tracker id that identifies the tracker as a thing in openHAB.
-This must be unique for each tracker connected to the same openHAB instance (e.g. family members).
-
-* **HTTP Method** - type in: **POST**
-* **HTTP Headers** - type in: **Content-Type: application/json**
-
-![Image](doc/gpslogger_3.png)
+* **URL**
+  * https://<your.ip.address>/gpstracker/gpslogger or
+  * https://home.myopenhab.org/gpstracker/gpslogger
+* **HTTP Body** - type in: { "_type":"location", "lat":%LAT, "lon":%LON, "tid":"XY", "acc":%ACC, "batt":%BATT, "tst":%TIMESTAMP }
+  * Note: "*tid*" is the tracker id that identifies the tracker as a thing. This must be unique for each tracker connected to the same openHAB instance (e.g. family members).
+* **HTTP Headers** - type in: *Content-Type: application/json*
+* **HTTP Method** - type in: *POST*
+* **Basic Authentication** - Set username and password to be able to reach your openHAB server (myopenhab.org credential, if choosen as URL)
+* Check if everything is ok by clicking on **Validate SSL Certificate**.
 
 ### Things
 
@@ -100,7 +81,7 @@ These dynamic channels require the following parameters:
 |---------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Region Name   | String   | Region name. If the region is configured in the tracker app as well use the same name. Distance channels can also be defined as binding only regions (not configured in trackers) |
 | Region center | Location | Region center location                                                                                                                                                            |
-| Region Radius | Integer  | Geofence radius                                                                                                                                                                   |
+| Region Radius | Integer  | Geofence radius                                                                                                                                                                 |
 | Accuracy Threshold | Integer  | Location accuracy threshold (0 to disable)                                                                                                                                                                 |
 
 Distance values will be updated each time a GPS location log record is received from the tracker if the accuracy is below the threshold or if the threshold is disabled.
