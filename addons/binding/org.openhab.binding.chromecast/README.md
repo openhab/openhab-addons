@@ -35,6 +35,15 @@ No authentication is required for accessing the devices on the network.
 
 Chromecast devices can also be manually added.
 The only configuration parameter is the `ipAddress`.
+For an audio group also the port is necessary.
+The autodiscovery process finds the port automatically.
+With manual thing configuration the parameter `port` must be determined manually.
+
+Example for audio group:
+
+```java
+Thing chromecast:audiogroup:bathroom  [ ipAddress="192.168.0.23", port=42139]
+```
 
 ## Channels
 
