@@ -36,19 +36,18 @@ import org.slf4j.LoggerFactory;
 /**
  * Discovers a SqueezeServer on the network using UPNP
  *
- * @author Dan Cunningham
+ * @author Dan Cunningham - Initial contribution
  * @author Mark Hilbush - Add support for LMS authentication
  *
  */
 @Component(immediate = true)
 public class SqueezeBoxServerDiscoveryParticipant implements UpnpDiscoveryParticipant {
+    private final Logger logger = LoggerFactory.getLogger(SqueezeBoxServerDiscoveryParticipant.class);
 
     /**
      * Name of a Squeeze Server
      */
     private static final String MODEL_NAME = "Logitech Media Server";
-
-    private Logger logger = LoggerFactory.getLogger(SqueezeBoxServerDiscoveryParticipant.class);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {

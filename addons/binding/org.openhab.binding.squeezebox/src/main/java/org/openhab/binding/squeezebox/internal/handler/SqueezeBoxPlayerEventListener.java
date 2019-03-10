@@ -17,10 +17,10 @@ import java.util.List;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
 
 /**
- * @author Markus Wolters
- * @author Ben Jones
- * @author Dan Cunningham (OH2 Port)
- * @author Mark Hilbush added durationEvent
+ * @author Markus Wolters - Initial contribution
+ * @author Ben Jones - ?
+ * @author Dan Cunningham - OH2 port
+ * @author Mark Hilbush - Added durationEvent
  * @author Mark Hilbush - Added event to update favorites list
  */
 public interface SqueezeBoxPlayerEventListener {

@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link SqueezeBoxPlayerState} is responsible for saving the state of a player.
  *
- * @author Mark Hilbush - Added support for AudioSink and notifications
+ * @author Mark Hilbush - Initial contribution
  * @author Patrik Gfeller - Moved class to its own file.
  */
 class SqueezeBoxPlayerState {

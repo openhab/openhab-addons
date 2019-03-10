@@ -30,7 +30,7 @@ import com.google.gson.JsonParser;
 /**
  * Collection of methods to help retrieve HTTP data from a SqueezeServer
  *
- * @author Dan Cunningham
+ * @author Dan Cunningham - Initial contribution
  * @author Svilen Valkanov - replaced Apache HttpClient with Jetty
  * @author Mark Hilbush - Add support for LMS authentication
  * @author Mark Hilbush - Rework exception handling

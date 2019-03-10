@@ -24,11 +24,11 @@ import org.slf4j.LoggerFactory;
  * This {@link SqueezeBoxNotificationListener}- is a type of PlayerEventListener
  * that's used to monitor certain events related to the notification functionality.
  *
- * @author Mark Hilbush - Implement AudioSink and notifications
+ * @author Mark Hilbush - Initial contribution
  * @author Mark Hilbush - Added event to update favorites list
  */
 public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEventListener {
-    private Logger logger = LoggerFactory.getLogger(SqueezeBoxNotificationListener.class);
+    private final Logger logger = LoggerFactory.getLogger(SqueezeBoxNotificationListener.class);
 
     private final String playerMAC;
 
