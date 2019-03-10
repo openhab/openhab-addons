@@ -10,13 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.loxone.internal.core;
+package org.openhab.binding.loxone.internal.types;
 
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Objects;
 
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
+import org.openhab.binding.loxone.internal.LxServerHandler;
 import org.openhab.binding.loxone.internal.controls.LxControl;
 
 import com.google.gson.JsonDeserializationContext;
@@ -51,14 +51,14 @@ public class LxConfig {
 
     public LxServerInfo msInfo;
 
-    public void finalize(LxServerHandlerApi api) {
+    public void finalize(LxServerHandler thingHandler) {
         rooms.values().removeIf(o -> (o == null || o.getUuid() == null));
         categories.values().removeIf(o -> (o == null || o.getUuid() == null));
         controls.values().removeIf(Objects::isNull);
         controls.values().forEach(c -> {
             LxContainer room = rooms.get(c.getRoomUuid());
             LxCategory category = categories.get(c.getCategoryUuid());
-            c.initialize(api, room, category);
+            c.initialize(thingHandler, room, category);
         });
     }
 

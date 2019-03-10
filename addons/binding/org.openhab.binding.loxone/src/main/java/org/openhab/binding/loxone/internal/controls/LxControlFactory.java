@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openhab.binding.loxone.internal.controls.LxControl.LxControlInstance;
-import org.openhab.binding.loxone.internal.core.LxUuid;
+import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
  * A factory of controls of Loxone Miniserver.
@@ -47,7 +47,7 @@ public class LxControlFactory {
 
     /**
      * Create a {@link LxControl} object for a control received from the Miniserver
-     * 
+     *
      * @param uuid UUID of the control to create
      * @param type control type
      * @return created control object or null if error

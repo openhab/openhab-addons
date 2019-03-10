@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.loxone.internal.core;
+package org.openhab.binding.loxone.internal.types;
 
 /**
  * Types of security authentication/encryption methods.

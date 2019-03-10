@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.library.types.HSBType;
  * @author Michael Mattan - initial contribution
  *
  */
-public class TemperatureHSBType extends HSBType {
+public class LxTemperatureHSBType extends HSBType {
 
     private static final long serialVersionUID = -2821122730407485795L;
 

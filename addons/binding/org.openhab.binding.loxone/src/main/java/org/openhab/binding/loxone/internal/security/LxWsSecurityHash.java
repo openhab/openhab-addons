@@ -10,10 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.loxone.internal.core;
+package org.openhab.binding.loxone.internal.security;
 
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.core.LxWsClient.LxWebSocket;
+import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.LxWebSocket;
+import org.openhab.binding.loxone.internal.types.LxErrorCode;
+import org.openhab.binding.loxone.internal.types.LxResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,14 +37,14 @@ class LxWsSecurityHash extends LxWsSecurity {
     /**
      * Create a hash-based authentication instance.
      *
-     * @param debugId    instance of the client used for debugging purposes only
-     * @param handlerApi API to the thing handler
-     * @param socket     websocket to perform communication with Miniserver
-     * @param user       user to authenticate
-     * @param password   password to authenticate
+     * @param debugId      instance of the client used for debugging purposes only
+     * @param thingHandler API to the thing handler
+     * @param socket       websocket to perform communication with Miniserver
+     * @param user         user to authenticate
+     * @param password     password to authenticate
      */
-    LxWsSecurityHash(int debugId, LxServerHandlerApi handlerApi, LxWebSocket socket, String user, String password) {
-        super(debugId, handlerApi, socket, user, password);
+    LxWsSecurityHash(int debugId, LxServerHandler thingHandler, LxWebSocket socket, String user, String password) {
+        super(debugId, thingHandler, socket, user, password);
     }
 
     @Override

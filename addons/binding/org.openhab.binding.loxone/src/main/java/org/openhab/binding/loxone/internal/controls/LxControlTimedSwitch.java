@@ -18,10 +18,10 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.core.LxCategory;
-import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxUuid;
+import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.types.LxCategory;
+import org.openhab.binding.loxone.internal.types.LxContainer;
+import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
  * A timed switch type of control on Loxone Miniserver.
@@ -67,8 +67,8 @@ public class LxControlTimedSwitch extends LxControlPushbutton {
     }
 
     @Override
-    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
-        super.initialize(api, room, category);
+    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
+        super.initialize(thingHandler, room, category);
         addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_NUMBER),
                 defaultChannelLabel + " / Deactivation Delay", "Deactivation Delay", null, null,
                 this::getDeactivationState);

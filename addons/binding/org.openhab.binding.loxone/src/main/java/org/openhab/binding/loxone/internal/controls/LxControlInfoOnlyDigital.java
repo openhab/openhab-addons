@@ -16,10 +16,10 @@ import static org.openhab.binding.loxone.internal.LxBindingConstants.*;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.core.LxCategory;
-import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxUuid;
+import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.types.LxCategory;
+import org.openhab.binding.loxone.internal.types.LxContainer;
+import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
  * An InfoOnlyDigital type of control on Loxone Miniserver.
@@ -58,8 +58,8 @@ public class LxControlInfoOnlyDigital extends LxControl {
     }
 
     @Override
-    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
-        super.initialize(api, room, category);
+    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
+        super.initialize(thingHandler, room, category);
         addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_SWITCH), defaultChannelLabel,
                 "Digital virtual state", tags, null, this::getChannelState);
     }

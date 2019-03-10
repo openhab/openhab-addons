@@ -32,11 +32,10 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.core.LxCategory;
-import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxUuid;
-import org.openhab.binding.loxone.internal.core.LxWsClient;
+import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.types.LxCategory;
+import org.openhab.binding.loxone.internal.types.LxContainer;
+import org.openhab.binding.loxone.internal.types.LxUuid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,13 +125,11 @@ public class LxControlLightControllerV2 extends LxControl {
     }
 
     @Override
-    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
-        super.initialize(api, room, category);
+    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
+        super.initialize(thingHandler, room, category);
         // add only channel, state description will be added later when a control state update message is received
         channelId = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_LIGHT_CTRL),
                 defaultChannelLabel, "Light controller V2", tags, this::handleCommands, this::getChannelState);
-        // sub-controls of this control have been created when update() method was called by the super class constructor
-
     }
 
     private void handleCommands(Command command) throws IOException {
@@ -172,7 +169,7 @@ public class LxControlLightControllerV2 extends LxControl {
                 onMoodsListChange((String) value);
             } else if (STATE_ACTIVE_MOODS_LIST.equals(stateName) && value instanceof String) {
                 // this state can be received before list of moods, but it contains a valid list of IDs
-                Integer[] array = LxWsClient.DEFAULT_GSON.fromJson((String) value, Integer[].class);
+                Integer[] array = thingHandler.getGson().fromJson((String) value, Integer[].class);
                 activeMoods = Arrays.asList(array);
                 // update all moods states - this will force update of channels too
                 moodList.values().forEach(mood -> mood.onStateChange(null));
@@ -238,7 +235,7 @@ public class LxControlLightControllerV2 extends LxControl {
      * @throws JsonSyntaxException error parsing json structure
      */
     private void onMoodsListChange(String text) throws JsonSyntaxException {
-        LxControlMood[] array = LxWsClient.DEFAULT_GSON.fromJson(text, LxControlMood[].class);
+        LxControlMood[] array = thingHandler.getGson().fromJson(text, LxControlMood[].class);
         Map<LxUuid, LxControlMood> newMoodList = new HashMap<>();
         minMoodId = null;
         maxMoodId = null;
@@ -248,7 +245,7 @@ public class LxControlLightControllerV2 extends LxControl {
                 logger.debug("Adding mood {} (id={}, name={})", id, mood.getName());
                 // mood-UUID = <controller-UUID>-M<mood-ID>
                 LxUuid moodUuid = new LxUuid(getUuid().toString() + "-M" + id);
-                mood.initialize(handlerApi, getRoom(), getCategory(), this, moodUuid);
+                mood.initialize(thingHandler, getRoom(), getCategory(), this, moodUuid);
                 newMoodList.put(moodUuid, mood);
                 if (minMoodId == null || minMoodId > id) {
                     minMoodId = id;
@@ -268,11 +265,11 @@ public class LxControlLightControllerV2 extends LxControl {
         }
 
         moodList.entrySet().stream().filter(e -> !newMoodList.containsKey(e.getKey())).forEach(e -> {
-            handlerApi.removeControl(e.getValue());
+            thingHandler.removeControl(e.getValue());
         });
 
         newMoodList.entrySet().stream().filter(e -> !moodList.containsKey(e.getKey())).forEach(e -> {
-            handlerApi.addControl(e.getValue());
+            thingHandler.addControl(e.getValue());
         });
 
         moodList = newMoodList;

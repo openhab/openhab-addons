@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.loxone.internal.core;
+package org.openhab.binding.loxone.internal.types;
 
 /**
  * Reasons why Miniserver may be not reachable
@@ -58,7 +58,7 @@ public enum LxErrorCode {
      * @param code status code received in message response from the Miniserver
      * @return converted error code
      */
-    static LxErrorCode getErrorCode(Integer code) {
+    public static LxErrorCode getErrorCode(Integer code) {
         if (code == null) {
             return ERROR_CODE_MISSING;
         }

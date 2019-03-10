@@ -25,11 +25,11 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.core.LxCategory;
-import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxUuid;
-import org.openhab.binding.loxone.internal.types.TemperatureHSBType;
+import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.types.LxCategory;
+import org.openhab.binding.loxone.internal.types.LxContainer;
+import org.openhab.binding.loxone.internal.types.LxTemperatureHSBType;
+import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
  * A Color Picker V2 type of control on Loxone Miniserver.
@@ -71,8 +71,8 @@ public class LxControlColorPickerV2 extends LxControl {
     }
 
     @Override
-    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
-        super.initialize(api, room, category);
+    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
+        super.initialize(thingHandler, room, category);
         addChannel("Color", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_COLORPICKER), defaultChannelLabel,
                 "Color Picker", tags, this::handleCommands, this::getColor);
     }
@@ -207,7 +207,7 @@ public class LxControlColorPickerV2 extends LxControl {
                 hsbColor = new HSBType(valueMatcher.group(1));
             } else if (tempPattern.matcher(color).matches() && valueMatcher.find()) {
                 // we have a temp(brightness,kelvin) pattern
-                hsbColor = TemperatureHSBType.fromBrightnessTemperature(valueMatcher.group(1));
+                hsbColor = LxTemperatureHSBType.fromBrightnessTemperature(valueMatcher.group(1));
             }
         } catch (IllegalArgumentException e) {
             // an error happened during HSBType creation, we return null

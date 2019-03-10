@@ -10,13 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.loxone.internal.core;
+package org.openhab.binding.loxone.internal.types;
 
 import java.lang.reflect.Type;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
@@ -27,7 +28,19 @@ import com.google.gson.annotations.SerializedName;
  * @author Pawel Pieczul - initial contribution
  *
  */
-class LxResponse {
+public class LxResponse {
+
+    /**
+     * A sub-response value structure that is received as a response to config API HTTP request sent to the Miniserver.
+     *
+     * @author Pawel Pieczul - initial contribution
+     *
+     */
+    public class LxResponseCfgApi {
+        public String snr;
+        public String version;
+    }
+
     /**
      * A sub-response structure that is part of a {@link LxResponse} class and contains a response to a command sent to
      * Miniserver's control.
@@ -35,7 +48,7 @@ class LxResponse {
      * @author Pawel Pieczul - initial contribution
      *
      */
-    class LxSubResponse {
+    public class LxSubResponse {
         @SerializedName("control")
         private String command;
         @SerializedName(value = "Code", alternate = { "code" })
@@ -52,7 +65,7 @@ class LxResponse {
     }
 
     @SerializedName("LL")
-    LxSubResponse subResponse;
+    public LxSubResponse subResponse;
     private final Logger logger = LoggerFactory.getLogger(LxResponse.class);
 
     /**
@@ -60,7 +73,7 @@ class LxResponse {
      *
      * @return true when response is ok
      */
-    boolean isResponseOk() {
+    public boolean isResponseOk() {
         return (subResponse != null && subResponse.isSubResponseOk());
     }
 
@@ -69,7 +82,7 @@ class LxResponse {
      *
      * @return command name
      */
-    String getCommand() {
+    public String getCommand() {
         return (subResponse != null ? subResponse.command : null);
     }
 
@@ -78,7 +91,7 @@ class LxResponse {
      *
      * @return error code value
      */
-    Integer getResponseCodeNumber() {
+    public Integer getResponseCodeNumber() {
         return (subResponse != null ? subResponse.code : null);
     }
 
@@ -87,7 +100,7 @@ class LxResponse {
      *
      * @return error code
      */
-    LxErrorCode getResponseCode() {
+    public LxErrorCode getResponseCode() {
         return LxErrorCode.getErrorCode(getResponseCodeNumber());
     }
 
@@ -96,21 +109,22 @@ class LxResponse {
      *
      * @return response value as string
      */
-    String getValueAsString() {
+    public String getValueAsString() {
         return (subResponse != null && subResponse.value != null ? subResponse.value.getAsString() : null);
     }
 
     /**
      * Deserializes response value as a given type
-     *
+     * 
+     * @param gson GSON object used for deserialization
      * @param      <T> class to deserialize response to
      * @param type class type to deserialize response to
      * @return deserialized response
      */
-    <T> T getValueAs(Type type) {
+    public <T> T getValueAs(Gson gson, Type type) {
         if (subResponse != null && subResponse.value != null) {
             try {
-                return LxWsClient.DEFAULT_GSON.fromJson(subResponse.value, type);
+                return gson.fromJson(subResponse.value, type);
             } catch (NumberFormatException | JsonParseException e) {
                 logger.debug("Error parsing response value as {}: {}", type, e.getMessage());
             }

@@ -24,10 +24,10 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.core.LxCategory;
-import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxUuid;
+import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.types.LxCategory;
+import org.openhab.binding.loxone.internal.types.LxContainer;
+import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
  * A slider type of control on Loxone Miniserver.
@@ -79,9 +79,9 @@ public class LxControlSlider extends LxControl {
     }
 
     @Override
-    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
-        super.initialize(api, room, category);
-        ChannelUID id = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_NUMBER),
+    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
+        super.initialize(thingHandler, room, category);
+        ChannelUID cid = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_NUMBER),
                 defaultChannelLabel, "Slider", tags, this::handleCommands, this::getChannelState);
         if (details != null) {
             format = details.format;
@@ -96,7 +96,7 @@ public class LxControlSlider extends LxControl {
             }
         }
         if (format != null) {
-            addChannelStateDescription(id, new StateDescription(new BigDecimal(minValue), new BigDecimal(maxValue),
+            addChannelStateDescription(cid, new StateDescription(new BigDecimal(minValue), new BigDecimal(maxValue),
                     new BigDecimal(stepValue), format, false, null));
         }
     }

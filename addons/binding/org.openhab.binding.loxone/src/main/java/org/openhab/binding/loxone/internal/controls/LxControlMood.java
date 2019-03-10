@@ -15,10 +15,10 @@ package org.openhab.binding.loxone.internal.controls;
 import java.io.IOException;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.core.LxCategory;
-import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxUuid;
+import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.types.LxCategory;
+import org.openhab.binding.loxone.internal.types.LxContainer;
+import org.openhab.binding.loxone.internal.types.LxUuid;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -82,15 +82,15 @@ class LxControlMood extends LxControlSwitch {
     }
 
     @Override
-    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
-        super.initialize(api, room, category);
+    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
+        super.initialize(thingHandler, room, category);
     }
 
-    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category,
+    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category,
             LxControlLightControllerV2 controller, LxUuid uuid) {
         this.uuid = uuid;
         this.controller = controller;
-        super.initialize(api, room, category);
+        super.initialize(thingHandler, room, category);
         // the 'all off' mood can't be operated as a switch, but needs to be present on the moods list for the
         // lighting controller
         // currently the API does not give a hint how to figure out the 'all off' mood

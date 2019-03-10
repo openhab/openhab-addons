@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.loxone.internal.core;
+package org.openhab.binding.loxone.internal.security;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -47,8 +47,10 @@ import javax.crypto.spec.IvParameterSpec;
 import org.apache.commons.codec.binary.Hex;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.id.InstanceUUID;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.core.LxWsClient.LxWebSocket;
+import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.LxWebSocket;
+import org.openhab.binding.loxone.internal.types.LxErrorCode;
+import org.openhab.binding.loxone.internal.types.LxResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,14 +157,14 @@ class LxWsSecurityToken extends LxWsSecurity {
     /**
      * Create a token-based authentication instance.
      *
-     * @param debugId    instance of the client used for debugging purposes only
-     * @param handlerApi API to the thing handler
-     * @param socket     websocket to perform communication with Miniserver
-     * @param user       user to authenticate
-     * @param password   password to authenticate
+     * @param debugId      instance of the client used for debugging purposes only
+     * @param thingHandler API to the thing handler
+     * @param socket       websocket to perform communication with Miniserver
+     * @param user         user to authenticate
+     * @param password     password to authenticate
      */
-    LxWsSecurityToken(int debugId, LxServerHandlerApi handlerApi, LxWebSocket socket, String user, String password) {
-        super(debugId, handlerApi, socket, user, password);
+    LxWsSecurityToken(int debugId, LxServerHandler thingHandler, LxWebSocket socket, String user, String password) {
+        super(debugId, thingHandler, socket, user, password);
     }
 
     @Override
@@ -214,7 +216,7 @@ class LxWsSecurityToken extends LxWsSecurity {
     }
 
     @Override
-    String encrypt(String command) {
+    public String encrypt(String command) {
         if (!encryptionReady) {
             return command;
         }
@@ -247,7 +249,7 @@ class LxWsSecurityToken extends LxWsSecurity {
     }
 
     @Override
-    String decryptControl(String control) {
+    public String decryptControl(String control) {
         String string = control;
         if (!encryptionReady || !string.startsWith(CMD_ENCRYPT_CMD)) {
             return string;
@@ -272,7 +274,7 @@ class LxWsSecurityToken extends LxWsSecurity {
     }
 
     @Override
-    void cancel() {
+    public void cancel() {
         super.cancel();
         tokenRefreshLock.lock();
         try {
@@ -308,7 +310,7 @@ class LxWsSecurityToken extends LxWsSecurity {
             aesDecryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             aesDecryptCipher.init(Cipher.DECRYPT_MODE, aesKey, ivSpec);
             // get token value from configuration storage
-            token = handlerApi.getSetting(SETTINGS_TOKEN);
+            token = thingHandler.getSetting(SETTINGS_TOKEN);
             logger.debug("[{}] Retrieved token value: {}", debugId, token);
         } catch (InvalidParameterException e) {
             return setError(LxErrorCode.INTERNAL_ERROR, "Invalid parameter: " + e.getMessage());
@@ -370,7 +372,7 @@ class LxWsSecurityToken extends LxWsSecurity {
         if (!checkResponse(resp)) {
             return setError(null, "Hash key/salt get failed.");
         }
-        LxResponseKeySalt keySalt = resp.getValueAs(LxResponseKeySalt.class);
+        LxResponseKeySalt keySalt = resp.getValueAs(thingHandler.getGson(), LxResponseKeySalt.class);
         if (keySalt == null) {
             return setError(null, "Error parsing hash key/salt json: " + resp.getValueAsString());
         }
@@ -452,11 +454,11 @@ class LxWsSecurityToken extends LxWsSecurity {
         if (token != null) {
             properties.put(SETTINGS_PASSWORD, null);
         }
-        handlerApi.setSettings(properties);
+        thingHandler.setSettings(properties);
     }
 
     private LxResponseToken parseTokenResponse(LxResponse response) {
-        LxResponseToken tokenResponse = response.getValueAs(LxResponseToken.class);
+        LxResponseToken tokenResponse = response.getValueAs(thingHandler.getGson(), LxResponseToken.class);
         if (tokenResponse == null) {
             setError(LxErrorCode.INTERNAL_ERROR, "Error parsing token response.");
             return null;

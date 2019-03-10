@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import org.openhab.binding.loxone.internal.core.LxUuid;
+import org.openhab.binding.loxone.internal.types.LxUuid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

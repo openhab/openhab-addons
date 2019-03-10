@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.loxone.internal.core;
+package org.openhab.binding.loxone.internal.security;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -23,23 +23,26 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.core.LxWsClient.LxWebSocket;
+import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.LxWebSocket;
+import org.openhab.binding.loxone.internal.types.LxErrorCode;
+import org.openhab.binding.loxone.internal.types.LxResponse;
+import org.openhab.binding.loxone.internal.types.LxWsSecurityType;
 
 /**
  * Security abstract class providing authentication and encryption services.
- * Used by the {@link LxWsClient} during connection establishment to authenticate user and during message exchange for
- * encryption and decryption or the messages.
+ * Used by the {@link LxServerHandler} during connection establishment to authenticate user and during message exchange
+ * for encryption and decryption or the messages.
  *
  * @author Pawel Pieczul - initial contribution
  *
  */
-abstract class LxWsSecurity {
+public abstract class LxWsSecurity {
     final int debugId;
     final String user;
     final String password;
     final LxWebSocket socket;
-    final LxServerHandlerApi handlerApi;
+    final LxServerHandler thingHandler;
 
     LxErrorCode reason;
     String details;
@@ -50,15 +53,15 @@ abstract class LxWsSecurity {
     /**
      * Create an authentication instance.
      *
-     * @param debugId    instance of the client used for debugging purposes only
-     * @param handlerApi API to the thing handler
-     * @param socket     websocket to perform communication with Miniserver
-     * @param user       user to authenticate
-     * @param password   password to authenticate
+     * @param debugId      instance of the client used for debugging purposes only
+     * @param thingHandler API to the thing handler
+     * @param socket       websocket to perform communication with Miniserver
+     * @param user         user to authenticate
+     * @param password     password to authenticate
      */
-    LxWsSecurity(int debugId, LxServerHandlerApi handlerApi, LxWebSocket socket, String user, String password) {
+    LxWsSecurity(int debugId, LxServerHandler thingHandler, LxWebSocket socket, String user, String password) {
         this.debugId = debugId;
-        this.handlerApi = handlerApi;
+        this.thingHandler = thingHandler;
         this.socket = socket;
         this.user = user;
         this.password = password;
@@ -73,7 +76,7 @@ abstract class LxWsSecurity {
      *
      * @param doneCallback callback to execute when authentication is finished or failed
      */
-    void authenticate(BiConsumer<LxErrorCode, String> doneCallback) {
+    public void authenticate(BiConsumer<LxErrorCode, String> doneCallback) {
         Runnable init = () -> {
             authenticationLock.lock();
             try {
@@ -98,7 +101,7 @@ abstract class LxWsSecurity {
      * Cancel authentication procedure and any pending activities.
      * It is supposed to be overridden by implementing classes.
      */
-    void cancel() {
+    public void cancel() {
         cancel = true;
     }
 
@@ -147,7 +150,7 @@ abstract class LxWsSecurity {
      * @param string input string to encrypt
      * @return encrypted string
      */
-    String encrypt(String string) {
+    public String encrypt(String string) {
         // by default no encryption
         return string;
     }
@@ -161,7 +164,7 @@ abstract class LxWsSecurity {
      * @return decrypted control or original control in case decryption is unavailable, control is not encrypted or
      *         other issue occurred
      */
-    String decryptControl(String control) {
+    public String decryptControl(String control) {
         // by default no decryption
         return control;
     }
@@ -186,17 +189,17 @@ abstract class LxWsSecurity {
     /**
      * Create an authentication instance.
      *
-     * @param type       type of security algorithm
-     * @param swVersion  Miniserver's software version or null if unknown
-     * @param debugId    instance of the client used for debugging purposes only
-     * @param handlerApi API to the thing handler
-     * @param socket     websocket to perform communication with Miniserver
-     * @param user       user to authenticate
-     * @param password   password to authenticate
+     * @param type         type of security algorithm
+     * @param swVersion    Miniserver's software version or null if unknown
+     * @param debugId      instance of the client used for debugging purposes only
+     * @param thingHandler API to the thing handler
+     * @param socket       websocket to perform communication with Miniserver
+     * @param user         user to authenticate
+     * @param password     password to authenticate
      * @return created security object
      */
-    static LxWsSecurity create(LxWsSecurityType type, String swVersion, int debugId, LxServerHandlerApi handlerApi,
-            LxWebSocket socket, String user, String password) {
+    public static LxWsSecurity create(LxWsSecurityType type, String swVersion, int debugId,
+            LxServerHandler thingHandler, LxWebSocket socket, String user, String password) {
         LxWsSecurityType securityType = type;
         if (securityType == LxWsSecurityType.AUTO && swVersion != null) {
             String[] versions = swVersion.split("[.]");
@@ -207,9 +210,9 @@ abstract class LxWsSecurity {
             }
         }
         if (securityType == LxWsSecurityType.HASH) {
-            return new LxWsSecurityHash(debugId, handlerApi, socket, user, password);
+            return new LxWsSecurityHash(debugId, thingHandler, socket, user, password);
         } else {
-            return new LxWsSecurityToken(debugId, handlerApi, socket, user, password);
+            return new LxWsSecurityToken(debugId, thingHandler, socket, user, password);
         }
     }
 

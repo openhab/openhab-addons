@@ -27,10 +27,10 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.core.LxCategory;
-import org.openhab.binding.loxone.internal.core.LxContainer;
-import org.openhab.binding.loxone.internal.core.LxUuid;
+import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.types.LxCategory;
+import org.openhab.binding.loxone.internal.types.LxContainer;
+import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
  * A radio-button type of control on Loxone Miniserver.
@@ -75,10 +75,10 @@ public class LxControlRadio extends LxControl {
     private List<StateOption> outputs = new ArrayList<>();
 
     @Override
-    public void initialize(LxServerHandlerApi api, LxContainer room, LxCategory category) {
-        super.initialize(api, room, category);
+    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
+        super.initialize(thingHandler, room, category);
         // add both channel and state description (all needed configuration is available)
-        ChannelUID id = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RADIO_BUTTON),
+        ChannelUID cid = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RADIO_BUTTON),
                 defaultChannelLabel, "Radio button", tags, this::handleCommands, this::getChannelState);
         if (details != null && details.outputs != null) {
             outputs = details.outputs.entrySet().stream().map(e -> new StateOption(e.getKey(), e.getValue()))
@@ -87,7 +87,7 @@ public class LxControlRadio extends LxControl {
         if (details != null && details.allOff != null) {
             outputs.add(new StateOption("0", details.allOff));
         }
-        addChannelStateDescription(id, new StateDescription(BigDecimal.ZERO, new BigDecimal(MAX_RADIO_OUTPUTS),
+        addChannelStateDescription(cid, new StateDescription(BigDecimal.ZERO, new BigDecimal(MAX_RADIO_OUTPUTS),
                 BigDecimal.ONE, null, false, outputs));
     }
 

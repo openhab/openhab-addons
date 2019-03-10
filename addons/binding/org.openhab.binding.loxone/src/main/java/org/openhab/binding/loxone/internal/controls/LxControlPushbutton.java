@@ -16,7 +16,7 @@ import java.io.IOException;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.loxone.internal.core.LxUuid;
+import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
  * A pushbutton type of control on Loxone Miniserver.
