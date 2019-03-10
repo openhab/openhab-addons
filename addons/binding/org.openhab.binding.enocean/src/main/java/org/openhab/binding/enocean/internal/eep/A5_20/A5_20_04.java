@@ -37,6 +37,10 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
  */
 public class A5_20_04 extends A5_20 {
 
+    public A5_20_04() {
+        super();
+    }
+
     public A5_20_04(ERP1Message packet) {
         super(packet);
     }
@@ -53,7 +57,8 @@ public class A5_20_04 extends A5_20 {
     }
 
     private String getStatusRequestEvent() {
-        return getBit(getDB_0Value(), 6) ? "triggered" : null;
+        return Boolean.valueOf(getBit(getDB_0Value(), 6)).toString();
+        // return getBit(getDB_0Value(), 6) ? "triggered" : null;
     }
 
     private byte getPos(Hashtable<String, State> currentState) {
@@ -73,7 +78,7 @@ public class A5_20_04 extends A5_20 {
     private byte getTsp(Hashtable<String, State> currentState) {
         State current = currentState.get(CHANNEL_TEMPERATURE_SETPOINT);
 
-        int value = 20; // 20 °C
+        double value = 20.0; // 20 °C
 
         if ((current != null) && (current instanceof QuantityType)) {
             @SuppressWarnings("unchecked")
@@ -83,12 +88,12 @@ public class A5_20_04 extends A5_20 {
                 QuantityType<Temperature> celsius = raw.toUnit(SIUnits.CELSIUS);
 
                 if (celsius != null) {
-                    value = celsius.intValue();
+                    value = celsius.doubleValue();
                 }
             }
         }
 
-        return (byte) ((value - 10) * (255.0 / 20.0));
+        return (byte) ((value - 10.0) * (255.0 / 20.0));
     }
 
     private byte getMc(Hashtable<String, State> currentState) {
@@ -98,11 +103,11 @@ public class A5_20_04 extends A5_20 {
             OnOffType state = current.as(OnOffType.class);
 
             if (state != null) {
-                return (byte) (state.equals(OnOffType.ON) ? 0x40 : 0x00);
+                return (byte) (state.equals(OnOffType.ON) ? 0x00 : 0x40);
             }
         }
 
-        return 0x40; // on
+        return 0x00; // on
     }
 
     private byte getWuc(Hashtable<String, State> currentState) {
@@ -144,7 +149,7 @@ public class A5_20_04 extends A5_20 {
             }
         }
 
-        return 0x00; // off
+        return 0x00; // unlocked
     }
 
     private byte getSer(Hashtable<String, State> currentState) {
@@ -207,8 +212,9 @@ public class A5_20_04 extends A5_20 {
 
     private State getTemperature() {
         boolean fl = getBit(getDB_0Value(), 0);
+        boolean mst = getBit(getDB_0Value(), 7);
 
-        if (fl) {
+        if (fl || mst) {
             return UnDefType.UNDEF;
         }
 
@@ -233,8 +239,9 @@ public class A5_20_04 extends A5_20 {
 
     private State getFeedTemperature() {
         boolean ts = getBit(getDB_0Value(), 1);
+        boolean mst = getBit(getDB_0Value(), 7);
 
-        if (ts) {
+        if (ts || mst) {
             return UnDefType.UNDEF;
         }
 

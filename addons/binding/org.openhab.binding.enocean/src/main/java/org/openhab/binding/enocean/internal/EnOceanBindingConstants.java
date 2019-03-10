@@ -280,9 +280,8 @@ public class EnOceanBindingConstants {
                     put(CHANNEL_SERVICECOMMAND, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_SERVICECOMMAND), CoreItemFactory.NUMBER));
 
-                    put(CHANNEL_STATUS_REQUEST_EVENT,
-                            new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_STATUS_REQUEST_EVENT),
-                                    CoreItemFactory.SWITCH, "", true, true));
+                    put(CHANNEL_STATUS_REQUEST_EVENT, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_STATUS_REQUEST_EVENT), null, "", false, true));
                     put(CHANNEL_SEND_COMMAND, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_SEND_COMMAND), CoreItemFactory.SWITCH));
 
