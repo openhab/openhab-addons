@@ -190,4 +190,4 @@ Because textual configuration isn't useful, follow the instructions in the [Gett
 -   Only polling is available. Further versions will contain other mechanisms under usage of the WebSocket implementation of Z-Way or MQTT.
 
 <br>
-<img src="doc/BMWi_4C_Gef_en.jpg" width="200">
+![BMWi](./doc/BMWi_4C_Gef_en.jpg)
