@@ -9,8 +9,6 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  javax.measure.quantity,
- javax.ws.rs.client,
- javax.ws.rs.core,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
@@ -22,5 +20,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

@@ -12,11 +12,12 @@
  */
 package org.openhab.binding.opendaikin.internal;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.opendaikin.internal.api.ControlInfo;
 import org.openhab.binding.opendaikin.internal.api.SensorInfo;
 import org.slf4j.Logger;
@@ -29,51 +30,67 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class OpenDaikinWebTargets {
+    private static final int TIMEOUT_MS = 30000;
 
-    private WebTarget base;
-    private WebTarget setControlInfo;
-    private WebTarget getControlInfo;
-    private WebTarget getSensorInfo;
+    private String setControlInfoUri;
+    private String getControlInfoUri;
+    private String getSensorInfoUri;
     private Logger logger = LoggerFactory.getLogger(OpenDaikinWebTargets.class);
 
-    public OpenDaikinWebTargets(Client client, String ipAddress) {
-        base = client.target("http://" + ipAddress);
-        setControlInfo = base.path("aircon/set_control_info");
-        getControlInfo = base.path("aircon/get_control_info");
-        getSensorInfo = base.path("aircon/get_sensor_info");
+    public OpenDaikinWebTargets(String ipAddress) {
+        String baseUri = "http://" + ipAddress + "/";
+        setControlInfoUri = baseUri + "aircon/set_control_info";
+        getControlInfoUri = baseUri + "aircon/get_control_info";
+        getSensorInfoUri = baseUri + "aircon/get_sensor_info";
     }
 
     public ControlInfo getControlInfo() throws OpenDaikinCommunicationException {
-        String response = invoke(getControlInfo.request().buildGet(), getControlInfo);
+        String response = invoke(getControlInfoUri);
         return ControlInfo.parse(response);
     }
 
     public void setControlInfo(ControlInfo info) throws OpenDaikinCommunicationException {
-        WebTarget target = info.getParamString(setControlInfo);
-        logger.debug("Calling this url: {}", target.getUri().toString());
-        invoke(target.request().buildGet(), target);
+        Map<String, String> queryParams = info.getParamString();
+        invoke(setControlInfoUri, queryParams);
     }
 
     public SensorInfo getSensorInfo() throws OpenDaikinCommunicationException {
-        String response = invoke(getSensorInfo.request().buildGet(), getSensorInfo);
+        String response = invoke(getSensorInfoUri);
         return SensorInfo.parse(response);
     }
 
-    private String invoke(Invocation invocation, WebTarget target) throws OpenDaikinCommunicationException {
-        Response response;
+    private String invoke(String uri) throws OpenDaikinCommunicationException {
+        return invoke(uri, new HashMap<>());
+    }
+
+    private String invoke(String uri, Map<String, String> params) throws OpenDaikinCommunicationException {
+        String uriWithParams = uri + paramsToQueryString(params);
+        logger.debug("Calling url: {}", uriWithParams);
+        String response;
         synchronized (this) {
-            response = invocation.invoke();
+            try {
+                response = HttpUtil.executeUrl("GET", uriWithParams, TIMEOUT_MS);
+            } catch (IOException ex) {
+                // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
+                // error check below consistent.
+                response = null;
+            }
         }
 
-        if (response.getStatus() != 200) {
+        if (response == null) {
             throw new OpenDaikinCommunicationException(
-                    String.format("Daikin controller returned %s while invoking %s : %s", response.getStatus(),
-                            target.getUri(), response.readEntity(String.class)));
-        } else if (!response.hasEntity()) {
-            throw new OpenDaikinCommunicationException(
-                    String.format("Daikin controller returned null response while invoking %s", target.getUri()));
+                    String.format("Daikin controller returned error while invoking %s", uriWithParams));
         }
 
-        return response.readEntity(String.class);
+        return response;
+    }
+
+    private String paramsToQueryString(Map<String, String> params) {
+        if (params.isEmpty()) {
+            return "";
+        }
+
+        return "?" + params.entrySet().stream().map(param -> param.getKey() + "=" + param.getValue())
+                .collect(Collectors.joining("&"));
     }
 }

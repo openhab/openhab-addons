@@ -13,11 +13,10 @@
 package org.openhab.binding.opendaikin.internal.api;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.ws.rs.client.WebTarget;
 
 import org.openhab.binding.opendaikin.internal.api.Enums.FanMovement;
 import org.openhab.binding.opendaikin.internal.api.Enums.FanSpeed;
@@ -71,24 +70,16 @@ public class ControlInfo {
         return info;
     }
 
-    public WebTarget getParamString(WebTarget target) {
-        WebTarget webTarget = target.queryParam("pow", power ? 1 : 0).queryParam("mode", mode.getValue())
-                .queryParam("f_rate", fanSpeed.getValue()).queryParam("f_dir", fanMovement.getValue());
+    public Map<String, String> getParamString() {
+        Map<String, String> params = new HashMap<>();
+        params.put("pow", power ? "1" : "0");
+        params.put("mode", Integer.toString(mode.getValue()));
+        params.put("f_rate", fanSpeed.getValue());
+        params.put("f_dir", Integer.toString(fanMovement.getValue()));
+        params.put("stemp", temp.orElse(20.0).toString());
+        params.put("shum", targetHumidity.map(value -> value.toString()).orElse(""));
 
-        if (temp.isPresent()) {
-            webTarget = webTarget.queryParam("stemp", temp.get());
-        } else {
-            webTarget = webTarget.queryParam("stemp", "20.0");
-        }
-
-        if (targetHumidity.isPresent()) {
-            webTarget = webTarget.queryParam("shum", targetHumidity.get());
-        } else {
-            // For some reason this can be empty, but nothing else can be
-            webTarget = webTarget.queryParam("shum", "");
-        }
-
-        return webTarget;
+        return params;
     }
 
     private static Optional<Double> parseDouble(String value) {

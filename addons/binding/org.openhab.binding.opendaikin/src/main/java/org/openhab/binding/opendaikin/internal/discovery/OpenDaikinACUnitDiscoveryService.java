@@ -23,9 +23,6 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -54,8 +51,6 @@ public class OpenDaikinACUnitDiscoveryService extends AbstractDiscoveryService {
 
     private final Runnable scanner;
     private ScheduledFuture<?> backgroundFuture;
-
-    private Client client = ClientBuilder.newClient();
 
     public OpenDaikinACUnitDiscoveryService() {
         super(Collections.singleton(OpenDaikinBindingConstants.THING_TYPE_AC_UNIT), 600, true);
@@ -126,7 +121,7 @@ public class OpenDaikinACUnitDiscoveryService extends AbstractDiscoveryService {
 
             String host = incomingPacket.getAddress().toString().substring(1);
             logger.debug("Received packet from {}", host);
-            new OpenDaikinWebTargets(client, host).getControlInfo();
+            new OpenDaikinWebTargets(host).getControlInfo();
 
             ThingUID thingUID = new ThingUID(OpenDaikinBindingConstants.THING_TYPE_AC_UNIT, host.replace('.', '_'));
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)

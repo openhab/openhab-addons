@@ -18,8 +18,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Temperature;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -58,7 +56,6 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
 
     private long refreshInterval;
 
-    private final Client client = ClientBuilder.newClient();
     private OpenDaikinWebTargets webTargets;
     private ScheduledFuture<?> pollFuture;
 
@@ -83,8 +80,9 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
                 changePower(((OnOffType) command).equals(OnOffType.ON));
                 return;
             case OpenDaikinBindingConstants.CHANNEL_AC_TEMP:
-                changeSetPoint(((DecimalType) command).doubleValue());
-                return;
+                if (changeSetPoint(command)) {
+                    return;
+                }
             case OpenDaikinBindingConstants.CHANNEL_AC_FAN_SPEED:
                 changeFanSpeed(FanSpeed.valueOf(((StringType) command).toString()));
                 return;
@@ -107,7 +105,7 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
         if (config.host == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address must be set");
         } else {
-            webTargets = new OpenDaikinWebTargets(client, config.host);
+            webTargets = new OpenDaikinWebTargets(config.host);
             refreshInterval = config.refresh;
 
             schedulePoll();
@@ -193,12 +191,24 @@ public class OpenDaikinAcUnitHandler extends BaseThingHandler {
         webTargets.setControlInfo(info);
     }
 
-    private void changeSetPoint(double temp) throws OpenDaikinCommunicationException {
+    /**
+     * @return true if the command was of an expected type, false otherwise
+     */
+    private boolean changeSetPoint(Command command) throws OpenDaikinCommunicationException {
+        double newTemperature;
+        if (command instanceof DecimalType) {
+            newTemperature = ((DecimalType) command).doubleValue();
+        } else if (command instanceof QuantityType) {
+            newTemperature = ((QuantityType<Temperature>) command).toUnit(SIUnits.CELSIUS).doubleValue();
+        } else {
+            return false;
+        }
+
         ControlInfo info = webTargets.getControlInfo();
-
-        info.temp = Optional.of(temp);
-
+        info.temp = Optional.of(newTemperature);
         webTargets.setControlInfo(info);
+
+        return true;
     }
 
     private void changeMode(Mode mode) throws OpenDaikinCommunicationException {
