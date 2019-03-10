@@ -36,10 +36,10 @@ import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelTypeProvider
  * It has a name and consists of multiple channels.
  *
  * @author David Graeff - Initial contribution
- * @param <C> Config class derived from {@link HAConfiguration}
+ * @param <C> Config class derived from {@link BaseChannelConfiguration}
  */
 @NonNullByDefault
-public abstract class AbstractComponent<C extends HAConfiguration> {
+public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
     // Component location fields
     protected final ChannelGroupTypeUID channelGroupTypeUID;
     protected final ChannelGroupUID channelGroupUID;
@@ -50,8 +50,8 @@ public abstract class AbstractComponent<C extends HAConfiguration> {
     // The hash code ({@link String#hashCode()}) of the configuration string
     // Used to determine if a component has changed.
     protected final int configHash;
-    protected final String configJson;
-    protected final C config;
+    protected final String channelConfigurationJson;
+    protected final C channelConfiguration;
 
     /**
      * Provide a thingUID and HomeAssistant topic ID to determine the ESH channel group UID and type.
@@ -67,9 +67,9 @@ public abstract class AbstractComponent<C extends HAConfiguration> {
                 haID.getChannelGroupTypeID());
         this.channelGroupUID = new ChannelGroupUID(componentConfiguration.getThingUID(), haID.getChannelGroupID());
 
-        this.configJson = componentConfiguration.getConfigJSON();
-        this.config = componentConfiguration.getConfig(clazz);
-        this.configHash = configJson.hashCode();
+        this.channelConfigurationJson = componentConfiguration.getConfigJSON();
+        this.channelConfiguration = componentConfiguration.getConfig(clazz);
+        this.configHash = channelConfigurationJson.hashCode();
     }
 
     /**
@@ -134,7 +134,7 @@ public abstract class AbstractComponent<C extends HAConfiguration> {
      * Component (Channel Group) name.
      */
     public String name() {
-        return config.name;
+        return channelConfiguration.name;
     }
 
     /**

@@ -48,7 +48,7 @@ import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.Abstra
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.ComponentSwitch;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents.ComponentDiscovered;
-import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HAConfigTypeAdapterFactory;
+import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HaID;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelTypeProvider;
@@ -158,7 +158,7 @@ public class HomeAssistantMQTTImplementationTests extends JavaOSGiTest {
         MqttChannelTypeProvider channelTypeProvider = mock(MqttChannelTypeProvider.class);
 
         final Map<String, AbstractComponent<?>> haComponents = new HashMap<String, AbstractComponent<?>>();
-        Gson gson = new GsonBuilder().registerTypeAdapterFactory(new HAConfigTypeAdapterFactory()).create();
+        Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
 
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
         DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing,

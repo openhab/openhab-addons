@@ -31,8 +31,8 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
-import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HAConfigTypeAdapterFactory;
-import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HAConfiguration;
+import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.ChannelConfigurationTypeAdapterFactory;
+import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.BaseChannelConfiguration;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HaID;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -75,7 +75,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     public HomeAssistantDiscovery() {
         super(Stream.of(MqttBindingConstants.HOMEASSISTANT_MQTT_THING).collect(Collectors.toSet()), 3, true,
                 BASE_TOPIC + "/#");
-        this.gson = new GsonBuilder().registerTypeAdapterFactory(new HAConfigTypeAdapterFactory()).create();
+        this.gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
     }
 
     @NonNullByDefault({})
@@ -155,7 +155,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         final String componentNames = components.stream().map(c -> HA_COMP_TO_NAME.getOrDefault(c, c))
                 .collect(Collectors.joining(","));
 
-        HAConfiguration config = HAConfiguration.fromString(new String(payload, StandardCharsets.UTF_8), gson);
+        BaseChannelConfiguration config = BaseChannelConfiguration.fromString(new String(payload, StandardCharsets.UTF_8), gson);
 
         Map<String, Object> properties = new HashMap<>();
         properties.put("objectid", topicParts.objectID);

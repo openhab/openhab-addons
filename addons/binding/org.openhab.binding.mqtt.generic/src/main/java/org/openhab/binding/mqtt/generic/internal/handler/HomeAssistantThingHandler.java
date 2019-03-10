@@ -34,7 +34,7 @@ import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.Abstra
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.CChannel;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.CFactory;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents;
-import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HAConfigTypeAdapterFactory;
+import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HaID;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HandlerConfiguration;
@@ -91,7 +91,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     public HomeAssistantThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider, int subscribeTimeout,
             int attributeReceiveTimeout) {
         super(thing, subscribeTimeout);
-        this.gson = new GsonBuilder().registerTypeAdapterFactory(new HAConfigTypeAdapterFactory()).create();
+        this.gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
         this.channelTypeProvider = channelTypeProvider;
         this.attributeReceiveTimeout = attributeReceiveTimeout;
         this.delayedProcessing = new DelayedBatchProcessing<>(attributeReceiveTimeout, this, scheduler);

@@ -22,14 +22,14 @@ import org.openhab.binding.mqtt.generic.internal.values.OnOffValue;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentBinarySensor extends AbstractComponent<ComponentBinarySensor.Config> {
+public class ComponentBinarySensor extends AbstractComponent<ComponentBinarySensor.ChannelConfiguration> {
     public static final String sensorChannelID = "sensor"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config extends HAConfiguration {
-        Config() {
+    static class ChannelConfiguration extends BaseChannelConfiguration {
+        ChannelConfiguration() {
             super("MQTT Binary Sensor");
         }
 
@@ -44,15 +44,15 @@ public class ComponentBinarySensor extends AbstractComponent<ComponentBinarySens
     };
 
     public ComponentBinarySensor(CFactory.ComponentConfiguration builder) {
-        super(builder, Config.class);
+        super(builder, ChannelConfiguration.class);
 
-        if (config.force_update) {
+        if (channelConfiguration.force_update) {
             throw new UnsupportedOperationException("Component:Sensor does not support forced updates");
         }
 
         channels.put(sensorChannelID,
-                new CChannel(this, sensorChannelID, new OnOffValue(config.payload_on, config.payload_off),
-                        config.state_topic, null, config.name, config.unit_of_measurement,
+                new CChannel(this, sensorChannelID, new OnOffValue(channelConfiguration.payload_on, channelConfiguration.payload_off),
+                        channelConfiguration.state_topic, null, channelConfiguration.name, channelConfiguration.unit_of_measurement,
                         builder.getUpdateListener()));
     }
 

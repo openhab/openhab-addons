@@ -64,7 +64,7 @@ public class DiscoverComponentsTests extends JavaOSGiTest {
         // Create a scheduler
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
 
-        Gson gson = new GsonBuilder().registerTypeAdapterFactory(new HAConfigTypeAdapterFactory()).create();
+        Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
 
         DiscoverComponents discover = spy(
                 new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing, scheduler, null, gson));

@@ -24,14 +24,14 @@ import org.openhab.binding.mqtt.generic.internal.values.OnOffValue;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentFan extends AbstractComponent<ComponentFan.Config> {
+public class ComponentFan extends AbstractComponent<ComponentFan.ChannelConfiguration> {
     public static final String switchChannelID = "fan"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config extends HAConfiguration {
-        Config() {
+    static class ChannelConfiguration extends BaseChannelConfiguration {
+        ChannelConfiguration() {
             super("MQTT Fan");
         }
 
@@ -42,10 +42,10 @@ public class ComponentFan extends AbstractComponent<ComponentFan.Config> {
     };
 
     public ComponentFan(CFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, Config.class);
+        super(componentConfiguration, ChannelConfiguration.class);
 
-        OnOffValue value = new OnOffValue(config.payload_on, config.payload_off);
+        OnOffValue value = new OnOffValue(channelConfiguration.payload_on, channelConfiguration.payload_off);
         channels.put(switchChannelID, new CChannel(this, switchChannelID, value, //
-                config.state_topic, config.command_topic, config.name, "", componentConfiguration.getUpdateListener()));
+                channelConfiguration.state_topic, channelConfiguration.command_topic, channelConfiguration.name, "", componentConfiguration.getUpdateListener()));
     }
 }

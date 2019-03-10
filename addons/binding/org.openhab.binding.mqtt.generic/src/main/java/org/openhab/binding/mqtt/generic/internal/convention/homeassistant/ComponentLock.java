@@ -23,14 +23,14 @@ import org.openhab.binding.mqtt.generic.internal.values.OnOffValue;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentLock extends AbstractComponent<ComponentLock.Config> {
+public class ComponentLock extends AbstractComponent<ComponentLock.ChannelConfiguration> {
     public static final String switchChannelID = "lock"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config extends HAConfiguration {
-        Config() {
+    static class ChannelConfiguration extends BaseChannelConfiguration {
+        ChannelConfiguration() {
             super("MQTT Lock");
         }
 
@@ -43,21 +43,21 @@ public class ComponentLock extends AbstractComponent<ComponentLock.Config> {
     };
 
     public ComponentLock(CFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, Config.class);
+        super(componentConfiguration, ChannelConfiguration.class);
 
         // We do not support all HomeAssistant quirks
-        if (config.optimistic && StringUtils.isNotBlank(config.state_topic)) {
+        if (channelConfiguration.optimistic && StringUtils.isNotBlank(channelConfiguration.state_topic)) {
             throw new UnsupportedOperationException("Component:Lock does not support forced optimistic mode");
         }
 
         channels.put(switchChannelID,
-                new CChannel(this, switchChannelID, new OnOffValue(config.payload_lock, config.payload_unlock),
-                        config.state_topic, config.command_topic, config.name, "",
+                new CChannel(this, switchChannelID, new OnOffValue(channelConfiguration.payload_lock, channelConfiguration.payload_unlock),
+                        channelConfiguration.state_topic, channelConfiguration.command_topic, channelConfiguration.name, "",
                         componentConfiguration.getUpdateListener()));
     }
 
     @Override
     public String name() {
-        return config.name;
+        return channelConfiguration.name;
     }
 }

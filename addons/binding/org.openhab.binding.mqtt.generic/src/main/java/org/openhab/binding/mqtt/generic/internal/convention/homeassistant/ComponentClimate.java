@@ -22,19 +22,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentClimate extends AbstractComponent<ComponentClimate.Config> {
+public class ComponentClimate extends AbstractComponent<ComponentClimate.ChannelConfiguration> {
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config extends HAConfiguration {
-        Config() {
+    static class ChannelConfiguration extends BaseChannelConfiguration {
+        ChannelConfiguration() {
             super("MQTT HVAC");
         }
     }
 
     public ComponentClimate(CFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, Config.class);
+        super(componentConfiguration, ChannelConfiguration.class);
         throw new UnsupportedOperationException("Component:Climate not supported yet");
     }
 

@@ -35,7 +35,7 @@ import org.openhab.binding.mqtt.generic.internal.values.ColorValue;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentLight extends AbstractComponent<ComponentLight.Config> implements ChannelStateUpdateListener {
+public class ComponentLight extends AbstractComponent<ComponentLight.ChannelConfiguration> implements ChannelStateUpdateListener {
     public static final String switchChannelID = "light"; // Randomly chosen channel "ID"
     public static final String brightnessChannelID = "brightness"; // Randomly chosen channel "ID"
     public static final String colorChannelID = "color"; // Randomly chosen channel "ID"
@@ -43,8 +43,8 @@ public class ComponentLight extends AbstractComponent<ComponentLight.Config> imp
     /**
      * Configuration class for MQTT component
      */
-    static class Config extends HAConfiguration {
-        Config() {
+    static class ChannelConfiguration extends BaseChannelConfiguration {
+        ChannelConfiguration() {
             super("MQTT Light");
         }
 
@@ -97,17 +97,17 @@ public class ComponentLight extends AbstractComponent<ComponentLight.Config> imp
     private final @Nullable ChannelStateUpdateListener channelStateUpdateListener;
 
     public ComponentLight(CFactory.ComponentConfiguration builder) {
-        super(builder, Config.class);
+        super(builder, ChannelConfiguration.class);
         this.channelStateUpdateListener = builder.getUpdateListener();
-        ColorValue value = new ColorValue(true, config.payload_on, config.payload_off, 100);
+        ColorValue value = new ColorValue(true, channelConfiguration.payload_on, channelConfiguration.payload_off, 100);
 
         // Create three MQTT subscriptions and use this class object as update listener
         switchChannel = new CChannel(this, switchChannelID, value, //
-                config.state_topic, config.command_topic, config.name, "", this);
+                channelConfiguration.state_topic, channelConfiguration.command_topic, channelConfiguration.name, "", this);
         colorChannel = new CChannel(this, colorChannelID, value, //
-                config.rgb_state_topic, config.rgb_command_topic, config.name, "", this);
+                channelConfiguration.rgb_state_topic, channelConfiguration.rgb_command_topic, channelConfiguration.name, "", this);
         brightnessChannel = new CChannel(this, brightnessChannelID, value, //
-                config.brightness_state_topic, config.brightness_command_topic, config.name, "", this);
+                channelConfiguration.brightness_state_topic, channelConfiguration.brightness_command_topic, channelConfiguration.name, "", this);
 
         channels.put(switchChannelID, colorChannel);
     }
@@ -129,7 +129,7 @@ public class ComponentLight extends AbstractComponent<ComponentLight.Config> imp
 
     @Override
     public String name() {
-        return config.name;
+        return channelConfiguration.name;
     }
 
     /**

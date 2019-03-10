@@ -29,40 +29,40 @@ import com.google.gson.annotations.SerializedName;
  * @author Jochen Klein - Initial contribution
  */
 @NonNullByDefault
-public abstract class HAConfiguration {
+public abstract class BaseChannelConfiguration {
 
     /**
      * This class is needed, to be able to parse only the common base attributes.
-     * Without this, {@link HAConfiguration} cannot be instantiated, as it is abstract.
+     * Without this, {@link BaseChannelConfiguration} cannot be instantiated, as it is abstract.
      * This is needed during the discovery.
      */
-    private static class Config extends HAConfiguration {
+    private static class Config extends BaseChannelConfiguration {
         public Config() {
             super("private");
         }
     }
 
     /**
-     * Parse the configJSON into a subclass of {@link HAConfiguration}
+     * Parse the configJSON into a subclass of {@link BaseChannelConfiguration}
      *
      * @param configJSON
      * @param gson
      * @param clazz
      * @return configuration object
      */
-    public static <C extends HAConfiguration> C fromString(final String configJSON, final Gson gson,
+    public static <C extends BaseChannelConfiguration> C fromString(final String configJSON, final Gson gson,
             final Class<C> clazz) {
         return gson.fromJson(configJSON, clazz);
     }
 
     /**
-     * Parse the base properties of the configJSON into a {@link HAConfiguration}
+     * Parse the base properties of the configJSON into a {@link BaseChannelConfiguration}
      *
      * @param configJSON
      * @param gson
      * @return configuration object
      */
-    public static HAConfiguration fromString(final String configJSON, final Gson gson) {
+    public static BaseChannelConfiguration fromString(final String configJSON, final Gson gson) {
         return fromString(configJSON, gson, Config.class);
     }
 
@@ -81,7 +81,7 @@ public abstract class HAConfiguration {
     @SerializedName(value = "~")
     protected String tilde = "";
 
-    protected HAConfiguration(String defaultName) {
+    protected BaseChannelConfiguration(String defaultName) {
         this.name = defaultName;
     }
 

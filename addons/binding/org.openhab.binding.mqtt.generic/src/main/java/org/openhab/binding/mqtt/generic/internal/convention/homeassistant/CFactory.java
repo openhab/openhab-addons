@@ -136,8 +136,8 @@ public class CFactory {
             return gson;
         }
 
-        public <C extends HAConfiguration> C getConfig(Class<C> clazz) {
-            return HAConfiguration.fromString(configJSON, gson, clazz);
+        public <C extends BaseChannelConfiguration> C getConfig(Class<C> clazz) {
+            return BaseChannelConfiguration.fromString(configJSON, gson, clazz);
         }
     }
 }

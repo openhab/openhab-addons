@@ -29,17 +29,17 @@ import com.google.gson.stream.JsonWriter;
 /**
  * This a Gson type adapter factory.
  *
- * It will create a type adapter for every class derived from {@link HAConfiguration} and ensures,
+ * It will create a type adapter for every class derived from {@link BaseChannelConfiguration} and ensures,
  * that abbreviated names are replaces with their long versions during the read.
  *
  * In elements, whose name end in'_topic' '~' replacement is performed.
  *
- * The adapters also handle {@link HAConfiguration.Device}
+ * The adapters also handle {@link BaseChannelConfiguration.Device}
  *
  * @author Jochen Klein - Initial contribution
  */
 @NonNullByDefault
-public class HAConfigTypeAdapterFactory implements TypeAdapterFactory {
+public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactory {
 
     @Override
     @Nullable
@@ -47,17 +47,17 @@ public class HAConfigTypeAdapterFactory implements TypeAdapterFactory {
         if (gson == null || type == null) {
             return null;
         }
-        if (HAConfiguration.class.isAssignableFrom(type.getRawType())) {
+        if (BaseChannelConfiguration.class.isAssignableFrom(type.getRawType())) {
             return createHAConfig(gson, type);
         }
-        if (HAConfiguration.Device.class.isAssignableFrom(type.getRawType())) {
+        if (BaseChannelConfiguration.Device.class.isAssignableFrom(type.getRawType())) {
             return createHADevice(gson, type);
         }
         return null;
     }
 
     /**
-     * Handle {@link HAConfiguration}
+     * Handle {@link BaseChannelConfiguration}
      *
      * @param gson
      * @param type
@@ -78,7 +78,7 @@ public class HAConfigTypeAdapterFactory implements TypeAdapterFactory {
                 /* read the object using the default adapter, but translate the names in the reader */
                 T result = delegate.read(MappingJsonReader.getConfigMapper(in));
                 /* do the '~' expansion afterwards */
-                expandTidleInTopics(HAConfiguration.class.cast(result));
+                expandTidleInTopics(BaseChannelConfiguration.class.cast(result));
                 return result;
             }
 
@@ -113,7 +113,7 @@ public class HAConfigTypeAdapterFactory implements TypeAdapterFactory {
         };
     }
 
-    private void expandTidleInTopics(HAConfiguration config) {
+    private void expandTidleInTopics(BaseChannelConfiguration config) {
         Class<?> type = config.getClass();
 
         String tilde = config.tilde;

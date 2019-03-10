@@ -23,14 +23,14 @@ import org.openhab.binding.mqtt.generic.internal.values.ImageValue;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentCamera extends AbstractComponent<ComponentCamera.Config> {
+public class ComponentCamera extends AbstractComponent<ComponentCamera.ChannelConfiguration> {
     public static final String cameraChannelID = "camera"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config extends HAConfiguration {
-        Config() {
+    static class ChannelConfiguration extends BaseChannelConfiguration {
+        ChannelConfiguration() {
             super("MQTT Camera");
         }
 
@@ -38,11 +38,11 @@ public class ComponentCamera extends AbstractComponent<ComponentCamera.Config> {
     };
 
     public ComponentCamera(CFactory.ComponentConfiguration builder) {
-        super(builder, Config.class);
+        super(builder, ChannelConfiguration.class);
 
         ImageValue value = new ImageValue();
         channels.put(cameraChannelID, new CChannel(this, cameraChannelID, value, //
-                config.topic, null, config.name, "", builder.getUpdateListener()));
+                channelConfiguration.topic, null, channelConfiguration.name, "", builder.getUpdateListener()));
     }
 
 }

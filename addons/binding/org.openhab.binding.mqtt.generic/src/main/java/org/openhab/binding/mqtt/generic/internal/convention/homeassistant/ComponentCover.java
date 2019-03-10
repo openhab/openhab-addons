@@ -24,14 +24,14 @@ import org.openhab.binding.mqtt.generic.internal.values.RollershutterValue;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentCover extends AbstractComponent<ComponentCover.Config> {
+public class ComponentCover extends AbstractComponent<ComponentCover.ChannelConfiguration> {
     public static final String switchChannelID = "cover"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config extends HAConfiguration {
-        Config() {
+    static class ChannelConfiguration extends BaseChannelConfiguration {
+        ChannelConfiguration() {
             super("MQTT Cover");
         }
 
@@ -43,11 +43,11 @@ public class ComponentCover extends AbstractComponent<ComponentCover.Config> {
     }
 
     public ComponentCover(CFactory.ComponentConfiguration builder) {
-        super(builder, Config.class);
+        super(builder, ChannelConfiguration.class);
 
-        RollershutterValue value = new RollershutterValue(config.payload_open, config.payload_close,
-                config.payload_stop);
+        RollershutterValue value = new RollershutterValue(channelConfiguration.payload_open, channelConfiguration.payload_close,
+                channelConfiguration.payload_stop);
         channels.put(switchChannelID, new CChannel(this, switchChannelID, value, //
-                config.state_topic, config.command_topic, config.name, "", builder.getUpdateListener()));
+                channelConfiguration.state_topic, channelConfiguration.command_topic, channelConfiguration.name, "", builder.getUpdateListener()));
     }
 }
