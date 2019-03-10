@@ -12,10 +12,16 @@
  */
 package org.openhab.binding.opendaikin.internal.api;
 
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.client.WebTarget;
 
+import org.openhab.binding.opendaikin.internal.api.Enums.FanMovement;
+import org.openhab.binding.opendaikin.internal.api.Enums.FanSpeed;
+import org.openhab.binding.opendaikin.internal.api.Enums.Mode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,103 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ControlInfo {
-    private static Logger logger = LoggerFactory.getLogger(ControlInfo.class);
-
-    public enum Mode {
-        UNKNOWN(-1),
-        AUTO(0),
-        DEHUMIDIFIER(2),
-        COLD(3),
-        HEAT(4),
-        FAN(6);
-
-        private int value;
-
-        Mode(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-
-        public static Mode fromValue(int value) {
-            for (Mode m : Mode.values()) {
-                if (m.getValue() == value) {
-                    return m;
-                }
-            }
-
-            logger.debug("Unexpected Mode value of \"{}\"", value);
-
-            // Default to auto
-            return AUTO;
-        }
-    }
-
-    public enum FanSpeed {
-        AUTO("A"),
-        SILENCE("B"),
-        LEVEL_1("3"),
-        LEVEL_2("4"),
-        LEVEL_3("5"),
-        LEVEL_4("6"),
-        LEVEL_5("7");
-
-        private String value;
-
-        FanSpeed(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public static FanSpeed fromValue(String value) {
-            for (FanSpeed m : FanSpeed.values()) {
-                if (m.getValue().equals(value)) {
-                    return m;
-                }
-            }
-
-            logger.debug("Unexpected FanSpeed value of \"{}\"", value);
-
-            // Default to auto
-            return AUTO;
-        }
-    }
-
-    public enum FanMovement {
-        UNKNOWN(-1),
-        STOPPED(0),
-        VERTICAL(1),
-        HORIZONTAL(2),
-        VERTICAL_AND_HORIZONTAL(3);
-
-        private int value;
-
-        FanMovement(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-
-        public static FanMovement fromValue(int value) {
-            for (FanMovement m : FanMovement.values()) {
-                if (m.getValue() == value) {
-                    return m;
-                }
-            }
-
-            logger.debug("Unexpected FanMovement value of \"{}\"", value);
-
-            // Default to stopped
-            return STOPPED;
-        }
-    }
+    private static Logger LOGGER = LoggerFactory.getLogger(ControlInfo.class);
 
     public boolean power = false;
     public Mode mode = Mode.AUTO;
@@ -137,37 +47,26 @@ public class ControlInfo {
     }
 
     public static ControlInfo parse(String response) {
-        logger.debug("Parsing string: \"{}\"", response);
+        LOGGER.debug("Parsing string: \"{}\"", response);
+
+        Map<String, String> responseMap = Arrays.asList(response.split(",")).stream().filter(kv -> kv.contains("="))
+                .map(kv -> {
+                    String[] keyValue = kv.split("=");
+                    String key = keyValue[0];
+                    String value = keyValue.length > 1 ? keyValue[1] : "";
+                    return new String[] { key, value };
+                }).collect(Collectors.toMap(x -> x[0], x -> x[1]));
+
         ControlInfo info = new ControlInfo();
-
-        for (String keyValuePair : response.split(",")) {
-            if (keyValuePair.contains("=")) {
-                String[] keyValue = keyValuePair.split("=");
-                String key = keyValue[0];
-                String value = keyValue.length > 1 ? keyValue[1] : "";
-
-                switch (key) {
-                    case "pow":
-                        info.power = "1".equals(value);
-                        break;
-                    case "mode":
-                        parseInt(value).ifPresent((modeValue) -> info.mode = Mode.fromValue(modeValue));
-                        break;
-                    case "stemp":
-                        info.temp = parseDouble(value);
-                        break;
-                    case "f_rate":
-                        info.fanSpeed = FanSpeed.fromValue(value);
-                        break;
-                    case "f_dir":
-                        parseInt(value).ifPresent((fanValue) -> info.fanMovement = FanMovement.fromValue(fanValue));
-                        break;
-                    case "shum":
-                        info.targetHumidity = parseInt(value);
-                        break;
-                }
-            }
-        }
+        info.power = "1".equals(responseMap.get("pow"));
+        info.mode = Optional.ofNullable(responseMap.get("mode")).flatMap(value -> parseInt(value))
+                .map(value -> Mode.fromValue(value)).orElse(Mode.AUTO);
+        info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> parseDouble(value));
+        info.fanSpeed = Optional.ofNullable(responseMap.get("f_rate")).map(value -> FanSpeed.fromValue(value))
+                .orElse(FanSpeed.AUTO);
+        info.fanMovement = Optional.ofNullable(responseMap.get("f_dir")).flatMap(value -> parseInt(value))
+                .map(value -> FanMovement.fromValue(value)).orElse(FanMovement.STOPPED);
+        info.targetHumidity = Optional.ofNullable(responseMap.get("shum")).flatMap(value -> parseInt(value));
 
         return info;
     }

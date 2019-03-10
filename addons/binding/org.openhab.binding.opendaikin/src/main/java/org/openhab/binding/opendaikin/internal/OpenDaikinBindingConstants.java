@@ -42,8 +42,5 @@ public class OpenDaikinBindingConstants {
     public static final String CHANNEL_AC_FAN_DIR = "fandir";
     public static final String CHANNEL_HUMIDITY = "humidity";
 
-    // Name for the setting that determines if we use Fahrenheit or Celsius
-    public static final String SETTING_USE_FAHRENHEIT = "useFahrenheit";
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AC_UNIT);
 }

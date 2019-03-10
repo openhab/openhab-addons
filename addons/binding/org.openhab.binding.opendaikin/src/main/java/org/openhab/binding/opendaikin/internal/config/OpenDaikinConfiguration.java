@@ -19,7 +19,7 @@ package org.openhab.binding.opendaikin.internal.config;
  *
  */
 public class OpenDaikinConfiguration {
-    public static String HOST = "host";
+    public static final String HOST = "host";
 
     public String host;
 

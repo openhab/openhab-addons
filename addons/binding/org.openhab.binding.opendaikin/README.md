@@ -13,7 +13,7 @@ This addon will broadcast messages on your local network looking for Daikin air 
 ## Thing Configuration
 
 * host - The hostname of the Daikin air conditioner. Typically you'd use an IP address such as `192.168.0.5` for this field.
-* refresh - The frequency with which to refresh information from the Daikin air conditioner specified in milliseconds. Defaults to 60 seconds.
+* refresh - The frequency with which to refresh information from the Daikin air conditioner specified in seconds. Defaults to 60 seconds.
 
 ## Channels
 

@@ -26,8 +26,8 @@
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
 				<label>Refresh Interval</label>
-				<description>The number of milliseconds between fetches of the AC unit state.</description>
-				<default>60000</default>
+				<description>The number of seconds between fetches of the AC unit state.</description>
+				<default>60</default>
 			</parameter>
 		</config-description>
 	</thing-type>

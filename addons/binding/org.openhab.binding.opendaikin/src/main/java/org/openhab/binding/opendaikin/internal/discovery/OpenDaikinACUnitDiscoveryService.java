@@ -104,6 +104,7 @@ public class OpenDaikinACUnitDiscoveryService extends AbstractDiscoveryService {
                     // Send before listening in case the port isn't bound until here.
                     socket.send(packet);
 
+                    // receivePacketAndDiscover will return false if no packet is received after 1 second
                     while (receivePacketAndDiscover(socket)) {
                     }
                 } catch (Exception e) {
