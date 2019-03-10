@@ -171,3 +171,7 @@ In order to get logs from the underlying library used to implement the HomeKit p
 openhab> log:set TRACE com.beowulfe.hap
 openhab> log:tail com.beowulfe.hap
 ```
+
+## Contributing
+
+When sending patches for the Homekit IO binding, please include a note about your change in `CHANGES.md`.
