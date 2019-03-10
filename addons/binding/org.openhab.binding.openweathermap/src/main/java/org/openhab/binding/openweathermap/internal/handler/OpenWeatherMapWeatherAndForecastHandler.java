@@ -283,15 +283,11 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     state = getQuantityTypeState(weatherData.getClouds().getAll(), PERCENT);
                     break;
                 case CHANNEL_RAIN:
-                    state = getQuantityTypeState(
-                            weatherData.getRain() == null || weatherData.getRain().getVolume() == null ? 0
-                                    : weatherData.getRain().getVolume(),
+                    state = getQuantityTypeState(weatherData.getRain() == null ? 0 : weatherData.getRain().getVolume(),
                             MILLI(METRE));
                     break;
                 case CHANNEL_SNOW:
-                    state = getQuantityTypeState(
-                            weatherData.getSnow() == null || weatherData.getSnow().getVolume() == null ? 0
-                                    : weatherData.getSnow().getVolume(),
+                    state = getQuantityTypeState(weatherData.getSnow() == null ? 0 : weatherData.getSnow().getVolume(),
                             MILLI(METRE));
                     break;
             }
@@ -361,15 +357,11 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     break;
                 case CHANNEL_RAIN:
                     state = getQuantityTypeState(
-                            forecastData.getRain() == null || forecastData.getRain().getVolume() == null ? 0
-                                    : forecastData.getRain().getVolume(),
-                            MILLI(METRE));
+                            forecastData.getRain() == null ? 0 : forecastData.getRain().getVolume(), MILLI(METRE));
                     break;
                 case CHANNEL_SNOW:
                     state = getQuantityTypeState(
-                            forecastData.getSnow() == null || forecastData.getSnow().getVolume() == null ? 0
-                                    : forecastData.getSnow().getVolume(),
-                            MILLI(METRE));
+                            forecastData.getSnow() == null ? 0 : forecastData.getSnow().getVolume(), MILLI(METRE));
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);

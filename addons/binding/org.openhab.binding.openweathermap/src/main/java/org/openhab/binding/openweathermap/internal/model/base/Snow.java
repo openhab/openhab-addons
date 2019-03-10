@@ -43,7 +43,7 @@ public class Snow {
         this.threeHours = threeHours;
     }
 
-    public @Nullable Double getVolume() {
-        return threeHours == null ? oneHour : threeHours;
+    public Double getVolume() {
+        return oneHour != null ? oneHour : threeHours != null ? threeHours / 3 : 0;
     }
 }
