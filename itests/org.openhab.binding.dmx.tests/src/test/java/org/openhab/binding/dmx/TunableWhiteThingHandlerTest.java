@@ -32,11 +32,10 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.dmx.internal.handler.DimmerThingHandler;
 import org.openhab.binding.dmx.internal.handler.TunableWhiteThingHandler;
 
 /**
- * Tests cases for {@link DimmerThingHandler}.
+ * Tests cases for {@link TunableWhiteThingHandler}.
  *
  * @author Jan N. Klug - Initial contribution
  */

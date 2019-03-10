@@ -30,7 +30,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.binding.builder.BridgeBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
-import org.eclipse.smarthome.test.java.JavaOSGiTest;
+import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +41,7 @@ import org.openhab.binding.dmx.internal.handler.SacnBridgeHandler;
  *
  * @author Jan N. Klug - Initial contribution
  */
-public class SacnBridgeHandlerTest extends JavaOSGiTest {
+public class SacnBridgeHandlerTest extends JavaTest {
     private static final String TEST_ADDRESS = "localhost";
     private static final int TEST_UNIVERSE = 1;
 

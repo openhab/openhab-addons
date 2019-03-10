@@ -35,10 +35,9 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.dmx.internal.handler.ColorThingHandler;
-import org.openhab.binding.dmx.internal.handler.DimmerThingHandler;
 
 /**
- * Tests cases for {@link DimmerThingHandler} in RGB mode.
+ * Tests cases for {@link ColorThingHandler} in RGB mode.
  *
  * @author Jan N. Klug - Initial contribution
  */
