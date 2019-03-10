@@ -27,9 +27,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tim Harper - Initial contribution
  *
- *         Note: This is not written as an Actor for performance reasons. Debounced calls are filtered synchronously, in
- *         the caller thread, without the need for locks, context switches, or heap allocations. We use AtomicBoolean to
- *         resolve concurrent races; the probability of contending on an AtomicBoolean transition is very low.
+ *         Note: Debounced calls are filtered synchronously, in the caller thread, without the need for locks, context
+ *         switches, or heap allocations. We use AtomicBoolean to resolve concurrent races; the probability of
+ *         contending on an AtomicBoolean transition is very low.
  *
  * @param name The name of this debouncer
  * @param scheduler The scheduler implementation to use
