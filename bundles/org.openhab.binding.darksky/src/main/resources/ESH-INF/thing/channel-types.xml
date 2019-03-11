@@ -12,6 +12,7 @@
 			<channel id="time-stamp" typeId="time-stamp" />
 			<channel id="condition" typeId="condition" />
 			<channel id="icon" typeId="condition-icon" />
+			<channel id="icon-id" typeId="condition-icon-id" />
 			<channel id="temperature" typeId="system.outdoor-temperature" />
 			<channel id="pressure" typeId="system.barometric-pressure" />
 			<channel id="humidity" typeId="system.atmospheric-humidity" />
@@ -39,6 +40,7 @@
 			<channel id="time-stamp" typeId="hourly-forecast-time-stamp" />
 			<channel id="condition" typeId="forecasted-condition" />
 			<channel id="icon" typeId="condition-icon" />
+			<channel id="icon-id" typeId="condition-icon-id" />
 			<channel id="temperature" typeId="forecasted-outdoor-temperature" />
 			<channel id="pressure" typeId="forecasted-barometric-pressure" />
 			<channel id="humidity" typeId="forecasted-atmospheric-humidity" />
@@ -62,6 +64,7 @@
 			<channel id="time-stamp" typeId="daily-forecast-time-stamp" />
 			<channel id="condition" typeId="forecasted-condition" />
 			<channel id="icon" typeId="condition-icon" />
+			<channel id="icon-id" typeId="condition-icon-id" />
 			<channel id="min-temperature" typeId="forecasted-min-outdoor-temperature" />
 			<channel id="max-temperature" typeId="forecasted-max-outdoor-temperature" />
 			<channel id="pressure" typeId="forecasted-barometric-pressure" />
@@ -126,6 +129,13 @@
 		<item-type>Image</item-type>
 		<label>Icon</label>
 		<description>Icon representing the weather condition.</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="condition-icon-id" advanced="true">
+		<item-type>String</item-type>
+		<label>Icon Id</label>
+		<description>Id of the icon to create the URL.</description>
 		<state readOnly="true" />
 	</channel-type>
 
@@ -292,17 +302,17 @@
 	</channel-type>
 
 	<channel-type id="ozone">
-		<item-type>Number</item-type>
+		<item-type>Number:ArealDensity</item-type>
 		<label>Ozone</label>
 		<description>Current ozone.</description>
-		<state readOnly="true" pattern="%.1f" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="forecasted-ozone">
-		<item-type>Number</item-type>
+		<item-type>Number:ArealDensity</item-type>
 		<label>Forecasted Ozone</label>
 		<description>Forecasted ozone.</description>
-		<state readOnly="true" pattern="%.1f" />
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="sunrise">

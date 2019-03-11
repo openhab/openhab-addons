@@ -238,7 +238,7 @@ public abstract class AbstractDarkSkyHandler extends BaseThingHandler {
         return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(value), ZoneId.systemDefault()));
     }
 
-    protected State getDecimalTypeState(double value) {
+    protected State getDecimalTypeState(int value) {
         return new DecimalType(value);
     }
 
@@ -268,7 +268,14 @@ public abstract class AbstractDarkSkyHandler extends BaseThingHandler {
         if (callback != null) {
             for (ChannelBuilder channelBuilder : callback.createChannelBuilders(
                     new ChannelGroupUID(getThing().getUID(), channelGroupId), channelGroupTypeUID)) {
-                channels.add(channelBuilder.build());
+                Channel newChannel = channelBuilder.build(),
+                        existingChannel = getThing().getChannel(newChannel.getUID().getId());
+                if (existingChannel != null) {
+                    logger.trace("Thing '{}' already has an existing channel '{}'. Omit adding new channel '{}'.",
+                            getThing().getUID(), existingChannel.getUID(), newChannel.getUID());
+                    continue;
+                }
+                channels.add(newChannel);
             }
         }
         return channels;

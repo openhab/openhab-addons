@@ -14,6 +14,7 @@ package org.openhab.binding.darksky.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
 import static org.eclipse.smarthome.core.library.unit.SIUnits.*;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
 import static org.openhab.binding.darksky.internal.DarkSkyBindingConstants.*;
 
 import java.util.ArrayList;
@@ -24,7 +25,6 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -74,7 +74,6 @@ public class DarkSkyWeatherAndForecastHandler extends AbstractDarkSkyHandler {
 
     private @Nullable DarkSkyChannelConfiguration sunriseTriggerChannelConfig;
     private @Nullable DarkSkyChannelConfiguration sunsetTriggerChannelConfig;
-
     private @Nullable DarkSkyJsonWeatherData weatherData;
 
     public DarkSkyWeatherAndForecastHandler(Thing thing) {
@@ -231,6 +230,9 @@ public class DarkSkyWeatherAndForecastHandler extends AbstractDarkSkyHandler {
                 case CHANNEL_CONDITION_ICON:
                     state = getRawTypeState(DarkSkyConnection.getWeatherIcon(currentData.getIcon()));
                     break;
+                case CHANNEL_CONDITION_ICON_ID:
+                    state = getStringTypeState(currentData.getIcon());
+                    break;
                 case CHANNEL_TEMPERATURE:
                     state = getQuantityTypeState(currentData.getTemperature(), CELSIUS);
                     break;
@@ -238,19 +240,19 @@ public class DarkSkyWeatherAndForecastHandler extends AbstractDarkSkyHandler {
                     state = getQuantityTypeState(currentData.getPressure(), HECTO(PASCAL));
                     break;
                 case CHANNEL_HUMIDITY:
-                    state = getQuantityTypeState(currentData.getHumidity() * 100, SmartHomeUnits.PERCENT);
+                    state = getQuantityTypeState(currentData.getHumidity() * 100, PERCENT);
                     break;
                 case CHANNEL_WIND_SPEED:
-                    state = getQuantityTypeState(currentData.getWindSpeed(), SmartHomeUnits.METRE_PER_SECOND);
+                    state = getQuantityTypeState(currentData.getWindSpeed(), METRE_PER_SECOND);
                     break;
                 case CHANNEL_WIND_DIRECTION:
-                    state = getQuantityTypeState(currentData.getWindBearing(), SmartHomeUnits.DEGREE_ANGLE);
+                    state = getQuantityTypeState(currentData.getWindBearing(), DEGREE_ANGLE);
                     break;
                 case CHANNEL_GUST_SPEED:
-                    state = getQuantityTypeState(currentData.getWindGust(), SmartHomeUnits.METRE_PER_SECOND);
+                    state = getQuantityTypeState(currentData.getWindGust(), METRE_PER_SECOND);
                     break;
                 case CHANNEL_CLOUDINESS:
-                    state = getQuantityTypeState(currentData.getCloudCover() * 100, SmartHomeUnits.PERCENT);
+                    state = getQuantityTypeState(currentData.getCloudCover() * 100, PERCENT);
                     break;
                 case CHANNEL_VISIBILITY:
                     state = getQuantityTypeState(currentData.getVisibility(), KILO(METRE));
@@ -266,13 +268,13 @@ public class DarkSkyWeatherAndForecastHandler extends AbstractDarkSkyHandler {
                             MILLI(METRE));
                     break;
                 case CHANNEL_PRECIPITATION_PROBABILITY:
-                    state = getQuantityTypeState(currentData.getPrecipProbability() * 100, SmartHomeUnits.PERCENT);
+                    state = getQuantityTypeState(currentData.getPrecipProbability() * 100, PERCENT);
                     break;
-                case CHANNEL_UV_INDEX:
+                case CHANNEL_UVINDEX:
                     state = getDecimalTypeState(currentData.getUvIndex());
                     break;
                 case CHANNEL_OZONE:
-                    state = getDecimalTypeState(currentData.getOzone());
+                    state = getQuantityTypeState(currentData.getOzone(), DOBSON_UNIT);
                     break;
                 case CHANNEL_SUNRISE:
                 case CHANNEL_SUNSET:
@@ -309,6 +311,9 @@ public class DarkSkyWeatherAndForecastHandler extends AbstractDarkSkyHandler {
                 case CHANNEL_CONDITION_ICON:
                     state = getRawTypeState(DarkSkyConnection.getWeatherIcon(forecastData.getIcon()));
                     break;
+                case CHANNEL_CONDITION_ICON_ID:
+                    state = getStringTypeState(forecastData.getIcon());
+                    break;
                 case CHANNEL_TEMPERATURE:
                     state = getQuantityTypeState(forecastData.getTemperature(), CELSIUS);
                     break;
@@ -316,19 +321,19 @@ public class DarkSkyWeatherAndForecastHandler extends AbstractDarkSkyHandler {
                     state = getQuantityTypeState(forecastData.getPressure(), HECTO(PASCAL));
                     break;
                 case CHANNEL_HUMIDITY:
-                    state = getQuantityTypeState(forecastData.getHumidity() * 100, SmartHomeUnits.PERCENT);
+                    state = getQuantityTypeState(forecastData.getHumidity() * 100, PERCENT);
                     break;
                 case CHANNEL_WIND_SPEED:
-                    state = getQuantityTypeState(forecastData.getWindSpeed(), SmartHomeUnits.METRE_PER_SECOND);
+                    state = getQuantityTypeState(forecastData.getWindSpeed(), METRE_PER_SECOND);
                     break;
                 case CHANNEL_WIND_DIRECTION:
-                    state = getQuantityTypeState(forecastData.getWindBearing(), SmartHomeUnits.DEGREE_ANGLE);
+                    state = getQuantityTypeState(forecastData.getWindBearing(), DEGREE_ANGLE);
                     break;
                 case CHANNEL_GUST_SPEED:
-                    state = getQuantityTypeState(forecastData.getWindGust(), SmartHomeUnits.METRE_PER_SECOND);
+                    state = getQuantityTypeState(forecastData.getWindGust(), METRE_PER_SECOND);
                     break;
                 case CHANNEL_CLOUDINESS:
-                    state = getQuantityTypeState(forecastData.getCloudCover() * 100, SmartHomeUnits.PERCENT);
+                    state = getQuantityTypeState(forecastData.getCloudCover() * 100, PERCENT);
                     break;
                 case CHANNEL_VISIBILITY:
                     state = getQuantityTypeState(forecastData.getVisibility(), KILO(METRE));
@@ -346,13 +351,13 @@ public class DarkSkyWeatherAndForecastHandler extends AbstractDarkSkyHandler {
                             MILLI(METRE));
                     break;
                 case CHANNEL_PRECIPITATION_PROBABILITY:
-                    state = getQuantityTypeState(forecastData.getPrecipProbability() * 100, SmartHomeUnits.PERCENT);
+                    state = getQuantityTypeState(forecastData.getPrecipProbability() * 100, PERCENT);
                     break;
-                case CHANNEL_UV_INDEX:
+                case CHANNEL_UVINDEX:
                     state = getDecimalTypeState(forecastData.getUvIndex());
                     break;
                 case CHANNEL_OZONE:
-                    state = getDecimalTypeState(forecastData.getOzone());
+                    state = getQuantityTypeState(forecastData.getOzone(), DOBSON_UNIT);
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
@@ -384,6 +389,9 @@ public class DarkSkyWeatherAndForecastHandler extends AbstractDarkSkyHandler {
                 case CHANNEL_CONDITION_ICON:
                     state = getRawTypeState(DarkSkyConnection.getWeatherIcon(forecastData.getIcon()));
                     break;
+                case CHANNEL_CONDITION_ICON_ID:
+                    state = getStringTypeState(forecastData.getIcon());
+                    break;
                 case CHANNEL_MIN_TEMPERATURE:
                     state = getQuantityTypeState(forecastData.getTemperatureMin(), CELSIUS);
                     break;
@@ -394,19 +402,19 @@ public class DarkSkyWeatherAndForecastHandler extends AbstractDarkSkyHandler {
                     state = getQuantityTypeState(forecastData.getPressure(), HECTO(PASCAL));
                     break;
                 case CHANNEL_HUMIDITY:
-                    state = getQuantityTypeState(forecastData.getHumidity() * 100, SmartHomeUnits.PERCENT);
+                    state = getQuantityTypeState(forecastData.getHumidity() * 100, PERCENT);
                     break;
                 case CHANNEL_WIND_SPEED:
-                    state = getQuantityTypeState(forecastData.getWindSpeed(), SmartHomeUnits.METRE_PER_SECOND);
+                    state = getQuantityTypeState(forecastData.getWindSpeed(), METRE_PER_SECOND);
                     break;
                 case CHANNEL_WIND_DIRECTION:
-                    state = getQuantityTypeState(forecastData.getWindBearing(), SmartHomeUnits.DEGREE_ANGLE);
+                    state = getQuantityTypeState(forecastData.getWindBearing(), DEGREE_ANGLE);
                     break;
                 case CHANNEL_GUST_SPEED:
-                    state = getQuantityTypeState(forecastData.getWindGust(), SmartHomeUnits.METRE_PER_SECOND);
+                    state = getQuantityTypeState(forecastData.getWindGust(), METRE_PER_SECOND);
                     break;
                 case CHANNEL_CLOUDINESS:
-                    state = getQuantityTypeState(forecastData.getCloudCover() * 100, SmartHomeUnits.PERCENT);
+                    state = getQuantityTypeState(forecastData.getCloudCover() * 100, PERCENT);
                     break;
                 case CHANNEL_VISIBILITY:
                     state = getQuantityTypeState(forecastData.getVisibility(), KILO(METRE));
@@ -424,13 +432,13 @@ public class DarkSkyWeatherAndForecastHandler extends AbstractDarkSkyHandler {
                             MILLI(METRE));
                     break;
                 case CHANNEL_PRECIPITATION_PROBABILITY:
-                    state = getQuantityTypeState(forecastData.getPrecipProbability() * 100, SmartHomeUnits.PERCENT);
+                    state = getQuantityTypeState(forecastData.getPrecipProbability() * 100, PERCENT);
                     break;
-                case CHANNEL_UV_INDEX:
+                case CHANNEL_UVINDEX:
                     state = getDecimalTypeState(forecastData.getUvIndex());
                     break;
                 case CHANNEL_OZONE:
-                    state = getDecimalTypeState(forecastData.getOzone());
+                    state = getQuantityTypeState(forecastData.getOzone(), DOBSON_UNIT);
                     break;
                 case CHANNEL_SUNRISE:
                     state = getDateTimeTypeState(forecastData.getSunriseTime());

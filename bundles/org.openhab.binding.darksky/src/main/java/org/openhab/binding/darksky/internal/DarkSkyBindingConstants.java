@@ -55,8 +55,8 @@ public class DarkSkyBindingConstants {
     // List of all channels
     public static final String CHANNEL_TIME_STAMP = "time-stamp";
     public static final String CHANNEL_CONDITION = "condition";
-    public static final String CHANNEL_CONDITION_ID = "condition-id";
     public static final String CHANNEL_CONDITION_ICON = "icon";
+    public static final String CHANNEL_CONDITION_ICON_ID = "icon-id";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_MIN_TEMPERATURE = "min-temperature";
     public static final String CHANNEL_MAX_TEMPERATURE = "max-temperature";
@@ -70,7 +70,7 @@ public class DarkSkyBindingConstants {
     public static final String CHANNEL_RAIN = "rain";
     public static final String CHANNEL_SNOW = "snow";
     public static final String CHANNEL_PRECIPITATION_PROBABILITY = "precip-probability";
-    public static final String CHANNEL_UV_INDEX = "uvindex";
+    public static final String CHANNEL_UVINDEX = "uvindex";
     public static final String CHANNEL_OZONE = "ozone";
     public static final String CHANNEL_SUNRISE = "sunrise";
     public static final String CHANNEL_SUNSET = "sunset";

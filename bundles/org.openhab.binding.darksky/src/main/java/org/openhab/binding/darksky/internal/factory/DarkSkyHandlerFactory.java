@@ -51,7 +51,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.darksky", service = ThingHandlerFactory.class)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.darksky")
 public class DarkSkyHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections

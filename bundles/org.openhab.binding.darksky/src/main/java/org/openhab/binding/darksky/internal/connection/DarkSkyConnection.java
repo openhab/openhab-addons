@@ -71,8 +71,7 @@ public class DarkSkyConnection {
     private final DarkSkyAPIHandler handler;
     private final HttpClient httpClient;
 
-    private static final ByteArrayFileCache IMAGE_CACHE = new ByteArrayFileCache(
-            "org.eclipse.smarthome.binding.darksky");
+    private static final ByteArrayFileCache IMAGE_CACHE = new ByteArrayFileCache("org.openhab.binding.darksky");
     private final ExpiringCacheMap<String, String> cache;
 
     private final Gson gson = new Gson();
@@ -189,6 +188,8 @@ public class DarkSkyConnection {
                 case BAD_REQUEST_400:
                 case UNAUTHORIZED_401:
                 case NOT_FOUND_404:
+                    logger.debug("Dark Sky server responded with status code {}: {}", httpStatus, content);
+                    throw new DarkSkyConfigurationException(content);
                 default:
                     logger.debug("Dark Sky server responded with status code {}: {}", httpStatus, content);
                     throw new DarkSkyCommunicationException(content);

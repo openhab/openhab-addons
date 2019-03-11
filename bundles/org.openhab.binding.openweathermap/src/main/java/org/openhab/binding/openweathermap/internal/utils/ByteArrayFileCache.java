@@ -104,7 +104,7 @@ public class ByteArrayFileCache {
         try {
             Files.write(fileInCache.toPath(), content);
         } catch (IOException e) {
-            logger.warn("Could not write file '{}' to cache", fileInCache.getName(), e);
+            logger.warn("Could not write file '{}' to cache", fileInCache.getName(), e);
         }
     }
 
@@ -174,7 +174,7 @@ public class ByteArrayFileCache {
             try {
                 return Files.readAllBytes(fileInCache.toPath());
             } catch (IOException e) {
-                logger.warn("Could not read file '{}' from cache", fileInCache.getName(), e);
+                logger.warn("Could not read file '{}' from cache", fileInCache.getName(), e);
             }
         } else {
             logger.debug("File '{}' not found in cache", fileInCache.getName());

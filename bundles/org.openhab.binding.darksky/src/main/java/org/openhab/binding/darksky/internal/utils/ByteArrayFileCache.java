@@ -37,15 +37,23 @@ public class ByteArrayFileCache {
 
     private final Logger logger = LoggerFactory.getLogger(ByteArrayFileCache.class);
 
+    private static final String MD5_ALGORITHM = "MD5";
+
     private static final String CACHE_FOLDER_NAME = "cache";
     public static final char EXTENSION_SEPARATOR = '.';
 
     protected final File cacheFolder;
 
+    /**
+     * Creates a new {@link ByteArrayFileCache} instance for a service. Creates a <code>cache</code> folder under
+     * <code>$userdata/cache/$servicePID</code>.
+     *
+     * @param servicePID PID of the service
+     */
     public ByteArrayFileCache(String servicePID) {
         // TODO track and limit folder size
         // TODO support user specific folder
-        cacheFolder = new File(new File(new File(ConfigConstants.getUserDataFolder()), CACHE_FOLDER_NAME), servicePID);
+        cacheFolder = new File(new File(ConfigConstants.getUserDataFolder(), CACHE_FOLDER_NAME), servicePID);
         if (!cacheFolder.exists()) {
             logger.debug("Creating cache folder '{}'", cacheFolder.getAbsolutePath());
             cacheFolder.mkdirs();
@@ -219,20 +227,20 @@ public class ByteArrayFileCache {
      */
     private String getUniqueFileName(String key) {
         try {
+            MessageDigest md = MessageDigest.getInstance(MD5_ALGORITHM);
             byte[] bytesOfFileName = key.getBytes(StandardCharsets.UTF_8);
-            MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] md5Hash = md.digest(bytesOfFileName);
             BigInteger bigInt = new BigInteger(1, md5Hash);
-            StringBuilder fileNameHash = new StringBuilder(bigInt.toString(16));
+            String fileNameHash = bigInt.toString(16);
             // Now we need to zero pad it if you actually want the full 32 chars
             while (fileNameHash.length() < 32) {
-                fileNameHash.insert(0, "0");
+                fileNameHash = "0" + fileNameHash;
             }
-            return fileNameHash.toString();
+            return fileNameHash;
         } catch (NoSuchAlgorithmException ex) {
             // should not happen
             logger.error("Could not create MD5 hash for key '{}'", key, ex);
-            return key.toString();
+            return key;
         }
     }
 }
