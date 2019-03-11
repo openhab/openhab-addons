@@ -29,6 +29,7 @@
     <module>org.openhab.binding.bluetooth.bluegiga.test</module>
     <module>org.openhab.binding.bluetooth.bluez</module>
     <module>org.openhab.binding.bluetooth.blukii</module>
+    <module>org.openhab.binding.bluetooth.ruuvitag</module>
     <module>org.openhab.binding.bluetooth.test</module>
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.bosesoundtouch</module>

@@ -76,6 +76,7 @@
         <feature>openhab-transport-serial</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.bluetooth/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.bluetooth.blukii/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.bluetooth.ruuvitag/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.bluetooth.bluez/${project.version}</bundle>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.bluetooth.bluegiga/${project.version}</bundle>
     </feature>
