@@ -174,7 +174,7 @@ public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener
             ZonePartitionReply reply = (ZonePartitionReply) message;
             for (int i = 0; i < ElkMessageFactory.MAX_ZONES; i++) {
                 Thing thing = getThingForType(ElkTypeToRequest.Area, reply.getAreas()[i]);
-                if (thing == null && !areas[reply.getAreas()[i] - 1]) {
+                if (thing == null && reply.getAreas()[i] != 0 && !areas[reply.getAreas()[i] - 1]) {
                     // Request the area.
                     connection.sendCommand(new StringTextDescription(ElkTypeToRequest.Area, reply.getAreas()[i]));
                     areas[reply.getAreas()[i] - 1] = true;
