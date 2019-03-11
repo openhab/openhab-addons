@@ -42,11 +42,11 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncementContent;
@@ -157,7 +157,7 @@ public class Connection {
             // generate serial
             byte[] serialBinary = new byte[16];
             rand.nextBytes(serialBinary);
-            this.serial = DatatypeConverter.printHexBinary(serialBinary);
+            this.serial = HexUtils.bytesToHex(serialBinary);
         }
         if (deviceId != null) {
             this.deviceId = deviceId;

@@ -17,9 +17,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.ftpserver.ftplet.FtpFile;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -181,7 +180,7 @@ public class SimpleFtpFile implements FtpFile {
 
         public byte[] getData() {
             try {
-                byte[] d = DatatypeConverter.parseHexBinary(data.toString());
+                byte[] d = HexUtils.hexToBytes(data.toString());
                 logger.debug("File len: {}", d.length);
                 return d;
             } catch (IllegalArgumentException e) {
