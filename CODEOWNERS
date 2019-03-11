@@ -235,6 +235,6 @@
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
-/itests/org.openhab.binding.dmx.test/ @J-N-K
+/itests/org.openhab.binding.dmx.tests/ @J-N-K
 
 # PLEASE HELP ADDING FURTHER LINES HERE!
