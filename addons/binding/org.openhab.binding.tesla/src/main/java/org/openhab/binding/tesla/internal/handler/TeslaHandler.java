@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,7 +41,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -1416,7 +1416,7 @@ public class TeslaHandler extends BaseThingHandler {
         private String getBasicAuthentication() {
             String token = this.user + ":" + this.password;
             try {
-                return "Basic " + DatatypeConverter.printBase64Binary(token.getBytes("UTF-8"));
+                return "Basic " + Base64.getEncoder().encodeToString(token.getBytes("UTF-8"));
             } catch (UnsupportedEncodingException ex) {
                 throw new IllegalStateException("Cannot encode with UTF-8", ex);
             }

@@ -22,6 +22,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +42,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.DatatypeConverter;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -1007,7 +1007,7 @@ public class HeliosHandler221 extends BaseThingHandler {
         private String getBasicAuthentication() {
             String token = this.user + ":" + this.password;
             try {
-                return "Basic " + DatatypeConverter.printBase64Binary(token.getBytes("UTF-8"));
+                return "Basic " + Base64.getEncoder().encodeToString(token.getBytes("UTF-8"));
             } catch (UnsupportedEncodingException ex) {
                 throw new IllegalStateException("Cannot encode with UTF-8", ex);
             }

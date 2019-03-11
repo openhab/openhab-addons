@@ -32,6 +32,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.link,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.core.util,
  org.eclipse.smarthome.io.net.http,
  org.osgi.framework,
  org.osgi.service.component,
