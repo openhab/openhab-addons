@@ -17,10 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,12 +143,12 @@ public class KM200Device {
     }
 
     public void setMD5Salt(String salt) {
-        md5Salt = DatatypeConverter.parseHexBinary(salt);
+        md5Salt = HexUtils.hexToBytes(salt);
         comCryption.recreateKeys();
     }
 
     public void setCryptKeyPriv(String key) {
-        cryptKeyPriv = DatatypeConverter.parseHexBinary(key);
+        cryptKeyPriv = HexUtils.hexToBytes(key);
     }
 
     public void setCryptKeyPriv(byte[] key) {
