@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -140,11 +141,11 @@ public abstract class XiaomiSocket {
      *
      * @param message - Message to be sent
      * @param address - Address, to which the message shall be sent
-     * @param port - - Port, through which the message shall be sent
+     * @param port    - Port, through which the message shall be sent
      */
     public void sendMessage(String message, InetAddress address, int port) {
         try {
-            byte[] sendData = message.getBytes("UTF-8");
+            byte[] sendData = message.getBytes(StandardCharsets.UTF_8);
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, address, port);
             logger.trace("Sending message: {} to {}:{}", message, address, port);
             getSocket().send(sendPacket);
@@ -199,7 +200,7 @@ public abstract class XiaomiSocket {
          * {@link XiaomiSocketListener} and passes the data to them.
          *
          * @param socket - The multicast socket to listen to
-         * @param dgram - The datagram to receive
+         * @param dgram  - The datagram to receive
          */
         private void receiveData(DatagramSocket socket, DatagramPacket dgram) {
             try {
@@ -229,7 +230,7 @@ public abstract class XiaomiSocket {
          * {@link XiaomiBridgeHandler}, before passing to any {@link XiaomiBridgeDiscoveryService}.
          *
          * @param listeners - a list of all {@link XiaomiSocketListener} to notify
-         * @param message - the data message as {@link JsonObject}
+         * @param message   - the data message as {@link JsonObject}
          */
         synchronized void notifyAll(List<XiaomiSocketListener> listeners, JsonObject message, InetAddress address) {
             for (XiaomiSocketListener listener : listeners) {

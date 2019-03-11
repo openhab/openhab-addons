@@ -13,6 +13,7 @@
 package org.openhab.binding.km200.internal;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -73,7 +74,6 @@ public class KM200Cryption {
     public String decodeMessage(byte[] encoded) {
         String retString = null;
         byte[] decodedB64 = null;
-
 
         // MimeDecoder was the only working decoder.
         decodedB64 = Base64.getMimeDecoder().decode(encoded);
@@ -148,12 +148,7 @@ public class KM200Cryption {
             }
 
             /* First half of the key: MD5 of (GatewayPassword . Salt) */
-            try {
-                bytesOfGatewayPassword = remoteDevice.getGatewayPassword().getBytes("UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                logger.error("No such encoding, UTF-8: {}", e.getMessage());
-                return;
-            }
+            bytesOfGatewayPassword = remoteDevice.getGatewayPassword().getBytes(StandardCharsets.UTF_8);
             byte[] combParts1 = new byte[bytesOfGatewayPassword.length + remoteDevice.getMD5Salt().length];
             System.arraycopy(bytesOfGatewayPassword, 0, combParts1, 0, bytesOfGatewayPassword.length);
             System.arraycopy(remoteDevice.getMD5Salt(), 0, combParts1, bytesOfGatewayPassword.length,
@@ -164,12 +159,7 @@ public class KM200Cryption {
             md5K2Init = md.digest(remoteDevice.getMD5Salt());
 
             /* Second half of the key: - private: MD5 of ( Salt . PrivatePassword) */
-            try {
-                bytesOfPrivatePassword = remoteDevice.getPrivatePassword().getBytes("UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                logger.error("No such encoding, UTF-8: {}", e.getMessage());
-                return;
-            }
+            bytesOfPrivatePassword = remoteDevice.getPrivatePassword().getBytes(StandardCharsets.UTF_8);
             byte[] combParts2 = new byte[bytesOfPrivatePassword.length + remoteDevice.getMD5Salt().length];
             System.arraycopy(remoteDevice.getMD5Salt(), 0, combParts2, 0, remoteDevice.getMD5Salt().length);
             System.arraycopy(bytesOfPrivatePassword, 0, combParts2, remoteDevice.getMD5Salt().length,
