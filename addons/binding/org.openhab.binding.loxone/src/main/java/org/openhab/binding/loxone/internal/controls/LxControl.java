@@ -91,6 +91,7 @@ public class LxControl {
         Double max;
         Double step;
         String format;
+        Boolean increaseOnly;
         String allOff;
         Map<String, String> outputs;
     }
