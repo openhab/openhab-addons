@@ -18,6 +18,7 @@
 /addons/binding/org.openhab.binding.bluetooth.bluegiga.test/ @cdjackson @kaikreuzer
 /addons/binding/org.openhab.binding.bluetooth.bluez/ @cdjackson @kaikreuzer
 /addons/binding/org.openhab.binding.bluetooth.blukii/ @kaikreuzer
+/addons/binding/org.openhab.binding.bluetooth.ruuvitag @ssalonen
 /addons/binding/org.openhab.binding.bluetooth.test/ @cdjackson @kaikreuzer
 /addons/binding/org.openhab.binding.boschindego/ @jofleck
 /addons/binding/org.openhab.binding.bosesoundtouch/ @marvkis @tratho
