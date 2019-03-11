@@ -41,6 +41,7 @@ public class LxControlFactory {
         add(new LxControlSwitch.Factory());
         add(new LxControlTextState.Factory());
         add(new LxControlTimedSwitch.Factory());
+        add(new LxControlTracker.Factory());
         add(new LxControlValueSelector.Factory());
     }
 
