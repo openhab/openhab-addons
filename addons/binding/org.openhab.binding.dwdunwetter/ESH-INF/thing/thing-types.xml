@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dwdunwetter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="dwdwarnings">
+		<label>Weather Warnings</label>
+		<description>Weather Warnings for an area</description>
+		<config-description>
+			<parameter name="cellId" type="text" required="true">
+				<label>Cell-ID</label>
+				<description><![CDATA[ID of the area to retrieve weather warnings. 
+For a list of valid IDs look at https://www.dwd.de/DE/leistungen/opendata/help/warnungen/cap_warncellids_csv.csv.
+With the % sign at the end it is possible to query multiple cells at once. For example with 8111% are cells retrieved that starts with 8111.]]></description>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="min" min="15">
+				<default>30</default>
+				<label>Refresh in minutes</label>
+				<description>Time between to API requests in minutes. Minimum 15 minutes.</description>
+			</parameter>
+			<parameter name="warningCount" type="integer" min="1" max="15">
+				<default>1</default>
+				<label>Number of provided warnings</label>
+				<description><![CDATA[Number of warnings to provide. 
+For each warning there will multiple channels.
+The warnings are sorted by severity first and begin second so the first warning is always the one with the highest severity.]]></description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="lastUpdated">
+		<item-type>DateTime</item-type>
+		<label>Last Updated</label>
+		<description>Timestamp of the last update from the endpoint</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="warning">
+		<item-type>Switch</item-type>
+		<label>Warning</label>
+		<description><![CDATA[ON if a warning is present, OFF else.
+While be switched to ON only after all other channels - except the trigger channel - are updated.
+Will be switched to OFF before all other channels are updated to NULL]]></description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="updated">
+		<kind>trigger</kind>
+		<label>Updated</label>
+		<description><![CDATA[Triggers NEW if a warning is send the first time. 
+This happens after all other channels are populated]]></description>
+		<event>
+			<options>
+				<option value="NEW">New</option>
+			</options>
+		</event>
+	</channel-type>
+	<channel-type id="severity">
+		<item-type>String</item-type>
+		<label>Severity</label>
+		<description>Severity of the warning. Possible values are Minor, Moderate, Severe and Extreme.</description>
+		<state readOnly="true">
+			<options>
+				<option value="Minor">Minor</option>
+				<option value="Moderate">Moderate</option>
+				<option value="Severe">Severe</option>
+				<option value="Extreme">Extreme</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="description">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>Textual description of the warning.</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="effective">
+		<item-type>DateTime</item-type>
+		<label>Issued</label>
+		<description>Issued Date and Time</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="onset">
+		<item-type>DateTime</item-type>
+		<label>Valid from</label>
+		<description>Start Date and Time for which the warning is valid</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="expires">
+		<item-type>DateTime</item-type>
+		<label>Valid to</label>
+		<description>End Date and Time for which the warning is valid</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="headline">
+		<item-type>String</item-type>
+		<label>Headline</label>
+		<description>Headline of the warning like "Amtliche Warnung vor FROST"</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="event">
+		<item-type>String</item-type>
+		<label>Type</label>
+		<description>Type of the warning, e.g. FROST</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="altitude">
+		<item-type>Number:Length</item-type>
+		<label>Height (from)</label>
+		<description>Lower Height above sea level for which the warning is valid</description>
+		<state readOnly="true" pattern="%d m" />
+	</channel-type>
+	<channel-type id="ceiling">
+		<item-type>Number:Length</item-type>
+		<label>Height (to)</label>
+		<description>Upper Height above sea level for which the warning is valid</description>
+		<state readOnly="true" pattern="%d m" />
+	</channel-type>
+	<channel-type id="instruction">
+		<item-type>String</item-type>
+		<label>Instruction</label>
+		<description>Instructions and safety information</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="urgency">
+		<item-type>String</item-type>
+		<label>Urgency</label>
+		<description>Urgency of the warning. Possible values are Immediate and Future.</description>
+		<state readOnly="true">
+			<options>
+				<option value="Immediate">Immediate</option>
+				<option value="Future">Future</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>
