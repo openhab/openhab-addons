@@ -141,7 +141,7 @@ public abstract class XiaomiSocket {
      *
      * @param message - Message to be sent
      * @param address - Address, to which the message shall be sent
-     * @param port    - Port, through which the message shall be sent
+     * @param port - Port, through which the message shall be sent
      */
     public void sendMessage(String message, InetAddress address, int port) {
         try {
@@ -200,7 +200,7 @@ public abstract class XiaomiSocket {
          * {@link XiaomiSocketListener} and passes the data to them.
          *
          * @param socket - The multicast socket to listen to
-         * @param dgram  - The datagram to receive
+         * @param dgram - The datagram to receive
          */
         private void receiveData(DatagramSocket socket, DatagramPacket dgram) {
             try {
@@ -230,7 +230,7 @@ public abstract class XiaomiSocket {
          * {@link XiaomiBridgeHandler}, before passing to any {@link XiaomiBridgeDiscoveryService}.
          *
          * @param listeners - a list of all {@link XiaomiSocketListener} to notify
-         * @param message   - the data message as {@link JsonObject}
+         * @param message - the data message as {@link JsonObject}
          */
         synchronized void notifyAll(List<XiaomiSocketListener> listeners, JsonObject message, InetAddress address) {
             for (XiaomiSocketListener listener : listeners) {

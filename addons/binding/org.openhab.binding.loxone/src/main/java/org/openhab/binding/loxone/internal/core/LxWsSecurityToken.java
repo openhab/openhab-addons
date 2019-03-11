@@ -131,11 +131,11 @@ class LxWsSecurityToken extends LxWsSecurity {
     /**
      * Create a token-based authentication instance.
      *
-     * @param debugId       instance of the client used for debugging purposes only
+     * @param debugId instance of the client used for debugging purposes only
      * @param configuration configuration object for getting and setting custom properties (e.g. token)
-     * @param socket        websocket to perform communication with Miniserver
-     * @param user          user to authenticate
-     * @param password      password to authenticate
+     * @param socket websocket to perform communication with Miniserver
+     * @param user user to authenticate
+     * @param password password to authenticate
      */
     LxWsSecurityToken(int debugId, Configuration configuration, LxWebSocket socket, String user, String password) {
         super(debugId, configuration, socket, user, password);

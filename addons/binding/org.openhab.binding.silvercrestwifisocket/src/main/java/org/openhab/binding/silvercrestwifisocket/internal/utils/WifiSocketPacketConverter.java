@@ -269,7 +269,7 @@ public class WifiSocketPacketConverter {
     /**
      * Converts one partial byte array to one hexadecimal string.
      *
-     * @param array  the byte array to convert.
+     * @param array the byte array to convert.
      * @param length the length to convert.
      * @return the hexadecimal string.
      */
