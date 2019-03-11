@@ -15,7 +15,7 @@ package org.openhab.binding.helios.internal.handler;
 import static org.openhab.binding.helios.internal.HeliosBindingConstants.*;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -1006,11 +1006,7 @@ public class HeliosHandler221 extends BaseThingHandler {
 
         private String getBasicAuthentication() {
             String token = this.user + ":" + this.password;
-            try {
-                return "Basic " + Base64.getEncoder().encodeToString(token.getBytes("UTF-8"));
-            } catch (UnsupportedEncodingException ex) {
-                throw new IllegalStateException("Cannot encode with UTF-8", ex);
-            }
+            return "Basic " + Base64.getEncoder().encodeToString(token.getBytes(StandardCharsets.UTF_8));
         }
     }
 
