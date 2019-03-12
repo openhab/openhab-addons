@@ -169,16 +169,14 @@ public class LxControlValueSelector extends LxControl {
         } catch (NumberFormatException e) {
             logger.debug("Error parsing value for state {}: {}", stateName, e.getMessage());
         }
-        if (minValue != null && maxValue != null) {
+        if (minValue != null && maxValue != null && stepValue != null) {
             if (minValue >= maxValue) {
                 logger.warn("Value selector min value >= max value: {}, {}", minValue, maxValue);
                 minValue = null;
                 maxValue = null;
             } else {
                 addChannelStateDescription(channelId, new StateDescription(new BigDecimal(minValue),
-                        new BigDecimal(maxValue),
-                        stepValue != null ? new BigDecimal(stepValue) : new BigDecimal((maxValue - minValue) / 10.0),
-                        format, false, null));
+                        new BigDecimal(maxValue), new BigDecimal(stepValue), format, false, null));
             }
         }
     }

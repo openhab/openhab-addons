@@ -124,7 +124,7 @@ public class LxControlDimmer extends LxControl {
             Double max = getStateDoubleValue(STATE_MAX);
             Double min = getStateDoubleValue(STATE_MIN);
             if (max != null && min != null) {
-                return (loxoneValue - min) * ((max - min) / 100);
+                return 100 * (loxoneValue - min) / (max - min);
             }
         }
         return null;
@@ -139,7 +139,7 @@ public class LxControlDimmer extends LxControl {
             Double max = getStateDoubleValue(STATE_MAX);
             Double min = getStateDoubleValue(STATE_MIN);
             if (max != null && min != null) {
-                double value = min + (ohValue / ((max - min) / 100));
+                double value = min + ohValue * (max - min) / 100;
                 return value; // no rounding to integer value is needed as loxone is accepting floating point values
             }
         }
