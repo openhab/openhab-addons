@@ -14,6 +14,7 @@ package org.openhab.binding.loxone.internal.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.InvalidParameterException;
@@ -130,16 +131,11 @@ class LxWsSecurityToken extends LxWsSecurity {
     /**
      * Create a token-based authentication instance.
      *
-     * @param debugId
-     *            instance of the client used for debugging purposes only
-     * @param configuration
-     *            configuration object for getting and setting custom properties (e.g. token)
-     * @param socket
-     *            websocket to perform communication with Miniserver
-     * @param user
-     *            user to authenticate
-     * @param password
-     *            password to authenticate
+     * @param debugId instance of the client used for debugging purposes only
+     * @param configuration configuration object for getting and setting custom properties (e.g. token)
+     * @param socket websocket to perform communication with Miniserver
+     * @param user user to authenticate
+     * @param password password to authenticate
      */
     LxWsSecurityToken(int debugId, Configuration configuration, LxWebSocket socket, String user, String password) {
         super(debugId, configuration, socket, user, password);
@@ -212,14 +208,15 @@ class LxWsSecurityToken extends LxWsSecurity {
 
         logger.debug("[{}] Command for encryption: {}", debugId, str);
         try {
-            String encrypted = Base64.getEncoder().encodeToString(aesEncryptCipher.doFinal(str.getBytes("UTF-8")));
+            String encrypted = Base64.getEncoder()
+                    .encodeToString(aesEncryptCipher.doFinal(str.getBytes(StandardCharsets.UTF_8)));
             try {
                 encrypted = URLEncoder.encode(encrypted, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 logger.warn("[{}] Unsupported encoding for encrypted command conversion to URL.", debugId);
             }
             return CMD_ENCRYPT_CMD + encrypted;
-        } catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException e) {
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
             logger.warn("[{}] Command encryption failed: {}", debugId, e.getMessage());
             return command;
         }
@@ -333,11 +330,11 @@ class LxWsSecurityToken extends LxWsSecurity {
         try {
             MessageDigest msgDigest = MessageDigest.getInstance("SHA-1");
             String pwdHashStr = password + ":" + keySalt.salt;
-            byte[] rawData = msgDigest.digest(pwdHashStr.getBytes("UTF-8"));
+            byte[] rawData = msgDigest.digest(pwdHashStr.getBytes(StandardCharsets.UTF_8));
             String pwdHash = Hex.encodeHexString(rawData).toUpperCase();
             logger.debug("[{}] PWDHASH: {}", debugId, pwdHash);
             return hashString(user + ":" + pwdHash, keySalt.key);
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+        } catch (NoSuchAlgorithmException e) {
             logger.debug("[{}] Error hashing token credentials: {}", debugId, e.getMessage());
             return null;
         }

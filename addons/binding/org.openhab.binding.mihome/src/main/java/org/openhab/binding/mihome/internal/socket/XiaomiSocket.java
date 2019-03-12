@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -140,11 +141,11 @@ public abstract class XiaomiSocket {
      *
      * @param message - Message to be sent
      * @param address - Address, to which the message shall be sent
-     * @param port - - Port, through which the message shall be sent
+     * @param port - Port, through which the message shall be sent
      */
     public void sendMessage(String message, InetAddress address, int port) {
         try {
-            byte[] sendData = message.getBytes("UTF-8");
+            byte[] sendData = message.getBytes(StandardCharsets.UTF_8);
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, address, port);
             logger.trace("Sending message: {} to {}:{}", message, address, port);
             getSocket().send(sendPacket);

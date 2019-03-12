@@ -13,6 +13,7 @@
 package org.openhab.binding.silvercrestwifisocket.internal.utils;
 
 import java.net.DatagramPacket;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 import javax.crypto.BadPaddingException;
@@ -82,7 +83,7 @@ public class WifiSocketPacketConverter {
         // init cipher
         byte[] encriptionKeyBytes;
         try {
-            encriptionKeyBytes = ENCRIPTION_KEY.getBytes("UTF-8");
+            encriptionKeyBytes = ENCRIPTION_KEY.getBytes(StandardCharsets.UTF_8);
             SecretKeySpec secretKey = new SecretKeySpec(encriptionKeyBytes, "AES");
             IvParameterSpec ivKey = new IvParameterSpec(encriptionKeyBytes);
 

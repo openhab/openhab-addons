@@ -91,10 +91,10 @@ public class NeatoRobot {
             sha256Hmac = Mac.getInstance("HmacSHA256");
             String stringToSign = this.serialNumber.toLowerCase() + "\n" + dateString + "\n" + body;
 
-            SecretKeySpec secretKey = new SecretKeySpec(this.secret.getBytes("UTF-8"), "HmacSHA256");
+            SecretKeySpec secretKey = new SecretKeySpec(this.secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
             sha256Hmac.init(secretKey);
 
-            byte[] signature = sha256Hmac.doFinal(stringToSign.getBytes("UTF-8"));
+            byte[] signature = sha256Hmac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));
             String hexString = Hex.encodeHexString(signature);
 
             // Properties headers = new Properties
