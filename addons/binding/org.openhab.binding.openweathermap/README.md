@@ -93,8 +93,14 @@ Once the parameter `forecastDays` will be changed, the available channel groups 
 | current          | wind-direction | Number:Angle         | Current wind direction.                                                 |
 | current          | gust-speed     | Number:Speed         | Current gust speed. **Advanced**                                        |
 | current          | cloudiness     | Number:Dimensionless | Current cloudiness.                                                     |
-| current          | rain           | Number:Length        | Rain volume for the last three hours.                                   |
-| current          | snow           | Number:Length        | Snow volume for the last three hours.                                   |
+| current          | rain           | Number:Length        | Rain volume of the last hour.                                           |
+| current          | snow           | Number:Length        | Snow volume of the last hour.                                           |
+
+**Attention**: Rain item is showing "1h" in the case when data are received from weather stations directly.
+The fact is that some METAR stations do not have precipitation indicators or do not measure precipitation conditions due to some other technical reasons.
+In this case, we use model data.
+So, rain item is showing "3h" when the API response based on model data.
+The "3h" value will be divided by three to always have an estimated value for one hour.
 
 ### 3 Hour Forecast
 

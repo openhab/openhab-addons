@@ -88,8 +88,7 @@ public class OpenWeatherMapConnection {
     private final OpenWeatherMapAPIHandler handler;
     private final HttpClient httpClient;
 
-    private static final ByteArrayFileCache IMAGE_CACHE = new ByteArrayFileCache(
-            "org.eclipse.smarthome.binding.openweathermap");
+    private static final ByteArrayFileCache IMAGE_CACHE = new ByteArrayFileCache("org.openhab.binding.openweathermap");
     private final ExpiringCacheMap<String, String> cache;
 
     private final JsonParser parser = new JsonParser();
