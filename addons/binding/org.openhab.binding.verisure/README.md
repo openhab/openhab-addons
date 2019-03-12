@@ -279,7 +279,7 @@ Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", passwor
 
 Thing smartLock JannesSmartLock "Verisure Entrance Yale Doorman"  [ deviceId="3C44_6NPO" ]
 Thing smartPlug JannesSmartPlug "Verisure SmartPlug" [ deviceId="3D7G_MANV" ]
-Thing waterDetector JannesVattenDetetktor "Verisure Water Detector" [ deviceId="3WET_Q)h5" ] 
+Thing waterDetector JannesVattenDetetktor "Verisure Water Detector" [ deviceId="3WET_QRH5" ] 
 ````
 
 
