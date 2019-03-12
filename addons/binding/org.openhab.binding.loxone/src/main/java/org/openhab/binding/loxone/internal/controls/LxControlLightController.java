@@ -107,7 +107,6 @@ public class LxControlLightController extends LxControl {
         // add only channel, state description will be added later when a control state update message is received
         channelId = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_LIGHT_CTRL),
                 defaultChannelLabel, "Light controller", tags, this::handleCommands, this::getChannelState);
-        // sub-controls of this control have been created when update() method was called by super class
     }
 
     private void handleCommands(Command command) throws IOException {
