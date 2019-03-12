@@ -88,6 +88,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.binding</groupId>
+      <artifactId>org.openhab.binding.bluetooth.ruuvitag</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.binding</groupId>
       <artifactId>org.openhab.binding.boschindego</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -144,6 +149,11 @@
     <dependency>
       <groupId>org.openhab.binding</groupId>
       <artifactId>org.openhab.binding.dsmr</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.binding</groupId>
+      <artifactId>org.openhab.binding.dwdunwetter</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -259,6 +269,11 @@
     <dependency>
       <groupId>org.openhab.binding</groupId>
       <artifactId>org.openhab.binding.icloud</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.binding</groupId>
+      <artifactId>org.openhab.binding.ihc</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
