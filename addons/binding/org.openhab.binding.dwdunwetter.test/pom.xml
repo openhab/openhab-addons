@@ -4,8 +4,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>pom</artifactId>
     <groupId>org.openhab.binding</groupId>
+    <artifactId>pom</artifactId>
     <version>2.5.0-SNAPSHOT</version>
   </parent>
 
@@ -18,7 +18,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.eclipse.tycho</groupId>
+        <groupId>${tycho-groupid}</groupId>
         <artifactId>target-platform-configuration</artifactId>
         <configuration>
           <dependency-resolution>
@@ -53,7 +53,7 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.eclipse.tycho</groupId>
+        <groupId>${tycho-groupid}</groupId>
         <artifactId>tycho-surefire-plugin</artifactId>
         <configuration>
           <dependencies>
