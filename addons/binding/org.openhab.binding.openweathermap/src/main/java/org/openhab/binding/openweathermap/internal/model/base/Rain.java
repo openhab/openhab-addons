@@ -22,8 +22,18 @@ import com.google.gson.annotations.SerializedName;
  * @author Christoph Weitkamp - Initial contribution
  */
 public class Rain {
+    @SerializedName("1h")
+    private @Nullable Double oneHour;
     @SerializedName("3h")
     private @Nullable Double threeHours;
+
+    public @Nullable Double get1h() {
+        return oneHour;
+    }
+
+    public void set1h(Double oneHour) {
+        this.oneHour = oneHour;
+    }
 
     public @Nullable Double get3h() {
         return threeHours;
@@ -31,5 +41,9 @@ public class Rain {
 
     public void set3h(Double threeHours) {
         this.threeHours = threeHours;
+    }
+
+    public Double getVolume() {
+        return oneHour != null ? oneHour : threeHours != null ? threeHours / 3 : 0;
     }
 }
