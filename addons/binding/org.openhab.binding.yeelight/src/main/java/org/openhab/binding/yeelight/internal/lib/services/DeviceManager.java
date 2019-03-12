@@ -240,6 +240,11 @@ public class DeviceManager {
         }
     }
 
+    public void doCustomAction(String deviceId, String action, String params) {
+        DeviceBase device = mDeviceList.get(deviceId);
+        device.sendCustomCommand(action, params);
+    }
+
     public void addDevice(DeviceBase device) {
         mDeviceList.put(device.getDeviceId(), device);
     }
