@@ -10,6 +10,7 @@
 		<channels>
 			<channel id="color" typeId="color" />
 			<channel id="colorTemperature" typeId="colorTemperature" />
+			<channel id="command" typeId="command" />
 		</channels>
 
 		<config-description-ref uri="thing-type:device:base" />

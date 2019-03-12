@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -193,6 +194,18 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
                     handleIncreaseDecreaseBrightnessCommand((IncreaseDecreaseType) command);
                 }
                 break;
+            case CHANNEL_COMMAND:
+                if (!command.toString().isEmpty()) {
+                    String[] tokens = command.toString().split(";");
+                    String methodAction = tokens[0];
+                    String methodParams = "";
+                    if (tokens.length > 1) {
+                        methodParams = tokens[1];
+                    }
+                    logger.debug(logInfo, methodAction + " " + methodParams);
+                    handleCustomCommand(methodAction, methodParams);
+                    updateState(channelUID, new StringType(""));
+                }
             default:
                 break;
         }
@@ -250,6 +263,10 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         ctAction.putValue(COLOR_TEMPERATURE_STEP * ct.intValue() + COLOR_TEMPERATURE_MINIMUM);
         ctAction.putDuration(getDuration());
         DeviceManager.getInstance().doAction(deviceId, ctAction);
+    }
+
+    void handleCustomCommand(String action, String params) {
+        DeviceManager.getInstance().doCustomAction(deviceId, action, params);
     }
 
     @Override
