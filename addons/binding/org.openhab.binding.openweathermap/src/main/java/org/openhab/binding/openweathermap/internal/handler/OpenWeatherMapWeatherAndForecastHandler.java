@@ -14,6 +14,7 @@ package org.openhab.binding.openweathermap.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
 import static org.eclipse.smarthome.core.library.unit.SIUnits.*;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
 import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingConstants.*;
 
 import java.util.ArrayList;
@@ -26,7 +27,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -268,30 +268,26 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     state = getQuantityTypeState(weatherData.getMain().getPressure(), HECTO(PASCAL));
                     break;
                 case CHANNEL_HUMIDITY:
-                    state = getQuantityTypeState(weatherData.getMain().getHumidity(), SmartHomeUnits.PERCENT);
+                    state = getQuantityTypeState(weatherData.getMain().getHumidity(), PERCENT);
                     break;
                 case CHANNEL_WIND_SPEED:
-                    state = getQuantityTypeState(weatherData.getWind().getSpeed(), SmartHomeUnits.METRE_PER_SECOND);
+                    state = getQuantityTypeState(weatherData.getWind().getSpeed(), METRE_PER_SECOND);
                     break;
                 case CHANNEL_WIND_DIRECTION:
-                    state = getQuantityTypeState(weatherData.getWind().getDeg(), SmartHomeUnits.DEGREE_ANGLE);
+                    state = getQuantityTypeState(weatherData.getWind().getDeg(), DEGREE_ANGLE);
                     break;
                 case CHANNEL_GUST_SPEED:
-                    state = getQuantityTypeState(weatherData.getWind().getGust(), SmartHomeUnits.METRE_PER_SECOND);
+                    state = getQuantityTypeState(weatherData.getWind().getGust(), METRE_PER_SECOND);
                     break;
                 case CHANNEL_CLOUDINESS:
-                    state = getQuantityTypeState(weatherData.getClouds().getAll(), SmartHomeUnits.PERCENT);
+                    state = getQuantityTypeState(weatherData.getClouds().getAll(), PERCENT);
                     break;
                 case CHANNEL_RAIN:
-                    state = getQuantityTypeState(
-                            weatherData.getRain() == null || weatherData.getRain().get3h() == null ? 0
-                                    : weatherData.getRain().get3h(),
+                    state = getQuantityTypeState(weatherData.getRain() == null ? 0 : weatherData.getRain().getVolume(),
                             MILLI(METRE));
                     break;
                 case CHANNEL_SNOW:
-                    state = getQuantityTypeState(
-                            weatherData.getSnow() == null || weatherData.getSnow().get3h() == null ? 0
-                                    : weatherData.getSnow().get3h(),
+                    state = getQuantityTypeState(weatherData.getSnow() == null ? 0 : weatherData.getSnow().getVolume(),
                             MILLI(METRE));
                     break;
             }
@@ -345,31 +341,27 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     state = getQuantityTypeState(forecastData.getMain().getPressure(), HECTO(PASCAL));
                     break;
                 case CHANNEL_HUMIDITY:
-                    state = getQuantityTypeState(forecastData.getMain().getHumidity(), SmartHomeUnits.PERCENT);
+                    state = getQuantityTypeState(forecastData.getMain().getHumidity(), PERCENT);
                     break;
                 case CHANNEL_WIND_SPEED:
-                    state = getQuantityTypeState(forecastData.getWind().getSpeed(), SmartHomeUnits.METRE_PER_SECOND);
+                    state = getQuantityTypeState(forecastData.getWind().getSpeed(), METRE_PER_SECOND);
                     break;
                 case CHANNEL_WIND_DIRECTION:
-                    state = getQuantityTypeState(forecastData.getWind().getDeg(), SmartHomeUnits.DEGREE_ANGLE);
+                    state = getQuantityTypeState(forecastData.getWind().getDeg(), DEGREE_ANGLE);
                     break;
                 case CHANNEL_GUST_SPEED:
-                    state = getQuantityTypeState(forecastData.getWind().getGust(), SmartHomeUnits.METRE_PER_SECOND);
+                    state = getQuantityTypeState(forecastData.getWind().getGust(), METRE_PER_SECOND);
                     break;
                 case CHANNEL_CLOUDINESS:
-                    state = getQuantityTypeState(forecastData.getClouds().getAll(), SmartHomeUnits.PERCENT);
+                    state = getQuantityTypeState(forecastData.getClouds().getAll(), PERCENT);
                     break;
                 case CHANNEL_RAIN:
                     state = getQuantityTypeState(
-                            forecastData.getRain() == null || forecastData.getRain().get3h() == null ? 0
-                                    : forecastData.getRain().get3h(),
-                            MILLI(METRE));
+                            forecastData.getRain() == null ? 0 : forecastData.getRain().getVolume(), MILLI(METRE));
                     break;
                 case CHANNEL_SNOW:
                     state = getQuantityTypeState(
-                            forecastData.getSnow() == null || forecastData.getSnow().get3h() == null ? 0
-                                    : forecastData.getSnow().get3h(),
-                            MILLI(METRE));
+                            forecastData.getSnow() == null ? 0 : forecastData.getSnow().getVolume(), MILLI(METRE));
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
@@ -419,19 +411,19 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     state = getQuantityTypeState(forecastData.getPressure(), HECTO(PASCAL));
                     break;
                 case CHANNEL_HUMIDITY:
-                    state = getQuantityTypeState(forecastData.getHumidity(), SmartHomeUnits.PERCENT);
+                    state = getQuantityTypeState(forecastData.getHumidity(), PERCENT);
                     break;
                 case CHANNEL_WIND_SPEED:
-                    state = getQuantityTypeState(forecastData.getSpeed(), SmartHomeUnits.METRE_PER_SECOND);
+                    state = getQuantityTypeState(forecastData.getSpeed(), METRE_PER_SECOND);
                     break;
                 case CHANNEL_WIND_DIRECTION:
-                    state = getQuantityTypeState(forecastData.getDeg(), SmartHomeUnits.DEGREE_ANGLE);
+                    state = getQuantityTypeState(forecastData.getDeg(), DEGREE_ANGLE);
                     break;
                 case CHANNEL_GUST_SPEED:
-                    state = getQuantityTypeState(forecastData.getGust(), SmartHomeUnits.METRE_PER_SECOND);
+                    state = getQuantityTypeState(forecastData.getGust(), METRE_PER_SECOND);
                     break;
                 case CHANNEL_CLOUDINESS:
-                    state = getQuantityTypeState(forecastData.getClouds(), SmartHomeUnits.PERCENT);
+                    state = getQuantityTypeState(forecastData.getClouds(), PERCENT);
                     break;
                 case CHANNEL_RAIN:
                     state = getQuantityTypeState(forecastData.getRain() == null ? 0 : forecastData.getRain(),
