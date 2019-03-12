@@ -20,6 +20,7 @@
     <module>runtime-index</module>
     <module>test-index</module>
     <module>openhab-core-index</module>
+    <module>openhab-addons</module>
   </modules>
 
 </project>
