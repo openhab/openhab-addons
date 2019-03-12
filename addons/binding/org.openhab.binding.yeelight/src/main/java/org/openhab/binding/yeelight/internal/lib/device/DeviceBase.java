@@ -270,6 +270,10 @@ public abstract class DeviceBase {
         }
     }
 
+    public void sendCustomCommand(String action, String params) {
+        mConnection.invokeCustom(new DeviceMethod(action, params));
+    }
+
     // ===================== setter and getter=====================
 
     public String getDeviceId() {

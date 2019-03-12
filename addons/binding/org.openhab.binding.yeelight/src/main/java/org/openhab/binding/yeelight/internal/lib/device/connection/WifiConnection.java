@@ -65,6 +65,24 @@ public class WifiConnection implements ConnectionBase {
     }
 
     @Override
+    public boolean invokeCustom(DeviceMethod method) {
+        if (mWriter != null) {
+            try {
+                mWriter.write(method.getCustomParamsStr().getBytes());
+                mWriter.flush();
+                logger.debug("{}: Write Success!", TAG);
+            } catch (Exception e) {
+                logger.debug("{}: write exception, set device to disconnected!", TAG);
+                logger.debug("Exception: {}", e);
+                mDevice.setConnectionState(ConnectState.DISCONNECTED);
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public boolean connect() {
         logger.debug("{}: connect() entering!", TAG);
         if (mSocket != null && mSocket.isConnected()) {

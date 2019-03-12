@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="yeelight" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="yeelight"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
@@ -36,6 +37,13 @@
 		<tags>
 			<tag>ColorTemperature</tag>
 		</tags>
+	</channel-type>
+
+	<!-- Command Channel -->
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Send a command directly to the device. For advanced users only.</description>
 	</channel-type>
 
 </thing:thing-descriptions>
