@@ -18,8 +18,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -91,7 +91,7 @@ public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
      */
     private String getUniqueFilenameForText(String text, String locale) {
         try {
-            byte[] bytesOfMessage = text.getBytes("UTF-8");
+            byte[] bytesOfMessage = text.getBytes(StandardCharsets.UTF_8);
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] md5Hash = md.digest(bytesOfMessage);
             BigInteger bigInt = new BigInteger(1, md5Hash);
@@ -102,10 +102,6 @@ public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
                 hashtext = "0" + hashtext;
             }
             return locale + "_" + hashtext;
-        } catch (UnsupportedEncodingException ex) {
-            // should not happen
-            logger.error("Could not create MD5 hash for '{}'", text, ex);
-            return null;
         } catch (NoSuchAlgorithmException ex) {
             // should not happen
             logger.error("Could not create MD5 hash for '{}'", text, ex);
@@ -126,7 +122,7 @@ public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
 
     private void writeText(File file, String text) throws IOException {
         try (OutputStream outputStream = new FileOutputStream(file)) {
-            outputStream.write(text.getBytes("UTF-8"));
+            outputStream.write(text.getBytes(StandardCharsets.UTF_8));
         }
     }
 }
