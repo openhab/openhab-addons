@@ -33,6 +33,7 @@ public class LxControlFactory {
         add(new LxControlInfoOnlyAnalog.Factory());
         add(new LxControlInfoOnlyDigital.Factory());
         add(new LxControlJalousie.Factory());
+        add(new LxControlLeftRightAnalog.Factory());
         add(new LxControlLeftRightDigital.Factory());
         add(new LxControlLightController.Factory());
         add(new LxControlLightControllerV2.Factory());
@@ -43,6 +44,7 @@ public class LxControlFactory {
         add(new LxControlTextState.Factory());
         add(new LxControlTimedSwitch.Factory());
         add(new LxControlTracker.Factory());
+        add(new LxControlUpDownAnalog.Factory());
         add(new LxControlUpDownDigital.Factory());
         add(new LxControlValueSelector.Factory());
     }

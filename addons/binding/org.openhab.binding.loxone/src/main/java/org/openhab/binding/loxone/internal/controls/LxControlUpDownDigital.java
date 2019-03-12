@@ -53,9 +53,6 @@ public class LxControlUpDownDigital extends LxControl {
         }
     }
 
-    /**
-     * A name by which Miniserver refers to switch controls
-     */
     static final String TYPE_NAME = "updowndigital";
 
     private static final String CMD_UP_ON = "UpOn";

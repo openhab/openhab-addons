@@ -18,23 +18,22 @@ import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
- * An LeftRightDigital type of control on Loxone Miniserver.
+ * An LeftRightAnalog type of control on Loxone Miniserver.
  * <p>
- * According to Loxone API documentation, LeftRightDigital control is a virtual input that is digital and has an input
- * type left-right buttons. It has no states and can only accept commands. Only left/right (which are actually equal to
- * up/down commands of {@link LxControlUpDownDigital}) on/off commands are generated. Pulse commands are not supported,
- * because of lack of corresponding feature in openHAB. Pulse can be emulated by quickly alternating between ON and OFF
- * commands.
+ * According to Loxone API documentation, LeftRightAnalog control is a virtual input that is analog and has an input
+ * type
+ * up-down buttons. The analog buttons are simulated as a single analog number value. This control behaves exactly the
+ * same as {@link LxControlUpDownAnalog} but has a different name.
  *
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlLeftRightDigital extends LxControlUpDownDigital {
+public class LxControlLeftRightAnalog extends LxControlUpDownAnalog {
 
     static class Factory extends LxControlInstance {
         @Override
         LxControl create(LxUuid uuid) {
-            return new LxControlLeftRightDigital(uuid);
+            return new LxControlLeftRightAnalog(uuid);
         }
 
         @Override
@@ -43,16 +42,14 @@ public class LxControlLeftRightDigital extends LxControlUpDownDigital {
         }
     }
 
-    static final String TYPE_NAME = "leftrightdigital";
+    static final String TYPE_NAME = "leftrightanalog";
 
-    LxControlLeftRightDigital(LxUuid uuid) {
+    LxControlLeftRightAnalog(LxUuid uuid) {
         super(uuid);
     }
 
     @Override
     public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
-        super.initialize(thingHandler, room, category, " / Left", "Left/Right Digital: Left", " / Right",
-                "Left/Right Digital: Right");
-
+        super.initialize(thingHandler, room, category, "Left/Right Analog");
     }
 }
