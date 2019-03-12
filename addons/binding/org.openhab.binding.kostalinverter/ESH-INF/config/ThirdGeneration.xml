@@ -5,8 +5,8 @@ xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0
 	<config-description uri="thing-type:kostalplenticorepikoiq_config">
 		<parameter name="url" type="text" required="true">
 			<context>network-address</context>
-			<label>IP address / HOSTNAME</label>
-			<description>Enter the IP address or the host name of the inverter. Note that DNS resolution must work properly to identify the inverter by its name</description>
+			<label>IP address / Hostname</label>
+			<description>Enter the IP address or the hostname of the inverter. Note that DNS resolution must work properly to identify the inverter by its name</description>
 		</parameter>
 		<parameter name="refreshInternalInSeconds" type="integer" required="true" unit="s">
 			<label>Refresh Interval</label>

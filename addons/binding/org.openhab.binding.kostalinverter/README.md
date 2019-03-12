@@ -6,30 +6,29 @@ Scrapes the web interface of the inverter for the metrics of the supported chann
 
 ## Supported Things
 
-### first generation devices (PIKO)
+### First generation devices (PIKO)
 
 Tested with Kostal Inverter PIKO but might work with other inverters from kostal too.
 
-### third generation devices (PIKO IQ / PLENTICORE plus)
+### Third generation devices (PIKO IQ / PLENTICORE plus)
 
 This implementation was tested for the current KOSTAL PIKO PLENTICORE plus and PIKO IQ devices.
-All of these devices contain the same communication board (SCB = <u>S</u>mart<u>C</u>onnection<u>B</u>oard)
+All of these devices contain the same communication board (SCB = **S**mart**C**onnection**B**oard)
 
 Currently supported things are:
-<ul>
-<li>PIKO IQ 4.2</li>
-<li>PIKO IQ 5.5</li>
-<li>PIKO IQ 7.0</li>
-<li>PIKO IQ 8.5</li>
-<li>PIKO IQ 10.0</li>
-<li>PLENTICORE plus 4.2 (with or without battery attached)</li>
-<li>PLENTICORE plus 5.5 (with or without battery attached)</li>
-<li>PLENTICORE plus 7.0 (with or without battery attached)</li>
-<li>PLENTICORE plus 8.5 (with or without battery attached)</li>
-<li>PLENTICORE plus 10.0 (with or without battery attached)</li>
-</ul>
 
-Others may be supported (like future devices using the same SCB or offering the same web api, branded oem devices, ...), but they were not tested!
+* PIKO IQ 4.2
+* PIKO IQ 5.5
+* PIKO IQ 7.0
+* PIKO IQ 8.5
+* PIKO IQ 10.0
+* PLENTICORE plus 4.2 (with or without battery attached)
+* PLENTICORE plus 5.5 (with or without battery attached)
+* PLENTICORE plus 7.0 (with or without battery attached)
+* PLENTICORE plus 8.5 (with or without battery attached)
+* PLENTICORE plus 10.0 (with or without battery attached)
+
+Others may be supported (like future devices using the same SCB or offering the same Web API, branded OEM devices, ...), but they were not tested!
 
 ## Discovery
 
@@ -37,7 +36,7 @@ None
 
 ## Channels
 
-### first generation devices (PIKO)
+### First generation devices (PIKO)
 
 -   acPower
 -   totalEnergy
@@ -54,84 +53,84 @@ None
 -   l3Voltage
 -   l3Power
 
-### third generation devices (PIKO IQ / PLENTICORE plus)
+### Third generation devices (PIKO IQ / PLENTICORE plus)
 
-```
-deviceLocalDCPower                          Current DC power of the inverter
-deviceLocalHomeconsumptionFromBattery       Current home consumption obtained from the battery
-deviceLocalHomeconsumptionFromGrid          Current home consumption obtained from the grid
-deviceLocalOwnconsumption                   Current own comsumption
-deviceLocalHomeconsumptionFromPV            Current home consumption obtained from photovoltaic
-deviceLocalHomeconsumptionTotal             Current total homeconsumption
-deviceLocalLimitEVUAbsolute                 Permitted feed-in quantity as absolute value as specified by the energy supplier 
-deviceLocalLimitEVURelativ                  Permitted feed-in quantity as relative value as specified by the energy supplier 
-deviceLocalWorktime                         Uptime of the inverter
-deviceLocalACPhase1CurrentAmperage          Amperage of phase 1
-deviceLocalACPhase1CurrentPower             Power of phase 1
-deviceLocalACPhase1CurrentVoltage           Voltage of phase 1
-deviceLocalACPhase2CurrentAmperage          Amperage of phase 2
-deviceLocalACPhase2CurrentPower             Power of phase 2
-deviceLocalACPhase2CurrentVoltage           Voltage of phase 2
-deviceLocalACPhase3CurrentAmperage          Amperage of phase 3
-deviceLocalACPhase3CurrentPower             Power of phase 3
-deviceLocalACPhase3CurrentVoltage           Voltage of phase 3
-deviceLocalACCurrentPower                   Current AC power of the inverter
-deviceLocalBatteryLoadingCycles             Amount of loading cycles done by the battery
-deviceLocalBatteryFullChargeCapacity        Capacity of the battery if charged fully
-deviceLocalBatteryAmperage                  Current amperage of the battery
-deviceLocalBatteryPower                     Current battery charge
-deviceLocalBatteryStageOfCharge             Current battery charge status
-deviceLocalBatteryVoltage                   Current voltage of the battery
-deviceLocalPVString1Amperage                Current amperage of photovoltaic string 1
-deviceLocalPVString1Power                   Current power  of photovoltaic string 1
-deviceLocalPVString1Voltage                 Current voltage of photovoltaic string 1
-deviceLocalPVString2Amperage                Current amperage of photovoltaic string 2
-deviceLocalPVString2Power                   Current power  of photovoltaic string 2
-deviceLocalPVString2Voltage                 Current voltage of photovoltaic string 2
-deviceLocalPVString3Amperage                Current amperage of photovoltaic string 3
-deviceLocalPVString3Power                   Current power  of photovoltaic string 2
-deviceLocalPVString3Voltage                 Current voltage of photovoltaic string 3
-SCBEventErrorCountMc                        Number of errors reported by the main controller
-SCBEventErrorCountSFH                       Number of errors reported by the grid interface controller
-SCBEventErrorCountSCB                       Number of errors reported by the smart communication board
-SCBEventWarningCountSCB                     Number of warnings reported by the smart communication board
-statisticAutarkyDay                         Autarky ratio of this day
-statisticAutarkyMonth                       Autarky ratio of this month
-statisticAutarkyTotal                       Autarky ratio overall
-statisticAutarkyYear                        Autarky ratio of this year
-statisticCo2SavingDay                       Savings in Co2 emissions today
-statisticCo2SavingMonth                     Savings in Co2 emissions this month
-statisticCo2SavingTotal                     Savings in Co2 emissions overall
-statisticCo2SavingYear                      Savings in Co2 emissions this year
-statisticHomeconsumptionDay                 Home consumption today
-statisticHomeconsumptionMonth               Home consumption this month
-statisticHomeconsumptionTotal               Home consumption overall
-statisticHomeconsumptionYear                Home consumption this year
-statisticHomeconsumptionFromBatteryDay      Home consumption obtained from the battery today
-statisticHomeconsumptionFromBatteryMonth    Home consumption obtained from the battery this month
-statisticHomeconsumptionFromBatteryTotal    Home consumption obtained from the battery overall
-statisticHomeconsumptionFromBatteryYear     Home consumption obtained from the battery this year
-statisticHomeconsumptionFromGridDay         Home consumption obtained from the grid today
-statisticHomeconsumptionFromGridMonth       Home consumption obtained from the grid this month
-statisticHomeconsumptionFromGridTotal       Home consumption obtained from the grid overall
-statisticHomeconsumptionFromGridYear        Home consumption obtained from the grid this year
-statisticHomeconsumptionFromPVDay           Home consumption obtained from the photovoltaic plant today
-statisticHomeconsumptionFromPVMonth         Home consumption obtained from the photovoltaic plant this month
-statisticHomeconsumptionFromPVTotal         Home consumption obtained from the photovoltaic plant overall
-statisticHomeconsumptionFromPVYear          Home consumption obtained from the photovoltaic plant this year
-statisticOwnconsumptionRateDay              Percentage of electricity demand covered by photovoltaics today
-statisticOwnconsumptionRateMonth            Percentage of electricity demand covered by photovoltaics this month
-statisticOwnconsumptionRateTotal            Percentage of electricity demand covered by photovoltaics overall
-statisticOwnconsumptionRateYear             Percentage of electricity demand covered by photovoltaics this year
-statisticYieldDay                           Yield of the photovoltaic plant today
-statisticYieldMonth                         Yield of the photovoltaic plant this month
-statisticYieldTotal                         Yield of the photovoltaic plant overall
-statisticYieldYear                          Yield of the photovoltaic plant this year
-```
+| Channel Type ID                          | Item Type                | Description                                                                      | Read Write |
+|------------------------------------------|--------------------------|----------------------------------------------------------------------------------|:----------:|
+| deviceLocalDCPower                       | Number:Energy            | Current DC power of the inverter                                                 |      R     |
+| deviceLocalHomeconsumptionFromBattery    | Number:Energy            | Current home consumption obtained from the battery                               |      R     |
+| deviceLocalHomeconsumptionFromGrid       | Number:Energy            | Current home consumption obtained from the grid                                  |      R     |
+| deviceLocalOwnconsumption                | Number:Energy            | Current own comsumption                                                          |      R     |
+| deviceLocalHomeconsumptionFromPV         | Number:Energy            | Current home consumption obtained from photovoltaic                              |      R     |
+| deviceLocalHomeconsumptionTotal          | Number:Energy            | Current total homeconsumption                                                    |      R     |
+| deviceLocalLimitEVUAbsolute              | Number:Energy            | Permitted feed-in quantity as absolute value as specified by the energy supplier |      R     |
+| deviceLocalLimitEVURelativ               | Number:Dimensionless     | Permitted feed-in quantity as relative value as specified by the energy supplier |      R     |
+| deviceLocalWorktime                      | Number:Time              | Uptime of the inverter                                                           |      R     |
+| deviceLocalACPhase1CurrentAmperage       | Number:ElectricCurrent   | Amperage of phase 1                                                              |      R     |
+| deviceLocalACPhase1CurrentPower          | Number:Energy            | Power of phase 1                                                                 |      R     |
+| deviceLocalACPhase1CurrentVoltage        | Number:ElectricPotential | Voltage of phase 1                                                               |      R     |
+| deviceLocalACPhase2CurrentAmperage       | Number:ElectricCurrent   | Amperage of phase 2                                                              |      R     |
+| deviceLocalACPhase2CurrentPower          | Number:Energy            | Power of phase 2                                                                 |      R     |
+| deviceLocalACPhase2CurrentVoltage        | Number:ElectricPotential | Voltage of phase 2                                                               |      R     |
+| deviceLocalACPhase3CurrentAmperage       | Number:ElectricCurrent   | Amperage of phase 3                                                              |      R     |
+| deviceLocalACPhase3CurrentPower          | Number:Energy            | Power of phase 3                                                                 |      R     |
+| deviceLocalACPhase3CurrentVoltage        | Number:ElectricPotential | Voltage of phase 3                                                               |      R     |
+| deviceLocalACCurrentPower                | Number:Energy            | Current AC power of the inverter                                                 |      R     |
+| deviceLocalBatteryLoadingCycles          | Number:Dimensionless     | Amount of loading cycles done by the battery                                     |      R     |
+| deviceLocalBatteryFullChargeCapacity     | Number:ElectricCharge    | Capacity of the battery if charged fully                                         |      R     |
+| deviceLocalBatteryAmperage               | Number:ElectricCurrent   | Current amperage of the battery                                                  |      R     |
+| deviceLocalBatteryPower                  | Number:Energy            | Current battery charge                                                           |      R     |
+| deviceLocalBatteryStageOfCharge          | Number:Dimensionless     | Current battery charge status                                                    |      R     |
+| deviceLocalBatteryVoltage                | Number:ElectricPotential | Current voltage of the battery                                                   |      R     |
+| deviceLocalPVString1Amperage             | Number:ElectricCurrent   | Current amperage of photovoltaic string 1                                        |      R     |
+| deviceLocalPVString1Power                | Number:Energy            | Current power of photovoltaic string 1                                           |      R     |
+| deviceLocalPVString1Voltage              | Number:ElectricPotential | Current voltage of photovoltaic string 1                                         |      R     |
+| deviceLocalPVString2Amperage             | Number:ElectricCurrent   | Current amperage of photovoltaic string 2                                        |      R     |
+| deviceLocalPVString2Power                | Number:Energy            | Current power of photovoltaic string 2                                           |      R     |
+| deviceLocalPVString2Voltage              | Number:ElectricPotential | Current voltage of photovoltaic string 2                                         |      R     |
+| deviceLocalPVString3Amperage             | Number:ElectricCurrent   | Current amperage of photovoltaic string 3                                        |      R     |
+| deviceLocalPVString3Power                | Number:Energy            | Current power of photovoltaic string 3                                           |      R     |
+| deviceLocalPVString3Voltage              | Number:ElectricPotential | Current voltage of photovoltaic string 3                                         |      R     |
+| SCBEventErrorCountMc                     | Number:Dimensionless     | Number of errors reported by the main controller                                 |      R     |
+| SCBEventErrorCountSFH                    | Number:Dimensionless     | Number of errors reported by the grid interface controller                       |      R     |
+| SCBEventErrorCountSCB                    | Number:Dimensionless     | Number of errors reported by the smart communication board                       |      R     |
+| SCBEventWarningCountSCB                  | Number:Dimensionless     | Number of warnings reported by the smart communication board                     |      R     |
+| statisticAutarkyDay                      | Number:Dimensionless     | Autarky ratio of this day                                                        |      R     |
+| statisticAutarkyMonth                    | Number:Dimensionless     | Autarky ratio of this month                                                      |      R     |
+| statisticAutarkyTotal                    | Number:Dimensionless     | Autarky ratio overall                                                            |      R     |
+| statisticAutarkyYear                     | Number:Dimensionless     | Autarky ratio of this year                                                       |      R     |
+| statisticCo2SavingDay                    | Number:Mass              | Savings in Co2 emissions today                                                   |      R     |
+| statisticCo2SavingMonth                  | Number:Mass              | Savings in Co2 emissions this month                                              |      R     |
+| statisticCo2SavingTotal                  | Number:Mass              | Savings in Co2 emissions overall                                                 |      R     |
+| statisticCo2SavingYear                   | Number:Mass              | Savings in Co2 emissions this year                                               |      R     |
+| statisticHomeconsumptionDay              | Number:Energy            | Home consumption today                                                           |      R     |
+| statisticHomeconsumptionMonth            | Number:Energy            | Home consumption this month                                                      |      R     |
+| statisticHomeconsumptionTotal            | Number:Energy            | Home consumption overall                                                         |      R     |
+| statisticHomeconsumptionYear             | Number:Energy            | Home consumption this year                                                       |      R     |
+| statisticHomeconsumptionFromBatteryDay   | Number:Energy            | Home consumption obtained from the battery today                                 |      R     |
+| statisticHomeconsumptionFromBatteryMonth | Number:Energy            | Home consumption obtained from the battery this month                            |      R     |
+| statisticHomeconsumptionFromBatteryTotal | Number:Energy            | Home consumption obtained from the battery overall                               |      R     |
+| statisticHomeconsumptionFromBatteryYear  | Number:Energy            | Home consumption obtained from the battery this year                             |      R     |
+| statisticHomeconsumptionFromGridDay      | Number:Energy            | Home consumption obtained from the grid today                                    |      R     |
+| statisticHomeconsumptionFromGridMonth    | Number:Energy            | Home consumption obtained from the grid this month                               |      R     |
+| statisticHomeconsumptionFromGridTotal    | Number:Energy            | Home consumption obtained from the grid overall                                  |      R     |
+| statisticHomeconsumptionFromGridYear     | Number:Energy            | Home consumption obtained from the grid this year                                |      R     |
+| statisticHomeconsumptionFromPVDay        | Number:Energy            | Home consumption obtained from the photovoltaic plant today                      |      R     |
+| statisticHomeconsumptionFromPVMonth      | Number:Energy            | Home consumption obtained from the photovoltaic plant this month                 |      R     |
+| statisticHomeconsumptionFromPVTotal      | Number:Energy            | Home consumption obtained from the photovoltaic plant overall                    |      R     |
+| statisticHomeconsumptionFromPVYear       | Number:Energy            | Home consumption obtained from the photovoltaic plant this year                  |      R     |
+| statisticOwnconsumptionRateDay           | Number:Dimensionless     | Percentage of electricity demand covered by photovoltaics today                  |      R     |
+| statisticOwnconsumptionRateMonth         | Number:Dimensionless     | Percentage of electricity demand covered by photovoltaics this month             |      R     |
+| statisticOwnconsumptionRateTotal         | Number:Dimensionless     | Percentage of electricity demand covered by photovoltaics overall                |      R     |
+| statisticOwnconsumptionRateYear          | Number:Dimensionless     | Percentage of electricity demand covered by photovoltaics this year              |      R     |
+| statisticYieldDay                        | Number:Energy            | Yield of the photovoltaic plant today                                            |      R     |
+| statisticYieldMonth                      | Number:Energy            | Yield of the photovoltaic plant this month                                       |      R     |
+| statisticYieldTotal                      | Number:Energy            | Yield of the photovoltaic plant overall                                          |      R     |
+| statisticYieldYear                       | Number:Energy            | Yield of the photovoltaic plant this year                                        |      R     |
 
 ## Thing Configuration
 
-### first generation devices (PIKO)
+### First generation devices (PIKO)
 
 demo.things
 
@@ -143,17 +142,17 @@ If the thing goes online then the connection to the web interface is successful.
 In case it is offline you should see an error message.
 You optionally can define a `userName` and a `password` parameter if the access to the webinterface is protected and a desired `refreshInterval` (the time interval between updates, default 60 seconds).
 
-### third generation devices (PIKO IQ / PLENTICORE plus)
+### Third generation devices (PIKO IQ / PLENTICORE plus)
 
 All third generation inverters require to define 3 mandatory configuration parameters:
 
-```
-url                       Host name or IP address of your device
-userPassword              Password you configured on the inverters web front end
-refreshInternalInSeconds  Defines how often the device is polled for new values
-```
+| Parameter                | Description                                            | Type    |  Unit   | Default value | Example value |
+|--------------------------|--------------------------------------------------------|---------|---------|---------------|---------------|
+| url                      | Host name or IP address of your device                 | Text    | ---     | ---           | 192.168.1.2   |
+| userPassword             | Password you configured on the inverters web front end | Text    | ---     | ---           | myPassword    |
+| refreshInternalInSeconds | Defines how often the device is polled for new values  | Integer | Seconds | 30            | 30            |
 
-If you are using the host name instead of the IP address, please make sure your DNS is configuration correctly!
+If you are using the hostname instead of the IP address, please make sure your DNS is configuration correctly!
 The refresh interval should be chosen wisely. To small interval may led to high workload for the inverter. From my testing I recommend a interval of 30 seconds.
 
 Full sample of thing configuration:
@@ -164,7 +163,7 @@ Thing kostalinverter:PLENTICOREPLUS100WITHBATTERY:MyPlentiCore100WithBattery [ u
 
 ## Items
 
-### first generation devices (PIKO)
+### First generation devices (PIKO)
 
 demo.items:
 
@@ -175,7 +174,7 @@ Number:Energy SolarTotalEnergy "Solar total energy [%.3f %unit%]" <energy> { cha
 String SolarStatus "Solar status [%s]" <energy> { channel="kostalinverter:kostalinverter:inverter:status" }
 ```
 
-### third generation devices (PIKO IQ / PLENTICORE plus)
+### Third generation devices (PIKO IQ / PLENTICORE plus)
 
 demo.items:
 

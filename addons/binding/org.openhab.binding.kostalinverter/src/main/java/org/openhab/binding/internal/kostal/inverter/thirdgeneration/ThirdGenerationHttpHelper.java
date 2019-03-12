@@ -38,7 +38,11 @@ import com.google.gson.JsonObject;
  *
  * @author René Stakemeier - Initial contribution
  */
-class ThirdGenerationHttpHelper {
+final class ThirdGenerationHttpHelper {
+
+    private ThirdGenerationHttpHelper() {
+    }
+
     // base URL of the web api
     private static final String WEB_API = "/api/v1";
     // GSON handler

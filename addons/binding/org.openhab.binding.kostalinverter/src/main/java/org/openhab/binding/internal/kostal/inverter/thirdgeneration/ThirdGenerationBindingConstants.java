@@ -67,7 +67,7 @@ public class ThirdGenerationBindingConstants {
     public static final String COMMUNICATION_ERROR_JSON = "HTTP communication error: answer did not match the expected format";
     public static final String COMMUNICATION_ERROR_API_CHANGED = "The API seems to have changed :-( Maybe this implementation has become incompatible with the device";
     public static final String COMMUNICATION_ERROR_INCOMPATIBLE_DEVICE = "The device could not provide the required information. Please check, if you selected the right thing for your device!";
-    public static final String COMMUNICATION_ERROR_USER_ACCOUNT_LOCKED = "Your user account on the device is logged. Please reset the password by following the instructions on the device´s web frontend";
+    public static final String COMMUNICATION_ERROR_USER_ACCOUNT_LOCKED = "Your user account on the device is locked. Please reset the password by following the instructions on the device´s web frontend";
     public static final String CONFIGURATION_ERROR_PASSWORD = "Wrong password";
 
     // List of all Channel uids

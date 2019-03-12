@@ -30,7 +30,7 @@ import java.util.stream.Stream;
  */
 class ThirdGenerationMappingInverterToChannel {
 
-    private static Map<ThirdGenerationInverterTypes, List<ThirdGenerationChannelMappingToWebApi>> channelMapping = new HashMap<ThirdGenerationInverterTypes, List<ThirdGenerationChannelMappingToWebApi>>();
+    private static final Map<ThirdGenerationInverterTypes, List<ThirdGenerationChannelMappingToWebApi>> CHANNEL_MAPPING = new HashMap<>();
 
     /*
      * Assign the channels to the devices.
@@ -213,7 +213,7 @@ class ThirdGenerationMappingInverterToChannel {
     static Map<String, List<ThirdGenerationChannelMappingToWebApi>> getModuleToChannelsMappingForInverter(
             ThirdGenerationInverterTypes inverter) {
         Map<String, List<ThirdGenerationChannelMappingToWebApi>> results = new HashMap<String, List<ThirdGenerationChannelMappingToWebApi>>();
-        for (ThirdGenerationChannelMappingToWebApi mapping : channelMapping.get(inverter)) {
+        for (ThirdGenerationChannelMappingToWebApi mapping : CHANNEL_MAPPING.get(inverter)) {
             List<ThirdGenerationChannelMappingToWebApi> channelList = null;
             if (results.containsKey(mapping.moduleId)) {
                 channelList = results.get(mapping.moduleId);
@@ -228,10 +228,10 @@ class ThirdGenerationMappingInverterToChannel {
 
     private static void addInverterChannel(ThirdGenerationInverterTypes inverter,
             ThirdGenerationChannelMappingToWebApi mapping) {
-        if (!channelMapping.containsKey(inverter)) {
-            channelMapping.put(inverter, new ArrayList<ThirdGenerationChannelMappingToWebApi>());
+        if (!CHANNEL_MAPPING.containsKey(inverter)) {
+            CHANNEL_MAPPING.put(inverter, new ArrayList<ThirdGenerationChannelMappingToWebApi>());
         }
-        channelMapping.get(inverter).add(mapping);
+        CHANNEL_MAPPING.get(inverter).add(mapping);
     }
 
     private static void addInverterChannel(ThirdGenerationInverterTypes inverter, String channelUID, String moduleId,

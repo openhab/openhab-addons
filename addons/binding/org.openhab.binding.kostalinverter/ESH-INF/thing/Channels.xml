@@ -17,35 +17,35 @@
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-from-battery">
 		<item-type>Number:Energy</item-type>
-		<label>Homeconsumption Battery</label>
+		<label>Home Consumption Battery</label>
 		<description>Current home consumption obtained from the battery</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-from-grid">
 		<item-type>Number:Energy</item-type>
-		<label>Homeconsumption Grid</label>
+		<label>Home Consumption Grid</label>
 		<description>Current home consumption obtained from the grid</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
 	<channel-type id="device-local-ownconsumption">
 		<item-type>Number:Energy</item-type>
-		<label>Ownconsumption</label>
+		<label>Own Consumption</label>
 		<description>Current own comsumption</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-from-pv">
 		<item-type>Number:Energy</item-type>
-		<label>Homeconsumption PV</label>
+		<label>Home Consumption PV</label>
 		<description>Current home consumption obtained from photovoltaic</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-total">
 		<item-type>Number:Energy</item-type>
-		<label>Homeconsumption</label>
+		<label>Home Consumption</label>
 		<description>Current total homeconsumption</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%" />
@@ -183,7 +183,7 @@
 	</channel-type>
 	<channel-type id="device-local-pvstring-1-amperage">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>PV Str1 Amperage </label>
+		<label>PV Str1 Amperage</label>
 		<description>Current amperage of photovoltaic string 1</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%" />
@@ -191,7 +191,7 @@
 	<channel-type id="device-local-pvstring-1-power">
 		<item-type>Number:Energy</item-type>
 		<label>PV Str1 Power</label>
-		<description>Current power  of photovoltaic string 1</description>
+		<description>Current power of photovoltaic string 1</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
@@ -204,7 +204,7 @@
 	</channel-type>
 	<channel-type id="device-local-pvstring-2-amperage">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>PV Str2 Amperage </label>
+		<label>PV Str2 Amperage</label>
 		<description>Current amperage of photovoltaic string 2</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%" />
@@ -212,7 +212,7 @@
 	<channel-type id="device-local-pvstring-2-power">
 		<item-type>Number:Energy</item-type>
 		<label>PV Str2 Power</label>
-		<description>Current power  of photovoltaic string 2</description>
+		<description>Current power of photovoltaic string 2</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
@@ -225,7 +225,7 @@
 	</channel-type>
 	<channel-type id="device-local-pvstring-3-amperage">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>PV Str3 Amperage </label>
+		<label>PV Str3 Amperage</label>
 		<description>Current amperage of photovoltaic string 3</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%" />
@@ -233,7 +233,7 @@
 	<channel-type id="device-local-pvstring-3-power">
 		<item-type>Number:Energy</item-type>
 		<label>PV Str3 Power</label>
-		<description>Current power  of photovoltaic string 2</description>
+		<description>Current power  of photovoltaic string 3</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
@@ -248,28 +248,24 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>MC Errors</label>
 		<description>Number of errors reported by the main controller</description>
-		<category>error</category>
 		<state readOnly="true" pattern="%.0f" />
 	</channel-type>
 	<channel-type id="scb-event-error-count-sfh">
 		<item-type>Number:Dimensionless</item-type>
 		<label>SFH Errors</label>
 		<description>Number of errors reported by the grid interface controller</description>
-		<category>error</category>
 		<state readOnly="true" pattern="%.0f" />
 	</channel-type>
 	<channel-type id="scb-event-error-count-scb">
 		<item-type>Number:Dimensionless</item-type>
 		<label>SCB Errors</label>
 		<description>Number of errors reported by the smart communication board</description>
-		<category>error</category>
 		<state readOnly="true" pattern="%.0f" />
 	</channel-type>
 	<channel-type id="scb-event-warning-count-scb">
 		<item-type>Number:Dimensionless</item-type>
 		<label>SCB Warnings</label>
 		<description>Number of warnings reported by the smart communication board</description>
-		<category>error</category>
 		<state readOnly="true" pattern="%.0f" />
 	</channel-type>
 	<channel-type id="statistic-autarky-day">

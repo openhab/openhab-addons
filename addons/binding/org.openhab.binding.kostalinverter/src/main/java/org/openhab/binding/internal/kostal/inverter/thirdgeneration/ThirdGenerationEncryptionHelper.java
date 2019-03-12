@@ -30,9 +30,12 @@ import javax.crypto.spec.SecretKeySpec;
  * The {@link ThirdGenerationEncryptionHelper} is responsible for handling the encryption for the authentication
  * handlers.
  *
- * @author René - Initial contribution
+ * @author René Stakemeier - Initial contribution
  */
-class ThirdGenerationEncryptionHelper {
+final class ThirdGenerationEncryptionHelper {
+
+    private ThirdGenerationEncryptionHelper() {
+    }
 
     /**
      * This method generates the HMACSha256 encrypted value of the given value

@@ -152,7 +152,7 @@ public class ThirdGenerationHandler extends BaseThingHandler {
      * current inverter
      *
      */
-    void updateChannelValues() {
+    private void updateChannelValues() {
         Map<String, List<ThirdGenerationChannelMappingToWebApi>> channelList = ThirdGenerationMappingInverterToChannel
                 .getModuleToChannelsMappingForInverter(inverterType);
         JsonArray updateMessageJsonArray = getUpdateChannelMessage(channelList);
