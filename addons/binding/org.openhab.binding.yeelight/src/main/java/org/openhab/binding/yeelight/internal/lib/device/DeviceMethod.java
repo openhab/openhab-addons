@@ -51,11 +51,20 @@ public class DeviceMethod {
 
     private String mMethodAction;
     private Object[] mMethodParams;
+    private String mCustomMethodParams;
     private int mIndex;
 
     public DeviceMethod(MethodAction action, Object[] params) {
         this.mMethodAction = action.action;
         this.mMethodParams = params;
+        this.mCustomMethodParams = "";
+        mIndex = ++sIndex;
+    }
+
+    public DeviceMethod(String action, String params) {
+        this.mMethodAction = action;
+        this.mMethodParams = null;
+        this.mCustomMethodParams = params;
         mIndex = ++sIndex;
     }
 
@@ -77,6 +86,14 @@ public class DeviceMethod {
             cmdBuilder.deleteCharAt(cmdBuilder.length() - 1);
         }
         cmdBuilder.append("]}\r\n");
+        return cmdBuilder.toString();
+    }
+
+    public String getCustomParamsStr() {
+        StringBuilder cmdBuilder = new StringBuilder();
+        cmdBuilder.append("{\"id\":").append(mIndex).append(",");
+        cmdBuilder.append("\"method\":\"").append(mMethodAction).append("\",");
+        cmdBuilder.append("\"params\":[").append(mCustomMethodParams).append("]}\r\n");
         return cmdBuilder.toString();
     }
 
