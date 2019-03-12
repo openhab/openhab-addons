@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -31,6 +32,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
@@ -39,6 +41,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.verisure.internal.DeviceStatusListener;
 import org.openhab.binding.verisure.internal.VerisureSession;
+import org.openhab.binding.verisure.internal.VerisureThingConfiguration;
 import org.openhab.binding.verisure.internal.model.VerisureBroadbandConnectionJSON;
 import org.openhab.binding.verisure.internal.model.VerisureDoorWindowJSON;
 import org.openhab.binding.verisure.internal.model.VerisureThingJSON;
@@ -66,11 +69,10 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
 
     protected @Nullable VerisureSession session;
 
-    protected @Nullable String id;
+    protected @Nullable VerisureThingConfiguration config;
 
-    public VerisureThingHandler(Thing thing) {
+    public VerisureThingHandler(@NonNull Thing thing) {
         super(thing);
-        this.id = thing.getUID().getId();
     }
 
     @Override
@@ -84,8 +86,8 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
                     bridgeHandler.handleCommand(channelUID, command);
                 }
             }
-            if (session != null && this.id != null) {
-                VerisureThingJSON thing = session.getVerisureThing(this.id);
+            if (session != null && config.deviceId != null) {
+                VerisureThingJSON thing = session.getVerisureThing(config.deviceId);
                 update(thing);
             }
         } else {
@@ -108,6 +110,12 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
     public void initialize() {
         logger.debug("initialize on thing: {}", thing);
         // Do not go online
+        config = getConfigAs(VerisureThingConfiguration.class);
+        if (config.deviceId == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Verisure device missing deviceId or subType");
+        }
+
         Bridge bridge = getBridge();
         if (bridge != null) {
             this.bridgeStatusChanged(bridge.getStatusInfo());
@@ -122,7 +130,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
             VerisureBridgeHandler vbh = (VerisureBridgeHandler) bridge.getHandler();
             if (vbh != null) {
                 session = vbh.getSession();
-                if (session != null && this.id != null) {
+                if (session != null) {
                     session.unregisterDeviceStatusListener(this);
                 }
             }
@@ -138,8 +146,8 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
                 VerisureBridgeHandler vbh = (VerisureBridgeHandler) bridge.getHandler();
                 if (vbh != null) {
                     session = vbh.getSession();
-                    if (session != null && this.id != null) {
-                        update(session.getVerisureThing(this.id));
+                    if (session != null && config.deviceId != null) {
+                        update(session.getVerisureThing(config.deviceId));
                         session.registerDeviceStatusListener(this);
                     }
                 }
@@ -150,24 +158,22 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
 
     public synchronized void update(@Nullable VerisureThingJSON thing) {
         logger.debug("update on thing: {}", thing);
-        updateStatus(ThingStatus.ONLINE);
-        if (getThing().getThingTypeUID().equals(THING_TYPE_DOORWINDOW)) {
-            VerisureDoorWindowJSON obj = (VerisureDoorWindowJSON) thing;
-            if (obj != null) {
+        if (thing != null) {
+            updateStatus(ThingStatus.ONLINE);
+            if (getThing().getThingTypeUID().equals(THING_TYPE_DOORWINDOW)) {
+                VerisureDoorWindowJSON obj = (VerisureDoorWindowJSON) thing;
                 updateDoorWindowState(obj);
-            }
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_USERPRESENCE)) {
-            VerisureUserPresenceJSON obj = (VerisureUserPresenceJSON) thing;
-            if (obj != null) {
+            } else if (getThing().getThingTypeUID().equals(THING_TYPE_USERPRESENCE)) {
+                VerisureUserPresenceJSON obj = (VerisureUserPresenceJSON) thing;
                 updateUserPresenceState(obj);
-            }
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_BROADBAND_CONNECTION)) {
-            VerisureBroadbandConnectionJSON obj = (VerisureBroadbandConnectionJSON) thing;
-            if (obj != null) {
+            } else if (getThing().getThingTypeUID().equals(THING_TYPE_BROADBAND_CONNECTION)) {
+                VerisureBroadbandConnectionJSON obj = (VerisureBroadbandConnectionJSON) thing;
                 updateBroadbandConnection(obj);
+            } else {
+                logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
             }
         } else {
-            logger.warn("Can't handle this thing typeuid: {}", getThing().getThingTypeUID());
+            logger.warn("Thing JSON is null: {}", getThing().getThingTypeUID());
         }
     }
 
@@ -246,11 +252,9 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
     public void onDeviceStateChanged(@Nullable VerisureThingJSON thing) {
         logger.trace("onDeviceStateChanged on thing: {}", thing);
         if (thing != null) {
-            String id = thing.getId();
-            if (id != null) {
-                if (id.equals(this.id)) {
-                    update(thing);
-                }
+            String id = thing.getDeviceId();
+            if (config.deviceId.equals(id)) {
+                update(thing);
             }
         }
     }

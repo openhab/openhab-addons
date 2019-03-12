@@ -2,7 +2,8 @@
 
 This is an OpenHAB binding for Versiure Alarm system, by Securitas Direct.
 
-This binding uses the rest API behind the myverisure pages https://mypages.verisure.com/login.html.
+This binding uses the rest API behind the Verisure My Pages: 
+https://mypages.verisure.com/login.html.
 
 The binding supports several installation sites via the configuration parameter numberOfInstallations that defaults to 1.
 
@@ -27,8 +28,8 @@ This binding supports the following thing types:
 
 ## Binding Configuration
 
-You will have to configure the bridge with username and password, these must be the same values as used when logging into https://mypages.verisure.com. 
-You can also configure your pin-code to be able to lock/unlock the SmartLock and arm/unarm the alarm. 
+You will have to configure the bridge with username and password, these must be the same credentials as used when logging into https://mypages.verisure.com. 
+You can also configure your pin-code to be able to lock/unlock the SmartLock and arm/unarm the Alarm. 
 It is also possible to configure the number of Verisure installations/sites you have, default is 1.
 
 ## Discovery
@@ -37,7 +38,7 @@ After the configuration of the Verisure Bridge all of the available Sensors, Ala
 
 ## Thing Configuration
 
-Only the bridge require manual configuration. The devices and sensors should not be added by hand, let the discovery/inbox initially configure these.
+Only the bridge require manual configuration. The devices and sensors can be added by hand, or you can let the discovery mechanism automatically find all of your Verisure things.
 
 ## Supported Things and Channels 
 
@@ -50,8 +51,14 @@ Only the bridge require manual configuration. The devices and sensors should not
 | status          | String    | This channel can be used to trigger an instant refresh by sending a RefreshType.REFRESH command.|
 
 
-
 ### Verisure Alarm
+
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Since Alarm lacks a Verisure ID, the following naming convention is used for alarm on first site: 'alarm_1'
+
+#### Channels
 
 ([alarm]) supports the following channels:
 
@@ -76,6 +83,13 @@ Only the bridge require manual configuration. The devices and sensors should not
 
 ### Verisure Smoke Detector
 
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Sensor Id. Example 5A4C_35FT (Note: the '_' in the Verisure ID, found in the Verisure App)
+
+#### Channels
+
 ([smokeDetector]) supports the following channels:
  
 | Channel Type ID | Item Type            | Description                                                | 
@@ -88,6 +102,13 @@ Only the bridge require manual configuration. The devices and sensors should not
 | siteId         | Number                | This channel reports the site ID of the site.              |
  
 ### Verisure Water Detector
+
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Sensor Id. Example 5A4C_35FT (Note: the '_' in the Verisure ID, found in the Verisure App or My Pages)
+
+#### Channels
 
 ([waterDetector]) supports the following channels:
 
@@ -102,6 +123,13 @@ Only the bridge require manual configuration. The devices and sensors should not
  
 ### Verisure Siren
 
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Sensor Id. Example 5A4C_35FT (Note: the '_' in the Verisure ID, found in the Verisure App or My Pages)
+
+#### Channels
+
 ([siren]) supports the following channels:
  
 | Channel Type ID | Item Type            | Description                                                | 
@@ -115,6 +143,13 @@ Only the bridge require manual configuration. The devices and sensors should not
 
 ### Verisure Night Control
 
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Sensor Id. Example 5A4C_35FT (Note: the '_' in the Verisure ID, found in the Verisure App or My Pages)
+
+#### Channels
+
 ([nightControl]) supports the following channels:
  
 | Channel Type ID | Item Type            | Description                                                | 
@@ -127,6 +162,13 @@ Only the bridge require manual configuration. The devices and sensors should not
 | siteId         | Number                | This channel reports the site ID of the site.              |
 
 ### Verisure Yaleman SmartLock
+
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Sensor Id. Example 5A4C_35FT (Note: the '_' in the Verisure ID, found in the Verisure App or My Pages)
+
+#### Channels
 
 ([smartLock]) supports the following channels:
 
@@ -152,6 +194,13 @@ Only the bridge require manual configuration. The devices and sensors should not
 
 ### Verisure SmartPlug
 
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Sensor Id. Example 5A4C_35FT (Note: the '_' in the Verisure ID, found in the Verisure App or My Pages)
+
+#### Channels
+
 ([smartPlug]) supports the following channels:
 
 | Channel Type ID    | Item Type | Description                                                       | 
@@ -166,6 +215,13 @@ Only the bridge require manual configuration. The devices and sensors should not
 
 ### Verisure DoorWindow Sensor
 
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Sensor Id. Example 5A4C_35FT (Note: the '_' in the Verisure ID, found in the Verisure App or My Pages)
+
+#### Channels
+
 ([doorWindowSensor]) supports the following channels:
  
 | Channel Type ID | Item Type | Description                                                                 | 
@@ -176,6 +232,13 @@ Only the bridge require manual configuration. The devices and sensors should not
 | siteId          | Number    | This channel reports the site ID of the site.                               |
 
 ### Verisure User Presence
+
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Since User presence lacks a Verisure ID, the following naming convention is used for User presence on first site: 'userpresence_1'
+
+#### Channels
 
 ([userPresence]) supports the following channels:
  
@@ -188,6 +251,13 @@ Only the bridge require manual configuration. The devices and sensors should not
 | siteId             | Number    | This channel reports the ID of the site.                    |
 
 ### Verisure Broadband Connection
+
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Since Broadband connection lacks a Verisure ID, the following naming convention is used for Broadband connection on first site: 'broadband_1'
+
+#### Channels
 
 ([broadbandConnection]) supports the following channels:
  
@@ -206,6 +276,10 @@ Only the bridge require manual configuration. The devices and sensors should not
 ````
 // Bridge configuration
 Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", password="1234", refresh="600", pin="111111", numberOfInstallations="1"]
+
+Thing smartLock JannesSmartLock "Verisure Entrance Yale Doorman"  [ deviceId="3C44_6NPO" ]
+Thing smartPlug JannesSmartPlug "Verisure SmartPlug" [ deviceId="3D7G_MANV" ]
+Thing waterDetector JannesVattenDetetktor "Verisure Water Detector" [ deviceId="3WET_Q)h5" ] 
 ````
 
 
@@ -213,7 +287,7 @@ Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", passwor
 
 ````
 // SmartLock and Alarm
-Switch   SmartLock                     "Verisure SmartLock"  <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:B2XX_YYST:setSmartLockStatus"}
+Switch   SmartLock                     "Verisure SmartLock"  <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:JannesSmartLock:setSmartLockStatus"}
 Number   AlarmHome                     "Alarm Home"          <alarm>                    {channel="verisure:alarm:myverisure:alarm_2:setAlarmStatus"}
 Switch   AlarmHomeVirtual              "Verisure Alarm"      <alarm>  [ "Switchable" ] 
 String   AlarmStatus                   "Verisure Alarm Status"                          {channel="verisure:alarm:myverisure:alarm_2:status"}
@@ -221,17 +295,17 @@ Number   AlarmNumericStatus            "Verisure Alarm Numeric Status"          
 String   AlarmAlarmStatus              "Verisure Alarm Status"                          {channel="verisure:alarm:myverisure:alarm_2:alarmStatus"}
 String   AlarmTimeStamp                "Verisure Alarm Time Stamp"                      {channel="verisure:alarm:myverisure:alarm_2:timestamp"}
 String   AlarmChangedByUser            "Verisure Alarm Changed By User"                 {channel="verisure:alarm:myverisure:alarm_2:changedByUser"}
-Switch   AutoLock                      "AutoLock"            <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:B2XX_YYST:setAutoRelock"}
-String   SmartLockStatus               "SmartLock Status"                               {channel="verisure:smartLock:myverisure:B2XX_YYST:smartLockStatus"}
-String   SmartLockCurrentStatus        "SmartLock Current Status"                       {channel="verisure:smartLock:myverisure:B2XX_YYST:status"}
-Number   SmartLockNumericStatus        "SmartLock Numeric Status"                       {channel="verisure:smartLock:myverisure:B2XX_YYST:numericStatus"}
-String   SmartLockVolume               "SmartLock Volym"     <lock>                     {channel="verisure:smartLock:myverisure:B2XX_YYST:setSmartLockVolume"}
-String   SmartLockVolumes              "SmartLock Volumes"                              {channel="verisure:smartLock:myverisure:B2XX_YYST:smartLockVolume"}
+Switch   AutoLock                      "AutoLock"            <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:JannesSmartLock:setAutoRelock"}
+String   SmartLockStatus               "SmartLock Status"                               {channel="verisure:smartLock:myverisure:JannesSmartLock:smartLockStatus"}
+String   SmartLockCurrentStatus        "SmartLock Current Status"                       {channel="verisure:smartLock:myverisure:JannesSmartLock:status"}
+Number   SmartLockNumericStatus        "SmartLock Numeric Status"                       {channel="verisure:smartLock:myverisure:JannesSmartLock:numericStatus"}
+String   SmartLockVolume               "SmartLock Volym"     <lock>                     {channel="verisure:smartLock:myverisure:JannesSmartLock:setSmartLockVolume"}
+String   SmartLockVolumes              "SmartLock Volumes"                              {channel="verisure:smartLock:myverisure:JannesSmartLock:smartLockVolume"}
 String   AlarmHomeInstallationName     "Alarm Home Installation Name"                   {channel="verisure:alarm:myverisure:alarm_2:siteName"}    
 
 // SmartPlugs         
-Switch   SmartPlugLamp                 "SmartPlug"               <lock>   [ "Switchable" ]  {channel="verisure:smartPlug:myverisure:A2XY_FGXY:setSmartPlugStatus"}
-Switch   SmartPlugGlavaRouter          "SmartPlug Glava Router"  <lock>   [ "Switchable" ]  {channel="verisure:smartPlug:myverisure:XYZX_ABCD:setSmartPlugStatus"}
+Switch   SmartPlugLamp                 "SmartPlug"               <lock>   [ "Switchable" ]  {channel="verisure:smartPlug:myverisure:JannesSmartPlug:setSmartPlugStatus"}
+Switch   SmartPlugGlavaRouter          "SmartPlug Glava Router"  <lock>   [ "Switchable" ]  {channel="verisure:smartPlug:myverisure:JannesSmartPlug:setSmartPlugStatus"}
 
 // DoorWindow
 String DoorWindowLocation              "Door Window Location"    {channel="verisure:doorWindowSensor:myverisure:1SG5_GHGT:location"}

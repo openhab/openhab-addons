@@ -86,6 +86,22 @@ public class VerisureBaseThingJSON implements VerisureThingJSON {
     }
 
     /**
+     * @return the deviceId
+     */
+    @Override
+    public @Nullable String getDeviceId() {
+        return id;
+    }
+
+    /**
+     * @param deviceId the deviceId to set
+     */
+    @Override
+    public void setDeviceId(@Nullable String deviceId) {
+        this.id = deviceId;
+    }
+
+    /**
      * @return the location
      */
     @Override

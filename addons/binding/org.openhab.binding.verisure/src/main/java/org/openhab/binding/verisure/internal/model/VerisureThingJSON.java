@@ -29,6 +29,10 @@ public interface VerisureThingJSON {
 
     public void setId(@Nullable String id);
 
+    public @Nullable String getDeviceId();
+
+    public void setDeviceId(@Nullable String deviceId);
+
     public @Nullable String getLocation();
 
     public void setSiteName(@Nullable String siteName);

@@ -80,14 +80,14 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
     }
 
     private void handleSmartLockState(Command command) {
-        if (session != null && this.id != null) {
-            VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session.getVerisureThing(this.id);
+        if (session != null && config.deviceId != null) {
+            VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session.getVerisureThing(config.deviceId);
             if (smartLock != null) {
                 BigDecimal pinCode = session.getPinCode();
                 String csrf = session.getCsrf();
                 String siteName = smartLock.getSiteName();
                 if (pinCode != null && csrf != null && siteName != null) {
-                    String smartLockUrl = this.id.replaceAll("_", "");
+                    String smartLockUrl = config.deviceId.replaceAll("_", "");
                     String url = SMARTLOCK_LOCK_COMMAND;
                     if (command == OnOffType.OFF) {
                         logger.debug("Attempting to unlock!");
@@ -114,14 +114,14 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
     }
 
     private void handleAutoRelock(Command command) {
-        if (session != null && this.id != null) {
-            VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session.getVerisureThing(this.id);
+        if (session != null && config.deviceId != null) {
+            VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session.getVerisureThing(config.deviceId);
             if (smartLock != null) {
                 BigDecimal pinCode = session.getPinCode();
                 String csrf = session.getCsrf();
                 String siteName = smartLock.getSiteName();
                 if (pinCode != null && csrf != null && siteName != null) {
-                    String deviceLabelUrl = this.id.replaceAll("_", "+");
+                    String deviceLabelUrl = config.deviceId.replaceAll("_", "+");
                     String locationUTF8;
                     try {
                         locationUTF8 = URLEncoder.encode(smartLock.getLocation(), "utf-8");
@@ -161,8 +161,8 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
     }
 
     private void handleSmartLockVolume(Command command) {
-        if (session != null && this.id != null) {
-            VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session.getVerisureThing(this.id);
+        if (session != null && config.deviceId != null) {
+            VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session.getVerisureThing(config.deviceId);
             if (smartLock != null) {
                 DoorLockVolumeSettings settings = smartLock.getDoorLockVolumeSettings();
                 String csrf = session.getCsrf();
@@ -185,7 +185,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                             } else {
                                 autoRelockStatus = "&_autoRelockEnabled=on";
                             }
-                            String deviceLabelUrl = id.replaceAll("_", "+");
+                            String deviceLabelUrl = config.deviceId.replaceAll("_", "+");
                             String url = SMARTLOCK_SET_COMMAND;
                             String data = "location=" + smartLock.getLocation() + autoRelockStatus + "&deviceLabel="
                                     + deviceLabelUrl + "&doorLockVolumeSettings.volume=" + command.toString()
@@ -206,8 +206,8 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
     }
 
     private void handleSmartLockVoiceLevel(Command command) {
-        if (session != null && this.id != null) {
-            VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session.getVerisureThing(this.id);
+        if (session != null && config.deviceId != null) {
+            VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session.getVerisureThing(config.deviceId);
             if (smartLock != null) {
                 DoorLockVolumeSettings settings = smartLock.getDoorLockVolumeSettings();
                 String csrf = session.getCsrf();
@@ -231,7 +231,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                             } else {
                                 autoRelockStatus = "&_autoRelockEnabled=on";
                             }
-                            String deviceLabelUrl = this.id.replaceAll("_", "+");
+                            String deviceLabelUrl = config.deviceId.replaceAll("_", "+");
                             String url = SMARTLOCK_SET_COMMAND;
                             String data = "location=" + smartLock.getLocation() + autoRelockStatus + "&deviceLabel="
                                     + deviceLabelUrl + "&doorLockVolumeSettings.volume="

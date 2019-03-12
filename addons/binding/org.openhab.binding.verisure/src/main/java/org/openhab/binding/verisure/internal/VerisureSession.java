@@ -127,6 +127,7 @@ public class VerisureSession {
         } else {
             if (logIn()) {
                 updateStatus();
+                areWeLoggedOut = false;
                 return true;
             } else {
                 areWeLoggedOut = true;
@@ -409,14 +410,14 @@ public class VerisureSession {
         logger.debug("REST Response ({})", thing);
         if (thing != null) {
             int instInst = verisureInstallation.getInstallationInstance();
-            thing.setId(Integer.toString(instInst));
-            VerisureThingJSON oldObj = verisureThings.get(thing.getId());
+            thing.setDeviceId(Integer.toString(instInst));
+            VerisureThingJSON oldObj = verisureThings.get(thing.getDeviceId());
             if (oldObj == null || !oldObj.equals(thing)) {
                 thing.setSiteId(verisureInstallation.getInstallationId());
                 thing.setSiteName(verisureInstallation.getInstallationName());
-                String id = thing.getId();
-                if (id != null) {
-                    verisureThings.put(id, thing);
+                String deviceId = thing.getDeviceId();
+                if (deviceId != null) {
+                    verisureThings.put(deviceId, thing);
                     notifyListeners(thing);
                 }
             }
@@ -432,11 +433,11 @@ public class VerisureSession {
                 for (VerisureThingJSON thing : things) {
                     int instInst = inst.getInstallationInstance();
                     if (thing instanceof VerisureUserPresenceJSON) {
-                        thing.setId(Integer.toString(instInst));
+                        thing.setDeviceId(Integer.toString(instInst));
                     } else if (thing instanceof VerisureAlarmJSON) {
                         String type = ((VerisureAlarmJSON) thing).getType();
                         if ("ARM_STATE".equals(type)) {
-                            thing.setId(Integer.toString(instInst));
+                            thing.setDeviceId(Integer.toString(instInst));
                         } else if ("DOOR_LOCK".equals(type)) {
                             // Then we know it is a SmartLock, lets get some more info on SmartLock Status
                             thing = updateSmartLockThing((VerisureAlarmJSON) thing, type);
@@ -444,18 +445,18 @@ public class VerisureSession {
                             logger.warn("Unknown alarm/lock type {}.", type);
                         }
                     } else {
-                        String id = thing.getId();
-                        if (id != null) {
-                            thing.setId(id.replaceAll("[^a-zA-Z0-9_]", "_"));
+                        String deviceId = thing.getDeviceId();
+                        if (deviceId != null) {
+                            thing.setDeviceId(deviceId.replaceAll("[^a-zA-Z0-9_]", "_"));
                         }
                     }
-                    VerisureThingJSON oldObj = verisureThings.get(thing.getId());
+                    VerisureThingJSON oldObj = verisureThings.get(thing.getDeviceId());
                     if (oldObj == null || !oldObj.equals(thing)) {
                         thing.setSiteId(inst.getInstallationId());
                         thing.setSiteName(inst.getInstallationName());
-                        String id = thing.getId();
-                        if (id != null) {
-                            verisureThings.put(id, thing);
+                        String deviceId = thing.getDeviceId();
+                        if (deviceId != null) {
+                            verisureThings.put(deviceId, thing);
                             notifyListeners(thing);
                         }
                     }
@@ -465,7 +466,7 @@ public class VerisureSession {
     }
 
     private VerisureSmartLockJSON updateSmartLockThing(VerisureAlarmJSON thing, @Nullable String type) {
-        VerisureSmartLockJSON smartLockThing = callJSONRest(SMARTLOCK_PATH + thing.getId(),
+        VerisureSmartLockJSON smartLockThing = callJSONRest(SMARTLOCK_PATH + thing.getDeviceId(),
                 VerisureSmartLockJSON.class);
         logger.debug("REST Response ({})", smartLockThing);
         if (smartLockThing == null) {
@@ -503,9 +504,9 @@ public class VerisureSession {
         if (status != null) {
             smartLockThing.setStatus(status);
         }
-        String id = smartLockThing.getId();
-        if (id != null) {
-            smartLockThing.setId(id.replaceAll("[^a-zA-Z0-9_]", "_"));
+        String deviceId = smartLockThing.getDeviceId();
+        if (deviceId != null) {
+            smartLockThing.setDeviceId(deviceId.replaceAll("[^a-zA-Z0-9_]", "_"));
         }
         return smartLockThing;
     }

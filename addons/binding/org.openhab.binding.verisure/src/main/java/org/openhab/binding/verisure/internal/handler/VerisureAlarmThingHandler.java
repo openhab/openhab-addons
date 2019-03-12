@@ -64,8 +64,8 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
     }
 
     private void handleAlarmState(Command command) {
-        if (session != null && this.id != null) {
-            VerisureAlarmJSON alarm = (VerisureAlarmJSON) session.getVerisureThing(this.id);
+        if (session != null && config.deviceId != null) {
+            VerisureAlarmJSON alarm = (VerisureAlarmJSON) session.getVerisureThing(config.deviceId);
             if (alarm != null) {
                 BigDecimal pinCode = session.getPinCode();
                 String csrf = session.getCsrf();

@@ -24,13 +24,14 @@ public class VerisureSmartPlugJSON extends VerisureBaseThingJSON {
     private Boolean hazardous;
     private String deviceLabel;
 
-    public VerisureSmartPlugJSON(String id, String location, String status, String statusText, Boolean hazardous) {
+    public VerisureSmartPlugJSON(String deviceId, String location, String status, String statusText,
+            Boolean hazardous) {
         super();
         this.location = location;
         this.status = status;
         this.statusText = statusText;
         this.hazardous = hazardous;
-        this.deviceLabel = id;
+        this.deviceLabel = deviceId;
     }
 
     /*
@@ -92,13 +93,13 @@ public class VerisureSmartPlugJSON extends VerisureBaseThingJSON {
     }
 
     @Override
-    public String getId() {
+    public String getDeviceId() {
         return deviceLabel;
     }
 
     @Override
-    public void setId(String id) {
-        this.deviceLabel = id;
+    public void setDeviceId(String deviceId) {
+        this.deviceLabel = deviceId;
     }
 
     public Boolean getHazardous() {

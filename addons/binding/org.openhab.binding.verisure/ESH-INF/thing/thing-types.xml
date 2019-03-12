@@ -4,7 +4,6 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<bridge-type id="bridge">
 		<label>Verisure Bridge</label>
 		<description>This bridge represents the http://mypages.verisure.com web page connector.</description>
@@ -68,6 +67,14 @@
 		<properties>
 			<property name="vendor">Verisure</property>
 		</properties>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Unique Id.</description>
+			</parameter>
+		</config-description>
+
 	</thing-type>
 
 	<thing-type id="smokeDetector">
@@ -90,6 +97,14 @@
 		<properties>
 			<property name="vendor">Verisure</property>
 		</properties>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Verisure Id.</description>
+			</parameter>
+		</config-description>
+
 	</thing-type>
 
 	<thing-type id="waterDetector">
@@ -112,6 +127,14 @@
 		<properties>
 			<property name="vendor">Verisure</property>
 		</properties>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Verisure Id.</description>
+			</parameter>
+		</config-description>
+
 	</thing-type>
 
 	<thing-type id="siren">
@@ -134,6 +157,14 @@
 		<properties>
 			<property name="vendor">Verisure</property>
 		</properties>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Verisure Id.</description>
+			</parameter>
+		</config-description>
+
 	</thing-type>
 
 	<thing-type id="nightControl">
@@ -156,6 +187,14 @@
 		<properties>
 			<property name="vendor">Verisure</property>
 		</properties>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Verisure Id.</description>
+			</parameter>
+		</config-description>
+
 	</thing-type>
 
 	<thing-type id="smartLock">
@@ -187,6 +226,14 @@
 		<properties>
 			<property name="vendor">Verisure</property>
 		</properties>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Verisure Id.</description>
+			</parameter>
+		</config-description>
+
 	</thing-type>
 
 	<thing-type id="smartPlug">
@@ -210,6 +257,14 @@
 		<properties>
 			<property name="vendor">Verisure</property>
 		</properties>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Verisure Id.</description>
+			</parameter>
+		</config-description>
+
 	</thing-type>
 
 	<thing-type id="doorWindowSensor">
@@ -230,6 +285,14 @@
 		<properties>
 			<property name="vendor">Verisure</property>
 		</properties>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Verisure Id.</description>
+			</parameter>
+		</config-description>
+
 	</thing-type>
 
 	<thing-type id="userPresence">
@@ -251,6 +314,14 @@
 		<properties>
 			<property name="vendor">Verisure</property>
 		</properties>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Unique Id.</description>
+			</parameter>
+		</config-description>
+
 	</thing-type>
 
 	<thing-type id="broadbandConnection">
@@ -272,6 +343,14 @@
 		<properties>
 			<property name="vendor">Verisure</property>
 		</properties>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Unique Id.</description>
+			</parameter>
+		</config-description>
+
 	</thing-type>
 
 	<channel-type id="status">
@@ -320,7 +399,7 @@
 		<item-type>DateTime</item-type>
 		<label>DateTime Last Check</label>
 		<description>Date and time of last updated check.</description>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM" />
 	</channel-type>
 
 	<channel-type id="changedByUser">

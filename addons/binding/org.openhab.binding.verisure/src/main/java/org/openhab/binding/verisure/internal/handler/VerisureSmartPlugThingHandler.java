@@ -65,12 +65,12 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
     }
 
     private void handleSmartPlugState(Command command) {
-        if (session != null && this.id != null) {
-            VerisureSmartPlugJSON smartPlug = (VerisureSmartPlugJSON) session.getVerisureThing(this.id);
+        if (session != null && config.deviceId != null) {
+            VerisureSmartPlugJSON smartPlug = (VerisureSmartPlugJSON) session.getVerisureThing(config.deviceId);
             if (smartPlug != null) {
                 String siteName = smartPlug.getSiteName();
                 if (siteName != null) {
-                    String smartPlugUrl = this.id.replaceAll("_", "+");
+                    String smartPlugUrl = config.deviceId.replaceAll("_", "+");
                     String url = SMARTPLUG_COMMAND;
                     String data = null;
                     if (command == OnOffType.OFF) {

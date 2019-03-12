@@ -28,11 +28,11 @@ public class VerisureDoorWindowJSON extends VerisureBaseThingJSON {
     private @Nullable String state;
     private @Nullable String deviceLabel;
 
-    public VerisureDoorWindowJSON(String id, String state, String location) {
+    public VerisureDoorWindowJSON(String deviceId, String state, String location) {
         super();
         this.area = location;
         this.state = state;
-        this.deviceLabel = id;
+        this.deviceLabel = deviceId;
     }
 
     public @Nullable String getState() {
@@ -65,12 +65,12 @@ public class VerisureDoorWindowJSON extends VerisureBaseThingJSON {
     }
 
     @Override
-    public void setId(@Nullable String id) {
-        this.deviceLabel = id;
+    public void setDeviceId(@Nullable String deviceId) {
+        this.deviceLabel = deviceId;
     }
 
     @Override
-    public @Nullable String getId() {
+    public @Nullable String getDeviceId() {
         return deviceLabel;
     }
 
