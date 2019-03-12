@@ -64,6 +64,8 @@
 /addons/binding/org.openhab.binding.hue.test/ @cweitkamp
 /addons/binding/org.openhab.binding.hyperion/ @tavalin
 /addons/binding/org.openhab.binding.icloud/ @pgfeller
+/addons/binding/org.openhab.binding.ihc/ @paulianttila
+/addons/binding/org.openhab.binding.ihc.test/ @paulianttila
 /addons/binding/org.openhab.binding.innogysmarthome/ @ollie-dev
 /addons/binding/org.openhab.binding.ipp/ @peuter
 /addons/binding/org.openhab.binding.irtrans/ @kgoderis
