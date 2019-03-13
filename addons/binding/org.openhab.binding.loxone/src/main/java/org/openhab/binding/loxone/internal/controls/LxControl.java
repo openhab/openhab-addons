@@ -93,6 +93,8 @@ public class LxControl {
         String format;
         Boolean increaseOnly;
         String allOff;
+        String url;
+        String urlHd;
         Map<String, String> outputs;
     }
 
