@@ -369,7 +369,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
      * Updates the status of all child Spotify Device Things.
      *
      * @param spotifyDevices list of Spotify devices
-     * @param playing true if the current active device is playing
+     * @param playing        true if the current active device is playing
      */
     private void updateDevicesStatus(List<Device> spotifyDevices, boolean playing) {
         getThing().getThings().stream() //
@@ -440,7 +440,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         if (device.getId() != null) {
             lastKnownDeviceId = device.getId();
             updateChannelState(CHANNEL_DEVICEID, valueOrEmpty(lastKnownDeviceId));
-            updateChannelState(CHANNEL_DEVICENAME, valueOrEmpty(lastKnownDeviceId));
+            updateChannelState(CHANNEL_DEVICENAME, valueOrEmpty(device.getName()));
         }
         lastKnownDeviceActive = device.isActive();
         updateChannelState(CHANNEL_DEVICEACTIVE, lastKnownDeviceActive ? OnOffType.ON : OnOffType.OFF);
@@ -471,7 +471,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
      * Convenience method to update the channel state as {@link StringType} with a {@link String} value
      *
      * @param channelId id of the channel to update
-     * @param value String value to set as {@link StringType}
+     * @param value     String value to set as {@link StringType}
      */
     private void updateChannelState(String channelId, String value) {
         updateChannelState(channelId, new StringType(value));
@@ -481,7 +481,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
      * Convenience method to update the channel state but only if the channel is linked.
      *
      * @param channelId id of the channel to update
-     * @param state State to set on the channel
+     * @param state     State to set on the channel
      */
     private void updateChannelState(String channelId, State state) {
         final Channel channel = thing.getChannel(channelId);
@@ -507,8 +507,8 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
          * Updates the progress with its actual values as provided by Spotify. Based on if the track is running or not
          * update the progress scheduler.
          *
-         * @param active true if this instance is not disposed
-         * @param playing true if the track if playing
+         * @param active   true if this instance is not disposed
+         * @param playing  true if the track if playing
          * @param duration duration of the track
          * @param progress current progress of the track
          */
