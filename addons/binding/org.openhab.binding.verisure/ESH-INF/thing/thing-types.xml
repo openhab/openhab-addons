@@ -19,12 +19,12 @@
 		<config-description>
 			<parameter name="username" type="text" required="true">
 				<label>Username</label>
-				<description>The username used to connect to mypage.verisure.com</description>
+				<description>The username used to login to http://mypage.verisure.com.</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
 				<context>password</context>
-				<description>The password used to connect mypage.verisure.com</description>
+				<description>The password used to login to http://mypage.verisure.com.</description>
 			</parameter>
 			<parameter name="refresh" type="integer">
 				<label>Refresh Interval</label>
@@ -38,7 +38,7 @@
 			</parameter>
 			<parameter name="numberOfInstallations" type="integer">
 				<label>Number of Verisure Installations</label>
-				<description>Number of Verisure installations.</description>
+				<description>Number of Verisure installations to monitor.</description>
 				<default>1</default>
 			</parameter>
 		</config-description>

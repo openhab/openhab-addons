@@ -44,6 +44,20 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 ### Verisure Bridge 
 
+#### Configuration Options
+
+*   username - The username used to connect to http://mypage.verisure.com
+
+*   password - The password used to connect to http://mypage.verisure.com
+
+*   refresh - Specifies the refresh interval in seconds
+
+*   pin - The username's pin code to arm/lock alarm/door
+
+*   numberOfInstallations - Number of Verisure Installations to monitor
+
+#### Channels
+
 ([bridge]) supports the following channel:
 
 | Channel Type ID | Item Type | Description                                                                                     |
@@ -62,24 +76,16 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 ([alarm]) supports the following channels:
 
-| Channel Type ID | Item Type | Description                                                                                                                                                     
-            |
-|-----------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------|
-| status          | String    | This channel reports the overall alarm status (armed/unarmed).                                                                  
-            |
-| numericStatus   | Number    | This channel reports the alarm status as a number.                                                                                
-            |
-| alarmStatus     | String    | This channel reports the specific alarm status ("DISARMED", "ARMED_HOME" or "ARMED AWAY").                                       
-            |
-| lastUpdate      | String    | This channel reports the last time the alarm status was changed.                                                          
-            |
-| changedByUser   | String    | This channel reports the user that last changed the state of the alarm.                                                       
-            |
-| siteName        | String    | This channel reports the name of the site.                                                                                     
-            |
-| siteId          | Number    | This channel reports the site ID of the site.                                                                                        
-            |
-| setAlarmStatus  | Number    | This channel is used to arm/disarm the alarm. Available alarm status are 0 for "DISARMED", 1 for "ARMED_HOME" and 2 for "ARMED AWAY"|                                             |
+| Channel Type ID | Item Type | Description                                                                               |
+|-----------------|-----------|-------------------------------------------------------------------------------------------|
+| status          | String    | This channel reports the overall alarm status (armed/unarmed).                            |
+| numericStatus   | Number    | This channel reports the alarm status as a number.                                        |
+| alarmStatus     | String    | This channel reports the specific alarm status ("DISARMED", "ARMED_HOME" or "ARMED AWAY").|
+| lastUpdate      | String    | This channel reports the last time the alarm status was changed.                          |
+| changedByUser   | String    | This channel reports the user that last changed the state of the alarm.                   |
+| siteName        | String    | This channel reports the name of the site.                                                |
+| siteId          | Number    | This channel reports the site ID of the site.                                             |
+| setAlarmStatus  | Number    | This channel is used to arm/disarm the alarm. Available alarm status are 0 for "DISARMED", for "ARMED_HOME" and 2 for "ARMED AWAY".|               |
 
 ### Verisure Smoke Detector
 
@@ -275,11 +281,12 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 ````
 // Bridge configuration
-Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", password="1234", refresh="600", pin="111111", numberOfInstallations="1"]
+Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", password="1234", refresh="600", pin="111111", numberOfInstallations="1"] {
 
-Thing smartLock JannesSmartLock "Verisure Entrance Yale Doorman"  [ deviceId="3C44_6NPO" ]
-Thing smartPlug JannesSmartPlug "Verisure SmartPlug" [ deviceId="3D7G_MANV" ]
-Thing waterDetector JannesVattenDetetktor "Verisure Water Detector" [ deviceId="3WET_QRH5" ] 
+     Thing smartLock JannesSmartLock "Verisure Entrance Yale Doorman"  [ deviceId="3C44_6NPO" ]
+     Thing smartPlug JannesSmartPlug "Verisure SmartPlug" [ deviceId="3D7G_MANV" ]
+     Thing waterDetector JannesVattenDetetktor "Verisure Water Detector" [ deviceId="3WET_QRH5" ] 
+}
 ````
 
 
