@@ -1,7 +1,32 @@
 # Homematic Binding
 
 This is the binding for the [eQ-3 Homematic Solution](http://www.eq-3.de/).
-This binding allows you to integrate, view, control and configure all Homematic devices in Eclipse SmartHome.
+This binding allows you to integrate, view, control and configure all Homematic devices in openHAB.
+
+## Configuration of the CCU
+
+Under `Home page > Settings > Control panel` with the menu `Configure Firewall` the Firewall configurations have to be adjusted.
+The CCU has to be configured to have "XML-RPC" set to "Full Access" or "Restricted access".
+Also the "Remote Homematic-Script API" has to be set to "Full Access" or "Restricted access".
+When the option "Restricted access" is used, some ports have to be added to the "Port opening" list.
+
+´´´
+2000;
+2001;
+2010;
+8701;
+9292;
+´´´
+
+Also the IP of the device running openHAB has to be set to the list of "IP addresses for restricted access".
+
+Also under `Home page > Settings > Control panel` with the menu `Security` the option `Authentication` has to be disabled as the binding does not support the configuration of `username` and `password`for the XML-RPC API.
+
+If this is not done the binding won't be able to connect to the CCU and the CCU Thing will stay uninitialized and sets a timeout exception:
+
+```
+xxx-xx-xx xx:xx:xx.xxx [hingStatusInfoChangedEvent] - - 'homematic:bridge:xxx' changed from INITIALIZING to OFFLINE (COMMUNICATION_ERROR): java.net.SocketTimeoutException: Connect Timeout
+```
 
 ## Supported Bridges
 
