@@ -88,20 +88,6 @@
       <url>https://openhab.jfrog.io/openhab/libs-release</url>
     </repository>
 
-    <!-- snapshots -->
-    <repository>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
-      <id>openhab-artifactory-snapshot</id>
-      <name>JFrog Artifactory Repository</name>
-      <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
-    </repository>
-
     <!-- openHAB dependencies p2 repository -->
     <repository>
       <id>p2-openhab-deps-repo</id>
@@ -180,5 +166,30 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>openhab-snapshot-repository</id>
+      <activation>
+        <property>
+          <name>!noOhSnapRepo</name>
+        </property>
+      </activation>
+      <repositories>
+        <repository>
+          <id>openhab-artifactory-snapshot</id>
+          <name>JFrog Artifactory Repository</name>
+          <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
 
 </project>
