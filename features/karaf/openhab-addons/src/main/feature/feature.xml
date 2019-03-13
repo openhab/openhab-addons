@@ -284,6 +284,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.icloud/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-ihc" description="IHC / ELKO Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.ihc/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-innogysmarthome" description="innogy Smarthome Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-http</feature>
