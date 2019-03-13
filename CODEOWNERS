@@ -125,7 +125,6 @@
 /addons/binding/org.openhab.binding.onkyo/ @pail23 @paulianttila
 /addons/binding/org.openhab.binding.opensprinkler/ @CrackerStealth
 /addons/binding/org.openhab.binding.openuv/ @clinique
-/addons/binding/org.openhab.binding.openweathermap/ @cweitkamp
 /addons/binding/org.openhab.binding.orvibo/ @tavalin
 /addons/binding/org.openhab.binding.pentair/ @jsjames
 /addons/binding/org.openhab.binding.phc/ @gnlpfjh
@@ -233,6 +232,7 @@
 /addons/voice/org.openhab.voice.voicerss/ @JochenHiller
 /bundles/org.openhab.binding.astro/ @gerrieg
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
+/bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
 
