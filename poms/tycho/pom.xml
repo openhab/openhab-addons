@@ -142,12 +142,33 @@
     <pluginManagement>
       <plugins>
         <plugin>
+          <groupId>org.commonjava.maven.plugins</groupId>
+          <artifactId>directory-maven-plugin</artifactId>
+          <version>0.3.1</version>
+          <executions>
+            <execution>
+              <id>tycho-dir</id>
+              <goals>
+                <goal>directory-of</goal>
+              </goals>
+              <phase>initialize</phase>
+              <configuration>
+                <property>tychodirRoot</property>
+                <project>
+                  <groupId>org.openhab</groupId>
+                  <artifactId>pom-addons2</artifactId>
+                </project>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
           <groupId>org.openhab.tools.sat</groupId>
           <artifactId>sat-plugin</artifactId>
           <version>{sat.version}</version>
           <configuration>
-            <checkstyleProperties>${basedirRoot}/tools/checkstyle.properties</checkstyleProperties>
-            <checkstyleFilter>${basedirRoot}/tools/checkstyle_suppressions.xml</checkstyleFilter>
+            <checkstyleProperties>${tychodirRoot}/../../tools/checkstyle.properties</checkstyleProperties>
+            <checkstyleFilter>${tychodirRoot}/../../tools/checkstyle_suppressions.xml</checkstyleFilter>
           </configuration>
         </plugin>
       </plugins>
