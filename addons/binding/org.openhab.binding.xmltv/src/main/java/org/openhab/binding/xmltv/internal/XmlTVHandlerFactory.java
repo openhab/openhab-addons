@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.xmltv", service = ThingHandlerFactory.class)
 public class XmlTVHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(XmlTVHandlerFactory.class);
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -96,21 +96,23 @@ public class XmlTVHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof XmlTVHandler) {
-            ThingUID thingUID = thingHandler.getThing().getUID();
-            unregisterDeviceDiscoveryService(thingUID);
+            Thing thing = thingHandler.getThing();
+            unregisterDeviceDiscoveryService(thing);
         }
         super.removeHandler(thingHandler);
     }
 
-    private void registerDeviceDiscoveryService(XmlTVHandler bridgeHandler) {
+    private synchronized void registerDeviceDiscoveryService(XmlTVHandler bridgeHandler) {
         XmlTVDiscoveryService discoveryService = new XmlTVDiscoveryService(bridgeHandler);
         discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
 
-    private void unregisterDeviceDiscoveryService(ThingUID thingUID) {
-        ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(thingUID);
-        serviceReg.unregister();
-        discoveryServiceRegs.remove(thingUID);
+    private synchronized void unregisterDeviceDiscoveryService(Thing thing) {
+        ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thing.getUID());
+        if (serviceReg != null) {
+            serviceReg.unregister();
+
+        }
     }
 }

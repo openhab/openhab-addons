@@ -66,7 +66,7 @@ public class ChannelHandler extends BaseThingHandler {
     private @Nullable RawType mediaIcon = new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
     private @Nullable RawType programmeIcon = new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
 
-    public List<Programme> programmes = new ArrayList<>();
+    public final List<Programme> programmes = new ArrayList<>();
 
     public ChannelHandler(Thing thing) {
         super(thing);
@@ -142,7 +142,7 @@ public class ChannelHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("handleCommand {} for {}", command, channelUID.getAsString());
+        logger.debug("handleCommand {} for {}", command, channelUID);
         if (command == RefreshType.REFRESH) {
             refreshProgramList();
         }
@@ -220,14 +220,14 @@ public class ChannelHandler extends BaseThingHandler {
                         break;
                 }
             } else {
-                logger.warn("Not enough programmes in XML file, think to refresh it");
+                logger.warn("Not enough programs in XML file, think to refresh it");
             }
         }
     }
 
     private QuantityType<?> getDurationInSeconds(Instant from, Instant to) {
         Duration elapsed = Duration.between(from, to);
-        long secondsElapsed = elapsed.toMillis() / 1000;
+        long secondsElapsed = TimeUnit.MILLISECONDS.toSeconds(elapsed.toMillis());
         return new QuantityType<>(secondsElapsed, SmartHomeUnits.SECOND);
     }
 

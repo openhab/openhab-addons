@@ -4,7 +4,7 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="XmlTVFile">
+	<bridge-type id="xmltvfile">
 		<label>XmlTVFile</label>
 		<description>This is the interface to a XmlTV file</description>
 
@@ -21,9 +21,9 @@
 		</config-description>
 	</bridge-type>
 	
-	<thing-type id="Channel">
+	<thing-type id="channel">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="XmlTVFile" />
+			<bridge-type-ref id="xmltvfile" />
 		</supported-bridge-type-refs>
 		<label>Channel</label>
 		<description>This represent a channel on a given TV file</description>
@@ -83,7 +83,7 @@
 	
 	<channel-group-type id="nextprog">
 		<label>Next Program</label>
-		<description>Program that will follow current programme on this channel</description>
+		<description>Program which will follow current program on this channel</description>
 		<channels>
 			<channel id="progStart" typeId="progStart" />
 			<channel id="timeLeft" typeId="timeLeft" />
@@ -104,7 +104,7 @@
 	<channel-type id="progIcon" advanced="true">
 		<item-type>String</item-type>
 		<label>Program URL</label>
-		<description>URL to an image of the programme.</description>
+		<description>URL to an image of the program.</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
@@ -139,35 +139,35 @@
 	<channel-type id="elapsedTime">
 		<item-type>Number:Time</item-type>
 		<label>Current Time</label>
-		<description>Current time of currently playing programme</description>
+		<description>Current time of currently playing program.</description>
 		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
 	<channel-type id="remainingTime" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Remaining Time</label>
-		<description>Time remaining until end of the programme</description>
+		<description>Time remaining until end of the program.</description>
 		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 	
 	<channel-type id="timeLeft" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Time Left</label>
-		<description>Time left before programme start</description>
+		<description>Time left before program start</description>
 		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
 	<channel-type id="progress">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Progress</label>
-		<description>Relative progression of the current programme</description>
+		<description>Relative progression of the current program.</description>
 		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 	
 	<channel-type id="icon">
 		<item-type>Image</item-type>
 		<label>Icon</label>
-		<description>Icon of the channel / programme</description>
+		<description>Icon of the channel / program.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	

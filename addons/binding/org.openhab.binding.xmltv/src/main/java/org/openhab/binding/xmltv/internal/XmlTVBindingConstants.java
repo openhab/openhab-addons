@@ -32,8 +32,8 @@ public class XmlTVBindingConstants {
     private static final String BINDING_ID = "xmltv";
 
     // List of all Bridge Type UIDs
-    public static final ThingTypeUID XMLTV_FILE_BRIDGE_TYPE = new ThingTypeUID(BINDING_ID, "XmlTVFile");
-    public static final ThingTypeUID XMLTV_CHANNEL_THING_TYPE = new ThingTypeUID(BINDING_ID, "Channel");
+    public static final ThingTypeUID XMLTV_FILE_BRIDGE_TYPE = new ThingTypeUID(BINDING_ID, "xmltvfile");
+    public static final ThingTypeUID XMLTV_CHANNEL_THING_TYPE = new ThingTypeUID(BINDING_ID, "channel");
 
     // Channel groups
     public static final String GROUP_CURRENT_PROGRAMME = "currentprog";
