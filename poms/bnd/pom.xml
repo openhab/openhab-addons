@@ -87,20 +87,6 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
-
-    <!-- snapshots -->
-    <repository>
-      <id>openhab-artifactory-snapshot</id>
-      <name>JFrog Artifactory Repository</name>
-      <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
-    </repository>
   </repositories>
 
   <pluginRepositories>
@@ -586,6 +572,28 @@ Import-Package: \\
           </plugins>
         </pluginManagement>
       </build>
+    </profile>
+    <profile>
+      <id>openhab-snapshot-repository</id>
+      <activation>
+        <property>
+          <name>!noOhSnapRepo</name>
+        </property>
+      </activation>
+      <repositories>
+        <repository>
+          <id>openhab-artifactory-snapshot</id>
+          <name>JFrog Artifactory Repository</name>
+          <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+          </snapshots>
+        </repository>
+      </repositories>
     </profile>
   </profiles>
 
