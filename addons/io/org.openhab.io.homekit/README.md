@@ -9,7 +9,7 @@ Some accessory types require a specific set of characteristics.
 
 ## Global Configuration
 
-Your first step will be to create the homekit.cfg in your `$OPENHAB_CONF/services` folder.
+Your first step will be to create the `homekit.cfg` in your `$OPENHAB_CONF/services` folder.
 At the very least, you will need to define a pin number for the bridge.
 This will be used in iOS when pairing. The pin code is in the form "###-##-###".
 Requirements beyond this are not clear, and Apple enforces limitations on eligible pins within iOS.
@@ -55,7 +55,7 @@ org.openhab.homekit:maximumTemperature=100
 
 ## Item Configuration
 
-After setting this global configuration, you will need to tag your openHAB items in order to map them to an ontology.
+After setting this global configuration, you will need to tag your [openHAB items](https://www.openhab.org/docs/configuration/items.html) for HomeKit in order to map them to an ontology.
 For our purposes, you may consider HomeKit accessories to be of two forms: simple and complex.
 
 A simple accessory will be mapped to a single openHAB item (i.e. a Lighbulb is mapped to a Switch, Dimmer, or Color item).
@@ -101,7 +101,7 @@ If you register an IP address that isn't reachable from your phone (such as `loc
 HomeKit allows only a single pairing to be established with the bridge.
 This pairing is normally shared across devices via iCloud.
 If you need to establish a new pairing, you'll need to clear the existing pairings.
-To do this, you can issue the command `smarthome:homekit clearPairings` from the OSGi console.
+To do this, you can issue the command `smarthome:homekit clearPairings` from the [OSGi console](https://www.openhab.org/docs/administration/console.html).
 After doing this, you may need to remove the file `$OPENHAB_USERDATA/jsondb/homekit.json` and restart openHAB.
 
 HomeKit requires a unique identifier for each accessory advertised by the bridge.
