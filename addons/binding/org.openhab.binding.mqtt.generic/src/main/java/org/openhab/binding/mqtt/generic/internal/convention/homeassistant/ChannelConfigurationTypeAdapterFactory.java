@@ -64,12 +64,10 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
      * @return
      */
     private <T> TypeAdapter<T> createHAConfig(Gson gson, TypeToken<T> type) {
-
         /* The delegate is the 'default' adapter */
         final TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
 
         return new TypeAdapter<T>() {
-
             @Override
             public T read(@Nullable JsonReader in) throws IOException {
                 if (in == null) {
@@ -90,12 +88,10 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
     }
 
     private <T> TypeAdapter<T> createHADevice(Gson gson, TypeToken<T> type) {
-
         /* The delegate is the 'default' adapter */
         final TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
 
         return new TypeAdapter<T>() {
-
             @Override
             public T read(@Nullable JsonReader in) throws IOException {
                 if (in == null) {

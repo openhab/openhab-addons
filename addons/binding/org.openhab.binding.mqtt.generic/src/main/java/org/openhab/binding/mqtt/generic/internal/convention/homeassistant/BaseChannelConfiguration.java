@@ -69,8 +69,8 @@ public abstract class BaseChannelConfiguration {
     public String name;
 
     protected String icon = "";
-    protected int qos = 0;
-    protected boolean retain = false;
+    protected int qos; // defaults to 0 according to HA specification
+    protected boolean retain; // defaults to false according to HA specification
     protected @Nullable String value_template;
     protected @Nullable String unique_id;
 
