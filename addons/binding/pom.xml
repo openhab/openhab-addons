@@ -43,8 +43,6 @@
     <module>org.openhab.binding.denonmarantz</module>
     <module>org.openhab.binding.digitalstrom</module>
     <module>org.openhab.binding.dlinksmarthome</module>
-    <module>org.openhab.binding.dmx</module>
-    <module>org.openhab.binding.dmx.test</module>
     <module>org.openhab.binding.dscalarm</module>
     <module>org.openhab.binding.dsmr</module>
     <module>org.openhab.binding.dsmr.test</module>
