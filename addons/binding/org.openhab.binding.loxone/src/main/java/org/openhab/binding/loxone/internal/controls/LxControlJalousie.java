@@ -153,7 +153,11 @@ public class LxControlJalousie extends LxControl {
             // state UP or DOWN from Loxone indicates blinds are moving up or down
             // state UP in openHAB means blinds are fully up (0%) and DOWN means fully down (100%)
             // so we will update only position and not up or down states
-            return new PercentType((int) (value * 100));
+            // a basic calculation like (value * 100.0) will give significant errors for some fractions, e.g.
+            // 0.29 * 100 = 28.xxxxx which in turn if converted to integer will cause the position to take same value
+            // for two different positions and later jump skipping one value (29 in this example)
+            // for that reason we need to round the results of multiplication to avoid this skipping of percentages
+            return new PercentType((int) Math.round(value * 100.0));
         }
         return null;
     };
@@ -190,8 +194,8 @@ public class LxControlJalousie extends LxControl {
     @Override
     public void onStateChange(LxControlState state) {
         // check position changes
-        if (STATE_POSITION.equals(state.getName()) && targetPosition != null && targetPosition > 0
-                && targetPosition < 1) {
+        if (STATE_POSITION.equals(state.getName()) && targetPosition != null && targetPosition >= 0
+                && targetPosition <= 1) {
             // see in which direction jalousie is moving
             Object value = state.getStateValue();
             if (value instanceof Double) {

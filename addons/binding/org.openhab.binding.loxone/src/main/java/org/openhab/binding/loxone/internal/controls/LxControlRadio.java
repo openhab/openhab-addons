@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -72,7 +73,7 @@ public class LxControlRadio extends LxControl {
      */
     private static final String CMD_RESET = "reset";
 
-    private List<StateOption> outputs = new ArrayList<>();
+    private Map<String, String> outputsMap;
 
     @Override
     public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
@@ -80,15 +81,21 @@ public class LxControlRadio extends LxControl {
         // add both channel and state description (all needed configuration is available)
         ChannelUID cid = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RADIO_BUTTON),
                 defaultChannelLabel, "Radio button", tags, this::handleCommands, this::getChannelState);
-        if (details != null && details.outputs != null) {
-            outputs = details.outputs.entrySet().stream().map(e -> new StateOption(e.getKey(), e.getValue()))
-                    .collect(Collectors.toList());
+
+        if (details != null) {
+            List<StateOption> outputs = new ArrayList<>();
+            if (details.outputs != null) {
+                outputsMap = details.outputs;
+                outputs = details.outputs.entrySet().stream().map(e -> new StateOption(e.getKey(), e.getValue()))
+                        .collect(Collectors.toList());
+            }
+            if (details.allOff != null && !details.allOff.isEmpty()) {
+                outputs.add(new StateOption("0", details.allOff));
+                outputsMap.put("0", details.allOff);
+            }
+            addChannelStateDescription(cid, new StateDescription(BigDecimal.ZERO, new BigDecimal(MAX_RADIO_OUTPUTS),
+                    BigDecimal.ONE, null, false, outputs));
         }
-        if (details != null && details.allOff != null) {
-            outputs.add(new StateOption("0", details.allOff));
-        }
-        addChannelStateDescription(cid, new StateDescription(BigDecimal.ZERO, new BigDecimal(MAX_RADIO_OUTPUTS),
-                BigDecimal.ONE, null, false, outputs));
     }
 
     LxControlRadio(LxUuid uuid) {
@@ -96,36 +103,23 @@ public class LxControlRadio extends LxControl {
     }
 
     private void handleCommands(Command command) throws IOException {
-        if (command instanceof OnOffType) {
-            if ((OnOffType) command == OnOffType.OFF) {
-                setOutput(0);
-            }
+        if (((command instanceof OnOffType && (OnOffType) command == OnOffType.OFF)
+                || (command instanceof DecimalType && (DecimalType) command == DecimalType.ZERO))
+                && outputsMap.containsKey("0")) {
+            sendAction(CMD_RESET);
         } else if (command instanceof DecimalType) {
-            setOutput(((DecimalType) command).intValue());
+            DecimalType output = (DecimalType) command;
+            if (outputsMap.containsKey(output.toString())) {
+                sendAction(String.valueOf(output.intValue()));
+            }
         }
     }
 
     private DecimalType getChannelState() {
         Double output = getStateDoubleValue(STATE_ACTIVE_OUTPUT);
-        if (output != null && output >= 0 && output <= MAX_RADIO_OUTPUTS) {
+        if (output != null && output % 1 == 0 && outputsMap.containsKey(String.valueOf(output.intValue()))) {
             return new DecimalType(output);
         }
         return null;
-    };
-
-    /**
-     * Set radio-button control's active output
-     * <p>
-     * Sends a command to operate the radio-button control.
-     *
-     * @param output output number to activate
-     * @throws IOException when something went wrong with communication
-     */
-    private void setOutput(int output) throws IOException {
-        if (output == 0) {
-            sendAction(CMD_RESET);
-        } else if (output >= 1 && output <= MAX_RADIO_OUTPUTS) {
-            sendAction(Long.toString(output));
-        }
     }
 }
