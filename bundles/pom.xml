@@ -20,6 +20,7 @@
   <modules>
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.avmfritz</module>
+    <module>org.openhab.binding.dmx</module>
     <module>org.openhab.binding.openweathermap</module>
   </modules>
 
