@@ -4,7 +4,7 @@ Scrapes the web interface of the inverter for the metrics of the supported chann
 
 ![Kostal Pico](doc/kostalpico.jpg)
 
-![Kostal PLENTICORE / PIKI IQ](doc/PLENTICORE.tif)
+![Kostal PLENTICORE / PIKI IQ](doc/plenticore.jpg)
 
 ## Supported Things
 
