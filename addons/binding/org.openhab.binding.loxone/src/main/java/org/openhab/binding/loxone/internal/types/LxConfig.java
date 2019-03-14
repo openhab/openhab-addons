@@ -16,7 +16,7 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Objects;
 
-import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.controls.LxControl;
 
 import com.google.gson.JsonDeserializationContext;
@@ -51,7 +51,7 @@ public class LxConfig {
 
     public LxServerInfo msInfo;
 
-    public void finalize(LxServerHandler thingHandler) {
+    public void finalize(LxServerHandlerApi thingHandler) {
         rooms.values().removeIf(o -> (o == null || o.getUuid() == null));
         categories.values().removeIf(o -> (o == null || o.getUuid() == null));
         controls.values().removeIf(Objects::isNull);

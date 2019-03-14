@@ -24,6 +24,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.LxWebSocket;
 import org.openhab.binding.loxone.internal.types.LxErrorCode;
 import org.openhab.binding.loxone.internal.types.LxResponse;
@@ -42,7 +43,7 @@ public abstract class LxWsSecurity {
     final String user;
     final String password;
     final LxWebSocket socket;
-    final LxServerHandler thingHandler;
+    final LxServerHandlerApi thingHandler;
 
     LxErrorCode reason;
     String details;
@@ -59,7 +60,7 @@ public abstract class LxWsSecurity {
      * @param user         user to authenticate
      * @param password     password to authenticate
      */
-    LxWsSecurity(int debugId, LxServerHandler thingHandler, LxWebSocket socket, String user, String password) {
+    LxWsSecurity(int debugId, LxServerHandlerApi thingHandler, LxWebSocket socket, String user, String password) {
         this.debugId = debugId;
         this.thingHandler = thingHandler;
         this.socket = socket;
@@ -199,7 +200,7 @@ public abstract class LxWsSecurity {
      * @return created security object
      */
     public static LxWsSecurity create(LxWsSecurityType type, String swVersion, int debugId,
-            LxServerHandler thingHandler, LxWebSocket socket, String user, String password) {
+            LxServerHandlerApi thingHandler, LxWebSocket socket, String user, String password) {
         LxWsSecurityType securityType = type;
         if (securityType == LxWsSecurityType.AUTO && swVersion != null) {
             String[] versions = swVersion.split("[.]");

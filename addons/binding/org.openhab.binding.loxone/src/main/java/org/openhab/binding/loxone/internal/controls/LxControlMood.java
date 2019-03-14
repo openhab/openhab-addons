@@ -15,7 +15,7 @@ package org.openhab.binding.loxone.internal.controls;
 import java.io.IOException;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.types.LxCategory;
 import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
@@ -82,11 +82,11 @@ class LxControlMood extends LxControlSwitch {
     }
 
     @Override
-    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
+    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
         super.initialize(thingHandler, room, category);
     }
 
-    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category,
+    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category,
             LxControlLightControllerV2 controller, LxUuid uuid) {
         this.uuid = uuid;
         this.controller = controller;

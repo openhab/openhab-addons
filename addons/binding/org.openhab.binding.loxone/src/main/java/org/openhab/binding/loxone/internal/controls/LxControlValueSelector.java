@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.StateDescription;
-import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.types.LxCategory;
 import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
@@ -77,7 +77,7 @@ public class LxControlValueSelector extends LxControl {
     }
 
     @Override
-    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
+    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
         super.initialize(thingHandler, room, category);
         channelId = addChannel("Dimmer", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_DIMMER),
                 defaultChannelLabel, "Value Selector", tags, this::handleCommand, this::getChannelState);

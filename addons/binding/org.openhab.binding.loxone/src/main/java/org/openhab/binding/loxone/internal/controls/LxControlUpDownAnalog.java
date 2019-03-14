@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.types.LxCategory;
 import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
@@ -70,11 +70,11 @@ public class LxControlUpDownAnalog extends LxControl {
     }
 
     @Override
-    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
+    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
         initialize(thingHandler, room, category, "Up/Down Analog");
     }
 
-    void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category, String channelDescription) {
+    void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category, String channelDescription) {
         super.initialize(thingHandler, room, category);
         channelId = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_NUMBER),
                 defaultChannelLabel, channelDescription, tags, this::handleCommands, this::getChannelState);

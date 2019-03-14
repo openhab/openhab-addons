@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.types.LxCategory;
 import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
@@ -50,7 +50,7 @@ public class LxControlLeftRightDigital extends LxControlUpDownDigital {
     }
 
     @Override
-    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
+    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
         super.initialize(thingHandler, room, category, " / Left", "Left/Right Digital: Left", " / Right",
                 "Left/Right Digital: Right");
 

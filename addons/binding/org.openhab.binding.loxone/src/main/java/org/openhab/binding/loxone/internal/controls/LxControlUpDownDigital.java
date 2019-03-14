@@ -20,7 +20,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.types.LxCategory;
 import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
@@ -70,11 +70,11 @@ public class LxControlUpDownDigital extends LxControl {
     }
 
     @Override
-    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
+    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
         initialize(thingHandler, room, category, " / Up", "Up/Down Digital: Up", " / Down", "Up/Down Digital: Down");
     }
 
-    void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category, String upChannelLabel,
+    void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category, String upChannelLabel,
             String upChannelDescription, String downChannelLabel, String downChannelDescription) {
         super.initialize(thingHandler, room, category);
         upChannelId = addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH),

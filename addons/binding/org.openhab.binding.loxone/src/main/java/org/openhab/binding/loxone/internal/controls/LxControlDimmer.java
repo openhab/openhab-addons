@@ -16,11 +16,12 @@ import static org.openhab.binding.loxone.internal.LxBindingConstants.*;
 
 import java.io.IOException;
 
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.types.LxCategory;
 import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
@@ -60,6 +61,7 @@ public class LxControlDimmer extends LxControl {
     private static final String STATE_POSITION = "position";
     private static final String STATE_MIN = "min";
     private static final String STATE_MAX = "max";
+    private static final String STATE_STEP = "step";
 
     /**
      * Command string used to set the dimmer ON
@@ -75,7 +77,7 @@ public class LxControlDimmer extends LxControl {
     }
 
     @Override
-    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
+    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
         super.initialize(thingHandler, room, category);
         addChannel("Dimmer", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_DIMMER), defaultChannelLabel,
                 "Dimmer", tags, this::handleCommands, this::getChannelState);
@@ -91,6 +93,26 @@ public class LxControlDimmer extends LxControl {
         } else if (command instanceof PercentType) {
             PercentType percentCmd = (PercentType) command;
             setPosition(percentCmd.doubleValue());
+        } else if (command instanceof IncreaseDecreaseType) {
+            Double value = getStateDoubleValue(STATE_POSITION);
+            Double min = getStateDoubleValue(STATE_MIN);
+            Double max = getStateDoubleValue(STATE_MAX);
+            Double step = getStateDoubleValue(STATE_STEP);
+            if (value != null && max != null && min != null && step != null && min >= 0 && max >= 0
+                    && max > min) {
+                if ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE) {
+                    value += step;
+                    if (value > max) {
+                        value = max;
+                    }
+                } else {
+                    value -= step;
+                    if (value < min) {
+                        value = min;
+                    }
+                }
+                sendAction(value.toString());
+            }
         }
     }
 
@@ -123,7 +145,7 @@ public class LxControlDimmer extends LxControl {
             }
             Double max = getStateDoubleValue(STATE_MAX);
             Double min = getStateDoubleValue(STATE_MIN);
-            if (max != null && min != null) {
+            if (max != null && min != null && max > min && min >= 0 && max >= 0) {
                 return 100 * (loxoneValue - min) / (max - min);
             }
         }

@@ -19,7 +19,9 @@ import java.io.IOException;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.types.LxCategory;
 import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
@@ -74,7 +76,7 @@ public class LxControlSwitch extends LxControl {
     }
 
     @Override
-    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
+    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
         super.initialize(thingHandler, room, category);
         if (category != null && category.getType() == LxCategory.CategoryType.LIGHTS) {
             tags.add("Lighting");
@@ -126,13 +128,15 @@ public class LxControlSwitch extends LxControl {
      *
      * @return ON/OFF or null if undefined
      */
-    OnOffType getSwitchState() {
+    State getSwitchState() {
         Double value = getStateDoubleValue(STATE_ACTIVE);
         if (value != null) {
             if (value == 1.0) {
                 return OnOffType.ON;
-            } else if (value == 0) {
+            } else if (value == 0.0) {
                 return OnOffType.OFF;
+            } else {
+                return UnDefType.UNDEF;
             }
         }
         return null;

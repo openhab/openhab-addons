@@ -39,6 +39,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
@@ -47,7 +48,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.binding.loxone.internal.controls.LxControl;
 import org.openhab.binding.loxone.internal.controls.LxControlState;
-import org.openhab.binding.loxone.internal.security.LxWsSecurity;
 import org.openhab.binding.loxone.internal.types.LxConfig;
 import org.openhab.binding.loxone.internal.types.LxConfig.LxServerInfo;
 import org.openhab.binding.loxone.internal.types.LxErrorCode;
@@ -65,7 +65,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author Pawel Pieczul - Initial contribution
  */
-public class LxServerHandler extends BaseThingHandler {
+public class LxServerHandler extends BaseThingHandler implements LxServerHandlerApi {
 
     private static final String SOCKET_URL = "/ws/rfc6455";
     private static final String CMD_CFG_API = "jdev/cfg/api";
@@ -246,34 +246,38 @@ public class LxServerHandler extends BaseThingHandler {
      * Public methods that are called by {@link LxControl} child classes
      */
 
-    /**
-     * Get a websocket object associated with this client
+    /*
+     * (non-Javadoc)
      *
-     * @return websocket object
+     * @see org.openhab.binding.loxone.internal.LxServerHandlerApi#sendAction(org.openhab.binding.loxone.internal.types.
+     * LxUuid, java.lang.String)
      */
-    public LxWebSocket getSocket() {
-        return socket;
+    @Override
+    public void sendAction(LxUuid id, String operation) throws IOException {
+        socket.sendAction(id, operation);
     }
 
-    /**
-     * Add a control - creates internal data structures and channels in the framework.
-     * This method should be used for all dynamically created controls, usually as a result of Miniserver's state update
-     * messages, after the static configuration is setup.
+    /*
+     * (non-Javadoc)
      *
-     * @param control control to be added
+     * @see
+     * org.openhab.binding.loxone.internal.LxServerHandlerApi#addControl(org.openhab.binding.loxone.internal.controls.
+     * LxControl)
      */
+    @Override
     public void addControl(LxControl control) {
         addControlStructures(control);
         addThingChannels(control.getChannelsWithSubcontrols(), false);
     }
 
-    /**
-     * Remove a control - removes internal data structures and channels from the framework
-     * This method should be used for all dynamically created controls, usually as a result of Miniserver's state update
-     * messages, after the static configuration is setup.
+    /*
+     * (non-Javadoc)
      *
-     * @param control control to remove
+     * @see
+     * org.openhab.binding.loxone.internal.LxServerHandlerApi#removeControl(org.openhab.binding.loxone.internal.controls
+     * .LxControl)
      */
+    @Override
     public void removeControl(LxControl control) {
         logger.debug("[{}] Removing control: {}", debugId, control.getName());
         control.getSubControls().values().forEach(subControl -> removeControl(subControl));
@@ -300,24 +304,25 @@ public class LxServerHandler extends BaseThingHandler {
         controls.remove(controlUuid);
     }
 
-    /**
-     * Sets channel's state to a new value
+    /*
+     * (non-Javadoc)
      *
-     * @param channelId channel ID
-     * @param state     new state value
+     * @see org.openhab.binding.loxone.internal.LxServerHandlerApi#setChannelState(org.eclipse.smarthome.core.thing.
+     * ChannelUID, org.eclipse.smarthome.core.types.State)
      */
+    @Override
     public void setChannelState(ChannelUID channelId, State state) {
         updateState(channelId, state);
     }
 
-    /**
-     * Sets a new channel state description. This method is called to dynamically change the way the channel state is
-     * interpreted and displayed. It is called when a dynamic state update is received from the Miniserver with a new
-     * way of displaying control's state.
+    /*
+     * (non-Javadoc)
      *
-     * @param channelId   channel ID
-     * @param description a new state description
+     * @see
+     * org.openhab.binding.loxone.internal.LxServerHandlerApi#setChannelStateDescription(org.eclipse.smarthome.core.
+     * thing.ChannelUID, org.eclipse.smarthome.core.types.StateDescription)
      */
+    @Override
     public void setChannelStateDescription(ChannelUID channelId, StateDescription description) {
         logger.debug("[{}] State description update for channel {}", debugId, channelId);
         dynamicStateDescriptionProvider.setDescription(channelId, description);
@@ -327,37 +332,47 @@ public class LxServerHandler extends BaseThingHandler {
      * Public methods called by {@link LxWsSecurity} child classes.
      */
 
-    /**
-     * Get configuration parameter from the thing configuration. This method is called by the {@link LxWsSecurity} class
-     * to dynamically retrieve previously stored login token and its parameters.
+    /*
+     * (non-Javadoc)
      *
-     * @param name parameter name
-     * @return parameter value
+     * @see org.openhab.binding.loxone.internal.LxServerHandlerApi#getSetting(java.lang.String)
      */
+    @Override
     public String getSetting(String name) {
         Object value = getConfig().get(name);
         return (value instanceof String) ? (String) value : null;
     }
 
-    /**
-     * Set configuration parameters in the thing configuration. This method is called by the {@link LxWsSecurity} class
-     * to dynamically stored login token and its parameters received from the Miniserver.
+    /*
+     * (non-Javadoc)
      *
-     * @param properties pairs of parameter names and values
+     * @see org.openhab.binding.loxone.internal.LxServerHandlerApi#setSettings(java.util.Map)
      */
+    @Override
     public void setSettings(Map<String, String> properties) {
         Configuration config = getConfig();
         properties.forEach((name, value) -> config.put(name, value));
         updateConfiguration(config);
     }
 
-    /**
-     * Get GSON object for reuse
+    /*
+     * (non-Javadoc)
      *
-     * @return GSON object
+     * @see org.openhab.binding.loxone.internal.LxServerHandlerApi#getGson()
      */
+    @Override
     public Gson getGson() {
         return GSON;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.openhab.binding.loxone.internal.LxServerHandlerApi#getThingId()
+     */
+    @Override
+    public ThingUID getThingId() {
+        return getThing().getUID();
     }
 
     /*

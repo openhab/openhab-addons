@@ -47,7 +47,7 @@ import javax.crypto.spec.IvParameterSpec;
 import org.apache.commons.codec.binary.Hex;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.id.InstanceUUID;
-import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.LxWebSocket;
 import org.openhab.binding.loxone.internal.types.LxErrorCode;
 import org.openhab.binding.loxone.internal.types.LxResponse;
@@ -163,7 +163,7 @@ class LxWsSecurityToken extends LxWsSecurity {
      * @param user         user to authenticate
      * @param password     password to authenticate
      */
-    LxWsSecurityToken(int debugId, LxServerHandler thingHandler, LxWebSocket socket, String user, String password) {
+    LxWsSecurityToken(int debugId, LxServerHandlerApi thingHandler, LxWebSocket socket, String user, String password) {
         super(debugId, thingHandler, socket, user, password);
     }
 

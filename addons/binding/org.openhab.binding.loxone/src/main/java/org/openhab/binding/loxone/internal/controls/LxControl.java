@@ -29,7 +29,8 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
-import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.types.LxCategory;
 import org.openhab.binding.loxone.internal.types.LxConfig;
 import org.openhab.binding.loxone.internal.types.LxContainer;
@@ -133,7 +134,7 @@ public class LxControl {
      * Parameters set when finalizing {@link LxConfig} object setup. They will be null right after constructing object.
      */
     transient String defaultChannelLabel;
-    transient LxServerHandler thingHandler;
+    transient LxServerHandlerApi thingHandler;
     private transient LxContainer room;
     private transient LxCategory category;
 
@@ -222,7 +223,11 @@ public class LxControl {
     public final State getChannelState(ChannelUID channelId) {
         Callbacks c = callbacks.get(channelId);
         if (c != null && c.stateCallback != null) {
-            return c.stateCallback.getChannelState();
+            try {
+                return c.stateCallback.getChannelState();
+            } catch (NumberFormatException e) {
+                return UnDefType.UNDEF;
+            }
         }
         return null;
     }
@@ -335,7 +340,7 @@ public class LxControl {
      * @param room         A room that this control and its subcontrols belong to
      * @param category     A category that this control and its subcontrols belong to
      */
-    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
+    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
         logger.debug("Initializing LxControl: {}", uuid);
 
         if (this.thingHandler != null) {
@@ -420,7 +425,7 @@ public class LxControl {
 
     /**
      * Returns control label that will be used for building channel name. This allows for customizing the label per
-     * control.
+     * control by overriding this method, but keeping {@link LxControl#getName()} intact.
      *
      * @return control channel label
      */
@@ -519,7 +524,7 @@ public class LxControl {
         if (thingHandler == null) {
             logger.error("Attempt to send command with not finalized configuration!: {}", action);
         } else {
-            thingHandler.getSocket().sendAction(uuid, action);
+            thingHandler.sendAction(uuid, action);
         }
     }
 
@@ -549,7 +554,7 @@ public class LxControl {
         if (index > 0) {
             controlId += "-" + index;
         }
-        return new ChannelUID(thingHandler.getThing().getUID(), controlId);
+        return new ChannelUID(thingHandler.getThingId(), controlId);
     }
 
 }

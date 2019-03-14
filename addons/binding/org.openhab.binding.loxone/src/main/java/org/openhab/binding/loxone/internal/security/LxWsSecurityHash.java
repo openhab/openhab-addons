@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.loxone.internal.security;
 
-import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.LxWebSocket;
 import org.openhab.binding.loxone.internal.types.LxErrorCode;
 import org.openhab.binding.loxone.internal.types.LxResponse;
@@ -43,7 +43,7 @@ class LxWsSecurityHash extends LxWsSecurity {
      * @param user         user to authenticate
      * @param password     password to authenticate
      */
-    LxWsSecurityHash(int debugId, LxServerHandler thingHandler, LxWebSocket socket, String user, String password) {
+    LxWsSecurityHash(int debugId, LxServerHandlerApi thingHandler, LxWebSocket socket, String user, String password) {
         super(debugId, thingHandler, socket, user, password);
     }
 

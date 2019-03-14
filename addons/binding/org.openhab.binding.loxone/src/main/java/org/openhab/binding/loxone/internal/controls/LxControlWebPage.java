@@ -15,8 +15,10 @@ package org.openhab.binding.loxone.internal.controls;
 import static org.openhab.binding.loxone.internal.LxBindingConstants.*;
 
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.eclipse.smarthome.core.types.StateDescription;
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.types.LxCategory;
 import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
@@ -52,7 +54,7 @@ public class LxControlWebPage extends LxControl {
     }
 
     @Override
-    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
+    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
         super.initialize(thingHandler, room, category);
         if (details != null) {
             if (details.url != null) {
@@ -62,9 +64,12 @@ public class LxControlWebPage extends LxControl {
                 urlHd = new StringType(details.urlHd);
             }
         }
-        addChannel("String", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_TEXT),
+        ChannelUID c1 = addChannel("String", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_TEXT),
                 defaultChannelLabel + " / URL", "Low resolution URL", tags, null, () -> url);
-        addChannel("String", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_TEXT),
+        addChannelStateDescription(c1, new StateDescription(null, null, null, null, true, null));
+
+        ChannelUID c2 = addChannel("String", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_TEXT),
                 defaultChannelLabel + " / URL HD", "High resolution URL", tags, null, () -> urlHd);
+        addChannelStateDescription(c2, new StateDescription(null, null, null, null, true, null));
     }
 }

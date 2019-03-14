@@ -16,7 +16,9 @@ import static org.openhab.binding.loxone.internal.LxBindingConstants.*;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.openhab.binding.loxone.internal.LxServerHandler;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.types.LxCategory;
 import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
@@ -58,19 +60,21 @@ public class LxControlInfoOnlyDigital extends LxControl {
     }
 
     @Override
-    public void initialize(LxServerHandler thingHandler, LxContainer room, LxCategory category) {
+    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
         super.initialize(thingHandler, room, category);
         addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_SWITCH), defaultChannelLabel,
                 "Digital virtual state", tags, null, this::getChannelState);
     }
 
-    private OnOffType getChannelState() {
+    private State getChannelState() {
         Double value = getStateDoubleValue(STATE_ACTIVE);
         if (value != null) {
             if (value == 0) {
                 return OnOffType.OFF;
             } else if (value == 1.0) {
                 return OnOffType.ON;
+            } else {
+                return UnDefType.UNDEF;
             }
         }
         return null;

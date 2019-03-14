@@ -308,25 +308,6 @@ public class LxWebSocket {
      */
 
     /**
-     * Sends an action to a Loxone Miniserver's control.
-     *
-     * @param id        identifier of the control
-     * @param operation identifier of the operation
-     * @throws IOException when communication error with Miniserver occurs
-     */
-    public void sendAction(LxUuid id, String operation) throws IOException {
-        String command = CMD_ACTION + id.getOriginalString() + "/" + operation;
-        logger.debug("[{}] Sending command {}", debugId, command);
-        LxResponse response = sendCmdWithResp(command, true, true);
-        if (response == null) {
-            throw new IOException("Error sending command " + command);
-        }
-        if (!response.isResponseOk()) {
-            throw new IOException("Received response is not ok to command " + command);
-        }
-    }
-
-    /**
      * Parse received message into a response structure. Check basic correctness of the response.
      *
      * @param msg received response message
@@ -434,6 +415,25 @@ public class LxWebSocket {
     /*
      * Methods used by {@link LxServerHandler}
      */
+
+    /**
+     * Sends an action to a Loxone Miniserver's control.
+     *
+     * @param id        identifier of the control
+     * @param operation identifier of the operation
+     * @throws IOException when communication error with Miniserver occurs
+     */
+    void sendAction(LxUuid id, String operation) throws IOException {
+        String command = CMD_ACTION + id.getOriginalString() + "/" + operation;
+        logger.debug("[{}] Sending command {}", debugId, command);
+        LxResponse response = sendCmdWithResp(command, true, true);
+        if (response == null) {
+            throw new IOException("Error sending command " + command);
+        }
+        if (!response.isResponseOk()) {
+            throw new IOException("Received response is not ok to command " + command);
+        }
+    }
 
     /**
      * Send keep-alive message to the Miniserver
