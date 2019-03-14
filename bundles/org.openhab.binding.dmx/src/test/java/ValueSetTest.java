@@ -48,6 +48,7 @@ public class ValueSetTest {
         assertThat(valueSet.getValue(5), is(200));
     }
 
+    @Test
     public void fromString() {
         ValueSet valueSet = ValueSet.fromString("1000:100,200:-1");
 

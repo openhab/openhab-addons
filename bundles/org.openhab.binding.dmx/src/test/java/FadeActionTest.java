@@ -144,5 +144,4 @@ public class FadeActionTest {
         fadeAction.reset();
         assertThat(fadeAction.getState(), is(ActionState.WAITING));
     }
-
 }
