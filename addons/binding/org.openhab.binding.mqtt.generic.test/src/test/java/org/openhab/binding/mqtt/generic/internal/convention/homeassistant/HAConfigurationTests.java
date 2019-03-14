@@ -19,38 +19,96 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class HAConfigurationTests {
 
+    private Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
+
     @Test
-    public void testTasmotaSwitch() {
+    public void testAbbreviations() {
         String json = "{\n"//
-                + "    \"name\":\"Licht Dachterasse\",\n" //
-                + "    \"cmd_t\":\"~cmnd/POWER\",\n" //
-                + "    \"stat_t\":\"~tele/STATE\",\n" //
-                + "    \"val_tpl\":\"{{value_json.POWER}}\",\n" //
-                + "    \"pl_off\":\"OFF\",\n" //
-                + "    \"pl_on\":\"ON\",\n" //
-                + "    \"avty_t\":\"~tele/LWT\",\n" //
-                + "    \"pl_avail\":\"Online\",\n" //
-                + "    \"pl_not_avail\":\"Offline\",\n" //
-                + "    \"uniq_id\":\"86C9AC_RL_1\",\n" //
+                + "    \"name\":\"A\",\n" //
+                + "    \"icon\":\"2\",\n" //
+                + "    \"qos\":1,\n" //
+                + "    \"retain\":true,\n" //
+                + "    \"val_tpl\":\"B\",\n" //
+                + "    \"uniq_id\":\"C\",\n" //
+                + "    \"avty_t\":\"~E\",\n" //
+                + "    \"pl_avail\":\"F\",\n" //
+                + "    \"pl_not_avail\":\"G\",\n" //
                 + "    \"device\":{\n" //
-                + "        \"identifiers\":[\"86C9AC\"],\n" //
-                + "        \"name\":\"Licht Dachterasse\",\n" //
-                + "        \"model\":\"Sonoff TH\",\n" //
-                + "        \"sw_version\":\"6.4.1(release-sensors)\",\n" //
-                + "        \"manufacturer\":\"Tasmota\"\n" //
+                + "        \"ids\":[\"H\"],\n" //
+                + "        \"cns\":[{\n" //
+                + "           \"type\": \"I1\",\n" //
+                + "           \"identifier\": \"I2\"\n" //
+                + "        }],\n" //
+                + "        \"name\":\"J\",\n" //
+                + "        \"mdl\":\"K\",\n" //
+                + "        \"sw\":\"L\",\n" //
+                + "        \"mf\":\"M\"\n" //
                 + "    },\n" //
-                + "    \"~\":\"sonoff-2476/\"\n" //
+                + "    \"~\":\"D/\"\n" //
                 + "}";
 
-        HAConfiguration config = HAConfiguration.fromString(json, new Gson());
+        BaseChannelConfiguration config = BaseChannelConfiguration.fromString(json, gson);
 
-        assertThat(config.name, is("Licht Dachterasse"));
+        assertThat(config.name, is("A"));
+        assertThat(config.icon, is("2"));
+        assertThat(config.qos, is(1));
+        assertThat(config.retain, is(true));
+        assertThat(config.value_template, is("B"));
+        assertThat(config.unique_id, is("C"));
+        assertThat(config.availability_topic, is("D/E"));
+        assertThat(config.payload_available, is("F"));
+        assertThat(config.payload_not_available, is("G"));
+
         assertThat(config.device, is(notNullValue()));
-        assertThat(config.device.identifiers, contains("86C9AC"));
-        assertThat(config.device.name, is("Licht Dachterasse"));
+        assertThat(config.device.identifiers, contains("H"));
+        assertThat(config.device.connections, is(notNullValue()));
+        assertThat(config.device.connections.get(0).type, is("I1"));
+        assertThat(config.device.connections.get(0).identifier, is("I2"));
+        assertThat(config.device.name, is("J"));
+        assertThat(config.device.model, is("K"));
+        assertThat(config.device.sw_version, is("L"));
+        assertThat(config.device.manufacturer, is("M"));
+    }
+
+    @Test
+    public void testTildeSubstritution() {
+        String json = "{\n"//
+                + "    \"name\":\"A\",\n" //
+                + "    \"icon\":\"2\",\n" //
+                + "    \"qos\":1,\n" //
+                + "    \"retain\":true,\n" //
+                + "    \"val_tpl\":\"B\",\n" //
+                + "    \"uniq_id\":\"C\",\n" //
+                + "    \"avty_t\":\"~E\",\n" //
+                + "    \"pl_avail\":\"F\",\n" //
+                + "    \"pl_not_avail\":\"G\",\n" //
+                + "    \"optimistic\":true,\n" //
+                + "    \"state_topic\":\"O/~\",\n" //
+                + "    \"command_topic\":\"P~Q\",\n" //
+                + "    \"device\":{\n" //
+                + "        \"ids\":[\"H\"],\n" //
+                + "        \"cns\":[{\n" //
+                + "           \"type\": \"I1\",\n" //
+                + "           \"identifier\": \"I2\"\n" //
+                + "        }],\n" //
+                + "        \"name\":\"J\",\n" //
+                + "        \"mdl\":\"K\",\n" //
+                + "        \"sw\":\"L\",\n" //
+                + "        \"mf\":\"M\"\n" //
+                + "    },\n" //
+                + "    \"~\":\"D/\"\n" //
+                + "}";
+
+        ComponentSwitch.ChannelConfiguration config = BaseChannelConfiguration.fromString(json, gson, ComponentSwitch.ChannelConfiguration.class);
+
+        assertThat(config.availability_topic, is("D/E"));
+        assertThat(config.state_topic, is("O/D/"));
+        assertThat(config.command_topic, is("P~Q"));
+
     }
 
     @Test
@@ -76,7 +134,7 @@ public class HAConfigurationTests {
                 + "    ]\n" //
                 + "}";
 
-        HAConfiguration config = HAConfiguration.fromString(json, new Gson(), ComponentFan.Config.class);
+        ComponentFan.ChannelConfiguration config = BaseChannelConfiguration.fromString(json, gson, ComponentFan.ChannelConfiguration.class);
         assertThat(config.name, is("Bedroom Fan"));
 
     }

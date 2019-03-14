@@ -82,7 +82,7 @@ public class CChannel {
         }
 
         Configuration configuration = new Configuration();
-        configuration.put("config", component.configJson);
+        configuration.put("config", component.channelConfigurationJson);
         channel = ChannelBuilder.create(channelUID, channelState.getItemType()).withType(channelTypeUID)
                 .withKind(type.getKind()).withLabel(label).withConfiguration(configuration).build();
     }

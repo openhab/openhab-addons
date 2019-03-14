@@ -29,13 +29,48 @@ import com.google.gson.annotations.SerializedName;
  * @author Jochen Klein - Initial contribution
  */
 @NonNullByDefault
-public abstract class HAConfiguration {
+public abstract class BaseChannelConfiguration {
+
+    /**
+     * This class is needed, to be able to parse only the common base attributes.
+     * Without this, {@link BaseChannelConfiguration} cannot be instantiated, as it is abstract.
+     * This is needed during the discovery.
+     */
+    private static class Config extends BaseChannelConfiguration {
+        public Config() {
+            super("private");
+        }
+    }
+
+    /**
+     * Parse the configJSON into a subclass of {@link BaseChannelConfiguration}
+     *
+     * @param configJSON
+     * @param gson
+     * @param clazz
+     * @return configuration object
+     */
+    public static <C extends BaseChannelConfiguration> C fromString(final String configJSON, final Gson gson,
+            final Class<C> clazz) {
+        return gson.fromJson(configJSON, clazz);
+    }
+
+    /**
+     * Parse the base properties of the configJSON into a {@link BaseChannelConfiguration}
+     *
+     * @param configJSON
+     * @param gson
+     * @return configuration object
+     */
+    public static BaseChannelConfiguration fromString(final String configJSON, final Gson gson) {
+        return fromString(configJSON, gson, Config.class);
+    }
 
     public String name;
 
     protected String icon = "";
-    protected int qos = 0;
-    protected boolean retain = false;
+    protected int qos; // defaults to 0 according to HA specification
+    protected boolean retain; // defaults to false according to HA specification
     protected @Nullable String value_template;
     protected @Nullable String unique_id;
 
@@ -46,42 +81,7 @@ public abstract class HAConfiguration {
     @SerializedName(value = "~")
     protected String tilde = "";
 
-    /**
-     * This class is needed, to be able to parse only the common base attributes.
-     * Without this, {@link HAConfiguration} cannot be instantiated, as it is abstract.
-     * This is needed during the discovery.
-     */
-    private static class Config extends HAConfiguration {
-        public Config() {
-            super("private");
-        }
-    }
-
-    /**
-     * Parse the configJSON into a subclass of {@link HAConfiguration}
-     *
-     * @param configJSON
-     * @param gson
-     * @param clazz
-     * @return configuration object
-     */
-    public static <C extends HAConfiguration> C fromString(final String configJSON, final Gson gson,
-            final Class<C> clazz) {
-        return gson.fromJson(configJSON, clazz);
-    }
-
-    /**
-     * Parse the base properties of the configJSON into a {@link HAConfiguration}
-     *
-     * @param configJSON
-     * @param gson
-     * @return configuration object
-     */
-    public static HAConfiguration fromString(final String configJSON, final Gson gson) {
-        return fromString(configJSON, gson, Config.class);
-    }
-
-    protected HAConfiguration(String defaultName) {
+    protected BaseChannelConfiguration(String defaultName) {
         this.name = defaultName;
     }
 

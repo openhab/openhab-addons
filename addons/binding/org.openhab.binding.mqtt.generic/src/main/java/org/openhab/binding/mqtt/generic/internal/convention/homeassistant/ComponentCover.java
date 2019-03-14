@@ -14,11 +14,7 @@ package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.RollershutterValue;
-
-import com.google.gson.Gson;
 
 /**
  * A MQTT Cover component, following the https://www.home-assistant.io/components/cover.mqtt/ specification.
@@ -28,14 +24,14 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentCover extends AbstractComponent<ComponentCover.Config> {
+public class ComponentCover extends AbstractComponent<ComponentCover.ChannelConfiguration> {
     public static final String switchChannelID = "cover"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config extends HAConfiguration {
-        Config() {
+    static class ChannelConfiguration extends BaseChannelConfiguration {
+        ChannelConfiguration() {
             super("MQTT Cover");
         }
 
@@ -46,13 +42,12 @@ public class ComponentCover extends AbstractComponent<ComponentCover.Config> {
         protected String payload_stop = "STOP";
     }
 
-    public ComponentCover(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener updateListener, Gson gson) {
-        super(thing, haID, configJSON, gson, Config.class);
+    public ComponentCover(CFactory.ComponentConfiguration builder) {
+        super(builder, ChannelConfiguration.class);
 
-        RollershutterValue value = new RollershutterValue(config.payload_open, config.payload_close,
-                config.payload_stop);
+        RollershutterValue value = new RollershutterValue(channelConfiguration.payload_open, channelConfiguration.payload_close,
+                channelConfiguration.payload_stop);
         channels.put(switchChannelID, new CChannel(this, switchChannelID, value, //
-                config.state_topic, config.command_topic, config.name, "", updateListener));
+                channelConfiguration.state_topic, channelConfiguration.command_topic, channelConfiguration.name, "", builder.getUpdateListener()));
     }
 }

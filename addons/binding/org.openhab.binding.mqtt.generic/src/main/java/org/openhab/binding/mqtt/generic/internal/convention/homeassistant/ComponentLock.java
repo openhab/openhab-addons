@@ -15,11 +15,7 @@ package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.OnOffValue;
-
-import com.google.gson.Gson;
 
 /**
  * A MQTT lock, following the https://www.home-assistant.io/components/lock.mqtt/ specification.
@@ -27,14 +23,14 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentLock extends AbstractComponent<ComponentLock.Config> {
+public class ComponentLock extends AbstractComponent<ComponentLock.ChannelConfiguration> {
     public static final String switchChannelID = "lock"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config extends HAConfiguration {
-        Config() {
+    static class ChannelConfiguration extends BaseChannelConfiguration {
+        ChannelConfiguration() {
             super("MQTT Lock");
         }
 
@@ -46,22 +42,22 @@ public class ComponentLock extends AbstractComponent<ComponentLock.Config> {
         protected @Nullable String command_topic;
     };
 
-    public ComponentLock(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
-        super(thing, haID, configJSON, gson, Config.class);
+    public ComponentLock(CFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         // We do not support all HomeAssistant quirks
-        if (config.optimistic && StringUtils.isNotBlank(config.state_topic)) {
+        if (channelConfiguration.optimistic && StringUtils.isNotBlank(channelConfiguration.state_topic)) {
             throw new UnsupportedOperationException("Component:Lock does not support forced optimistic mode");
         }
 
         channels.put(switchChannelID,
-                new CChannel(this, switchChannelID, new OnOffValue(config.payload_lock, config.payload_unlock),
-                        config.state_topic, config.command_topic, config.name, "", channelStateUpdateListener));
+                new CChannel(this, switchChannelID, new OnOffValue(channelConfiguration.payload_lock, channelConfiguration.payload_unlock),
+                        channelConfiguration.state_topic, channelConfiguration.command_topic, channelConfiguration.name, "",
+                        componentConfiguration.getUpdateListener()));
     }
 
     @Override
     public String name() {
-        return config.name;
+        return channelConfiguration.name;
     }
 }

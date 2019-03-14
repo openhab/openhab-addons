@@ -14,11 +14,7 @@ package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.TextValue;
-
-import com.google.gson.Gson;
 
 /**
  * A MQTT sensor, following the https://www.home-assistant.io/components/sensor.mqtt/ specification.
@@ -26,14 +22,14 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentSensor extends AbstractComponent<ComponentSensor.Config> {
+public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelConfiguration> {
     public static final String sensorChannelID = "sensor"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config extends HAConfiguration {
-        Config() {
+    static class ChannelConfiguration extends BaseChannelConfiguration {
+        ChannelConfiguration() {
             super("MQTT Sensor");
         }
 
@@ -45,20 +41,19 @@ public class ComponentSensor extends AbstractComponent<ComponentSensor.Config> {
         protected String state_topic = "";
     };
 
-    public ComponentSensor(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
-        super(thing, haID, configJSON, gson, Config.class);
+    public ComponentSensor(CFactory.ComponentConfiguration builder) {
+        super(builder, ChannelConfiguration.class);
 
-        if (config.force_update) {
+        if (channelConfiguration.force_update) {
             throw new UnsupportedOperationException("Component:Sensor does not support forced updates");
         }
 
-        channels.put(sensorChannelID, new CChannel(this, sensorChannelID, new TextValue(), config.state_topic, null,
-                config.name, config.unit_of_measurement, channelStateUpdateListener));
+        channels.put(sensorChannelID, new CChannel(this, sensorChannelID, new TextValue(), channelConfiguration.state_topic, null,
+                channelConfiguration.name, channelConfiguration.unit_of_measurement, builder.getUpdateListener()));
     }
 
     @Override
     public String name() {
-        return config.name;
+        return channelConfiguration.name;
     }
 }
