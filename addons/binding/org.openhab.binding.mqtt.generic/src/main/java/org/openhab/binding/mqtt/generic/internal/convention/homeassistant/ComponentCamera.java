@@ -13,12 +13,7 @@
 package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.ImageValue;
-
-import com.google.gson.Gson;
 
 /**
  * A MQTT camera, following the https://www.home-assistant.io/components/camera.mqtt/ specification.
@@ -28,27 +23,26 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentCamera extends AbstractComponent<ComponentCamera.Config> {
+public class ComponentCamera extends AbstractComponent<ComponentCamera.ChannelConfiguration> {
     public static final String cameraChannelID = "camera"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config extends HAConfiguration {
-        Config() {
+    static class ChannelConfiguration extends BaseChannelConfiguration {
+        ChannelConfiguration() {
             super("MQTT Camera");
         }
 
         protected String topic = "";
     };
 
-    public ComponentCamera(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
-        super(thing, haID, configJSON, gson, Config.class);
+    public ComponentCamera(CFactory.ComponentConfiguration builder) {
+        super(builder, ChannelConfiguration.class);
 
         ImageValue value = new ImageValue();
         channels.put(cameraChannelID, new CChannel(this, cameraChannelID, value, //
-                config.topic, null, config.name, "", channelStateUpdateListener));
+                channelConfiguration.topic, null, channelConfiguration.name, "", builder.getUpdateListener()));
     }
 
 }
