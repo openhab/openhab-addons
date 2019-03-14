@@ -356,7 +356,7 @@
 		<tags>
 			<tag>heating</tag>
 		</tags>
-		<state pattern="%s" readOnly="false">
+		<state pattern="%s">
 			<options>
 				<option value="Normal">Normal</option>
 				<option value="Day">Day</option>
@@ -374,7 +374,7 @@
 		<tags>
 			<tag>heating</tag>
 		</tags>
-		<state pattern="%s" readOnly="false">
+		<state pattern="%s">
 			<options>
 				<option value="COOLING">COOLING</option>
 				<option value="HEATING">HEATING</option>
@@ -392,7 +392,7 @@
 		<tags>
 			<tag>heating</tag>
 		</tags>
-		<state pattern="%s" readOnly="false">
+		<state pattern="%s">
 			<options>
 				<option value="AUTO">AUTO</option>
 				<option value="HIGH">HIGH</option>
@@ -442,7 +442,7 @@
 		<label>UV Switch</label>
 		<description>UV Switch</description>
 		<category>Switch</category>
-		<state pattern="%d %%" readOnly="false"></state>
+		<state pattern="%d %%"></state>
 	</channel-type>
 
 	<channel-type id="Sonic">

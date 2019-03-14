@@ -26,7 +26,6 @@ import org.openhab.binding.hdl.internal.handler.HdlPacket;
  *
  * @author stigla - Initial contribution
  */
-
 public class MPL848FH extends Device {
     private double temperatureValue;
     private OnOffType uvSwitch1 = null; // Status On/OFf

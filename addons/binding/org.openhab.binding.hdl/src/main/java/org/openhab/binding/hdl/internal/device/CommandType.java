@@ -21,7 +21,6 @@ package org.openhab.binding.hdl.internal.device;
  * @author stigla - Initial contribution
  *
  */
-
 public enum CommandType {
     Scene_Control(2),
     Response_Scene_Control(3),

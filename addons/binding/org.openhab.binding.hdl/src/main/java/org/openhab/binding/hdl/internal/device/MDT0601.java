@@ -22,7 +22,6 @@ import org.openhab.binding.hdl.internal.handler.HdlPacket;
  *
  * @author stigla - Initial contribution
  */
-
 public class MDT0601 extends Device {
     // Dimmer 6x1A - Universal
     private PercentType dimChannel1 = null;

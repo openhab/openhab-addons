@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author stigla - Initial contribution
  */
-
 public class HdlHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(HdlHandlerFactory.class);

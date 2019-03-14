@@ -20,7 +20,6 @@ import java.util.Map;
  *
  * @author stigla - Initial contribution
  */
-
 public final class DeviceConfiguration {
 
     private String serialNr = null;

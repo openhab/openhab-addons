@@ -27,7 +27,6 @@ import org.openhab.binding.hdl.internal.handler.HdlPacket;
  *
  * @author stigla - Initial contribution
  */
-
 public class MS08Mn2C extends Device {
     private double temperatureValue;
     private double brightnessValue;

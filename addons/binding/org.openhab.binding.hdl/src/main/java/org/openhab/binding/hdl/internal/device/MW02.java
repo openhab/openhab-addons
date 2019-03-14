@@ -24,7 +24,6 @@ import org.openhab.binding.hdl.internal.handler.HdlPacket;
  *
  * @author stigla - Initial contribution
  */
-
 public class MW02 extends Device {
 
     /** Device type for Curtain controller for controlling off 3. parts curtains **/

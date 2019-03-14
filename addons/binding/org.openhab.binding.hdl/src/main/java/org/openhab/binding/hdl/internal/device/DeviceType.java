@@ -18,7 +18,6 @@ package org.openhab.binding.hdl.internal.device;
  *
  * @author stigla - Initial contribution
  */
-
 public enum DeviceType {
 
     MD0610(1), // 6 channels 10A dimmable scene controller

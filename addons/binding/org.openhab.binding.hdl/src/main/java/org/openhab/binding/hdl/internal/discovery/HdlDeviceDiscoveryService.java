@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author stigla - Initial contribution
  */
-
 public class HdlDeviceDiscoveryService extends AbstractDiscoveryService implements DeviceStatusListener {
 
     private static final int SEARCH_TIME = 60;

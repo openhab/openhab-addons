@@ -17,7 +17,6 @@ package org.openhab.binding.hdl.internal.device;
  *
  * @author stigla - Initial contribution
  */
-
 public class DeviceInformation {
 
     private DeviceType deviceType = DeviceType.Invalid;

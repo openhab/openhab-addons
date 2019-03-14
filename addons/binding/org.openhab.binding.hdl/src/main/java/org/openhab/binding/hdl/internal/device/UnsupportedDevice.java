@@ -17,7 +17,6 @@ package org.openhab.binding.hdl.internal.device;
  *
  * @author stigla - Initial contribution
  */
-
 public class UnsupportedDevice extends Device {
 
     public UnsupportedDevice(DeviceConfiguration c) {

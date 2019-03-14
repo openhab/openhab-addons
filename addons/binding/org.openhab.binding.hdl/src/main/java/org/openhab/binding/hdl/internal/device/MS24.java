@@ -22,7 +22,6 @@ import org.openhab.binding.hdl.internal.handler.HdlPacket;
  *
  * @author stigla - Initial contribution
  */
-
 public class MS24 extends Device {
 
     /** Device type for Sensor Input Module **/

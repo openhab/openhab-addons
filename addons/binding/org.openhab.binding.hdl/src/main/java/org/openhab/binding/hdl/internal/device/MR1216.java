@@ -22,7 +22,6 @@ import org.openhab.binding.hdl.internal.handler.HdlPacket;
  *
  * @author stigla - Initial contribution
  */
-
 public class MR1216 extends Device {
 
     /** Device type for this Relay 12x16A **/

@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author stigla - Initial contribution
  */
-
 public abstract class Device {
     protected static final Logger LOGGER = LoggerFactory.getLogger(Device.class);
 
