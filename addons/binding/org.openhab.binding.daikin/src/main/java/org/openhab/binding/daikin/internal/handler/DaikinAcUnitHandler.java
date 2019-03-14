@@ -36,10 +36,10 @@ import org.openhab.binding.daikin.internal.DaikinBindingConstants;
 import org.openhab.binding.daikin.internal.DaikinCommunicationException;
 import org.openhab.binding.daikin.internal.DaikinWebTargets;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
-import org.openhab.binding.daikin.internal.api.SensorInfo;
 import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
 import org.openhab.binding.daikin.internal.api.Enums.FanSpeed;
 import org.openhab.binding.daikin.internal.api.Enums.Mode;
+import org.openhab.binding.daikin.internal.api.SensorInfo;
 import org.openhab.binding.daikin.internal.config.DaikinConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +100,7 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing OpenDaikin AC Unit");
+        logger.debug("Initializing Daikin AC Unit");
         DaikinConfiguration config = getConfigAs(DaikinConfiguration.class);
         if (config.host == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address must be set");
@@ -171,8 +171,7 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
             updateTemperatureChannel(DaikinBindingConstants.CHANNEL_OUTDOOR_TEMP, sensorInfo.outdoortemp);
 
             if (sensorInfo.indoorhumidity.isPresent()) {
-                updateState(DaikinBindingConstants.CHANNEL_HUMIDITY,
-                        new DecimalType(sensorInfo.indoorhumidity.get()));
+                updateState(DaikinBindingConstants.CHANNEL_HUMIDITY, new DecimalType(sensorInfo.indoorhumidity.get()));
             } else {
                 updateState(DaikinBindingConstants.CHANNEL_HUMIDITY, UnDefType.UNDEF);
             }

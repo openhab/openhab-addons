@@ -25,6 +25,7 @@
 /addons/binding/org.openhab.binding.chromecast.test/ @kaikreuzer
 /addons/binding/org.openhab.binding.cm11a/ @BobRak
 /addons/binding/org.openhab.binding.coolmasternet/ @projectgus
+/addons/binding/org.openhab.binding.daikin/ @caffineehacker
 /addons/binding/org.openhab.binding.deconz/ @davidgraeff
 /addons/binding/org.openhab.binding.denonmarantz/ @jwveldhuis
 /addons/binding/org.openhab.binding.digitalstrom/ @MichaelOchel @msiegele
@@ -118,7 +119,6 @@
 /addons/binding/org.openhab.binding.onewiregpio/ @aogorek
 /addons/binding/org.openhab.binding.onewire.test/ @J-N-K
 /addons/binding/org.openhab.binding.onkyo/ @pail23 @paulianttila
-/addons/binding/org.openhab.binding.opendaikin/ @caffineehacker
 /addons/binding/org.openhab.binding.opensprinkler/ @CrackerStealth
 /addons/binding/org.openhab.binding.openuv/ @clinique
 /addons/binding/org.openhab.binding.openweathermap/ @cweitkamp

@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.opendaikin")
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.daikin")
 @NonNullByDefault
 public class DaikinHandlerFactory extends BaseThingHandlerFactory {
 
