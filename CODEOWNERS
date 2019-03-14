@@ -26,6 +26,7 @@
 /addons/binding/org.openhab.binding.chromecast.test/ @kaikreuzer
 /addons/binding/org.openhab.binding.cm11a/ @BobRak
 /addons/binding/org.openhab.binding.coolmasternet/ @projectgus
+/addons/binding/org.openhab.binding.daikin/ @caffineehacker
 /addons/binding/org.openhab.binding.deconz/ @davidgraeff
 /addons/binding/org.openhab.binding.denonmarantz/ @jwveldhuis
 /addons/binding/org.openhab.binding.digitalstrom/ @MichaelOchel @msiegele
