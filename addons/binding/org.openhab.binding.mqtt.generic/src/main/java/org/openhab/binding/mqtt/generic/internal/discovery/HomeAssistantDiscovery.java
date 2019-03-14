@@ -31,7 +31,8 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
-import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HAConfiguration;
+import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.ChannelConfigurationTypeAdapterFactory;
+import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.BaseChannelConfiguration;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HaID;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -39,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * The {@link HomeAssistantDiscovery} is responsible for discovering device nodes that follow the
@@ -52,7 +54,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantDiscovery.class);
     protected final Map<String, Set<String>> componentsPerThingID = new TreeMap<>();
     private @Nullable ScheduledFuture<?> future;
-    private final Gson gson = new Gson();
+    private final Gson gson;
 
     public static final Map<String, String> HA_COMP_TO_NAME = new TreeMap<>();
     {
@@ -73,6 +75,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     public HomeAssistantDiscovery() {
         super(Stream.of(MqttBindingConstants.HOMEASSISTANT_MQTT_THING).collect(Collectors.toSet()), 3, true,
                 BASE_TOPIC + "/#");
+        this.gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
     }
 
     @NonNullByDefault({})
@@ -152,7 +155,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         final String componentNames = components.stream().map(c -> HA_COMP_TO_NAME.getOrDefault(c, c))
                 .collect(Collectors.joining(","));
 
-        HAConfiguration config = HAConfiguration.fromString(new String(payload, StandardCharsets.UTF_8), gson);
+        BaseChannelConfiguration config = BaseChannelConfiguration.fromString(new String(payload, StandardCharsets.UTF_8), gson);
 
         Map<String, Object> properties = new HashMap<>();
         properties.put("objectid", topicParts.objectID);
