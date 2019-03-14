@@ -112,6 +112,11 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.coolmasternet/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-daikin" description="Daikin Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.daikin/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-denonmarantz" description="DenonMarantz Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
