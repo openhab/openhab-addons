@@ -118,6 +118,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.binding</groupId>
+      <artifactId>org.openhab.binding.daikin</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.binding</groupId>
       <artifactId>org.openhab.binding.deconz</artifactId>
       <version>${project.version}</version>
     </dependency>
