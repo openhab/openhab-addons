@@ -25,13 +25,13 @@ public class LxControlWebPageTest extends LxControlTest {
 
     @Test
     public void testControlCreation() {
-        testControlCreation(LxControlWebPage.class, 0, 2, 2, 0);
+        testControlCreation(LxControlWebPage.class, 1, 0, 2, 2, 0);
     }
 
     @Test
     public void testChannels() {
-        testChannel("String", " / URL", null, null, null, null, true);
-        testChannel("String", " / URL HD", null, null, null, null, true);
+        testChannel("String", " / URL", null, null, null, null, true, null);
+        testChannel("String", " / URL HD", null, null, null, null, true, null);
     }
 
     @Test

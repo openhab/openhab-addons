@@ -281,6 +281,83 @@
 				"max": "131b19cd-03c0-640a-ffffd2fd15b703b6",
 				"step": "131b19cd-03c0-6407-ffffd2fd15b703b6"
 			}
+		},
+		"0e367c09-0161-e2c1-ffff403fb0c34b9e": {
+			"name": "Window Blinds",
+			"type": "Jalousie",
+			"uuidAction": "0e367c09-0161-e2c1-ffff403fb0c34b9e",
+			"room": "0e368d32-014f-4604-ffff403fb0c34b9e",
+			"cat": "0b734138-033e-02d8-ffff403fb0c34b9e",
+			"defaultRating": 0,
+			"isFavorite": false,
+			"isSecured": false,
+			"details": {
+				"isAutomatic": true,
+				"animation": 1
+			},
+			"states": {
+				"infoText": "131b0b1e-022c-06e0-ffff504f9410790f",
+				"up": "0e367c09-0161-e2b9-ffff29379da805e5",
+				"down": "0e367c09-0161-e2ba-ffff29379da805e5",
+				"position": "0e367c09-0161-e2bb-ffff29379da805e5",
+				"shadePosition": "0e367c09-0161-e2bc-ffff29379da805e5",
+				"safetyActive": "0e367c09-0161-e2be-ffff29379da805e5",
+				"autoAllowed": "0e367c09-0161-e29c-ffff29379da805e5",
+				"autoActive": "0e367c09-0161-e2bd-ffff29379da805e5",
+				"locked": "0e367c09-0161-e2bf-ffff29379da805e5",
+				"autoInfoText": "131b0b1e-022c-06e1-ffff504f9410790f",
+				"autoState": "131b0b1e-022c-06e2-ffff504f9410790f"
+			}
+		},
+		"4255054f-0355-af47-ffff403fb0c34b9e": {
+			"name": "Sprinkler 1",
+			"type": "Radio",
+			"uuidAction": "4255054f-0355-af47-ffff403fb0c34b9e",
+			"room": "11d68cf4-0080-7697-ffff403fb0c34b9e",
+			"cat": "0fe650c2-0004-d446-ffff504f9410790f",
+			"defaultRating": 0,
+			"isFavorite": false,
+			"isSecured": false,
+			"defaultIcon": null,
+			"details": {
+				"allOff": "",
+				"outputs": {
+					"1": "Sprinkler 1",
+					"2": "Sprinkler 2",
+					"3": "Sprinkler 3",
+					"4": "Sprinkler 4",
+					"5": "Sprinkler 5",
+					"6": "Sprinkler 6"
+				}
+			},
+			"states": {
+				"activeOutput": "4255054f-0355-af46-ffff8e584788cd57"
+			}
+		},
+		"1255054f-0355-af47-ffff403fb0c34b9e": {
+			"name": "Sprinkler 2",
+			"type": "Radio",
+			"uuidAction": "1255054f-0355-af47-ffff403fb0c34b9e",
+			"room": "11d68cf4-0080-7697-ffff403fb0c34b9e",
+			"cat": "0fe650c2-0004-d446-ffff504f9410790f",
+			"defaultRating": 0,
+			"isFavorite": false,
+			"isSecured": false,
+			"defaultIcon": null,
+			"details": {
+				"allOff": "All Off",
+				"outputs": {
+					"1": "Sprinkler 1",
+					"2": "Sprinkler 2",
+					"3": "Sprinkler 3",
+					"4": "Sprinkler 4",
+					"5": "Sprinkler 5",
+					"6": "Sprinkler 6"
+				}
+			},
+			"states": {
+				"activeOutput": "1255054f-0355-af46-ffff8e584788cd57"
+			}
 		}
 	},
 	"weatherServer": {

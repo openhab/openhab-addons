@@ -28,7 +28,7 @@ public class LxControlSwitchTest extends LxControlTest {
 
     @Test
     public void testControlCreation() {
-        testControlCreation(LxControlSwitch.class, 0, 1, 1, 1);
+        testControlCreation(LxControlSwitch.class, 1, 0, 1, 1, 1);
     }
 
     @Test

@@ -1,5 +1,4 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +25,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.loxone.internal.types.LxCategory;
 import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
@@ -46,9 +46,9 @@ class LxControlTest {
         handler.loadConfiguration();
     }
 
-    <T> void testControlCreation(Class<T> testClass, int numberOfSubcontrols, int numberOfChannels,
-            int numberOfChannelsWithSubs, int numberOfStates) {
-        assertEquals(1, numberOfControls(testClass));
+    <T> void testControlCreation(Class<T> testClass, int numberOfControls, int numberOfSubcontrols,
+            int numberOfChannels, int numberOfChannelsWithSubs, int numberOfStates) {
+        assertEquals(numberOfControls, numberOfControls(testClass));
         LxControl c = getControl(controlUuid);
         assertNotNull(c);
         Map<LxUuid, LxControl> subC = c.getSubControls();
@@ -69,7 +69,7 @@ class LxControlTest {
     }
 
     void testChannel(String itemType, String namePostFix, BigDecimal min, BigDecimal max, BigDecimal step,
-            String format, boolean readOnly) {
+            String format, boolean readOnly, List<StateOption> options) {
         LxControl ctrl = getControl(controlUuid);
         assertNotNull(ctrl);
         Channel c = getChannel(getExpectedName(controlName, ctrl.getRoom().getName(), namePostFix), ctrl);
@@ -78,19 +78,36 @@ class LxControlTest {
         assertNotNull(c.getDescription());
         assertEquals(itemType, c.getAcceptedItemType());
         assertEquals(ChannelKind.STATE, c.getKind());
-        if (readOnly || min != null || max != null || step != null || format != null) {
+        if (readOnly || min != null || max != null || step != null || format != null || options != null) {
             StateDescription d = handler.stateDescriptions.get(c.getUID());
             assertNotNull(d);
             assertEquals(min, d.getMinimum());
             assertEquals(max, d.getMaximum());
             assertEquals(step, d.getStep());
             assertEquals(format, d.getPattern());
-            assertTrue(d.isReadOnly());
+            assertTrue(readOnly == d.isReadOnly());
+            List<StateOption> opts = d.getOptions();
+            if (options == null) {
+                assertTrue(opts == null || opts.isEmpty());
+            } else {
+                assertNotNull(opts);
+                assertEquals(options.size(), opts.size());
+                options.forEach(o -> {
+                    long num = opts.stream()
+                            .filter(f -> o.getLabel().equals(f.getLabel()) && o.getValue().equals(f.getValue()))
+                            .collect(Collectors.counting());
+                    assertEquals(1, num);
+                });
+            }
         }
     }
 
     void testChannel(String itemType) {
-        testChannel(itemType, null, null, null, null, null, false);
+        testChannel(itemType, null, null, null, null, null, false, null);
+    }
+
+    void testChannel(String itemType, String namePostFix) {
+        testChannel(itemType, namePostFix, null, null, null, null, false, null);
     }
 
     void testChannelState(String namePostFix, State expectedValue) {

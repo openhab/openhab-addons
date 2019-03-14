@@ -28,7 +28,7 @@ public class LxControlDimmerTest extends LxControlTest {
 
     @Test
     public void testControlCreation() {
-        testControlCreation(LxControlDimmer.class, 0, 1, 1, 4);
+        testControlCreation(LxControlDimmer.class, 1, 0, 1, 1, 4);
     }
 
     @Test

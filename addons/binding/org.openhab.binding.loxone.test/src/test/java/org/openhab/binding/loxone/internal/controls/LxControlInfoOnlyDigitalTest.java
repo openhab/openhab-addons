@@ -26,7 +26,7 @@ public class LxControlInfoOnlyDigitalTest extends LxControlTest {
 
     @Test
     public void testControlCreation() {
-        testControlCreation(LxControlInfoOnlyDigital.class, 0, 1, 1, 1);
+        testControlCreation(LxControlInfoOnlyDigital.class, 1, 0, 1, 1, 1);
     }
 
     @Test

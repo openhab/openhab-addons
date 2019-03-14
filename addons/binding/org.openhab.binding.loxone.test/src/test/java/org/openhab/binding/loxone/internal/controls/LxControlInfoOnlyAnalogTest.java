@@ -26,12 +26,12 @@ public class LxControlInfoOnlyAnalogTest extends LxControlTest {
 
     @Test
     public void testControlCreation() {
-        testControlCreation(LxControlInfoOnlyAnalog.class, 0, 1, 1, 1);
+        testControlCreation(LxControlInfoOnlyAnalog.class, 1, 0, 1, 1, 1);
     }
 
     @Test
     public void testChannels() {
-        testChannel("Number", null, null, null, null, "%.2f", true);
+        testChannel("Number", null, null, null, null, "%.2f", true, null);
     }
 
     @Test
