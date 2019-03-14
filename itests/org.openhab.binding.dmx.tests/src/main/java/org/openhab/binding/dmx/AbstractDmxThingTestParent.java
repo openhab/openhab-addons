@@ -46,7 +46,7 @@ import org.openhab.binding.dmx.test.TestBridgeHandler;
  * @author Simon Kaufmann - initial contribution and API
  *
  */
-public class AbstractDmxThingTest extends JavaTest {
+public class AbstractDmxThingTestParent extends JavaTest {
 
     private Map<String, Object> bridgeProperties;
 

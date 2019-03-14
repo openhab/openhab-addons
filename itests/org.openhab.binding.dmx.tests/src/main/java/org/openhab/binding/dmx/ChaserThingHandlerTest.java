@@ -44,7 +44,7 @@ import org.openhab.binding.dmx.test.TestBridgeHandler;
  *
  * @author Jan N. Klug - Initial contribution
  */
-public class ChaserThingHandlerTest extends AbstractDmxThingTest {
+public class ChaserThingHandlerTest extends AbstractDmxThingTestParent {
 
     private static final String TEST_CHANNEL = "100";
     private static final String TEST_STEPS_INFINITE = "1000:100:1000|1000:200:-1";

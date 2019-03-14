@@ -39,7 +39,7 @@ import org.openhab.binding.dmx.internal.handler.DimmerThingHandler;
  *
  * @author Jan N. Klug - Initial contribution
  */
-public class DimmerThingHandlerTest extends AbstractDmxThingTest {
+public class DimmerThingHandlerTest extends AbstractDmxThingTestParent {
     private static final String TEST_CHANNEL_CONFIG = "100";
     private static final int TEST_FADE_TIME = 1500;
 

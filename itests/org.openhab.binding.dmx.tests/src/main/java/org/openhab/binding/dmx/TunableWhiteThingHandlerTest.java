@@ -39,7 +39,7 @@ import org.openhab.binding.dmx.internal.handler.TunableWhiteThingHandler;
  *
  * @author Jan N. Klug - Initial contribution
  */
-public class TunableWhiteThingHandlerTest extends AbstractDmxThingTest {
+public class TunableWhiteThingHandlerTest extends AbstractDmxThingTestParent {
 
     private static final String TEST_CHANNEL_CONFIG = "100/2";
     private static final int TEST_FADE_TIME = 1500;

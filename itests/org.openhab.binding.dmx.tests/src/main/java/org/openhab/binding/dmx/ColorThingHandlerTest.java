@@ -41,7 +41,7 @@ import org.openhab.binding.dmx.internal.handler.ColorThingHandler;
  *
  * @author Jan N. Klug - Initial contribution
  */
-public class ColorThingHandlerTest extends AbstractDmxThingTest {
+public class ColorThingHandlerTest extends AbstractDmxThingTestParent {
 
     private static final String TEST_CHANNEL_CONFIG = "100/3";
     private static final int TEST_FADE_TIME = 1500;
