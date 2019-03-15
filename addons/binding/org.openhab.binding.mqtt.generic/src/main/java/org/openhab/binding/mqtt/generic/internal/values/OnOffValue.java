@@ -29,28 +29,45 @@ import org.eclipse.smarthome.core.types.Command;
  */
 @NonNullByDefault
 public class OnOffValue extends Value {
-    private final String onString;
-    private final String offString;
+    private final String onState;
+    private final String offState;
+    private final String onCommand;
+    private final String offCommand;
 
     /**
      * Creates a switch On/Off type, that accepts "ON", "1" for on and "OFF","0" for off.
      */
     public OnOffValue() {
-        super(CoreItemFactory.SWITCH, Stream.of(OnOffType.class, StringType.class).collect(Collectors.toList()));
-        this.onString = OnOffType.ON.name();
-        this.offString = OnOffType.OFF.name();
+        this(OnOffType.ON.name(), OnOffType.OFF.name());
     }
 
     /**
      * Creates a new SWITCH On/Off value.
      *
-     * @param onValue The ON value string. This will be compared to MQTT messages.
+     * values send in messages will be the same as those expected in incomming messages
+     *
+     * @param onValue  The ON value string. This will be compared to MQTT messages.
      * @param offValue The OFF value string. This will be compared to MQTT messages.
      */
     public OnOffValue(@Nullable String onValue, @Nullable String offValue) {
+        this(onValue, offValue, onValue, offValue);
+    }
+
+    /**
+     * Creates a new SWITCH On/Off value.
+     *
+     * @param onState    The ON value string. This will be compared to MQTT messages.
+     * @param offState   The OFF value string. This will be compared to MQTT messages.
+     * @param onCommand  The ON value string. This will be send in MQTT messages.
+     * @param offCommand The OFF value string. This will be send in MQTT messages.
+     */
+    public OnOffValue(@Nullable String onState, @Nullable String offState, @Nullable String onCommand,
+            @Nullable String offCommand) {
         super(CoreItemFactory.SWITCH, Stream.of(OnOffType.class, StringType.class).collect(Collectors.toList()));
-        this.onString = onValue == null ? OnOffType.ON.name() : onValue;
-        this.offString = offValue == null ? OnOffType.OFF.name() : offValue;
+        this.onState = onState == null ? OnOffType.ON.name() : onState;
+        this.offState = offState == null ? OnOffType.OFF.name() : offState;
+        this.onCommand = onCommand == null ? OnOffType.ON.name() : onCommand;
+        this.offCommand = offCommand == null ? OnOffType.OFF.name() : offCommand;
     }
 
     @Override
@@ -59,9 +76,9 @@ public class OnOffValue extends Value {
             state = (OnOffType) command;
         } else {
             final String updatedValue = command.toString();
-            if (onString.equals(updatedValue)) {
+            if (onState.equals(updatedValue)) {
                 state = OnOffType.ON;
-            } else if (offString.equals(updatedValue)) {
+            } else if (offState.equals(updatedValue)) {
                 state = OnOffType.OFF;
             } else {
                 state = OnOffType.valueOf(updatedValue);
@@ -71,6 +88,6 @@ public class OnOffValue extends Value {
 
     @Override
     public String getMQTTpublishValue() {
-        return (state == OnOffType.ON) ? onString : offString;
+        return (state == OnOffType.ON) ? onCommand : offCommand;
     }
 }
