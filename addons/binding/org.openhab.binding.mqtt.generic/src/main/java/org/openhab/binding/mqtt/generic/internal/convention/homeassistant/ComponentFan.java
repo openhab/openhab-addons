@@ -14,11 +14,7 @@ package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.values.OnOffValue;
-
-import com.google.gson.Gson;
 
 /**
  * A MQTT Fan component, following the https://www.home-assistant.io/components/fan.mqtt/ specification.
@@ -28,14 +24,14 @@ import com.google.gson.Gson;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ComponentFan extends AbstractComponent<ComponentFan.Config> {
+public class ComponentFan extends AbstractComponent<ComponentFan.ChannelConfiguration> {
     public static final String switchChannelID = "fan"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
      */
-    static class Config extends HAConfiguration {
-        Config() {
+    static class ChannelConfiguration extends BaseChannelConfiguration {
+        ChannelConfiguration() {
             super("MQTT Fan");
         }
 
@@ -45,12 +41,11 @@ public class ComponentFan extends AbstractComponent<ComponentFan.Config> {
         protected String payload_off = "OFF";
     };
 
-    public ComponentFan(ThingUID thing, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener updateListener, Gson gson) {
-        super(thing, haID, configJSON, gson, Config.class);
+    public ComponentFan(CFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
-        OnOffValue value = new OnOffValue(config.payload_on, config.payload_off);
+        OnOffValue value = new OnOffValue(channelConfiguration.payload_on, channelConfiguration.payload_off);
         channels.put(switchChannelID, new CChannel(this, switchChannelID, value, //
-                config.state_topic, config.command_topic, config.name, "", updateListener));
+                channelConfiguration.state_topic, channelConfiguration.command_topic, channelConfiguration.name, "", componentConfiguration.getUpdateListener()));
     }
 }

@@ -216,7 +216,7 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
      * @param bridgeHandler bridge handler to use for communication with ow bus
      * @param now current time
      */
-    public void refresh(OwBaseBridgeHandler bridgeHandler, long now) {
+    public void refresh(OwserverBridgeHandler bridgeHandler, long now) {
         try {
             Boolean forcedRefresh = lastRefresh == 0;
             if (now >= (lastRefresh + refreshInterval)) {
@@ -310,7 +310,7 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
             return;
         }
 
-        OwBaseBridgeHandler bridgeHandler = (OwBaseBridgeHandler) bridge.getHandler();
+        OwserverBridgeHandler bridgeHandler = (OwserverBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
             logger.debug("bridgehandler for {} not available for scheduling property update, retrying in 5s",
                     thing.getUID());
@@ -334,7 +334,7 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
      * @return properties to be added to the properties map
      * @throws OwException
      */
-    public void updateSensorProperties(OwBaseBridgeHandler bridgeHandler) throws OwException {
+    public void updateSensorProperties(OwserverBridgeHandler bridgeHandler) throws OwException {
         Map<String, String> properties = editProperties();
         OwSensorType sensorType = bridgeHandler.getType(sensorId);
         properties.put(PROPERTY_MODELID, sensorType.toString());

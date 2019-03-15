@@ -95,7 +95,7 @@ Thing hyperion:serverNG:myServer [ host="192.168.0.10", port=19444, priority=50,
 Dimmer Brightness "Brightness [%s]" {channel="hyperion:serverV1:myServer:brightness"}
 Color MyColor "Color" {channel="hyperion:serverV1:myServer:color"}
 String Effect "Current effect [%s]" {channel="hyperion:serverV1:myServer:effect"}
-String lear "Clear priority" {channel="hyperion:serverV1:myServer:clear"}
+String Clear "Clear priority" {channel="hyperion:serverV1:myServer:clear"}
 ```
 
 ### Hyperion.ng Server

@@ -14,7 +14,6 @@ package org.openhab.binding.onewire.internal.owserver;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.onewire.internal.SensorId;
-import org.openhab.binding.onewire.internal.device.OwDeviceParameter;
 
 /**
  * The {@link OwserverDeviceParameter} device parameter definition for owserver bridge handler
@@ -23,7 +22,7 @@ import org.openhab.binding.onewire.internal.device.OwDeviceParameter;
  */
 
 @NonNullByDefault
-public class OwserverDeviceParameter extends OwDeviceParameter {
+public class OwserverDeviceParameter {
     private String prefix = "";
     private String path = "";
 
@@ -31,7 +30,7 @@ public class OwserverDeviceParameter extends OwDeviceParameter {
      * device parameter for owserver bridge handler
      *
      * @param prefix path prefix (e.g. "uncached/")
-     * @param path   path without sensor id (e.g. "/humidity")
+     * @param path path without sensor id (e.g. "/humidity")
      */
     public OwserverDeviceParameter(String prefix, String path) {
         if (prefix.endsWith("/")) {

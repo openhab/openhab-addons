@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -21,18 +22,15 @@
     <module>org.openhab.binding.allplay</module>
     <module>org.openhab.binding.amazondashbutton</module>
     <module>org.openhab.binding.amazonechocontrol</module>
-    <module>org.openhab.binding.astro</module>
-    <module>org.openhab.binding.astro.test</module>
     <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.autelis</module>
-    <module>org.openhab.binding.avmfritz</module>
-    <module>org.openhab.binding.avmfritz.test</module>
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.bluetooth</module>
     <module>org.openhab.binding.bluetooth.bluegiga</module>
     <module>org.openhab.binding.bluetooth.bluegiga.test</module>
     <module>org.openhab.binding.bluetooth.bluez</module>
     <module>org.openhab.binding.bluetooth.blukii</module>
+    <module>org.openhab.binding.bluetooth.ruuvitag</module>
     <module>org.openhab.binding.bluetooth.test</module>
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.bosesoundtouch</module>
@@ -40,15 +38,16 @@
     <module>org.openhab.binding.chromecast.test</module>
     <module>org.openhab.binding.cm11a</module>
     <module>org.openhab.binding.coolmasternet</module>
+    <module>org.openhab.binding.daikin</module>
     <module>org.openhab.binding.deconz</module>
     <module>org.openhab.binding.denonmarantz</module>
     <module>org.openhab.binding.digitalstrom</module>
     <module>org.openhab.binding.dlinksmarthome</module>
-    <module>org.openhab.binding.dmx</module>
-    <module>org.openhab.binding.dmx.test</module>
     <module>org.openhab.binding.dscalarm</module>
     <module>org.openhab.binding.dsmr</module>
     <module>org.openhab.binding.dsmr.test</module>
+    <module>org.openhab.binding.dwdunwetter</module>
+    <module>org.openhab.binding.dwdunwetter.test</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.enocean</module>
     <module>org.openhab.binding.evohome</module>
@@ -76,6 +75,8 @@
     <module>org.openhab.binding.hyperion</module>
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.icloud</module>
+    <module>org.openhab.binding.ihc</module>
+    <module>org.openhab.binding.ihc.test</module>
     <module>org.openhab.binding.innogysmarthome</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.irtrans</module>
@@ -134,7 +135,6 @@
     <module>org.openhab.binding.onewiregpio</module>
     <module>org.openhab.binding.onkyo</module>
     <module>org.openhab.binding.opensprinkler</module>
-    <module>org.openhab.binding.openweathermap</module>
     <module>org.openhab.binding.openuv</module>
     <module>org.openhab.binding.orvibo</module>
     <module>org.openhab.binding.pentair</module>

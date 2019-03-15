@@ -55,7 +55,7 @@ public class SynopAnalyzerBindingConstants {
     // Default units
     public static final Unit<Temperature> TEMPERATURE_UNIT = SIUnits.CELSIUS;
     public static final Unit<Pressure> PRESSURE_UNIT = HECTO(SIUnits.PASCAL);
-    public static final Unit<Speed> WIND_SPEED_UNIT_MS = SIUnits.METRE_PER_SECOND;
+    public static final Unit<Speed> WIND_SPEED_UNIT_MS = SmartHomeUnits.METRE_PER_SECOND;
     public static final Unit<Speed> WIND_SPEED_UNIT_KNOT = SmartHomeUnits.KNOT;
     public static final Unit<Angle> WIND_DIRECTION_UNIT = SmartHomeUnits.DEGREE_ANGLE;
     public static final String[] WIND_DIRECTIONS = new String[] { "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S",

@@ -23,6 +23,8 @@ public interface ConnectionBase {
 
     boolean invoke(DeviceMethod method);
 
+    boolean invokeCustom(DeviceMethod method);
+
     boolean connect();
 
     boolean disconnect();

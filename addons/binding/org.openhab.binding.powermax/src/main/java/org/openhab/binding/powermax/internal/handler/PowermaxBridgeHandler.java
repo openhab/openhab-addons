@@ -144,7 +144,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
 
     private String initializeBridgeSerial(PowermaxSerialConfiguration config) {
         String errorMsg = null;
-        if (StringUtils.isNotBlank(config.serialPort)) {
+        if (StringUtils.isNotBlank(config.serialPort) && !config.serialPort.startsWith("rfc2217")) {
             motionOffDelay = getMotionOffDelaySetting(config.motionOffDelay, DEFAULT_MOTION_OFF_DELAY);
             boolean allowArming = getBooleanSetting(config.allowArming, false);
             boolean allowDisarming = getBooleanSetting(config.allowDisarming, false);
@@ -164,7 +164,11 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
             commManager = new PowermaxCommManager(config.serialPort, panelType, forceStandardMode, autoSyncTime,
                     serialPortManager);
         } else {
-            errorMsg = "serialPort setting must be defined in thing configuration";
+            if (StringUtils.isNotBlank(config.serialPort) && config.serialPort.startsWith("rfc2217")) {
+                errorMsg = "Please use the IP Connection thing type for a serial over IP connection.";
+            } else {
+                errorMsg = "serialPort setting must be defined in thing configuration";
+            }
         }
         return errorMsg;
     }

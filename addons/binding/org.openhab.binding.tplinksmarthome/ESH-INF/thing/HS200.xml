@@ -11,6 +11,7 @@
 
 		<channels>
 			<channel id="switch" typeId="system.power" />
+			<channel id="led" typeId="led" />
 			<channel id="rssi" typeId="rssi" />
 		</channels>
 

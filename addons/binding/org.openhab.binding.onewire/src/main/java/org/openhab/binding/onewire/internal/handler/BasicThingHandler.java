@@ -126,7 +126,7 @@ public class BasicThingHandler extends OwBaseThingHandler {
                 Integer ioChannel = Integer.valueOf(channelUID.getId().substring(channelUID.getId().length() - 1));
                 Bridge bridge = getBridge();
                 if (bridge != null) {
-                    OwBaseBridgeHandler bridgeHandler = (OwBaseBridgeHandler) bridge.getHandler();
+                    OwserverBridgeHandler bridgeHandler = (OwserverBridgeHandler) bridge.getHandler();
                     if (bridgeHandler != null) {
                         if (!((AbstractDigitalOwDevice) sensors.get(0)).writeChannel(bridgeHandler, ioChannel,
                                 command)) {

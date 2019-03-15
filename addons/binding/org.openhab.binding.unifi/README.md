@@ -76,19 +76,29 @@ The `considerHome` parameter allows you to control how quickly the binding marks
 
 The Wireless Client information that is retrieved is available as these channels:
 
-| Channel ID | Item Type | Description                                                          |
-|------------|-----------|--------------------------------------------------------------------- |
-| online     | Switch    | Online status of the client                                          |
-| site       | String    | Site name (from the controller web UI) the client is associated with |
-| macAddress | String    | MAC address of the client                                            |
-| ipAddress  | String    | IP address of the client                                             |
-| ap         | String    | Access point (AP) the client is connected to                         |
-| essid      | String    | Network name (ESSID) the client is connected to                      |
-| rssi       | Number    | Received signal strength indicator (RSSI) of the client              |
-| uptime     | Number    | Uptime of the wireless client (in seconds)                           |
-| lastSeen   | DateTime  | Date and Time the wireless client was last seen                      |
+| Channel ID | Item Type | Description                                                          | Permissions |
+|------------|-----------|--------------------------------------------------------------------- | ----------- |
+| online     | Switch    | Online status of the client                                          | Read        |
+| site       | String    | Site name (from the controller web UI) the client is associated with | Read        |
+| macAddress | String    | MAC address of the client                                            | Read        |
+| ipAddress  | String    | IP address of the client                                             | Read        |
+| ap         | String    | Access point (AP) the client is connected to                         | Read        |
+| essid      | String    | Network name (ESSID) the client is connected to                      | Read        |
+| rssi       | Number    | Received signal strength indicator (RSSI) of the client              | Read        |
+| uptime     | Number    | Uptime of the wireless client (in seconds)                           | Read        |
+| lastSeen   | DateTime  | Date and Time the wireless client was last seen                      | Read        |
+| blocked    | Switch    | Blocked status of the client                                         | Read, Write |
+| reconnect  | Switch    | Force the client to be reconnect                                     | Write       |
 
-*Note: All channels are read-only*
+_Note: All channels with the Write permission require administrator credentials as defined in the controller._
+
+##### `blocked`
+
+The `blocked` channel allows you to block / unblock a client via the controller.
+
+##### `reconnect`
+
+The `reconnect` channel allows you to force a client to reconnect. Sending `ON` to this channel will trigger a reconnect via the controller.
 
 
 ## Full Example
@@ -115,6 +125,8 @@ String   MatthewsPhoneESSID      "Matthew's iPhone: ESSID [%s]"                 
 Number   MatthewsPhoneRSSI       "Matthew's iPhone: RSSI [%d]"                      { channel="unifi:wirelessClient:home:matthewsPhone:rssi" }
 Number   MatthewsPhoneUptime     "Matthew's iPhone: Uptime [%d]"                    { channel="unifi:wirelessClient:home:matthewsPhone:uptime" }
 DateTime MatthewsPhoneLastSeen   "Matthew's iPhone: Last Seen [%1$tH:%1$tM:%1$tS]"  { channel="unifi:wirelessClient:home:matthewsPhone:lastSeen" } 
+Switch   MatthewsPhoneBlocked    "Matthew's iPhone: Blocked"                        { channel="unifi:wirelessClient:home:matthewsPhone:blocked" }
+Switch   MatthewsPhoneReconnect  "Matthew's iPhone: Reconnect"                      { channel="unifi:wirelessClient:home:matthewsPhone:reconnect" }
 ```
 
 transform/unifi.map
@@ -139,6 +151,8 @@ sitemap unifi label="UniFi Binding"
 		Text item=MatthewsPhoneRSSI
 		Text item=MatthewsPhoneUptime
 		Text item=MatthewsPhoneLastSeen
+		Switch item=MatthewsPhoneBlocked
+		Switch item=MatthewsPhoneReconnect
 	}
 }
 ```

@@ -19,6 +19,9 @@
 			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
 			<channel id="mediaLength" typeId="mediaLength" />
 			<channel id="volume" typeId="volume" />
+			<channel id="equalizerTreble" typeId="equalizerTreble" />
+			<channel id="equalizerMidrange" typeId="equalizerMidrange" />
+			<channel id="equalizerBass" typeId="equalizerBass" />
 			<channel id="shuffle" typeId="shuffle" />
 			<channel id="imageUrl" typeId="imageUrl" />
 			<channel id="title" typeId="title" />
@@ -36,7 +39,11 @@
 			<channel id="textToSpeech" typeId="textToSpeech" />
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
+			<channel id="nextReminder" typeId="nextReminder" />
 			<channel id="playAlarmSound" typeId="playAlarmSound" />
+			<channel id="nextAlarm" typeId="nextAlarm" />
+			<channel id="nextMusicAlarm" typeId="nextMusicAlarm" />
+			<channel id="nextTimer" typeId="nextTimer" />
 			<channel id="startRoutine" typeId="startRoutine" />
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
@@ -65,6 +72,9 @@
 			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
 			<channel id="mediaLength" typeId="mediaLength" />
 			<channel id="volume" typeId="volume" />
+			<channel id="equalizerTreble" typeId="equalizerTreble" />
+			<channel id="equalizerMidrange" typeId="equalizerMidrange" />
+			<channel id="equalizerBass" typeId="equalizerBass" />
 			<channel id="shuffle" typeId="shuffle" />
 			<channel id="imageUrl" typeId="imageUrl" />
 			<channel id="title" typeId="title" />
@@ -82,7 +92,11 @@
 			<channel id="textToSpeech" typeId="textToSpeech" />
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
+			<channel id="nextReminder" typeId="nextReminder" />
 			<channel id="playAlarmSound" typeId="playAlarmSound" />
+			<channel id="nextAlarm" typeId="nextAlarm" />
+			<channel id="nextMusicAlarm" typeId="nextMusicAlarm" />
+			<channel id="nextTimer" typeId="nextTimer" />
 			<channel id="startRoutine" typeId="startRoutine" />
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
@@ -111,6 +125,9 @@
 			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
 			<channel id="mediaLength" typeId="mediaLength" />
 			<channel id="volume" typeId="volume" />
+			<channel id="equalizerTreble" typeId="equalizerTreble" />
+			<channel id="equalizerMidrange" typeId="equalizerMidrange" />
+			<channel id="equalizerBass" typeId="equalizerBass" />
 			<channel id="shuffle" typeId="shuffle" />
 			<channel id="imageUrl" typeId="imageUrl" />
 			<channel id="title" typeId="title" />
@@ -128,7 +145,11 @@
 			<channel id="textToSpeech" typeId="textToSpeech" />
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
+			<channel id="nextReminder" typeId="nextReminder" />
 			<channel id="playAlarmSound" typeId="playAlarmSound" />
+			<channel id="nextAlarm" typeId="nextAlarm" />
+			<channel id="nextMusicAlarm" typeId="nextMusicAlarm" />
+			<channel id="nextTimer" typeId="nextTimer" />
 			<channel id="startRoutine" typeId="startRoutine" />
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
@@ -206,13 +227,13 @@
 	</channel-type>
 	<channel-type id="bluetoothDeviceName" advanced="true">
 		<item-type>String</item-type>
-		<label>Bluetooth device</label>
+		<label>Bluetooth Device</label>
 		<description>Connected bluetooth device</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="radioStationId" advanced="true">
 		<item-type>String</item-type>
-		<label>TuneIn Radio station id</label>
+		<label>TuneIn Radio Station Id</label>
 		<description>Id of the radio station</description>
 	</channel-type>
 	<channel-type id="remind" advanced="true">
@@ -222,7 +243,7 @@
 	</channel-type>
 	<channel-type id="startRoutine" advanced="true">
 		<item-type>String</item-type>
-		<label>Start a routine</label>
+		<label>Start A Routine</label>
 		<description>The command which must be spoken to active the routing without the preceding "Alexa," (Write Only)
 		</description>
 	</channel-type>
@@ -233,22 +254,22 @@
 	</channel-type>
 	<channel-type id="amazonMusicTrackId" advanced="true">
 		<item-type>String</item-type>
-		<label>Amazon music track id</label>
+		<label>Amazon Music Track Id</label>
 		<description>Id of the amazon music track</description>
 	</channel-type>
 	<channel-type id="amazonMusic" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Amazon music</label>
+		<label>Amazon Music</label>
 		<description>Amazon Music turned on</description>
 	</channel-type>
 	<channel-type id="amazonMusicPlayListId" advanced="true">
 		<item-type>String</item-type>
-		<label>Amazon music play list id</label>
+		<label>Amazon Music Play List Id</label>
 		<description>Amazon Music play list id (Write only, no current state)</description>
 	</channel-type>
 	<channel-type id="amazonMusicPlayListIdLastUsed" advanced="true">
 		<item-type>String</item-type>
-		<label>Amazon music last selected playlist id</label>
+		<label>Amazon Music Last Selected Playlist Id</label>
 		<description>Id of the playlist which was started with openHAB</description>
 	</channel-type>
 	<channel-type id="providerDisplayName" advanced="true">
@@ -259,12 +280,12 @@
 	</channel-type>
 	<channel-type id="bluetoothMAC">
 		<item-type>String</item-type>
-		<label>Bluetooth connection</label>
+		<label>Bluetooth Connection</label>
 		<description>MAC-Address of the bluetooth connected device</description>
 	</channel-type>
 	<channel-type id="imageUrl" advanced="true">
 		<item-type>String</item-type>
-		<label>Image url</label>
+		<label>Image Url</label>
 		<description>Url of the album image or radio station logo</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -288,7 +309,7 @@
 	</channel-type>
 	<channel-type id="radio" advanced="true">
 		<item-type>Switch</item-type>
-		<label>TuneIn radio</label>
+		<label>TuneIn Radio</label>
 		<description>Radio turned on</description>
 	</channel-type>
 	<channel-type id="bluetooth" advanced="true">
@@ -316,47 +337,65 @@
 		<label>Volume</label>
 		<description>Volume of the sound</description>
 	</channel-type>
+	<channel-type id="equalizerTreble">
+		<item-type>Number</item-type>
+		<label>Treble</label>
+		<description>Equalizer Treble</description>
+		<state min="-6" max="6" step="1"></state>
+	</channel-type>
+	<channel-type id="equalizerMidrange">
+		<item-type>Number</item-type>
+		<label>Midrange</label>
+		<description>Equalizer Midrange</description>
+		<state min="-6" max="6" step="1"></state>
+	</channel-type>
+	<channel-type id="equalizerBass">
+		<item-type>Number</item-type>
+		<label>Bass</label>
+		<description>Equalizer Bass</description>
+		<state min="-6" max="6" step="1"></state>
+	</channel-type>
 	<channel-type id="musicProviderId">
 		<item-type>String</item-type>
-		<label>Music provider</label>
+		<label>Music Provider</label>
 		<description>Music provider</description>
 	</channel-type>
 	<channel-type id="playMusicVoiceCommand">
 		<item-type>String</item-type>
-		<label>Music voice command</label>
+		<label>Music Voice Command</label>
 		<description>Voice command as text. E.g. 'Yesterday from the Beatles' (Write only)</description>
 	</channel-type>
 	<channel-type id="textToSpeech" advanced="true">
 		<item-type>String</item-type>
 		<label>Speak</label>
-		<description>Speak the text (Write only)</description>
+		<description>Speak the text (Write only). It is possible to use plain text or SSML: &lt;speak&gt;I want to tell you a secret.&lt;amazon:effect name=&quot;whispered&quot;&gt;I am not a real human.&lt;/amazon:effect&gt;.Can you believe it?&lt;/speak&gt;</description>
 	</channel-type>
 	<channel-type id="textToSpeechVolume" advanced="true">
 		<item-type>Dimmer</item-type>
-		<label>Speak volume</label>
+		<label>Speak Volume</label>
 		<description>Volume of the Speak channel. If 0, the current volume will be used.</description>
 	</channel-type>
 	<channel-type id="lastVoiceCommand" advanced="true">
 		<item-type>String</item-type>
-		<label>Last voice command</label>
+		<label>Last Voice Command</label>
 		<description>Last voice command spoken to the device. Writing to the channel starts voice output.</description>
 		<state readOnly="false" />
 	</channel-type>
 	<channel-type id="mediaProgress" advanced="false">
 		<item-type>Dimmer</item-type>
-		<label>Media progress</label>
+		<label>Media Progress</label>
 		<description>Media progress in percent</description>
 		<state readOnly="false" />
 	</channel-type>
 	<channel-type id="mediaProgressTime" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Media play time</label>
+		<label>Media Play Time</label>
 		<description>Media play time</description>
 		<state readOnly="false" pattern="%d %unit%" />
 	</channel-type>
 	<channel-type id="mediaLength" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Media length</label>
+		<label>Media Length</label>
 		<description>Media length</description>
 		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
@@ -378,13 +417,37 @@
 	<channel-type id="notificationVolume" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Notification volume</label>
-		<description>Notification volume</description>
+		<description>Notification Volume</description>
 		<state readOnly="false" />
 	</channel-type>
 	<channel-type id="ascendingAlarm" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Ascending alarm</label>
+		<label>Ascending Alarm</label>
 		<description>Ascending alarm up to the configured volume</description>
 		<state readOnly="false" />
+	</channel-type>
+	<channel-type id="nextReminder" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Next Reminder</label>
+		<description>Next Reminder</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nextAlarm" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Next Alarm</label>
+		<description>Next alarm</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nextMusicAlarm" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Next Music Alarm</label>
+		<description>Next music alarm</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="nextTimer" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Next Timer</label>
+		<description>Next timer</description>
+		<state readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>
