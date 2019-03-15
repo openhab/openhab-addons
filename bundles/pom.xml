@@ -22,6 +22,8 @@
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.dmx</module>
     <module>org.openhab.binding.openweathermap</module>
+    <module>org.openhab.extensionservice.marketplace</module>
+    <module>org.openhab.extensionservice.marketplace.automation</module>
   </modules>
 
   <build>
