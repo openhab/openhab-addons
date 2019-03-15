@@ -19,6 +19,7 @@
 
   <modules>
     <module>org.openhab.binding.airquality</module>
+    <module>org.openhab.binding.airvisualnode</module>
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.dmx</module>
