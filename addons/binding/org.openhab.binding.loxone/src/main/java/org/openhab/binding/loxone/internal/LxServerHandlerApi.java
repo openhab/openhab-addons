@@ -106,7 +106,7 @@ public interface LxServerHandlerApi {
 
     /**
      * Get ID of the Miniserver's Thing
-     * 
+     *
      * @return ID of the Thing
      */
     ThingUID getThingId();

@@ -14,10 +14,14 @@ package org.openhab.binding.loxone.internal.controls;
 
 import static org.openhab.binding.loxone.internal.LxBindingConstants.*;
 
+import java.math.BigDecimal;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.types.LxCategory;
 import org.openhab.binding.loxone.internal.types.LxContainer;
@@ -69,14 +73,19 @@ public class LxControlTimedSwitch extends LxControlPushbutton {
     @Override
     public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
         super.initialize(thingHandler, room, category);
-        addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_NUMBER),
+        ChannelUID id = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_NUMBER),
                 defaultChannelLabel + " / Deactivation Delay", "Deactivation Delay", null, null,
                 this::getDeactivationState);
+        addChannelStateDescription(id, new StateDescription(new BigDecimal(-1), null, null, null, true, null));
     }
 
     private State getDeactivationState() {
         Double deactivationValue = getStateDoubleValue(STATE_DEACTIVATION_DELAY);
         if (deactivationValue != null) {
+            if (deactivationValue.equals(-1.0)) {
+                // we don't show the special value of -1 to the user, this means switch is on and delay is zero
+                deactivationValue = 0.0;
+            }
             return new DecimalType(deactivationValue);
         }
         return null;
