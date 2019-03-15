@@ -33,6 +33,13 @@ public class WSPhoneNumberValue extends WSResourceValue {
         this.number = number;
     }
 
+    public WSPhoneNumberValue(WSResourceValue from) {
+        super(from.resourceID);
+        if (from instanceof WSPhoneNumberValue) {
+            this.number = ((WSPhoneNumberValue) from).number;
+        }
+    }
+
     /**
      * Gets the value of the number property.
      *

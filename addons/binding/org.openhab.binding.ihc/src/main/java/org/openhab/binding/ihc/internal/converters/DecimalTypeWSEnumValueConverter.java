@@ -33,7 +33,8 @@ public class DecimalTypeWSEnumValueConverter implements Converter<WSEnumValue, D
     @Override
     public WSEnumValue convertFromOHType(@NonNull DecimalType from, @NonNull WSEnumValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        value.setEnumValueID(from.intValue());
-        return value;
+        WSEnumValue v = new WSEnumValue(value);
+        v.setEnumValueID(from.intValue());
+        return v;
     }
 }

@@ -33,6 +33,13 @@ public class WSBooleanValue extends WSResourceValue {
         this.value = value;
     }
 
+    public WSBooleanValue(WSResourceValue from) {
+        super(from.resourceID);
+        if (from instanceof WSBooleanValue) {
+            this.value = ((WSBooleanValue) from).value;
+        }
+    }
+
     /**
      * Gets the value of the value property.
      *

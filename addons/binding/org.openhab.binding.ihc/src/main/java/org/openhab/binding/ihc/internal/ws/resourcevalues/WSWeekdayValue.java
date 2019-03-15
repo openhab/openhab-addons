@@ -33,6 +33,13 @@ public class WSWeekdayValue extends WSResourceValue {
         this.weekdayNumber = weekdayNumber;
     }
 
+    public WSWeekdayValue(WSResourceValue from) {
+        super(from.resourceID);
+        if (from instanceof WSWeekdayValue) {
+            this.weekdayNumber = ((WSWeekdayValue) from).weekdayNumber;
+        }
+    }
+
     /**
      * Gets the value of the weekdayNumber property.
      *

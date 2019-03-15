@@ -33,7 +33,8 @@ public class UpDownTypeWSBooleanValueConverter implements Converter<WSBooleanVal
     @Override
     public WSBooleanValue convertFromOHType(@NonNull UpDownType from, @NonNull WSBooleanValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        value.setValue(from == UpDownType.UP ^ convertData.getInverted());
-        return value;
+        WSBooleanValue v = new WSBooleanValue(value);
+        v.setValue(from == UpDownType.UP ^ convertData.getInverted());
+        return v;
     }
 }

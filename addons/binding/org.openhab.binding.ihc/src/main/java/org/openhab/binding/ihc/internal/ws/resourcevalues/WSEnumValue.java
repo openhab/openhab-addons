@@ -37,6 +37,15 @@ public class WSEnumValue extends WSResourceValue {
         this.enumName = enumName;
     }
 
+    public WSEnumValue(WSResourceValue from) {
+        super(from.resourceID);
+        if (from instanceof WSEnumValue) {
+            this.definitionTypeID = ((WSEnumValue) from).definitionTypeID;
+            this.enumValueID = ((WSEnumValue) from).enumValueID;
+            this.enumName = ((WSEnumValue) from).enumName;
+        }
+    }
+
     /**
      * Gets the value of the definitionTypeID property.
      *

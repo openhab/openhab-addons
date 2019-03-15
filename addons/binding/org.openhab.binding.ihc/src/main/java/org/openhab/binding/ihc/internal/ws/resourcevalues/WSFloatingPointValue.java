@@ -37,6 +37,15 @@ public class WSFloatingPointValue extends WSResourceValue {
         this.maximumValue = maximumValue;
     }
 
+    public WSFloatingPointValue(WSResourceValue from) {
+        super(from.resourceID);
+        if (from instanceof WSFloatingPointValue) {
+            this.floatingPointValue = ((WSFloatingPointValue) from).floatingPointValue;
+            this.minimumValue = ((WSFloatingPointValue) from).minimumValue;
+            this.maximumValue = ((WSFloatingPointValue) from).maximumValue;
+        }
+    }
+
     /**
      * Gets the value of the maximumValue property.
      *

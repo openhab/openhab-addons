@@ -36,10 +36,11 @@ public class StringTypeWSEnumValueConverter implements Converter<WSEnumValue, St
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         if (convertData.getEnumValues() != null) {
             boolean found = false;
+            WSEnumValue v = new WSEnumValue(value);
             for (IhcEnumValue item : convertData.getEnumValues()) {
                 if (item.getName().equals(from.toString())) {
-                    value.setEnumValueID(item.getId());
-                    value.setEnumName(item.getName());
+                    v.setEnumValueID(item.getId());
+                    v.setEnumName(item.getName());
                     found = true;
                     break;
                 }
@@ -47,7 +48,7 @@ public class StringTypeWSEnumValueConverter implements Converter<WSEnumValue, St
             if (!found) {
                 throw new ConversionException("Can't find enum value for string " + value.toString());
             }
-            return value;
+            return v;
         } else {
             throw new ConversionException("Enum list is null");
         }

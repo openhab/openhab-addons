@@ -44,10 +44,11 @@ public class DateTimeTypeWSDateValueConverter implements Converter<WSDateValue, 
         short year = (short) cal.get(Calendar.YEAR);
         byte month = (byte) (cal.get(Calendar.MONTH) + 1);
         byte day = (byte) cal.get(Calendar.DAY_OF_MONTH);
-        value.setYear(year);
-        value.setMonth(month);
-        value.setDay(day);
-        return value;
+        WSDateValue v = new WSDateValue(value);
+        v.setYear(year);
+        v.setMonth(month);
+        v.setDay(day);
+        return v;
     }
 
     private Calendar dateTimeToCalendar(WSDateValue date, WSTimeValue time) {

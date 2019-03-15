@@ -39,8 +39,9 @@ public class OpenClosedTypeWSIntegerValueConverter implements Converter<WSIntege
             newVal = newVal == 1 ? 0 : 1;
         }
         if (newVal >= value.getMinimumValue() && newVal <= value.getMaximumValue()) {
-            value.setInteger(newVal);
-            return value;
+            WSIntegerValue v = new WSIntegerValue(value);
+            v.setInteger(newVal);
+            return v;
         } else {
             throw new ConversionException("Value is not between acceptable limits (min=" + value.getMinimumValue()
                     + ", max=" + value.getMaximumValue() + ")");

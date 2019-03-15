@@ -33,7 +33,8 @@ public class DecimalTypeWSWeekdayValueConverter implements Converter<WSWeekdayVa
     @Override
     public WSWeekdayValue convertFromOHType(@NonNull DecimalType from, @NonNull WSWeekdayValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        value.setWeekdayNumber(from.intValue());
-        return value;
+        WSWeekdayValue v = new WSWeekdayValue(value);
+        v.setWeekdayNumber(from.intValue());
+        return v;
     }
 }

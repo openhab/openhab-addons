@@ -33,7 +33,8 @@ public class DecimalTypeWSTimerValueConverter implements Converter<WSTimerValue,
     @Override
     public WSTimerValue convertFromOHType(@NonNull DecimalType from, @NonNull WSTimerValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        value.setMilliseconds(from.longValue());
-        return value;
+        WSTimerValue v = new WSTimerValue(value);
+        v.setMilliseconds(from.longValue());
+        return v;
     }
 }

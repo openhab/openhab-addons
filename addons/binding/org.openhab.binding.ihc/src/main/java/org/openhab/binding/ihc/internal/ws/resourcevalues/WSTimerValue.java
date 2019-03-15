@@ -33,6 +33,13 @@ public class WSTimerValue extends WSResourceValue {
         this.milliseconds = milliseconds;
     }
 
+    public WSTimerValue(WSResourceValue from) {
+        super(from.resourceID);
+        if (from instanceof WSTimerValue) {
+            this.milliseconds = ((WSTimerValue) from).milliseconds;
+        }
+    }
+
     /**
      * Gets the value of the milliseconds property.
      *

@@ -33,7 +33,8 @@ public class OpenClosedTypeWSBooleanValueConverter implements Converter<WSBoolea
     @Override
     public WSBooleanValue convertFromOHType(@NonNull OpenClosedType from, @NonNull WSBooleanValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        value.setValue(from == OpenClosedType.OPEN ^ convertData.getInverted());
-        return value;
+        WSBooleanValue v = new WSBooleanValue(value);
+        v.setValue(from == OpenClosedType.OPEN ^ convertData.getInverted());
+        return v;
     }
 }

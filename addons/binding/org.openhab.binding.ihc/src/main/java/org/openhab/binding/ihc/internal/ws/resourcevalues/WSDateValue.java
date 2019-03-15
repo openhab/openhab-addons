@@ -37,6 +37,15 @@ public class WSDateValue extends WSResourceValue {
         this.day = day;
     }
 
+    public WSDateValue(WSResourceValue from) {
+        super(from.resourceID);
+        if (from instanceof WSDateValue) {
+            this.year = ((WSDateValue) from).year;
+            this.month = ((WSDateValue) from).month;
+            this.day = ((WSDateValue) from).day;
+        }
+    }
+
     /**
      * Gets the value of the month property.
      *

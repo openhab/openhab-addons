@@ -39,8 +39,9 @@ public class DecimalTypeWSFloatingPointValueConverter implements Converter<WSFlo
     public WSFloatingPointValue convertFromOHType(@NonNull DecimalType from, @NonNull WSFloatingPointValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         if (from.doubleValue() >= value.getMinimumValue() && from.doubleValue() <= value.getMaximumValue()) {
-            value.setFloatingPointValue(from.doubleValue());
-            return value;
+            WSFloatingPointValue v = new WSFloatingPointValue(value);
+            v.setFloatingPointValue(from.doubleValue());
+            return v;
         } else {
             throw new ConversionException("Value is not between acceptable limits (min=" + value.getMinimumValue()
                     + ", max=" + value.getMaximumValue() + ")");

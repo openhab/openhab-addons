@@ -33,7 +33,8 @@ public class OnOffTypeWSBooleanValueConverter implements Converter<WSBooleanValu
     @Override
     public WSBooleanValue convertFromOHType(@NonNull OnOffType from, @NonNull WSBooleanValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        value.setValue(from == OnOffType.ON ^ convertData.getInverted());
-        return value;
+        WSBooleanValue v = new WSBooleanValue(value);
+        v.setValue(from == OnOffType.ON ^ convertData.getInverted());
+        return v;
     }
 }

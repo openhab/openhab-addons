@@ -37,6 +37,15 @@ public class WSTimeValue extends WSResourceValue {
         this.seconds = seconds;
     }
 
+    public WSTimeValue(WSResourceValue from) {
+        super(from.resourceID);
+        if (from instanceof WSTimeValue) {
+            this.hours = ((WSTimeValue) from).hours;
+            this.minutes = ((WSTimeValue) from).minutes;
+            this.seconds = ((WSTimeValue) from).seconds;
+        }
+    }
+
     /**
      * Gets the value of the hours property.
      *

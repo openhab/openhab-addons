@@ -35,6 +35,15 @@ public class WSSceneRelayValue extends WSResourceValue {
         this.relayValue = relayValue;
     }
 
+    public WSSceneRelayValue(WSResourceValue from) {
+        super(from.resourceID);
+        if (from instanceof WSSceneRelayValue) {
+            this.delayTime = ((WSSceneRelayValue) from).delayTime;
+            this.delayTime = ((WSSceneRelayValue) from).delayTime;
+            this.relayValue = ((WSSceneRelayValue) from).relayValue;
+        }
+    }
+
     /**
      * Gets the value of the delayTime property.
      *

@@ -44,10 +44,11 @@ public class DateTimeTypeWSTimeValueConverter implements Converter<WSTimeValue, 
         int hours = cal.get(Calendar.HOUR_OF_DAY);
         int minutes = cal.get(Calendar.MINUTE);
         int seconds = cal.get(Calendar.SECOND);
-        value.setHours(hours);
-        value.setMinutes(minutes);
-        value.setSeconds(seconds);
-        return value;
+        WSTimeValue v = new WSTimeValue(value);
+        v.setHours(hours);
+        v.setMinutes(minutes);
+        v.setSeconds(seconds);
+        return v;
     }
 
     private Calendar dateTimeToCalendar(WSDateValue date, WSTimeValue time) {

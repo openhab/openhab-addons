@@ -37,6 +37,15 @@ public class WSIntegerValue extends WSResourceValue {
         this.maximumValue = maximumValue;
     }
 
+    public WSIntegerValue(WSResourceValue from) {
+        super(from.resourceID);
+        if (from instanceof WSIntegerValue) {
+            this.integer = ((WSIntegerValue) from).integer;
+            this.minimumValue = ((WSIntegerValue) from).minimumValue;
+            this.maximumValue = ((WSIntegerValue) from).maximumValue;
+        }
+    }
+
     /**
      * Gets the value of the integer property.
      *
