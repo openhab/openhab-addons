@@ -12,7 +12,6 @@
 /addons/binding/org.openhab.binding.amazonechocontrol/ @mgeramb
 /addons/binding/org.openhab.binding.atlona/ @tmrobert8
 /addons/binding/org.openhab.binding.autelis/ @digitaldan
-/addons/binding/org.openhab.binding.bigassfan/ @mhilbush
 /addons/binding/org.openhab.binding.bluetooth/ @cdjackson @kaikreuzer
 /addons/binding/org.openhab.binding.bluetooth.bluegiga/ @cdjackson @kaikreuzer
 /addons/binding/org.openhab.binding.bluetooth.bluegiga.test/ @cdjackson @kaikreuzer
@@ -231,6 +230,7 @@
 /addons/voice/org.openhab.voice.voicerss/ @JochenHiller
 /bundles/org.openhab.binding.astro/ @gerrieg
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
+/bundles/org.openhab.binding.bigassfan/ @mhilbush
 /bundles/org.openhab.binding.dmx/ @J-N-K
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /itests/org.openhab.binding.astro.tests/ @gerrieg
