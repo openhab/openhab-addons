@@ -185,9 +185,6 @@
 /addons/binding/org.openhab.binding.yeelight/ @claell
 /addons/binding/org.openhab.binding.zoneminder/ @Mr-Eskildsen
 /addons/binding/org.openhab.binding.zway/ @pathec
-/addons/extensionservice/org.openhab.extensionservice.marketplace/ @kaikreuzer
-/addons/extensionservice/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer
-/addons/extensionservice/org.openhab.extensionservice.marketplace.test/ @kaikreuzer
 /addons/io/org.openhab.io.azureiothub/ @nikotanghe
 /addons/io/org.openhab.io.homekit/ @beowulfe
 /addons/io/org.openhab.io.hueemulation/ @davidgraeff @digitaldan
@@ -233,6 +230,8 @@
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
 /bundles/org.openhab.binding.dmx/ @J-N-K
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
+/bundles/org.openhab.extensionservice.marketplace/ @kaikreuzer
+/bundles/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
 /itests/org.openhab.binding.dmx.tests/ @J-N-K
