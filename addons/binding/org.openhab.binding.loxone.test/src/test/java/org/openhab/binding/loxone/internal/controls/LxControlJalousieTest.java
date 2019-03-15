@@ -20,6 +20,12 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Test class for (@link LxControlJalousie}
+ *
+ * @author Pawel Pieczul - initial contribution
+ *
+ */
 public class LxControlJalousieTest extends LxControlTest {
 
     private final String ROLLERSHUTTER_CHANNEL = null;

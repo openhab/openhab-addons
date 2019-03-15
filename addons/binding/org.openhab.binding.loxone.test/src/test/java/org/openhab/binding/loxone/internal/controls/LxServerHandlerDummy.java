@@ -35,6 +35,12 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/**
+ * Dummy implementation of thing handler and its API towards controls.
+ *
+ * @author Pawel Pieczul - initial contribution
+ *
+ */
 public class LxServerHandlerDummy implements LxServerHandlerApi {
 
     Gson gson;

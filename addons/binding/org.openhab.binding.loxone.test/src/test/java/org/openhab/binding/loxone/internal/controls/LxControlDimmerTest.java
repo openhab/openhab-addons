@@ -19,6 +19,12 @@ import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Test class for (@link LxControlDimmer}
+ * 
+ * @author Pawel Pieczul - initial contribution
+ *
+ */
 public class LxControlDimmerTest extends LxControlTest {
     @Before
     public void setup() {

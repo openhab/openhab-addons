@@ -17,6 +17,12 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Test class for (@link LxControlInfoOnlyAnalog}
+ *
+ * @author Pawel Pieczul - initial contribution
+ *
+ */
 public class LxControlInfoOnlyAnalogTest extends LxControlTest {
     @Before
     public void setup() {

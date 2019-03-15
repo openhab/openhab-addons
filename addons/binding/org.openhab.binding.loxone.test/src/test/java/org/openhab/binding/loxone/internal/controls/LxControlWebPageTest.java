@@ -16,6 +16,12 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Test class for (@link LxControlWebPage}
+ *
+ * @author Pawel Pieczul - initial contribution
+ *
+ */
 public class LxControlWebPageTest extends LxControlTest {
     @Before
     public void setup() {

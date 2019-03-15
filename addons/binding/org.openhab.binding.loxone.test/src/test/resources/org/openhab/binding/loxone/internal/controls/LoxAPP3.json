@@ -358,6 +358,68 @@
 			"states": {
 				"activeOutput": "1255054f-0355-af46-ffff8e584788cd57"
 			}
+		},
+		"106bed36-016d-6dd8-ffffffe6109fb656": {
+			"name": "Gate",
+			"type": "TextState",
+			"uuidAction": "106bed36-016d-6dd8-ffffffe6109fb656",
+			"room": "0b734138-038c-0386-ffff403fb0c34b9e",
+			"cat": "0fe665f4-0161-4773-ffff403fb0c34b9e",
+			"defaultRating": 0,
+			"isFavorite": false,
+			"isSecured": false,
+			"defaultIcon": null,
+			"states": {
+				"textAndIcon": "106bed36-016d-6dd8-ffffffe6109fb656"
+			}
+		},
+		"132aa43b-01d4-56ea-ffff403fb0c34b9e": {
+			"name": "Tracker Control",
+			"type": "Tracker",
+			"uuidAction": "132aa43b-01d4-56ea-ffff403fb0c34b9e",
+			"room": "0b734138-037d-034e-ffff403fb0c34b9e",
+			"cat": "0fe650c2-0004-d446-ffff504f9410790f",
+			"defaultRating": 0,
+			"isFavorite": false,
+			"isSecured": false,
+			"details": {
+				"maxEntries": 5
+			},
+			"states": {
+				"entries": "132aa43b-01d4-56ea-ffff403fb0c34b9e"
+			}
+		},
+		"0e3684cc-026e-28e0-ffff403fb0c34b9e": {
+			"name": "Kitchen All Blinds Up",
+			"type": "Pushbutton",
+			"uuidAction": "0e3684cc-026e-28e0-ffff403fb0c34b9e",
+			"room": "0b734138-038c-035e-ffff403fb0c34b9e",
+			"cat": "0b734138-033e-02d8-ffff403fb0c34b9e",
+			"defaultRating": 0,
+			"isFavorite": false,
+			"isSecured": false,
+			"defaultIcon": null,
+			"states": {
+				"active": "0e3684cc-026e-28e0-ffff403fb0c34b9e"
+			}
+		},
+		"1326771c-030e-3a7c-ffff403fb0c34b9e": {
+			"name": "Stairwell Light Switch",
+			"type": "TimedSwitch",
+			"uuidAction": "1326771c-030e-3a7c-ffff403fb0c34b9e",
+			"room": "0b734138-037d-034e-ffff403fb0c34b9e",
+			"cat": "0fe650c2-0004-d446-ffff504f9410790f",
+			"defaultRating": 0,
+			"isFavorite": false,
+			"isSecured": false,
+			"defaultIcon": null,
+			"details": {
+				"isStairwayLs": true
+			},
+			"states": {
+				"deactivationDelay": "1326771c-030e-3a7c-ffff403fb0c34b9e",
+				"deactivationDelayTotal": "1326771c-030e-3a78-ffff0a5e97ff8000"
+			}
 		}
 	},
 	"weatherServer": {

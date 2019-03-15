@@ -30,6 +30,12 @@ import org.openhab.binding.loxone.internal.types.LxCategory;
 import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
+/**
+ * Common test framework class for all (@link LxControl} objects
+ *
+ * @author Pawel Pieczul - initial contribution
+ *
+ */
 class LxControlTest {
     LxServerHandlerDummy handler;
     LxUuid controlUuid;
@@ -78,8 +84,8 @@ class LxControlTest {
         assertNotNull(c.getDescription());
         assertEquals(itemType, c.getAcceptedItemType());
         assertEquals(ChannelKind.STATE, c.getKind());
+        StateDescription d = handler.stateDescriptions.get(c.getUID());
         if (readOnly || min != null || max != null || step != null || format != null || options != null) {
-            StateDescription d = handler.stateDescriptions.get(c.getUID());
             assertNotNull(d);
             assertEquals(min, d.getMinimum());
             assertEquals(max, d.getMaximum());
@@ -99,6 +105,8 @@ class LxControlTest {
                     assertEquals(1, num);
                 });
             }
+        } else {
+            assertNull(d);
         }
     }
 
@@ -126,7 +134,7 @@ class LxControlTest {
         testChannelState(null, expectedValue);
     }
 
-    void changeLoxoneState(String stateName, Double value) {
+    void changeLoxoneState(String stateName, Object value) {
         LxControl ctrl = getControl(controlUuid);
         assertNotNull(ctrl);
         LxControlState state = ctrl.getStates().get(stateName);
@@ -176,7 +184,7 @@ class LxControlTest {
 
     private <T> long numberOfControls(Class<T> c) {
         Collection<LxControl> v = handler.controls.values();
-        return v.stream().filter(o -> c.isInstance(o)).collect(Collectors.counting());
+        return v.stream().filter(o -> c.equals(o.getClass())).collect(Collectors.counting());
     }
 
     private LxControl getControl(LxUuid uuid) {

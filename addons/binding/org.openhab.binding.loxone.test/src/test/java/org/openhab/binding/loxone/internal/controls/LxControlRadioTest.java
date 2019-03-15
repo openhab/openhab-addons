@@ -23,6 +23,12 @@ import org.eclipse.smarthome.core.types.StateOption;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Test class for (@link LxControlRadio} - variant with no 'all off' selection
+ *
+ * @author Pawel Pieczul - initial contribution
+ *
+ */
 public class LxControlRadioTest extends LxControlTest {
     @Before
     public void setup() {
