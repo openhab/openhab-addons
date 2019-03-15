@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.Configuration;
 
 /**
  * HomeAssistant MQTT components use a specific MQTT topic layout,
@@ -28,10 +28,10 @@ import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
  */
 @NonNullByDefault
 public class HaID {
-    final public String baseTopic;
-    final public String component;
-    final public String nodeID;
-    final public String objectID;
+    final private String baseTopic;
+    final private String component;
+    final private String nodeID;
+    final private String objectID;
 
     /**
      * Creates a {@link HaID} object for a given HomeAssistant MQTT topic.
@@ -56,6 +56,10 @@ public class HaID {
         baseTopic = strings[0];
     }
 
+    public HaID() {
+        this("", "", "", "");
+    }
+
     /**
      * Creates a {@link HaID} by providing all components separately.
      *
@@ -64,62 +68,123 @@ public class HaID {
      * @param nodeID The node ID (can be the empty string)
      * @param component The component ID
      */
-    public HaID(String baseTopic, String objectID, String nodeID, String component) {
+    private HaID(String baseTopic, String objectID, String nodeID, String component) {
         this.baseTopic = baseTopic;
         this.objectID = objectID;
         this.nodeID = nodeID;
         this.component = component;
     }
 
-    /**
-     * Creates a {@link HaID} by providing a channel UID.
-     *
-     * @param baseTopic The base topic. Usually "homeassistant".
-     * @param channel The channel UID
-     */
-    public HaID(String baseTopic, ChannelUID channel) {
-        String groupId = channel.getGroupId();
-        if (groupId == null) {
-            throw new IllegalArgumentException("Channel needs a group ID!");
-        }
-        String[] groupParts = groupId.split("_");
-        if (groupParts.length != 2) {
-            throw new IllegalArgumentException("Channel needs a group ID with the pattern component_node!");
-        }
-        this.objectID = channel.getThingUID().getId();
-        this.nodeID = groupParts[1];
-        this.component = groupParts[0];
-        this.baseTopic = baseTopic;
+    public static HaID fromConfig(String baseTopic, Configuration config) {
+        String objectID = (String) config.get("objectid");
+        String nodeID = (String) config.getProperties().getOrDefault("nodeid", "");
+        String component = (String) config.get("component");
+        return new HaID(baseTopic, objectID, nodeID, component);
     }
 
-    /**
-     * We map the HomeAssistant MQTT topic tree object to an ESH Thing.
-     */
-    public String getThingID() {
+    public void toConfig(Configuration config) {
+        config.put("objectid", objectID);
+        config.put("nodeid", nodeID);
+        config.put("component", component);
+    }
+
+    public HandlerConfiguration toHandlerConfiguration() {
+        String objectID = this.objectID;
+        if (StringUtils.isNotBlank(nodeID)) {
+            objectID = nodeID + "/" + objectID;
+        }
+
+        return new HandlerConfiguration(baseTopic, objectID);
+    }
+
+    public static HaID fromConfig(HandlerConfiguration config) {
+        String baseTopic = config.getBasetopic();
+        String objectID = config.getObjectid();
+        String nodeID = "";
+
+        if (StringUtils.contains(objectID, '/')) {
+            String[] parts = objectID.split("/");
+
+            if (parts.length != 2) {
+                throw new IllegalArgumentException(
+                        "Bad configuration. objectid must be <objectId> or <nodeId>/<objectId>!");
+            }
+            nodeID = parts[0];
+            objectID = parts[1];
+        }
+        return new HaID(baseTopic, objectID, nodeID, "+");
+    }
+
+    public String getFallbackGroupId() {
+        StringBuilder str = new StringBuilder();
+
+        if (StringUtils.isNotBlank(nodeID)) {
+            str.append(nodeID).append('_');
+        }
+        str.append(objectID).append('_').append(component);
+        return str.toString();
+    }
+
+    public String getComponent() {
+        return component;
+    }
+
+    public String getObjectID() {
         return objectID;
     }
 
-    /**
-     * The channel group type UID consists of all components of this object (object-id + node-id + component-id).
-     */
-    public String getChannelGroupTypeID() {
-        return objectID + "_" + component + nodeID;
+    public String getTopic(String suffix) {
+        StringBuilder str = new StringBuilder();
+
+        str.append(baseTopic).append('/').append(component).append('/');
+
+        if (StringUtils.isNotBlank(nodeID)) {
+            str.append(nodeID).append('/');
+        }
+        str.append(objectID);
+        if (StringUtils.isNotBlank(suffix)) {
+            str.append('/').append(suffix);
+        }
+
+        return str.toString();
     }
 
-    /**
-     * A channel type UID consists of all components of this object (object-id + node-id + component-id) and a
-     * channel-id on top.
-     */
-    public ChannelTypeUID getChannelTypeID(String channelID) {
-        return new ChannelTypeUID(MqttBindingConstants.BINDING_ID,
-                objectID + "_" + component + nodeID + "_" + channelID);
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + baseTopic.hashCode();
+        result = prime * result + component.hashCode();
+        result = prime * result + nodeID.hashCode();
+        result = prime * result + objectID.hashCode();
+        return result;
     }
 
-    /**
-     * The channel group ID consists of the node-id and the component-id
-     */
-    public String getChannelGroupID() {
-        return component + "_" + nodeID;
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        HaID other = (HaID) obj;
+        if (!baseTopic.equals(other.baseTopic)) {
+            return false;
+        }
+        if (!component.equals(other.component)) {
+            return false;
+        }
+        if (!nodeID.equals(other.nodeID)) {
+            return false;
+        }
+        if (!objectID.equals(other.objectID)) {
+            return false;
+        }
+        return true;
     }
 
     @Override

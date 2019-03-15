@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.internal.handler.HomeAssistantThingHandler;
 
@@ -27,9 +29,31 @@ public class HandlerConfiguration {
     /**
      * The MQTT prefix topic
      */
-    public String basetopic = "homeassistant";
+    private String basetopic = "homeassistant";
     /**
      * The object id. This is comparable to a Homie Device.
      */
-    public String objectid = "";
+    private String objectid = "";
+
+    public HandlerConfiguration() {
+    }
+
+    public HandlerConfiguration(String basetopic, String objectid) {
+        super();
+        this.basetopic = basetopic;
+        this.objectid = objectid;
+    }
+
+    public String getBasetopic() {
+        return basetopic;
+    }
+
+    public String getObjectid() {
+        return objectid;
+    }
+
+    public void toProperties(Map<String, Object> properties) {
+        properties.put("basetopic", basetopic);
+        properties.put("objectid", objectid);
+    }
 }
