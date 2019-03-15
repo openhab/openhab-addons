@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" configuration-pid="binding.openweathermap" name="org.openhab.binding.openweathermap.internal.factory.OpenWeatherMapHandlerFactory">
+   <service servicefactory="false">
+      <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
+   </service>
+   <reference bind="setHttpClientFactory" cardinality="1..1" interface="org.eclipse.smarthome.io.net.http.HttpClientFactory" name="HttpClientFactory" policy="static" unbind="unsetHttpClientFactory"/>
+   <reference bind="setLocaleProvider" cardinality="1..1" interface="org.eclipse.smarthome.core.i18n.LocaleProvider" name="LocaleProvider" policy="static" unbind="unsetLocaleProvider"/>
+   <reference bind="setLocationProvider" cardinality="1..1" interface="org.eclipse.smarthome.core.i18n.LocationProvider" name="LocationProvider" policy="static" unbind="unsetLocationProvider"/>
+   <reference bind="setTranslationProvider" cardinality="1..1" interface="org.eclipse.smarthome.core.i18n.TranslationProvider" name="TranslationProvider" policy="static" unbind="unsetTranslationProvider"/>
+   <implementation class="org.openhab.binding.openweathermap.internal.factory.OpenWeatherMapHandlerFactory"/>
+</scr:component>
