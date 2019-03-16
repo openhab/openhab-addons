@@ -131,8 +131,6 @@
     <module>org.openhab.binding.nuki</module>
     <module>org.openhab.binding.oceanic</module>
     <module>org.openhab.binding.onebusaway</module>
-    <module>org.openhab.binding.onewire</module>
-    <module>org.openhab.binding.onewire.test</module>
     <module>org.openhab.binding.onewiregpio</module>
     <module>org.openhab.binding.onkyo</module>
     <module>org.openhab.binding.opensprinkler</module>

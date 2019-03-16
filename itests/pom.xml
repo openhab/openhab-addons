@@ -21,6 +21,7 @@
     <module>org.openhab.binding.astro.tests</module>
     <module>org.openhab.binding.avmfritz.tests</module>
     <module>org.openhab.binding.dmx.tests</module>
+    <module>org.openhab.binding.onewire.tests</module>
   </modules>
 
   <profiles>
