@@ -36,11 +36,11 @@ public class CFactory {
     /**
      * Create a HA MQTT component. The configuration JSon string is required.
      *
-     * @param thingUID       The Thing UID that this component will belong to.
-     * @param haID           The location of this component. The HomeAssistant ID contains the object-id, node-id and
-     *                           component-id.
-     * @param configJSON     Most components expect a "name", a "state_topic" and "command_topic" like with
-     *                           "{name:'Name',state_topic:'homeassistant/switch/0/object/state',command_topic:'homeassistant/switch/0/object/set'".
+     * @param thingUID The Thing UID that this component will belong to.
+     * @param haID The location of this component. The HomeAssistant ID contains the object-id, node-id and
+     *            component-id.
+     * @param configJSON Most components expect a "name", a "state_topic" and "command_topic" like with
+     *            "{name:'Name',state_topic:'homeassistant/switch/0/object/state',command_topic:'homeassistant/switch/0/object/set'".
      * @param updateListener A channel state update listener
      * @return A HA MQTT Component
      */
@@ -81,8 +81,8 @@ public class CFactory {
     /**
      * Create a HA MQTT component by a given channel configuration.
      *
-     * @param basetopic      The MQTT base topic, usually "homeassistant"
-     * @param channel        A channel with the JSON configuration embedded as configuration (key: 'config')
+     * @param basetopic The MQTT base topic, usually "homeassistant"
+     * @param channel A channel with the JSON configuration embedded as configuration (key: 'config')
      * @param updateListener A channel state update listener
      * @return A HA MQTT Component
      */

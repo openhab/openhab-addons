@@ -58,10 +58,10 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
     /**
      * Provide a thingUID and HomeAssistant topic ID to determine the ESH channel group UID and type.
      *
-     * @param thing      A ThingUID
-     * @param haID       A HomeAssistant topic ID
+     * @param thing A ThingUID
+     * @param haID A HomeAssistant topic ID
      * @param configJson The configuration string
-     * @param gson       A Gson instance
+     * @param gson A Gson instance
      */
     public AbstractComponent(CFactory.ComponentConfiguration componentConfiguration, Class<C> clazz) {
         this.componentConfiguration = componentConfiguration;
@@ -82,7 +82,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
     /**
      * Subscribes to all state channels of the component and adds all channels to the provided channel type provider.
      *
-     * @param connection                 The connection
+     * @param connection The connection
      * @param channelStateUpdateListener A listener
      * @return A future that completes as soon as all subscriptions have been performed. Completes exceptionally on
      *         errors.
