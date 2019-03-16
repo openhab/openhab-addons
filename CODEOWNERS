@@ -5,8 +5,6 @@
 *       @openhab/2-x-add-ons-maintainers
 
 # Add-on maintainers:
-/addons/binding/org.openhab.binding.airquality/ @kubawolanin
-/addons/binding/org.openhab.binding.airvisualnode/ @3cky
 /addons/binding/org.openhab.binding.allplay/ @dominicdesu
 /addons/binding/org.openhab.binding.amazondashbutton/ @OLibutzki
 /addons/binding/org.openhab.binding.amazonechocontrol/ @mgeramb
@@ -226,6 +224,8 @@
 /addons/voice/org.openhab.voice.picotts/ @FlorianSW
 /addons/voice/org.openhab.voice.pollytts/ @hillmanr
 /addons/voice/org.openhab.voice.voicerss/ @JochenHiller
+/bundles/org.openhab.binding.airquality/ @kubawolanin
+/bundles/org.openhab.binding.airvisualnode/ @3cky
 /bundles/org.openhab.binding.astro/ @gerrieg
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
 /bundles/org.openhab.binding.dmx/ @J-N-K
