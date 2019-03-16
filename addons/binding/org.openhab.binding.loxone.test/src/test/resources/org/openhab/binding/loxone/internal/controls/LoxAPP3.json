@@ -403,10 +403,10 @@
 				"active": "0e3684cc-026e-28e0-ffff403fb0c34b9e"
 			}
 		},
-		"1326771c-030e-3a7c-ffff403fb0c34b9e": {
-			"name": "Stairwell Light Switch",
-			"type": "TimedSwitch",
-			"uuidAction": "1326771c-030e-3a7c-ffff403fb0c34b9e",
+		"131b1a96-02b9-f6e9-eeff403fb0c34b9e": {
+			"name": "Up Down Analog Input",
+			"type": "UpDownAnalog",
+			"uuidAction": "131b1a96-02b9-f6e9-eeff403fb0c34b9e",
 			"room": "0b734138-037d-034e-ffff403fb0c34b9e",
 			"cat": "0fe650c2-0004-d446-ffff504f9410790f",
 			"defaultRating": 0,
@@ -414,11 +414,35 @@
 			"isSecured": false,
 			"defaultIcon": null,
 			"details": {
-				"isStairwayLs": true
+				"format": "%.1f",
+				"min": 50.000,
+				"max": 150.000,
+				"step": 10.000
 			},
 			"states": {
-				"deactivationDelay": "1326771c-030e-3a7c-ffff403fb0c34b9e",
-				"deactivationDelayTotal": "1326771c-030e-3a78-ffff0a5e97ff8000"
+				"value": "131b1a96-02b9-f6e9-eeff403fb0c34b9e",
+				"error": "131b1a96-02b9-f6e8-eefffdf1ae1f802f"
+			}
+		},
+		"131b1a96-02b9-f6e9-ffff403fb0c34b9e": {
+			"name": "Left Right Analog Input",
+			"type": "LeftRightAnalog",
+			"uuidAction": "131b1a96-02b9-f6e9-ffff403fb0c34b9e",
+			"room": "0b734138-037d-034e-ffff403fb0c34b9e",
+			"cat": "0fe650c2-0004-d446-ffff504f9410790f",
+			"defaultRating": 0,
+			"isFavorite": false,
+			"isSecured": false,
+			"defaultIcon": null,
+			"details": {
+				"format": "value: %.2f",
+				"min": 1072.123,
+				"max": 1123.458,
+				"step": 23.987
+			},
+			"states": {
+				"value": "131b1a96-02b9-f6e9-ffff403fb0c34b9e",
+				"error": "131b1a96-02b9-f6e8-fffffdf1ae1f802f"
 			}
 		}
 	},
