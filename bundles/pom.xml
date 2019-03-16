@@ -20,6 +20,7 @@
   <modules>
     <module>org.openhab.binding.airquality</module>
     <module>org.openhab.binding.airvisualnode</module>
+    <module>org.openhab.binding.allplay</module>
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.avmfritz</module>

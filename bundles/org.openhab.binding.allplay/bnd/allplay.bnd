@@ -1,0 +1,2 @@
+Include-Resource: lib/tchaikovsky.jar
+Bundle-Classpath: ., tchaikovsky.jar
