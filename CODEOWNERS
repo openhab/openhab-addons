@@ -151,7 +151,6 @@
 /addons/binding/org.openhab.binding.solaredge/ @alexf2015
 /addons/binding/org.openhab.binding.solarlog/ @johannrichard
 /addons/binding/org.openhab.binding.somfytahoma/ @octa22
-/addons/binding/org.openhab.binding.sonos/ @kgoderis @lolodomo
 /addons/binding/org.openhab.binding.sonyaudio/ @freke
 /addons/binding/org.openhab.binding.spotify/ @Hilbrand
 /addons/binding/org.openhab.binding.squeezebox/ @digitaldan @mhilbush
@@ -232,6 +231,7 @@
 /bundles/org.openhab.binding.dmx/ @J-N-K
 /bundles/org.openhab.binding.onewire/ @J-N-K
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
+/bundles/org.openhab.binding.sonos/ @kgoderis @lolodomo
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
 /itests/org.openhab.binding.dmx.tests/ @J-N-K
