@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Svilen Valkanov - Initial contribution
+ * @author Alexander Falkenstern - Process information
  */
 @NonNullByDefault
 public class SysteminfoBindingConstants {
@@ -27,6 +28,7 @@ public class SysteminfoBindingConstants {
     public static final String BINDING_ID = "systeminfo";
 
     public static final ThingTypeUID THING_TYPE_COMPUTER = new ThingTypeUID(BINDING_ID, "computer");
+    public static final ThingTypeUID THING_TYPE_PROCESS = new ThingTypeUID(BINDING_ID, "process");
 
     // Thing properties
     /**
@@ -54,258 +56,227 @@ public class SysteminfoBindingConstants {
      */
     public static final String PROPERTY_OS_VERSION = "OS Version";
 
+    // List of all Channel group IDs
+    /**
+     * Battery group ID
+     */
+    public static final String BATTERY_GROUP_ID = "battery";
+
+    /**
+     * CPU group ID
+     */
+    public static final String CPU_GROUP_ID = "cpu";
+
+    /**
+     * Display group ID
+     */
+    public static final String DISPLAY_GROUP_ID = "display";
+
+    /**
+     * Physical storage drive group ID
+     */
+    public static final String DRIVE_GROUP_ID = "drive";
+
+    /**
+     * Physical sensors group ID
+     */
+    public static final String FANS_GROUP_ID = "fans";
+
+    /**
+     * Memory group ID
+     */
+    public static final String MEMORY_GROUP_ID = "memory";
+
+    /**
+     * Network group ID
+     */
+    public static final String NETWORK_GROUP_ID = "network";
+
+    /**
+     * Swap group ID
+     */
+    public static final String STORAGE_GROUP_ID = "storage";
+
+    /**
+     * Swap group ID
+     */
+    public static final String SWAP_GROUP_ID = "swap";
+
     // List of all Channel IDs
+    /**
+     * Name
+     */
+    public static final String CHANNEL_NAME = "name";
+
+    /**
+     * Detailed description
+     */
+    public static final String CHANNEL_DESCRIPTION = "description";
+
+    /**
+     * Running threads count
+     */
+    public static final String CHANNEL_THREADS = "threads";
 
     /**
      * Size of the available memory
      */
-    public static final String CHANNEL_MEMORY_AVAILABLE = "memory#available";
-
-    /**
-     * Size of the used memory
-     */
-    public static final String CHANNEL_MEMORY_USED = "memory#used";
+    public static final String CHANNEL_AVAILABLE = "available";
 
     /**
      * Total size of the memory
      */
-    public static final String CHANNEL_MEMORY_TOTAL = "memory#total";
+    public static final String CHANNEL_TOTAL = "total";
+
+    /**
+     * Size of the used memory
+     */
+    public static final String CHANNEL_USED = "used";
 
     /**
      * Percents of the available memory
      */
-    public static final String CHANNEL_MEMORY_AVAILABLE_PERCENT = "memory#availablePercent";
+    public static final String CHANNEL_AVAILABLE_PERCENT = "availablePercent";
 
     /**
      * Percents of the used memory
      */
-    public static final String CHANNEL_MEMORY_USED_PERCENT = "memory#usedPercent";
-
-    /**
-     * Total size of swap memory
-     */
-    public static final String CHANNEL_SWAP_TOTAL = "swap#total";
-
-    /**
-     * Size of the available swap memory
-     */
-    public static final String CHANNEL_SWAP_AVAILABLE = "swap#available";
-
-    /**
-     * Size of the used swap memory
-     */
-    public static final String CHANNEL_SWAP_USED = "swap#used";
-
-    /**
-     * Percents of the available swap memory
-     */
-    public static final String CHANNEL_SWAP_AVAILABLE_PERCENT = "swap#availablePercent";
-
-    /**
-     * Percents of the used swap memory
-     */
-    public static final String CHANNEL_SWAP_USED_PERCENT = "swap#usedPercent";
-
-    /**
-     * Physical storage drive name
-     */
-    public static final String CHANNEL_DRIVE_NAME = "drive#name";
+    public static final String CHANNEL_USED_PERCENT = "usedPercent";
 
     /**
      * Physical storage drive model
      */
-    public static final String CHANNEL_DRIVE_MODEL = "drive#model";
+    public static final String CHANNEL_DRIVE_MODEL = "model";
 
     /**
      * Physical storage drive serial number
      */
-    public static final String CHANNEL_DRIVE_SERIAL = "drive#serial";
-
-    /**
-     * Name of the logical volume storage
-     */
-    public static final String CHANNEL_STORAGE_NAME = "storage#name";
+    public static final String CHANNEL_DRIVE_SERIAL = "serial";
 
     /**
      * Logical storage volume type -(e.g. NTFS, FAT32 ..)
      */
-    public static final String CHANNEL_STORAGE_TYPE = "storage#type";
-
-    /**
-     * Description of the logical volume storage
-     */
-    public static final String CHANNEL_STORAGE_DESCRIPTION = "storage#description";
-
-    /**
-     * Size of the available storage space
-     */
-    public static final String CHANNEL_STORAGE_AVAILABLE = "storage#available";
-
-    /**
-     * Size of the used storage space
-     */
-    public static final String CHANNEL_STORAGE_USED = "storage#used";
-
-    /**
-     * Total storage space
-     */
-    public static final String CHANNEL_STORAGE_TOTAL = "storage#total";
-
-    /**
-     * Percents of the available storage space
-     */
-    public static final String CHANNEL_STORAGE_AVAILABLE_PERCENT = "storage#availablePercent";
-
-    /**
-     * Percents of the used storage space
-     */
-    public static final String CHANNEL_STORAGE_USED_PERCENT = "storage#usedPercent";
-
-    /**
-     * Temperature of the CPU measured from the sensors.
-     */
-    public static final String CHANNEL_SENSORS_CPU_TEMPERATURE = "sensors#cpuTemp";
-
-    /**
-     * Voltage of the CPU core.
-     */
-    public static final String CHANNEL_SENOSRS_CPU_VOLTAGE = "sensors#cpuVoltage";
+    public static final String CHANNEL_STORAGE_TYPE = "type";
 
     /**
      * Fan speed
      */
-    public static final String CHANNEL_SENSORS_FAN_SPEED = "sensors#fanSpeed";
-
-    /**
-     * Name of the battery
-     */
-    public static final String CHANNEL_BATTERY_NAME = "battery#name";
+    public static final String CHANNEL_FAN_SPEED = "speed";
 
     /**
      * Remaining capacity of the battery.
      */
-    public static final String CHANNEL_BATTERY_REMAINING_CAPACITY = "battery#remainingCapacity";
+    public static final String CHANNEL_BATTERY_REMAINING_CAPACITY = "remainingCapacity";
 
     /**
      * Estimated remaining time of the battery
      */
-    public static final String CHANNEL_BATTERY_REMAINING_TIME = "battery#remainingTime";
-
-    /**
-     * Detailed description about the CPU
-     */
-    public static final String CHANNEL_CPU_DESCRIPTION = "cpu#description";
-
-    /**
-     * Average recent CPU load
-     */
-    public static final String CHANNEL_CPU_LOAD = "cpu#load";
+    public static final String CHANNEL_BATTERY_REMAINING_TIME = "remainingTime";
 
     /**
      * Average CPU load for the last minute
      */
-    public static final String CHANNEL_CPU_LOAD_1 = "cpu#load1";
+    public static final String CHANNEL_CPU_LOAD = "load";
+
+    /**
+     * Average CPU load for the last minute
+     */
+    public static final String CHANNEL_CPU_LOAD_1 = "load1";
 
     /**
      * Average CPU load for the last 5 minutes
      */
-    public static final String CHANNEL_CPU_LOAD_5 = "cpu#load5";
+    public static final String CHANNEL_CPU_LOAD_5 = "load5";
 
     /**
      * Average CPU load for the last 15 minutes
      */
-    public static final String CHANNEL_CPU_LOAD_15 = "cpu#load15";
+    public static final String CHANNEL_CPU_LOAD_15 = "load15";
 
     /**
-     * CPU name
+     * Temperature of the CPU measured from the sensors.
      */
-    public static final String CHANNEL_CPU_NAME = "cpu#name";
+    public static final String CHANNEL_CPU_TEMPERATURE = "temperature";
+
+    /**
+     * Voltage of the CPU core.
+     */
+    public static final String CHANNEL_CPU_VOLTAGE = "voltage";
 
     /**
      * CPU uptime in minutes
      */
-    public static final String CHANNEL_CPU_UPTIME = "cpu#uptime";
-
-    /**
-     * CPU running threads count
-     */
-    public static final String CHANNEL_CPU_THREADS = "cpu#threads";
+    public static final String CHANNEL_CPU_UPTIME = "uptime";
 
     /**
      * Information about the display device
      */
-    public static final String CHANNEL_DISPLAY_INFORMATION = "display#information";
+    public static final String CHANNEL_DISPLAY_INFORMATION = "information";
 
     /**
      * Host IP address of the network
      */
-    public static final String CHANNEL_NETWORK_IP = "network#ip";
+    public static final String CHANNEL_NETWORK_IP = "ip";
 
     /**
      * Network display name
      */
-    public static final String CHANNEL_NETWORK_ADAPTER_NAME = "network#networkName";
+    public static final String CHANNEL_NETWORK_INTERFACE = "interface";
 
     /**
      * Network data sent
      */
-    public static final String CHANNEL_NETWORK_DATA_SENT = "network#dataSent";
+    public static final String CHANNEL_NETWORK_DATA_SENT = "dataSent";
 
     /**
      * Network data received
      */
-    public static final String CHANNEL_NETWORK_DATA_RECEIVED = "network#dataReceived";
+    public static final String CHANNEL_NETWORK_DATA_RECEIVED = "dataReceived";
 
     /**
      * Network packets sent
      */
-    public static final String CHANNEL_NETWORK_PACKETS_SENT = "network#packetsSent";
+    public static final String CHANNEL_NETWORK_PACKETS_SENT = "packetsSent";
 
     /**
      * Network packets received
      */
-    public static final String CHANNEL_NETWORK_PACKETS_RECEIVED = "network#packetsReceived";
-
-    /**
-     * Network name
-     */
-    public static final String CHANNEL_NETWORK_NAME = "network#networkDisplayName";
+    public static final String CHANNEL_NETWORK_PACKETS_RECEIVED = "packetsReceived";
 
     /**
      * Network mac address
      */
-    public static final String CHANNEL_NETWORK_MAC = "network#mac";
-
-    /**
-     * Name of the channel group for process information
-     */
-    public static final String CHANNEL_GROUP_PROCESS = "process";
+    public static final String CHANNEL_NETWORK_MAC = "mac";
 
     /**
      * CPU load used from a process
      */
-
-    public static final String CHANNEL_PROCESS_LOAD = "process#load";
+    public static final String CHANNEL_PROCESS_LOAD = "load";
 
     /**
      * Size of memory used from a process in MB
      */
-    public static final String CHANNEL_PROCESS_MEMORY = "process#used";
+    public static final String CHANNEL_PROCESS_RESIDENT_MEMORY = "resident";
 
     /**
-     * Name of the process
+     * Size of memory used from a process in MB
      */
-    public static final String CHANNEL_PROCESS_NAME = "process#name";
+    public static final String CHANNEL_PROCESS_VIRTUAL_MEMORY = "virtual";
 
     /**
      * Number of threads, used form the process
      */
-    public static final String CHANNEL_PROCESS_THREADS = "process#threads";
+    public static final String CHANNEL_PROCESS_THREADS = "threads";
 
     /**
      * The full path of the process
      */
-    public static final String CHANNEL_PROCESS_PATH = "process#path";
+    public static final String CHANNEL_PROCESS_PATH = "path";
+
+    /**
+     * Name of the process
+     */
+    public static final String CHANNEL_PROCESS_USER = "user";
 
     // Thing configuraion
     /**
@@ -318,17 +289,20 @@ public class SysteminfoBindingConstants {
      */
     public static final String MEDIUM_PRIORITY_REFRESH_TIME = "interval_medium";
 
-    // Channel configuration
-
-    /**
-     * Name of the channel configuration parameter priority
-     */
-    public static final String PRIOIRITY_PARAM = "priority";
-
     /**
      * Name of the channel configuration parameter pid
      *
      */
-    public static final String PID_PARAM = "pid";
+    public static final String PROCESS_ID = "pid";
+
+    // Channel configuration
+    public static final String LOW_PRIOIRITY = "Low";
+    public static final String MEDIUM_PRIOIRITY = "Medium";
+    public static final String HIGH_PRIOIRITY = "High";
+
+    /**
+     * Name of the channel configuration parameter priority
+     */
+    public static final String PARAMETER_PRIOIRITY = "priority";
 
 }

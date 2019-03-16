@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="systeminfo" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- This thing represents a computer with single logical storage device, single drive, single display, battery and one 
+		network interface installed. If other configurations are needed feel free to create different thing types. Currently dynamic 
+		channel creation is not supported from the binding. -->
+	<thing-type id="process">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="computer" />
+		</supported-bridge-type-refs>
+		<label>Process</label>
+		<description>Information about running process</description>
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="load" typeId="load" />
+			<channel id="resident" typeId="memory" />
+			<channel id="virtual" typeId="memory" />
+			<channel id="user" typeId="user" />
+			<channel id="path" typeId="path" />
+			<channel id="threads" typeId="threads" />
+		</channels>
+		<config-description-ref uri="thing-type:systeminfo:processConfig" />
+	</thing-type>
+</thing:thing-descriptions>

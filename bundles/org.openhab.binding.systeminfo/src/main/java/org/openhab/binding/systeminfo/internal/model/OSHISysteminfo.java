@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
-import oshi.hardware.ComputerSystem;
 import oshi.hardware.Display;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.HWDiskStore;
@@ -33,6 +32,7 @@ import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.NetworkIF;
 import oshi.hardware.PowerSource;
 import oshi.hardware.Sensors;
+import oshi.hardware.VirtualMemory;
 import oshi.software.os.OSFileStore;
 import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
@@ -64,16 +64,14 @@ public class OSHISysteminfo implements SysteminfoInterface {
     private @NonNullByDefault({}) CentralProcessor cpu;
     private @NonNullByDefault({}) Sensors sensors;
 
-    // Static objects, should be recreated on each request
-    private @NonNullByDefault({}) ComputerSystem computerSystem;
-    private @NonNullByDefault({}) OperatingSystem operatingSystem;
-    private @NonNullByDefault({}) NetworkIF[] networks;
-    private @NonNullByDefault({}) Display[] displays;
-    private @NonNullByDefault({}) OSFileStore[] fileStores;
-    private @NonNullByDefault({}) PowerSource[] powerSources;
-    private @NonNullByDefault({}) HWDiskStore[] drives;
+    private long[] oldCpuTicks;
 
-    public static final int PRECISION_AFTER_DECIMAL_SIGN = 1;
+    // Static objects, should be recreated on each request
+    private OperatingSystem operatingSystem;
+    private Display[] displays;
+    private HWDiskStore[] drives;
+
+    public static final int PRECISION_AFTER_DECIMAL_SIGN = 2;
 
     /**
      * Some of the methods used in this constructor execute native code and require execute permissions
@@ -81,11 +79,6 @@ public class OSHISysteminfo implements SysteminfoInterface {
      */
     public OSHISysteminfo() {
         logger.debug("OSHISysteminfo service is created");
-    }
-
-    @Override
-    public void initializeSysteminfo() {
-        logger.debug("OSHISysteminfo service starts initializing");
 
         SystemInfo systemInfo = new SystemInfo();
         hal = systemInfo.getHardware();
@@ -95,225 +88,173 @@ public class OSHISysteminfo implements SysteminfoInterface {
         cpu = hal.getProcessor();
         sensors = hal.getSensors();
 
+        oldCpuTicks = cpu.getSystemCpuLoadTicks();
+
         // Static objects, should be recreated on each request. In OSHI 4.0.0. it is planned to change this mechanism -
         // see https://github.com/oshi/oshi/issues/310
         // TODO: Once the issue is resolved in OSHI , remove unnecessary object recreations from the public get methods
-        computerSystem = hal.getComputerSystem();
         operatingSystem = systemInfo.getOperatingSystem();
-        networks = hal.getNetworkIFs();
         displays = hal.getDisplays();
-        fileStores = operatingSystem.getFileSystem().getFileStores();
-        powerSources = hal.getPowerSources();
         drives = hal.getDiskStores();
     }
 
-    private Object getDevice(Object @Nullable [] devices, int index) throws DeviceNotFoundException {
-        if ((devices == null) || (devices.length <= index)) {
-            throw new DeviceNotFoundException("Device with index: " + index + " can not be found!");
+    private Object getDevice(Object @Nullable [] devices, int index) throws IllegalArgumentException {
+        if ((devices == null) || (index >= devices.length)) {
+            throw new IllegalArgumentException("Device with index " + index + " can not be found.");
         }
         return devices[index];
     }
 
-    private OSProcess getProcess(int pid) throws DeviceNotFoundException {
+    private OSProcess getProcess(int pid) throws IllegalArgumentException {
         OSProcess process = operatingSystem.getProcess(pid);
         if (process == null) {
-            throw new DeviceNotFoundException("Error while getting information for process with PID " + pid);
+            throw new IllegalArgumentException("Process with id " + pid + " can not be found.");
         }
         return process;
     }
 
     @Override
     public StringType getOsFamily() {
-        String osFamily = operatingSystem.getFamily();
-        return new StringType(osFamily);
+        return new StringType(operatingSystem.getFamily());
     }
 
     @Override
     public StringType getOsManufacturer() {
-        String osManufacturer = operatingSystem.getManufacturer();
-        return new StringType(osManufacturer);
+        return new StringType(operatingSystem.getManufacturer());
     }
 
     @Override
     public StringType getOsVersion() {
-        String osVersion = operatingSystem.getVersion().toString();
-        return new StringType(osVersion);
+        return new StringType(operatingSystem.getVersion().toString());
     }
 
     @Override
     public StringType getCpuName() {
-        String name = cpu.getName();
-        return new StringType(name);
+        return new StringType(cpu.getName());
     }
 
     @Override
     public StringType getCpuDescription() {
-        String model = cpu.getModel();
-        String family = cpu.getFamily();
-        String serialNumber = computerSystem.getSerialNumber();
-        String identifier = cpu.getIdentifier();
-        String vendor = cpu.getVendor();
-        String architecture = cpu.isCpu64bit() ? "64 bit" : "32 bit";
-        String descriptionFormatString = "Model: %s %s,family: %s, vendor: %s, sn: %s, identifier: %s ";
-        String description = String.format(descriptionFormatString, model, architecture, family, vendor, serialNumber,
-                identifier);
+        final String model = cpu.getModel();
+        final String family = cpu.getFamily();
+        final String id = cpu.getProcessorID();
+        final String identifier = cpu.getIdentifier();
+        final String vendor = cpu.getVendor();
+        final String architecture = cpu.isCpu64bit() ? "64 bit" : "32 bit";
 
-        return new StringType(description);
+        String format = "Model: %s %s, family: %s, vendor: %s, sn: %s, identifier: %s";
+        return new StringType(String.format(format, model, architecture, family, vendor, id, identifier));
     }
 
     @Override
     public DecimalType getCpuLogicalCores() {
-        int logicalProcessorCount = cpu.getLogicalProcessorCount();
-        return new DecimalType(logicalProcessorCount);
+        return new DecimalType(cpu.getLogicalProcessorCount());
     }
 
     @Override
     public DecimalType getCpuPhysicalCores() {
-        int physicalProcessorCount = cpu.getPhysicalProcessorCount();
-        return new DecimalType(physicalProcessorCount);
+        return new DecimalType(cpu.getPhysicalProcessorCount());
     }
 
     @Override
-    public DecimalType getMemoryTotal() {
-        long totalMemory = memory.getTotal();
-        totalMemory = getSizeInMB(totalMemory);
-        return new DecimalType(totalMemory);
-    }
-
-    @Override
-    public DecimalType getMemoryAvailable() {
-        long availableMemory = memory.getAvailable();
-        availableMemory = getSizeInMB(availableMemory);
-        return new DecimalType(availableMemory);
-    }
-
-    @Override
-    public DecimalType getMemoryUsed() {
-        long totalMemory = memory.getTotal();
-        long availableMemory = memory.getAvailable();
-        long usedMemory = totalMemory - availableMemory;
-        usedMemory = getSizeInMB(usedMemory);
-        return new DecimalType(usedMemory);
-    }
-
-    @Override
-    public DecimalType getStorageTotal(int index) throws DeviceNotFoundException {
+    public DecimalType getStorageTotal(int index) throws IllegalArgumentException {
         // In the current OSHI version a new query is required for the storage data values to be updated
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
-        fileStores = operatingSystem.getFileSystem().getFileStores();
-        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
-        long totalSpace = fileStore.getTotalSpace();
-        totalSpace = getSizeInMB(totalSpace);
-        return new DecimalType(totalSpace);
+        OSFileStore[] stores = operatingSystem.getFileSystem().getFileStores();
+        OSFileStore store = (OSFileStore) getDevice(stores, index);
+        return new DecimalType(getSizeInMB(store.getTotalSpace()));
     }
 
     @Override
-    public DecimalType getStorageAvailable(int index) throws DeviceNotFoundException {
+    public DecimalType getStorageAvailable(int index) throws IllegalArgumentException {
         // In the current OSHI version a new query is required for the storage data values to be updated
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
-        fileStores = operatingSystem.getFileSystem().getFileStores();
-        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
-        long freeSpace = fileStore.getUsableSpace();
-        freeSpace = getSizeInMB(freeSpace);
-        return new DecimalType(freeSpace);
+        OSFileStore[] stores = operatingSystem.getFileSystem().getFileStores();
+        OSFileStore store = (OSFileStore) getDevice(stores, index);
+        return new DecimalType(getSizeInMB(store.getUsableSpace()));
     }
 
     @Override
-    public DecimalType getStorageUsed(int index) throws DeviceNotFoundException {
+    public DecimalType getStorageUsed(int index) throws IllegalArgumentException {
         // In the current OSHI version a new query is required for the storage data values to be updated
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
-        fileStores = operatingSystem.getFileSystem().getFileStores();
-        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
-        long totalSpace = fileStore.getTotalSpace();
-        long freeSpace = fileStore.getUsableSpace();
-        long usedSpace = totalSpace - freeSpace;
-        usedSpace = getSizeInMB(usedSpace);
-        return new DecimalType(usedSpace);
+        OSFileStore[] stores = operatingSystem.getFileSystem().getFileStores();
+        OSFileStore store = (OSFileStore) getDevice(stores, index);
+        return new DecimalType(getSizeInMB(store.getTotalSpace() - store.getUsableSpace()));
     }
 
     @Override
-    public @Nullable DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException {
+    public DecimalType getStorageAvailablePercent(int index) throws IllegalArgumentException {
         // In the current OSHI version a new query is required for the storage data values to be updated
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
-        fileStores = operatingSystem.getFileSystem().getFileStores();
-        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
-        long totalSpace = fileStore.getTotalSpace();
-        long freeSpace = fileStore.getUsableSpace();
-        if (totalSpace > 0) {
-            double freePercentDecimal = (double) freeSpace / (double) totalSpace;
-            BigDecimal freePercent = getPercentsValue(freePercentDecimal);
-            return new DecimalType(freePercent);
-        } else {
-            return null;
+        OSFileStore[] stores = operatingSystem.getFileSystem().getFileStores();
+        OSFileStore store = (OSFileStore) getDevice(stores, index);
+
+        long total = store.getTotalSpace();
+        if (total <= 0) {
+            throw new IllegalArgumentException("Storage device with index " + index + " has no space.");
         }
+        return new DecimalType(getPercentsValue((double) store.getUsableSpace() / (double) total));
     }
 
     @Override
-    public @Nullable DecimalType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException {
+    public DecimalType getStorageUsedPercent(int index) throws IllegalArgumentException {
         // In the current OSHI version a new query is required for the storage data values to be updated
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
-        fileStores = operatingSystem.getFileSystem().getFileStores();
-        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
-        long totalSpace = fileStore.getTotalSpace();
-        long freeSpace = fileStore.getUsableSpace();
-        long usedSpace = totalSpace - freeSpace;
-        if (totalSpace > 0) {
-            double usedPercentDecimal = (double) usedSpace / (double) totalSpace;
-            BigDecimal usedPercent = getPercentsValue(usedPercentDecimal);
-            return new DecimalType(usedPercent);
-        } else {
-            return null;
+        OSFileStore[] stores = operatingSystem.getFileSystem().getFileStores();
+        OSFileStore store = (OSFileStore) getDevice(stores, index);
+
+        long total = store.getTotalSpace();
+        if (total <= 0) {
+            throw new IllegalArgumentException("Storage device with index " + index + " has no space.");
         }
+        return new DecimalType(getPercentsValue((double) (total - store.getUsableSpace()) / (double) total));
     }
 
     @Override
-    public StringType getStorageName(int index) throws DeviceNotFoundException {
-        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
-        String name = fileStore.getName();
-        return new StringType(name);
+    public StringType getStorageName(int index) throws IllegalArgumentException {
+        OSFileStore[] stores = operatingSystem.getFileSystem().getFileStores();
+        OSFileStore store = (OSFileStore) getDevice(stores, index);
+        return new StringType(store.getName());
     }
 
     @Override
-    public StringType getStorageType(int deviceIndex) throws DeviceNotFoundException {
-        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
-        String type = fileStore.getType();
-        return new StringType(type);
+    public StringType getStorageType(int index) throws IllegalArgumentException {
+        OSFileStore[] stores = operatingSystem.getFileSystem().getFileStores();
+        OSFileStore store = (OSFileStore) getDevice(stores, index);
+        return new StringType(store.getType());
     }
 
     @Override
-    public StringType getStorageDescription(int index) throws DeviceNotFoundException {
-        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
-        String description = fileStore.getDescription();
-        return new StringType(description);
+    public StringType getStorageDescription(int index) throws IllegalArgumentException {
+        OSFileStore[] stores = operatingSystem.getFileSystem().getFileStores();
+        OSFileStore store = (OSFileStore) getDevice(stores, index);
+        return new StringType(store.getDescription());
     }
 
     @Override
-    public StringType getNetworkIp(int index) throws DeviceNotFoundException {
+    public StringType getNetworkIp(int index) throws IllegalArgumentException {
         // In the current OSHI version a new query is required for the network data values to be updated
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
-        networks = hal.getNetworkIFs();
-        NetworkIF netInterface = (NetworkIF) getDevice(networks, index);
+        NetworkIF netInterface = (NetworkIF) getDevice(hal.getNetworkIFs(), index);
         String[] ipAddresses = netInterface.getIPv4addr();
-        String ipv4 = (String) getDevice(ipAddresses, 0);
-        return new StringType(ipv4);
+        return new StringType((String) getDevice(ipAddresses, 0));
     }
 
     @Override
-    public StringType getNetworkName(int index) throws DeviceNotFoundException {
-        NetworkIF netInterface = (NetworkIF) getDevice(networks, index);
-        String name = netInterface.getName();
-        return new StringType(name);
+    public StringType getNetworkName(int index) throws IllegalArgumentException {
+        NetworkIF netInterface = (NetworkIF) getDevice(hal.getNetworkIFs(), index);
+        return new StringType(netInterface.getName());
     }
 
     @Override
-    public StringType getNetworkDisplayName(int index) throws DeviceNotFoundException {
-        NetworkIF netInterface = (NetworkIF) getDevice(networks, index);
-        String adapterName = netInterface.getDisplayName();
-        return new StringType(adapterName);
+    public StringType getNetworkDisplayName(int index) throws IllegalArgumentException {
+        NetworkIF netInterface = (NetworkIF) getDevice(hal.getNetworkIFs(), index);
+        return new StringType(netInterface.getDisplayName());
     }
 
     @Override
-    public StringType getDisplayInformation(int index) throws DeviceNotFoundException {
+    public StringType getDisplayInformation(int index) throws IllegalArgumentException {
         Display display = (Display) getDevice(displays, index);
 
         byte[] edid = display.getEdid();
@@ -323,174 +264,186 @@ public class OSHISysteminfo implements SysteminfoInterface {
         int width = EdidUtil.getHcm(edid);
         int height = EdidUtil.getVcm(edid);
 
-        String edidFormatString = "Product %s, manufacturer %s, SN: %s, Width: %d, Height: %d";
-        String edidInfo = String.format(edidFormatString, product, manufacturer, serialNumber, width, height);
-        return new StringType(edidInfo);
+        String format = "Product %s, manufacturer %s, SN: %s, Width: %d, Height: %d";
+        return new StringType(String.format(format, product, manufacturer, serialNumber, width, height));
     }
 
     @Override
-    public @Nullable DecimalType getSensorsCpuTemperature() {
-        BigDecimal cpuTemp = new BigDecimal(sensors.getCpuTemperature());
-        cpuTemp = cpuTemp.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
-        return cpuTemp.signum() == 1 ? new DecimalType(cpuTemp) : null;
+    public DecimalType getSensorsCpuTemperature() throws IllegalArgumentException {
+        BigDecimal temperature = new BigDecimal(sensors.getCpuTemperature());
+        temperature = temperature.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
+
+        if (temperature.signum() < 0) {
+            throw new IllegalArgumentException("CPU reported negative temperature.");
+        }
+        return new DecimalType(temperature);
     }
 
     @Override
-    public @Nullable DecimalType getSensorsCpuVoltage() {
-        BigDecimal cpuVoltage = new BigDecimal(sensors.getCpuVoltage());
-        cpuVoltage = cpuVoltage.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
-        return cpuVoltage.signum() == 1 ? new DecimalType(cpuVoltage) : null;
+    public DecimalType getSensorsCpuVoltage() throws IllegalArgumentException {
+        BigDecimal voltage = new BigDecimal(sensors.getCpuVoltage());
+        voltage = voltage.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
+
+        if (voltage.signum() < 0) {
+            throw new IllegalArgumentException("CPU reported negative voltage.");
+        }
+        return new DecimalType(voltage);
     }
 
     @Override
-    public @Nullable DecimalType getSensorsFanSpeed(int index) throws DeviceNotFoundException {
-        int[] fanSpeeds = sensors.getFanSpeeds();
-        int speed = (int) getDevice(ArrayUtils.toObject(fanSpeeds), index);
-        return speed > 0 ? new DecimalType(speed) : null;
+    public DecimalType getSensorsFanSpeed(int index) throws IllegalArgumentException {
+        int speed = (int) getDevice(ArrayUtils.toObject(sensors.getFanSpeeds()), index);
+
+        if (speed < 0) {
+            throw new IllegalArgumentException("Fan reported negative speed.");
+        }
+        return new DecimalType(speed);
     }
 
     @Override
-    public @Nullable DecimalType getBatteryRemainingTime(int index) throws DeviceNotFoundException {
+    public DecimalType getBatteryRemainingTime(int index) throws IllegalArgumentException {
         // In the current OSHI version a new query is required for the battery data values to be updated
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
-        powerSources = hal.getPowerSources();
-        PowerSource powerSource = (PowerSource) getDevice(powerSources, index);
-        double remainingTimeInSeconds = powerSource.getTimeRemaining();
+        PowerSource source = (PowerSource) getDevice(hal.getPowerSources(), index);
         // The getTimeRemaining() method returns (-1.0) if is calculating or (-2.0) if the time is unlimited.
-        BigDecimal remainingTime = getTimeInMinutes(remainingTimeInSeconds);
-        return remainingTime.signum() == 1 ? new DecimalType(remainingTime) : null;
+        BigDecimal remainingTime = getTimeInMinutes(source.getTimeRemaining());
+
+        if (remainingTime.doubleValue() < -1.0) {
+            throw new IllegalArgumentException("Battery is charging.");
+        } else if (remainingTime.doubleValue() < 0.0) {
+            throw new IllegalArgumentException("Battery time is unknown.");
+        }
+        return new DecimalType(remainingTime);
     }
 
     @Override
-    public DecimalType getBatteryRemainingCapacity(int index) throws DeviceNotFoundException {
+    public DecimalType getBatteryRemainingCapacity(int index) throws IllegalArgumentException {
         // In the current OSHI version a new query is required for the battery data values to be updated
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
-        powerSources = hal.getPowerSources();
-        PowerSource powerSource = (PowerSource) getDevice(powerSources, index);
-        double remainingCapacity = powerSource.getRemainingCapacity();
-        BigDecimal remainingCapacityPercents = getPercentsValue(remainingCapacity);
-        return new DecimalType(remainingCapacityPercents);
+        PowerSource source = (PowerSource) getDevice(hal.getPowerSources(), index);
+        return new DecimalType(getPercentsValue(source.getRemainingCapacity()));
     }
 
     @Override
-    public StringType getBatteryName(int index) throws DeviceNotFoundException {
-        PowerSource powerSource = (PowerSource) getDevice(powerSources, index);
-        String name = powerSource.getName();
-        return new StringType(name);
+    public StringType getBatteryName(int index) throws IllegalArgumentException {
+        PowerSource source = (PowerSource) getDevice(hal.getPowerSources(), index);
+        return new StringType(source.getName());
     }
 
     @Override
-    public @Nullable DecimalType getMemoryAvailablePercent() {
-        long availableMemory = memory.getAvailable();
-        long totalMemory = memory.getTotal();
-        if (totalMemory > 0) {
-            double freePercentDecimal = (double) availableMemory / (double) totalMemory;
-            BigDecimal freePercent = getPercentsValue(freePercentDecimal);
-            return new DecimalType(freePercent);
-        } else {
-            return null;
+    public DecimalType getMemoryTotal() {
+        long total = memory.getTotal();
+        return new DecimalType(getSizeInMB(total));
+    }
+
+    @Override
+    public DecimalType getMemoryAvailable() {
+        long available = memory.getAvailable();
+        return new DecimalType(getSizeInMB(available));
+    }
+
+    @Override
+    public DecimalType getMemoryUsed() {
+        long used = memory.getTotal() - memory.getAvailable();
+        return new DecimalType(getSizeInMB(used));
+    }
+
+    @Override
+    public DecimalType getMemoryAvailablePercent() throws IllegalArgumentException {
+        long total = memory.getTotal();
+        if (total <= 0) {
+            throw new IllegalArgumentException("Main memory has no space.");
         }
+        return new DecimalType(getPercentsValue((double) memory.getAvailable() / (double) total));
     }
 
     @Override
-    public @Nullable DecimalType getMemoryUsedPercent() {
-        long availableMemory = memory.getAvailable();
-        long totalMemory = memory.getTotal();
-        long usedMemory = totalMemory - availableMemory;
-        if (totalMemory > 0) {
-            double usedPercentDecimal = (double) usedMemory / (double) totalMemory;
-            BigDecimal usedPercent = getPercentsValue(usedPercentDecimal);
-            return new DecimalType(usedPercent);
-        } else {
-            return null;
+    public DecimalType getMemoryUsedPercent() throws IllegalArgumentException {
+        long total = memory.getTotal();
+        if (total <= 0) {
+            throw new IllegalArgumentException("Main memory has no space.");
         }
+        return new DecimalType(getPercentsValue((double) (total - memory.getAvailable()) / (double) total));
     }
 
     @Override
-    public StringType getDriveName(int deviceIndex) throws DeviceNotFoundException {
+    public StringType getDriveName(int deviceIndex) throws IllegalArgumentException {
         HWDiskStore drive = (HWDiskStore) getDevice(drives, deviceIndex);
-        String name = drive.getName();
-        return new StringType(name);
+        return new StringType(drive.getName());
     }
 
     @Override
-    public StringType getDriveModel(int deviceIndex) throws DeviceNotFoundException {
+    public StringType getDriveModel(int deviceIndex) throws IllegalArgumentException {
         HWDiskStore drive = (HWDiskStore) getDevice(drives, deviceIndex);
-        String model = drive.getModel();
-        return new StringType(model);
+        return new StringType(drive.getModel());
     }
 
     @Override
-    public StringType getDriveSerialNumber(int deviceIndex) throws DeviceNotFoundException {
+    public StringType getDriveSerialNumber(int deviceIndex) throws IllegalArgumentException {
         HWDiskStore drive = (HWDiskStore) getDevice(drives, deviceIndex);
-        String serialNumber = drive.getSerial();
-        return new StringType(serialNumber);
+        return new StringType(drive.getSerial());
     }
 
     @Override
-    public @Nullable DecimalType getSwapTotal() {
-        long swapTotal = memory.getVirtualMemory().getSwapTotal();
-        swapTotal = getSizeInMB(swapTotal);
-        return swapTotal > 0 ? new DecimalType(swapTotal) : null;
+    public DecimalType getSwapTotal() {
+        VirtualMemory swap = memory.getVirtualMemory();
+        return new DecimalType(getSizeInMB(swap.getSwapTotal()));
     }
 
     @Override
-    public @Nullable DecimalType getSwapAvailable() {
-        long swapTotal = memory.getVirtualMemory().getSwapTotal();
-        long swapUsed = memory.getVirtualMemory().getSwapUsed();
-        long swapAvaialble = swapTotal - swapUsed;
-        swapAvaialble = getSizeInMB(swapAvaialble);
-        return swapAvaialble > 0 ? new DecimalType(swapAvaialble) : null;
+    public DecimalType getSwapAvailable() {
+        VirtualMemory swap = memory.getVirtualMemory();
+        return new DecimalType(getSizeInMB(swap.getSwapTotal() - swap.getSwapUsed()));
     }
 
     @Override
-    public @Nullable DecimalType getSwapUsed() {
-        long swapTotal = memory.getVirtualMemory().getSwapUsed();
-        swapTotal = getSizeInMB(swapTotal);
-        return swapTotal > 0 ? new DecimalType(swapTotal) : null;
+    public DecimalType getSwapUsed() {
+        VirtualMemory swap = memory.getVirtualMemory();
+        return new DecimalType(getSizeInMB(swap.getSwapUsed()));
     }
 
     @Override
-    public @Nullable DecimalType getSwapAvailablePercent() {
-        long usedSwap = memory.getVirtualMemory().getSwapUsed();
-        long totalSwap = memory.getVirtualMemory().getSwapTotal();
-        long freeSwap = totalSwap - usedSwap;
-        if (totalSwap > 0) {
-            double freePercentDecimal = (double) freeSwap / (double) totalSwap;
-            BigDecimal freePercent = getPercentsValue(freePercentDecimal);
-            return new DecimalType(freePercent);
-        } else {
-            return null;
+    public DecimalType getSwapAvailablePercent() throws IllegalArgumentException {
+        VirtualMemory swap = memory.getVirtualMemory();
+
+        long total = swap.getSwapTotal();
+        if (total <= 0) {
+            throw new IllegalArgumentException("Swap memory has no space.");
         }
+        return new DecimalType(getPercentsValue((double) (total - swap.getSwapUsed()) / total));
     }
 
     @Override
-    public @Nullable DecimalType getSwapUsedPercent() {
-        long usedSwap = memory.getVirtualMemory().getSwapUsed();
-        long totalSwap = memory.getVirtualMemory().getSwapTotal();
-        if (totalSwap > 0) {
-            double usedPercentDecimal = (double) usedSwap / (double) totalSwap;
-            BigDecimal usedPercent = getPercentsValue(usedPercentDecimal);
-            return new DecimalType(usedPercent);
-        } else {
-            return null;
+    public DecimalType getSwapUsedPercent() throws IllegalArgumentException {
+        VirtualMemory swap = memory.getVirtualMemory();
+
+        long total = swap.getSwapTotal();
+        if (total <= 0) {
+            throw new IllegalArgumentException("Swap memory has no space.");
         }
+        return new DecimalType(getPercentsValue((double) swap.getSwapUsed() / total));
     }
 
-    private long getSizeInMB(long sizeInBytes) {
-        return Math.round(sizeInBytes / (1024D * 1024));
+    private double getSizeInMB(long sizeInBytes) {
+        double kBytes = Math.round(sizeInBytes / 1024.0);
+        return Math.round(100.0 * (kBytes / 1024.0)) / 100.0;
     }
 
     private BigDecimal getPercentsValue(double decimalFraction) {
-        BigDecimal result = new BigDecimal(decimalFraction * 100);
-        result = result.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
-        return result;
+        BigDecimal result = new BigDecimal(decimalFraction * 100.0);
+        return result.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
     }
 
     private BigDecimal getTimeInMinutes(double timeInSeconds) {
-        BigDecimal timeInMinutes = new BigDecimal(timeInSeconds / 60);
-        timeInMinutes = timeInMinutes.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_UP);
-        return timeInMinutes;
+        BigDecimal timeInMinutes = new BigDecimal(timeInSeconds / 60.0);
+        return timeInMinutes.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_UP);
+    }
+
+    @Override
+    public DecimalType getCpuLoad() {
+        double load = cpu.getSystemCpuLoadBetweenTicks(oldCpuTicks);
+        oldCpuTicks = cpu.getSystemCpuLoadTicks();
+        return new DecimalType(getPercentsValue(load));
     }
 
     /**
@@ -499,9 +452,12 @@ public class OSHISysteminfo implements SysteminfoInterface {
      * This information is available only on Mac and Linux OS.
      */
     @Override
-    public @Nullable DecimalType getCpuLoad1() {
-        BigDecimal avarageCpuLoad = getAvarageCpuLoad(1);
-        return avarageCpuLoad.signum() == -1 ? null : new DecimalType(avarageCpuLoad);
+    public DecimalType getCpuLoad1() throws IllegalArgumentException {
+        BigDecimal load = getAvarageCpuLoad(1);
+        if (load.doubleValue() < 0.0) {
+            throw new IllegalArgumentException("CPU reported negative load.");
+        }
+        return new DecimalType(load);
     }
 
     /**
@@ -510,9 +466,12 @@ public class OSHISysteminfo implements SysteminfoInterface {
      * This information is available only on Mac and Linux OS.
      */
     @Override
-    public @Nullable DecimalType getCpuLoad5() {
-        BigDecimal avarageCpuLoad = getAvarageCpuLoad(5);
-        return avarageCpuLoad.signum() == -1 ? null : new DecimalType(avarageCpuLoad);
+    public DecimalType getCpuLoad5() throws IllegalArgumentException {
+        BigDecimal load = getAvarageCpuLoad(5);
+        if (load.doubleValue() < 0.0) {
+            throw new IllegalArgumentException("CPU reported negative load.");
+        }
+        return new DecimalType(load);
     }
 
     /**
@@ -521,31 +480,35 @@ public class OSHISysteminfo implements SysteminfoInterface {
      * This information is available only on Mac and Linux OS.
      */
     @Override
-    public @Nullable DecimalType getCpuLoad15() {
-        BigDecimal avarageCpuLoad = getAvarageCpuLoad(15);
-        return avarageCpuLoad.signum() == -1 ? null : new DecimalType(avarageCpuLoad);
+    public DecimalType getCpuLoad15() throws IllegalArgumentException {
+        BigDecimal load = getAvarageCpuLoad(15);
+        if (load.doubleValue() < 0.0) {
+            throw new IllegalArgumentException("CPU reported negative load.");
+        }
+        return new DecimalType(load);
     }
 
     private BigDecimal getAvarageCpuLoad(int timeInMunutes) {
         // This parameter is specified in OSHI Javadoc
         int index;
         switch (timeInMunutes) {
-            case 1:
+            case 1: {
                 index = 0;
                 break;
-            case 5:
+            }
+            case 5: {
                 index = 1;
                 break;
+            }
             case 15:
+            default: {
                 index = 2;
                 break;
-            default:
-                index = 2;
+            }
         }
         double processorLoads[] = cpu.getSystemLoadAverage(index + 1);
         BigDecimal result = new BigDecimal(processorLoads[index]);
-        result = result.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
-        return result;
+        return result.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
     }
 
     @Override
@@ -561,111 +524,99 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public StringType getNetworkMac(int networkIndex) throws DeviceNotFoundException {
-        NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
-        String mac = network.getMacaddr();
-        return new StringType(mac);
+    public StringType getNetworkMac(int networkIndex) throws IllegalArgumentException {
+        NetworkIF network = (NetworkIF) getDevice(hal.getNetworkIFs(), networkIndex);
+        return new StringType(network.getMacaddr());
     }
 
     @Override
-    public DecimalType getNetworkPacketsReceived(int networkIndex) throws DeviceNotFoundException {
+    public DecimalType getNetworkPacketsReceived(int networkIndex) throws IllegalArgumentException {
         // In the current OSHI version a new query is required for the network data values to be updated
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
-        networks = hal.getNetworkIFs();
-        NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
+        NetworkIF network = (NetworkIF) getDevice(hal.getNetworkIFs(), networkIndex);
         network.updateAttributes();
-        long packRecv = network.getPacketsRecv();
-        return new DecimalType(packRecv);
+        return new DecimalType(network.getPacketsRecv());
     }
 
     @Override
-    public DecimalType getNetworkPacketsSent(int networkIndex) throws DeviceNotFoundException {
+    public DecimalType getNetworkPacketsSent(int networkIndex) throws IllegalArgumentException {
         // In the current OSHI version a new query is required for the network data values to be updated
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
-        networks = hal.getNetworkIFs();
-        NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
+        NetworkIF network = (NetworkIF) getDevice(hal.getNetworkIFs(), networkIndex);
         network.updateAttributes();
         long packSent = network.getPacketsSent();
         return new DecimalType(packSent);
     }
 
     @Override
-    public DecimalType getNetworkDataSent(int networkIndex) throws DeviceNotFoundException {
+    public DecimalType getNetworkDataSent(int networkIndex) throws IllegalArgumentException {
         // In the current OSHI version a new query is required for the network data values to be updated
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
-        networks = hal.getNetworkIFs();
-        NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
+        NetworkIF network = (NetworkIF) getDevice(hal.getNetworkIFs(), networkIndex);
         network.updateAttributes();
         long bytesSent = network.getBytesSent();
         return new DecimalType(getSizeInMB(bytesSent));
     }
 
     @Override
-    public DecimalType getNetworkDataReceived(int networkIndex) throws DeviceNotFoundException {
+    public DecimalType getNetworkDataReceived(int networkIndex) throws IllegalArgumentException {
         // In the current OSHI version a new query is required for the network data values to be updated
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
-        networks = hal.getNetworkIFs();
-        NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
+        NetworkIF network = (NetworkIF) getDevice(hal.getNetworkIFs(), networkIndex);
         network.updateAttributes();
-        long bytesRecv = network.getBytesRecv();
-        return new DecimalType(getSizeInMB(bytesRecv));
+        return new DecimalType(getSizeInMB(network.getBytesRecv()));
     }
 
     @Override
-    public @Nullable StringType getProcessName(int pid) throws DeviceNotFoundException {
-        if (pid > 0) {
-            OSProcess process = getProcess(pid);
-            String name = process.getName();
-            return new StringType(name);
-        } else {
-            return null;
-        }
+    public StringType getProcessName(int pid) throws IllegalArgumentException {
+        OSProcess process = getProcess(pid);
+        return new StringType(process.getName());
     }
 
     @Override
-    public @Nullable DecimalType getProcessCpuUsage(int pid) throws DeviceNotFoundException {
-        if (pid > 0) {
-            OSProcess process = getProcess(pid);
-            double cpuUsageRaw = (process.getKernelTime() + process.getUserTime()) / process.getUpTime();
-            BigDecimal cpuUsage = getPercentsValue(cpuUsageRaw);
-            return new DecimalType(cpuUsage);
-        } else {
-            return null;
-        }
+    public DecimalType getProcessCpuUsage(int pid) throws IllegalArgumentException {
+        OSProcess process = getProcess(pid);
+        double cpuUsageRaw = (double) process.getKernelTime() / (double) process.getUpTime();
+        cpuUsageRaw += (double) process.getUserTime() / (double) process.getUpTime();
+        return new DecimalType(getPercentsValue(cpuUsageRaw));
     }
 
     @Override
-    public @Nullable DecimalType getProcessMemoryUsage(int pid) throws DeviceNotFoundException {
-        if (pid > 0) {
-            OSProcess process = getProcess(pid);
-            long memortInBytes = process.getResidentSetSize();
-            long memoryInMB = getSizeInMB(memortInBytes);
-            return new DecimalType(memoryInMB);
-        } else {
-            return null;
-        }
+    public DecimalType getProcessResidentMemory(int pid) throws IllegalArgumentException {
+        OSProcess process = getProcess(pid);
+        long memory = process.getResidentSetSize();
+        return new DecimalType(getSizeInMB(memory));
     }
 
     @Override
-    public @Nullable StringType getProcessPath(int pid) throws DeviceNotFoundException {
-        if (pid > 0) {
-            OSProcess process = getProcess(pid);
-            String path = process.getPath();
-            return new StringType(path);
-        } else {
-            return null;
-        }
+    public DecimalType getProcessVirtualMemory(int pid) throws IllegalArgumentException {
+        OSProcess process = getProcess(pid);
+        long memory = process.getVirtualSize();
+        return new DecimalType(getSizeInMB(memory));
     }
 
     @Override
-    public @Nullable DecimalType getProcessThreads(int pid) throws DeviceNotFoundException {
-        if (pid > 0) {
-            OSProcess process = getProcess(pid);
-            int threadCount = process.getThreadCount();
-            return new DecimalType(threadCount);
-        } else {
-            return null;
-        }
+    public StringType getProcessPath(int pid) throws IllegalArgumentException {
+        OSProcess process = getProcess(pid);
+        return new StringType(process.getPath());
+    }
+
+    @Override
+    public DecimalType getProcessThreads(int pid) throws IllegalArgumentException {
+        OSProcess process = getProcess(pid);
+        return new DecimalType(process.getThreadCount());
+    }
+
+    @Override
+    public DecimalType getProcessUpTime(int pid) throws IllegalArgumentException {
+        OSProcess process = getProcess(pid);
+        return new DecimalType(process.getUpTime() / 1000);
+    }
+
+    @Override
+    public StringType getProcessUser(int pid) throws IllegalArgumentException {
+        OSProcess process = getProcess(pid);
+        return new StringType(process.getUser());
     }
 
 }

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
-		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<!-- The thing updates at intervals the High and Medium priority channels, defined in channel configuration file. This parameters 
-		specify how often (time in seconds) these channels should be updated. -->
+	<!--
+		The thing updates at intervals the High and Medium priority channels, defined in channel configuration file.
+		This parameters specify how often (time in seconds) these channels should be updated.
+-->
 
 	<config-description uri="thing-type:systeminfo:computerConfig">
 		<parameter name="interval_high" type="integer">

@@ -6,24 +6,21 @@
 	<!-- This thing represents a computer with single logical storage device, single drive, single display, battery and one 
 		network interface installed. If other configurations are needed feel free to create different thing types. Currently dynamic 
 		channel creation is not supported from the binding. -->
-	<thing-type id="computer">
+	<bridge-type id="computer">
 		<label>Systeminfo</label>
 		<description>The computer operating system and hardware information</description>
-
 		<channel-groups>
 			<channel-group id="memory" typeId="memoryGroup" />
 			<channel-group id="storage" typeId="storageGroup" />
-			<channel-group id="sensors" typeId="sensorsGroup" />
+			<channel-group id="fans" typeId="fansGroup" />
 			<channel-group id="cpu" typeId="cpuGroup" />
 			<!-- This group types are not mandatory for every computer configuration -->
-			<channel-group id="process" typeId="processGroup" />
 			<channel-group id="drive" typeId="driveGroup" />
 			<channel-group id="swap" typeId="swapGroup" />
 			<channel-group id="display" typeId="displayGroup" />
 			<channel-group id="battery" typeId="batteryGroup" />
 			<channel-group id="network" typeId="networkGroup" />
 		</channel-groups>
-
 		<properties>
 			<property name="CPU Logical Cores">Not available</property>
 			<property name="CPU Physical Cores">Not available</property>
@@ -31,8 +28,6 @@
 			<property name="OS Version">Not available</property>
 			<property name="OS Family">Not available</property>
 		</properties>
-
 		<config-description-ref uri="thing-type:systeminfo:computerConfig" />
-	</thing-type>
-
+	</bridge-type>
 </thing:thing-descriptions>

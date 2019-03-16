@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<!--
+		The thing updates at intervals the High and Medium priority channels, defined in channel configuration file.
+		This parameters specify how often (time in seconds) these channels should be updated.
+	-->
+
+	<config-description uri="thing-type:systeminfo:processConfig">
+		<parameter name="pid" type="integer" min="0" step="1">
+			<label>PID</label>
+			<description>The Process Identifier of the process.</description>
+			<default>0</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

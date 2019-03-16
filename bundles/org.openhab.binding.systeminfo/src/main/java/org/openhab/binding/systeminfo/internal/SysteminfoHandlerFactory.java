@@ -12,18 +12,21 @@
  */
 package org.openhab.binding.systeminfo.internal;
 
-import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants.THING_TYPE_COMPUTER;
+import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants.*;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.systeminfo.internal.handler.ProcessinfoHandler;
 import org.openhab.binding.systeminfo.internal.handler.SysteminfoHandler;
 import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
 import org.osgi.service.component.annotations.Component;
@@ -36,12 +39,19 @@ import org.osgi.service.component.annotations.Reference;
  * @author Svilen Valkanov - Initial contribution
  * @author Lyubomir Papazov - Pass systeminfo service to the SysteminfoHandler constructor
  * @author Wouter Born - Add null annotations
+ * @author Alexander Falkenstern - Process information
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.systeminfo")
 public class SysteminfoHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COMPUTER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS;
+    static {
+        Set<ThingTypeUID> buffer = new HashSet<>();
+        buffer.add(THING_TYPE_COMPUTER);
+        buffer.add(THING_TYPE_PROCESS);
+        SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(buffer);
+    }
 
     private @NonNullByDefault({}) SysteminfoInterface systeminfo;
 
@@ -52,13 +62,13 @@ public class SysteminfoHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        if (thingTypeUID.equals(THING_TYPE_COMPUTER)) {
-            return new SysteminfoHandler(thing, systeminfo);
+        ThingHandler handler = null;
+        if (THING_TYPE_COMPUTER.equals(thing.getThingTypeUID()) && (thing instanceof Bridge)) {
+            handler = new SysteminfoHandler((Bridge) thing, systeminfo);
+        } else if (THING_TYPE_PROCESS.equals(thing.getThingTypeUID())) {
+            handler = new ProcessinfoHandler(thing, systeminfo);
         }
-
-        return null;
+        return handler;
     }
 
     @Reference
@@ -69,4 +79,5 @@ public class SysteminfoHandlerFactory extends BaseThingHandlerFactory {
     public void unbindSystemInfo(SysteminfoInterface systeminfo) {
         this.systeminfo = null;
     }
+
 }

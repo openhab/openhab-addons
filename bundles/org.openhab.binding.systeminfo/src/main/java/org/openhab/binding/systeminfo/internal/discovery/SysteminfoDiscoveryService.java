@@ -71,12 +71,10 @@ public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
             }
         } catch (UnknownHostException ex) {
             hostname = DEFAULT_THING_ID;
-            logger.info("Hostname can not be resolved. Computer name will be set to the default one: {}",
-                    DEFAULT_THING_ID);
+            logger.info("Hostname can not be resolved. Computer name will be set to {}.", DEFAULT_THING_ID);
         }
 
-        ThingTypeUID computerType = SysteminfoBindingConstants.THING_TYPE_COMPUTER;
-        ThingUID computer = new ThingUID(computerType, hostname);
+        ThingUID computer = new ThingUID(SysteminfoBindingConstants.THING_TYPE_COMPUTER, hostname);
         thingDiscovered(DiscoveryResultBuilder.create(computer).withLabel(DEFAULT_THING_LABEL).build());
     }
 

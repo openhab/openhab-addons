@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Falkenstern - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class)
+@Component(service = DiscoveryService.class, configurationPid = "discovery.plclogo")
 public class PLCDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(PLCDiscoveryService.class);
