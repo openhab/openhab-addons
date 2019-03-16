@@ -111,6 +111,9 @@ public class LxControlUpDownAnalog extends LxControl {
         if (error == null || error == 0.0) {
             Double value = getStateDoubleValue(STATE_VALUE);
             if (value != null) {
+                if (minValue != null && maxValue != null && (minValue > value || maxValue < value)) {
+                    return null;
+                }
                 return new DecimalType(value);
             }
         } else {
