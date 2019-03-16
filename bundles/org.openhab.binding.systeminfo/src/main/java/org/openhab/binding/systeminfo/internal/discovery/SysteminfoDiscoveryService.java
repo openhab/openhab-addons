@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.systeminfo.internal.discovery;
 
-import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants.THING_TYPE_COMPUTER;
+import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants.BRIDGE_TYPE_COMPUTER;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -22,7 +22,6 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
-import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
@@ -46,7 +45,7 @@ public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(SysteminfoDiscoveryService.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_COMPUTER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(BRIDGE_TYPE_COMPUTER);
 
     private static final int DISCOVERY_TIME_SECONDS = 30;
     private static final String THING_UID_VALID_CHARS = "A-Za-z0-9_-";
@@ -71,12 +70,10 @@ public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
             }
         } catch (UnknownHostException ex) {
             hostname = DEFAULT_THING_ID;
-            logger.info("Hostname can not be resolved. Computer name will be set to the default one: {}",
-                    DEFAULT_THING_ID);
+            logger.info("Hostname can not be resolved. Computer name will be set to {}.", DEFAULT_THING_ID);
         }
 
-        ThingTypeUID computerType = SysteminfoBindingConstants.THING_TYPE_COMPUTER;
-        ThingUID computer = new ThingUID(computerType, hostname);
+        ThingUID computer = new ThingUID(SysteminfoBindingConstants.BRIDGE_TYPE_COMPUTER, hostname);
         thingDiscovered(DiscoveryResultBuilder.create(computer).withLabel(DEFAULT_THING_LABEL).build());
     }
 

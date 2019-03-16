@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- This file contains channel specific information and describes how the different channel types should be rendered. Each
-		channel is assigned a default priority configuration. For more info about priorities see OH-INF/config/channelConfig.xml -->
+		channel is assigned a default priority configuration. For more info about priorities see ESH-INF/config/channelConfig.xml -->
 
 	<channel-group-type id="memoryGroup">
 		<label>Physical Memory</label>
@@ -13,7 +13,7 @@
 		<channels>
 			<channel id="total" typeId="total"/>
 			<channel id="available" typeId="available"/>
-			<channel id="used" typeId="used"/>
+			<channel id="used" typeId="memory"/>
 			<channel id="availablePercent" typeId="availablePercent"/>
 			<channel id="usedPercent" typeId="usedPercent"/>
 		</channels>
@@ -25,7 +25,7 @@
 		<channels>
 			<channel id="total" typeId="total"/>
 			<channel id="available" typeId="available"/>
-			<channel id="used" typeId="used"/>
+			<channel id="used" typeId="memory"/>
 			<channel id="availablePercent" typeId="availablePercent"/>
 			<channel id="usedPercent" typeId="usedPercent"/>
 		</channels>
@@ -37,7 +37,7 @@
 		<channels>
 			<channel id="total" typeId="total"/>
 			<channel id="available" typeId="available"/>
-			<channel id="used" typeId="used"/>
+			<channel id="used" typeId="memory"/>
 			<channel id="availablePercent" typeId="availablePercent"/>
 			<channel id="usedPercent" typeId="usedPercent"/>
 			<channel id="name" typeId="name"/>
@@ -61,8 +61,8 @@
 		<description>Network parameters</description>
 		<channels>
 			<channel id="ip" typeId="ip"/>
-			<channel id="networkName" typeId="networkName"/>
-			<channel id="networkDisplayName" typeId="networkDisplayName"/>
+			<channel id="interface" typeId="networkName"/>
+			<channel id="name" typeId="networkDisplayName"/>
 			<channel id="dataSent" typeId="dataSent"/>
 			<channel id="dataReceived" typeId="dataReceived"/>
 			<channel id="packetsSent" typeId="packetsSent"/>
@@ -79,13 +79,11 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="sensorsGroup">
-		<label>Sensor</label>
-		<description>Sensor parameters</description>
+	<channel-group-type id="fansGroup">
+		<label>Fan</label>
+		<description>Fan parameters</description>
 		<channels>
-			<channel id="cpuTemp" typeId="cpuTemp"/>
-			<channel id="cpuVoltage" typeId="cpuVoltage"/>
-			<channel id="fanSpeed" typeId="fanSpeed"/>
+			<channel id="speed" typeId="fanSpeed"/>
 		</channels>
 	</channel-group-type>
 
@@ -105,32 +103,23 @@
 		<channels>
 			<channel id="name" typeId="name"/>
 			<channel id="description" typeId="description"/>
+			<channel id="load" typeId="load"/>
 			<channel id="load1" typeId="loadAverage"/>
 			<channel id="load5" typeId="loadAverage"/>
 			<channel id="load15" typeId="loadAverage"/>
 			<channel id="uptime" typeId="uptime"/>
 			<channel id="threads" typeId="threads"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="voltage" typeId="voltage"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="processGroup">
-		<label>Process</label>
-		<description>System process information</description>
-		<channels>
-			<channel id="load" typeId="load_process"/>
-			<channel id="used" typeId="used_process"/>
-			<channel id="name" typeId="name_process"/>
-			<channel id="threads" typeId="threads_process"/>
-			<channel id="path" typeId="path_process"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-type id="path_process">
+	<channel-type id="path" advanced="true">
 		<item-type>String</item-type>
 		<label>Path</label>
 		<description>The full path</description>
 		<state readOnly="true" pattern="%s"/>
-		<config-description-ref uri="systeminfo:channels:lowpriority_process"/>
+		<config-description-ref uri="systeminfo:channels:lowpriority"/>
 	</channel-type>
 
 	<channel-type id="available">
@@ -141,20 +130,12 @@
 		<config-description-ref uri="systeminfo:channels:highpriority"/>
 	</channel-type>
 
-	<channel-type id="used">
+	<channel-type id="memory">
 		<item-type>Number</item-type>
-		<label>Used</label>
-		<description>Used size in MB</description>
+		<label>Memory</label>
+		<description>Memory size in MB</description>
 		<state readOnly="true" pattern="%d MB"/>
 		<config-description-ref uri="systeminfo:channels:highpriority"/>
-	</channel-type>
-
-	<channel-type id="used_process">
-		<item-type>Number</item-type>
-		<label>Used</label>
-		<description>Used size in MB</description>
-		<state readOnly="true" pattern="%d MB"/>
-		<config-description-ref uri="systeminfo:channels:highpriority_process"/>
 	</channel-type>
 
 	<channel-type id="total">
@@ -189,12 +170,12 @@
 		<config-description-ref uri="systeminfo:channels:lowpriority"/>
 	</channel-type>
 
-	<channel-type id="name_process">
+	<channel-type id="user" advanced="true">
 		<item-type>String</item-type>
-		<label>Name</label>
-		<description>Name of the device (process)</description>
+		<label>User</label>
+		<description>The user name</description>
 		<state readOnly="true" pattern="%s"/>
-		<config-description-ref uri="systeminfo:channels:lowpriority_process"/>
+		<config-description-ref uri="systeminfo:channels:lowpriority"/>
 	</channel-type>
 
 	<channel-type id="model" advanced="true">
@@ -229,7 +210,7 @@
 		<config-description-ref uri="systeminfo:channels:lowpriority"/>
 	</channel-type>
 
-	<channel-type id="cpuTemp" advanced="true">
+	<channel-type id="temperature" advanced="true">
 		<item-type>Number</item-type>
 		<label>CPU Temperature</label>
 		<description>CPU Temperature in Celsius degrees</description>
@@ -237,7 +218,7 @@
 		<config-description-ref uri="systeminfo:channels:highpriority"/>
 	</channel-type>
 
-	<channel-type id="cpuVoltage" advanced="true">
+	<channel-type id="voltage" advanced="true">
 		<item-type>Number</item-type>
 		<label>CPU Voltage</label>
 		<description>CPU Voltage in V</description>
@@ -269,12 +250,12 @@
 		<config-description-ref uri="systeminfo:channels:mediumpriority"/>
 	</channel-type>
 
-	<channel-type id="load_process">
+	<channel-type id="load">
 		<item-type>Number</item-type>
 		<label>Load</label>
 		<description>Load in percent</description>
 		<state readOnly="true" pattern="%.1f %%"/>
-		<config-description-ref uri="systeminfo:channels:highpriority_process"/>
+		<config-description-ref uri="systeminfo:channels:highpriority"/>
 	</channel-type>
 
 	<channel-type id="loadAverage" advanced="true">
@@ -301,14 +282,6 @@
 		<config-description-ref uri="systeminfo:channels:mediumpriority"/>
 	</channel-type>
 
-	<channel-type id="threads_process" advanced="true">
-		<item-type>Number</item-type>
-		<label>Number of Threads</label>
-		<description>Number of threads currently running</description>
-		<state readOnly="true" pattern="%d"/>
-		<config-description-ref uri="systeminfo:channels:mediumpriority_process"/>
-	</channel-type>
-
 	<channel-type id="information" advanced="true">
 		<item-type>String</item-type>
 		<label>Display Information</label>
@@ -327,7 +300,7 @@
 
 	<channel-type id="mac" advanced="true">
 		<item-type>String</item-type>
-		<label>Mac Address</label>
+		<label>MAC Address</label>
 		<description>Mac address of the network</description>
 		<state readOnly="true" pattern="%s "/>
 		<config-description-ref uri="systeminfo:channels:lowpriority"/>

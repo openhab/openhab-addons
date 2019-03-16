@@ -26,11 +26,6 @@ import org.openhab.core.library.types.StringType;
 @NonNullByDefault
 public interface SysteminfoInterface {
 
-    /**
-     * Initialize logic for the Systeminfo implementation
-     */
-    public void initializeSysteminfo();
-
     // Operating system info
     /**
      * Get the Family of the operating system /e.g. Windows,Unix,.../
@@ -72,6 +67,13 @@ public interface SysteminfoInterface {
     public DecimalType getCpuPhysicalCores();
 
     /**
+     * Get the recent average CPU load for all logical processors
+     *
+     * @return the load as percentage value /0-100/
+     */
+    public DecimalType getCpuLoad();
+
+    /**
      * Returns the system load average for the last minute.
      *
      * @return the load as a number of processes or null, if no information is available
@@ -93,18 +95,45 @@ public interface SysteminfoInterface {
     public @Nullable DecimalType getCpuLoad15();
 
     /**
+     * Get the number of threads currently running
+     *
+     * @return number of threads
+     */
+    public DecimalType getCpuThreads();
+
+    /**
      * Get the System uptime (time since boot).
      *
      * @return time in minutes since boot
      */
     public DecimalType getCpuUptime();
 
+    // Battery info
     /**
-     * Get the number of threads currently running
+     * Get battery name
      *
-     * @return number of threads
+     * @param index
+     * @throws IllegalArgumentException
      */
-    public DecimalType getCpuThreads();
+    public StringType getBatteryName(int index) throws IllegalArgumentException;
+
+    /**
+     * Get estimated time remaining for the power source.
+     *
+     * @param index
+     * @return minutes remaining charge or null, if the time is estimated as unlimited
+     * @throws IllegalArgumentException
+     */
+    public @Nullable DecimalType getBatteryRemainingTime(int index) throws IllegalArgumentException;
+
+    /**
+     * Battery remaining capacity.
+     *
+     * @param index
+     * @return percentage value /0-100/
+     * @throws IllegalArgumentException
+     */
+    public @Nullable DecimalType getBatteryRemainingCapacity(int index) throws IllegalArgumentException;
 
     // Memory info
     /**
@@ -112,21 +141,21 @@ public interface SysteminfoInterface {
      *
      * @return memory size in MB
      */
-    public DecimalType getMemoryTotal();
+    public @Nullable DecimalType getMemoryTotal();
 
     /**
      * Returns available size of memory
      *
      * @return memory size in MB
      */
-    public DecimalType getMemoryAvailable();
+    public @Nullable DecimalType getMemoryAvailable();
 
     /**
      * Returns used size of memory
      *
      * @return memory size in MB
      */
-    public DecimalType getMemoryUsed();
+    public @Nullable DecimalType getMemoryUsed();
 
     /**
      * Percents of available memory on the machine
@@ -184,166 +213,166 @@ public interface SysteminfoInterface {
      *
      * @param deviceIndex - the index of the logical volume
      * @return storage size in MB
-     * @throws DeviceNotFoundException
+     * @throws IllegalArgumentException
      */
-    public DecimalType getStorageTotal(int deviceIndex) throws DeviceNotFoundException;
+    public @Nullable DecimalType getStorageTotal(int deviceIndex) throws IllegalArgumentException;
 
     /**
      * Returns the available storage space on the logical storage volume
      *
      * @param deviceIndex - the index of the logical volume
      * @return storage size in MB
-     * @throws DeviceNotFoundException
+     * @throws IllegalArgumentException
      */
-    public DecimalType getStorageAvailable(int deviceIndex) throws DeviceNotFoundException;
+    public @Nullable DecimalType getStorageAvailable(int deviceIndex) throws IllegalArgumentException;
 
     /**
      * Gets the used storage space on the logical storage volume
      *
      * @param deviceIndex - the index of the logical volume
      * @return storage size in MB
-     * @throws DeviceNotFoundException
+     * @throws IllegalArgumentException
      */
-    public DecimalType getStorageUsed(int deviceIndex) throws DeviceNotFoundException;
+    public @Nullable DecimalType getStorageUsed(int deviceIndex) throws IllegalArgumentException;
 
     /**
      * Gets the percent of available storage on the logical volume
      *
      * @param deviceIndex - the index of the logical volume
      * @return percent of available storage or null
-     * @throws DeviceNotFoundException
+     * @throws IllegalArgumentException
      */
-    public @Nullable DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException;
+    public @Nullable DecimalType getStorageAvailablePercent(int deviceIndex) throws IllegalArgumentException;
 
     /**
      * Gets the percent of used storage on the logical volume
      *
      * @param deviceIndex - the index of the logical volume
      * @return percent of used storage or null
-     * @throws DeviceNotFoundException
+     * @throws IllegalArgumentException
      */
-    public @Nullable DecimalType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException;
+    public @Nullable DecimalType getStorageUsedPercent(int deviceIndex) throws IllegalArgumentException;
 
     /**
      * Gets the name of the logical storage volume
      *
-     * @throws DeviceNotFoundException
+     * @throws IllegalArgumentException
      */
-    public StringType getStorageName(int deviceIndex) throws DeviceNotFoundException;
+    public StringType getStorageName(int deviceIndex) throws IllegalArgumentException;
 
     /**
      * Gets the type of the logical storage volume (e.g. NTFS, FAT32)
      *
-     * @throws DeviceNotFoundException
+     * @throws IllegalArgumentException
      */
-    public StringType getStorageType(int deviceIndex) throws DeviceNotFoundException;
+    public StringType getStorageType(int deviceIndex) throws IllegalArgumentException;
 
     /**
      * Gets the description of the logical storage volume
      *
-     * @throws DeviceNotFoundException
+     * @throws IllegalArgumentException
      */
-    public StringType getStorageDescription(int deviceIndex) throws DeviceNotFoundException;
+    public StringType getStorageDescription(int deviceIndex) throws IllegalArgumentException;
 
     // Hardware drive info
     /**
      * Gets the name of the physical storage drive
      *
      * @param deviceIndex - index of the storage drive
-     * @throws DeviceNotFoundException
+     * @throws IllegalArgumentException
      */
-    public StringType getDriveName(int deviceIndex) throws DeviceNotFoundException;
+    public StringType getDriveName(int deviceIndex) throws IllegalArgumentException;
 
     /**
      * Gets the model of the physical storage drive
      *
      * @param deviceIndex - index of the storage drive
-     * @throws DeviceNotFoundException
+     * @throws IllegalArgumentException
      */
-    public StringType getDriveModel(int deviceIndex) throws DeviceNotFoundException;
+    public StringType getDriveModel(int deviceIndex) throws IllegalArgumentException;
 
     /**
      * Gets the serial number of the physical storage drive
      *
      * @param deviceIndex - index of the storage drive
-     * @throws DeviceNotFoundException
+     * @throws IllegalArgumentException
      */
-    public StringType getDriveSerialNumber(int deviceIndex) throws DeviceNotFoundException;
+    public StringType getDriveSerialNumber(int deviceIndex) throws IllegalArgumentException;
 
     // Network info
     /**
      * Get the Host IP address of the network.
      *
-     * @param networkIndex - the index of the network
+     * @param index - the index of the network
      * @return 32-bit IPv4 address
-     * @throws DeviceNotFoundException
+     * @throws IllegalArgumentException
      */
-    public StringType getNetworkIp(int networkIndex) throws DeviceNotFoundException;
+    public StringType getNetworkIp(int index) throws IllegalArgumentException;
 
     /**
      * Get the name of this network.
      *
-     * @param networkIndex - the index of the network
-     * @throws DeviceNotFoundException
+     * @param index - the index of the network
+     * @throws IllegalArgumentException
      */
-    public StringType getNetworkName(int networkIndex) throws DeviceNotFoundException;
+    public StringType getNetworkName(int index) throws IllegalArgumentException;
 
     /**
      * The description of the network. On some platforms, this is identical to the name.
      *
-     * @param networkIndex - the index of the network
-     * @throws DeviceNotFoundException
+     * @param index - the index of the network
+     * @throws IllegalArgumentException
      */
-    public StringType getNetworkDisplayName(int networkIndex) throws DeviceNotFoundException;
+    public StringType getNetworkDisplayName(int index) throws IllegalArgumentException;
 
     /**
      * Gets the MAC Address of the network.
      *
-     * @param networkIndex - the index of the network
-     * @throws DeviceNotFoundException
+     * @param index - the index of the network
+     * @throws IllegalArgumentException
      */
-    public StringType getNetworkMac(int networkIndex) throws DeviceNotFoundException;
+    public StringType getNetworkMac(int index) throws IllegalArgumentException;
 
     /**
      * Get number of packets received
      *
-     * @param networkIndex - the index of the network
-     * @throws DeviceNotFoundException
+     * @param index - the index of the network
+     * @throws IllegalArgumentException
      */
-    public DecimalType getNetworkPacketsReceived(int networkIndex) throws DeviceNotFoundException;
+    public DecimalType getNetworkPacketsReceived(int index) throws IllegalArgumentException;
 
     /**
      * Get number of packets sent
      *
-     * @param networkIndex - the index of the network
-     * @throws DeviceNotFoundException
+     * @param index - the index of the network
+     * @throws IllegalArgumentException
      */
-    public DecimalType getNetworkPacketsSent(int networkIndex) throws DeviceNotFoundException;
+    public DecimalType getNetworkPacketsSent(int index) throws IllegalArgumentException;
 
     /**
      * Get data sent in MB for this network
      *
-     * @param networkIndex - the index of the network
-     * @throws DeviceNotFoundException
+     * @param index - the index of the network
+     * @throws IllegalArgumentException
      */
-    public DecimalType getNetworkDataSent(int networkIndex) throws DeviceNotFoundException;
+    public DecimalType getNetworkDataSent(int index) throws IllegalArgumentException;
 
     /**
      * Get data received in MB for this network
      *
-     * @param networkIndex - the index of the network
-     * @throws DeviceNotFoundException
+     * @param index - the index of the network
+     * @throws IllegalArgumentException
      */
-    public DecimalType getNetworkDataReceived(int networkIndex) throws DeviceNotFoundException;
+    public DecimalType getNetworkDataReceived(int index) throws IllegalArgumentException;
 
     // Display info
     /**
      * Get information about the display device as product number, manufacturer, serial number, width and height in cm";
      *
      * @param deviceIndex - the index of the display device
-     * @throws DeviceNotFoundException
+     * @throws IllegalArgumentException
      */
-    public StringType getDisplayInformation(int deviceIndex) throws DeviceNotFoundException;
+    public StringType getDisplayInformation(int deviceIndex) throws IllegalArgumentException;
 
     // Sensors info
     /**
@@ -363,78 +392,78 @@ public interface SysteminfoInterface {
     /**
      * Get fan speed
      *
-     * @param deviceIndex
+     * @param index
      * @return Speed in rpm or null if unable to measure fan speed
-     * @throws DeviceNotFoundException
+     * @throws IllegalArgumentException
      */
-    public @Nullable DecimalType getSensorsFanSpeed(int deviceIndex) throws DeviceNotFoundException;
-
-    // Battery info
-    /**
-     * Get estimated time remaining for the power source.
-     *
-     * @param deviceIndex
-     * @return minutes remaining charge or null, if the time is estimated as unlimited
-     * @throws DeviceNotFoundException
-     */
-    public @Nullable DecimalType getBatteryRemainingTime(int deviceIndex) throws DeviceNotFoundException;
-
-    /**
-     * Battery remaining capacity.
-     *
-     * @param deviceIndex
-     * @return percentage value /0-100/
-     * @throws DeviceNotFoundException
-     */
-    public DecimalType getBatteryRemainingCapacity(int deviceIndex) throws DeviceNotFoundException;
-
-    /**
-     * Get battery name
-     *
-     * @param deviceIndex
-     * @throws DeviceNotFoundException
-     */
-    public StringType getBatteryName(int deviceIndex) throws DeviceNotFoundException;
+    public @Nullable DecimalType getSensorsFanSpeed(int index) throws IllegalArgumentException;
 
     /**
      * Returns the name of the process
      *
      * @param pid - the PID of the process
-     * @throws DeviceNotFoundException - thrown if process with this PID can not be found
+     * @throws IllegalArgumentException - thrown if process with this PID can not be found
      */
-    public @Nullable StringType getProcessName(int pid) throws DeviceNotFoundException;
+    public @Nullable StringType getProcessName(int pid) throws IllegalArgumentException;
 
     /**
      * Returns the CPU usage of the process
      *
      * @param pid - the PID of the process
      * @return - percentage value /0-100/
-     * @throws DeviceNotFoundException - thrown if process with this PID can not be found
+     * @throws IllegalArgumentException - thrown if process with this PID can not be found
      */
-    public @Nullable DecimalType getProcessCpuUsage(int pid) throws DeviceNotFoundException;
+    public @Nullable DecimalType getProcessCpuUsage(int pid) throws IllegalArgumentException;
 
     /**
-     * Returns the size of RAM memory only usage of the process
+     * Returns the size of RAM memory only usage of the process.
+     * It does include all stack and heap memory.
      *
      * @param pid - the PID of the process
      * @return memory size in MB
-     * @throws DeviceNotFoundException- thrown if process with this PID can not be found
+     * @throws IllegalArgumentException- thrown if process with this PID can not be found
      */
-    public @Nullable DecimalType getProcessMemoryUsage(int pid) throws DeviceNotFoundException;
+    public @Nullable DecimalType getProcessResidentMemory(int pid) throws IllegalArgumentException;
+
+    /**
+     * Returns Virtual Memory Size (VSZ). It includes all memory that the process can access,
+     * including memory that is swapped out and memory that is from shared libraries.
+     *
+     * @param pid - the PID of the process
+     * @return memory size in MB
+     * @throws IllegalArgumentException- thrown if process with this PID can not be found
+     */
+    public @Nullable DecimalType getProcessVirtualMemory(int pid) throws IllegalArgumentException;
 
     /**
      * Returns the full path of the executing process.
      *
      * @param pid - the PID of the process
-     * @throws DeviceNotFoundException - thrown if process with this PID can not be found
+     * @throws IllegalArgumentException - thrown if process with this PID can not be found
      */
-    public @Nullable StringType getProcessPath(int pid) throws DeviceNotFoundException;
+    public @Nullable StringType getProcessPath(int pid) throws IllegalArgumentException;
 
     /**
      * Returns the number of threads in this process.
      *
      * @param pid - the PID of the process
-     * @throws DeviceNotFoundException - thrown if process with this PID can not be found
+     * @throws IllegalArgumentException - thrown if process with this PID can not be found
      */
-    public @Nullable DecimalType getProcessThreads(int pid) throws DeviceNotFoundException;
+    public @Nullable DecimalType getProcessThreads(int pid) throws IllegalArgumentException;
+
+    /**
+     * Returns the number of seconds since the process started..
+     *
+     * @param pid - the PID of the process
+     * @throws IllegalArgumentException - thrown if process with this PID can not be found
+     */
+    public @Nullable DecimalType getProcessUpTime(int pid) throws IllegalArgumentException;
+
+    /**
+     * Returns the user this process is run under.
+     *
+     * @param pid - the PID of the process
+     * @throws IllegalArgumentException - thrown if process with this PID can not be found
+     */
+    public @Nullable StringType getProcessUser(int pid) throws IllegalArgumentException;
 }
