@@ -160,9 +160,6 @@ public class VerisureBaseThingJSON implements VerisureThingJSON {
         if (this == obj) {
             return true;
         }
-        if (!super.equals(obj)) {
-            return false;
-        }
         if (!(obj instanceof VerisureBaseThingJSON)) {
             return false;
         }

@@ -113,9 +113,8 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
         config = getConfigAs(VerisureThingConfiguration.class);
         if (config.deviceId == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Verisure device missing deviceId or subType");
+                    "Verisure device is missing deviceId");
         }
-
         Bridge bridge = getBridge();
         if (bridge != null) {
             this.bridgeStatusChanged(bridge.getStatusInfo());

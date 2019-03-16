@@ -472,6 +472,14 @@ public class VerisureSession {
         if (smartLockThing == null) {
             // Fix if doorlock query gives empty JSON
             smartLockThing = new VerisureSmartLockJSON();
+            String deviceId = thing.getDeviceId();
+            // In original JSON the Device Id lacks a space after first 4 characters,
+            // hence we insert a space at position 4
+            if (deviceId != null) {
+                StringBuilder sb = new StringBuilder(deviceId);
+                sb.insert(4, " ");
+                smartLockThing.setDeviceId(sb.toString());
+            }
         }
         String date = thing.getDate();
         if (date != null) {
