@@ -30,7 +30,9 @@ This binding supports the following thing types:
 
 You will have to configure the bridge with username and password, these must be the same credentials as used when logging into https://mypages.verisure.com. 
 You can also configure your pin-code to be able to lock/unlock the SmartLock and arm/unarm the Alarm. 
-It is also possible to configure the number of Verisure installations/sites you have, default is 1.
+**NOTE:** To be able to have full control over all SmartLock functionality, the user has to have Administrator rights.
+It is also possible to configure the number of Verisure installations/sites you have, default is 1. You have to configure a user with the same
+username, password and pin on the other installation/site.
 
 ## Discovery
 
@@ -47,6 +49,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 #### Configuration Options
 
 *   username - The username used to connect to http://mypage.verisure.com
+    * The user has to have Administrator rights to have full SmartLock functionality
 
 *   password - The password used to connect to http://mypage.verisure.com
 
@@ -194,9 +197,9 @@ Only the bridge require manual configuration. The devices and sensors can be add
 | siteName               | String    | This channel reports the name of the site.                                                               |
 | siteId                 | Number    | This channel reports the site ID of the site.                                                            |
 | setSmartLockStatus     | Switch    | This channel is used to lock/unlock.                                                                     |
-| setAutoRelock          | Switch    | This channel is used to configure auto-lock functionality                                                |                
-| setSmartLockVolume     | String    | This channel is used to set the volume level. Available volume settings are "SILENCE", "LOW" and "HIGH". |  
-| setSmartLockVoiceLevel | String    | This channel is used to set the voice level. Available voice level settings are "ESSENTIAL" and "NORMAL".| 
+| setAutoRelock          | Switch    | This channel is used to configure auto-lock functionality. Only supported for users with Administrator rights.                                                |                
+| setSmartLockVolume     | String    | This channel is used to set the volume level. Available volume settings are "SILENCE", "LOW" and "HIGH". Only supported for users with Administrator rights.|  
+| setSmartLockVoiceLevel | String    | This channel is used to set the voice level. Available voice level settings are "ESSENTIAL" and "NORMAL". Only supported for users with Administrator rights.| 
 
 ### Verisure SmartPlug
 

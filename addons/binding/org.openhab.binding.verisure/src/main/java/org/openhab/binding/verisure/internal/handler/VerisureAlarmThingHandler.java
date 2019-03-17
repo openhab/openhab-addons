@@ -89,6 +89,8 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
                     session.sendCommand(siteName, url, data);
                     ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_STATUS);
                     updateState(cuid, new StringType("pending"));
+                } else if (pinCode == null) {
+                    logger.warn("PIN code is not configured! Mandatory to control Alarm!");
                 }
             }
         }

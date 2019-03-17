@@ -108,6 +108,8 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                     } else {
                         logger.debug("Unknown command! {}", command);
                     }
+                } else if (pinCode == null) {
+                    logger.warn("PIN code is not configured! Mandatory to control SmartLock!");
                 }
             }
         }
