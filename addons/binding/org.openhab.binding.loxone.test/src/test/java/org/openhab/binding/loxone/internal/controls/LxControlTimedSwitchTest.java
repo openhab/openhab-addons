@@ -26,7 +26,7 @@ import org.junit.Test;
  *
  */
 public class LxControlTimedSwitchTest extends LxControlTest {
-    private final String DELAY_CHANNEL = " / Deactivation Delay";
+    private static final String DELAY_CHANNEL = " / Deactivation Delay";
 
     @Before
     public void setup() {

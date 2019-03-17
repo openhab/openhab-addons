@@ -444,6 +444,46 @@
 				"value": "131b1a96-02b9-f6e9-ffff403fb0c34b9e",
 				"error": "131b1a96-02b9-f6e8-fffffdf1ae1f802f"
 			}
+		},
+		"0fd08ca6-01a6-d72a-ffff403fb0c34b9e": {
+			"name": "First Floor Scene",
+			"type": "UpDownDigital",
+			"uuidAction": "0fd08ca6-01a6-d72a-ffff403fb0c34b9e",
+			"room": "0b734138-037d-034e-ffff403fb0c34b9e",
+			"cat": "0b734138-033e-02d4-ffff403fb0c34b9e",
+			"defaultRating": 0,
+			"isFavorite": false,
+			"isSecured": false,
+			"defaultIcon": null
+		},
+		"0fd08ca6-01a6-d72a-efff403fb0c34b9e": {
+			"name": "Second Floor Scene",
+			"type": "LeftRightDigital",
+			"uuidAction": "0fd08ca6-01a6-d72a-efff403fb0c34b9e",
+			"room": "0b734138-037d-034e-ffff403fb0c34b9e",
+			"cat": "0b734138-033e-02d4-ffff403fb0c34b9e",
+			"defaultRating": 0,
+			"isFavorite": false,
+			"isSecured": false,
+			"defaultIcon": null
+		},
+		"1326771c-030e-3a7c-ffff403fb0c34b9e": {
+			"name": "Stairwell Light Switch",
+			"type": "TimedSwitch",
+			"uuidAction": "1326771c-030e-3a7c-ffff403fb0c34b9e",
+			"room": "0b734138-037d-034e-ffff403fb0c34b9e",
+			"cat": "0fe650c2-0004-d446-ffff504f9410790f",
+			"defaultRating": 0,
+			"isFavorite": false,
+			"isSecured": false,
+			"defaultIcon": null,
+			"details": {
+				"isStairwayLs": true
+			},
+			"states": {
+				"deactivationDelay": "1326771c-030e-3a7c-ffff403fb0c34b9e",
+				"deactivationDelayTotal": "1326771c-030e-3a78-ffff0a5e97ff8000"
+			}
 		}
 	},
 	"weatherServer": {

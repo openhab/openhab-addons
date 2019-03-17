@@ -159,7 +159,7 @@ class LxControlTest {
     }
 
     void testAction(String expectedAction, int numberOfActions) {
-        assertEquals(numberOfActions, handler.actionQueue.size());
+        assertTrue(numberOfActions <= handler.actionQueue.size());
         if (numberOfActions > 0) {
             String action = handler.actionQueue.poll();
             assertNotNull(action);

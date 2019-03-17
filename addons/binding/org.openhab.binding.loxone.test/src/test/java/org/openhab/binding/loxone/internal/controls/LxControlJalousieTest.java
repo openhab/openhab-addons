@@ -28,9 +28,9 @@ import org.junit.Test;
  */
 public class LxControlJalousieTest extends LxControlTest {
 
-    private final String ROLLERSHUTTER_CHANNEL = null;
-    private final String SHADE_CHANNEL = " / Shade";
-    private final String AUTO_SHADE_CHANNEL = " / Auto Shade";
+    private static final String ROLLERSHUTTER_CHANNEL = null;
+    private static final String SHADE_CHANNEL = " / Shade";
+    private static final String AUTO_SHADE_CHANNEL = " / Auto Shade";
 
     @Before
     public void setup() {
