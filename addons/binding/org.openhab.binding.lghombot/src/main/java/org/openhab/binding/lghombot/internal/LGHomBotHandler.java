@@ -385,7 +385,7 @@ public class LGHomBotHandler extends BaseThingHandler {
                         break;
                     case "CPU_IDLE":
                         if (isLinked(CHANNEL_CPU_LOAD)) {
-                            DecimalType cpuLoad = new DecimalType(100 - Double.valueOf(state).intValue());
+                            DecimalType cpuLoad = new DecimalType(100 - Double.valueOf(state).longValue());
                             if (!cpuLoad.equals(currentCPULoad)) {
                                 currentCPULoad = cpuLoad;
                                 channel = new ChannelUID(getThing().getUID(), CHANNEL_CPU_LOAD);
