@@ -14,6 +14,7 @@ This binding supports only one thing: The Onkyo AV Receiver.  All supported Onky
 
 This binding can discover the supported Onkyo AV Receivers. At the moment only the following models are supported:
 
+-   HT-RC560
 -   TX-NR414
 -   TX-NR474
 -   TX-NR509
