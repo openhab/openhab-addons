@@ -323,12 +323,13 @@ The trigger channel will trigger for each received message on the MQTT topic "al
 Now push those changes to your items in a `rules` file:
 
 ```xtend
-rule "Publish all"
+rule "Receive all"
 when 
-      Channel "mqtt:broker:myUnsecureBroker:myTriggerChannel" triggered
-then
-    val parts = receivedEvent.split("#")
-    sendCommand(parts.get(0), parts.get(1))
+      Channel "mqtt:broker:MQTTBroker:myTriggerChannel" triggered
+then 
+    val parts1 = receivedEvent.toString.split("/").get(1)
+    val parts2 = parts1.split("#")
+    sendCommand(parts2.get(0), parts2.get(1))
 end
 ```
 
