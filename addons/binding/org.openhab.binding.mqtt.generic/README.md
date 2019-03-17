@@ -325,7 +325,7 @@ Now push those changes to your items in a `rules` file:
 ```xtend
 rule "Receive all"
 when 
-      Channel "mqtt:broker:MQTTBroker:myTriggerChannel" triggered
+      Channel "mqtt:broker:myUnsecureBroker:myTriggerChannel" triggered
 then 
     val parts1 = receivedEvent.toString.split("/").get(1)
     val parts2 = parts1.split("#")
