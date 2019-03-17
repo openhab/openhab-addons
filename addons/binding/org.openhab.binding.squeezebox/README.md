@@ -35,6 +35,12 @@ The binding has the following configuration options, which can be set for "bindi
 |-------------|------------------|--------------------------------------------------------------------------|----------|
 | callbackUrl | Callback URL     | URL to use for playing notification sounds, e.g. http://192.168.0.2:8080 | no       |
 
+When a SqueezeBox is used as an audio sink, the SqueezeBox player connects to openHAB to get the audio stream.
+By default, the binding sends the SqueezeBox the URL for getting the audio stream based on the Primary
+Address (Network Settings configuration) and the openHAB HTTP port.
+Sometimes it's necessary to use the Callback URL to override the default, such as when using a reverse proxy or with
+some docker implementations.
+
 ## Thing Configuration
 
 The Squeeze Server bridge requires the ip address, web port, and cli port to access it on.
