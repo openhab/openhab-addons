@@ -285,8 +285,8 @@ public class ValloxMVWebSocket {
                 int iFilterChangedDateMonth = getNumber(bytes, 498);
                 int iFilterChangedDateYear = getNumber(bytes, 500);
 
-                Calendar cal = Calendar.getInstance();
-                cal.set(iFilterChangedDateYear + 2000, iFilterChangedDateMonth - 1 /* Month is 0-based */,
+                Calendar cFilterChangedDate = Calendar.getInstance();
+                cFilterChangedDate.set(iFilterChangedDateYear + 2000, iFilterChangedDateMonth - 1 /* Month is 0-based */,
                         iFilterChangedDateDay, 0, 0, 0);
 
                 int iExtrFanBalanceBase = getNumber(bytes, 374);
@@ -341,7 +341,7 @@ public class ValloxMVWebSocket {
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_HOURS_CURRENT,
                         new DecimalType(iUptimeHoursCurrent));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_FILTER_CHANGED_DATE,
-                        new DateTimeType(ZonedDateTime.ofInstant(cal.toInstant(), TimeZone.getDefault().toZoneId())));
+                        new DateTimeType(ZonedDateTime.ofInstant(cFilterChangedDate.toInstant(), TimeZone.getDefault().toZoneId())));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_REMAINING_FILTER_DAYS,
                         new DecimalType(iRemainingTimeForFilter));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE,
