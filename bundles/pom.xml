@@ -2,20 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
     <version>2.5.0-SNAPSHOT</version>
     <relativePath>../poms/bnd</relativePath>
   </parent>
-
   <groupId>org.openhab.addons.bundles</groupId>
   <artifactId>org.openhab.addons.reactor.bundles</artifactId>
   <packaging>pom</packaging>
-
   <name>openHAB Add-ons :: Bundles</name>
-
   <modules>
     <module>org.openhab.binding.airquality</module>
     <module>org.openhab.binding.airvisualnode</module>
@@ -34,6 +30,7 @@
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.bosesoundtouch</module>
+    <module>org.openhab.binding.buienradar</module>
     <module>org.openhab.binding.chromecast</module>
     <module>org.openhab.binding.cm11a</module>
     <module>org.openhab.binding.coolmasternet</module>
@@ -205,7 +202,6 @@
     <module>org.openhab.voice.pollytts</module>
     <module>org.openhab.voice.voicerss</module>
   </modules>
-
   <build>
     <pluginManagement>
       <plugins>
@@ -240,7 +236,6 @@
       </plugin>
     </plugins>
   </build>
-
   <dependencies>
     <dependency>
       <groupId>org.openhab.core.bom</groupId>
@@ -261,5 +256,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
 </project>
