@@ -21,12 +21,13 @@
 
     <feature name="openhab-binding-airquality" description="Air Quality Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.airquality/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.airquality/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-airvisualnode" description="AirVisual Node Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.airvisualnode/${project.version}</bundle>
+        <bundle dependency="true" start-level="80">mvn:org.samba.jcifs/jcifs/1.3.17</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.airvisualnode/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-allplay" description="AllPlay Binding" version="${project.version}">
@@ -68,7 +69,7 @@
 
     <feature name="openhab-binding-bigassfan" description="Big Ass Fan Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.bigassfan/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bigassfan/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-bluetooth" description="Bluetooth Binding" version="${project.version}">
@@ -543,7 +544,7 @@
 
     <feature name="openhab-binding-onewire" description="OneWire Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.onewire/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.onewire/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-onewiregpio" description="OneWireGPIO Binding" version="${project.version}">
@@ -722,7 +723,7 @@
     <feature name="openhab-binding-sonos" description="Sonos Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.sonos/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.sonos/${project.version}</bundle>
         <config name="binding.sonos">
             opmlUrl = http://opml.radiotime.com/Describe.ashx?c=nowplaying&amp;partnerId=IAeIhU42&amp;id=%id&amp;serial=%serial
         </config>

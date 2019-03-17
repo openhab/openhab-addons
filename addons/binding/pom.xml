@@ -17,14 +17,11 @@
   <name>openHAB Bindings</name>
 
   <modules>
-    <module>org.openhab.binding.airquality</module>
-    <module>org.openhab.binding.airvisualnode</module>
     <module>org.openhab.binding.allplay</module>
     <module>org.openhab.binding.amazondashbutton</module>
     <module>org.openhab.binding.amazonechocontrol</module>
     <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.autelis</module>
-    <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.bluetooth</module>
     <module>org.openhab.binding.bluetooth.bluegiga</module>
     <module>org.openhab.binding.bluetooth.bluegiga.test</module>
@@ -130,8 +127,6 @@
     <module>org.openhab.binding.nuki</module>
     <module>org.openhab.binding.oceanic</module>
     <module>org.openhab.binding.onebusaway</module>
-    <module>org.openhab.binding.onewire</module>
-    <module>org.openhab.binding.onewire.test</module>
     <module>org.openhab.binding.onewiregpio</module>
     <module>org.openhab.binding.onkyo</module>
     <module>org.openhab.binding.opensprinkler</module>
@@ -165,7 +160,6 @@
     <module>org.openhab.binding.solaredge</module>
     <module>org.openhab.binding.solarlog</module>
     <module>org.openhab.binding.somfytahoma</module>
-    <module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.sonyaudio</module>
     <module>org.openhab.binding.spotify</module>
     <module>org.openhab.binding.squeezebox</module>
