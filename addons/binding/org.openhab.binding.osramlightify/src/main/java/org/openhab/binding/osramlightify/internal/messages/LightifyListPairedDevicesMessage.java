@@ -180,7 +180,7 @@ public final class LightifyListPairedDevicesMessage extends LightifyBaseMessage 
                     if (thing != null) {
                         thing.setBridgeUID(bridgeHandler.getThing().getUID());
                         deviceHandler = (LightifyDeviceHandler) thing.getHandler();
-                        known.put(deviceHandler.getDeviceAddress(), deviceHandler);
+                        known.put(deviceAddress.clone(), deviceHandler);
                     }
                 }
             }
