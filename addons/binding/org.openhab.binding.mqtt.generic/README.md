@@ -341,7 +341,7 @@ when
       Member of myGroupOfItems changed
 then
    val actions = getActions("mqtt","mqtt:broker:myUnsecureBroker")
-   actions.publishMQTT("allItems/"+triggeringItem.name,triggeringItem.state)
+   actions.publishMQTT("allItems/"+triggeringItem.name,triggeringItem.state.toString)
 end
 ```
 
