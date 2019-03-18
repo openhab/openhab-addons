@@ -32,7 +32,7 @@ public class ZoneChangeUpdate extends ElkMessage {
         super(ElkCommand.ZoneChangeUpdateReport);
 
         String zoneNumberStr = incomingData.substring(0, 3);
-        zoneNumber = Integer.valueOf(zoneNumberStr, 16);
+        zoneNumber = Integer.valueOf(zoneNumberStr);
         String statusStr = incomingData.substring(3, 4);
         int value = Byte.valueOf(statusStr, 16);
         switch (value & 0x03) {
