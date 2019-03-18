@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dmx;
+package org.openhab.binding.dmx.internal.handler;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.IsCloseTo.closeTo;
@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.dmx.internal.handler.ColorThingHandler;
+import org.openhab.binding.dmx.test.AbstractDmxThingTestParent;
 
 /**
  * Tests cases for {@link ColorThingHandler} in RGB mode.

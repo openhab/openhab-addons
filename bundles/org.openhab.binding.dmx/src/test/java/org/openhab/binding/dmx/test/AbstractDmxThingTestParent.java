@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dmx;
+package org.openhab.binding.dmx.test;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.IsCloseTo.closeTo;
@@ -38,7 +38,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.test.java.JavaTest;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
-import org.openhab.binding.dmx.test.TestBridgeHandler;
 
 /**
  * Common utilities for DMX thing handler tests.
