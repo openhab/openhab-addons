@@ -35,5 +35,6 @@ Import-Package:
  org.jupnp.model.meta,
  org.jupnp.model.types,
  org.osgi.framework,
+ org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

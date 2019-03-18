@@ -15,7 +15,7 @@ package org.openhab.binding.squeezebox.internal.handler;
 /***
  * Enumeration of the play states of a player.
  *
- * @author Patrik Gfeller
+ * @author Patrik Gfeller - Initial contribution
  *
  */
 enum SqueezeBoxPlayerPlayState {

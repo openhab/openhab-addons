@@ -15,7 +15,7 @@ package org.openhab.binding.squeezebox.internal.handler;
 /**
  * Represents a Squeeze Player
  *
- * @author Dan Cunningham
+ * @author Dan Cunningham - Initial contribution
  *
  */
 public class SqueezeBoxPlayer {

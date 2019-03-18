@@ -17,7 +17,7 @@ package org.openhab.binding.squeezebox.internal.utils;
  * Exception class to indicate a timeout during comminication with
  * the media server.
  *
- * @author Patrik Gfeller
+ * @author Patrik Gfeller - Initial contribution
  *
  */
 public class SqueezeBoxTimeoutException extends Exception {

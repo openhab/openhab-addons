@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 class SqueezeBoxNotificationPlayer implements Closeable {
+    private final Logger logger = LoggerFactory.getLogger(SqueezeBoxNotificationPlayer.class);
+
     // An exception is thrown if we do not receive an acknowledge
     // for a volume set command in the given amount of time [s].
     private static final int VOLUME_COMMAND_TIMEOUT = 4;
@@ -39,7 +41,6 @@ class SqueezeBoxNotificationPlayer implements Closeable {
     // after the defined amount in [s]
     private static final int PLAYLIST_COMMAND_TIMEOUT = 5;
 
-    private final Logger logger = LoggerFactory.getLogger(SqueezeBoxNotificationPlayer.class);
     private final SqueezeBoxPlayerState playerState;
     private final SqueezeBoxPlayerHandler squeezeBoxPlayerHandler;
     private final SqueezeBoxServerHandler squeezeBoxServerHandler;
