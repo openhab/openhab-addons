@@ -15,8 +15,8 @@ package org.openhab.binding.squeezebox.internal.config;
 /**
  * Configuration of a server.
  *
- * @author Dan Cunningham
- * @author Mark Hilbush Added user ID and password
+ * @author Dan Cunningham - Initial contribution
+ * @author Mark Hilbush - Added user ID and password
  *
  */
 public class SqueezeBoxServerConfig {

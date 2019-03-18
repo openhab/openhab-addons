@@ -15,7 +15,7 @@ package org.openhab.binding.squeezebox.internal.config;
 /**
  * Configuration for a player
  *
- * @author Dan Cunningham
+ * @author Dan Cunningham - Initial contribution
  * @author Mark Hilbush - Convert sound notification volume from channel to config parameter
  *
  */
