@@ -354,6 +354,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             managementClient.restart(destination);
         } catch (KNXException e) {
             logger.warn("Could not reset device with address '{}': {}", address, e.getMessage());
+        } catch (InterruptedException e) { // ignored as in Calimero pre-2.4.0
         } finally {
             if (destination != null) {
                 destination.destroy();
@@ -388,6 +389,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
     @Override
     public DeviceInfoClient getDeviceInfoClient() {
+        DeviceInfoClient deviceInfoClient = this.deviceInfoClient;
         if (deviceInfoClient != null) {
             return deviceInfoClient;
         } else {
