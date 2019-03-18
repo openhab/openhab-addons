@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * When a {@link SqueezeBoxServerHandler} finds a new SqueezeBox Player we will
  * add it to the system.
  *
- * @author Dan Cunningham
+ * @author Dan Cunningham - Initial contribution
  * @author Mark Hilbush - added method to cancel request player job, and to set thing properties
  * @author Mark Hilbush - Added duration channel
  * @author Mark Hilbush - Added event to update favorites list

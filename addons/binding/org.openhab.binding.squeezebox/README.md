@@ -29,7 +29,17 @@ Once it is added as a Thing the Squeeze Server bridge will discover Squeeze Play
 
 ## Binding Configuration
 
-The binding requires no special configuration
+The binding has the following configuration options, which can be set for "binding:squeezebox":
+
+| Parameter   | Name             | Description                                                              | Required |
+|-------------|------------------|--------------------------------------------------------------------------|----------|
+| callbackUrl | Callback URL     | URL to use for playing notification sounds, e.g. http://192.168.0.2:8080 | no       |
+
+When a SqueezeBox is used as an audio sink, the SqueezeBox player connects to openHAB to get the audio stream.
+By default, the binding sends the SqueezeBox the URL for getting the audio stream based on the Primary
+Address (Network Settings configuration) and the openHAB HTTP port.
+Sometimes it's necessary to use the Callback URL to override the default, such as when using a reverse proxy or with
+some docker implementations.
 
 ## Thing Configuration
 
@@ -138,8 +148,7 @@ String YourPlayer_PlayFavorite "Play Favorite [%s]" { channel="squeezebox:squeez
 
     -  Modify other settings to suite your taste
 
--   When you load the dashboard and click on the selection widget, you should see the favorites.
-Selecting a favorite from the list will play it.
+-   When you load the dashboard and click on the selection widget, you should see the favorites. Selecting a favorite from the list will play it.
 
 #### For Sitemap
 
@@ -190,18 +199,12 @@ end
 
 ### Known Issues
 
--   There are some versions of squeezelite that will not correctly play very short duration mp3 files.
-Versions of squeezelite after v1.7 and before v1.8.6 will not play very short duration mp3 files reliably.
-For example, if you're using piCorePlayer (which uses squeezelite), please check your version of squeezelite if you're having trouble playing notifications.
-This bug has been fixed in squeezelite version 1.8.6-985, which is included in piCorePlayer version 3.20.
+-   There are some versions of squeezelite that will not correctly play very short duration mp3 files. Versions of squeezelite after v1.7 and before v1.8.6 will not play very short duration mp3 files reliably. For example, if you're using piCorePlayer (which uses squeezelite), please check your version of squeezelite if you're having trouble playing notifications. This bug has been fixed in squeezelite version 1.8.6-985, which is included in piCorePlayer version 3.20.
 
 -   When streaming from a remote service (such as Pandora or Spotify), after the notification plays, the Squeezebox Server starts playing a new track, instead of picking up from where it left off on the currently playing track.
 
--   There have been reports that notifications do not play reliably, or do not play at all, when using Logitech Media Server (LMS) version 7.7.5.
-Therefore, it is recommended that the LMS be on a more current version than 7.7.5.
+-   There have been reports that notifications do not play reliably, or do not play at all, when using Logitech Media Server (LMS) version 7.7.5. Therefore, it is recommended that the LMS be on a more current version than 7.7.5.
 
--   There have been reports that the LMS does not play some WAV files reliably.
-If you're using a TTS service that produces WAV files, and the notifications are not playing, try using an MP3-formatted TTS notification.
+-   There have been reports that the LMS does not play some WAV files reliably. If you're using a TTS service that produces WAV files, and the notifications are not playing, try using an MP3-formatted TTS notification.
 
--   The LMS treats player MAC addresses as case-sensitive.
-Therefore, the case of MAC addresses in the Squeeze Player thing configuration must match the case displayed on the *Information* tab in the LMS Settings.
+-   The LMS treats player MAC addresses as case-sensitive. Therefore, the case of MAC addresses in the Squeeze Player thing configuration must match the case displayed on the *Information* tab in the LMS Settings.
