@@ -40,4 +40,6 @@ Fragment-Host: org.openhab.binding.dmx
 	org.objenesis;version='[2.6.0,2.6.1)',\
 	org.openhab.core.test;version='[2.5.0,2.5.1)',\
 	osgi.enroute.hamcrest.wrapper;version='[1.3.0,1.3.1)',\
-	osgi.enroute.junit.wrapper;version='[4.12.0,4.12.1)'
+	osgi.enroute.junit.wrapper;version='[4.12.0,4.12.1)',\
+	org.eclipse.equinox.event;version='[1.4.300,1.4.301)',\
+	org.openhab.core.storage.json;version='[2.5.0,2.5.1)'
