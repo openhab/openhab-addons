@@ -216,6 +216,9 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
             return false;
         }
 
+        // Only half degree increments are allowed, all others are silently rejected by the A/C units
+        newTemperature = Math.round(newTemperature * 2) / 2.0;
+
         ControlInfo info = webTargets.getControlInfo();
         info.temp = Optional.of(newTemperature);
         webTargets.setControlInfo(info);
