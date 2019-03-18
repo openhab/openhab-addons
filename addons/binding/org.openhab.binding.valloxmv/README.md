@@ -42,6 +42,8 @@ Overview of provided channels
 | uptimeyears               | A_CYC_TOTAL_UP_TIME_YEARS   | Total uptime years                |r | Y                    |
 | uptimehours               | A_CYC_TOTAL_UP_TIME_HOURS   | Total uptime hours                |r | h                    |
 | uptimehourscurrent        | A_CYC_CURRENT_UP_TIME_HOURS | Current uptime in hours           |r | h                    |
+| filterchangeddate         | A\_CYC\_FILTER\_CHANGED\_DAY/MONTH/YEAR | Last filter change    |r | date                 |
+| remainingfilterdays       | A_CYC_CURRENT_UP_TIME_HOURS | Days until filter change          |r | d                    |
 | extrfanbalancebase        | A_CYC_EXTR_FAN_BALANCE_BASE | Extract fan base speed            |rw| 0 - 100 (%)          |
 | suppfanbalancebase        | A_CYC_SUPP_FAN_BALANCE_BASE | Supply fan base speed             |rw| 0 - 100 (%)          |
 | homespeedsetting          | A_CYC_HOME_SPEED_SETTING    | Home fan speed                    |rw| 0 - 100 (%)          |
