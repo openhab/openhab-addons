@@ -117,6 +117,16 @@ public class ValloxMVBindingConstants {
     public static final String CHANNEL_UPTIME_HOURS_CURRENT = "uptimehourscurrent";
 
     /**
+     * Date filter was changed last time.
+     */
+    public static final String CHANNEL_FILTER_CHANGED_DATE = "filterchangeddate";
+
+    /**
+     * Days until filter has to be changed.
+     */
+    public static final String CHANNEL_REMAINING_FILTER_DAYS = "remainingfilterdays";
+
+    /**
      * Extract fan base speed in % (0-100).
      */
     public static final String CHANNEL_EXTR_FAN_BALANCE_BASE = "extrfanbalancebase";

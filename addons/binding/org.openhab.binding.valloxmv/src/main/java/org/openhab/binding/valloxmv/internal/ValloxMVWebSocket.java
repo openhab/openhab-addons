@@ -19,8 +19,11 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.time.ZonedDateTime;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -32,6 +35,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -257,41 +261,50 @@ public class ValloxMVWebSocket {
 
                 logger.debug("Fan Speed: {}", (bytes[129] & 0xFF));
 
-                int bdFanspeed = getNumber(bytes, 128);
-                int bdFanspeedExtract = getNumber(bytes, 144);
-                int bdFanspeedSupply = getNumber(bytes, 146);
+                int iFanspeed = getNumber(bytes, 128);
+                int iFanspeedExtract = getNumber(bytes, 144);
+                int iFanspeedSupply = getNumber(bytes, 146);
                 BigDecimal bdTempInside = getTemperature(bytes, 130);
                 BigDecimal bdTempExhaust = getTemperature(bytes, 132);
                 BigDecimal bdTempOutside = getTemperature(bytes, 134);
                 BigDecimal bdTempIncomingBeforeHeating = getTemperature(bytes, 136);
                 BigDecimal bdTempIncoming = getTemperature(bytes, 138);
-                int bdHumidity = getNumber(bytes, 166);
+                int iHumidity = getNumber(bytes, 166);
 
-                int bdStateOrig = getNumber(bytes, 214);
-                int bdBoostTimer = getNumber(bytes, 220);
-                int bdFireplaceTimer = getNumber(bytes, 222);
+                int iStateOrig = getNumber(bytes, 214);
+                int iBoostTimer = getNumber(bytes, 220);
+                int iFireplaceTimer = getNumber(bytes, 222);
 
-                int bdCellstate = getNumber(bytes, 228);
-                int bdUptimeYears = getNumber(bytes, 230);
-                int bdUptimeHours = getNumber(bytes, 232);
-                int bdUptimeHoursCurrent = getNumber(bytes, 234);
+                int iCellstate = getNumber(bytes, 228);
+                int iUptimeYears = getNumber(bytes, 230);
+                int iUptimeHours = getNumber(bytes, 232);
+                int iUptimeHoursCurrent = getNumber(bytes, 234);
 
-                int bdExtrFanBalanceBase = getNumber(bytes, 374);
-                int bdSuppFanBalanceBase = getNumber(bytes, 376);
+                int iRemainingTimeForFilter = getNumber(bytes, 236);
+                int iFilterChangedDateDay = getNumber(bytes, 496);
+                int iFilterChangedDateMonth = getNumber(bytes, 498);
+                int iFilterChangedDateYear = getNumber(bytes, 500);
 
-                int bdHomeSpeedSetting = getNumber(bytes, 418);
-                int bdAwaySpeedSetting = getNumber(bytes, 406);
-                int bdBoostSpeedSetting = getNumber(bytes, 430);
+                Calendar cFilterChangedDate = Calendar.getInstance();
+                cFilterChangedDate.set(iFilterChangedDateYear + 2000,
+                        iFilterChangedDateMonth - 1 /* Month is 0-based */, iFilterChangedDateDay, 0, 0, 0);
+
+                int iExtrFanBalanceBase = getNumber(bytes, 374);
+                int iSuppFanBalanceBase = getNumber(bytes, 376);
+
+                int iHomeSpeedSetting = getNumber(bytes, 418);
+                int iAwaySpeedSetting = getNumber(bytes, 406);
+                int iBoostSpeedSetting = getNumber(bytes, 430);
                 BigDecimal bdHomeAirTempTarget = getTemperature(bytes, 420);
                 BigDecimal bdAwayAirTempTarget = getTemperature(bytes, 408);
                 BigDecimal bdBoostAirTempTarget = getTemperature(bytes, 432);
 
                 BigDecimal bdState;
-                if (bdFireplaceTimer > 0) {
+                if (iFireplaceTimer > 0) {
                     bdState = new BigDecimal(ValloxMVBindingConstants.STATE_FIREPLACE);
-                } else if (bdBoostTimer > 0) {
+                } else if (iBoostTimer > 0) {
                     bdState = new BigDecimal(ValloxMVBindingConstants.STATE_BOOST);
-                } else if (bdStateOrig == 1) {
+                } else if (iStateOrig == 1) {
                     bdState = new BigDecimal(ValloxMVBindingConstants.STATE_AWAY);
                 } else {
                     bdState = new BigDecimal(ValloxMVBindingConstants.STATE_ATHOME);
@@ -307,9 +320,9 @@ public class ValloxMVWebSocket {
                 updateChannel(ValloxMVBindingConstants.CHANNEL_ONOFF, onoff);
                 updateChannel(ValloxMVBindingConstants.CHANNEL_STATE, new DecimalType(bdState));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_FAN_SPEED,
-                        new QuantityType<>(bdFanspeed, SmartHomeUnits.PERCENT));
-                updateChannel(ValloxMVBindingConstants.CHANNEL_FAN_SPEED_EXTRACT, new DecimalType(bdFanspeedExtract));
-                updateChannel(ValloxMVBindingConstants.CHANNEL_FAN_SPEED_SUPPLY, new DecimalType(bdFanspeedSupply));
+                        new QuantityType<>(iFanspeed, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FAN_SPEED_EXTRACT, new DecimalType(iFanspeedExtract));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FAN_SPEED_SUPPLY, new DecimalType(iFanspeedSupply));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_TEMPERATURE_INSIDE,
                         new QuantityType<>(bdTempInside, SIUnits.CELSIUS));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_TEMPERATURE_OUTSIDE,
@@ -321,22 +334,26 @@ public class ValloxMVWebSocket {
                 updateChannel(ValloxMVBindingConstants.CHANNEL_TEMPERATURE_INCOMING,
                         new QuantityType<>(bdTempIncoming, SIUnits.CELSIUS));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_HUMIDITY,
-                        new QuantityType<>(bdHumidity, SmartHomeUnits.PERCENT));
-                updateChannel(ValloxMVBindingConstants.CHANNEL_CELLSTATE, new DecimalType(bdCellstate));
-                updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_YEARS, new DecimalType(bdUptimeYears));
-                updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_HOURS, new DecimalType(bdUptimeHours));
+                        new QuantityType<>(iHumidity, SmartHomeUnits.PERCENT));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_CELLSTATE, new DecimalType(iCellstate));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_YEARS, new DecimalType(iUptimeYears));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_HOURS, new DecimalType(iUptimeHours));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_HOURS_CURRENT,
-                        new DecimalType(bdUptimeHoursCurrent));
+                        new DecimalType(iUptimeHoursCurrent));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FILTER_CHANGED_DATE, new DateTimeType(
+                        ZonedDateTime.ofInstant(cFilterChangedDate.toInstant(), TimeZone.getDefault().toZoneId())));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_REMAINING_FILTER_DAYS,
+                        new QuantityType<>(iRemainingTimeForFilter, SmartHomeUnits.DAY));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE,
-                        new QuantityType<>(bdExtrFanBalanceBase, SmartHomeUnits.PERCENT));
+                        new QuantityType<>(iExtrFanBalanceBase, SmartHomeUnits.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE,
-                        new QuantityType<>(bdSuppFanBalanceBase, SmartHomeUnits.PERCENT));
+                        new QuantityType<>(iSuppFanBalanceBase, SmartHomeUnits.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_HOME_SPEED_SETTING,
-                        new QuantityType<>(bdHomeSpeedSetting, SmartHomeUnits.PERCENT));
+                        new QuantityType<>(iHomeSpeedSetting, SmartHomeUnits.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_AWAY_SPEED_SETTING,
-                        new QuantityType<>(bdAwaySpeedSetting, SmartHomeUnits.PERCENT));
+                        new QuantityType<>(iAwaySpeedSetting, SmartHomeUnits.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_BOOST_SPEED_SETTING,
-                        new QuantityType<>(bdBoostSpeedSetting, SmartHomeUnits.PERCENT));
+                        new QuantityType<>(iBoostSpeedSetting, SmartHomeUnits.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_HOME_AIR_TEMP_TARGET,
                         new QuantityType<>(bdHomeAirTempTarget, SIUnits.CELSIUS));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_AWAY_AIR_TEMP_TARGET,
