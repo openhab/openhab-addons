@@ -327,7 +327,7 @@ rule "Receive all"
 when 
       Channel "mqtt:broker:myUnsecureBroker:myTriggerChannel" triggered
 then 
-    //The receivedEvent String contains unneeded elements like the mqtt topic, we only need everything after the "/" as this is were Item name and state are
+    //The receivedEvent String contains unneeded elements like the mqtt topic, we only need everything after the "/" as this is were item name and state are
     val parts1 = receivedEvent.toString.split("/").get(1)
     val parts2 = parts1.split("#")
     sendCommand(parts2.get(0), parts2.get(1))
