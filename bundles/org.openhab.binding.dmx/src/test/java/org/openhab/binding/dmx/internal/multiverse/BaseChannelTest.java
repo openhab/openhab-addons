@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dmx.multiverse;
+package org.openhab.binding.dmx.internal.multiverse;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -18,7 +18,6 @@ import static org.junit.Assert.assertThat;
 import java.util.List;
 
 import org.junit.Test;
-import org.openhab.binding.dmx.internal.multiverse.BaseDmxChannel;
 
 /**
  * Tests cases for BaseChannel
