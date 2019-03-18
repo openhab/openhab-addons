@@ -286,8 +286,8 @@ public class ValloxMVWebSocket {
                 int iFilterChangedDateYear = getNumber(bytes, 500);
 
                 Calendar cFilterChangedDate = Calendar.getInstance();
-                cFilterChangedDate.set(iFilterChangedDateYear + 2000, iFilterChangedDateMonth - 1 /* Month is 0-based */,
-                        iFilterChangedDateDay, 0, 0, 0);
+                cFilterChangedDate.set(iFilterChangedDateYear + 2000,
+                        iFilterChangedDateMonth - 1 /* Month is 0-based */, iFilterChangedDateDay, 0, 0, 0);
 
                 int iExtrFanBalanceBase = getNumber(bytes, 374);
                 int iSuppFanBalanceBase = getNumber(bytes, 376);
@@ -340,10 +340,10 @@ public class ValloxMVWebSocket {
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_HOURS, new DecimalType(iUptimeHours));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_UPTIME_HOURS_CURRENT,
                         new DecimalType(iUptimeHoursCurrent));
-                updateChannel(ValloxMVBindingConstants.CHANNEL_FILTER_CHANGED_DATE,
-                        new DateTimeType(ZonedDateTime.ofInstant(cFilterChangedDate.toInstant(), TimeZone.getDefault().toZoneId())));
+                updateChannel(ValloxMVBindingConstants.CHANNEL_FILTER_CHANGED_DATE, new DateTimeType(
+                        ZonedDateTime.ofInstant(cFilterChangedDate.toInstant(), TimeZone.getDefault().toZoneId())));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_REMAINING_FILTER_DAYS,
-                        new DecimalType(iRemainingTimeForFilter));
+                        new QuantityType<>(iRemainingTimeForFilter, SmartHomeUnits.DAY));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_EXTR_FAN_BALANCE_BASE,
                         new QuantityType<>(iExtrFanBalanceBase, SmartHomeUnits.PERCENT));
                 updateChannel(ValloxMVBindingConstants.CHANNEL_SUPP_FAN_BALANCE_BASE,
