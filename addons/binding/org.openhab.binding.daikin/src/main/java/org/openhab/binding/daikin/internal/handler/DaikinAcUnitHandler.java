@@ -77,21 +77,34 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
     private void handleCommandInternal(ChannelUID channelUID, Command command) throws DaikinCommunicationException {
         switch (channelUID.getId()) {
             case DaikinBindingConstants.CHANNEL_AC_POWER:
-                changePower(((OnOffType) command).equals(OnOffType.ON));
-                return;
+                if (command instanceof OnOffType) {
+                    changePower(((OnOffType) command).equals(OnOffType.ON));
+                    return;
+                }
+                break;
             case DaikinBindingConstants.CHANNEL_AC_TEMP:
                 if (changeSetPoint(command)) {
                     return;
                 }
+                break;
             case DaikinBindingConstants.CHANNEL_AC_FAN_SPEED:
-                changeFanSpeed(FanSpeed.valueOf(((StringType) command).toString()));
-                return;
+                if (command instanceof StringType) {
+                    changeFanSpeed(FanSpeed.valueOf(((StringType) command).toString()));
+                    return;
+                }
+                break;
             case DaikinBindingConstants.CHANNEL_AC_FAN_DIR:
-                changeFanDir(FanMovement.valueOf(((StringType) command).toString()));
-                return;
+                if (command instanceof StringType) {
+                    changeFanDir(FanMovement.valueOf(((StringType) command).toString()));
+                    return;
+                }
+                break;
             case DaikinBindingConstants.CHANNEL_AC_MODE:
-                changeMode(Mode.valueOf(((StringType) command).toString()));
-                return;
+                if (command instanceof StringType) {
+                    changeMode(Mode.valueOf(((StringType) command).toString()));
+                    return;
+                }
+                break;
         }
 
         logger.warn("Received command of wrong type for thing '{}' on channel {}", thing.getUID().getAsString(),
