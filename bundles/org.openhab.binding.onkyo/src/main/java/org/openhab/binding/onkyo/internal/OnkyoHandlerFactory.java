@@ -146,4 +146,13 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
     protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
         this.networkAddressService = null;
     }
+
+    @Reference
+    protected void setDynamicStateDescriptionProvider(OnkyoStateDescriptionProvider provider) {
+        this.stateDescriptionProvider = provider;
+    }
+
+    protected void unsetDynamicStateDescriptionProvider(OnkyoStateDescriptionProvider provider) {
+        this.stateDescriptionProvider = null;
+    }
 }

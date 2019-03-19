@@ -119,6 +119,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             if (connection.isConnected()) {
                 updateStatus(ThingStatus.ONLINE);
 
+                sendCommand(EiscpCommand.INFO_QUERY);
             }
         });
 
@@ -181,8 +182,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     selectInput(((DecimalType) command).intValue());
                 } else if (command.equals(RefreshType.REFRESH)) {
                     sendCommand(EiscpCommand.SOURCE_QUERY);
-
-                    sendCommand(EiscpCommand.INFO_QUERY);
                 }
                 break;
             case CHANNEL_LISTENMODE:
@@ -339,11 +338,12 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
 
         for (int i = 0; i < selectorlist.getLength(); i++) {
             Element selectorItem = (Element) selectorlist.item(i);
-            logger.debug("Input Item {} {}", selectorItem.getAttribute("id"), selectorItem.getAttribute("name"));
+
             options.add(new StateOption(String.valueOf(Integer.parseInt(selectorItem.getAttribute("id"), 16)),
                     selectorItem.getAttribute("name")));
         }
-        logger.debug("optionslist {}", options);
+        logger.debug("Got Input List from Receiver {}", options);
+
         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_INPUT), options);
         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_INPUTZONE2), options);
         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_INPUTZONE3), options);
@@ -490,15 +490,14 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             Document doc = builder.parse(is);
 
             NodeList SelectableInputs = doc.getDocumentElement().getElementsByTagName("selector");
-            logger.debug("InputNodes {}", SelectableInputs.getLength());
             this.populateInputs(SelectableInputs);
 
         } catch (ParserConfigurationException e) {
-            logger.error("ProcessInfo Error {}", e);
+            logger.debug("Error parsing Info XML {}", e);
         } catch (SAXException e) {
-            logger.error("ProcessInfo Error {}", e);
+            logger.debug("Error parsing Info XML {}", e);
         } catch (IOException e) {
-            logger.error("ProcessInfo Error {}", e);
+            logger.debug("Error parsing Info XML {}", e);
         }
 
     }
