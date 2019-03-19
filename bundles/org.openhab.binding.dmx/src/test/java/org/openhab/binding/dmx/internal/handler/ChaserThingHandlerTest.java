@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dmx;
+package org.openhab.binding.dmx.internal.handler;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
@@ -37,6 +37,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.dmx.internal.handler.ChaserThingHandler;
+import org.openhab.binding.dmx.test.AbstractDmxThingTestParent;
 import org.openhab.binding.dmx.test.TestBridgeHandler;
 
 /**

@@ -10,10 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dmx;
+package org.openhab.binding.dmx.internal.handler;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.dmx.internal.DmxBindingConstants.*;
@@ -34,32 +33,30 @@ import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.dmx.internal.handler.SacnBridgeHandler;
+import org.openhab.binding.dmx.internal.handler.Lib485BridgeHandler;
 
 /**
- * Tests cases for {@link SacnBridgeHandler}.
+ * Tests cases for {@link Lib485BridgeHandler}.
  *
  * @author Jan N. Klug - Initial contribution
  */
-public class SacnBridgeHandlerTest extends JavaTest {
-    private static final String TEST_ADDRESS = "localhost";
-    private static final int TEST_UNIVERSE = 1;
+public class Lib485BridgeHandlerTest extends JavaTest {
 
-    private final ThingUID BRIDGE_UID_SACN = new ThingUID(THING_TYPE_SACN_BRIDGE, "sacnbridge");
-    private final ChannelUID CHANNEL_UID_MUTE = new ChannelUID(BRIDGE_UID_SACN, CHANNEL_MUTE);
+    private static final String TEST_ADDRESS = "localhost";
+
+    private final ThingUID BRIDGE_UID_LIB485 = new ThingUID(THING_TYPE_LIB485_BRIDGE, "lib485bridge");
+    private final ChannelUID CHANNEL_UID_MUTE = new ChannelUID(BRIDGE_UID_LIB485, CHANNEL_MUTE);
 
     Map<String, Object> bridgeProperties;
 
     private Bridge bridge;
-    private SacnBridgeHandler bridgeHandler;
+    private Lib485BridgeHandler bridgeHandler;
 
     @Before
     public void setUp() {
         bridgeProperties = new HashMap<>();
         bridgeProperties.put(CONFIG_ADDRESS, TEST_ADDRESS);
-        bridgeProperties.put(CONFIG_UNIVERSE, TEST_UNIVERSE);
-        bridgeProperties.put(CONFIG_SACN_MODE, "unicast");
-        bridge = BridgeBuilder.create(THING_TYPE_SACN_BRIDGE, "sacnbridge").withLabel("sACN Bridge")
+        bridge = BridgeBuilder.create(THING_TYPE_LIB485_BRIDGE, "lib485bridge").withLabel("Lib485 Bridge")
                 .withChannel(ChannelBuilder.create(CHANNEL_UID_MUTE, "Switch").withType(MUTE_CHANNEL_TYPEUID).build())
                 .withConfiguration(new Configuration(bridgeProperties)).build();
 
@@ -69,7 +66,7 @@ public class SacnBridgeHandlerTest extends JavaTest {
             return null;
         }).when(mockCallback).statusUpdated(any(), any());
 
-        bridgeHandler = new SacnBridgeHandler(bridge) {
+        bridgeHandler = new Lib485BridgeHandler(bridge) {
             @Override
             protected void validateConfigurationParameters(Map<String, Object> configurationParameters) {
             }
@@ -87,20 +84,7 @@ public class SacnBridgeHandlerTest extends JavaTest {
 
     @Test
     public void assertBridgeStatus() {
-        waitForAssert(() -> assertEquals(ThingStatus.ONLINE, bridge.getStatusInfo().getStatus()));
-    }
-
-    @Test
-    public void renamingOfUniverses() {
-        waitForAssert(() -> assertThat(bridgeHandler.getUniverseId(), is(TEST_UNIVERSE)));
-
-        bridgeProperties.replace(CONFIG_UNIVERSE, 2);
-        bridgeHandler.handleConfigurationUpdate(bridgeProperties);
-        waitForAssert(() -> assertThat(bridgeHandler.getUniverseId(), is(2)));
-
-        bridgeProperties.replace(CONFIG_UNIVERSE, TEST_UNIVERSE);
-        bridgeHandler.handleConfigurationUpdate(bridgeProperties);
-        waitForAssert(() -> assertThat(bridgeHandler.getUniverseId(), is(TEST_UNIVERSE)));
+        waitForAssert(() -> assertEquals(ThingStatus.OFFLINE, bridge.getStatusInfo().getStatus()));
     }
 
 }

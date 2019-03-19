@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dmx;
+package org.openhab.binding.dmx.internal.handler;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
@@ -34,32 +34,32 @@ import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.dmx.internal.handler.ArtnetBridgeHandler;
+import org.openhab.binding.dmx.internal.handler.SacnBridgeHandler;
 
 /**
- * Tests cases for {@link ArtnetBridgeHandler}.
+ * Tests cases for {@link SacnBridgeHandler}.
  *
  * @author Jan N. Klug - Initial contribution
  */
-public class ArtnetBridgeHandlerTest extends JavaTest {
-
+public class SacnBridgeHandlerTest extends JavaTest {
     private static final String TEST_ADDRESS = "localhost";
     private static final int TEST_UNIVERSE = 1;
 
-    private final ThingUID BRIDGE_UID_ARTNET = new ThingUID(THING_TYPE_ARTNET_BRIDGE, "artnetbridge");
-    private final ChannelUID CHANNEL_UID_MUTE = new ChannelUID(BRIDGE_UID_ARTNET, CHANNEL_MUTE);
+    private final ThingUID BRIDGE_UID_SACN = new ThingUID(THING_TYPE_SACN_BRIDGE, "sacnbridge");
+    private final ChannelUID CHANNEL_UID_MUTE = new ChannelUID(BRIDGE_UID_SACN, CHANNEL_MUTE);
 
     Map<String, Object> bridgeProperties;
 
     private Bridge bridge;
-    private ArtnetBridgeHandler bridgeHandler;
+    private SacnBridgeHandler bridgeHandler;
 
     @Before
     public void setUp() {
         bridgeProperties = new HashMap<>();
         bridgeProperties.put(CONFIG_ADDRESS, TEST_ADDRESS);
         bridgeProperties.put(CONFIG_UNIVERSE, TEST_UNIVERSE);
-        bridge = BridgeBuilder.create(THING_TYPE_ARTNET_BRIDGE, "artnetbridge").withLabel("Artnet Bridge")
+        bridgeProperties.put(CONFIG_SACN_MODE, "unicast");
+        bridge = BridgeBuilder.create(THING_TYPE_SACN_BRIDGE, "sacnbridge").withLabel("sACN Bridge")
                 .withChannel(ChannelBuilder.create(CHANNEL_UID_MUTE, "Switch").withType(MUTE_CHANNEL_TYPEUID).build())
                 .withConfiguration(new Configuration(bridgeProperties)).build();
 
@@ -69,7 +69,7 @@ public class ArtnetBridgeHandlerTest extends JavaTest {
             return null;
         }).when(mockCallback).statusUpdated(any(), any());
 
-        bridgeHandler = new ArtnetBridgeHandler(bridge) {
+        bridgeHandler = new SacnBridgeHandler(bridge) {
             @Override
             protected void validateConfigurationParameters(Map<String, Object> configurationParameters) {
             }

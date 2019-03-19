@@ -10,9 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dmx;
+package org.openhab.binding.dmx.internal.handler;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.dmx.internal.DmxBindingConstants.*;
@@ -33,30 +34,32 @@ import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.dmx.internal.handler.Lib485BridgeHandler;
+import org.openhab.binding.dmx.internal.handler.ArtnetBridgeHandler;
 
 /**
- * Tests cases for {@link Lib485BridgeHandler}.
+ * Tests cases for {@link ArtnetBridgeHandler}.
  *
  * @author Jan N. Klug - Initial contribution
  */
-public class Lib485BridgeHandlerTest extends JavaTest {
+public class ArtnetBridgeHandlerTest extends JavaTest {
 
     private static final String TEST_ADDRESS = "localhost";
+    private static final int TEST_UNIVERSE = 1;
 
-    private final ThingUID BRIDGE_UID_LIB485 = new ThingUID(THING_TYPE_LIB485_BRIDGE, "lib485bridge");
-    private final ChannelUID CHANNEL_UID_MUTE = new ChannelUID(BRIDGE_UID_LIB485, CHANNEL_MUTE);
+    private final ThingUID BRIDGE_UID_ARTNET = new ThingUID(THING_TYPE_ARTNET_BRIDGE, "artnetbridge");
+    private final ChannelUID CHANNEL_UID_MUTE = new ChannelUID(BRIDGE_UID_ARTNET, CHANNEL_MUTE);
 
     Map<String, Object> bridgeProperties;
 
     private Bridge bridge;
-    private Lib485BridgeHandler bridgeHandler;
+    private ArtnetBridgeHandler bridgeHandler;
 
     @Before
     public void setUp() {
         bridgeProperties = new HashMap<>();
         bridgeProperties.put(CONFIG_ADDRESS, TEST_ADDRESS);
-        bridge = BridgeBuilder.create(THING_TYPE_LIB485_BRIDGE, "lib485bridge").withLabel("Lib485 Bridge")
+        bridgeProperties.put(CONFIG_UNIVERSE, TEST_UNIVERSE);
+        bridge = BridgeBuilder.create(THING_TYPE_ARTNET_BRIDGE, "artnetbridge").withLabel("Artnet Bridge")
                 .withChannel(ChannelBuilder.create(CHANNEL_UID_MUTE, "Switch").withType(MUTE_CHANNEL_TYPEUID).build())
                 .withConfiguration(new Configuration(bridgeProperties)).build();
 
@@ -66,7 +69,7 @@ public class Lib485BridgeHandlerTest extends JavaTest {
             return null;
         }).when(mockCallback).statusUpdated(any(), any());
 
-        bridgeHandler = new Lib485BridgeHandler(bridge) {
+        bridgeHandler = new ArtnetBridgeHandler(bridge) {
             @Override
             protected void validateConfigurationParameters(Map<String, Object> configurationParameters) {
             }
@@ -84,7 +87,20 @@ public class Lib485BridgeHandlerTest extends JavaTest {
 
     @Test
     public void assertBridgeStatus() {
-        waitForAssert(() -> assertEquals(ThingStatus.OFFLINE, bridge.getStatusInfo().getStatus()));
+        waitForAssert(() -> assertEquals(ThingStatus.ONLINE, bridge.getStatusInfo().getStatus()));
+    }
+
+    @Test
+    public void renamingOfUniverses() {
+        waitForAssert(() -> assertThat(bridgeHandler.getUniverseId(), is(TEST_UNIVERSE)));
+
+        bridgeProperties.replace(CONFIG_UNIVERSE, 2);
+        bridgeHandler.handleConfigurationUpdate(bridgeProperties);
+        waitForAssert(() -> assertThat(bridgeHandler.getUniverseId(), is(2)));
+
+        bridgeProperties.replace(CONFIG_UNIVERSE, TEST_UNIVERSE);
+        bridgeHandler.handleConfigurationUpdate(bridgeProperties);
+        waitForAssert(() -> assertThat(bridgeHandler.getUniverseId(), is(TEST_UNIVERSE)));
     }
 
 }
