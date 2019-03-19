@@ -34,8 +34,39 @@ Facade requires a bridge reference to the Sun and the orientation of the facade 
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+facade.things
+```
+facadelightcalculator:facade:cuisine "Facade Cuisine" @ "Outside" [orientation=115, poffset=90, margin=2, noffset=90]
+facadelightcalculator:facade:sejour "Facade Sejour" @ "Outside" [orientation=205, poffset=90, margin=2, noffset=90]
+facadelightcalculator:facade:jardin "Facade Jardin" @ "Outside" [orientation=295, poffset=90, margin=2, noffset=90]
+```
 
-## Any custom content here!
+facade.items
+```
+Group gFacade "Facades" (gBindings, gOutside)
+    Group gFacadeCuisine "Facade Cuisine" (gFacade)
+        Switch                  Facade_Cuisine_FacingSun    "Cuisine Ensolleillée"  (gFacadeCuisine)                {channel="facadelightcalculator:facade:cuisine:facingSun" }
+        Number:Dimensionless    Facade_Cuisine_Bearing      "Cuisine Bearing"       (gFacadeCuisine,gSensorCounter) {channel="facadelightcalculator:facade:cuisine:bearing"}
+        String                  Facade_Cuisine_Side         "Côté du soleil"        (gFacadeCuisine)                {channel="facadelightcalculator:facade:cuisine:side"}
+    Group gFacadeSejour  "Facade Séjour" (gFacade)
+        Switch                  Facade_Sejour_FacingSun     "Séjour Ensolleillée"   (gFacadeSejour)                 {channel="facadelightcalculator:facade:sejour:facingSun" }
+        Number:Dimensionless    Facade_Sejour_Bearing       "Séjour Bearing"        (gFacadeSejour,gSensorCounter)  {channel="facadelightcalculator:facade:sejour:bearing"}
+        String                  Facade_Sejour_Side          "Côté du soleil"        (gFacadeSejour)                 {channel="facadelightcalculator:facade:sejour:side"}
+    Group gFacadeJardin  "Facade Jardin" (gFacade)
+        Switch                  Facade_Jardin_FacingSun     "Jardin Ensolleillée"   (gFacadeJardin)                 {channel="facadelightcalculator:facade:jardin:facingSun" }
+        Number:Dimensionless    Facade_Jardin_Bearing       "Jardin Bearing"        (gFacadeJardin,gSensorCounter)  {channel="facadelightcalculator:facade:jardin:bearing"}
+        String                  Facade_Jardin_Side          "Côté du soleil"        (gFacadeJardin)                 {channel="facadelightcalculator:facade:jardin:side"}
+``` 
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+Here, we will use follow profile in order to furnish sun azimuth to the facades :
+
+astro.items
+```
+// Sun
+Number:Angle        Astro_Sun_Azimuth       "Azimuth [%d %unit%]"                               (gAstro, gRecordLastUpdate, gSensorCounter) 
+                                                                                                                            {channel="astro:sun:home:position#azimuth",
+                                                                                                                             channel="facadelightcalculator:facade:cuisine:sunAzimuth" [profile="follow"],
+                                                                                                                             channel="facadelightcalculator:facade:jardin:sunAzimuth" [profile="follow"],
+                                                                                                                             channel="facadelightcalculator:facade:sejour:sunAzimuth" [profile="follow"]
+                                                                                                                            }
+```
