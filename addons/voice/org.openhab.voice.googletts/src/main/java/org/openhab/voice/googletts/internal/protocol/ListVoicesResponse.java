@@ -14,19 +14,23 @@ package org.openhab.voice.googletts.internal.protocol;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The message returned to the client by the voices.list method.
  *
  * @author Wouter Born - Initial contribution
  */
+@NonNullByDefault
 public class ListVoicesResponse {
 
     /**
      * The list of voices.
      */
-    private List<Voice> voices;
+    private @Nullable List<Voice> voices;
 
-    public List<Voice> getVoices() {
+    public @Nullable List<Voice> getVoices() {
         return voices;
     }
 
