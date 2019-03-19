@@ -60,7 +60,10 @@ You find the following repository structure:
 ### Command line build
 
 To build all add-ons from the command-line, type in:
-`mvn clean install -DskipChecks -DskipTests`. This will only build all add-ons but does not run the tests and the static code checks. For binding development you want to run that command without skipping checks and tests.
+
+`mvn clean install`
+
+Optionally you can skip tests (`-DskipTests`) or skip some static analysis (`-DskipChecks`) this does  improve the build time but could hide problems in your code. For binding development you want to run that command without skipping checks and tests.
 
 Subsequent calls can include the `-o` for offline as in: `mvn clean install -DskipChecks -o` which will be a bit faster.
 
@@ -69,11 +72,11 @@ For integration tests you might need to run: `mvn clean install -DwithResolver -
 ### How to develop in the Eclipse IDE
 
 1. Install Bndtools in your Eclipse IDE. (Is automatically installed if you have used the Eclipse Installer for openHAB development as described here: https://www.openhab.org/docs/developer/development/ide.html)
-1. Checkout the bnd based openHAB demo application: `git clone --depth=1 https://github.com/maggu2810/openhab-demo`.
-2. Open the directory in Eclipse. Wait for the download and build to finish (about 3-5 minutes).
-3. Checkout this repository: `git clone --depth=1 https://github.com/openhab/openhab2-addons`
-4. In Eclipse File->Import->"Existing maven projects": Add the binding that you want to develop on to the workspace.
-4. In Eclipse Package Explorer: Search for `pom.xml` in the demo-app project.
+2. Checkout the bnd based openHAB demo application: `git clone --depth=1 https://github.com/maggu2810/openhab-demo`.
+3. Open the directory in Eclipse. Wait for the download and build to finish (about 3-5 minutes).
+4. Checkout this repository: `git clone --depth=1 https://github.com/openhab/openhab2-addons`
+5. In Eclipse File->Import->"Existing maven projects": Add the binding that you want to develop on to the workspace.
+6. In Eclipse Package Explorer: Search for `pom.xml` in the demo-app project.
     ![Bildschirmfoto vom 2019-03-19 13-46-48](https://user-images.githubusercontent.com/66436/54607049-a9031700-4a4d-11e9-9b9d-64a620270d28.png)
     Add your addon as maven dependency like so (replace `astro`!):
    ```xml
@@ -89,11 +92,11 @@ For integration tests you might need to run: `mvn clean install -DwithResolver -
      </dependencies>
    </project>
    ```
-5. In Eclipse Package Explorer: Search for `app.bndrun` in the "demo-app" project.
+7. In Eclipse Package Explorer: Search for `app.bndrun` in the "demo-app" project.
    Double click (takes a few seconds).
-5. Add your project to "Run requirements" via drag&drop from the Package Explorer.
+8. Add your project to "Run requirements" via drag&drop from the Package Explorer.
     ![Bildschirmfoto vom 2019-03-18 12-26-03](https://user-images.githubusercontent.com/66436/54527103-2c066d80-4979-11e9-8852-c06a41f4d50b.png)
-6. Execute with "Run OSGi"
+9. Execute with "Run OSGi"
 
 The demo application runs a slim set of openHAB core bundles including automations (next gen rules) and PaperUI. The startup should only take about 5 seconds and you are greeted by the openHAB console where you can type in console commands.
 
