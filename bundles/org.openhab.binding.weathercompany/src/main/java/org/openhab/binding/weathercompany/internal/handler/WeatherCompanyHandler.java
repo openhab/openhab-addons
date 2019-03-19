@@ -238,14 +238,14 @@ public class WeatherCompanyHandler extends BaseThingHandler {
 
     private boolean isImperial() {
         // This works
-        return ImperialUnits.getInstance().equals(systemOfUnits);
+        // return ImperialUnits.getInstance().equals(systemOfUnits);
 
         // This also works
         // return
         // ImperialUnits.getInstance().getClass().getSimpleName().equals(systemOfUnits.getClass().getSimpleName());
 
         // FIXME: This fails to compile
-        // return systemOfUnits instanceof ImperialUnits ? true : false;
+        return systemOfUnits instanceof ImperialUnits ? true : false;
     }
 
     /*

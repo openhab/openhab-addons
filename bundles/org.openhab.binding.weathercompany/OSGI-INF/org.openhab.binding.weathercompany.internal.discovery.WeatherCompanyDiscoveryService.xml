@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0" configuration-pid="discovery.weathercompany" immediate="true" name="org.openhab.binding.weathercompany.internal.discovery.WeatherCompanyDiscoveryService">
+   <service>
+      <provide interface="org.eclipse.smarthome.config.discovery.DiscoveryService"/>
+   </service>
+   <reference bind="setLocaleProvider" interface="org.eclipse.smarthome.core.i18n.LocaleProvider" name="LocaleProvider" unbind="unsetLocaleProvider"/>
+   <reference bind="setLocationProvider" interface="org.eclipse.smarthome.core.i18n.LocationProvider" name="LocationProvider" unbind="unsetLocationProvider"/>
+   <implementation class="org.openhab.binding.weathercompany.internal.discovery.WeatherCompanyDiscoveryService"/>
+</scr:component>
