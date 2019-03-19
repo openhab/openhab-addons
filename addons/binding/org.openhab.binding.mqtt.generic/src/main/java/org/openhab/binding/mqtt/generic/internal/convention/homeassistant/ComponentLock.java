@@ -50,14 +50,11 @@ public class ComponentLock extends AbstractComponent<ComponentLock.ChannelConfig
             throw new UnsupportedOperationException("Component:Lock does not support forced optimistic mode");
         }
 
-        channels.put(switchChannelID,
-                new CChannel(this, switchChannelID, new OnOffValue(channelConfiguration.payload_lock, channelConfiguration.payload_unlock),
-                        channelConfiguration.state_topic, channelConfiguration.command_topic, channelConfiguration.name, "",
-                        componentConfiguration.getUpdateListener()));
-    }
-
-    @Override
-    public String name() {
-        return channelConfiguration.name;
+        buildChannel(switchChannelID,
+                new OnOffValue(channelConfiguration.payload_lock, channelConfiguration.payload_unlock),
+                channelConfiguration.name).listener(componentConfiguration.getUpdateListener())//
+                        .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
+                        .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain)//
+                        .build();
     }
 }

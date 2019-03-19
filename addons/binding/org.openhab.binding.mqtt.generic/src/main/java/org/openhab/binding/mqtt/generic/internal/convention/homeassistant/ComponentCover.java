@@ -42,12 +42,16 @@ public class ComponentCover extends AbstractComponent<ComponentCover.ChannelConf
         protected String payload_stop = "STOP";
     }
 
-    public ComponentCover(CFactory.ComponentConfiguration builder) {
-        super(builder, ChannelConfiguration.class);
+    public ComponentCover(CFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
-        RollershutterValue value = new RollershutterValue(channelConfiguration.payload_open, channelConfiguration.payload_close,
-                channelConfiguration.payload_stop);
-        channels.put(switchChannelID, new CChannel(this, switchChannelID, value, //
-                channelConfiguration.state_topic, channelConfiguration.command_topic, channelConfiguration.name, "", builder.getUpdateListener()));
+        RollershutterValue value = new RollershutterValue(channelConfiguration.payload_open,
+                channelConfiguration.payload_close, channelConfiguration.payload_stop);
+
+        buildChannel(switchChannelID, value, channelConfiguration.name)
+                .listener(componentConfiguration.getUpdateListener())//
+                .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
+                .commandTopic(channelConfiguration.command_topic, channelConfiguration.retain)//
+                .build();
     }
 }
