@@ -46,7 +46,7 @@ public class OnOffValue extends Value {
      *
      * values send in messages will be the same as those expected in incomming messages
      *
-     * @param onValue  The ON value string. This will be compared to MQTT messages.
+     * @param onValue The ON value string. This will be compared to MQTT messages.
      * @param offValue The OFF value string. This will be compared to MQTT messages.
      */
     public OnOffValue(@Nullable String onValue, @Nullable String offValue) {
@@ -56,9 +56,9 @@ public class OnOffValue extends Value {
     /**
      * Creates a new SWITCH On/Off value.
      *
-     * @param onState    The ON value string. This will be compared to MQTT messages.
-     * @param offState   The OFF value string. This will be compared to MQTT messages.
-     * @param onCommand  The ON value string. This will be send in MQTT messages.
+     * @param onState The ON value string. This will be compared to MQTT messages.
+     * @param offState The OFF value string. This will be compared to MQTT messages.
+     * @param onCommand The ON value string. This will be send in MQTT messages.
      * @param offCommand The OFF value string. This will be send in MQTT messages.
      */
     public OnOffValue(@Nullable String onState, @Nullable String offState, @Nullable String onCommand,

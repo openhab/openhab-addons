@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.eclipse.smarthome.io.transport.mqtt.MqttMessageSubscriber;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
+import org.openhab.binding.mqtt.generic.internal.generic.TransformationServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +42,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
     private final ThingUID thingUID;
     private final ScheduledExecutorService scheduler;
     private final @Nullable ChannelStateUpdateListener updateListener;
+    private final TransformationServiceProvider transformationServiceProvider;
 
     protected final CompletableFuture<@Nullable Void> discoverFinishedFuture = new CompletableFuture<>();
     private final Gson gson;
@@ -67,11 +69,13 @@ public class DiscoverComponents implements MqttMessageSubscriber {
      * @param channelStateUpdateListener Channel update listener. Usually the handler.
      */
     public DiscoverComponents(ThingUID thingUID, ScheduledExecutorService scheduler,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson) {
+            @Nullable ChannelStateUpdateListener channelStateUpdateListener, Gson gson,
+            TransformationServiceProvider transformationServiceProvider) {
         this.thingUID = thingUID;
         this.scheduler = scheduler;
         this.updateListener = channelStateUpdateListener;
         this.gson = gson;
+        this.transformationServiceProvider = transformationServiceProvider;
     }
 
     @Override
@@ -81,7 +85,8 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         }
         HaID haID = new HaID(topic);
         String config = new String(payload);
-        AbstractComponent<?> component = CFactory.createComponent(thingUID, haID, config, updateListener, gson);
+        AbstractComponent<?> component = CFactory.createComponent(thingUID, haID, config, updateListener, gson,
+                transformationServiceProvider);
         if (component != null) {
             logger.trace("Found HomeAssistant thing {} component {}", haID.objectID, haID.component);
             if (discoveredListener != null) {

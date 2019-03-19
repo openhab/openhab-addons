@@ -23,7 +23,8 @@ import com.google.gson.GsonBuilder;
 
 public class HAConfigurationTests {
 
-    private Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
+    private Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory())
+            .create();
 
     @Test
     public void testAbbreviations() {
@@ -103,7 +104,8 @@ public class HAConfigurationTests {
                 + "    \"~\":\"D/\"\n" //
                 + "}";
 
-        ComponentSwitch.ChannelConfiguration config = BaseChannelConfiguration.fromString(json, gson, ComponentSwitch.ChannelConfiguration.class);
+        ComponentSwitch.ChannelConfiguration config = BaseChannelConfiguration.fromString(json, gson,
+                ComponentSwitch.ChannelConfiguration.class);
 
         assertThat(config.availability_topic, is("D/E"));
         assertThat(config.state_topic, is("O/D/"));
@@ -134,7 +136,8 @@ public class HAConfigurationTests {
                 + "    ]\n" //
                 + "}";
 
-        ComponentFan.ChannelConfiguration config = BaseChannelConfiguration.fromString(json, gson, ComponentFan.ChannelConfiguration.class);
+        ComponentFan.ChannelConfiguration config = BaseChannelConfiguration.fromString(json, gson,
+                ComponentFan.ChannelConfiguration.class);
         assertThat(config.name, is("Bedroom Fan"));
 
     }

@@ -41,19 +41,18 @@ public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelCo
         protected String state_topic = "";
     };
 
-    public ComponentSensor(CFactory.ComponentConfiguration builder) {
-        super(builder, ChannelConfiguration.class);
+    public ComponentSensor(CFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         if (channelConfiguration.force_update) {
             throw new UnsupportedOperationException("Component:Sensor does not support forced updates");
         }
 
-        channels.put(sensorChannelID, new CChannel(this, sensorChannelID, new TextValue(), channelConfiguration.state_topic, null,
-                channelConfiguration.name, channelConfiguration.unit_of_measurement, builder.getUpdateListener()));
+        buildChannel(sensorChannelID, new TextValue(), channelConfiguration.name)
+                .listener(componentConfiguration.getUpdateListener())//
+                .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
+                .unit(channelConfiguration.unit_of_measurement)//
+                .build();
     }
 
-    @Override
-    public String name() {
-        return channelConfiguration.name;
-    }
 }
