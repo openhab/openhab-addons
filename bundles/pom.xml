@@ -28,6 +28,7 @@
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.onewire</module>
     <module>org.openhab.binding.openweathermap</module>
+    <module>org.openhab.binding.plugwise</module>
     <module>org.openhab.binding.sonos</module>
     <module>org.openhab.extensionservice.marketplace</module>
     <module>org.openhab.extensionservice.marketplace.automation</module>

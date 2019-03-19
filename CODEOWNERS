@@ -1,4 +1,4 @@
-# This file helps Github doing automatic review requests for new PRs.
+# This file helps GitHub doing automatic review requests for new PRs.
 # It should always list the active maintainers of certain add-ons.
 
 # As a fallback, if no specific maintainer is listed below, assign the PR to the repo maintainers team:
@@ -122,7 +122,6 @@
 /addons/binding/org.openhab.binding.phc/ @gnlpfjh
 /addons/binding/org.openhab.binding.pioneeravr/ @Stratehm
 /addons/binding/org.openhab.binding.plclogo/ @falkena
-/addons/binding/org.openhab.binding.plugwise/ @wborn
 /addons/binding/org.openhab.binding.powermax/ @lolodomo
 /addons/binding/org.openhab.binding.pulseaudio/ @peuter
 /addons/binding/org.openhab.binding.regoheatpump/ @crnjan
@@ -228,6 +227,7 @@
 /bundles/org.openhab.binding.globalcache/ @mhilbush
 /bundles/org.openhab.binding.onewire/ @J-N-K
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
+/bundles/org.openhab.binding.plugwise/ @wborn
 /bundles/org.openhab.binding.sonos/ @kgoderis @lolodomo
 /bundles/org.openhab.extensionservice.marketplace/ @kaikreuzer
 /bundles/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer
