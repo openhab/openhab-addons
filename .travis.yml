@@ -51,4 +51,4 @@ matrix:
   allow_failures:
     - jdk: openjdk11
 script:
-  - mvnp clean install -B -DskipChecks=true -DskipTests=true $(extra_maven_opts)
+  - MAVEN_OPTS="-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN" mvnp clean install -B -DskipChecks=true -DskipTests=true $(extra_maven_opts)
