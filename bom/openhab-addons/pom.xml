@@ -792,12 +792,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.extensionservice</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.extensionservice.marketplace</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.extensionservice</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.extensionservice.marketplace.automation</artifactId>
       <version>${project.version}</version>
     </dependency>

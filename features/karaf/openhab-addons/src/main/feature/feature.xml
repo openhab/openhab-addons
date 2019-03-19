@@ -925,8 +925,8 @@
 
     <feature name="openhab-misc-market" description="Eclipse IoT Market" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle>mvn:org.openhab.extensionservice/org.openhab.extensionservice.marketplace/${project.version}</bundle>
-<!--        <bundle>mvn:org.openhab.extensionservice/org.openhab.extensionservice.marketplace.automation/${project.version}</bundle>-->
+        <bundle>mvn:org.openhab.addons.bundles/org.openhab.extensionservice.marketplace/${project.version}</bundle>
+<!--        <bundle>mvn:org.openhab.addons.bundles/org.openhab.extensionservice.marketplace.automation/${project.version}</bundle>-->
     </feature>
 
     <feature name="openhab-misc-mqttbroker" description="Embedded MQTT Broker" version="${project.version}">
