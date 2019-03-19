@@ -81,10 +81,10 @@ public class ByteArrayFileCacheTest {
     @Test
     public void testGetUniqueFileName() {
         String mp3UniqueFileName = subject.getUniqueFileName(MP3_FILE_NAME);
-        assertThat(mp3UniqueFileName, is(equalTo("1d075d78d78f8ceaad7bd8bb1b234365")));
+        assertThat(mp3UniqueFileName, is(equalTo(subject.getUniqueFileName(MP3_FILE_NAME))));
 
         String txtUniqueFileName = subject.getUniqueFileName(TXT_FILE_NAME);
-        assertThat(txtUniqueFileName, is(equalTo("8d78a8df93ae9eca1ca101694aa7e656")));
+        assertThat(txtUniqueFileName, is(equalTo(subject.getUniqueFileName(TXT_FILE_NAME))));
 
         assertThat(mp3UniqueFileName, is(not(equalTo(txtUniqueFileName))));
     }

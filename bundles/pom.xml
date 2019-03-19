@@ -40,6 +40,7 @@
     <module>org.openhab.binding.hdanywhere</module>
     <module>org.openhab.binding.hyperion</module>
     <module>org.openhab.binding.irtrans</module>
+    <module>org.openhab.binding.kodi</module>
     <module>org.openhab.binding.leapmotion</module>
     <module>org.openhab.binding.lifx</module>
     <module>org.openhab.binding.lirc</module>
