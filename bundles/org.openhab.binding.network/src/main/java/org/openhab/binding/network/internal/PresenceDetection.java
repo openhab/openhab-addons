@@ -622,8 +622,10 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         }
     }
 
-    private void disableDHCPListen(InetAddress destinationAddress) {
-        DHCPListenService.unregister(destinationAddress.getHostAddress());
-        dhcpState = "off";
+    private void disableDHCPListen(@Nullable InetAddress destinationAddress) {
+        if (destinationAddress != null) {
+            DHCPListenService.unregister(destinationAddress.getHostAddress());
+            dhcpState = "off";
+        }
     }
 }
