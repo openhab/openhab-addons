@@ -41,7 +41,6 @@
 /addons/binding/org.openhab.binding.feed.test/ @svilenvul
 /addons/binding/org.openhab.binding.feican/ @Hilbrand
 /addons/binding/org.openhab.binding.folding/ @fa2k
-/addons/binding/org.openhab.binding.freebox/ @lolodomo
 /addons/binding/org.openhab.binding.fronius/ @trokohl
 /addons/binding/org.openhab.binding.fsinternetradio/ @paphko
 /addons/binding/org.openhab.binding.fsinternetradio.test/ @paphko
@@ -225,6 +224,7 @@
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
 /bundles/org.openhab.binding.bigassfan/ @mhilbush
 /bundles/org.openhab.binding.dmx/ @J-N-K
+/bundles/org.openhab.binding.freebox/ @lolodomo
 /bundles/org.openhab.binding.globalcache/ @mhilbush
 /bundles/org.openhab.binding.onewire/ @J-N-K
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
