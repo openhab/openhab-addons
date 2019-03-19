@@ -42,7 +42,7 @@ import org.openhab.binding.mqtt.generic.internal.values.Value;
 @NonNullByDefault
 public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
     // Component location fields
-    private ComponentConfiguration componentConfiguration;
+    private final ComponentConfiguration componentConfiguration;
     protected final ChannelGroupTypeUID channelGroupTypeUID;
     protected final ChannelGroupUID channelGroupUID;
     protected final HaID haID;
