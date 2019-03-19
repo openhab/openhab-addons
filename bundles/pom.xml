@@ -26,8 +26,8 @@
     <module>org.openhab.binding.dmx</module>
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.globalcache</module>
-    <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.lifx</module>
+    <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.onewire</module>
     <module>org.openhab.binding.openweathermap</module>
     <module>org.openhab.binding.plugwise</module>

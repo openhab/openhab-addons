@@ -222,8 +222,8 @@
 /bundles/org.openhab.binding.dmx/ @J-N-K
 /bundles/org.openhab.binding.freebox/ @lolodomo
 /bundles/org.openhab.binding.globalcache/ @mhilbush
-/bundles/org.openhab.binding.network/ @davidgraeff @mettke
 /bundles/org.openhab.binding.lifx/ @wborn
+/bundles/org.openhab.binding.network/ @davidgraeff @mettke
 /bundles/org.openhab.binding.onewire/ @J-N-K
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /bundles/org.openhab.binding.plugwise/ @wborn
