@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -323,7 +324,7 @@ public class IhcClient {
                 if (logger.isDebugEnabled()) {
                     logger.debug("File size before base64 encoding: {} bytes", byteStream.size());
                 }
-                byte[] decodedBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(byteStream.toString());
+                byte[] decodedBytes = Base64.getDecoder().decode(byteStream.toString());
                 logger.debug("File size after base64 encoding: {} bytes", decodedBytes.length);
                 try (GZIPInputStream gzis = new GZIPInputStream(new ByteArrayInputStream(decodedBytes))) {
                     try (InputStreamReader in = new InputStreamReader(gzis, "ISO-8859-1")) {
