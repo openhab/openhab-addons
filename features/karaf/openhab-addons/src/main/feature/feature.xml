@@ -234,7 +234,7 @@
     <feature name="openhab-binding-globalcache" description="GlobalCache Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transformation-map</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.globalcache/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.globalcache/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-gpstracker" description="GPSTracker Binding" version="${project.version}">
@@ -918,8 +918,8 @@
 
     <feature name="openhab-misc-market" description="Eclipse IoT Market" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle>mvn:org.openhab.extensionservice/org.openhab.extensionservice.marketplace/${project.version}</bundle>
-<!--        <bundle>mvn:org.openhab.extensionservice/org.openhab.extensionservice.marketplace.automation/${project.version}</bundle>-->
+        <bundle>mvn:org.openhab.addons.bundles/org.openhab.extensionservice.marketplace/${project.version}</bundle>
+<!--        <bundle>mvn:org.openhab.addons.bundles/org.openhab.extensionservice.marketplace.automation/${project.version}</bundle>-->
     </feature>
 
     <feature name="openhab-misc-mqttbroker" description="Embedded MQTT Broker" version="${project.version}">
