@@ -17,6 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
+import org.openhab.binding.mqtt.generic.internal.generic.TransformationServiceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,9 +45,10 @@ public class CFactory {
      * @return A HA MQTT Component
      */
     public static @Nullable AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener updateListener, Gson gson) {
+            @Nullable ChannelStateUpdateListener updateListener, Gson gson,
+            TransformationServiceProvider transformationServiceProvider) {
         ComponentConfiguration componentConfiguration = new ComponentConfiguration(thingUID, haID, configJSON, gson)
-                .withListerner(updateListener);
+                .listener(updateListener).transformationProvider(transformationServiceProvider);
         try {
             switch (haID.component) {
                 case "alarm_control_panel":
@@ -85,7 +87,8 @@ public class CFactory {
      * @return A HA MQTT Component
      */
     public static @Nullable AbstractComponent<?> createComponent(String basetopic, Channel channel,
-            @Nullable ChannelStateUpdateListener updateListener, Gson gson) {
+            @Nullable ChannelStateUpdateListener updateListener, Gson gson,
+            TransformationServiceProvider transformationServiceProvider) {
         HaID haID = new HaID(basetopic, channel.getUID());
         ThingUID thingUID = channel.getUID().getThingUID();
         String configJSON = (String) channel.getConfiguration().get("config");
@@ -93,13 +96,14 @@ public class CFactory {
             logger.warn("Provided channel does not have a 'config' configuration key!");
             return null;
         }
-        return createComponent(thingUID, haID, configJSON, updateListener, gson);
+        return createComponent(thingUID, haID, configJSON, updateListener, gson, transformationServiceProvider);
     }
 
     protected static class ComponentConfiguration {
         private ThingUID thingUID;
         private HaID haID;
         private String configJSON;
+        private @Nullable TransformationServiceProvider transformationServiceProvider;
         private @Nullable ChannelStateUpdateListener updateListener;
         private Gson gson;
 
@@ -110,8 +114,14 @@ public class CFactory {
             this.gson = gson;
         }
 
-        public ComponentConfiguration withListerner(@Nullable ChannelStateUpdateListener updateListener) {
+        public ComponentConfiguration listener(@Nullable ChannelStateUpdateListener updateListener) {
             this.updateListener = updateListener;
+            return this;
+        }
+
+        public ComponentConfiguration transformationProvider(
+                TransformationServiceProvider transformationServiceProvider) {
+            this.transformationServiceProvider = transformationServiceProvider;
             return this;
         }
 
@@ -130,6 +140,11 @@ public class CFactory {
         @Nullable
         public ChannelStateUpdateListener getUpdateListener() {
             return updateListener;
+        }
+
+        @Nullable
+        public TransformationServiceProvider getTransformationServiceProvider() {
+            return transformationServiceProvider;
         }
 
         public Gson getGson() {
