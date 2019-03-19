@@ -121,7 +121,8 @@
     <feature name="openhab-binding-denonmarantz" description="DenonMarantz Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.denonmarantz/${project.version}</bundle>
+        <bundle dependency="true">mvn:javax.xml.bind/jaxb-api/2.3.1</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.denonmarantz/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-deconz" description="Dresden Elektronik Deconz Binding" version="${project.version}">
