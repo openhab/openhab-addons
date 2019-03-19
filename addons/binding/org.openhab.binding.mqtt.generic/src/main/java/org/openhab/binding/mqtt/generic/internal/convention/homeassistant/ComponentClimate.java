@@ -37,5 +37,4 @@ public class ComponentClimate extends AbstractComponent<ComponentClimate.Channel
         super(componentConfiguration, ChannelConfiguration.class);
         throw new UnsupportedOperationException("Component:Climate not supported yet");
     }
-
 }

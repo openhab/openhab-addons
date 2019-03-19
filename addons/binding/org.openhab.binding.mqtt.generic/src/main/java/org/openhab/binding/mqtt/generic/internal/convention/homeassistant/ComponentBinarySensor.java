@@ -43,17 +43,17 @@ public class ComponentBinarySensor extends AbstractComponent<ComponentBinarySens
         protected String payload_off = "OFF";
     };
 
-    public ComponentBinarySensor(CFactory.ComponentConfiguration builder) {
-        super(builder, ChannelConfiguration.class);
+    public ComponentBinarySensor(CFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         if (channelConfiguration.force_update) {
             throw new UnsupportedOperationException("Component:Sensor does not support forced updates");
         }
 
-        channels.put(sensorChannelID,
-                new CChannel(this, sensorChannelID, new OnOffValue(channelConfiguration.payload_on, channelConfiguration.payload_off),
-                        channelConfiguration.state_topic, null, channelConfiguration.name, channelConfiguration.unit_of_measurement,
-                        builder.getUpdateListener()));
+        buildChannel(sensorChannelID, new OnOffValue(channelConfiguration.payload_on, channelConfiguration.payload_off),
+                channelConfiguration.name).listener(componentConfiguration.getUpdateListener())//
+                        .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
+                        .unit(channelConfiguration.unit_of_measurement)//
+                        .build();
     }
-
 }

@@ -58,21 +58,30 @@ public class ComponentAlarmControlPanel extends AbstractComponent<ComponentAlarm
     public ComponentAlarmControlPanel(CFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
-        final String[] state_enum = { channelConfiguration.state_disarmed, channelConfiguration.state_armed_home, channelConfiguration.state_armed_away,
-                channelConfiguration.state_pending, channelConfiguration.state_triggered };
-        channels.put(stateChannelID, new CChannel(this, stateChannelID, new TextValue(state_enum), channelConfiguration.state_topic,
-                null, channelConfiguration.name, "", componentConfiguration.getUpdateListener()));
+        final String[] state_enum = { channelConfiguration.state_disarmed, channelConfiguration.state_armed_home,
+                channelConfiguration.state_armed_away, channelConfiguration.state_pending,
+                channelConfiguration.state_triggered };
+        buildChannel(stateChannelID, new TextValue(state_enum), channelConfiguration.name)
+                .listener(componentConfiguration.getUpdateListener())
+                .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
+                .build();
 
-        channels.put(switchDisarmChannelID,
-                new CChannel(this, switchDisarmChannelID, new TextValue(new String[] { channelConfiguration.payload_disarm }),
-                        channelConfiguration.state_topic, null, channelConfiguration.name, "", componentConfiguration.getUpdateListener()));
+        String command_topic = channelConfiguration.command_topic;
+        if (command_topic != null) {
+            buildChannel(switchDisarmChannelID, new TextValue(new String[] { channelConfiguration.payload_disarm }),
+                    channelConfiguration.name).listener(componentConfiguration.getUpdateListener())//
+                            .commandTopic(command_topic, channelConfiguration.retain)//
+                            .build();
 
-        channels.put(switchArmHomeChannelID,
-                new CChannel(this, switchArmHomeChannelID, new TextValue(new String[] { channelConfiguration.payload_arm_home }),
-                        channelConfiguration.state_topic, null, channelConfiguration.name, "", componentConfiguration.getUpdateListener()));
+            buildChannel(switchArmHomeChannelID, new TextValue(new String[] { channelConfiguration.payload_arm_home }),
+                    channelConfiguration.name).listener(componentConfiguration.getUpdateListener())//
+                            .commandTopic(command_topic, channelConfiguration.retain)//
+                            .build();
 
-        channels.put(switchArmAwayChannelID,
-                new CChannel(this, switchArmAwayChannelID, new TextValue(new String[] { channelConfiguration.payload_arm_away }),
-                        channelConfiguration.state_topic, null, channelConfiguration.name, "", componentConfiguration.getUpdateListener()));
+            buildChannel(switchArmAwayChannelID, new TextValue(new String[] { channelConfiguration.payload_arm_away }),
+                    channelConfiguration.name).listener(componentConfiguration.getUpdateListener())//
+                            .commandTopic(command_topic, channelConfiguration.retain)//
+                            .build();
+        }
     }
 }

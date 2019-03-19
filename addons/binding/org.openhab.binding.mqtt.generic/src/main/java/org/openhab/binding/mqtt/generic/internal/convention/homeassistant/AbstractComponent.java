@@ -23,13 +23,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelGroupUID;
 import org.eclipse.smarthome.core.thing.type.ChannelDefinition;
-import org.eclipse.smarthome.core.thing.type.ChannelDefinitionBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
+import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.CFactory.ComponentConfiguration;
 import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelTypeProvider;
+import org.openhab.binding.mqtt.generic.internal.values.Value;
 
 /**
  * A HomeAssistant component is comparable to an ESH channel group.
@@ -41,6 +42,7 @@ import org.openhab.binding.mqtt.generic.internal.generic.MqttChannelTypeProvider
 @NonNullByDefault
 public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
     // Component location fields
+    private final ComponentConfiguration componentConfiguration;
     protected final ChannelGroupTypeUID channelGroupTypeUID;
     protected final ChannelGroupUID channelGroupUID;
     protected final HaID haID;
@@ -62,6 +64,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      * @param gson A Gson instance
      */
     public AbstractComponent(CFactory.ComponentConfiguration componentConfiguration, Class<C> clazz) {
+        this.componentConfiguration = componentConfiguration;
         this.haID = componentConfiguration.getHaID();
         this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID,
                 haID.getChannelGroupTypeID());
@@ -70,6 +73,10 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
         this.channelConfigurationJson = componentConfiguration.getConfigJSON();
         this.channelConfiguration = componentConfiguration.getConfig(clazz);
         this.configHash = channelConfigurationJson.hashCode();
+    }
+
+    protected CChannel.Builder buildChannel(String channelID, Value valueState, String label) {
+        return new CChannel.Builder(this, componentConfiguration, channelID, valueState, label);
     }
 
     /**
@@ -82,7 +89,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      */
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        return channels.values().stream().map(v -> v.channelState.start(connection, scheduler, timeout))
+        return channels.values().stream().map(v -> v.start(connection, scheduler, timeout))
                 .reduce(CompletableFuture.completedFuture(null), (f, v) -> f.thenCompose(b -> v));
     }
 
@@ -93,8 +100,8 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      *         exceptionally on errors.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        return channels.values().stream().map(v -> v.channelState.stop())
-                .reduce(CompletableFuture.completedFuture(null), (f, v) -> f.thenCompose(b -> v));
+        return channels.values().stream().map(v -> v.stop()).reduce(CompletableFuture.completedFuture(null),
+                (f, v) -> f.thenCompose(b -> v));
     }
 
     /**
@@ -103,7 +110,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      * @param channelTypeProvider The channel type provider
      */
     public void addChannelTypes(MqttChannelTypeProvider channelTypeProvider) {
-        channels.values().forEach(v -> channelTypeProvider.setChannelType(v.channelTypeUID, v.type));
+        channels.values().forEach(v -> v.addChannelTypes(channelTypeProvider));
     }
 
     /**
@@ -113,7 +120,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      * @param channelTypeProvider The channel type provider
      */
     public void removeChannelTypes(MqttChannelTypeProvider channelTypeProvider) {
-        channels.values().forEach(v -> channelTypeProvider.removeChannelType(v.channelTypeUID));
+        channels.values().forEach(v -> v.removeChannelTypes(channelTypeProvider));
     }
 
     /**
@@ -167,8 +174,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      * Return the channel group type.
      */
     public ChannelGroupType type() {
-        final List<ChannelDefinition> channelDefinitions = channels.values().stream()
-                .map(c -> new ChannelDefinitionBuilder(c.channelUID.getId(), c.channelTypeUID).build())
+        final List<ChannelDefinition> channelDefinitions = channels.values().stream().map(c -> c.type())
                 .collect(Collectors.toList());
         return ChannelGroupTypeBuilder.instance(channelGroupTypeUID, name()).withChannelDefinitions(channelDefinitions)
                 .build();
@@ -179,7 +185,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      * to the MQTT broker got lost.
      */
     public void resetState() {
-        channels.values().forEach(c -> c.channelState.getCache().resetState());
+        channels.values().forEach(c -> c.resetState());
     }
 
 }

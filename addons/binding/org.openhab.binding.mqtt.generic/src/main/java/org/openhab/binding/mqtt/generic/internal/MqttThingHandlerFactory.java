@@ -97,7 +97,7 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements 
         } else if (thingTypeUID.equals(MqttBindingConstants.HOMIE300_MQTT_THING)) {
             return new HomieThingHandler(thing, typeProvider, 1500, 200);
         } else if (thingTypeUID.equals(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)) {
-            return new HomeAssistantThingHandler(thing, typeProvider, 1500, 200);
+            return new HomeAssistantThingHandler(thing, typeProvider, this, 1500, 200);
         }
         return null;
     }

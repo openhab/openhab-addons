@@ -37,12 +37,14 @@ public class ComponentCamera extends AbstractComponent<ComponentCamera.ChannelCo
         protected String topic = "";
     };
 
-    public ComponentCamera(CFactory.ComponentConfiguration builder) {
-        super(builder, ChannelConfiguration.class);
+    public ComponentCamera(CFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         ImageValue value = new ImageValue();
-        channels.put(cameraChannelID, new CChannel(this, cameraChannelID, value, //
-                channelConfiguration.topic, null, channelConfiguration.name, "", builder.getUpdateListener()));
-    }
 
+        buildChannel(cameraChannelID, value, channelConfiguration.name)
+                .listener(componentConfiguration.getUpdateListener())//
+                .stateTopic(channelConfiguration.topic)//
+                .build();
+    }
 }
