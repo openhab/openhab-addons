@@ -18,7 +18,6 @@
 
   <modules>
     <module>binding</module>
-    <module>extensionservice</module>
     <module>io</module>
     <module>persistence</module>
     <module>transform</module>
