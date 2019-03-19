@@ -17,7 +17,8 @@ No binding configuration required.
 
 ## Thing Configuration
 
-Facade requires a bridge reference to the Sun and the orientation of the facade toward geographic north. By default, the facade is considered enlighted when the sun azimuth reaches orientation - 90° (negative offset) until orientation + 90° (positive offset). The two parameters (negative and positive offset) are set by default to 90. These can be modified to take in account natural obstacles (wall, trees) that reduces the lighting angle.
+Facade requires as input the Azimuth of the sun as provided by Astro Binding, and the orientation of the facade toward geographic north. By default, the facade is considered enlighted when the sun azimuth reaches orientation - 90° (negative offset) until orientation + 90° (positive offset). The two parameters (negative and positive offset) are set by default to 90. These can be modified to take in account natural obstacles (wall, trees) that reduces the lighting angle.
+
 
 ## Channels
 
@@ -25,12 +26,12 @@ Facade requires a bridge reference to the Sun and the orientation of the facade 
         * **channel**: 
             * `facingsun` (Switch) : ON if orientation - negative offset <= sun azimut <= orientation + negative offset
             * `bearing` (Number:Dimensionless) : percentage of direct lighting. 100% when the sun is in front, 0% when not facing sun 
-            * `side` (String) : indicates if the sun is in the left, in front or on the right of the facade
+            * `side` (String) : indicates if the sun is in the left, in front or on the right of the facade. Possible values are OUT_LEFT, LEFT, FRONT, RIGHT, OUT_RIGHT
             
 ### Trigger Channels
 
 * **thing** `face`
-        * **facadeEvent**:: `SUN_ENTER, SUN_LEAVE
+        * **facadeEvent**:: `SUN_ENTER, SUN_LEAVE, SUN_FRONT
 
 ## Full Example
 

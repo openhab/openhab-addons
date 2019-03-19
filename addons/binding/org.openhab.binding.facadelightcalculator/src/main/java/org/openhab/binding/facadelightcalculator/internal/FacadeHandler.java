@@ -52,9 +52,6 @@ public class FacadeHandler extends BaseThingHandler {
     private State previousInWindow = UnDefType.UNDEF;
     private State previousRelative = UnDefType.UNDEF;
 
-    // @NonNullByDefault({})
-    // private FacadeConfiguration config;
-
     int shift;
     int shiftedOrientation;
     int shiftedLeft;
