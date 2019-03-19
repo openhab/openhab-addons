@@ -242,7 +242,7 @@ class GoogleCloudAPI {
 
         ListVoicesResponse listVoicesResponse = gson.fromJson(builder.getContentAsString(), ListVoicesResponse.class);
 
-        if (listVoicesResponse == null) {
+        if (listVoicesResponse == null || listVoicesResponse.getVoices() == null) {
             return emptyList();
         }
 
