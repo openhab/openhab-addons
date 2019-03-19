@@ -24,6 +24,7 @@
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.dmx</module>
+    <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.onewire</module>
     <module>org.openhab.binding.openweathermap</module>
     <module>org.openhab.binding.sonos</module>

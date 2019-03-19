@@ -70,7 +70,6 @@
     <module>org.openhab.binding.hue</module>
     <module>org.openhab.binding.hue.test</module>
     <module>org.openhab.binding.hyperion</module>
-    <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.icloud</module>
     <module>org.openhab.binding.ihc</module>
     <module>org.openhab.binding.ihc.test</module>
