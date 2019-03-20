@@ -71,7 +71,6 @@
 /addons/binding/org.openhab.binding.leapmotion/ @kaikreuzer
 /addons/binding/org.openhab.binding.lgtvserial/ @fa2k
 /addons/binding/org.openhab.binding.lgwebos/ @sprehn
-/addons/binding/org.openhab.binding.lifx/ @wborn
 /addons/binding/org.openhab.binding.lirc/ @kabili207
 /addons/binding/org.openhab.binding.logreader/ @paulianttila
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
@@ -213,6 +212,7 @@
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
 /bundles/org.openhab.binding.freebox/ @lolodomo
 /bundles/org.openhab.binding.globalcache/ @mhilbush
+/bundles/org.openhab.binding.lifx/ @wborn
 /bundles/org.openhab.binding.nest/ @wborn
 /bundles/org.openhab.binding.network/ @davidgraeff @mettke
 /bundles/org.openhab.binding.nibeheatpump/ @paulianttila
