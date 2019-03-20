@@ -114,10 +114,8 @@ public class LxControlLightControllerV2 extends LxControl {
     // Following commands are not supported:
     // moveFavoriteMood, moveAdditionalMood, moveMood, addToFavoriteMood, removeFromFavoriteMood, learn, delete
 
-    private Map<LxUuid, LxControlMood> moodList = new HashMap<>();
+    private Map<Integer, LxControlMood> moodList = new HashMap<>();
     private List<Integer> activeMoods = new ArrayList<>();
-    private Integer minMoodId;
-    private Integer maxMoodId;
     private ChannelUID channelId;
 
     LxControlLightControllerV2(LxUuid uuid) {
@@ -150,7 +148,10 @@ public class LxControlLightControllerV2 extends LxControl {
     private State getChannelState() {
         // update the single mood channel state
         if (activeMoods.size() == 1) {
-            return new DecimalType(activeMoods.get(0));
+            Integer id = activeMoods.get(0);
+            if (isMoodOk(id)) {
+                return new DecimalType(id);
+            }
         }
         return UnDefType.UNDEF;
     };
@@ -170,7 +171,7 @@ public class LxControlLightControllerV2 extends LxControl {
             } else if (STATE_ACTIVE_MOODS_LIST.equals(stateName) && value instanceof String) {
                 // this state can be received before list of moods, but it contains a valid list of IDs
                 Integer[] array = thingHandler.getGson().fromJson((String) value, Integer[].class);
-                activeMoods = Arrays.asList(array);
+                activeMoods = Arrays.asList(array).stream().filter(id -> isMoodOk(id)).collect(Collectors.toList());
                 // update all moods states - this will force update of channels too
                 moodList.values().forEach(mood -> mood.onStateChange(null));
                 // finally we update controller's state based on the active moods list
@@ -210,10 +211,7 @@ public class LxControlLightControllerV2 extends LxControl {
      * @return true if mood ID is within allowed range or range is not configured
      */
     boolean isMoodOk(Integer moodId) {
-        if ((minMoodId != null && minMoodId > moodId) || (maxMoodId != null && maxMoodId < moodId)) {
-            return false;
-        }
-        return true;
+        return moodId != null && moodList.containsKey(moodId);
     }
 
     /**
@@ -236,9 +234,9 @@ public class LxControlLightControllerV2 extends LxControl {
      */
     private void onMoodsListChange(String text) throws JsonSyntaxException {
         LxControlMood[] array = thingHandler.getGson().fromJson(text, LxControlMood[].class);
-        Map<LxUuid, LxControlMood> newMoodList = new HashMap<>();
-        minMoodId = null;
-        maxMoodId = null;
+        Map<Integer, LxControlMood> newMoodList = new HashMap<>();
+        Integer minMoodId = null;
+        Integer maxMoodId = null;
         for (LxControlMood mood : array) {
             Integer id = mood.getId();
             if (id != null && mood.getName() != null) {
@@ -246,7 +244,7 @@ public class LxControlLightControllerV2 extends LxControl {
                 // mood-UUID = <controller-UUID>-M<mood-ID>
                 LxUuid moodUuid = new LxUuid(getUuid().toString() + "-M" + id);
                 mood.initialize(thingHandler, getRoom(), getCategory(), this, moodUuid);
-                newMoodList.put(moodUuid, mood);
+                newMoodList.put(id, mood);
                 if (minMoodId == null || minMoodId > id) {
                     minMoodId = id;
                 }
@@ -264,14 +262,8 @@ public class LxControlLightControllerV2 extends LxControl {
                     new BigDecimal(maxMoodId), BigDecimal.ONE, null, false, optionsList));
         }
 
-        moodList.entrySet().stream().filter(e -> !newMoodList.containsKey(e.getKey())).forEach(e -> {
-            thingHandler.removeControl(e.getValue());
-        });
-
-        newMoodList.entrySet().stream().filter(e -> !moodList.containsKey(e.getKey())).forEach(e -> {
-            thingHandler.addControl(e.getValue());
-        });
-
+        moodList.values().forEach(m -> thingHandler.removeControl(m));
+        newMoodList.values().forEach(m -> thingHandler.addControl(m));
         moodList = newMoodList;
     }
 }
