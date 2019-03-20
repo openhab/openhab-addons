@@ -19,9 +19,8 @@ import java.util.Arrays;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -104,13 +103,13 @@ public abstract class EEP {
                     return UnDefType.UNDEF;
                 }
 
-                return new QuantityType<>((this.optionalData[5] & 0xFF) * -1, SmartHomeUnits.ONE);
+                return new DecimalType((this.optionalData[5] & 0xFF) * -1);
             case CHANNEL_REPEATCOUNT:
                 if (this.optionalData == null || this.optionalData.length < 6) {
                     return UnDefType.UNDEF;
                 }
 
-                return new QuantityType<>(this.status & 0b1111, SmartHomeUnits.ONE);
+                return new DecimalType(this.status & 0b1111);
             case CHANNEL_LASTRECEIVED:
                 return new DateTimeType();
         }
