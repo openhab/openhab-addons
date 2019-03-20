@@ -29,6 +29,7 @@
     <module>org.openhab.binding.dwdunwetter</module>
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.globalcache</module>
+    <module>org.openhab.binding.nest</module>
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.nibeheatpump</module>
     <module>org.openhab.binding.onewire</module>
