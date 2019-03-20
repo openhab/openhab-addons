@@ -83,7 +83,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 | measurementSwitch               | D2-01       | 0x00-0F,11,12 | generalSwitch(/A/B), instantpower,<br/>totalusage, repeaterMode | NodOn In Wall Switch | Discovery |
 | classicDevice                   | F6-02       | 0x01-02       | virtualRockerswitchA, virtualRockerswitchB | - | Teach-in |
 
-¹ Not all channels are supported by all devices, it depends which specific EEP type is used by the device, all thing types additionally support rssi, repeatCount and lastReceived channels
+¹ Not all channels are supported by all devices, it depends which specific EEP type is used by the device, all thing types additionally support `rssi`, `repeatCount` and `lastReceived` channels
 
 ² These are just examples of supported devices
 
@@ -206,7 +206,7 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | setBaseId           | String             | Changes the BaseId of your gateway. This can only be done 10 times! So use it with care. |
 | pushButton          | Trigger            | Channel type system:rawbutton, emits PRESSED and RELEASED events |
 | rockerswitchA/B     | Trigger            | Channel type system:rawrocker, emits DIR1_PRESSED, DIR1_RELEASED, DIR2_PRESSED, DIR2_RELEASED events |
-| windowHandleState   | String             | Textual representation of handle position (OPEN, CLOSED, TILTED)  |
+| windowHandleState   | String             | Textual representation of handle position (OPEN, CLOSED, TILTED) |
 | contact             | Contact            | State OPEN/CLOSED (tilted handle => OPEN) |
 | temperature         | Number:Temperature | Temperature in degree Celsius |
 | humidity            | Number             | Relative humidity level in percentages |
@@ -218,35 +218,37 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | dimmer              | Dimmer             | Dimmer value in percent |
 | generalSwitch(/A/B) | Switch             | Switch something (channel A/B) ON/OFF |
 | rollershutter       | Rollershutter      | Shut time (shutTime) in seconds can be configured |
-| angle               | Number:Angle       | The angle for blinds
+| angle               | Number:Angle       | The angle for blinds |
 | instantpower        | Number:Power       | Instant power consumption in Watts |
 | totalusage          | Number:Energy      | Used energy in Kilowatt hours |
 | teachInCMD          | Switch             | Sends a teach-in msg, content can configured with parameter teachInMSG |
-| virtualSwitchA      | Switch             | Used to convert switch item commands into rocker switch messages (channel A used)<br/>Time in ms between sending a pressed and release message can be defined with channel parameter duration.<br/>The switch mode (rocker switch: use DIR1 and DIR2, toggle: use just one DIR) can be set with channel parameter switchMode (rockerSwitch, toggleButtonDir1, toggleButtonDir2)|
-|virtualRollershutterA| Rollershutter      | Used to convert rollershutter item commands into rocker switch messages (channel A used)|
-|rockerswitchListenerSwitch| Switch        | Used to convert rocker switch messages into switch item state updates|
-|rockerswitchListenerRollershutter| Rollershutter | Used to convert rocker switch messages into rollershutter item state updates|
-|virtualRockerswitchB | String             | Used to send plain rocker switch messages (channel B used)|
-|batteryVoltage       | Number:ElectricPotential | Battery voltage for things with battery|
-|energyStorage        | Number:ElectricPotential | Energy storage, don't know what this means...|
-|rssi                 | Number                   | Received Signal Strength Indication (dBm) of last received message |
-|repeatCount          | Number                   | Number of repeaters involved in the transmission of the telegram |
-|lastReceived         | DateTime                 | Date and time the last telegram was received |
+| virtualSwitchA      | Switch             | Used to convert switch item commands into rocker switch messages (channel A used)<br/>Time in ms between sending a pressed and release message can be defined with channel parameter duration.<br/>The switch mode (rocker switch: use DIR1 and DIR2, toggle: use just one DIR) can be set with channel parameter switchMode (rockerSwitch, toggleButtonDir1, toggleButtonDir2) |
+| virtualRollershutterA | Rollershutter      | Used to convert rollershutter item commands into rocker switch messages (channel A used) |
+| rockerswitchListenerSwitch | Switch        | Used to convert rocker switch messages into switch item state updates |
+| rockerswitchListenerRollershutter | Rollershutter | Used to convert rocker switch messages into rollershutter item state updates |
+| virtualRockerswitchB | String             | Used to send plain rocker switch messages (channel B used) |
+| batteryVoltage       | Number:ElectricPotential | Battery voltage for things with battery |
+| energyStorage        | Number:ElectricPotential | Energy storage, don't know what this means... |
+| rssi                 | Number                   | Received Signal Strength Indication (dBm) of last received message |
+| repeatCount          | Number                   | Number of repeaters involved in the transmission of the telegram |
+| lastReceived         | DateTime                 | Date and time the last telegram was received |
 
-Items linked to bi-directional actuators (actuator sends status messages back) should always disable the ```autoupdate```.
-This is especially true for Eltako rollershutter, as their position is calcaulted out of the current position and the moving time.
+Items linked to bi-directional actuators (actuator sends status messages back) should always disable the `autoupdate`.
+This is especially true for Eltako rollershutter, as their position is calculated out of the current position and the moving time.
 
 ## Channel Configuration
+
 Some channels can be configured with parameters.
 
-|Channel type    | Parameter      | Meaning                    | Possible Values |
-|----------------|----------------|----------------------------|---|
-| rollershutter  | shutTime       | Time (in seconds) to completely close the rollershutter |  |
-| dimmer         | rampingTime    | Duration of dimming | A5-38-08: Ramping Time (in seconds), 0 = default ramping, 1..255 = seconds to 100%; D2-01-01: 0 = switch, 1-3 = timer 1-3, 4 = stop |
-| teachInCMD     | manufacturerId | Id is used for 4BS teach in with EEP   | HEX |
-|                | teachInMSG     | Use this message if teach in type and/or manufacturer id are unknown | HEX |
+| Channel type  | Parameter      | Meaning                                                              | Possible values                                                                                                                     |
+|---------------|----------------|----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| rollershutter | shutTime       | Time (in seconds) to completely close the rollershutter              |                                                                                                                                     |
+| dimmer        | rampingTime    | Duration of dimming                                                  | A5-38-08: Ramping Time (in seconds), 0 = default ramping, 1..255 = seconds to 100%; D2-01-01: 0 = switch, 1-3 = timer 1-3, 4 = stop |
+| teachInCMD    | manufacturerId | Id is used for 4BS teach in with EEP                                 | HEX                                                                                                                                 |
+|               | teachInMSG     | Use this message if teach in type and/or manufacturer id are unknown | HEX                                                                                                                                 |
 
 Possible declaration in Thing DSL:
+
 ```xtend
 Thing centralCommand 11223344 "Light" @ "Living room" [ enoceanId="11223344", senderIdOffset=15, sendingEEPId="A5_38_08_02", receivingEEPId="A5_38_08_02" ] {
     Channels:
