@@ -35,6 +35,12 @@ This binding is developed on and tested with the following devices
     * FSB14 (rollershutter)
     * FUD14 (dimmer)
     * FSSA-230V (smart plug)
+    * FWZ12-65A (energy meter)
+    * FTKE (window / door contact)
+    * TF-FGB (window handle)
+    * TF-FKB (window contact)
+    * TF-AHDSB (outdoor brightness sensor)
+    * FAFT60 (outdoor temperature & humidity sensor)
  * The following Opus actuators:
     * GN-A-R12V-SR-4 (light)
     * GN-A-R12V-MF-2 (light)
@@ -43,7 +49,14 @@ This binding is developed on and tested with the following devices
     * GN-A-U230V-JRG (rollershutter)
     * OPUS-FUNK PLUS Jalousieaktor 1fach UP (rollershutter)
     * OPUS-Funk PLUS Steckdosenleiste (smart multiple socket)
- * NodOn Smart Plug (ASP-2-1-10), In Wall Switch (SIN-2-2-00, SIN-2-1-0x), Permundo PSC234 (smart plug with metering)
+ * NodOn: 
+    * Smart Plug (ASP-2-1-10)
+    * In Wall Switch (SIN-2-2-00, SIN-2-1-0x)
+    * Temperature & humidity sensor (STPH-2-1-05)
+ * Permundo 
+    * PSC234 (smart plug with metering) = Afriso APR234
+    * PSC132 (smart switch actor with metering)
+    * PSC152 (smart blinds control)
  * Thermokon SR04 room control
  * Hoppe SecuSignal window handles
  * Rocker switches (NodOn, Eltako FT55 etc)
@@ -56,12 +69,13 @@ Hence if your device supports one of the following EEPs the chances are good tha
 | bridge                          | -           | -             | repeaterMode, setBaseId      | USB300, EnOceanPi              | -         |
 | pushButton                      | F6-01       | 0x01          | pushButton                   |                                | Manually  |
 | rockerSwitch                    | F6-02       | 0x01-02       | rockerswitchA, rockerswitchB | Eltako FT55                    | Discovery |
-| mechanicalHandle                | F6-10       | 0x00-01       | windowHandleState, contact   | Hoppe SecuSignal handles       | Discovery |
-| contact                         | D5-00       | 0x01          | contact                      | Eltako FTK                     | Discovery |
+| mechanicalHandle                | F6-10       | 0x00-01       | windowHandleState, contact   | Hoppe SecuSignal handles, Eltako TF-FGB | Discovery |
+| contact                         | D5-00       | 0x01          | contact                      | Eltako FTK(E) & TF-FKB            | Discovery |
 | temperatureSensor               | A5-02       | 0x01-30       | temperature                  | Thermokon SR65                 | Discovery |
 | temperatureHumiditySensor       | A5-04       | 0x01-03       | humidity, temperature        | Eltako FTSB                    | Discovery |
 | occupancySensor                 | A5-07       | 0x01-03       | illumination, batteryVoltage,<br/>motionDetection | NodON PIR-2-1-01 | Discovery |
 | lightTemperatureOccupancySensor | A5-08       | 0x01-03       | illumination, temperature,<br/>occupancy, motionDetection | Eltako FABH | Discovery |
+| lightSensor                     | A5-06       | 0x01          | illumination                 | Eltako TF-AHDSB                | Discovery |
 | roomOperatingPanel              | A5-10       | 0x01-23       | temperature, setPoint, fanSpeedStage,<br/>occupancy           | Thermokon SR04 | Discovery |
 | automatedMeterSensor            | A5-12       | 0x00-03       | counter, currentNumber, instantpower,<br/>totalusage, amrLitre, amrCubicMetre | FWZ12 | Discovery |
 | centralCommand                  | A5-38       | 0x08          | dimmer, generalSwitch        | Eltako FUD14, FSR14            | Teach-in |
@@ -69,7 +83,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 | measurementSwitch               | D2-01       | 0x00-0F,11,12 | generalSwitch(/A/B), instantpower,<br/>totalusage, repeaterMode | NodOn In Wall Switch | Discovery |
 | classicDevice                   | F6-02       | 0x01-02       | virtualRockerswitchA, virtualRockerswitchB | - | Teach-in |
 
-¹ Not all channels are supported by all devices, it depends which specific EEP type is used by the device, all thing types additionally support receivingState channel
+¹ Not all channels are supported by all devices, it depends which specific EEP type is used by the device, all thing types additionally support `rssi`, `repeatCount` and `lastReceived` channels
 
 ² These are just examples of supported devices
 
@@ -135,9 +149,9 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | enoceanId         | EnOceanId of device this thing belongs to | hex value as string |
 | rockerSwitch                    | receivingEEPId    |                             | F6_02_01, F6_02_02 |
 |                                 | enoceanId         | | |
-| mechanicalHandle                | receivingEEPId    |                             | F6_10_00, F6_10_01 |
+| mechanicalHandle                | receivingEEPId    |                             | F6_10_00, F6_10_01, A5_14_09 |
 |                                 | enoceanId         | | |
-| contact                         | receivingEEPId    |                             | D5_00_01 |
+| contact                         | receivingEEPId    |                             | D5_00_01, A5_14_01_ELTAKO |
 |                                 | enoceanId         | | |
 | temperatureSensor               | receivingEEPId    |                             | A5_02_01-0B, A5_02_10-1B, A5_02_20, A5_02_30 |
 |                                 | enoceanId         | | |
@@ -146,6 +160,8 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 | occupancySensor                 | receivingEEPId    |                             | A5_07_01-03 |
 |                                 | enoceanId         | | |
 | lightTemperatureOccupancySensor | receivingEEPId    |                             | A5_08_01-03, A5_08_01_FXBH |
+|                                 | enoceanId         | | |
+| lightSensor                     | receivingEEPId    |                             | A5_06_01, A5_06_01_ELTAKO |
 |                                 | enoceanId         | | |
 | roomOperatingPanel              | receivingEEPId    |                             | A5_10_01-0D, A5_10_10-1F, A5_10_20-23 |
 |                                 | enoceanId         | | |
@@ -190,7 +206,7 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | setBaseId           | String             | Changes the BaseId of your gateway. This can only be done 10 times! So use it with care. |
 | pushButton          | Trigger            | Channel type system:rawbutton, emits PRESSED and RELEASED events |
 | rockerswitchA/B     | Trigger            | Channel type system:rawrocker, emits DIR1_PRESSED, DIR1_RELEASED, DIR2_PRESSED, DIR2_RELEASED events |
-| windowHandleState   | String             | Textual representation of handle position (OPEN, CLOSED, TILTED)  |
+| windowHandleState   | String             | Textual representation of handle position (OPEN, CLOSED, TILTED) |
 | contact             | Contact            | State OPEN/CLOSED (tilted handle => OPEN) |
 | temperature         | Number:Temperature | Temperature in degree Celsius |
 | humidity            | Number             | Relative humidity level in percentages |
@@ -202,15 +218,44 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | dimmer              | Dimmer             | Dimmer value in percent |
 | generalSwitch(/A/B) | Switch             | Switch something (channel A/B) ON/OFF |
 | rollershutter       | Rollershutter      | Shut time (shutTime) in seconds can be configured |
+| angle               | Number:Angle       | The angle for blinds |
 | instantpower        | Number:Power       | Instant power consumption in Watts |
 | totalusage          | Number:Energy      | Used energy in Kilowatt hours |
-| receivingState      | String             | RSSI value and repeater count of last received message |
 | teachInCMD          | Switch             | Sends a teach-in msg, content can configured with parameter teachInMSG |
-| virtualSwitchA      | Switch             | Used to convert switch item commands into rocker switch messages (channel A used)<br/>Time in ms between sending a pressed and release message can be defined with channel parameter duration.<br/>The switch mode (rocker switch: use DIR1 and DIR2, toggle: use just one DIR) can be set with channel parameter switchMode (rockerSwitch, toggleButtonDir1, toggleButtonDir2)|
-|virtualRollershutterA| Rollershutter      | Used to convert rollershutter item commands into rocker switch messages (channel A used)|
-|rockerswitchListenerSwitch| Switch        | Used to convert rocker switch messages into switch item state updates|
-|rockerswitchListenerRollershutter| Rollershutter | Used to convert rocker switch messages into rollershutter item state updates|
-|virtualRockerswitchB | String             | Used to send plain rocker switch messages (channel B used)|
+| virtualSwitchA      | Switch             | Used to convert switch item commands into rocker switch messages (channel A used)<br/>Time in ms between sending a pressed and release message can be defined with channel parameter duration.<br/>The switch mode (rocker switch: use DIR1 and DIR2, toggle: use just one DIR) can be set with channel parameter switchMode (rockerSwitch, toggleButtonDir1, toggleButtonDir2) |
+| virtualRollershutterA | Rollershutter      | Used to convert rollershutter item commands into rocker switch messages (channel A used) |
+| rockerswitchListenerSwitch | Switch        | Used to convert rocker switch messages into switch item state updates |
+| rockerswitchListenerRollershutter | Rollershutter | Used to convert rocker switch messages into rollershutter item state updates |
+| virtualRockerswitchB | String             | Used to send plain rocker switch messages (channel B used) |
+| batteryVoltage       | Number:ElectricPotential | Battery voltage for things with battery |
+| energyStorage        | Number:ElectricPotential | Energy storage, don't know what this means... |
+| rssi                 | Number                   | Received Signal Strength Indication (dBm) of last received message |
+| repeatCount          | Number                   | Number of repeaters involved in the transmission of the telegram |
+| lastReceived         | DateTime                 | Date and time the last telegram was received |
+
+Items linked to bi-directional actuators (actuator sends status messages back) should always disable the `autoupdate`.
+This is especially true for Eltako rollershutter, as their position is calculated out of the current position and the moving time.
+
+## Channel Configuration
+
+Some channels can be configured with parameters.
+
+| Channel type  | Parameter      | Meaning                                                              | Possible values                                                                                                                     |
+|---------------|----------------|----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| rollershutter | shutTime       | Time (in seconds) to completely close the rollershutter              |                                                                                                                                     |
+| dimmer        | rampingTime    | Duration of dimming                                                  | A5-38-08: Ramping Time (in seconds), 0 = default ramping, 1..255 = seconds to 100%; D2-01-01: 0 = switch, 1-3 = timer 1-3, 4 = stop |
+| teachInCMD    | manufacturerId | Id is used for 4BS teach in with EEP                                 | HEX                                                                                                                                 |
+|               | teachInMSG     | Use this message if teach in type and/or manufacturer id are unknown | HEX                                                                                                                                 |
+
+Possible declaration in Thing DSL:
+
+```xtend
+Thing centralCommand 11223344 "Light" @ "Living room" [ enoceanId="11223344", senderIdOffset=15, sendingEEPId="A5_38_08_02", receivingEEPId="A5_38_08_02" ] {
+    Channels:
+        Type teachInCMD : teachInCMD [ teachInMSG="E0400D80" ]
+        Type dimmer : dimmer [ rampingTime=0 ]
+}
+```
 
 ## Rules and Profiles
 
@@ -232,13 +277,13 @@ end
 
 ```xtend
 Bridge enocean:bridge:gtwy "EnOcean Gateway" [ path="/dev/ttyAMA0" ] {
-   Thing rockerSwitch rs01 "Rocker" @ "Kitchen" [ enoceanID="aabbcc01", receivingEEPId="F6_02_01" ]
-   Thing mechanicalHandle mh01 "Door handle" @ "Living room" [ enoceanID="aabbcc02", receivingEEPId="F6_10_00" ]
-   Thing roomOperatingPanel p01 "Panel" @ "Floor" [ enoceanID="aabbcc03", receivingEEPId="A5_10_06" ]
-   Thing centralCommand cc01 "Light" @ "Kitchen" [ enoceanID="aabbcc04", senderIdOffset=1, sendingEEPId="A5_38_08_01", receivingEEPId="F6_00_00", broadcastMessages=true, suppressRepeating=false ]
-   Thing centralCommand cc02 "Dimmer" @ "Living room" [ enoceanID="aabbcc05", senderIdOffset=2, sendingEEPId="A5_38_08_02", receivingEEPId="A5_38_08_02", broadcastMessages=true, suppressRepeating=false ]
-   Thing rollershutter r01 "Rollershutter" @ "Kitchen" [ enoceanID="aabbcc06", senderIdOffset=3, sendingEEPId="A5_3F_7F_EltakoFSB", receivingEEPId="A5_3F_7F_EltakoFSB", broadcastMessages=true, suppressRepeating=false ] {Channels: Type rollershutter:rollershutter [shutTime=25]}
-   Thing measurementSwitch ms01 "TV Smart Plug" @ "Living room" [ enoceanID="aabbcc07", senderIdOffset=4, sendingEEPId="D2_01_09", broadcastMessages=false, receivingEEPId="D2_01_09","A5_12_01", suppressRepeating=false, pollingInterval=300]
+   Thing rockerSwitch rs01 "Rocker" @ "Kitchen" [ enoceanId="aabbcc01", receivingEEPId="F6_02_01" ]
+   Thing mechanicalHandle mh01 "Door handle" @ "Living room" [ enoceanId="aabbcc02", receivingEEPId="F6_10_00" ]
+   Thing roomOperatingPanel p01 "Panel" @ "Floor" [ enoceanId="aabbcc03", receivingEEPId="A5_10_06" ]
+   Thing centralCommand cc01 "Light" @ "Kitchen" [ enoceanId="aabbcc04", senderIdOffset=1, sendingEEPId="A5_38_08_01", receivingEEPId="F6_00_00", broadcastMessages=true, suppressRepeating=false ]
+   Thing centralCommand cc02 "Dimmer" @ "Living room" [ enoceanId="aabbcc05", senderIdOffset=2, sendingEEPId="A5_38_08_02", receivingEEPId="A5_38_08_02", broadcastMessages=true, suppressRepeating=false ]
+   Thing rollershutter r01 "Rollershutter" @ "Kitchen" [ enoceanId="aabbcc06", senderIdOffset=3, sendingEEPId="A5_3F_7F_EltakoFSB", receivingEEPId="A5_3F_7F_EltakoFSB", broadcastMessages=true, suppressRepeating=false ] {Channels: Type rollershutter:rollershutter [shutTime=25]}
+   Thing measurementSwitch ms01 "TV Smart Plug" @ "Living room" [ enoceanId="aabbcc07", senderIdOffset=4, sendingEEPId="D2_01_09", broadcastMessages=false, receivingEEPId="D2_01_09","A5_12_01", suppressRepeating=false, pollingInterval=300]
    Thing classicDevice cd01 "Garage_Light" @ "Garage" [ 
         senderIdOffset=5, 
         sendingEEPId="F6_02_01", 
@@ -256,6 +301,7 @@ Bridge enocean:bridge:gtwy "EnOcean Gateway" [ path="/dev/ttyAMA0" ] {
 ```xtend
 Player Kitchen_Sonos "Sonos" (Kitchen) {channel="sonos:PLAY1:ID:control", channel="enocean:rockerSwitch:gtwy:rs01:rockerswitchA" [profile="system:rawrocker-to-play-pause"]}
 Dimmer Kitchen_Hue "Hue" <light> {channel="enocean:rockerSwitch:gtwy:rs01:rockerswitchB" [profile="system:rawrocker-to-dimmer"], channel="hue:0220:0017884f6626:9:brightness"}
+Rollershutter Kitchen_Rollershutter "Roller shutter" <blinds> (Kitchen) {channel="enocean:rollershutter:gtwy:r01:rollershutter", autoupdate="false"}
 Switch Garage_Light "Switch" {
         channel="enocean:classicDevice:gtwy:cd01:virtualRockerswitchA", 
         channel="enocean:classicDevice:gtwy:cd01:Listener1", 

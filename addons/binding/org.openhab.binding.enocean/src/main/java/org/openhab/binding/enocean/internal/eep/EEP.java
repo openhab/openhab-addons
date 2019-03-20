@@ -18,8 +18,9 @@ import java.util.Arrays;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -96,8 +97,21 @@ public abstract class EEP {
                     String.format("Channel %s(%s) is not supported", channelId, channelTypeId));
         }
 
-        if (channelTypeId.equals(CHANNEL_RECEIVINGSTATE)) {
-            return convertToReceivingState();
+        switch (channelTypeId) {
+            case CHANNEL_RSSI:
+                if (this.optionalData == null || this.optionalData.length < 6) {
+                    return UnDefType.UNDEF;
+                }
+
+                return new DecimalType((this.optionalData[5] & 0xFF) * -1);
+            case CHANNEL_REPEATCOUNT:
+                if (this.optionalData == null || this.optionalData.length < 6) {
+                    return UnDefType.UNDEF;
+                }
+
+                return new DecimalType(this.status & 0b1111);
+            case CHANNEL_LASTRECEIVED:
+                return new DateTimeType();
         }
 
         return convertToStateImpl(channelId, channelTypeId, currentState, config);
@@ -251,13 +265,5 @@ public abstract class EEP {
             setOptionalData(Helper.concatAll(new byte[] { 0x01 }, destinationId, new byte[] { (byte) 0xff, 0x00 }));
         }
         return this;
-    }
-
-    protected State convertToReceivingState() {
-        if (this.optionalData == null || this.optionalData.length < 6) {
-            return UnDefType.UNDEF;
-        }
-
-        return new StringType(String.format("Rssi %s, repeated %s", this.optionalData[5], this.status & 0b1111));
     }
 }
