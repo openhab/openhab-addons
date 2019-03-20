@@ -29,6 +29,7 @@
     <module>org.openhab.binding.dwdunwetter</module>
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.globalcache</module>
+    <module>org.openhab.binding.irtrans</module>
     <module>org.openhab.binding.lifx</module>
     <module>org.openhab.binding.nest</module>
     <module>org.openhab.binding.network</module>
