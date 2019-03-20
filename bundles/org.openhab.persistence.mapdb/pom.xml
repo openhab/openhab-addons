@@ -4,21 +4,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.openhab.addons</groupId>
-    <artifactId>pom</artifactId>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
     <version>2.5.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.openhab.persistence</groupId>
-  <artifactId>pom</artifactId>
+  <artifactId>org.openhab.persistence.mapdb</artifactId>
 
-  <packaging>pom</packaging>
-
-  <name>Persistence</name>
-
-  <modules>
-    <module>org.openhab.persistence.mapdb</module>
-    <module>org.openhab.persistence.mapdb.test</module>
-  </modules>
+  <name>openHAB Add-ons :: Bundles :: MapDB Persistence</name>
 
 </project>
