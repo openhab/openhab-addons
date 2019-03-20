@@ -619,7 +619,7 @@
     <feature name="openhab-binding-powermax" description="Powermax Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.powermax/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.powermax/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-pulseaudio" description="Pulseaudio Binding" version="${project.version}">
@@ -830,7 +830,7 @@
 
     <feature name="openhab-binding-weatherunderground" description="WeatherUnderground Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.weatherunderground/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.weatherunderground/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-wemo" description="Wemo Binding" version="${project.version}">
