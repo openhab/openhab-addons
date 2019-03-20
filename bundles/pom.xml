@@ -26,6 +26,7 @@
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.denonmarantz</module>
     <module>org.openhab.binding.dmx</module>
+    <module>org.openhab.binding.dwdunwetter</module>
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.network</module>
