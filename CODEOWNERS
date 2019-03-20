@@ -8,7 +8,6 @@
 /addons/binding/org.openhab.binding.allplay/ @dominicdesu
 /addons/binding/org.openhab.binding.amazondashbutton/ @OLibutzki
 /addons/binding/org.openhab.binding.amazonechocontrol/ @mgeramb
-/addons/binding/org.openhab.binding.atlona/ @tmrobert8
 /addons/binding/org.openhab.binding.autelis/ @digitaldan
 /addons/binding/org.openhab.binding.bluetooth/ @cdjackson @kaikreuzer
 /addons/binding/org.openhab.binding.bluetooth.bluegiga/ @cdjackson @kaikreuzer
@@ -214,6 +213,7 @@
 /bundles/org.openhab.binding.airquality/ @kubawolanin
 /bundles/org.openhab.binding.airvisualnode/ @3cky
 /bundles/org.openhab.binding.astro/ @gerrieg
+/bundles/org.openhab.binding.atlona/ @tmrobert8
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
 /bundles/org.openhab.binding.bigassfan/ @mhilbush
 /bundles/org.openhab.binding.denonmarantz/ @jwveldhuis
