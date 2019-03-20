@@ -157,7 +157,6 @@
 /addons/binding/org.openhab.binding.tplinksmarthome.test/ @Hilbrand
 /addons/binding/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /addons/binding/org.openhab.binding.tradfri.test/ @cweitkamp @kaikreuzer
-/addons/binding/org.openhab.binding.unifi/ @mgbowman
 /addons/binding/org.openhab.binding.urtsi/ @OLibutzki
 /addons/binding/org.openhab.binding.valloxmv/ @bjoernbrings
 /addons/binding/org.openhab.binding.velbus/ @cedricboon
@@ -228,6 +227,7 @@
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /bundles/org.openhab.binding.plugwise/ @wborn
 /bundles/org.openhab.binding.sonos/ @kgoderis @lolodomo
+/bundles/org.openhab.binding.unifi/ @mgbowman
 /bundles/org.openhab.extensionservice.marketplace/ @kaikreuzer
 /bundles/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer
 /itests/org.openhab.binding.astro.tests/ @gerrieg
