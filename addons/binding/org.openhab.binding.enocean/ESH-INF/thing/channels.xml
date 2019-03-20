@@ -189,9 +189,24 @@
 		</config-description>
 	</channel-type>
 
-	<channel-type id="receivingState">
-		<item-type>String</item-type>
-		<label>Receiving Status</label>
+	<channel-type id="rssi" advanced="true">
+		<item-type>Number</item-type>
+		<label>RSSI</label>
+		<description>Received Signal Strength Indication</description>
+		<state readOnly="true" />
+	</channel-type>
+	
+	<channel-type id="repeatCount" advanced="true">
+		<item-type>Number</item-type>
+		<label>RepeatCount</label>
+		<description>Number of repeaters involved in the transmission of the telegram</description>
+		<state readOnly="true" />
+	</channel-type>
+	
+	<channel-type id="lastReceived" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>LastReceived</label>
+		<description>Date and time the last telegram was received</description>
 		<state readOnly="true" />
 	</channel-type>
 
