@@ -35,6 +35,7 @@
     <module>org.openhab.binding.unifi</module>
     <module>org.openhab.extensionservice.marketplace</module>
     <module>org.openhab.extensionservice.marketplace.automation</module>
+    <module>org.openhab.persistence.mapdb</module>
   </modules>
 
   <build>

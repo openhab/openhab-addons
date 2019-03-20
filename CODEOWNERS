@@ -187,8 +187,6 @@
 /addons/io/org.openhab.io.transport.modbus/ @ssalonen
 /addons/io/org.openhab.io.transport.modbus.test/ @ssalonen
 /addons/io/org.openhab.io.webaudio/ @kaikreuzer
-/addons/persistence/org.openhab.persistence.mapdb/ @mkhl
-/addons/persistence/org.openhab.persistence.mapdb.test/ @mkhl
 /addons/transform/org.openhab.transform.exec/ @openhab/2-x-add-ons-maintainers
 /addons/transform/org.openhab.transform.javascript/ @openhab/2-x-add-ons-maintainers
 /addons/transform/org.openhab.transform.jinja/ @jochen314 
@@ -230,9 +228,11 @@
 /bundles/org.openhab.binding.unifi/ @mgbowman
 /bundles/org.openhab.extensionservice.marketplace/ @kaikreuzer
 /bundles/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer
+/bundles/org.openhab.persistence.mapdb/ @mkhl
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
 /itests/org.openhab.binding.dmx.tests/ @J-N-K
 /itests/org.openhab.binding.onewire.tests/ @J-N-K
+/itests/org.openhab.persistence.mapdb.tests/ @mkhl
 
 # PLEASE HELP ADDING FURTHER LINES HERE!
