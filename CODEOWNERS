@@ -29,8 +29,6 @@
 /addons/binding/org.openhab.binding.dscalarm/ @RSStephens
 /addons/binding/org.openhab.binding.dsmr/ @Hilbrand
 /addons/binding/org.openhab.binding.dsmr.test/ @Hilbrand
-/addons/binding/org.openhab.binding.dwdunwetter/ @limdul79
-/addons/binding/org.openhab.binding.dwdunwetter.test/ @limdul79
 /addons/binding/org.openhab.binding.elerotransmitterstick/ @vbier
 /addons/binding/org.openhab.binding.enocean/ @fruggy83
 /addons/binding/org.openhab.binding.evohome/ @Nebula83
@@ -214,6 +212,7 @@
 /bundles/org.openhab.binding.bigassfan/ @mhilbush
 /bundles/org.openhab.binding.denonmarantz/ @jwveldhuis
 /bundles/org.openhab.binding.dmx/ @J-N-K
+/bundles/org.openhab.binding.dwdunwetter/ @limdul79
 /bundles/org.openhab.binding.freebox/ @lolodomo
 /bundles/org.openhab.binding.globalcache/ @mhilbush
 /bundles/org.openhab.binding.network/ @davidgraeff @mettke
