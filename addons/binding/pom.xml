@@ -37,7 +37,6 @@
     <module>org.openhab.binding.coolmasternet</module>
     <module>org.openhab.binding.daikin</module>
     <module>org.openhab.binding.deconz</module>
-    <module>org.openhab.binding.denonmarantz</module>
     <module>org.openhab.binding.digitalstrom</module>
     <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dscalarm</module>
