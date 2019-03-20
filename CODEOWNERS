@@ -116,7 +116,6 @@
 /addons/binding/org.openhab.binding.phc/ @gnlpfjh
 /addons/binding/org.openhab.binding.pioneeravr/ @Stratehm
 /addons/binding/org.openhab.binding.plclogo/ @falkena
-/addons/binding/org.openhab.binding.powermax/ @lolodomo
 /addons/binding/org.openhab.binding.pulseaudio/ @peuter
 /addons/binding/org.openhab.binding.regoheatpump/ @crnjan
 /addons/binding/org.openhab.binding.rfxcom/ @martinvw @paulianttila
@@ -158,7 +157,6 @@
 /addons/binding/org.openhab.binding.valloxmv/ @bjoernbrings
 /addons/binding/org.openhab.binding.velbus/ @cedricboon
 /addons/binding/org.openhab.binding.vitotronic/ @steand
-/addons/binding/org.openhab.binding.weatherunderground/ @lolodomo
 /addons/binding/org.openhab.binding.wemo/ @hmerk
 /addons/binding/org.openhab.binding.wemo.test/ @hmerk
 /addons/binding/org.openhab.binding.wifiled/ @rvt @xylo
@@ -223,8 +221,10 @@
 /bundles/org.openhab.binding.onewire/ @J-N-K
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /bundles/org.openhab.binding.plugwise/ @wborn
+/bundles/org.openhab.binding.powermax/ @lolodomo
 /bundles/org.openhab.binding.sonos/ @kgoderis @lolodomo
 /bundles/org.openhab.binding.unifi/ @mgbowman
+/bundles/org.openhab.binding.weatherunderground/ @lolodomo
 /bundles/org.openhab.extensionservice.marketplace/ @kaikreuzer
 /bundles/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer
 /bundles/org.openhab.persistence.mapdb/ @mkhl
