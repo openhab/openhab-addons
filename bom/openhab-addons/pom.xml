@@ -562,7 +562,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.powermax</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -752,7 +752,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.weatherunderground</artifactId>
       <version>${project.version}</version>
     </dependency>
