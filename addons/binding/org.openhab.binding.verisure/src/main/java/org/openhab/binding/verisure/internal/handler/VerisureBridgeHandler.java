@@ -14,7 +14,9 @@ package org.openhab.binding.verisure.internal.handler;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.RejectedExecutionException;
@@ -117,9 +119,9 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Configuration of username and password is mandatory");
         } else {
-            authstring = "j_username=" + config.username + "&j_password=" + config.password
-                    + "&spring-security-redirect=" + START_REDIRECT;
             try {
+                authstring = "j_username=" + config.username + "&j_password="
+                        + URLEncoder.encode(config.password, "UTF-8") + "&spring-security-redirect=" + START_REDIRECT;
                 if (session == null) {
                     // Configuration change
                     session = new VerisureSession(this.httpClient);
@@ -127,7 +129,10 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
                 session.initialize(authstring, pinCode, numberOfInstallations);
                 startAutomaticRefresh();
             } catch (RuntimeException e) {
-                logger.warn("Failed to initialize!", e);
+                logger.warn("Failed to initialize! Exception caught: {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (UnsupportedEncodingException e) {
+                logger.warn("Failed to URL Encode password: {}, exception caught: {} ", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
