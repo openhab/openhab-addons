@@ -170,7 +170,6 @@
     <module>org.openhab.binding.tplinksmarthome.test</module>
     <module>org.openhab.binding.tradfri</module>
     <module>org.openhab.binding.tradfri.test</module>
-    <module>org.openhab.binding.unifi</module>
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.valloxmv</module>
     <module>org.openhab.binding.velbus</module>
