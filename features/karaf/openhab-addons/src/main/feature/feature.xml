@@ -141,7 +141,9 @@
     <feature name="openhab-binding-dlinksmarthome" description="D-Link Smart Home Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
-        <bundle deoendency="true">mvn:com.sun.xml.ws/jaxws-ri/2.3.2</bundle>
+        <bundle dependency="true">mvn:org.apache.cxf/cxf-core/3.3.1</bundle>
+        <bundle dependency="true">mvn:org.apache.cxf.services.wsn/cxf-services-wsn-api/3.3.1</bundle>
+        <bundle dependency="true">mvn:org.apache.cxf.services.wsn/cxf-services-wsn-core/3.3.1</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.dlinksmarthome/${project.version}</bundle>
     </feature>
 
