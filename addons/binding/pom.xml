@@ -20,7 +20,6 @@
     <module>org.openhab.binding.allplay</module>
     <module>org.openhab.binding.amazondashbutton</module>
     <module>org.openhab.binding.amazonechocontrol</module>
-    <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.autelis</module>
     <module>org.openhab.binding.bluetooth</module>
     <module>org.openhab.binding.bluetooth.bluegiga</module>
@@ -37,14 +36,11 @@
     <module>org.openhab.binding.coolmasternet</module>
     <module>org.openhab.binding.daikin</module>
     <module>org.openhab.binding.deconz</module>
-    <module>org.openhab.binding.denonmarantz</module>
     <module>org.openhab.binding.digitalstrom</module>
     <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dscalarm</module>
     <module>org.openhab.binding.dsmr</module>
     <module>org.openhab.binding.dsmr.test</module>
-    <module>org.openhab.binding.dwdunwetter</module>
-    <module>org.openhab.binding.dwdunwetter.test</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.enocean</module>
     <module>org.openhab.binding.evohome</module>
@@ -111,10 +107,6 @@
     <module>org.openhab.binding.neato</module>
     <module>org.openhab.binding.neeo</module>
     <module>org.openhab.binding.netatmo</module>
-    <module>org.openhab.binding.nest</module>
-    <module>org.openhab.binding.nest.test</module>
-    <module>org.openhab.binding.nibeheatpump</module>
-    <module>org.openhab.binding.nibeheatpump.test</module>
     <module>org.openhab.binding.nibeuplink</module>
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.ntp</module>
@@ -131,7 +123,6 @@
     <module>org.openhab.binding.phc</module>
     <module>org.openhab.binding.pioneeravr</module>
     <module>org.openhab.binding.plclogo</module>
-    <module>org.openhab.binding.powermax</module>
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.regoheatpump</module>
     <module>org.openhab.binding.rme</module>
@@ -169,12 +160,10 @@
     <module>org.openhab.binding.tplinksmarthome.test</module>
     <module>org.openhab.binding.tradfri</module>
     <module>org.openhab.binding.tradfri.test</module>
-    <module>org.openhab.binding.unifi</module>
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.valloxmv</module>
     <module>org.openhab.binding.velbus</module>
     <module>org.openhab.binding.vitotronic</module>
-    <module>org.openhab.binding.weatherunderground</module>
     <module>org.openhab.binding.wemo</module>
     <module>org.openhab.binding.wemo.test</module>
     <module>org.openhab.binding.wifiled</module>

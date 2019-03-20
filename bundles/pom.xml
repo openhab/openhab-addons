@@ -21,19 +21,28 @@
     <module>org.openhab.binding.airquality</module>
     <module>org.openhab.binding.airvisualnode</module>
     <module>org.openhab.binding.astro</module>
+    <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.bigassfan</module>
+    <module>org.openhab.binding.denonmarantz</module>
     <module>org.openhab.binding.dmx</module>
+    <module>org.openhab.binding.dwdunwetter</module>
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.lifx</module>
+    <module>org.openhab.binding.nest</module>
     <module>org.openhab.binding.network</module>
+    <module>org.openhab.binding.nibeheatpump</module>
     <module>org.openhab.binding.onewire</module>
     <module>org.openhab.binding.openweathermap</module>
     <module>org.openhab.binding.plugwise</module>
+    <module>org.openhab.binding.powermax</module>
     <module>org.openhab.binding.sonos</module>
+    <module>org.openhab.binding.unifi</module>
+    <module>org.openhab.binding.weatherunderground</module>
     <module>org.openhab.extensionservice.marketplace</module>
     <module>org.openhab.extensionservice.marketplace.automation</module>
+    <module>org.openhab.persistence.mapdb</module>
   </modules>
 
   <build>

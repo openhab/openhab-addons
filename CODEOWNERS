@@ -8,7 +8,6 @@
 /addons/binding/org.openhab.binding.allplay/ @dominicdesu
 /addons/binding/org.openhab.binding.amazondashbutton/ @OLibutzki
 /addons/binding/org.openhab.binding.amazonechocontrol/ @mgeramb
-/addons/binding/org.openhab.binding.atlona/ @tmrobert8
 /addons/binding/org.openhab.binding.autelis/ @digitaldan
 /addons/binding/org.openhab.binding.bluetooth/ @cdjackson @kaikreuzer
 /addons/binding/org.openhab.binding.bluetooth.bluegiga/ @cdjackson @kaikreuzer
@@ -25,14 +24,11 @@
 /addons/binding/org.openhab.binding.coolmasternet/ @projectgus
 /addons/binding/org.openhab.binding.daikin/ @caffineehacker
 /addons/binding/org.openhab.binding.deconz/ @davidgraeff
-/addons/binding/org.openhab.binding.denonmarantz/ @jwveldhuis
 /addons/binding/org.openhab.binding.digitalstrom/ @MichaelOchel @msiegele
 /addons/binding/org.openhab.binding.dlinksmarthome/ @MikeJMajor
 /addons/binding/org.openhab.binding.dscalarm/ @RSStephens
 /addons/binding/org.openhab.binding.dsmr/ @Hilbrand
 /addons/binding/org.openhab.binding.dsmr.test/ @Hilbrand
-/addons/binding/org.openhab.binding.dwdunwetter/ @limdul79
-/addons/binding/org.openhab.binding.dwdunwetter.test/ @limdul79
 /addons/binding/org.openhab.binding.elerotransmitterstick/ @vbier
 /addons/binding/org.openhab.binding.enocean/ @fruggy83
 /addons/binding/org.openhab.binding.evohome/ @Nebula83
@@ -98,11 +94,7 @@
 /addons/binding/org.openhab.binding.nanoleaf/ @raepple
 /addons/binding/org.openhab.binding.neato/ @jjlauterbach
 /addons/binding/org.openhab.binding.neeo/ @tmrobert8
-/addons/binding/org.openhab.binding.nest/ @wborn
-/addons/binding/org.openhab.binding.nest.test/ @wborn
 /addons/binding/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
-/addons/binding/org.openhab.binding.nibeheatpump/ @paulianttila
-/addons/binding/org.openhab.binding.nibeheatpump.test/ @paulianttila
 /addons/binding/org.openhab.binding.nibeuplink/ @alexf2015
 /addons/binding/org.openhab.binding.nikohomecontrol/ @mherwege
 /addons/binding/org.openhab.binding.ntp/ @marcelrv
@@ -119,7 +111,6 @@
 /addons/binding/org.openhab.binding.phc/ @gnlpfjh
 /addons/binding/org.openhab.binding.pioneeravr/ @Stratehm
 /addons/binding/org.openhab.binding.plclogo/ @falkena
-/addons/binding/org.openhab.binding.powermax/ @lolodomo
 /addons/binding/org.openhab.binding.pulseaudio/ @peuter
 /addons/binding/org.openhab.binding.regoheatpump/ @crnjan
 /addons/binding/org.openhab.binding.rfxcom/ @martinvw @paulianttila
@@ -157,12 +148,10 @@
 /addons/binding/org.openhab.binding.tplinksmarthome.test/ @Hilbrand
 /addons/binding/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /addons/binding/org.openhab.binding.tradfri.test/ @cweitkamp @kaikreuzer
-/addons/binding/org.openhab.binding.unifi/ @mgbowman
 /addons/binding/org.openhab.binding.urtsi/ @OLibutzki
 /addons/binding/org.openhab.binding.valloxmv/ @bjoernbrings
 /addons/binding/org.openhab.binding.velbus/ @cedricboon
 /addons/binding/org.openhab.binding.vitotronic/ @steand
-/addons/binding/org.openhab.binding.weatherunderground/ @lolodomo
 /addons/binding/org.openhab.binding.wemo/ @hmerk
 /addons/binding/org.openhab.binding.wemo.test/ @hmerk
 /addons/binding/org.openhab.binding.wifiled/ @rvt @xylo
@@ -188,8 +177,6 @@
 /addons/io/org.openhab.io.transport.modbus/ @ssalonen
 /addons/io/org.openhab.io.transport.modbus.test/ @ssalonen
 /addons/io/org.openhab.io.webaudio/ @kaikreuzer
-/addons/persistence/org.openhab.persistence.mapdb/ @mkhl
-/addons/persistence/org.openhab.persistence.mapdb.test/ @mkhl
 /addons/transform/org.openhab.transform.exec/ @openhab/2-x-add-ons-maintainers
 /addons/transform/org.openhab.transform.javascript/ @openhab/2-x-add-ons-maintainers
 /addons/transform/org.openhab.transform.jinja/ @jochen314 
@@ -217,22 +204,33 @@
 /bundles/org.openhab.binding.airquality/ @kubawolanin
 /bundles/org.openhab.binding.airvisualnode/ @3cky
 /bundles/org.openhab.binding.astro/ @gerrieg
+/bundles/org.openhab.binding.atlona/ @tmrobert8
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
 /bundles/org.openhab.binding.bigassfan/ @mhilbush
+/bundles/org.openhab.binding.denonmarantz/ @jwveldhuis
 /bundles/org.openhab.binding.dmx/ @J-N-K
+/bundles/org.openhab.binding.dwdunwetter/ @limdul79
 /bundles/org.openhab.binding.freebox/ @lolodomo
 /bundles/org.openhab.binding.globalcache/ @mhilbush
 /bundles/org.openhab.binding.lifx/ @wborn
+/bundles/org.openhab.binding.nest/ @wborn
 /bundles/org.openhab.binding.network/ @davidgraeff @mettke
+/bundles/org.openhab.binding.nibeheatpump/ @paulianttila
 /bundles/org.openhab.binding.onewire/ @J-N-K
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /bundles/org.openhab.binding.plugwise/ @wborn
+/bundles/org.openhab.binding.powermax/ @lolodomo
 /bundles/org.openhab.binding.sonos/ @kgoderis @lolodomo
+/bundles/org.openhab.binding.unifi/ @mgbowman
+/bundles/org.openhab.binding.weatherunderground/ @lolodomo
 /bundles/org.openhab.extensionservice.marketplace/ @kaikreuzer
 /bundles/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer
+/bundles/org.openhab.persistence.mapdb/ @mkhl
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
 /itests/org.openhab.binding.dmx.tests/ @J-N-K
+/itests/org.openhab.binding.nest.tests/ @wborn
 /itests/org.openhab.binding.onewire.tests/ @J-N-K
+/itests/org.openhab.persistence.mapdb.tests/ @mkhl
 
 # PLEASE HELP ADDING FURTHER LINES HERE!
