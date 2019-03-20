@@ -14,6 +14,7 @@ package org.openhab.binding.loxone.internal.controls;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
@@ -74,11 +75,10 @@ class LxControlTest {
         assertEquals(numberOfStates, c.getStates().size());
     }
 
-    void testChannel(String itemType, String namePostFix, BigDecimal min, BigDecimal max, BigDecimal step,
-            String format, boolean readOnly, List<StateOption> options) {
-        LxControl ctrl = getControl(controlUuid);
+    void testChannel(LxControl ctrl, String itemType, String namePostFix, BigDecimal min, BigDecimal max,
+            BigDecimal step, String format, boolean readOnly, List<StateOption> options) {
         assertNotNull(ctrl);
-        Channel c = getChannel(getExpectedName(controlName, ctrl.getRoom().getName(), namePostFix), ctrl);
+        Channel c = getChannel(getExpectedName(ctrl.getLabel(), ctrl.getRoom().getName(), namePostFix), ctrl);
         assertNotNull(c);
         assertNotNull(c.getUID());
         assertNotNull(c.getDescription());
@@ -110,18 +110,27 @@ class LxControlTest {
         }
     }
 
+    void testChannel(String itemType, String namePostFix, BigDecimal min, BigDecimal max, BigDecimal step,
+            String format, boolean readOnly, List<StateOption> options) {
+        LxControl ctrl = getControl(controlUuid);
+        testChannel(ctrl, itemType, namePostFix, min, max, step, format, readOnly, options);
+    }
+
     void testChannel(String itemType) {
         testChannel(itemType, null, null, null, null, null, false, null);
+    }
+
+    void testChannel(LxControl ctrl, String itemType) {
+        testChannel(ctrl, itemType, null, null, null, null, null, false, null);
     }
 
     void testChannel(String itemType, String namePostFix) {
         testChannel(itemType, namePostFix, null, null, null, null, false, null);
     }
 
-    void testChannelState(String namePostFix, State expectedValue) {
-        LxControl ctrl = getControl(controlUuid);
+    void testChannelState(LxControl ctrl, String namePostFix, State expectedValue) {
         assertNotNull(ctrl);
-        Channel c = getChannel(getExpectedName(controlName, ctrl.getRoom().getName(), namePostFix), ctrl);
+        Channel c = getChannel(getExpectedName(ctrl.getLabel(), ctrl.getRoom().getName(), namePostFix), ctrl);
         assertNotNull(c);
         State current = ctrl.getChannelState(c.getUID());
         if (expectedValue != null) {
@@ -130,8 +139,17 @@ class LxControlTest {
         assertEquals(expectedValue, current);
     }
 
+    void testChannelState(String namePostFix, State expectedValue) {
+        LxControl ctrl = getControl(controlUuid);
+        testChannelState(ctrl, namePostFix, expectedValue);
+    }
+
     void testChannelState(State expectedValue) {
-        testChannelState(null, expectedValue);
+        testChannelState((String) null, expectedValue);
+    }
+
+    void testChannelState(LxControl ctrl, State expectedValue) {
+        testChannelState(ctrl, null, expectedValue);
     }
 
     void changeLoxoneState(String stateName, Object value) {
@@ -142,10 +160,9 @@ class LxControlTest {
         state.setStateValue(value);
     }
 
-    void executeCommand(String namePostFix, Command command) {
-        LxControl ctrl = getControl(controlUuid);
+    void executeCommand(LxControl ctrl, String namePostFix, Command command) {
         assertNotNull(ctrl);
-        Channel c = getChannel(getExpectedName(controlName, ctrl.getRoom().getName(), namePostFix), ctrl);
+        Channel c = getChannel(getExpectedName(ctrl.getLabel(), ctrl.getRoom().getName(), namePostFix), ctrl);
         assertNotNull(c);
         try {
             ctrl.handleCommand(c.getUID(), command);
@@ -154,12 +171,21 @@ class LxControlTest {
         }
     }
 
+    void executeCommand(String namePostFix, Command command) {
+        LxControl ctrl = getControl(controlUuid);
+        executeCommand(ctrl, namePostFix, command);
+    }
+
+    void executeCommand(LxControl ctrl, Command command) {
+        executeCommand(ctrl, null, command);
+    }
+
     void executeCommand(Command command) {
-        executeCommand(null, command);
+        executeCommand((String) null, command);
     }
 
     void testAction(String expectedAction, int numberOfActions) {
-        assertTrue(numberOfActions <= handler.actionQueue.size());
+        assertEquals(numberOfActions, handler.actionQueue.size());
         if (numberOfActions > 0) {
             String action = handler.actionQueue.poll();
             assertNotNull(action);
@@ -173,6 +199,14 @@ class LxControlTest {
         } else {
             testAction(expectedAction, 1);
         }
+    }
+
+    void testSubControl(Type type, String name) {
+        LxControl ctrl = getControl(controlUuid);
+        assertNotNull(ctrl);
+        long n = ctrl.getSubControls().values().stream().filter(c -> name.equals(c.getName()))
+                .collect(Collectors.counting());
+        assertEquals(1L, n);
     }
 
     private Channel getChannel(String name, LxControl c) {

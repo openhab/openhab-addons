@@ -49,6 +49,7 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
     Queue<String> actionQueue = new LinkedList<>();
 
     Map<LxUuid, LxControl> controls;
+    Map<LxUuid, LxControl> extraControls = new HashMap<>();
     Map<ChannelUID, StateDescription> stateDescriptions = new HashMap<>();
 
     public LxServerHandlerDummy() {
@@ -81,14 +82,13 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
 
     @Override
     public void addControl(LxControl control) {
-        // TODO Auto-generated method stub
-
+        extraControls.put(control.getUuid(), control);
     }
 
     @Override
     public void removeControl(LxControl control) {
-        // TODO Auto-generated method stub
-
+        LxControl ctrl = extraControls.remove(control.getUuid());
+        assertNotNull(ctrl);
     }
 
     @Override

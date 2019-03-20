@@ -484,6 +484,83 @@
 				"deactivationDelay": "1326771c-030e-3a7c-ffff403fb0c34b9e",
 				"deactivationDelayTotal": "1326771c-030e-3a78-ffff0a5e97ff8000"
 			}
+		},
+		"1076668f-0101-7076-ffff403fb0c34b9e": {
+			"name": "Lighting controller",
+			"type": "LightControllerV2",
+			"uuidAction": "1076668f-0101-7076-ffff403fb0c34b9e",
+			"room": "0b734138-03ac-03f0-ffff403fb0c34b9e",
+			"cat": "0b734138-033e-02d4-ffff403fb0c34b9e",
+			"defaultRating": 1,
+			"isFavorite": false,
+			"isSecured": false,
+			"details": {
+				"movementScene": 5,
+				"masterValue": "1076668f-0101-7076-ffff403fb0c34b9e/masterValue"
+			},
+			"states": {
+				"activeMoods": "11d66fdf-01ad-0a8b-ffff504f9410790f",
+				"moodList": "11d66fdf-01ad-0a8c-ffff504f9410790f",
+				"favoriteMoods": "11d66fdf-01ad-0a8d-ffff504f9410790f",
+				"additionalMoods": "11d66fdf-01ad-0a8e-ffff504f9410790f"
+			},
+			"subControls": {
+				"1076668f-0101-7076-ffff403fb0c34b9e/masterValue": {
+					"name": "Overall Switch",
+					"type": "Switch",
+					"uuidAction": "1076668f-0101-7076-ffff403fb0c34b9e/masterValue",
+					"defaultRating": 0,
+					"isFavorite": false,
+					"isSecured": false,
+					"states": {
+						"active": "1076668f-0101-7072-ffffe94fed106136"
+					}
+				},
+				"1076668f-0101-7076-ffff403fb0c34b9e/AI1": {
+					"name": "Hall Study Lights",
+					"type": "Switch",
+					"uuidAction": "1076668f-0101-7076-ffff403fb0c34b9e/AI1",
+					"defaultRating": 0,
+					"isFavorite": false,
+					"isSecured": false,
+					"states": {
+						"active": "1076668f-0101-705f-ffffe94fed106136"
+					}
+				},
+				"1076668f-0101-7076-ffff403fb0c34b9e/AI2": {
+					"name": "Roof Lights",
+					"type": "Switch",
+					"uuidAction": "1076668f-0101-7076-ffff403fb0c34b9e/AI2",
+					"defaultRating": 0,
+					"isFavorite": false,
+					"isSecured": false,
+					"states": {
+						"active": "1076668f-0101-7060-ffffe94fed106136"
+					}
+				},
+				"1076668f-0101-7076-ffff403fb0c34b9e/AI3": {
+					"name": "Hall Left Lights",
+					"type": "Switch",
+					"uuidAction": "1076668f-0101-7076-ffff403fb0c34b9e/AI3",
+					"defaultRating": 0,
+					"isFavorite": false,
+					"isSecured": false,
+					"states": {
+						"active": "1076668f-0101-7061-ffffe94fed106136"
+					}
+				},
+				"1076668f-0101-7076-ffff403fb0c34b9e/AI4": {
+					"name": "Hall Right Lights",
+					"type": "Switch",
+					"uuidAction": "1076668f-0101-7076-ffff403fb0c34b9e/AI4",
+					"defaultRating": 0,
+					"isFavorite": false,
+					"isSecured": false,
+					"states": {
+						"active": "1076668f-0101-7062-ffffe94fed106136"
+					}
+				}
+			}
 		}
 	},
 	"weatherServer": {
