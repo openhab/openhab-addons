@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.util.HexUtils;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.openhab.binding.rfxcom.internal.connector.RFXComConnectorInterface;
@@ -50,8 +51,6 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComTransmitterMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gnu.io.NoSuchPortException;
-
 /**
  * {@link RFXComBridgeHandler} is the handler for a RFXCOM transceivers. All
  * {@link RFXComHandler}s use the {@link RFXComBridgeHandler} to execute the
@@ -69,6 +68,8 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
     private RFXComBridgeConfiguration configuration = null;
     private ScheduledFuture<?> connectorTask;
+
+    private SerialPortManager serialPortManager;
 
     private class TransmitQueue {
         private Queue<RFXComBaseMessage> queue = new LinkedBlockingQueue<>();
@@ -108,8 +109,9 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
     private TransmitQueue transmitQueue = new TransmitQueue();
 
-    public RFXComBridgeHandler(@NonNull Bridge br) {
+    public RFXComBridgeHandler(@NonNull Bridge br, SerialPortManager serialPortManager) {
         super(br);
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -146,6 +148,13 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
         configuration = getConfigAs(RFXComBridgeConfiguration.class);
 
+        if (configuration.serialPort != null && configuration.serialPort.startsWith("rfc2217")) {
+            logger.debug("Please use the Transceiver over TCP/IP bridge type for a serial over IP connection.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Please use the Transceiver over TCP/IP bridge type for a serial over IP connection.");
+            return;
+        }
+
         if (connectorTask == null || connectorTask.isCancelled()) {
             connectorTask = scheduler.scheduleWithFixedDelay(() -> {
                 logger.debug("Checking RFXCOM transceiver connection, thing status = {}", thing.getStatus());
@@ -162,7 +171,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         try {
             if (configuration.serialPort != null) {
                 if (connector == null) {
-                    connector = new RFXComSerialConnector();
+                    connector = new RFXComSerialConnector(serialPortManager);
                 }
             } else if (configuration.bridgeId != null) {
                 if (connector == null) {
@@ -190,8 +199,6 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Get status of controller");
                 connector.sendMessage(RFXComMessageFactory.CMD_GET_STATUS);
             }
-        } catch (NoSuchPortException e) {
-            logger.error("Connection to RFXCOM transceiver failed", e);
         } catch (IOException e) {
             logger.error("Connection to RFXCOM transceiver failed", e);
             if ("device not opened (3)".equalsIgnoreCase(e.getMessage())) {

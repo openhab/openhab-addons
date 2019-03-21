@@ -27,11 +27,13 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.rfxcom.internal.discovery.RFXComDeviceDiscoveryService;
 import org.openhab.binding.rfxcom.internal.handler.RFXComBridgeHandler;
 import org.openhab.binding.rfxcom.internal.handler.RFXComHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import com.google.common.collect.Sets;
 
@@ -53,6 +55,17 @@ public class RFXComHandlerFactory extends BaseThingHandlerFactory {
             RFXComBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS,
             RFXComBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS);
 
+    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+
+    @Reference
+    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
+
+    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
+        this.serialPortManager = null;
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES.contains(thingTypeUID);
@@ -64,7 +77,7 @@ public class RFXComHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (RFXComBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            RFXComBridgeHandler handler = new RFXComBridgeHandler((Bridge) thing);
+            RFXComBridgeHandler handler = new RFXComBridgeHandler((Bridge) thing, serialPortManager);
             registerDeviceDiscoveryService(handler);
             return handler;
         } else if (supportsThingType(thingTypeUID)) {

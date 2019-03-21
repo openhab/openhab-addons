@@ -18,18 +18,17 @@ import java.util.TooManyListenersException;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.util.HexUtils;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPort;
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  * RFXCOM connector for serial port communication.
@@ -41,17 +40,27 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
 
     private OutputStream out;
     private SerialPort serialPort;
+    private SerialPortManager serialPortManager;
 
     private Thread readerThread;
 
+    public RFXComSerialConnector(SerialPortManager serialPortManager) {
+        super();
+        this.serialPortManager = serialPortManager;
+    }
+
     @Override
     public void connect(RFXComBridgeConfiguration device)
-            throws NoSuchPortException, PortInUseException, UnsupportedCommOperationException, IOException {
-        CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(device.serialPort);
+            throws RFXComException, PortInUseException, UnsupportedCommOperationException, IOException {
+        SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(device.serialPort);
+        if (portIdentifier == null) {
+            logger.debug("No serial port {}", device.serialPort);
+            throw new RFXComException("No serial port " + device.serialPort);
+        }
 
-        CommPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
+        SerialPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
 
-        serialPort = (SerialPort) commPort;
+        serialPort = commPort;
         serialPort.setSerialPortParams(38400, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
         serialPort.enableReceiveThreshold(1);
         serialPort.enableReceiveTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
