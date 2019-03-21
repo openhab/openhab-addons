@@ -24,6 +24,7 @@
     <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.bigassfan</module>
+    <module>org.openhab.binding.coolmasternet</module>
     <module>org.openhab.binding.denonmarantz</module>
     <module>org.openhab.binding.dmx</module>
     <module>org.openhab.binding.dwdunwetter</module>
