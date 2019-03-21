@@ -55,10 +55,13 @@
     <maven.compiler.target>${oh.java.version}</maven.compiler.target>
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
-    <bnd.version>4.1.0</bnd.version>
+    <bnd.version>4.2.0</bnd.version>
     <karaf.version>4.2.2</karaf.version>
     <sat.version>0.5.0</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
+
+    <bnd.importpackage></bnd.importpackage>
+    <bnd.includeresource></bnd.includeresource>
   </properties>
 
   <repositories>
@@ -171,6 +174,7 @@ Import-Package: \\
   org.eclipse.smarthome.*;version=!,\\
   org.openhab.*;version=!,\\
   com.google.common.*;version="14.0",\\
+  ${bnd.importpackage},\\
   *
 -exportcontents: \\
   !*.internal.*,\\
@@ -178,6 +182,7 @@ Import-Package: \\
   org.openhab.*
 -sources: false
 -contract: *
+-includeresource: ${bnd.includeresource}
 ]]></bnd>
 <!--
 -dsannotations-options: norequirements
@@ -465,6 +470,19 @@ Import-Package: \\
               <pluginExecutions>
                 <pluginExecution>
                   <pluginExecutionFilter>
+                    <groupId>com.googlecode.addjars-maven-plugin</groupId>
+                    <artifactId>addjars-maven-plugin</artifactId>
+                    <versionRange>[1.0.5,)</versionRange>
+                    <goals>
+                      <goal>add-jars</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
                     <groupId>org.apache.karaf.tooling</groupId>
                     <artifactId>karaf-maven-plugin</artifactId>
                     <versionRange>[4.2.1,)</versionRange>
@@ -535,6 +553,44 @@ Import-Package: \\
   </build>
 
   <profiles>
+    <profile>
+      <id>add-libraries</id>
+      <activation>
+        <file>
+          <exists>lib/</exists>
+        </file>
+      </activation>
+      <properties>
+        <bnd.includeresource>${project.basedir}/lib/; lib:=true</bnd.includeresource>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.googlecode.addjars-maven-plugin</groupId>
+            <artifactId>addjars-maven-plugin</artifactId>
+            <version>1.0.5</version>
+            <executions>
+            <execution>
+              <goals>
+              <goal>add-jars</goal>
+              </goals>
+              <configuration>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/lib</directory>
+                  <includes>
+                    <include>**/*.jar</include>
+                  </includes>
+                </resource>
+              </resources>
+              </configuration>
+            </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
     <profile>
       <id>skip-itest</id>
       <activation>
