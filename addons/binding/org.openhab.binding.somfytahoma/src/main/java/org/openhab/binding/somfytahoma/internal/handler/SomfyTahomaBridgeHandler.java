@@ -511,6 +511,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 .header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en")
                 .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate")
                 .header("X-Requested-With", "XMLHttpRequest")
+                .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS)
                 .agent(TAHOMA_AGENT);
     }
 
