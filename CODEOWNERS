@@ -193,8 +193,6 @@
 /addons/transform/org.openhab.transform.xslt.test/ @openhab/2-x-add-ons-maintainers
 /addons/voice/org.openhab.voice.googletts/ @gbicskei
 /addons/voice/org.openhab.voice.kaldi/ @kaikreuzer
-/addons/voice/org.openhab.voice.mactts/ @kaikreuzer
-/addons/voice/org.openhab.voice.mactts.test/ @kaikreuzer
 /addons/voice/org.openhab.voice.marytts/ @kaikreuzer
 /addons/voice/org.openhab.voice.pollytts/ @hillmanr
 /addons/voice/org.openhab.voice.voicerss/ @JochenHiller
@@ -225,6 +223,7 @@
 /bundles/org.openhab.extensionservice.marketplace/ @kaikreuzer
 /bundles/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer
 /bundles/org.openhab.persistence.mapdb/ @mkhl
+/bundles/org.openhab.voice.mactts/ @kaikreuzer
 /bundles/org.openhab.voice.picotts/ @FlorianSW
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
