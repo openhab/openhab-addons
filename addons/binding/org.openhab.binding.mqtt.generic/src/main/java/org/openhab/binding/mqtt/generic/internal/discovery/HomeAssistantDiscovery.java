@@ -132,7 +132,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         // Therefore the components are assembled into a list and given to the DiscoveryResult label for the user to
         // easily recognize object capabilities.
         HaID topicParts = determineTopicParts(topic);
-        final String thingID = topicParts.getObjectID();
+        final String thingID = topicParts.objectID;
         final ThingUID thingUID = new ThingUID(MqttBindingConstants.HOMEASSISTANT_MQTT_THING, connectionBridge,
                 thingID);
 
@@ -146,11 +146,11 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
 
         // We need to keep track of already found component topics for a specific object_id/node_id
         Set<String> components = componentsPerThingID.getOrDefault(thingID, new HashSet<>());
-        if (components.contains(topicParts.getComponent())) {
-            logger.trace("Discovered an already known component {}", topicParts.getComponent());
+        if (components.contains(topicParts.component)) {
+            logger.trace("Discovered an already known component {}", topicParts.component);
             return; // If we already know about this object component, ignore the discovered topic.
         }
-        components.add(topicParts.getComponent());
+        components.add(topicParts.component);
         componentsPerThingID.put(thingID, components);
 
         final String componentNames = components.stream().map(c -> HA_COMP_TO_NAME.getOrDefault(c, c))
@@ -161,7 +161,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
 
         Map<String, Object> properties = new HashMap<>();
         HandlerConfiguration handlerConfig = topicParts.toHandlerConfiguration();
-        handlerConfig.toProperties(properties);
+        handlerConfig.appendToProperties(properties);
         config.addDeviceProperties(properties);
         // First remove an already discovered thing with the same ID
         thingRemoved(thingUID);
@@ -176,7 +176,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         if (!topic.endsWith("/config")) {
             return;
         }
-        final String thingID = determineTopicParts(topic).getObjectID();
+        final String thingID = determineTopicParts(topic).objectID;
         componentsPerThingID.remove(thingID);
         thingRemoved(new ThingUID(MqttBindingConstants.HOMEASSISTANT_MQTT_THING, connectionBridge, thingID));
     }

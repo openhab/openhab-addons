@@ -29,13 +29,14 @@ public class HandlerConfiguration {
     /**
      * The MQTT prefix topic
      */
-    private String basetopic = "homeassistant";
+    public final String basetopic;
     /**
      * The object id. This is comparable to a Homie Device.
      */
-    private String objectid = "";
+    public final String objectid;
 
     public HandlerConfiguration() {
+        this("homeassistant", "");
     }
 
     public HandlerConfiguration(String basetopic, String objectid) {
@@ -44,16 +45,15 @@ public class HandlerConfiguration {
         this.objectid = objectid;
     }
 
-    public String getBasetopic() {
-        return basetopic;
-    }
-
-    public String getObjectid() {
-        return objectid;
-    }
-
-    public void toProperties(Map<String, Object> properties) {
+    /**
+     * Add the <code>basetopic</code> and <code>objectid</code> to teh properties.
+     *
+     * @param properties
+     * @return the modified propertiess
+     */
+    public <T extends Map<String, Object>> T appendToProperties(T properties) {
         properties.put("basetopic", basetopic);
         properties.put("objectid", objectid);
+        return properties;
     }
 }

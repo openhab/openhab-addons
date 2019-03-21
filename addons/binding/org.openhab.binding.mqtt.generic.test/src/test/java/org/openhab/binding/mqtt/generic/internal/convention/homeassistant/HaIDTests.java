@@ -24,9 +24,9 @@ public class HaIDTests {
     public void testWithoutNode() {
         HaID subject = new HaID("homeassistant/switch/name/config");
 
-        assertThat(subject.getObjectID(), is("name"));
+        assertThat(subject.objectID, is("name"));
 
-        assertThat(subject.getComponent(), is("switch"));
+        assertThat(subject.component, is("switch"));
         assertThat(subject.getTopic("suffix"), is("homeassistant/switch/name/suffix"));
 
         Configuration config = new Configuration();
@@ -46,9 +46,9 @@ public class HaIDTests {
     public void testWithNode() {
         HaID subject = new HaID("homeassistant/switch/node/name/config");
 
-        assertThat(subject.getObjectID(), is("name"));
+        assertThat(subject.objectID, is("name"));
 
-        assertThat(subject.getComponent(), is("switch"));
+        assertThat(subject.component, is("switch"));
         assertThat(subject.getTopic("suffix"), is("homeassistant/switch/node/name/suffix"));
 
         Configuration config = new Configuration();

@@ -82,7 +82,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     protected HandlerConfiguration config = new HandlerConfiguration();
     private HaID discoveryHomeAssistantID = new HaID();
 
-     protected final TransformationServiceProvider transformationServiceProvider;
+    protected final TransformationServiceProvider transformationServiceProvider;
 
     /**
      * Create a new thing handler for HomeAssistant MQTT components.
@@ -110,7 +110,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     @Override
     public void initialize() {
         config = getConfigAs(HandlerConfiguration.class);
-        if (StringUtils.isEmpty(config.getObjectid())) {
+        if (StringUtils.isEmpty(config.objectid)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device ID unknown");
             return;
         }
@@ -129,7 +129,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 continue;
             }
 
-            HaID haID = HaID.fromConfig(config.getBasetopic(), channel.getConfiguration());
+            HaID haID = HaID.fromConfig(config.basetopic, channel.getConfiguration());
             ThingUID thingUID = channel.getUID().getThingUID();
             String channelConfigurationJSON = (String) channel.getConfiguration().get("config");
             if (channelConfigurationJSON == null) {

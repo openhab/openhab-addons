@@ -50,7 +50,7 @@ public class CFactory {
                 channelConfigurationJSON, gson).listener(updateListener)
                         .transformationProvider(transformationServiceProvider);
         try {
-            switch (haID.getComponent()) {
+            switch (haID.component) {
                 case "alarm_control_panel":
                     return new ComponentAlarmControlPanel(componentConfiguration);
                 case "binary_sensor":

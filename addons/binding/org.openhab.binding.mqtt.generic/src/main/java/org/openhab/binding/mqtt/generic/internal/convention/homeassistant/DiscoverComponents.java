@@ -87,12 +87,12 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         AbstractComponent<?> component = CFactory.createComponent(thingUID, haID, config, updateListener, gson,
                 transformationServiceProvider);
         if (component != null) {
-            logger.trace("Found HomeAssistant thing {} component {}", haID.getObjectID(), haID.getComponent());
+            logger.trace("Found HomeAssistant thing {} component {}", haID.objectID, haID.component);
             if (discoveredListener != null) {
                 discoveredListener.componentDiscovered(haID, component);
             }
         } else {
-            logger.debug("Configuration of HomeAssistant thing {} invalid: {}", haID.getObjectID(), config);
+            logger.debug("Configuration of HomeAssistant thing {} invalid: {}", haID.objectID, config);
         }
     }
 
