@@ -45,6 +45,7 @@
     <module>org.openhab.extensionservice.marketplace</module>
     <module>org.openhab.extensionservice.marketplace.automation</module>
     <module>org.openhab.persistence.mapdb</module>
+    <module>org.openhab.voice.mactts</module>
     <module>org.openhab.voice.picotts</module>
   </modules>
 
