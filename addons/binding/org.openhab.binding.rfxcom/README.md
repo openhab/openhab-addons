@@ -22,34 +22,12 @@ This binding supports the RFXtrx433E and RFXtrx315 transceivers and the RFXrec43
 
 ## Discovery
 
-The transceivers/receivers may be automatically discovered by the JD2XX library and put in the Inbox or may be configured manually.
+The transceivers/receivers has to be configured manually.
 
 After the bridge is configured and the transceiver receives a message from any sensor or actuator, the device is put in the Inbox.
 Because RFXCOM communication is a one way protocol, receiver actuators can't be discovered automatically.
 
-### Note: Apple OS X
-
-Apple provides built-in FTDI drivers for OS X, which need to be disabled to get JD2XX work properly.
-
-FTDI driver disabling can be done by the following command
-
-```
-sudo kextunload -b com.apple.driver.AppleUSBFTDI
-```
-
-FTDI driver can be enabled by the following command
-
-```
-sudo kextload -b com.apple.driver.AppleUSBFTDI
-```
-
 ### Note: Linux
-
-Linux has built-in FTDI drivers, which need to be disabled for JD2XX to take over
-
-FTDI drivers can be disabled by blacklisting the ftdi\_sio module in your modprobe config (/etc/modprobe.d/).
-However this will require ALL FTDI devices to then be accessed via something like JD2XX.
-If you have, or may acquire, other USB serial devices you will probably prefer to configure your RFXCOM manually.
 
 If you configure the RFXCOM manually note that the serial port that is assigned to it may change if you have more than one USB serial device.
 On systems using udev (practically all modern Linux systems) you can add a rule to /etc/udev/rules.d/ such as:
@@ -62,8 +40,6 @@ and then you will be able to use /dev/rfxtrx0 as the serial device regardless of
 (N.B. you can get the product and serial strings to use from the output of dmesg, lsusb or by looking in /sys/)
 
 ### Manual Configuration
-
-If you have any problems with JD2XX or you don't want to disable FTDI driver on OS X or Linux, you can also configure RFXCOM transceivers/receivers manually.
 
 To do that via the PaperUI, manually add the generic RFXCOM device named `RFXCOM USB Transceiver`, with the description "This is universal RFXCOM transceiver bridge for manual configuration purposes".
 You will need to specify at least the serial port which has been assigned to the RFXCOM (see notes above).
@@ -129,8 +105,7 @@ Bridge rfxcom:tcpbridge:sunflower [ host="sunflower", port=10001 ] {
 | all                               | Enable Visonic                  | enableVisonic          | Enable receiving of protocol Visonic                                     | false    |         |
 | all                               | Enable Undecoded                | enableUndecoded        | Enable receiving of protocol Undecoded                                   | false    |         |
 | all                               | Enable X10                      | enableX10              | Enable receiving of protocol X10                                         | false    |         |
-| bridge                            | Serial port                     | serialPort             | Serial port for manual configuration                                     | true     |         |
-| RFXtrx315 / RFXrec433 / RFXtrx433 | Serial number                   | bridgeId               | Serial number of the RFXCOM (FTDI) device                                | true     |         |
+| bridge / RFXtrx315 / RFXrec433 / RFXtrx433 | Serial port                     | serialPort             | Serial port for manual configuration                                     | true     |         |
 | tcpbridge                         | Host                            | host                   | Hostname / ip address of device                                          | true     |         |
 | tcpbridge                         | Port                            | port                   | Port of device                                                           | true     |         |
 

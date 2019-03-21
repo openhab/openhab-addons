@@ -1,9 +1,7 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.binding.rfxcom
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: 
- .,
- lib/jd2xx.jar
+Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: Rfxcom Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

@@ -34,7 +34,6 @@ import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.openhab.binding.rfxcom.internal.connector.RFXComConnectorInterface;
 import org.openhab.binding.rfxcom.internal.connector.RFXComEventListener;
-import org.openhab.binding.rfxcom.internal.connector.RFXComJD2XXConnector;
 import org.openhab.binding.rfxcom.internal.connector.RFXComSerialConnector;
 import org.openhab.binding.rfxcom.internal.connector.RFXComTcpConnector;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
@@ -153,6 +152,11 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Please use the Transceiver over TCP/IP bridge type for a serial over IP connection.");
             return;
+        } else if (configuration.serialPort == null && configuration.bridgeId != null) {
+            logger.debug("Please set the serial port setting (JD2xx is now depreacated).");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Please set the serial port setting (JD2xx is now depreacated).");
+            return;
         }
 
         if (connectorTask == null || connectorTask.isCancelled()) {
@@ -172,10 +176,6 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
             if (configuration.serialPort != null) {
                 if (connector == null) {
                     connector = new RFXComSerialConnector(serialPortManager);
-                }
-            } else if (configuration.bridgeId != null) {
-                if (connector == null) {
-                    connector = new RFXComJD2XXConnector();
                 }
             } else if (configuration.host != null) {
                 if (connector == null) {
@@ -201,15 +201,6 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
             }
         } catch (IOException e) {
             logger.error("Connection to RFXCOM transceiver failed", e);
-            if ("device not opened (3)".equalsIgnoreCase(e.getMessage())) {
-                if (connector instanceof RFXComJD2XXConnector) {
-                    logger.info("Automatically Discovered RFXCOM bridges use FTDI chip driver (D2XX)."
-                            + " Reason for this error normally is related to operating system native FTDI drivers,"
-                            + " which prevent D2XX driver to open device."
-                            + " To solve this problem, uninstall OS FTDI native drivers or add manually universal bridge 'RFXCOM USB Transceiver',"
-                            + " which use normal serial port driver rather than D2XX.");
-                }
-            }
         } catch (Exception e) {
             logger.error("Connection to RFXCOM transceiver failed", e);
         } catch (UnsatisfiedLinkError e) {

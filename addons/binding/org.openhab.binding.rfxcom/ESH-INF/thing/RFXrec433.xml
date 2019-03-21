@@ -1,32 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="rfxcom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
+<thing:thing-descriptions bindingId="rfxcom"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
 
 	<bridge-type id="RFXrec433">
 		<label>RFXrec433 USB 433.92MHz Receiver</label>
 		<description>This is an RFXCOM 433.92MHz receiver bridge.</description>
 
 		<config-description>
-			<parameter name="bridgeId" type="text" required="true">
-				<label>Serial number</label>
-				<description>Serial number of the RFXCOM (FTDI) device</description>
+			<parameter name="serialPort" type="text" required="true">
+				<label>Serial Port</label>
+				<context>serial-port</context>
+				<description>Serial port where RFXCOM transceiver is connected.</description>
+			</parameter>
+			<parameter name="bridgeId" type="text" required="false">
+				<label>Serial number (deprecated)</label>
+				<description>Deprecated setting, please set now the serial port</description>
 			</parameter>
 			<parameter name="disableDiscovery" type="boolean" required="true">
 				<label>Disable discovery of unknown devices</label>
-				<description>These RF protocols are prone to noise. If you find a lot of unknown devices showing up in your inbox enabling this will stop devices being added to your inbox.</description>
+				<description>These RF protocols are prone to noise. If you find a lot of unknown devices showing up in your inbox
+					enabling this will stop devices being added to your inbox.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="ignoreConfig" type="boolean">
 				<label>Skip transceiver configuration</label>
 				<description>Fully skip and ignore RFXCOM transceiver configuration. Binding assume that RFXCOM transceiver is
 					preconfigured e.g. via RFXcom Manager. When this is enabled, both set mode command and individual message
-					configurations are ignored.</description>
+					configurations are ignored.
+				</description>
 				<default>true</default>
 			</parameter>
 			<parameter name="setMode" type="text">
 				<label>RFXCOM transceiver mode</label>
 				<description>RFXCOM transceiver set mode command. Command should be in hexadecimal string format and 28 characters
-					(14 bytes) long. If set mode command is given, individual message configurations are ignored.</description>
+					(14 bytes) long. If set mode command is given, individual message configurations are ignored.
+				</description>
 			</parameter>
 			<parameter name="transmitPower" type="integer" min="-18" max="10">
 				<label>Transmit power</label>
