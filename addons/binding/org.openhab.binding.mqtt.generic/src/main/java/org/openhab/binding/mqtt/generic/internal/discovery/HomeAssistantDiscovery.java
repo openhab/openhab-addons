@@ -161,7 +161,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
 
         Map<String, Object> properties = new HashMap<>();
         HandlerConfiguration handlerConfig = topicParts.toHandlerConfiguration();
-        handlerConfig.appendToProperties(properties);
+        properties = handlerConfig.appendToProperties(properties);
         config.addDeviceProperties(properties);
         // First remove an already discovered thing with the same ID
         thingRemoved(thingUID);
