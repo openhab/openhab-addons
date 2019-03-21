@@ -199,13 +199,8 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Get status of controller");
                 connector.sendMessage(RFXComMessageFactory.CMD_GET_STATUS);
             }
-        } catch (IOException e) {
-            logger.error("Connection to RFXCOM transceiver failed", e);
         } catch (Exception e) {
             logger.error("Connection to RFXCOM transceiver failed", e);
-        } catch (UnsatisfiedLinkError e) {
-            logger.error("Error occurred when trying to load native library for OS '{}' version '{}', processor '{}'",
-                    System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"), e);
         }
     }
 
