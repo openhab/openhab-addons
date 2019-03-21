@@ -109,7 +109,6 @@
 /addons/binding/org.openhab.binding.phc/ @gnlpfjh
 /addons/binding/org.openhab.binding.pioneeravr/ @Stratehm
 /addons/binding/org.openhab.binding.plclogo/ @falkena
-/addons/binding/org.openhab.binding.pulseaudio/ @peuter
 /addons/binding/org.openhab.binding.regoheatpump/ @crnjan
 /addons/binding/org.openhab.binding.rfxcom/ @martinvw @paulianttila
 /addons/binding/org.openhab.binding.rfxcom.test/ @martinvw @paulianttila
@@ -217,6 +216,7 @@
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /bundles/org.openhab.binding.plugwise/ @wborn
 /bundles/org.openhab.binding.powermax/ @lolodomo
+/bundles/org.openhab.binding.pulseaudio/ @peuter
 /bundles/org.openhab.binding.sonos/ @kgoderis @lolodomo
 /bundles/org.openhab.binding.unifi/ @mgbowman
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo
