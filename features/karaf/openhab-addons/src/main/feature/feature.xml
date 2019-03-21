@@ -110,7 +110,7 @@
 
     <feature name="openhab-binding-coolmasternet" description="CoolMasterNet Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.coolmasternet/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.coolmasternet/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-daikin" description="Daikin Binding" version="${project.version}">
