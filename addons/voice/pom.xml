@@ -21,7 +21,6 @@
     <module>org.openhab.voice.mactts</module>
     <module>org.openhab.voice.mactts.test</module>
     <module>org.openhab.voice.marytts</module>
-    <module>org.openhab.voice.picotts</module>
     <module>org.openhab.voice.pollytts</module>
     <module>org.openhab.voice.voicerss</module>
   </modules>
