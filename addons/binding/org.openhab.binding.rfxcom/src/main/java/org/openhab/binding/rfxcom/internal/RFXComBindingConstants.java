@@ -52,12 +52,6 @@ public class RFXComBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(BRIDGE_MANUAL, BRIDGE_TCP,
             BRIDGE_RFXTRX443, BRIDGE_RFXTRX315, BRIDGE_RFXREC443);
 
-    /**
-     * Presents all discoverable Bridge types by RFXCOM binding.
-     */
-    public static final Set<ThingTypeUID> DISCOVERABLE_BRIDGE_THING_TYPES_UIDS = ImmutableSet.of(BRIDGE_RFXTRX443,
-            BRIDGE_RFXTRX315, BRIDGE_RFXREC443);
-
     // List of all Channel ids
     public static final String CHANNEL_RAW_MESSAGE = "rawMessage";
     public static final String CHANNEL_RAW_PAYLOAD = "rawPayload";
