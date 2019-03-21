@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UplinkWebInterface implements AtomicReferenceTrait {
 
-    private final static int NIBE_ID_THRESHOLD = 10;
+    private final static int NIBE_ID_THRESHOLD = 14;
 
     private final Logger logger = LoggerFactory.getLogger(UplinkWebInterface.class);
 
