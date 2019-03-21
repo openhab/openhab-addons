@@ -58,7 +58,6 @@
 /addons/binding/org.openhab.binding.ihc.test/ @paulianttila
 /addons/binding/org.openhab.binding.innogysmarthome/ @ollie-dev
 /addons/binding/org.openhab.binding.ipp/ @peuter
-/addons/binding/org.openhab.binding.irtrans/ @kgoderis
 /addons/binding/org.openhab.binding.jeelink/ @vbier
 /addons/binding/org.openhab.binding.keba/ @kgoderis
 /addons/binding/org.openhab.binding.km200/ @Markinus
@@ -211,6 +210,7 @@
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
 /bundles/org.openhab.binding.freebox/ @lolodomo
 /bundles/org.openhab.binding.globalcache/ @mhilbush
+/bundles/org.openhab.binding.irtrans/ @kgoderis
 /bundles/org.openhab.binding.lifx/ @wborn
 /bundles/org.openhab.binding.nest/ @wborn
 /bundles/org.openhab.binding.network/ @davidgraeff @mettke
