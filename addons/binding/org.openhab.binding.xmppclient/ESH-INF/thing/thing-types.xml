@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="xmppclient"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="xmppBridge" extensible="publishTrigger">
+		<label>XMPP Client</label>
+		<description>A connection to a XMPP server</description>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Server Hostname/IP</label>
+				<description>The IP/Hostname of the XMPP server</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>XMPP server Port</label>
+				<description>The port is optional, if none is provided, the typical ports 5222 is used.</description>
+				<context>network-address</context>
+			</parameter>
+
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>The XMPP username</description>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>The XMPP password</description>
+				<context>password</context>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<channel-type id="publishTrigger">
+		<kind>trigger</kind>
+		<label>Publish trigger</label>
+		<description>This channel is triggered when a message is received on the configured XMPP account. The event payload will be the received text.</description>
+		<event></event>
+		<config-description>
+			<parameter name="payload" type="text" required="false">
+				<label>Payload condition</label>
+				<description>An optional condition on the value</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+</thing:thing-descriptions>
