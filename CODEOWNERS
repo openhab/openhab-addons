@@ -21,7 +21,6 @@
 /addons/binding/org.openhab.binding.chromecast/ @kaikreuzer
 /addons/binding/org.openhab.binding.chromecast.test/ @kaikreuzer
 /addons/binding/org.openhab.binding.cm11a/ @BobRak
-/addons/binding/org.openhab.binding.coolmasternet/ @projectgus
 /addons/binding/org.openhab.binding.daikin/ @caffineehacker
 /addons/binding/org.openhab.binding.deconz/ @davidgraeff
 /addons/binding/org.openhab.binding.digitalstrom/ @MichaelOchel @msiegele
@@ -200,6 +199,7 @@
 /bundles/org.openhab.binding.atlona/ @tmrobert8
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
 /bundles/org.openhab.binding.bigassfan/ @mhilbush
+/bundles/org.openhab.binding.coolmasternet/ @projectgus
 /bundles/org.openhab.binding.denonmarantz/ @jwveldhuis
 /bundles/org.openhab.binding.dmx/ @J-N-K
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
