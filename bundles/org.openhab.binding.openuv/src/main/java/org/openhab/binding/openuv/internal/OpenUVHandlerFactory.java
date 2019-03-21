@@ -42,8 +42,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.openuv")
 public class OpenUVHandlerFactory extends BaseThingHandlerFactory {
 
-    @NonNullByDefault({})
-    private LocationProvider locationProvider;
+    private @NonNullByDefault({}) LocationProvider locationProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
