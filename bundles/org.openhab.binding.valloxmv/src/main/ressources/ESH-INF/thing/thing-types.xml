@@ -176,15 +176,14 @@
 
 	<channel-type id="filterchangeddate" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Last filter change</label>
+		<label>Last Filter Change</label>
 		<description>Date filter was changed last time</description>
-		<category>Date</category>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="remainingfilterdays" advanced="true">
-		<item-type>Number</item-type>
-		<label>Days until filter change</label>
+		<item-type>Number:Time</item-type>
+		<label>Next Filter Change</label>
 		<description>Days until filter has to be changed</description>
 		<state pattern="%d d" readOnly="true" />
 	</channel-type>
