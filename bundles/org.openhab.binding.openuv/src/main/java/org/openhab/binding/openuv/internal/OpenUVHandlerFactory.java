@@ -42,7 +42,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.openuv")
 public class OpenUVHandlerFactory extends BaseThingHandlerFactory {
 
-    private @Nullable LocationProvider locationProvider;
+    @NonNullByDefault({})
+    private LocationProvider locationProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -82,7 +83,7 @@ public class OpenUVHandlerFactory extends BaseThingHandlerFactory {
         this.locationProvider = null;
     }
 
-    public @Nullable LocationProvider getLocationProvider() {
+    public LocationProvider getLocationProvider() {
         return locationProvider;
     }
 
