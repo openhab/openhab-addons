@@ -123,7 +123,6 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 | Channel Type ID | Item Type            | Description                                                | 
 |----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
-| humidity       | Number                | This channel reports the current humidity in percentage.   |
 | temperature    | Number:Temperature    | This channel reports the current humidity in percentage.   |
 | lastUpdate     | String                | This channel reports the last time this sensor was updated.|
 | location       | String                | This channel reports the location.                         |
@@ -143,7 +142,6 @@ Only the bridge require manual configuration. The devices and sensors can be add
  
 | Channel Type ID | Item Type            | Description                                                | 
 |----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
-| humidity       | Number                | This channel reports the current humidity in percentage.   |
 | temperature    | Number:Temperature    | This channel reports the current humidity in percentage.   |
 | lastUpdate     | String                | This channel reports the last time this sensor was updated.|
 | location       | String                | This channel reports the location.                         |
@@ -163,7 +161,6 @@ Only the bridge require manual configuration. The devices and sensors can be add
  
 | Channel Type ID | Item Type            | Description                                                | 
 |----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
-| humidity       | Number                | This channel reports the current humidity in percentage.   |
 | temperature    | Number:Temperature    | This channel reports the current humidity in percentage.   |
 | lastUpdate     | String                | This channel reports the last time this sensor was updated.|
 | location       | String                | This channel reports the location.                         |
