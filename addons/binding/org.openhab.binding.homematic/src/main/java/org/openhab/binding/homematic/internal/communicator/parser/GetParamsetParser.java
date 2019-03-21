@@ -41,6 +41,11 @@ public class GetParamsetParser extends CommonRpcParser<Object[], Void> {
     @Override
     @SuppressWarnings("unchecked")
     public Void parse(Object[] message) throws IOException {
+
+        if (message == null || message.length == 0 || !(message[0] instanceof Map)) {
+            return null;
+        }
+
         Map<String, ?> mapMessage = (Map<String, ?>) message[0];
         for (String dpName : mapMessage.keySet()) {
             HmDatapointInfo dpInfo = new HmDatapointInfo(paramsetType, channel, dpName);
