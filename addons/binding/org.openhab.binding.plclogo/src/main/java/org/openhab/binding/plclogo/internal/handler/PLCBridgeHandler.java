@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -95,18 +94,14 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         @Override
         public void run() {
             PLCLogoClient localClient = client;
-            Layout memory = LOGO_MEMORY_BLOCK.get(getLogoFamily()).get("SIZE");
-            if ((memory != null) && (localClient != null)) {
+            Map<?, @Nullable Layout> memory = LOGO_MEMORY_BLOCK.get(getLogoFamily());
+            Layout layout = (memory != null) ? memory.get(MEMORY_SIZE) : null;
+            if ((layout != null) && (localClient != null)) {
                 try {
-                    int result = localClient.readDBArea(1, 0, memory.length, S7Client.S7WLByte, buffer);
+                    int result = localClient.readDBArea(1, 0, layout.length, S7Client.S7WLByte, buffer);
                     if (result == 0) {
                         synchronized (handlers) {
                             for (PLCCommonHandler handler : handlers) {
-                                if (handler == null) {
-                                    logger.debug("Skip processing of invalid handler.");
-                                    continue;
-                                }
-
                                 int length = handler.getBufferLength();
                                 int address = handler.getStartAddress();
                                 if ((length > 0) && (address != PLCCommonHandler.INVALID)) {
@@ -178,12 +173,14 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                     updateState(channelUID, new DateTimeType(clock));
                 } else if (DAIGNOSTICS_CHANNEL.equals(channelId)) {
                     Map<Integer, @Nullable String> states = LOGO_STATES.get(getLogoFamily());
-                    for (Integer key : states.keySet()) {
-                        String message = states.get(buffer[0] & key.intValue());
-                        synchronized (oldValues) {
-                            if ((message != null) && (oldValues.get(channelUID) != message)) {
-                                updateState(channelUID, new StringType(message));
-                                oldValues.put(channelUID, message);
+                    if (states != null) {
+                        for (Integer key : states.keySet()) {
+                            String message = states.get(buffer[0] & key.intValue());
+                            synchronized (oldValues) {
+                                if ((message != null) && (oldValues.get(channelUID) != message)) {
+                                    updateState(channelUID, new StringType(message));
+                                    oldValues.put(channelUID, message);
+                                }
                             }
                         }
                     }
@@ -219,10 +216,6 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         synchronized (oldValues) {
             oldValues.clear();
         }
-
-        Thing thing = getThing();
-        Objects.requireNonNull(thing, "PLCBridgeHandler: Thing may not be null");
-
         config.set(getConfigAs(PLCLogoBridgeConfiguration.class));
 
         boolean configured = (config.get().getLocalTSAP() != null);
