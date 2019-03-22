@@ -44,7 +44,7 @@ public class SynopLand extends Synop {
 
     @Override
     protected void setHorizontalVisibilityInt() {
-        if (stringArray.size() < 4 || !stringIsValid((temp = stringArray.get(3)))) {
+        if (stringArray.size() < 4 || !isValidString((temp = stringArray.get(3)))) {
             horizontalVisibilityInt = Constants.INITIAL_VALUE;
             return;
         }
@@ -58,24 +58,24 @@ public class SynopLand extends Synop {
 
     @Override
     protected void setTemperatureString() {
-        if (stringArray.size() < 6 || !stringIsValid(stringArray.get(5))) {
+        if (stringArray.size() < 6 || !isValidString(stringArray.get(5))) {
             return;
         }
 
         if (stringArray.get(5).charAt(0) == '0') {
-            if (stringArray.size() < 7 || !stringIsValid(stringArray.get(6))) {
+            if (stringArray.size() < 7 || !isValidString(stringArray.get(6))) {
                 return;
             }
 
             temperatureString = stringArray.get(6).substring(1, 5);
-        } else if (stringIsValid(stringArray.get(5))) {
+        } else if (isValidString(stringArray.get(5))) {
             temperatureString = stringArray.get(5).substring(1, 5);
         }
     }
 
     @Override
     protected void setWindString() {
-        if (stringArray.size() < 5 || !stringIsValid((temp = stringArray.get(4)))) {
+        if (stringArray.size() < 5 || !isValidString((temp = stringArray.get(4)))) {
             return;
         }
 
@@ -85,7 +85,7 @@ public class SynopLand extends Synop {
     @Override
     protected void setPressureString() {
         if (stringArray.size() < 8 || stringArray.get(7).charAt(0) != '3'
-                || !stringIsValid((temp = stringArray.get(7)))) {
+                || !isValidString((temp = stringArray.get(7)))) {
             return;
         }
 
@@ -112,7 +112,7 @@ public class SynopLand extends Synop {
 
     protected void setRainfallString() {
         if (stringArray.size() < 11 || stringArray.get(10).charAt(0) != '6'
-                || !stringIsValid((temp = stringArray.get(10)))) {
+                || !isValidString((temp = stringArray.get(10)))) {
             return;
         }
 

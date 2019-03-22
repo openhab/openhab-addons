@@ -24,7 +24,7 @@ public abstract class Synop {
 
     private final int VALID_STRING_LENGTH = 5;
 
-    protected ArrayList<String> stringArray;
+    protected final ArrayList<String> stringArray;
 
     private String stationType;
     protected String stationCode;
@@ -82,7 +82,7 @@ public abstract class Synop {
             dayHourAndWindIndicator = stringArray.get(2);
         }
 
-        if (!stringIsValid(dayHourAndWindIndicator)) {
+        if (!isValidString(dayHourAndWindIndicator)) {
             return;
         }
 
@@ -135,8 +135,6 @@ public abstract class Synop {
     protected abstract void setHorizontalVisibilityInt();
 
     private void setTemperature() {
-        float temp;
-
         setTemperatureString();
 
         if (temperatureString == null) {
@@ -154,7 +152,7 @@ public abstract class Synop {
         }
 
         try {
-            temp = Float.parseFloat(temperatureString.substring(1, 4)) / 10;
+            float temp = Float.parseFloat(temperatureString.substring(1, 4)) / 10;
             temperature *= temp;
         } catch (NumberFormatException e) {
             temperature = Constants.INITIAL_VALUE;
@@ -253,12 +251,8 @@ public abstract class Synop {
 
     protected abstract void setPressureString();
 
-    protected boolean stringIsValid(String str) {
-        if (str.length() != VALID_STRING_LENGTH) {
-            return false;
-        }
-
-        return true;
+    protected boolean isValidString(String str) {
+        return (str.length() == VALID_STRING_LENGTH);
     }
 
     public String getStationType() {

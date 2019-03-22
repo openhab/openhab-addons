@@ -48,7 +48,7 @@ public abstract class SynopMobile extends Synop {
 
     @Override
     protected void setHorizontalVisibilityInt() {
-        if (stringArray.size() < 6 || !stringIsValid((temp = stringArray.get(5)))) {
+        if (stringArray.size() < 6 || !isValidString((temp = stringArray.get(5)))) {
             horizontalVisibilityInt = Constants.INITIAL_VALUE;
             return;
         }
@@ -62,7 +62,7 @@ public abstract class SynopMobile extends Synop {
 
     @Override
     protected void setTemperatureString() {
-        if (stringArray.size() < 8 || !stringIsValid((temp = stringArray.get(7)))) {
+        if (stringArray.size() < 8 || !isValidString((temp = stringArray.get(7)))) {
             return;
         }
 
@@ -71,7 +71,7 @@ public abstract class SynopMobile extends Synop {
 
     @Override
     protected void setWindString() {
-        if (stringArray.size() < 7 || !stringIsValid((temp = stringArray.get(6)))) {
+        if (stringArray.size() < 7 || !isValidString((temp = stringArray.get(6)))) {
             return;
         }
 
@@ -82,7 +82,7 @@ public abstract class SynopMobile extends Synop {
     protected abstract void setPressureString();
 
     protected void setLatitude() {
-        if (stringArray.size() < 4 || !stringIsValid((temp = stringArray.get(3)))) {
+        if (stringArray.size() < 4 || !isValidString((temp = stringArray.get(3)))) {
             return;
         }
 
@@ -100,7 +100,7 @@ public abstract class SynopMobile extends Synop {
     }
 
     protected void setLongitudeAndQuadrant() {
-        if (stringArray.size() < 5 || !stringIsValid((temp = stringArray.get(4)))) {
+        if (stringArray.size() < 5 || !isValidString((temp = stringArray.get(4)))) {
             return;
         }
 
