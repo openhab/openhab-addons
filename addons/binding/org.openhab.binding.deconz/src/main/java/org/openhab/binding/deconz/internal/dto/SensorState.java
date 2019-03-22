@@ -44,6 +44,10 @@ public class SensorState {
     public @Nullable Boolean fire;
     /** water sensors provide a boolean value. */
     public @Nullable Boolean water;
+    /** alarm sensors provide a boolean value. */
+    public @Nullable Boolean alarm;
+    /** IAS Zone sensors provide a boolean value. */
+    public @Nullable Boolean tampered;
     /** vibration sensors provide a boolean value. */
     public @Nullable Boolean vibration;
     /** carbonmonoxide sensors provide a boolean value. */

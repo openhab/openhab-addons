@@ -39,6 +39,7 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_OPENCLOSE_SENSOR = new ThingTypeUID(BINDING_ID, "openclosesensor");
     public static final ThingTypeUID THING_TYPE_WATERLEAKAGE_SENSOR = new ThingTypeUID(BINDING_ID,
             "waterleakagesensor");
+    public static final ThingTypeUID THING_TYPE_ALARM_SENSOR = new ThingTypeUID(BINDING_ID, "alarmsensor");
 
     // List of all Channel ids
     public static final String CHANNEL_PRESENCE = "presence";
@@ -60,6 +61,8 @@ public class BindingConstants {
     public static final String CHANNEL_BUTTONEVENT = "buttonevent";
     public static final String CHANNEL_OPENCLOSE = "open";
     public static final String CHANNEL_WATERLEAKAGE = "waterleakage";
+    public static final String CHANNEL_ALARM = "alarm";
+    public static final String CHANNEL_TAMPERED = "tampered";
     public static final String CHANNEL_BATTERY_LEVEL = "battery_level";
     public static final String CHANNEL_BATTERY_LOW = "battery_low";
 

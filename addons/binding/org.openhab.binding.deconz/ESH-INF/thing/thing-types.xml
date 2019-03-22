@@ -365,4 +365,29 @@
 		<state readOnly="true" />
 	</channel-type>
 
+	<thing-type id="alarmsensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz" />
+		</supported-bridge-type-refs>
+		<label>Alarm Sensor</label>
+		<description>An alarm sensor</description>
+		<channels>
+			<channel typeId="alarm" id="alarm" />
+			<channel typeId="last_updated" id="last_updated" />
+		</channels>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Sensor ID</label>
+				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="alarm">
+		<item-type>Switch</item-type>
+		<label>Alarm</label>
+		<description>Alarm was triggered.</description>
+		<state readOnly="true" />
+	</channel-type>
+
 </thing:thing-descriptions>
