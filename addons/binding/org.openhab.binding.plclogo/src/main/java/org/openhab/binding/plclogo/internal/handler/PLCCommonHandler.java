@@ -25,11 +25,12 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.plclogo.internal.PLCLogoBindingConstants;
-import org.openhab.binding.plclogo.internal.PLCLogoClient;
 import org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.Layout;
+import org.openhab.binding.plclogo.internal.PLCLogoClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,11 +49,8 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
 
     private Map<String, @Nullable State> oldValues = new HashMap<>();
 
-    @Nullable
-    private PLCLogoClient client;
-
-    @Nullable
-    private String family;
+    private @Nullable PLCLogoClient client;
+    private String family = NOT_SUPPORTED;
 
     /**
      * Constructor.
@@ -84,8 +82,8 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
             oldValues.clear();
         }
 
+        family = NOT_SUPPORTED;
         client = null;
-        family = null;
     }
 
     /**
@@ -98,7 +96,8 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
         String family = getLogoFamily();
         logger.debug("Get start address of {} LOGO! for {} blocks.", family, kind);
 
-        Layout layout = LOGO_MEMORY_BLOCK.get(family).get(kind);
+        Map<?, @Nullable Layout> memory = LOGO_MEMORY_BLOCK.get(family);
+        Layout layout = (memory != null) ? memory.get(kind) : null;
         return layout != null ? layout.address : INVALID;
     }
 
@@ -112,7 +111,8 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
         String family = getLogoFamily();
         logger.debug("Get data buffer length of {} LOGO! for {} blocks.", family, kind);
 
-        Layout layout = LOGO_MEMORY_BLOCK.get(family).get(kind);
+        Map<?, @Nullable Layout> memory = LOGO_MEMORY_BLOCK.get(family);
+        Layout layout = (memory != null) ? memory.get(kind) : null;
         return layout != null ? layout.length : 0;
     }
 
@@ -181,12 +181,13 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
      */
     protected int getBase(final String name) {
         Layout layout = null;
+        String family = getLogoFamily();
 
-        logger.debug("Get base address of {} LOGO! for block {} .", getLogoFamily(), name);
+        logger.debug("Get base address of {} LOGO! for block {} .", family, name);
 
         String block = name.split("\\.")[0];
-        if (isValid(name) && !block.isEmpty()) {
-            Map<?, @Nullable Layout> memory = LOGO_MEMORY_BLOCK.get(family);
+        Map<?, @Nullable Layout> memory = LOGO_MEMORY_BLOCK.get(family);
+        if (isValid(name) && !block.isEmpty() && (memory != null)) {
             if (Character.isDigit(block.charAt(1))) {
                 layout = memory.get(block.substring(0, 1));
             } else if (Character.isDigit(block.charAt(2))) {
@@ -221,7 +222,11 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
 
     protected void setOldValue(final String name, final @Nullable State value) {
         synchronized (oldValues) {
-            oldValues.put(name, value);
+            if (!NOT_SUPPORTED.equalsIgnoreCase(name)) {
+                oldValues.put(name, value);
+            } else {
+                logger.info("Wrong configurated LOGO! block {} found.", name);
+            }
         }
     }
 
@@ -234,6 +239,18 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
         return client;
     }
 
+    protected @Nullable PLCBridgeHandler getBridgeHandler() {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            BridgeHandler handler = bridge.getHandler();
+            if ((handler != null) && (handler instanceof PLCBridgeHandler)) {
+                return (PLCBridgeHandler) handler;
+            }
+
+        }
+        return null;
+    }
+
     /**
      * Returns configured LOGO! family.
      *
@@ -242,30 +259,29 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
      * @return Configured LOGO! family
      */
     protected String getLogoFamily() {
-        return family != null ? family : "NOT SUPPORTED";
+        return family;
     }
 
     /**
      * Perform thing initialization.
      */
     protected void doInitialization() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            PLCBridgeHandler handler = (PLCBridgeHandler) bridge.getHandler();
-            if (handler != null) {
-                family = handler.getLogoFamily();
-                client = handler.getLogoClient();
-                if ((client == null) || (family == null)) {
-                    String message = "Can not initialize LOGO! block handler.";
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
-                    logger.warn("Can not initialize thing {} for LOGO! {}.", thing.getUID(), bridge.getUID());
-                }
+        PLCBridgeHandler handler = getBridgeHandler();
+        if (handler != null) {
+            family = handler.getLogoFamily();
+            client = handler.getLogoClient();
+            if ((client == null) || NOT_SUPPORTED.equalsIgnoreCase(family)) {
+                String message = "Can not initialize LOGO! block handler.";
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+
+                Thing thing = getThing();
+                logger.warn("Can not initialize thing {} for LOGO! {}.", thing.getUID(), thing.getBridgeUID());
             }
         }
     }
 
-    protected static String getBlockFromChannel(final Channel channel) {
-        return channel.getProperties().get(BLOCK_PROPERTY);
+    protected static String getBlockFromChannel(final @Nullable Channel channel) {
+        return channel == null ? NOT_SUPPORTED : channel.getProperties().get(BLOCK_PROPERTY);
     }
 
 }

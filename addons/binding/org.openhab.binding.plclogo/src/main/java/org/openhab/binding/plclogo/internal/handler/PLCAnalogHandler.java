@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -63,26 +62,26 @@ public class PLCAnalogHandler extends PLCCommonHandler {
     private static final Map<String, @Nullable Integer> LOGO_BLOCKS_0BA7;
     static {
         Map<String, @Nullable Integer> buffer = new HashMap<>();
-        buffer.put("AI", 8); // 8 analog inputs
-        buffer.put("AQ", 2); // 2 analog outputs
-        buffer.put("AM", 16); // 16 analog markers
+        buffer.put(I_ANALOG, 8); // 8 analog inputs
+        buffer.put(Q_ANALOG, 2); // 2 analog outputs
+        buffer.put(M_ANALOG, 16); // 16 analog markers
         LOGO_BLOCKS_0BA7 = Collections.unmodifiableMap(buffer);
     }
 
     private static final Map<String, @Nullable Integer> LOGO_BLOCKS_0BA8;
     static {
         Map<String, @Nullable Integer> buffer = new HashMap<>();
-        buffer.put("AI", 8); // 8 analog inputs
-        buffer.put("AQ", 8); // 8 analog outputs
-        buffer.put("AM", 64); // 64 analog markers
-        buffer.put("NAI", 32); // 32 network analog inputs
-        buffer.put("NAQ", 16); // 16 network analog outputs
+        buffer.put(I_ANALOG, 8); // 8 analog inputs
+        buffer.put(Q_ANALOG, 8); // 8 analog outputs
+        buffer.put(M_ANALOG, 64); // 64 analog markers
+        buffer.put(NI_ANALOG, 32); // 32 network analog inputs
+        buffer.put(NQ_ANALOG, 16); // 16 network analog outputs
         LOGO_BLOCKS_0BA8 = Collections.unmodifiableMap(buffer);
     }
 
-    private static final Map<String, Map<String, @Nullable Integer>> LOGO_BLOCK_NUMBER;
+    private static final Map<String, @Nullable Map<String, @Nullable Integer>> LOGO_BLOCK_NUMBER;
     static {
-        Map<String, Map<String, @Nullable Integer>> buffer = new HashMap<>();
+        Map<String, @Nullable Map<String, @Nullable Integer>> buffer = new HashMap<>();
         buffer.put(LOGO_0BA7, LOGO_BLOCKS_0BA7);
         buffer.put(LOGO_0BA8, LOGO_BLOCKS_0BA8);
         LOGO_BLOCK_NUMBER = Collections.unmodifiableMap(buffer);
@@ -102,12 +101,14 @@ public class PLCAnalogHandler extends PLCCommonHandler {
         }
 
         Channel channel = getThing().getChannel(channelUID.getId());
-        Objects.requireNonNull(channel, "PLCAnalogHandler: Invalid channel found");
-
-        PLCLogoClient client = getLogoClient();
         String name = getBlockFromChannel(channel);
+        if (!isValid(name) || (channel == null)) {
+            logger.debug("Can not update channel {}, block {}.", channelUID, name);
+            return;
+        }
 
         int address = getAddress(name);
+        PLCLogoClient client = getLogoClient();
         if ((address != INVALID) && (client != null)) {
             if (command instanceof RefreshType) {
                 int base = getBase(name);
@@ -183,8 +184,6 @@ public class PLCAnalogHandler extends PLCCommonHandler {
         super.updateState(channelUID, state);
 
         Channel channel = thing.getChannel(channelUID.getId());
-        Objects.requireNonNull(channel, "PLCAnalogHandler: Invalid channel found");
-
         setOldValue(getBlockFromChannel(channel), state);
     }
 
@@ -199,9 +198,9 @@ public class PLCAnalogHandler extends PLCCommonHandler {
         if (3 <= name.length() && (name.length() <= 5)) {
             String kind = getBlockKind();
             if (Character.isDigit(name.charAt(2)) || Character.isDigit(name.charAt(3))) {
-                boolean valid = "AI".equalsIgnoreCase(kind) || "NAI".equalsIgnoreCase(kind);
-                valid = valid || "AQ".equalsIgnoreCase(kind) || "NAQ".equalsIgnoreCase(kind);
-                return name.startsWith(kind) && (valid || "AM".equalsIgnoreCase(kind));
+                boolean valid = I_ANALOG.equalsIgnoreCase(kind) || NI_ANALOG.equalsIgnoreCase(kind);
+                valid = valid || Q_ANALOG.equalsIgnoreCase(kind) || NQ_ANALOG.equalsIgnoreCase(kind);
+                return name.startsWith(kind) && (valid || M_ANALOG.equalsIgnoreCase(kind));
             }
         }
         return false;
@@ -218,8 +217,9 @@ public class PLCAnalogHandler extends PLCCommonHandler {
         String family = getLogoFamily();
         logger.debug("Get block number of {} LOGO! for {} blocks.", family, kind);
 
-        Integer number = LOGO_BLOCK_NUMBER.get(family).get(kind);
-        return number == null ? 0 : number.intValue();
+        Map<?, @Nullable Integer> blocks = LOGO_BLOCK_NUMBER.get(family);
+        Integer number = (blocks != null) ? blocks.get(kind) : null;
+        return (number != null) ? number.intValue() : 0;
     }
 
     @Override
@@ -236,9 +236,6 @@ public class PLCAnalogHandler extends PLCCommonHandler {
     @Override
     protected void doInitialization() {
         Thing thing = getThing();
-        Bridge bridge = getBridge();
-        Objects.requireNonNull(bridge, "PLCAnalogHandler: Bridge may not be null");
-
         logger.debug("Initialize LOGO! analog input blocks handler.");
 
         config.set(getConfigAs(PLCAnalogConfiguration.class));
@@ -246,13 +243,14 @@ public class PLCAnalogHandler extends PLCCommonHandler {
         super.doInitialization();
         if (ThingStatus.OFFLINE != thing.getStatus()) {
             String kind = getBlockKind();
-            String text = "AI".equalsIgnoreCase(kind) || "NAI".equalsIgnoreCase(kind) ? "input" : "output";
+            String text = I_ANALOG.equalsIgnoreCase(kind) || NI_ANALOG.equalsIgnoreCase(kind) ? "input" : "output";
 
             ThingBuilder tBuilder = editThing();
 
             String label = thing.getLabel();
             if (label == null) {
-                label = bridge.getLabel() == null ? "Siemens Logo!" : bridge.getLabel();
+                Bridge bridge = getBridge();
+                label = (bridge == null) || (bridge.getLabel() == null) ? "Siemens Logo!" : bridge.getLabel();
                 label += (": analog " + text + "s");
             }
             tBuilder.withLabel(label);

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.plclogo.internal.config;
 
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.NOT_SUPPORTED;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.plclogo.internal.PLCLogoBindingConstants;
@@ -25,7 +27,7 @@ import org.openhab.binding.plclogo.internal.PLCLogoBindingConstants;
 public class PLCLogoBridgeConfiguration {
 
     private String address = "";
-    private String family = "";
+    private String family = NOT_SUPPORTED;
     private String localTSAP = "0x3000";
     private String remoteTSAP = "0x2000";
     private Integer refresh = 100;

@@ -67,7 +67,7 @@ public class PLCMemoryConfiguration extends PLCCommonConfiguration {
     @Override
     public String getChannelType() {
         final String kind = getBlockKind();
-        return kind.equalsIgnoreCase("VB") && block.contains(".") ? DIGITAL_OUTPUT_ITEM : ANALOG_ITEM;
+        return kind.equalsIgnoreCase(MEMORY_BYTE) && block.contains(".") ? DIGITAL_OUTPUT_ITEM : ANALOG_ITEM;
     }
 
     @Override
