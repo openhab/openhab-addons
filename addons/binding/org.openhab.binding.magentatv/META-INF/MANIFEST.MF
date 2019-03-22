@@ -36,5 +36,7 @@ Import-Package:
  org.osgi.service.component,
  org.osgi.service.component.annotations;resolution:=optional,
  org.osgi.service.http,
- org.slf4j
+ org.slf4j,
+ org.openhab.binding.magentatv
+Export-Package: org.openhab.binding.magentatv; x-internal:=true
 Service-Component: OSGI-INF/*.xml

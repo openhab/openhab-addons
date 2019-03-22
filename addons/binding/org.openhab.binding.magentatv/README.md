@@ -94,6 +94,7 @@ For now the binding selects the first matching network interface, which is not a
 Channels receiving event information when changing the channel or playing a video:
 
 ## Supported Key Code (channel key)
+
 | Key | Description |
 | ---- | -----------|
 | POWER| Power on/off the receiver (check standby mode) |
@@ -179,25 +180,31 @@ String MagentaTV_RunStatus "Run Status"      {channel="magentatv:xxxxxxxx-xxxx-x
 ```
 
 ### sitemap
+
 ```
 please contribute an example
 ```
 
 ### magentatv.rules
+
 Due to the fact the POWER is a toggle button and the binding can't detect the current status, which could lead into the situation that you want to power on the receiver as part of a scene, but due to the fact that it is already ON you switch it off. We spend some time to fiddle out a better handling and find a way to detect a network message when the receiver gets powered off (MR4xx only). In this case MagentaTV_Power is switch to OFF.
 
 This said you could use the following
+
 ```
         if (MagentaTV_Power.state != ON) {
             sendCommand(MagentaTV_Power, ON)
         }
 ```
+
 to switch it ON (within a scene) and 
+
 ```
         if (MagentaTV_Power.state != OFF) {
             sendCommand(MagentaTV_Power, OFF)
         }
 ```
+
 to switch it off.
 
 Maybe after an openHAB restart you need to make sure that OH and receiver are in sync, because the binding can't read the power status on startup.

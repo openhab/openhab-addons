@@ -90,11 +90,11 @@ public class MagentaTVPoweroffListener extends Thread {
                         }
                     }
                 } catch (Exception e) {
-                    logger.error("Unable to process SSDP message: '{}'", message);
+                    logger.exception("Unable to process SSDP message: " + message, e);
                 }
             }
         } catch (Exception e) {
-            logger.error("Exception in Poweroff listener: {} ({})", e.getMessage(), e.getClass());
+            logger.exception("Poweroff listener failure", e);
         } finally {
             close();
         }

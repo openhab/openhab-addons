@@ -40,7 +40,7 @@ import org.osgi.service.component.annotations.Reference;
  * The {@link MagentaTVHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author markus7017 - Initial contribution
+ * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 @Component(service = { ThingHandlerFactory.class,
@@ -65,7 +65,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
         protected MagentaTVHandler thingHandler;
     }
 
-    private final HashMap<String, MagentaTVDevice> deviceList = new HashMap<String, MagentaTVDevice>();
+    private final Map<String, MagentaTVDevice> deviceList = new HashMap<String, MagentaTVDevice>();
 
     /**
      * Activate the bundle: save properties
@@ -140,8 +140,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                 }
             }
         } catch (Exception e) {
-            logger.error("Unable to process discovered device, UDN='{}': {} ({})", discoveredUDN, e.getMessage(),
-                    e.getClass());
+            logger.exception("Unable to process discovered device, UDN=" + discoveredUDN, e);
         }
     }
 
@@ -285,10 +284,9 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                 return true;
             }
 
-            logger.error("Received pairingCode {} for unregistered device {}!", pairingCode, ipAddress);
+            logger.fatal("Received pairingCode {} for unregistered device {}!", pairingCode, ipAddress);
         } catch (Exception e) {
-            logger.error("Unable to process pairing result for deviceID '{}': {} ({})", notifyDeviceId, e.getMessage(),
-                    e.getClass());
+            logger.exception("Unable to process pairing result for deviceID " + notifyDeviceId, e);
         }
         return false;
     }
@@ -308,9 +306,9 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                 dev.thingHandler.onStbEvent(jsonEvent);
                 return true;
             }
-            logger.error("Received event for unregistered MAC '{}', JSON='{}'", stbMac.toUpperCase(), jsonEvent);
+            logger.fatal("Received event for unregistered MAC '{}', JSON='{}'", stbMac.toUpperCase(), jsonEvent);
         } catch (Exception e) {
-            logger.error("Unable to process playContent for MAC {}: {} ({})", stbMac, e.getMessage(), e.getClass());
+            logger.exception("Unable to process playContent for MAC " + stbMac, e);
         }
         return false;
     }
@@ -331,7 +329,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                 dev.thingHandler.onPowerOff();
             }
         } catch (Exception e) {
-            logger.error("Unable to process SSDP message for IP {}", ipAddress);
+            logger.exception("Unable to process SSDP message for IP " + ipAddress, e);
         }
 
     }

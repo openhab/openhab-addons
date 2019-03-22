@@ -39,8 +39,18 @@ import org.openhab.binding.magentatv.internal.MagentaTVLogger;
  * The {@link MagentaTVOAuth} class implements the OAuth authentication, which
  * is used to query the userID from the Telekom platform.
  *
- * @author Mathias Gisch - Initial contribution - bash script (Mat_Ias)
- * @author Markus Michels - Initial contribution (markus7017)
+ * @author Mathias Gisch - Initial contribution - bash script
+ * @author Markus Michels - Initial contribution - adapted to Java
+ *
+ *         Deutsche Telekom uses a OAuth-based authentication to access the EPG portal. The
+ *         communication between the MR and the remote app requires a pairing before the receiver could be
+ *         controlled by sending keys etc. The so called userID is not directly derived from any local parameters
+ *         (like terminalID as a has from the mac address), but will be returned as a result from the OAuth
+ *         authentication. This will be performed in 3 steps
+ *         1. Get OAuth credentials -> Service URL, Scope, Secret, Client ID
+ *         2. Get OAth Token -> authentication token for step 3
+ *         3. Authenticate, which then provides the userID (beside other parameters)
+ *
  */
 public class MagentaTVOAuth {
     private final MagentaTVLogger logger = new MagentaTVLogger(MagentaTVOAuth.class, "OAuth");
@@ -56,7 +66,6 @@ public class MagentaTVOAuth {
     private String oAuthClientSecret = "";
     private String oAuthClientId = "";
     private String accessToken = "";
-    private String epgurl = "";
     private String epghttpsurl = "";
 
     public String getOAuthCredentials(String accountName, String accountPassword) throws Exception {
@@ -79,19 +88,6 @@ public class MagentaTVOAuth {
             httpHeader.setProperty(HEADER_HOST, StringUtils.substringAfterLast(OAUTH_GET_CRED_URL, "/"));
             logger.trace("Get OAuth credentials from '{}'", url);
             httpResponse = HttpUtil.executeUrl(HTTP_GET, url, httpHeader, null, null, NETWORK_TIMEOUT);
-
-            // Telekom uses a OAuth-based authentication to access the EPG prtoal. The
-            // communication between the MR and
-            // the
-            // remove app requires a pairing before the receiver could be controlled by
-            // sending keys etc. The so called
-            // userID is not directly derived from any local parameters (like terminalID as
-            // a has from the mac address),
-            // but will be returned as a result from the OAuth authentication. This will be
-            // performed in 3 steps
-            // 1. Get OAuth credentials -> Service URL, Scope, Secret, Client ID
-            // 2. Get OAth Token -> authentication token for step 3
-            // 3. Authenticate, which then provides the userID (beside other parameters)
 
             // Sample response:
             /*
@@ -154,7 +150,7 @@ public class MagentaTVOAuth {
             String errorMessage = MessageFormat.format(
                     "Authentication failed (Get OAuth credentials; Service URL={0}, accountName={1} - {2} ({3})",
                     oAuthService, accountName, e.getMessage(), e.getClass());
-            logger.error(errorMessage);
+            logger.fatal(errorMessage);
             logger.trace("response='{}'", httpResponse);
             throw new MagentaTVException(errorMessage, e);
         }
@@ -184,7 +180,7 @@ public class MagentaTVOAuth {
                 String error = getJString(json, "error", "");
                 String errorMessage = MessageFormat.format("Authentication for account {0} failed: {1} - {2}",
                         accountName, errorDesc, error);
-                logger.error(errorMessage);
+                logger.fatal(errorMessage);
                 throw new MagentaTVException(errorMessage);
             }
 
@@ -196,7 +192,7 @@ public class MagentaTVOAuth {
             String errorMessage = MessageFormat.format(
                     "Authentication failed (Get OAuth token; Service URL={0}, accountName={1} - {2} ({3})",
                     oAuthService, accountName, e.getMessage(), e.getClass());
-            logger.error(errorMessage);
+            logger.fatal(errorMessage);
             logger.trace("response='{}'", httpResponse);
             throw new MagentaTVException(errorMessage, e);
         }
@@ -232,11 +228,11 @@ public class MagentaTVOAuth {
                 retmsg = getJString(json, "desc", "");
                 String errorMessage = MessageFormat.format("Unable to authenticate: accountName={}, rc={} - {}",
                         accountName, retcode, retmsg);
-                logger.error(errorMessage);
+                logger.fatal(errorMessage);
                 throw new MagentaTVException(errorMessage);
             }
 
-            epgurl = getJString(json, "epgurl", "");
+            String epgurl = getJString(json, "epgurl", "");
             String userID = getJString(json, "userID", "");
             if ((userID == null) || userID.isEmpty()) {
                 throw new MagentaTVException("OAuth failed, no userID received!");
@@ -248,7 +244,7 @@ public class MagentaTVOAuth {
             String errorMessage = MessageFormat.format(
                     "Authentication failed (Authenticate; Service URL={0}, accountName={1} - rc={2} - {3} ({4} - {5})",
                     oAuthService, accountName, retcode, retmsg, e.getMessage(), e.getClass());
-            logger.error(errorMessage);
+            logger.fatal(errorMessage);
             logger.trace("response='{}'", httpResponse);
             throw new MagentaTVException(errorMessage, e);
         }

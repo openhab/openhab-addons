@@ -198,7 +198,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 errorMessage = "Unable to initialize thing: " + e.getMessage();
             } finally {
                 if (!errorMessage.isEmpty()) {
-                    logger.error("Initialization failed for device '{}' ({}): {}", thingConfig.getFriendlyName(),
+                    logger.fatal("Initialization failed for device '{}' ({}): {}", thingConfig.getFriendlyName(),
                             thingConfig.getTerminalID(), errorMessage);
                     setOnlineState(ThingStatus.OFFLINE, errorMessage);
                 }
@@ -294,13 +294,13 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                     }
                     break;
                 default:
-                    logger.error("Command for unknown channel '{}'", channelUID.getAsString());
+                    logger.fatal("Command for unknown channel '{}'", channelUID.getAsString());
             }
         } catch (Exception e) {
             String errorMessage = MessageFormat.format(
                     "Channel operation failed: Command={0}, value={1}, error={2} ({3}", command.toString(),
-                    channelUID.getId().toString(), e.getMessage(), e.getClass());
-            logger.error(errorMessage);
+                    channelUID.getId().toString());
+            logger.exception(errorMessage, e);
             setOnlineState(ThingStatus.OFFLINE, errorMessage);
         }
     }
@@ -343,14 +343,14 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         ThingStatus status = this.getThing().getStatus();
         if (status != newStatus) {
             if (newStatus == ThingStatus.INITIALIZING) {
-                logger.error("Invalid new thing state: ", newStatus.toString());
+                logger.fatal("Invalid new thing state: ", newStatus.toString());
             }
             if (newStatus == ThingStatus.ONLINE) {
                 updateStatus(newStatus);
                 updateState(CHANNEL_POWER, OnOffType.ON);
             } else {
                 if (!errorMessage.isEmpty()) {
-                    logger.error("Communication Error - {}, switch Thing offline", errorMessage);
+                    logger.fatal("Communication Error - {}, switch Thing offline", errorMessage);
                     updateStatus(newStatus, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
                 } else {
                     updateStatus(newStatus);
@@ -412,9 +412,9 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                  */
             }
         } catch (Exception e) {
-            String errorMessage = MessageFormat.format("Device {0} ({1}) is offline, {2} returned {3} {4})",
-                    thingConfig.getFriendlyName(), thingConfig.getTerminalID(), step, e.getMessage(), e.getClass());
-            logger.error(errorMessage);
+            String errorMessage = MessageFormat.format("Device {0} ({1}) is offline, {2}",
+                    thingConfig.getFriendlyName(), thingConfig.getTerminalID(), step);
+            logger.exception(errorMessage, e);
             // setOnlineState(ThingStatus.OFFLINE, errorMessage);
         }
 
@@ -431,9 +431,9 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 // switches the thing to online state
             }
         } catch (Exception e) {
-            String errorMessage = MessageFormat.format("Re-Connect for device {0} ({1}) failed -  {3} {4})",
-                    thingConfig.getFriendlyName(), thingConfig.getTerminalID(), e.getMessage(), e.getClass());
-            logger.error(errorMessage);
+            String errorMessage = MessageFormat.format("Re-Connect for device {0} ({1}) failed",
+                    thingConfig.getFriendlyName(), thingConfig.getTerminalID());
+            logger.exception(errorMessage, e);
             // setOnlineState(ThingStatus.OFFLINE, errorMessage);
         }
     }
@@ -442,7 +442,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     public void onWakeup(Map<String, Object> discoveredProperties) throws Exception {
         if (control == null) {
             // this should never happen
-            logger.error("Unable to process wakeup");
+            logger.fatal("Unable to process wakeup (control == null)");
             return;
         }
         if ((this.getThing().getStatus() == ThingStatus.OFFLINE) || thingConfig.getVerificationCode().isEmpty()) {
@@ -481,7 +481,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 }
             }
         } else {
-            logger.error("Pairing: control is null!!");
+            logger.fatal("Pairing: control is null!!");
         }
     }
 
@@ -615,7 +615,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 updateState(CHANNEL_POWER, OnOffType.ON);
             }
         } catch (Exception e) {
-            logger.error("Unable to process STB event: {}, JSON='{}'", e.getMessage(), jsonEvent);
+            logger.exception("Unable to process STB event: JSON='{}'" + jsonEvent, e);
         } finally {
             if (reader != null) {
                 reader.close();
@@ -639,11 +639,11 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
 
     @Override
     public void dispose() {
-        scheduler.shutdownNow();
         cancelPairingCheck();
         if (handlerFactory != null) {
             handlerFactory.removeDevice(thingConfig.getTerminalID());
         }
+        scheduler.shutdownNow();
         super.dispose();
     }
 

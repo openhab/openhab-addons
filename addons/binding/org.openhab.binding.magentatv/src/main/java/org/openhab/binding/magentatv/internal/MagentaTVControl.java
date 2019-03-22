@@ -246,9 +246,7 @@ public class MagentaTVControl {
         // pairingCode will be received by the Servlet, is calls onPairingResult()
         // Exception if request failed (response code != HTTP_OK)
         if (!response.contains("X-pairingRequestResponse") || !response.contains("<result>")) {
-            String errorMessage = MessageFormat.format("Unexpected result for pairing response: '{}'", response);
-            logger.error(errorMessage);
-            throw new MagentaTVException(errorMessage);
+            throw new MagentaTVException("Unexpected result for pairing response: " + response);
         }
 
         String result = StringUtils.substringBetween(response, "<result>", "</result>");

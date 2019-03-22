@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * inserts a prefix to every messages, which makes it easier to read between all
  * the other messages.
  *
- * @author Markus Michels - Initial contribution (markus7017)
+ * @author Markus Michels - Initial contribution
  */
 public class MagentaTVLogger {
     private Logger logger;
@@ -32,8 +32,12 @@ public class MagentaTVLogger {
         prefix = "MagentaTV." + module + ": ";
     }
 
-    public void error(String message, Object... a) {
-        logger.info(prefix + " - error: " + message, a);
+    public void fatal(String message, Object... a) {
+        logger.info(prefix + " - FATAL: " + message, a);
+    }
+
+    public void exception(String message, Exception e) {
+        logger.info(prefix + " - EXCEPTION: {} - {} ({})", message, e.getMessage(), e.getClass());
     }
 
     public void info(String message, Object... a) {

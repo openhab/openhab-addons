@@ -96,7 +96,7 @@
 
    <channel-group-type id="status">
       <label>Play Status</label>
-       <description>STttus information on media play</description>
+       <description>Status information on media play</description>
        <channels>
            <channel id="channel" typeId="channel" />
            <channel id="channelCode" typeId="channelCode" />

@@ -39,8 +39,8 @@ import org.osgi.service.http.NamespaceException;
 /**
  * Main OSGi service and HTTP servlet for MagentaTV NOTIFY.
  *
- * @author Markus Michels (markus7017) - Initial contribution (derived from
- *         Netatmo binding, thanks)
+ * @author Markus Michels - Initial contribution
+ * @author Gaël L'hopital - derived from Netatmo binding's servlet
  */
 @Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
 public class MagentaTVNotifyServlet extends HttpServlet {
@@ -50,24 +50,16 @@ public class MagentaTVNotifyServlet extends HttpServlet {
     private HttpService httpService;
     private MagentaTVHandlerFactory handlerFactory;
 
-    /**
-     * OSGi activation callback.
-     *
-     * @param config Config properties
-     */
     @Activate
     protected void activate(Map<String, Object> config) {
         try {
             httpService.registerServlet(PAIRING_NOTIFY_URI, this, null, httpService.createDefaultHttpContext());
             logger.info("Servlet started at '{}'", PAIRING_NOTIFY_URI);
         } catch (ServletException | NamespaceException e) {
-            logger.error("Could not start: {} ({})", e.getMessage(), e.getClass());
+            logger.exception("Could not start", e);
         }
     }
 
-    /**
-     * OSGi de-activation callback.
-     */
     @Deactivate
     protected void deactivate() {
         httpService.unregister(PAIRING_NOTIFY_URI);
@@ -104,7 +96,7 @@ public class MagentaTVNotifyServlet extends HttpServlet {
             logger.trace("Reqeust from {}:{}{} ({}, {})", ipAddress, request.getRemotePort(), path,
                     request.getRemoteHost(), request.getProtocol());
             if (!path.equalsIgnoreCase(PAIRING_NOTIFY_URI)) {
-                logger.error("Invalid request received - path = {}", path);
+                logger.fatal("Invalid request received - path = {}", path);
                 return;
             }
 
@@ -139,9 +131,9 @@ public class MagentaTVNotifyServlet extends HttpServlet {
 
         } catch (Exception e) {
             if (data != null) {
-                logger.error("Exception: {} ({}), data='{}'", e.getMessage(), e.getClass(), data);
+                logger.fatal("Unable to process http reques: {} ({}), data='{}'", e.getMessage(), e.getClass(), data);
             } else {
-                logger.error("Exception: {} ({})", e.getMessage(), e.getClass());
+                logger.exception("Unable to process http request", e);
             }
         } finally {
             setHeaders(resp);
@@ -157,12 +149,6 @@ public class MagentaTVNotifyServlet extends HttpServlet {
 
     private void setHeaders(HttpServletResponse response) {
         response.setCharacterEncoding(CHARSET_UTF8);
-        // response.setContentType(CONTENT_TYPE_XML);
-        // response.setHeader("Access-Control-Allow-Origin", "*");
-        // response.setHeader("Access-Control-Allow-Methods", "POST");
-        // response.setHeader("Access-Control-Max-Age", "3600");
-        // response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With,
-        // Content-Type, Accept");
     }
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)

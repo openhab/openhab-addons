@@ -72,14 +72,13 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
                         device.getDetails().getModelDetails().getModelName(),
                         device.getDetails().getModelDetails().getModelNumber());
                 if (handlerFactory == null) {
-                    logger.error("handlerFactory not yet initialized!");
+                    logger.fatal("handlerFactory not yet initialized!");
                     return null;
                 }
 
                 Map<String, Object> properties = new HashMap<>();
                 properties.put(PROPERTY_VENDOR,
                         VENDOR + "(" + device.getDetails().getManufacturerDetails().getManufacturer() + ")");
-                String model = device.getDetails().getModelDetails().getModelName();
                 properties.put(PROPERTY_MODEL_ID, device.getDetails().getModelDetails().getModelName().toUpperCase());
                 properties.put(PROPERTY_HARDWARE_VERSION, device.getDetails().getModelDetails().getModelNumber());
                 properties.put(PROPERTY_SERIAL_NUMBER, device.getDetails().getSerialNumber());
@@ -106,7 +105,7 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 handlerFactory.deviceDiscoverd(properties);
             }
         } catch (Exception e) {
-            logger.error("Unable to create thing: {} ({})", e.getMessage(), e.getClass());
+            logger.exception("Unable to create thing", e);
         }
         return result;
     }
@@ -134,7 +133,7 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 }
             }
         } catch (Exception e) {
-            logger.error("Unable to determine Thing ID: {}", e.getMessage());
+            logger.exception("Unable to determine Thing ID", e);
         }
         return null;
     }

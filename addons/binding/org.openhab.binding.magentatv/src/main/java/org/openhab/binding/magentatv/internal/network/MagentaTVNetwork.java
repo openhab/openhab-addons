@@ -138,7 +138,7 @@ public class MagentaTVNetwork {
 
             if (localIP.isEmpty() || localIP.equals("0.0.0.0") || localIP.equals("127.0.0.1")) {
                 {
-                    logger.error("Unable to detect local ip address!");
+                    logger.fatal("Unable to detect local ip address!");
                     return false;
                 }
             }
@@ -158,7 +158,7 @@ public class MagentaTVNetwork {
                 return true;
             }
         } catch (Exception e) {
-            logger.error("Unable to get local IP / MAC address: {}!", e.getMessage());
+            logger.exception("Unable to get local IP / MAC address", e);
         }
         return false;
     }

@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * The {@link MagentaTVBindingConstants} class defines common constants, which
  * are used across the whole binding.
  *
- * @author Markus Michels (markus7017) - Initial contribution
+ * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 public class MagentaTVBindingConstants {

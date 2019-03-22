@@ -158,7 +158,7 @@ public class MagentaTVHttp {
         if (!errorMessage.isEmpty()) {
             errorMessage = MessageFormat.format("Network I/O failed for {0}:{1}: {2}", remoteIp, remotePort,
                     errorMessage);
-            logger.error(errorMessage);
+            logger.fatal(errorMessage);
             throw new IOException(errorMessage);
         }
         return response;
