@@ -930,11 +930,10 @@
 <!--        <bundle>mvn:org.openhab.addons.bundles/org.openhab.extensionservice.marketplace.automation/${project.version}</bundle>-->
     </feature>
 
-    <feature name="openhab-misc-mqttbroker" description="MQTT Broker Moquette" version="${project.version}">
+    <feature name="openhab-misc-mqttbroker" description="Embedded MQTT Broker" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mqtt</feature>
-        <bundle dependency="true" start-level="80">mvn:io.moquette/moquette-broker/0.12.1</bundle>
-        <bundle>mvn:org.openhab.addons.bundles/org.openhab.io.mqttembeddedbroker/${project.version}</bundle>
+        <bundle>mvn:org.openhab.io/org.openhab.io.mqttembeddedbroker/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-misc-neeo" description="NEEO Integration" version="${project.version}">
