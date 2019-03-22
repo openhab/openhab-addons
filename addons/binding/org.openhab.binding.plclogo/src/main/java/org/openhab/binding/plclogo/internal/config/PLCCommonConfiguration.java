@@ -43,6 +43,12 @@ abstract class PLCCommonConfiguration {
         this.force = force;
     }
 
+    /**
+     * Return channel type accepted by thing.
+     * Can be Contact, Switch, Number, DateTime or String
+     *
+     * @return Accepted channel type
+     */
     public abstract String getChannelType();
 
     /**

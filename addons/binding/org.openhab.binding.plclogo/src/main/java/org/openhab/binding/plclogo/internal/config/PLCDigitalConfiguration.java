@@ -45,7 +45,8 @@ public class PLCDigitalConfiguration extends PLCCommonConfiguration {
 
     @Override
     public String getChannelType() {
-        return (kind.equalsIgnoreCase("I") || kind.equalsIgnoreCase("NI")) ? DIGITAL_INPUT_ITEM : DIGITAL_OUTPUT_ITEM;
+        boolean isInput = kind.equalsIgnoreCase(I_DIGITAL) || kind.equalsIgnoreCase(NI_DIGITAL);
+        return isInput ? DIGITAL_INPUT_ITEM : DIGITAL_OUTPUT_ITEM;
     }
 
 }

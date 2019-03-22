@@ -53,8 +53,9 @@ public class PLCPulseConfiguration extends PLCMemoryConfiguration {
     }
 
     public String getObservedChannelType() {
-        final String kind = getObservedBlockKind();
-        return (kind.equalsIgnoreCase("I") || kind.equalsIgnoreCase("NI")) ? DIGITAL_INPUT_ITEM : DIGITAL_OUTPUT_ITEM;
+        String kind = getObservedBlockKind();
+        boolean isInput = kind.equalsIgnoreCase(I_DIGITAL) || kind.equalsIgnoreCase(NI_DIGITAL);
+        return isInput ? DIGITAL_INPUT_ITEM : DIGITAL_OUTPUT_ITEM;
     }
 
     public String getObservedBlockKind() {

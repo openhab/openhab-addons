@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -65,26 +64,26 @@ public class PLCDigitalHandler extends PLCCommonHandler {
     private static final Map<String, @Nullable Integer> LOGO_BLOCKS_0BA7;
     static {
         Map<String, @Nullable Integer> buffer = new HashMap<>();
-        buffer.put("I", 24); // 24 digital inputs
-        buffer.put("Q", 16); // 16 digital outputs
-        buffer.put("M", 27); // 27 digital markers
+        buffer.put(I_DIGITAL, 24); // 24 digital inputs
+        buffer.put(Q_DIGITAL, 16); // 16 digital outputs
+        buffer.put(M_DIGITAL, 27); // 27 digital markers
         LOGO_BLOCKS_0BA7 = Collections.unmodifiableMap(buffer);
     }
 
     private static final Map<String, @Nullable Integer> LOGO_BLOCKS_0BA8;
     static {
         Map<String, @Nullable Integer> buffer = new HashMap<>();
-        buffer.put("I", 24); // 24 digital inputs
-        buffer.put("Q", 20); // 20 digital outputs
-        buffer.put("M", 64); // 64 digital markers
-        buffer.put("NI", 64); // 64 network inputs
-        buffer.put("NQ", 64); // 64 network outputs
+        buffer.put(I_DIGITAL, 24); // 24 digital inputs
+        buffer.put(Q_DIGITAL, 20); // 20 digital outputs
+        buffer.put(M_DIGITAL, 64); // 64 digital markers
+        buffer.put(NI_DIGITAL, 64); // 64 network inputs
+        buffer.put(NQ_DIGITAL, 64); // 64 network outputs
         LOGO_BLOCKS_0BA8 = Collections.unmodifiableMap(buffer);
     }
 
-    private static final Map<String, Map<String, @Nullable Integer>> LOGO_BLOCK_NUMBER;
+    private static final Map<String, @Nullable Map<String, @Nullable Integer>> LOGO_BLOCK_NUMBER;
     static {
-        Map<String, Map<String, @Nullable Integer>> buffer = new HashMap<>();
+        Map<String, @Nullable Map<String, @Nullable Integer>> buffer = new HashMap<>();
         buffer.put(LOGO_0BA7, LOGO_BLOCKS_0BA7);
         buffer.put(LOGO_0BA8, LOGO_BLOCKS_0BA8);
         LOGO_BLOCK_NUMBER = Collections.unmodifiableMap(buffer);
@@ -104,13 +103,15 @@ public class PLCDigitalHandler extends PLCCommonHandler {
         }
 
         Channel channel = getThing().getChannel(channelUID.getId());
-        Objects.requireNonNull(channel, "PLCDigitalHandler: Invalid channel found");
-
-        PLCLogoClient client = getLogoClient();
         String name = getBlockFromChannel(channel);
+        if (!isValid(name) || (channel == null)) {
+            logger.debug("Can not update channel {}, block {}.", channelUID, name);
+            return;
+        }
 
         int bit = getBit(name);
         int address = getAddress(name);
+        PLCLogoClient client = getLogoClient();
         if ((address != INVALID) && (bit != INVALID) && (client != null)) {
             if (command instanceof RefreshType) {
                 int base = getBase(name);
@@ -193,8 +194,6 @@ public class PLCDigitalHandler extends PLCCommonHandler {
         }
 
         Channel channel = thing.getChannel(channelUID.getId());
-        Objects.requireNonNull(channel, "PLCDigitalHandler: Invalid channel found");
-
         setOldValue(getBlockFromChannel(channel), value);
     }
 
@@ -209,9 +208,9 @@ public class PLCDigitalHandler extends PLCCommonHandler {
         if (2 <= name.length() && (name.length() <= 4)) {
             String kind = getBlockKind();
             if (Character.isDigit(name.charAt(1)) || Character.isDigit(name.charAt(2))) {
-                boolean valid = "I".equalsIgnoreCase(kind) || "NI".equalsIgnoreCase(kind);
-                valid = valid || "Q".equalsIgnoreCase(kind) || "NQ".equalsIgnoreCase(kind);
-                return name.startsWith(kind) && (valid || "M".equalsIgnoreCase(kind));
+                boolean valid = I_DIGITAL.equalsIgnoreCase(kind) || NI_DIGITAL.equalsIgnoreCase(kind);
+                valid = valid || Q_DIGITAL.equalsIgnoreCase(kind) || NQ_DIGITAL.equalsIgnoreCase(kind);
+                return name.startsWith(kind) && (valid || M_DIGITAL.equalsIgnoreCase(kind));
             }
         }
         return false;
@@ -228,8 +227,9 @@ public class PLCDigitalHandler extends PLCCommonHandler {
         String family = getLogoFamily();
         logger.debug("Get block number of {} LOGO! for {} blocks.", family, kind);
 
-        Integer number = LOGO_BLOCK_NUMBER.get(family).get(kind);
-        return number == null ? 0 : number.intValue();
+        Map<?, @Nullable Integer> blocks = LOGO_BLOCK_NUMBER.get(family);
+        Integer number = (blocks != null) ? blocks.get(kind) : null;
+        return (number != null) ? number.intValue() : 0;
     }
 
     @Override
@@ -246,9 +246,6 @@ public class PLCDigitalHandler extends PLCCommonHandler {
     @Override
     protected void doInitialization() {
         Thing thing = getThing();
-        Bridge bridge = getBridge();
-        Objects.requireNonNull(bridge, "PLCMemoryHandler: Bridge may not be null");
-
         logger.debug("Initialize LOGO! digital input blocks handler.");
 
         config.set(getConfigAs(PLCDigitalConfiguration.class));
@@ -256,18 +253,19 @@ public class PLCDigitalHandler extends PLCCommonHandler {
         super.doInitialization();
         if (ThingStatus.OFFLINE != thing.getStatus()) {
             String kind = getBlockKind();
-            String text = "I".equalsIgnoreCase(kind) || "NI".equalsIgnoreCase(kind) ? "input" : "output";
+            String type = config.get().getChannelType();
+            String text = DIGITAL_INPUT_ITEM.equalsIgnoreCase(type) ? "input" : "output";
 
             ThingBuilder tBuilder = editThing();
 
             String label = thing.getLabel();
             if (label == null) {
-                label = bridge.getLabel() == null ? "Siemens Logo!" : bridge.getLabel();
+                Bridge bridge = getBridge();
+                label = (bridge == null) || (bridge.getLabel() == null) ? "Siemens Logo!" : bridge.getLabel();
                 label += (": digital " + text + "s");
             }
             tBuilder.withLabel(label);
 
-            String type = config.get().getChannelType();
             for (int i = 0; i < getNumberOfChannels(); i++) {
                 String name = kind + String.valueOf(i + 1);
                 ChannelUID uid = new ChannelUID(thing.getUID(), name);
