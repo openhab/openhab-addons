@@ -48,6 +48,7 @@
     <module>org.openhab.binding.powermax</module>
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.sonos</module>
+    <module>org.openhab.binding.spotify</module>
     <module>org.openhab.binding.unifi</module>
     <module>org.openhab.binding.weatherunderground</module>
     <module>org.openhab.extensionservice.marketplace</module>
