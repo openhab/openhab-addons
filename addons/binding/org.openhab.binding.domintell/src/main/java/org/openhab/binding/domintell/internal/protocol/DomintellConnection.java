@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.domintell.internal.protocol;
 
@@ -23,9 +27,7 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.*;
 import java.util.Date;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * {@link DomintellConnection} class implements the communication protocol provided by the Domintell DETH02 ethernet
@@ -102,9 +104,19 @@ public class DomintellConnection {
     private ScheduledFuture<?> readerCheckJob;
 
     /**
-     * Thread for receiving messages from Domintell system (message producer for readQueue).
+     * Thread for receiving messages from Domintell system
      */
     private MessageReceiverThread readerThread;
+
+    /**
+     * Thread for sending messages to Domintell system.
+     */
+    private MessageSenderThread senderThread;
+
+    /**
+     * Outgoing message queue
+     */
+    private BlockingQueue<String> writerQueue = new ArrayBlockingQueue<>(10);
 
     /**
      * Socket
@@ -223,6 +235,9 @@ public class DomintellConnection {
             socket.connect(config.getInternetAddress(), config.getPort());
             logger.debug("Socket connected");
 
+            senderThread = new MessageSenderThread(socket);
+            senderThread.start();
+
             readerThread = new MessageReceiverThread(socket);
             readerThread.start();
 
@@ -252,6 +267,12 @@ public class DomintellConnection {
         }
 
         sendCommand(CMD_LOGOUT, true);
+
+        //stop the reader
+        if (senderThread != null && senderThread.isAlive()) {
+            senderThread.interrupt();
+        }
+        senderThread = null;
 
         //stop the reader
         if (readerThread != null && readerThread.isAlive()) {
@@ -286,12 +307,46 @@ public class DomintellConnection {
     private void sendCommand(String cmd, boolean force) {
         logger.trace("Sending message: >{}<", cmd);
         if (socket != null && (force || currentState == StateListener.State.ONLINE)) {
-            byte[] buf = cmd.getBytes();
             try {
-                DatagramPacket p = new DatagramPacket(buf, buf.length, config.getInternetAddress(), config.getPort());
-                socket.send(p);
-            } catch (IOException e) {
-                logger.trace("Could not send message: >{}<", cmd);
+                writerQueue.put(cmd);
+            } catch (InterruptedException e) {
+                logger.trace("Sender queue interrupted: >{}<", cmd);
+            }
+        }
+    }
+
+    /**
+     * Receiver thread class
+     */
+    private class MessageSenderThread extends Thread {
+        /**
+         * Connected socket
+         */
+        private DatagramSocket socket;
+
+        MessageSenderThread(DatagramSocket socket) {
+            super();
+            this.socket = socket;
+        }
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    //consuming messages until interrupted
+                    String cmd = writerQueue.take();
+                    byte[] buf = cmd.getBytes();
+                    try {
+                        DatagramPacket p = new DatagramPacket(buf, buf.length, config.getInternetAddress(), config.getPort());
+                        socket.send(p);
+                    } catch (IOException e) {
+                        logger.trace("Could not send message: >{}<", cmd);
+                    }
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    logger.debug("Sender thread interrupted.");
+                    break;
+                }
             }
         }
     }

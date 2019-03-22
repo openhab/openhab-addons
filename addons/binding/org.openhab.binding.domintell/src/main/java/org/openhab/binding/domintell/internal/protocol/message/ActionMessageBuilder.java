@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.domintell.internal.protocol.message;
 
@@ -121,7 +125,7 @@ public class ActionMessageBuilder {
      * @return Message string
      */
     public String build() {
-        StringBuilder sb = new StringBuilder(ItemKey.toLabel(moduleType, serialNumber, ioNumber));
+        StringBuilder sb = new StringBuilder("&").append(ItemKey.toLabel(moduleType, serialNumber, ioNumber));
         String[] actionString = action.getActionString();
         if (actionString.length == 1) {
             sb.append(actionString[0]);
@@ -145,7 +149,7 @@ public class ActionMessageBuilder {
             String base = sb.toString();
             sb = new StringBuilder();
             for (String action: actionString) {
-                sb.append("&").append(base).append(action);
+                sb.append(base).append(action);
             }
         }
         return sb.toString();
