@@ -34,6 +34,7 @@
     <module>org.openhab.binding.folding</module>
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.globalcache</module>
+    <module>org.openhab.binding.harmonyhub</module>
     <module>org.openhab.binding.hyperion</module>
     <module>org.openhab.binding.irtrans</module>
     <module>org.openhab.binding.lifx</module>
