@@ -27,13 +27,15 @@ import org.openhab.binding.mqtt.generic.internal.handler.HomeAssistantThingHandl
 @NonNullByDefault
 public class HandlerConfiguration {
     /**
+     * hint: cannot be final, or <code>getConfigAs</code> will not work.
      * The MQTT prefix topic
      */
-    public final String basetopic;
+    public String basetopic;
     /**
+     * hint: cannot be final, or <code>getConfigAs</code> will not work.
      * The object id. This is comparable to a Homie Device.
      */
-    public final String objectid;
+    public String objectid;
 
     public HandlerConfiguration() {
         this("homeassistant", "");
