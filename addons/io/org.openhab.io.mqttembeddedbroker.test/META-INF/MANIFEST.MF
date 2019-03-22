@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: MqttBroker Binding Tests
+Bundle-SymbolicName: org.openhab.io.mqttembeddedbroker.test;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Fragment-Host: org.openhab.io.mqttembeddedbroker
+Import-Package: org.eclipse.smarthome.core.common.registry,
+ org.eclipse.smarthome.core.events,
+ org.eclipse.smarthome.test,
+ org.hamcrest;core=split,
+ org.hamcrest.collection,
+ org.hamcrest.core,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners,
+ org.mockito,
+ org.osgi.framework,
+ org.osgi.service.device,
+ org.slf4j
+Automatic-Module-Name: org.openhab.io.mqttembeddedbroker.test
