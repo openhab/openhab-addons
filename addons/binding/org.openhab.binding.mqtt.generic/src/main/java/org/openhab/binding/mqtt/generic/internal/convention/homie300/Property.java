@@ -160,6 +160,11 @@ public class Property implements AttributeChanged {
 
         Value value;
         Boolean isDecimal = null;
+
+        if (attributes.name == "") {
+            attributes.name = propertyID;
+        }
+
         switch (attributes.datatype) {
             case boolean_:
                 value = new OnOffValue("true", "false");
