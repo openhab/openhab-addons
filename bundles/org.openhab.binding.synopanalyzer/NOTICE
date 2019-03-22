@@ -14,7 +14,7 @@ https://github.com/openhab/openhab2-addons
 
 == Third-party Content
 
-SynopAnalizer
+This binding hosts portions of code coming from Jonarzz's SynopAnalizer
 * License: EPL + MIT License
 * Project: https://github.com/Jonarzz/SynopAnalizer
 * Source:  https://github.com/Jonarzz/SynopAnalizer

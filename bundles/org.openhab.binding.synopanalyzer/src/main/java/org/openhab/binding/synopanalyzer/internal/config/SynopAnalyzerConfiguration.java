@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.synopanalyzer.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.synopanalyzer.internal.handler.SynopAnalyzerHandler;
 
 /**
@@ -20,7 +21,8 @@ import org.openhab.binding.synopanalyzer.internal.handler.SynopAnalyzerHandler;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class SynopAnalyzerConfiguration {
     public long refreshInterval;
-    public String stationId;
+    public @NonNullByDefault({}) String stationId;
 }

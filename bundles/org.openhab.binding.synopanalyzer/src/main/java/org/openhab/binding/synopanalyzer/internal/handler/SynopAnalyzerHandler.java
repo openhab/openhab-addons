@@ -43,15 +43,14 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.synopanalyser.internal.synop.Constants;
+import org.openhab.binding.synopanalyser.internal.synop.Synop;
+import org.openhab.binding.synopanalyser.internal.synop.SynopLand;
+import org.openhab.binding.synopanalyser.internal.synop.SynopMobileLand;
+import org.openhab.binding.synopanalyser.internal.synop.SynopShip;
 import org.openhab.binding.synopanalyzer.internal.config.SynopAnalyzerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.nwpi.Constants;
-import com.nwpi.synop.Synop;
-import com.nwpi.synop.SynopLand;
-import com.nwpi.synop.SynopMobileLand;
-import com.nwpi.synop.SynopShip;
 
 /**
  * The {@link SynopAnalyzerHandler} is responsible for handling commands, which are
@@ -72,10 +71,8 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(SynopAnalyzerHandler.class);
 
-    @NonNullByDefault({})
-    private ScheduledFuture<?> executionJob;
-    @NonNullByDefault({})
-    private SynopAnalyzerConfiguration configuration;
+    private @NonNullByDefault({}) ScheduledFuture<?> executionJob;
+    private @NonNullByDefault({}) SynopAnalyzerConfiguration configuration;
 
     public SynopAnalyzerHandler(Thing thing) {
         super(thing);
@@ -146,7 +143,8 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                 kc = 1 - 0.75 * kc;
                 return new DecimalType(kc);
             case OVERCAST:
-                return new StringType(synop.getOvercast());
+                String overcast = synop.getOvercast();
+                return overcast == null ? UnDefType.NULL : new StringType(synop.getOvercast());
             case PRESSURE:
                 return new QuantityType<>(synop.getPressure(), PRESSURE_UNIT);
             case TEMPERATURE:
@@ -162,7 +160,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                 QuantityType<Speed> windStrength = getWindStrength(synop);
                 QuantityType<Speed> wsKpH = windStrength.toUnit(SIUnits.KILOMETRE_PER_HOUR);
                 return (wsKpH != null) ? new DecimalType(Math.round(Math.pow(wsKpH.floatValue() / 3.01, 0.666666666)))
-                        : UnDefType.UNDEF;
+                        : UnDefType.NULL;
             case TIME_UTC:
                 ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
                 int year = synop.getYear() == 0 ? now.getYear() : synop.getYear();
