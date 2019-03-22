@@ -48,10 +48,10 @@ public class HandlerConfiguration {
     }
 
     /**
-     * Add the <code>basetopic</code> and <code>objectid</code> to teh properties.
+     * Add the <code>basetopic</code> and <code>objectid</code> to the properties.
      *
      * @param properties
-     * @return the modified propertiess
+     * @return the modified properties
      */
     public <T extends Map<String, Object>> T appendToProperties(T properties) {
         properties.put("basetopic", basetopic);

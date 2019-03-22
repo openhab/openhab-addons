@@ -186,7 +186,7 @@ public class CChannel {
                     ChannelConfigBuilder.create().withRetain(retain).withStateTopic(state_topic)
                             .withCommandTopic(command_topic).build(),
                     channelUID, valueState, channelStateUpdateListener);
-                    
+
             if (StringUtils.isBlank(state_topic)) {
                 type = ChannelTypeBuilder.trigger(channelTypeUID, label)
                         .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL)).build();

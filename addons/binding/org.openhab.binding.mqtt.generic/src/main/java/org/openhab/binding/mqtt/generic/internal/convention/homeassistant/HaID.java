@@ -35,13 +35,13 @@ public class HaID {
     public final String nodeID;
     public final String objectID;
 
-    private final String _topic;
+    private final String topic;
 
     /**
      * Creates a {@link HaID} object for a given HomeAssistant MQTT topic.
      *
      * @param mqttTopic A topic like "homeassistant/binary_sensor/garden/config" or
-     *            "homeassistant/binary_sensor/0/garden/config"
+     *     "homeassistant/binary_sensor/0/garden/config"
      */
     public HaID(String mqttTopic) {
         String[] strings = mqttTopic.split("/");
@@ -63,7 +63,7 @@ public class HaID {
             objectID = strings[2];
         }
 
-        this._topic = createTopic(this);
+        this.topic = createTopic(this);
     }
 
     public HaID() {
@@ -83,7 +83,7 @@ public class HaID {
         this.objectID = objectID;
         this.nodeID = nodeID;
         this.component = component;
-        this._topic = createTopic(this);
+        this.topic = createTopic(this);
     }
 
     private static final String createTopic(HaID id) {
@@ -202,7 +202,7 @@ public class HaID {
      * @return fallback group id
      */
     public String getTopic(String suffix) {
-        return _topic + suffix;
+        return topic + suffix;
     }
 
     @Override
@@ -245,6 +245,6 @@ public class HaID {
 
     @Override
     public String toString() {
-        return _topic;
+        return topic;
     }
 }
