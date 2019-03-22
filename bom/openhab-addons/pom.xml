@@ -827,7 +827,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.addons.bundles</groupId>
+      <groupId>org.openhab.io</groupId>
       <artifactId>org.openhab.io.mqttembeddedbroker</artifactId>
       <version>${project.version}</version>
     </dependency>
