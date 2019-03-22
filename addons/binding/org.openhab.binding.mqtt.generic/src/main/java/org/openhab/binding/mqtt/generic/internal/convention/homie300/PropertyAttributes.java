@@ -18,7 +18,6 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.internal.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.internal.mapping.MQTTvalueTransform;
-import org.openhab.binding.mqtt.generic.internal.mapping.MandatoryField;
 import org.openhab.binding.mqtt.generic.internal.mapping.TopicPrefix;
 
 /**
@@ -40,7 +39,7 @@ public class PropertyAttributes extends AbstractMqttAttributeClass {
         color_
     }
 
-    public @MandatoryField String name = "";
+    public String name = "";
 
     /**
      * stateful + non-settable: The node publishes a property state (temperature sensor)
@@ -53,7 +52,7 @@ public class PropertyAttributes extends AbstractMqttAttributeClass {
     public boolean settable = false;
     public boolean retained = true;
     public String unit = "";
-    public @MandatoryField @MQTTvalueTransform(suffix = "_") DataTypeEnum datatype = DataTypeEnum.unknown;
+    public @MQTTvalueTransform(suffix = "_") DataTypeEnum datatype = DataTypeEnum.unknown;
     public String format = "";
 
     @Override
