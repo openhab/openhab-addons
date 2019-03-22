@@ -25,6 +25,7 @@ These things are supported:
 | Pressure Sensor                   | ZHAPressure                       | `pressuresensor`     |
 | Open/Close Sensor                 | ZHAOpenClose                      | `openclosesensor`    |
 | Water Leakage Sensor              | ZHAWater                          | `waterleakagesensor` |
+| Alarm Sensor                      | ZHAAlarm                          | `alarmsensor`        |
 | deCONZ Artificial Daylight Sensor | deCONZ specific: simulated sensor | `daylightsensor`     |
 
 ## Discovery
@@ -88,6 +89,8 @@ The devices support some of the following channels:
 | pressure        | Number:Pressure          |      R      | Current pressure in hPa                                                                   | pressuresensor                               |
 | open            | Contact                  |      R      | Status of contacts: `OPEN`; `CLOSED`                                                      | openclosesensor                              |
 | waterleakage    | Switch                   |      R      | Status of water leakage: `ON` = water leakage detected; `OFF` = no water leakage detected | waterleakagesensor                           |
+| alarm           | Switch                   |      R      | Status of an alarm: `ON` = alarm was triggered; `OFF` = no alarm                          | alarmsensor                                  |
+| tampered        | Switch                   |      R      | Status of a zone: `ON` = zone is being tampered; `OFF` = zone is not tampered             | any IAS sensor                               |
 | light           | String                   |      R      | Light level: `Daylight`,`Sunset`,`Dark`                                                   | daylightsensor                               |
 | value           | Number                   |      R      | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk                 | daylightsensor                               |
 | battery_level   | Number                   |      R      | Battery level (in %)                                                                      | any battery-powered sensor                   |
@@ -118,6 +121,7 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
     openclosesensor     livingroom-window       "Livingroom Window"         [ id="5" ]
     switch              livingroom-hue-tap      "Livingroom Hue Tap"        [ id="6" ]
     waterleakagesensor  basement-water-leakage  "Basement Water Leakage"    [ id="7" ]
+    alarmsensor         basement-alarm          "Basement Alarm Sensor"     [ id="8" ]
 }
 ```
 
@@ -130,6 +134,7 @@ Number:Dimensionless    Livingroom_Humidity     "Humidity Livingroom [%.1f %%]" 
 Number:Pressure         Livingroom_Pressure     "Pressure Livingroom [%.1f hPa]"    <pressure>      { channel="deconz:pressuresensor:homeserver:livingroom-pressure:pressure" }
 Contact                 Livingroom_Window       "Window Livingroom [%s]"            <door>          { channel="deconz:openclosesensor:homeserver:livingroom-window:open" }
 Switch                  Basement_Water_Leakage  "Basement Water Leakage [%s]"                       { channel="deconz:waterleakagesensor:homeserver:basement-water-leakage:waterleakage" }
+Switch                  Basement_Alarm          "Basement Alarm Triggered [%s]"                     { channel="deconz:alarmsensor:homeserver:basement-alarm:alarm" }
 ```
 
 ### Events
