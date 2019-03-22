@@ -13,6 +13,8 @@
 package org.openhab.binding.deconz.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.*;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
 import java.time.LocalDateTime;
@@ -40,8 +42,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -202,7 +202,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                     Float temperature = newState.config.temperature;
                     if (temperature != null) {
                         createAndUpdateChannelIfExists(CHANNEL_TEMPERATURE,
-                                new QuantityType<Temperature>(temperature / 100, SIUnits.CELSIUS));
+                                new QuantityType<Temperature>(temperature / 100, CELSIUS));
                     }
 
                     // ZHAPresence - e.g. IKEA TRÅDFRI motion sensor
@@ -221,6 +221,11 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                     }
                     if (newState.state.current != null) {
                         createChannel(CHANNEL_CURRENT);
+                    }
+
+                    // IAS Zone sensor - e.g. Heiman HS1MS motion sensor
+                    if (newState.state.tampered != null) {
+                        createChannel(CHANNEL_TAMPERED);
                     }
 
                     // Initial data
@@ -324,27 +329,27 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                 break;
             case CHANNEL_POWER:
                 if (power != null) {
-                    updateState(channelUID, new QuantityType<Power>(power, SmartHomeUnits.WATT));
+                    updateState(channelUID, new QuantityType<Power>(power, WATT));
                 }
                 break;
             case CHANNEL_CONSUMPTION:
                 if (consumption != null) {
-                    updateState(channelUID, new QuantityType<Energy>(consumption, SmartHomeUnits.WATT_HOUR));
+                    updateState(channelUID, new QuantityType<Energy>(consumption, WATT_HOUR));
                 }
                 break;
             case CHANNEL_VOLTAGE:
                 if (voltage != null) {
-                    updateState(channelUID, new QuantityType<ElectricPotential>(voltage, SmartHomeUnits.VOLT));
+                    updateState(channelUID, new QuantityType<ElectricPotential>(voltage, VOLT));
                 }
                 break;
             case CHANNEL_CURRENT:
                 if (current != null) {
-                    updateState(channelUID, new QuantityType<ElectricCurrent>(current, MILLI(SmartHomeUnits.AMPERE)));
+                    updateState(channelUID, new QuantityType<ElectricCurrent>(current, MILLI(AMPERE)));
                 }
                 break;
             case CHANNEL_LIGHT_LUX:
                 if (lux != null) {
-                    updateState(channelUID, new QuantityType<Illuminance>(lux, SmartHomeUnits.LUX));
+                    updateState(channelUID, new QuantityType<Illuminance>(lux, LUX));
                 }
                 break;
             case CHANNEL_LIGHT_LEVEL:
@@ -360,17 +365,17 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                 break;
             case CHANNEL_TEMPERATURE:
                 if (temperature != null) {
-                    updateState(channelUID, new QuantityType<Temperature>(temperature / 100, SIUnits.CELSIUS));
+                    updateState(channelUID, new QuantityType<Temperature>(temperature / 100, CELSIUS));
                 }
                 break;
             case CHANNEL_HUMIDITY:
                 if (humidity != null) {
-                    updateState(channelUID, new QuantityType<Dimensionless>(humidity / 100, SmartHomeUnits.PERCENT));
+                    updateState(channelUID, new QuantityType<Dimensionless>(humidity / 100, PERCENT));
                 }
                 break;
             case CHANNEL_PRESSURE:
                 if (pressure != null) {
-                    updateState(channelUID, new QuantityType<Pressure>(pressure, HECTO(SIUnits.PASCAL)));
+                    updateState(channelUID, new QuantityType<Pressure>(pressure, HECTO(PASCAL)));
                 }
                 break;
             case CHANNEL_PRESENCE:
@@ -390,6 +395,12 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                 break;
             case CHANNEL_WATERLEAKAGE:
                 updateState(channelUID, Boolean.TRUE.equals(state.water) ? OnOffType.ON : OnOffType.OFF);
+                break;
+            case CHANNEL_ALARM:
+                updateState(channelUID, Boolean.TRUE.equals(state.alarm) ? OnOffType.ON : OnOffType.OFF);
+                break;
+            case CHANNEL_TAMPERED:
+                updateState(channelUID, Boolean.TRUE.equals(state.tampered) ? OnOffType.ON : OnOffType.OFF);
                 break;
             case CHANNEL_BUTTON:
                 if (buttonevent != null) {
