@@ -561,7 +561,7 @@ Import-Package: \\
         </file>
       </activation>
       <properties>
-        <bnd.includeresource>${project.basedir}/lib/; lib:=true</bnd.includeresource>
+        <bnd.includeresource>${.}/../../lib/; lib:=true</bnd.includeresource>
       </properties>
       <build>
         <plugins>
