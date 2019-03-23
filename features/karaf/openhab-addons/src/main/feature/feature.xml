@@ -243,7 +243,7 @@
 
     <feature name="openhab-binding-gpstracker" description="GPSTracker Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.gpstracker/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.gpstracker/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-groheondus" description="GROHE ONDUS Binding" version="${project.version}">
