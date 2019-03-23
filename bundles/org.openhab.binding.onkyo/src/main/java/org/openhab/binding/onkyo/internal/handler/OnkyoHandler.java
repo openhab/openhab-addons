@@ -492,12 +492,8 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             NodeList SelectableInputs = doc.getDocumentElement().getElementsByTagName("selector");
             populateInputs(SelectableInputs);
 
-        } catch (ParserConfigurationException e) {
-            logger.debug("Error parsing Info XML {}", e);
-        } catch (SAXException e) {
-            logger.debug("Error parsing Info XML {}", e);
-        } catch (IOException e) {
-            logger.debug("Error parsing Info XML {}", e);
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            logger.debug("Error occured during Info XML parsing.", e);
         }
 
     }
