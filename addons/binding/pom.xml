@@ -100,8 +100,6 @@
     <module>org.openhab.binding.netatmo</module>
     <module>org.openhab.binding.nibeuplink</module>
     <module>org.openhab.binding.nikohomecontrol</module>
-    <module>org.openhab.binding.ntp</module>
-    <module>org.openhab.binding.ntp.test</module>
     <module>org.openhab.binding.nuki</module>
     <module>org.openhab.binding.oceanic</module>
     <module>org.openhab.binding.onebusaway</module>
