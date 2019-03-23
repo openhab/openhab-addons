@@ -470,19 +470,6 @@ Import-Package: \\
               <pluginExecutions>
                 <pluginExecution>
                   <pluginExecutionFilter>
-                    <groupId>com.googlecode.addjars-maven-plugin</groupId>
-                    <artifactId>addjars-maven-plugin</artifactId>
-                    <versionRange>[1.0.5,)</versionRange>
-                    <goals>
-                      <goal>add-jars</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
-                <pluginExecution>
-                  <pluginExecutionFilter>
                     <groupId>org.apache.karaf.tooling</groupId>
                     <artifactId>karaf-maven-plugin</artifactId>
                     <versionRange>[4.2.1,)</versionRange>
@@ -554,11 +541,14 @@ Import-Package: \\
 
   <profiles>
     <profile>
-      <id>add-libraries</id>
+      <id>add-libraries-cli</id>
       <activation>
         <file>
           <exists>lib/</exists>
         </file>
+        <property>
+          <name>!m2e.version</name>
+        </property>
       </activation>
       <properties>
         <bnd.includeresource>${.}/../../lib/; filter:=*.jar; lib:=true</bnd.includeresource>
@@ -589,6 +579,21 @@ Import-Package: \\
           </plugin>
         </plugins>
       </build>
+    </profile>
+
+    <profile>
+      <id>add-libraries-eclipse</id>
+      <activation>
+        <file>
+          <exists>lib/</exists>
+        </file>
+        <property>
+          <name>m2e.version</name>
+        </property>
+      </activation>
+      <properties>
+        <bnd.includeresource>${.}/lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+      </properties>
     </profile>
 
     <profile>
