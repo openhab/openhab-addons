@@ -60,7 +60,6 @@
 /addons/binding/org.openhab.binding.konnected/ @volfan6415
 /addons/binding/org.openhab.binding.kostalinverter/ @cschneider
 /addons/binding/org.openhab.binding.lametrictime/ @syphr42
-/addons/binding/org.openhab.binding.leapmotion/ @kaikreuzer
 /addons/binding/org.openhab.binding.lgtvserial/ @fa2k
 /addons/binding/org.openhab.binding.lgwebos/ @sprehn
 /addons/binding/org.openhab.binding.logreader/ @paulianttila
@@ -195,6 +194,7 @@
 /bundles/org.openhab.binding.harmonyhub/ @digitaldan
 /bundles/org.openhab.binding.hyperion/ @tavalin
 /bundles/org.openhab.binding.irtrans/ @kgoderis
+/bundles/org.openhab.binding.leapmotion/ @kaikreuzer
 /bundles/org.openhab.binding.lifx/ @wborn
 /bundles/org.openhab.binding.lirc/ @kabili207
 /bundles/org.openhab.binding.nest/ @wborn
