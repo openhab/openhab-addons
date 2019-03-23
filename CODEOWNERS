@@ -139,7 +139,6 @@
 /addons/binding/org.openhab.binding.wemo.test/ @hmerk
 /addons/binding/org.openhab.binding.wifiled/ @rvt @xylo
 /addons/binding/org.openhab.binding.wifiled.test/ @rvt @xylo
-/addons/binding/org.openhab.binding.windcentrale/ @marcelrv
 /addons/binding/org.openhab.binding.yamahareceiver/ @davidgraeff @zarusz
 /addons/binding/org.openhab.binding.yamahareceiver.test/ @davidgraeff @zarusz
 /addons/binding/org.openhab.binding.yeelight/ @claell
@@ -220,6 +219,7 @@
 /bundles/org.openhab.binding.unifi/ @mgbowman
 /bundles/org.openhab.binding.valloxmv/ @bjoernbrings
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo
+/bundles/org.openhab.binding.windcentrale/ @marcelrv
 /bundles/org.openhab.extensionservice.marketplace/ @kaikreuzer
 /bundles/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer
 /bundles/org.openhab.persistence.mapdb/ @mkhl
