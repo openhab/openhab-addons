@@ -86,7 +86,6 @@
 /addons/binding/org.openhab.binding.neato/ @jjlauterbach
 /addons/binding/org.openhab.binding.neeo/ @tmrobert8
 /addons/binding/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
-/addons/binding/org.openhab.binding.nibeuplink/ @alexf2015
 /addons/binding/org.openhab.binding.nikohomecontrol/ @mherwege
 /addons/binding/org.openhab.binding.ntp/ @marcelrv
 /addons/binding/org.openhab.binding.ntp.test/ @marcelrv
@@ -201,6 +200,7 @@
 /bundles/org.openhab.binding.nest/ @wborn
 /bundles/org.openhab.binding.network/ @davidgraeff @mettke
 /bundles/org.openhab.binding.nibeheatpump/ @paulianttila
+/bundles/org.openhab.binding.nibeuplink/ @alexf2015
 /bundles/org.openhab.binding.onewire/ @J-N-K
 /bundles/org.openhab.binding.openuv/ @clinique
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
