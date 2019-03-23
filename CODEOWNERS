@@ -177,7 +177,6 @@
 /addons/voice/org.openhab.voice.kaldi/ @kaikreuzer
 /addons/voice/org.openhab.voice.marytts/ @kaikreuzer
 /addons/voice/org.openhab.voice.pollytts/ @hillmanr
-/addons/voice/org.openhab.voice.voicerss/ @JochenHiller
 /bundles/org.openhab.binding.airquality/ @kubawolanin
 /bundles/org.openhab.binding.airvisualnode/ @3cky
 /bundles/org.openhab.binding.astro/ @gerrieg
@@ -224,6 +223,7 @@
 /bundles/org.openhab.persistence.mapdb/ @mkhl
 /bundles/org.openhab.voice.mactts/ @kaikreuzer
 /bundles/org.openhab.voice.picotts/ @FlorianSW
+/bundles/org.openhab.voice.voicerss/ @JochenHiller
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
 /itests/org.openhab.binding.dmx.tests/ @J-N-K
