@@ -180,7 +180,8 @@ public class CChannel {
             ChannelTypeUID channelTypeUID;
 
             channelUID = new ChannelUID(component.channelGroupUID, channelID);
-            channelTypeUID = component.haID.getChannelTypeID(channelID);
+            channelTypeUID = new ChannelTypeUID(MqttBindingConstants.BINDING_ID,
+                    channelUID.getGroupId() + "_" + channelID);
             channelState = new ChannelState(
                     ChannelConfigBuilder.create().withRetain(retain).withStateTopic(state_topic)
                             .withCommandTopic(command_topic).build(),
@@ -197,6 +198,8 @@ public class CChannel {
 
             Configuration configuration = new Configuration();
             configuration.put("config", component.channelConfigurationJson);
+            component.haID.toConfig(configuration);
+
             channel = ChannelBuilder.create(channelUID, channelState.getItemType()).withType(channelTypeUID)
                     .withKind(type.getKind()).withLabel(label).withConfiguration(configuration).build();
 
