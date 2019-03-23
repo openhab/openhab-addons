@@ -140,7 +140,6 @@
     <module>org.openhab.binding.tado</module>
     <module>org.openhab.binding.tankerkoenig</module>
     <module>org.openhab.binding.tellstick</module>
-    <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.toon</module>
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tplinksmarthome.test</module>

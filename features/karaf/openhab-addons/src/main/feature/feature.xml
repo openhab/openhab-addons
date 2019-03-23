@@ -781,7 +781,7 @@
     </feature>
     <feature name="openhab-binding-tesla" description="Tesla Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.tesla/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.tesla/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-toon" description="Toon Binding" version="${project.version}">

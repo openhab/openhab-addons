@@ -127,7 +127,6 @@
 /addons/binding/org.openhab.binding.tado/ @dfrommi
 /addons/binding/org.openhab.binding.tankerkoenig/ @dolic @JueBag
 /addons/binding/org.openhab.binding.tellstick/ @jarlebh
-/addons/binding/org.openhab.binding.tesla/ @kgoderis
 /addons/binding/org.openhab.binding.toon/ @jongj
 /addons/binding/org.openhab.binding.tplinksmarthome/ @Hilbrand
 /addons/binding/org.openhab.binding.tplinksmarthome.test/ @Hilbrand
@@ -218,6 +217,7 @@
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
 /bundles/org.openhab.binding.sonos/ @kgoderis @lolodomo
 /bundles/org.openhab.binding.spotify/ @Hilbrand
+/bundles/org.openhab.binding.tesla/ @kgoderis
 /bundles/org.openhab.binding.unifi/ @mgbowman
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo
 /bundles/org.openhab.extensionservice.marketplace/ @kaikreuzer
