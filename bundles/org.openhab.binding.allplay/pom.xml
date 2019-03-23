@@ -13,48 +13,8 @@
 
   <name>openHAB Add-ons :: Bundles :: AllPlay Binding</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>de.kaizencode</groupId>
-      <artifactId>tchaikovsky</artifactId>
-      <version>0.0.0</version>
-      <!--scope>system</scope>
-      <systemPath>${project.basedir}/lib/tchaikovsky.jar</systemPath-->
-    </dependency>
-  </dependencies>
+  <properties>
+    <bnd.importpackage>de.kaizencode.tchaikovsky.*</bnd.importpackage>
+  </properties>
   
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-install-plugin</artifactId>
-            <version>2.5.2</version>
-            <executions>
-                <execution>
-                    <phase>initialize</phase>
-                    <goals>
-                        <goal>install-file</goal>
-                    </goals>
-                    <configuration>
-                        <file>lib/tchaikovsky.jar</file>
-                        <groupId>de.kaizencode</groupId>
-                        <artifactId>tchaikovsky</artifactId>
-                        <version>0.0.0</version>
-                        <packaging>jar</packaging>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
-        <plugin>
-          <groupId>biz.aQute.bnd</groupId>
-          <artifactId>bnd-maven-plugin</artifactId>
-          <version>${bnd.version}</version>
-          <configuration>
-            <bndfile>bnd/allplay.bnd</bndfile>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
 </project>
