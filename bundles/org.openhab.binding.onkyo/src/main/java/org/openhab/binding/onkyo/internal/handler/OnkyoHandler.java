@@ -464,7 +464,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                  */
 
                 case INFO:
-                    this.processInfo(data.getValue());
+                    processInfo(data.getValue());
                     logger.debug("Info message: '{}'", data.getValue());
                     break;
 
@@ -490,7 +490,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             Document doc = builder.parse(is);
 
             NodeList SelectableInputs = doc.getDocumentElement().getElementsByTagName("selector");
-            this.populateInputs(SelectableInputs);
+            populateInputs(SelectableInputs);
 
         } catch (ParserConfigurationException e) {
             logger.debug("Error parsing Info XML {}", e);
