@@ -72,7 +72,6 @@
     <module>org.openhab.binding.konnected</module>
     <module>org.openhab.binding.kostalinverter</module>
     <module>org.openhab.binding.lametrictime</module>
-    <module>org.openhab.binding.leapmotion</module>
     <module>org.openhab.binding.lgtvserial</module>
     <module>org.openhab.binding.lgwebos</module>
     <module>org.openhab.binding.lirc</module>
