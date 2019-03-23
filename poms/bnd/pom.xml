@@ -559,6 +559,9 @@ Import-Package: \\
         <file>
           <exists>lib/</exists>
         </file>
+        <property>
+          <name>!m2e.version</name>
+        </property>
       </activation>
       <properties>
         <bnd.includeresource>${.}/../../lib/; filter:=*.jar; lib:=true</bnd.includeresource>
