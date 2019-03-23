@@ -814,7 +814,7 @@
 
     <feature name="openhab-binding-valloxmv" description="ValloxMV Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.valloxmv/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.valloxmv/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-velbus" description="Velbus Binding" version="${project.version}">

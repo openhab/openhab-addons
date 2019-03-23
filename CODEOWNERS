@@ -133,7 +133,6 @@
 /addons/binding/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /addons/binding/org.openhab.binding.tradfri.test/ @cweitkamp @kaikreuzer
 /addons/binding/org.openhab.binding.urtsi/ @OLibutzki
-/addons/binding/org.openhab.binding.valloxmv/ @bjoernbrings
 /addons/binding/org.openhab.binding.velbus/ @cedricboon
 /addons/binding/org.openhab.binding.vitotronic/ @steand
 /addons/binding/org.openhab.binding.wemo/ @hmerk
@@ -219,6 +218,7 @@
 /bundles/org.openhab.binding.spotify/ @Hilbrand
 /bundles/org.openhab.binding.tesla/ @kgoderis
 /bundles/org.openhab.binding.unifi/ @mgbowman
+/bundles/org.openhab.binding.valloxmv/ @bjoernbrings
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo
 /bundles/org.openhab.extensionservice.marketplace/ @kaikreuzer
 /bundles/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer
