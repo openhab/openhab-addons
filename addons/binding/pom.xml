@@ -115,8 +115,6 @@
     <module>org.openhab.binding.pioneeravr</module>
     <module>org.openhab.binding.regoheatpump</module>
     <module>org.openhab.binding.rme</module>
-    <module>org.openhab.binding.rfxcom</module>
-    <module>org.openhab.binding.rfxcom.test</module>
     <module>org.openhab.binding.robonect</module>
     <module>org.openhab.binding.robonect.test</module>
     <module>org.openhab.binding.rotelra1x</module>
