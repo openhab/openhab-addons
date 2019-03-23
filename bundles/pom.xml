@@ -38,19 +38,25 @@
     <module>org.openhab.binding.hyperion</module>
     <module>org.openhab.binding.irtrans</module>
     <module>org.openhab.binding.lifx</module>
+    <module>org.openhab.binding.lirc</module>
     <module>org.openhab.binding.nest</module>
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.nibeheatpump</module>
     <module>org.openhab.binding.onewire</module>
     <module>org.openhab.binding.openuv</module>
     <module>org.openhab.binding.openweathermap</module>
+    <module>org.openhab.binding.plclogo</module>
     <module>org.openhab.binding.plugwise</module>
     <module>org.openhab.binding.powermax</module>
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.rfxcom</module>
+    <module>org.openhab.binding.sensebox</module>
+    <module>org.openhab.binding.serialbutton</module>
     <module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.spotify</module>
+    <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.unifi</module>
+    <module>org.openhab.binding.valloxmv</module>
     <module>org.openhab.binding.weatherunderground</module>
     <module>org.openhab.extensionservice.marketplace</module>
     <module>org.openhab.extensionservice.marketplace.automation</module>

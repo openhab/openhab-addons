@@ -391,7 +391,7 @@
 
     <feature name="openhab-binding-lirc" description="LIRC Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.lirc/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.lirc/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-logreader" description="Log Reader Binding" version="${project.version}">
@@ -600,7 +600,7 @@
 
     <feature name="openhab-binding-plclogo" description="PLCLogo Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.plclogo/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.plclogo/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-plugwise" description="Plugwise Binding" version="${project.version}">
@@ -670,7 +670,7 @@
 
     <feature name="openhab-binding-sensebox" description="Sensebox Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.sensebox/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.sensebox/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-seneye" description="Seneye Binding" version="${project.version}">
@@ -681,7 +681,7 @@
     <feature name="openhab-binding-serialbutton" description="Serial Button Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.serialbutton/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.serialbutton/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-silvercrestwifisocket" description="Silvercrest Wifi Plug Binding" version="${project.version}">
@@ -774,7 +774,7 @@
     </feature>
     <feature name="openhab-binding-tesla" description="Tesla Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.tesla/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.tesla/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-toon" description="Toon Binding" version="${project.version}">
@@ -807,7 +807,7 @@
 
     <feature name="openhab-binding-valloxmv" description="ValloxMV Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.valloxmv/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.valloxmv/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-velbus" description="Velbus Binding" version="${project.version}">

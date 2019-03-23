@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.Configuration;
 
 /**
  * HomeAssistant MQTT components use a specific MQTT topic layout,
@@ -23,37 +23,51 @@ import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
  * followed by the component id, an optional node id and the object id.
  *
  * This helper class can split up an MQTT topic into such parts.
+ * <p>
+ * Implementation note: This is an immutable class.
  *
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
 public class HaID {
-    final public String baseTopic;
-    final public String component;
-    final public String nodeID;
-    final public String objectID;
+    public final String baseTopic;
+    public final String component;
+    public final String nodeID;
+    public final String objectID;
+
+    private final String topic;
 
     /**
      * Creates a {@link HaID} object for a given HomeAssistant MQTT topic.
      *
      * @param mqttTopic A topic like "homeassistant/binary_sensor/garden/config" or
-     *            "homeassistant/binary_sensor/0/garden/config"
+     *     "homeassistant/binary_sensor/0/garden/config"
      */
     public HaID(String mqttTopic) {
         String[] strings = mqttTopic.split("/");
-        if (strings.length < 3) {
-            throw new IllegalArgumentException("MQTT topic not a HomeAssistant topic!");
+        if (strings.length < 4 || strings.length > 5) {
+            throw new IllegalArgumentException("MQTT topic not a HomeAssistant topic (wrong length)!");
         }
-        if (strings.length >= 5) {
-            component = strings[1];
+        if (!"config".equals(strings[strings.length - 1])) {
+            throw new IllegalArgumentException("MQTT topic not a HomeAssistant topic ('config' missing)!");
+        }
+
+        baseTopic = strings[0];
+        component = strings[1];
+
+        if (strings.length == 5) {
             nodeID = strings[2];
             objectID = strings[3];
         } else {
-            component = strings[1];
             nodeID = "";
             objectID = strings[2];
         }
-        baseTopic = strings[0];
+
+        this.topic = createTopic(this);
+    }
+
+    public HaID() {
+        this("", "", "", "");
     }
 
     /**
@@ -64,66 +78,173 @@ public class HaID {
      * @param nodeID The node ID (can be the empty string)
      * @param component The component ID
      */
-    public HaID(String baseTopic, String objectID, String nodeID, String component) {
+    private HaID(String baseTopic, String objectID, String nodeID, String component) {
         this.baseTopic = baseTopic;
         this.objectID = objectID;
         this.nodeID = nodeID;
         this.component = component;
+        this.topic = createTopic(this);
+    }
+
+    private static final String createTopic(HaID id) {
+        StringBuilder str = new StringBuilder();
+        str.append(id.baseTopic).append('/').append(id.component).append('/');
+        if (StringUtils.isNotBlank(id.nodeID)) {
+            str.append(id.nodeID).append('/');
+        }
+        str.append(id.objectID).append('/');
+        return str.toString();
     }
 
     /**
-     * Creates a {@link HaID} by providing a channel UID.
+     * Extract the HaID information from a channel configuration.
+     * <p>
+     * <code>objectid</code>, <code>nodeid</code>, and <code>component</code> values are fetched from the configuration.
      *
-     * @param baseTopic The base topic. Usually "homeassistant".
-     * @param channel The channel UID
+     * @param baseTopic
+     * @param config
+     * @return newly created HaID
      */
-    public HaID(String baseTopic, ChannelUID channel) {
-        String groupId = channel.getGroupId();
-        if (groupId == null) {
-            throw new IllegalArgumentException("Channel needs a group ID!");
+    public static HaID fromConfig(String baseTopic, Configuration config) {
+        String objectID = (String) config.get("objectid");
+        String nodeID = (String) config.getProperties().getOrDefault("nodeid", "");
+        String component = (String) config.get("component");
+        return new HaID(baseTopic, objectID, nodeID, component);
+    }
+
+    /**
+     * Add the HaID information to a channel configuration.
+     * <p>
+     * <code>objectid</code>, <code>nodeid</code>, and <code>component</code> values are added to the configuration.
+     *
+     * @param config
+     * @return the modified configuration
+     */
+    public Configuration toConfig(Configuration config) {
+        config.put("objectid", objectID);
+        config.put("nodeid", nodeID);
+        config.put("component", component);
+        return config;
+    }
+
+    /**
+     * Extract the HaID information from a thing configuration.
+     * <p>
+     * <code>basetpoic</code> and <code>objectid</code> are taken from the configuration.
+     * The <code>objectid</code> string may be in the form <code>nodeid/objectid</code>.
+     * <p>
+     * The <code>component</code> component in the resulting HaID will be set to <code>+</code>.
+     * This enables the HaID to be used as an mqtt subscription topic.
+     *
+     * @param config
+     * @return newly created HaID
+     */
+    public static HaID fromConfig(HandlerConfiguration config) {
+        String objectID = config.objectid;
+        String nodeID = "";
+
+        if (StringUtils.contains(objectID, '/')) {
+            String[] parts = objectID.split("/");
+
+            if (parts.length != 2) {
+                throw new IllegalArgumentException(
+                        "Bad configuration. objectid must be <objectId> or <nodeId>/<objectId>!");
+            }
+            nodeID = parts[0];
+            objectID = parts[1];
         }
-        String[] groupParts = groupId.split("_");
-        if (groupParts.length != 2) {
-            throw new IllegalArgumentException("Channel needs a group ID with the pattern component_node!");
+        return new HaID(config.basetopic, objectID, nodeID, "+");
+    }
+
+    /**
+     * Create a new thing configuration which contains the information from this HaID.
+     * <p>
+     * <code>objectid</code> in the thing configuration will be
+     * <code>nodeID/objectID<code> from the HaID, if <code>nodeID</code> is not empty.
+     * <p>
+     * <code>component</code> value will not be preserved.
+     *
+     * @return the new thing configuration
+     */
+    public HandlerConfiguration toHandlerConfiguration() {
+        String objectID = this.objectID;
+        if (StringUtils.isNotBlank(nodeID)) {
+            objectID = nodeID + "/" + objectID;
         }
-        this.objectID = channel.getThingUID().getId();
-        this.nodeID = groupParts[1];
-        this.component = groupParts[0];
-        this.baseTopic = baseTopic;
+
+        return new HandlerConfiguration(baseTopic, objectID);
     }
 
     /**
-     * We map the HomeAssistant MQTT topic tree object to an ESH Thing.
+     * The default group id is the unique_id of the component, given in the config-json.
+     * If the unique id is not set, then a fallback is constructed from the HaID information.
+     *
+     * @return fallback group id
      */
-    public String getThingID() {
-        return objectID;
+    public String getFallbackGroupId() {
+        StringBuilder str = new StringBuilder();
+
+        if (StringUtils.isNotBlank(nodeID)) {
+            str.append(nodeID).append('_');
+        }
+        str.append(objectID).append('_').append(component);
+        return str.toString();
     }
 
     /**
-     * The channel group type UID consists of all components of this object (object-id + node-id + component-id).
+     * Return a topic, which can be used for a mqtt subscription.
+     * Defined values for suffix are:
+     * <ul>
+     * <li>config</li>
+     * <li>state</li>
+     * </ul>
+     *
+     * @return fallback group id
      */
-    public String getChannelGroupTypeID() {
-        return objectID + "_" + component + nodeID;
+    public String getTopic(String suffix) {
+        return topic + suffix;
     }
 
-    /**
-     * A channel type UID consists of all components of this object (object-id + node-id + component-id) and a
-     * channel-id on top.
-     */
-    public ChannelTypeUID getChannelTypeID(String channelID) {
-        return new ChannelTypeUID(MqttBindingConstants.BINDING_ID,
-                objectID + "_" + component + nodeID + "_" + channelID);
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + baseTopic.hashCode();
+        result = prime * result + component.hashCode();
+        result = prime * result + nodeID.hashCode();
+        result = prime * result + objectID.hashCode();
+        return result;
     }
 
-    /**
-     * The channel group ID consists of the node-id and the component-id
-     */
-    public String getChannelGroupID() {
-        return component + "_" + nodeID;
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        HaID other = (HaID) obj;
+        if (!baseTopic.equals(other.baseTopic)) {
+            return false;
+        }
+        if (!component.equals(other.component)) {
+            return false;
+        }
+        if (!nodeID.equals(other.nodeID)) {
+            return false;
+        }
+        if (!objectID.equals(other.objectID)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return baseTopic + "/" + component + "/" + nodeID + "/" + objectID;
+        return topic;
     }
 }

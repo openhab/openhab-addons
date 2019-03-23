@@ -63,7 +63,6 @@
 /addons/binding/org.openhab.binding.leapmotion/ @kaikreuzer
 /addons/binding/org.openhab.binding.lgtvserial/ @fa2k
 /addons/binding/org.openhab.binding.lgwebos/ @sprehn
-/addons/binding/org.openhab.binding.lirc/ @kabili207
 /addons/binding/org.openhab.binding.logreader/ @paulianttila
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
 /addons/binding/org.openhab.binding.lutron/ @actong
@@ -101,7 +100,6 @@
 /addons/binding/org.openhab.binding.pentair/ @jsjames
 /addons/binding/org.openhab.binding.phc/ @gnlpfjh
 /addons/binding/org.openhab.binding.pioneeravr/ @Stratehm
-/addons/binding/org.openhab.binding.plclogo/ @falkena
 /addons/binding/org.openhab.binding.regoheatpump/ @crnjan
 /addons/binding/org.openhab.binding.rme/ @kgoderis
 /addons/binding/org.openhab.binding.robonect/ @reyem
@@ -111,8 +109,6 @@
 /addons/binding/org.openhab.binding.samsungtv/ @paulianttila
 /addons/binding/org.openhab.binding.satel/ @druciak
 /addons/binding/org.openhab.binding.seneye/ @nikotanghe
-/addons/binding/org.openhab.binding.sensebox/ @hakan42
-/addons/binding/org.openhab.binding.serialbutton/ @kaikreuzer
 /addons/binding/org.openhab.binding.silvercrestwifisocket/ @jmvaz
 /addons/binding/org.openhab.binding.sleepiq/ @syphr42
 /addons/binding/org.openhab.binding.smaenergymeter/ @monnimeter
@@ -129,14 +125,12 @@
 /addons/binding/org.openhab.binding.tado/ @dfrommi
 /addons/binding/org.openhab.binding.tankerkoenig/ @dolic @JueBag
 /addons/binding/org.openhab.binding.tellstick/ @jarlebh
-/addons/binding/org.openhab.binding.tesla/ @kgoderis
 /addons/binding/org.openhab.binding.toon/ @jongj
 /addons/binding/org.openhab.binding.tplinksmarthome/ @Hilbrand
 /addons/binding/org.openhab.binding.tplinksmarthome.test/ @Hilbrand
 /addons/binding/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /addons/binding/org.openhab.binding.tradfri.test/ @cweitkamp @kaikreuzer
 /addons/binding/org.openhab.binding.urtsi/ @OLibutzki
-/addons/binding/org.openhab.binding.valloxmv/ @bjoernbrings
 /addons/binding/org.openhab.binding.velbus/ @cedricboon
 /addons/binding/org.openhab.binding.vitotronic/ @steand
 /addons/binding/org.openhab.binding.wemo/ @hmerk
@@ -205,19 +199,25 @@
 /bundles/org.openhab.binding.hyperion/ @tavalin
 /bundles/org.openhab.binding.irtrans/ @kgoderis
 /bundles/org.openhab.binding.lifx/ @wborn
+/bundles/org.openhab.binding.lirc/ @kabili207
 /bundles/org.openhab.binding.nest/ @wborn
 /bundles/org.openhab.binding.network/ @davidgraeff @mettke
 /bundles/org.openhab.binding.nibeheatpump/ @paulianttila
 /bundles/org.openhab.binding.onewire/ @J-N-K
 /bundles/org.openhab.binding.openuv/ @clinique
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
+/bundles/org.openhab.binding.plclogo/ @falkena
 /bundles/org.openhab.binding.plugwise/ @wborn
 /bundles/org.openhab.binding.powermax/ @lolodomo
 /bundles/org.openhab.binding.pulseaudio/ @peuter
 /bundles/org.openhab.binding.rfxcom/ @martinvw @paulianttila
+/bundles/org.openhab.binding.sensebox/ @hakan42
+/bundles/org.openhab.binding.serialbutton/ @kaikreuzer
 /bundles/org.openhab.binding.sonos/ @kgoderis @lolodomo
 /bundles/org.openhab.binding.spotify/ @Hilbrand
+/bundles/org.openhab.binding.tesla/ @kgoderis
 /bundles/org.openhab.binding.unifi/ @mgbowman
+/bundles/org.openhab.binding.valloxmv/ @bjoernbrings
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo
 /bundles/org.openhab.extensionservice.marketplace/ @kaikreuzer
 /bundles/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer

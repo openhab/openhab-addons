@@ -75,7 +75,6 @@
     <module>org.openhab.binding.leapmotion</module>
     <module>org.openhab.binding.lgtvserial</module>
     <module>org.openhab.binding.lgwebos</module>
-    <module>org.openhab.binding.lirc</module>
     <module>org.openhab.binding.logreader</module>
     <module>org.openhab.binding.loxone</module>
     <module>org.openhab.binding.lutron</module>
@@ -113,7 +112,6 @@
     <module>org.openhab.binding.pentair</module>
     <module>org.openhab.binding.phc</module>
     <module>org.openhab.binding.pioneeravr</module>
-    <module>org.openhab.binding.plclogo</module>
     <module>org.openhab.binding.regoheatpump</module>
     <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.robonect</module>
@@ -123,8 +121,6 @@
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.satel</module>
     <module>org.openhab.binding.seneye</module>
-    <module>org.openhab.binding.sensebox</module>
-    <module>org.openhab.binding.serialbutton</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>
     <module>org.openhab.binding.sleepiq</module>
     <module>org.openhab.binding.smaenergymeter</module>
@@ -141,14 +137,12 @@
     <module>org.openhab.binding.tado</module>
     <module>org.openhab.binding.tankerkoenig</module>
     <module>org.openhab.binding.tellstick</module>
-    <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.toon</module>
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tplinksmarthome.test</module>
     <module>org.openhab.binding.tradfri</module>
     <module>org.openhab.binding.tradfri.test</module>
     <module>org.openhab.binding.urtsi</module>
-    <module>org.openhab.binding.valloxmv</module>
     <module>org.openhab.binding.velbus</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.wemo</module>

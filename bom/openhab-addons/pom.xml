@@ -357,7 +357,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.lirc</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -552,7 +552,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.plclogo</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -617,12 +617,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.sensebox</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.serialbutton</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -707,7 +707,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.tesla</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -737,7 +737,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.valloxmv</artifactId>
       <version>${project.version}</version>
     </dependency>
