@@ -99,7 +99,6 @@
     <module>org.openhab.binding.neato</module>
     <module>org.openhab.binding.neeo</module>
     <module>org.openhab.binding.netatmo</module>
-    <module>org.openhab.binding.nibeuplink</module>
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.ntp</module>
     <module>org.openhab.binding.ntp.test</module>
