@@ -677,7 +677,7 @@
 
     <feature name="openhab-binding-sensebox" description="Sensebox Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.sensebox/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.sensebox/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-seneye" description="Seneye Binding" version="${project.version}">
