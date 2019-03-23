@@ -12,8 +12,12 @@ cache:
   - $HOME/.m2
   - $HOME/.p2
 
+before_cache:
+  # remove resolver-status.properties, they change with each run and invalidate the cache
+  - find $HOME/.m2 -name resolver-status.properties -exec rm {} \;
+  
 before_install:
-  - echo "MAVEN_OPTS='-Xms1g -Xmx2g'" > ~/.mavenrc
+  - echo "MAVEN_OPTS='-Xms1g -Xmx2g -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'" > ~/.mavenrc
 install:
   - |
     function extra_maven_opts() {
