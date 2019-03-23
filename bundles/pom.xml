@@ -50,6 +50,7 @@
     <module>org.openhab.binding.powermax</module>
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.sensebox</module>
+    <module>org.openhab.binding.serialbutton</module>
     <module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.spotify</module>
     <module>org.openhab.binding.unifi</module>
