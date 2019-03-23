@@ -14,7 +14,7 @@
   <name>openHAB Add-ons :: Bundles :: AllPlay Binding</name>
 
   <properties>
-    <bnd.importpackage>de.kaizencode.tchaikovsky.*</bnd.importpackage>
+    <bnd.importpackage>org.slf4j.impl.*;resolution:=optional,de.kaizencode.tchaikovsky.*</bnd.importpackage>
   </properties>
   
 </project>
