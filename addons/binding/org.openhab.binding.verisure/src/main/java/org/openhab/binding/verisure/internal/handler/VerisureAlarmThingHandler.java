@@ -136,7 +136,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_SITE_INSTALLATION_ID);
             BigDecimal siteId = status.getSiteId();
             if (siteId != null) {
-                updateState(cuid, new DecimalType(status.getSiteId().intValue()));
+                updateState(cuid, new DecimalType(status.getSiteId().longValue()));
             }
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_SITE_INSTALLATION_NAME);
             updateState(cuid, new StringType(status.getSiteName()));

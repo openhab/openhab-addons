@@ -188,7 +188,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_SITE_INSTALLATION_ID);
         BigDecimal siteId = status.getSiteId();
         if (siteId != null) {
-            updateState(cuid, new DecimalType(siteId.intValue()));
+            updateState(cuid, new DecimalType(siteId.longValue()));
         }
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_SITE_INSTALLATION_NAME);
         StringType instName = new StringType(status.getSiteName());
@@ -205,7 +205,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_SITE_INSTALLATION_ID);
         BigDecimal siteId = status.getSiteId();
         if (siteId != null) {
-            updateState(cuid, new DecimalType(status.getSiteId().intValue()));
+            updateState(cuid, new DecimalType(status.getSiteId().longValue()));
         }
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_SITE_INSTALLATION_NAME);
         StringType instName = new StringType(status.getSiteName());
@@ -240,7 +240,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_SITE_INSTALLATION_ID);
         BigDecimal siteId = status.getSiteId();
         if (siteId != null) {
-            updateState(cuid, new DecimalType(status.getSiteId().intValue()));
+            updateState(cuid, new DecimalType(status.getSiteId().longValue()));
         }
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_SITE_INSTALLATION_NAME);
         StringType instName = new StringType(status.getSiteName());

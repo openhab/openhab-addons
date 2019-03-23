@@ -302,7 +302,7 @@ public class VerisureSession {
         if (verisureInstallation == null) {
             verisureInstallation = new VerisureInstallation(alarmInstallationName);
             verisureInstallation.setInstallationInstance(installationInstance);
-            verisureInstallation.setInstallationId(new BigDecimal(installationInstance));
+            verisureInstallation.setInstallationId(BigDecimal.valueOf(installationInstance));
             verisureInstallations.put(alarmInstallationName, verisureInstallation);
         } else {
             verisureInstallation.setInstallationInstance(installationInstance);
@@ -320,7 +320,7 @@ public class VerisureSession {
                     verisureInstallations.put(secondAlarmInstallationName, verisureInstallation);
                 }
                 try {
-                    verisureInstallation.setInstallationId(new BigDecimal(Integer.parseInt(installationId)));
+                    verisureInstallation.setInstallationId(new BigDecimal(installationId));
                 } catch (NumberFormatException e) {
                     logger.warn("Erroneous installation id {}.", installationId);
                 }
