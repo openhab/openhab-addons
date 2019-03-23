@@ -38,6 +38,7 @@
     <module>org.openhab.binding.hyperion</module>
     <module>org.openhab.binding.irtrans</module>
     <module>org.openhab.binding.lifx</module>
+    <module>org.openhab.binding.lirc</module>
     <module>org.openhab.binding.nest</module>
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.nibeheatpump</module>
