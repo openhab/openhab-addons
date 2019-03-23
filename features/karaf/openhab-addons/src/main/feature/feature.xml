@@ -688,7 +688,7 @@
     <feature name="openhab-binding-serialbutton" description="Serial Button Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.serialbutton/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.serialbutton/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-silvercrestwifisocket" description="Silvercrest Wifi Plug Binding" version="${project.version}">
