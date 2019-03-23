@@ -114,7 +114,6 @@
     <module>org.openhab.binding.pentair</module>
     <module>org.openhab.binding.phc</module>
     <module>org.openhab.binding.pioneeravr</module>
-    <module>org.openhab.binding.plclogo</module>
     <module>org.openhab.binding.regoheatpump</module>
     <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.rfxcom</module>
