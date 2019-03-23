@@ -14,7 +14,6 @@ package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.mqtt.generic.internal.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.internal.generic.TransformationServiceProvider;
@@ -44,11 +43,12 @@ public class CFactory {
      * @param updateListener A channel state update listener
      * @return A HA MQTT Component
      */
-    public static @Nullable AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID, String configJSON,
-            @Nullable ChannelStateUpdateListener updateListener, Gson gson,
+    public static @Nullable AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID,
+            String channelConfigurationJSON, @Nullable ChannelStateUpdateListener updateListener, Gson gson,
             TransformationServiceProvider transformationServiceProvider) {
-        ComponentConfiguration componentConfiguration = new ComponentConfiguration(thingUID, haID, configJSON, gson)
-                .listener(updateListener).transformationProvider(transformationServiceProvider);
+        ComponentConfiguration componentConfiguration = new ComponentConfiguration(thingUID, haID,
+                channelConfigurationJSON, gson).listener(updateListener)
+                        .transformationProvider(transformationServiceProvider);
         try {
             switch (haID.component) {
                 case "alarm_control_panel":
@@ -76,27 +76,6 @@ public class CFactory {
             logger.warn("Not supported", e);
         }
         return null;
-    }
-
-    /**
-     * Create a HA MQTT component by a given channel configuration.
-     *
-     * @param basetopic The MQTT base topic, usually "homeassistant"
-     * @param channel A channel with the JSON configuration embedded as configuration (key: 'config')
-     * @param updateListener A channel state update listener
-     * @return A HA MQTT Component
-     */
-    public static @Nullable AbstractComponent<?> createComponent(String basetopic, Channel channel,
-            @Nullable ChannelStateUpdateListener updateListener, Gson gson,
-            TransformationServiceProvider transformationServiceProvider) {
-        HaID haID = new HaID(basetopic, channel.getUID());
-        ThingUID thingUID = channel.getUID().getThingUID();
-        String configJSON = (String) channel.getConfiguration().get("config");
-        if (configJSON == null) {
-            logger.warn("Provided channel does not have a 'config' configuration key!");
-            return null;
-        }
-        return createComponent(thingUID, haID, configJSON, updateListener, gson, transformationServiceProvider);
     }
 
     protected static class ComponentConfiguration {

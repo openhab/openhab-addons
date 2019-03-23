@@ -74,8 +74,9 @@ public class DiscoverComponentsTests extends JavaOSGiTest {
         DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.testHomeAssistantThing,
                 scheduler, null, gson, transformationServiceProvider));
 
-        discover.startDiscovery(connection, 50, new HaID("homeassistant", "object", "node", "component"), discovered)
-                .get(100, TimeUnit.MILLISECONDS);
+        HandlerConfiguration config = new HandlerConfiguration("homeassistant", "object");
+
+        discover.startDiscovery(connection, 50, HaID.fromConfig(config), discovered).get(100, TimeUnit.MILLISECONDS);
 
     }
 }

@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -29,12 +30,13 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.AbstractComponent;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.CChannel;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.CFactory;
-import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.ChannelConfigurationTypeAdapterFactory;
+import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HaID;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HandlerConfiguration;
@@ -78,7 +80,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     protected final Map<String, AbstractComponent<?>> haComponents = new HashMap<>();
 
     protected HandlerConfiguration config = new HandlerConfiguration();
-    private HaID discoveryHomeAssistantID = new HaID("", "", "", "");
+    private HaID discoveryHomeAssistantID = new HaID();
 
     protected final TransformationServiceProvider transformationServiceProvider;
 
@@ -108,11 +110,11 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     @Override
     public void initialize() {
         config = getConfigAs(HandlerConfiguration.class);
-        if (config.objectid.isEmpty()) {
+        if (StringUtils.isEmpty(config.objectid)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device ID unknown");
             return;
         }
-        discoveryHomeAssistantID = new HaID(config.basetopic, config.objectid, "", "");
+        discoveryHomeAssistantID = HaID.fromConfig(config);
 
         for (Channel channel : thing.getChannels()) {
             final String groupID = channel.getUID().getGroupId();
@@ -127,7 +129,15 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 continue;
             }
 
-            component = CFactory.createComponent(config.basetopic, channel, this, gson, transformationServiceProvider);
+            HaID haID = HaID.fromConfig(config.basetopic, channel.getConfiguration());
+            ThingUID thingUID = channel.getUID().getThingUID();
+            String channelConfigurationJSON = (String) channel.getConfiguration().get("config");
+            if (channelConfigurationJSON == null) {
+                logger.warn("Provided channel does not have a 'config' configuration key!");
+            } else {
+                component = CFactory.createComponent(thingUID, haID, channelConfigurationJSON, this, gson,
+                        transformationServiceProvider);
+            }
 
             if (component != null) {
                 haComponents.put(component.uid().getId(), component);

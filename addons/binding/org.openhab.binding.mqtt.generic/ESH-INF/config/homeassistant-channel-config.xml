@@ -5,7 +5,22 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="mqtt:ha_channel">
-		<parameter name="config" type="text">
+		<parameter name="component" type="text" readOnly="true" required="true">
+			<label>Component</label>
+			<description>Type of the channel group.</description>
+			<default></default>
+		</parameter>
+		<parameter name="nodeid" type="text" readOnly="true">
+			<label>Node ID</label>
+			<description>Optional node name of the component</description>
+			<default></default>
+		</parameter>
+		<parameter name="objectid" type="text" readOnly="true" required="true">
+			<label>Object ID</label>
+			<description>Object id of the component</description>
+			<default></default>
+		</parameter>
+		<parameter name="config" type="text" readOnly="true" required="true">
 			<label>Json Configuration</label>
 			<description>The json configuration string received by the component via MQTT.</description>
 			<default></default>

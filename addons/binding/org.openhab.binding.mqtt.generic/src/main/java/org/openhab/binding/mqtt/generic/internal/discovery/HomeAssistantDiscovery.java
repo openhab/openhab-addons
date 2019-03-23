@@ -31,9 +31,10 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
-import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.BaseChannelConfiguration;
+import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HaID;
+import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HandlerConfiguration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -129,9 +130,9 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
 
         // We will of course find multiple of the same unique Thing IDs, for each different component another one.
         // Therefore the components are assembled into a list and given to the DiscoveryResult label for the user to
-        // easily recognise object capabilities.
+        // easily recognize object capabilities.
         HaID topicParts = determineTopicParts(topic);
-        final String thingID = topicParts.getThingID();
+        final String thingID = topicParts.objectID;
         final ThingUID thingUID = new ThingUID(MqttBindingConstants.HOMEASSISTANT_MQTT_THING, connectionBridge,
                 thingID);
 
@@ -155,12 +156,12 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         final String componentNames = components.stream().map(c -> HA_COMP_TO_NAME.getOrDefault(c, c))
                 .collect(Collectors.joining(","));
 
-        BaseChannelConfiguration config = BaseChannelConfiguration.fromString(new String(payload, StandardCharsets.UTF_8), gson);
+        BaseChannelConfiguration config = BaseChannelConfiguration
+                .fromString(new String(payload, StandardCharsets.UTF_8), gson);
 
         Map<String, Object> properties = new HashMap<>();
-        properties.put("objectid", topicParts.objectID);
-        properties.put("nodeid", topicParts.nodeID);
-        properties.put("basetopic", BASE_TOPIC);
+        HandlerConfiguration handlerConfig = topicParts.toHandlerConfiguration();
+        properties = handlerConfig.appendToProperties(properties);
         config.addDeviceProperties(properties);
         // First remove an already discovered thing with the same ID
         thingRemoved(thingUID);
@@ -175,7 +176,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         if (!topic.endsWith("/config")) {
             return;
         }
-        final String thingID = determineTopicParts(topic).getThingID();
+        final String thingID = determineTopicParts(topic).objectID;
         componentsPerThingID.remove(thingID);
         thingRemoved(new ThingUID(MqttBindingConstants.HOMEASSISTANT_MQTT_THING, connectionBridge, thingID));
     }

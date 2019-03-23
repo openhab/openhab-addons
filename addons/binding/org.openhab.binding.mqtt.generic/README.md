@@ -23,6 +23,7 @@ Find the next table to understand the topology mapping from Homie to the Framewo
 | Property | Channel       | homie/super-car/engine/temperature |
 
 System trigger channels are supported using non-retained properties, with *enum* data type and with the following formats:
+
 * Format: "PRESSED,RELEASED" -> system.rawbutton
 * Format: "SHORT\_PRESSED,DOUBLE\_PRESSED,LONG\_PRESSED" -> system.button
 * Format: "DIR1\_PRESSED,DIR1\_RELEASED,DIR2\_PRESSED,DIR2\_RELEASED" -> system.rawrocker
@@ -124,6 +125,7 @@ You can connect this channel to a Contact or Switch item.
 * __on__: An optional string (like "BRIGHT") that is recognized as on state. (ON will always be recognized.)
 * __off__: An optional string (like "DARK") that is recognized as off state. (OFF will always be recognized.)
 * __onBrightness__: If you connect this channel to a Switch item and turn it on,
+
 color and saturation are preserved from the last state, but
 the brightness will be set to this configured initial brightness (default: 10%).
 
@@ -234,9 +236,9 @@ Here are a few examples:
 ## Troubleshooting
 
 * If you get the error "No MQTT client": Please update your installation.
-* If you use the Mosquitto broker: Please be aware that there is a relatively low setting
-  for retained messages. At some point messages will just not being delivered
-  anymore: Change the setting 
+* If you use the Mosquitto broker: Please be aware that there is a relatively low setting 
+for retained messages. At some point messages will just not being delivered anymore: 
+Change the setting 
 
 ## Examples
 

@@ -15,9 +15,8 @@ package org.openhab.binding.mqtt.generic.internal.convention.homeassistant;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.junit.Test;
-import org.openhab.binding.mqtt.generic.internal.convention.homeassistant.HaID;
 
 public class HaIDTests {
 
@@ -25,20 +24,44 @@ public class HaIDTests {
     public void testWithoutNode() {
         HaID subject = new HaID("homeassistant/switch/name/config");
 
-        assertThat(subject.getThingID(), is("name"));
-        assertThat(subject.getChannelGroupTypeID(), is("name_switch"));
-        assertThat(subject.getChannelTypeID("channel"), is(new ChannelTypeUID("mqtt:name_switch_channel")));
-        assertThat(subject.getChannelGroupID(), is("switch_"));
+        assertThat(subject.objectID, is("name"));
+
+        assertThat(subject.component, is("switch"));
+        assertThat(subject.getTopic("suffix"), is("homeassistant/switch/name/suffix"));
+
+        Configuration config = new Configuration();
+        subject.toConfig(config);
+
+        HaID restore = HaID.fromConfig("homeassistant", config);
+
+        assertThat(restore, is(subject));
+
+        HandlerConfiguration haConfig = subject.toHandlerConfiguration();
+
+        restore = HaID.fromConfig(haConfig);
+        assertThat(restore, is(new HaID("homeassistant/+/name/config")));
     }
 
     @Test
     public void testWithNode() {
         HaID subject = new HaID("homeassistant/switch/node/name/config");
 
-        assertThat(subject.getThingID(), is("name"));
-        assertThat(subject.getChannelGroupTypeID(), is("name_switchnode"));
-        assertThat(subject.getChannelTypeID("channel"), is(new ChannelTypeUID("mqtt:name_switchnode_channel")));
-        assertThat(subject.getChannelGroupID(), is("switch_node"));
+        assertThat(subject.objectID, is("name"));
+
+        assertThat(subject.component, is("switch"));
+        assertThat(subject.getTopic("suffix"), is("homeassistant/switch/node/name/suffix"));
+
+        Configuration config = new Configuration();
+        subject.toConfig(config);
+
+        HaID restore = HaID.fromConfig("homeassistant", config);
+
+        assertThat(restore, is(subject));
+
+        HandlerConfiguration haConfig = subject.toHandlerConfiguration();
+
+        restore = HaID.fromConfig(haConfig);
+        assertThat(restore, is(new HaID("homeassistant/+/node/name/config")));
     }
 
 }

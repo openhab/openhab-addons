@@ -19,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelGroupUID;
@@ -65,14 +66,20 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
      */
     public AbstractComponent(CFactory.ComponentConfiguration componentConfiguration, Class<C> clazz) {
         this.componentConfiguration = componentConfiguration;
-        this.haID = componentConfiguration.getHaID();
-        this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID,
-                haID.getChannelGroupTypeID());
-        this.channelGroupUID = new ChannelGroupUID(componentConfiguration.getThingUID(), haID.getChannelGroupID());
 
         this.channelConfigurationJson = componentConfiguration.getConfigJSON();
         this.channelConfiguration = componentConfiguration.getConfig(clazz);
         this.configHash = channelConfigurationJson.hashCode();
+
+        this.haID = componentConfiguration.getHaID();
+
+        String groupId = channelConfiguration.unique_id;
+        if (groupId == null || StringUtils.isBlank(groupId)) {
+            groupId = this.haID.getFallbackGroupId();
+        }
+
+        this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID, groupId);
+        this.channelGroupUID = new ChannelGroupUID(componentConfiguration.getThingUID(), groupId);
     }
 
     protected CChannel.Builder buildChannel(String channelID, Value valueState, String label) {
