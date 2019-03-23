@@ -8,11 +8,13 @@ Binding should be compatible with Onkyo AV receivers which support ISCP (Integra
 
 ## Supported Things
 
-This binding supports only one thing: The Onkyo AV Receiver.  All supported Onkyo devices are registered as an audio sink in the framework.
+This binding supports only one thing: The Onkyo AV receiver.
+All supported Onkyo devices are registered as an audio sink in the framework.
 
 ## Discovery
 
-This binding can discover the supported Onkyo AV Receivers. At the moment only the following models are supported:
+This binding can discover the supported Onkyo AV receivers.
+At the moment only the following models are supported:
 
 -   HT-RC560
 -   TX-NR414
@@ -54,17 +56,21 @@ org.openhab.onkyo:enableAutoDiscovery=false
 This configuration parameter only controls the Onkyo AVR auto-discovery process, not the openHAB auto-discovery.
 Moreover, if the openHAB auto-discovery is disabled, the Onkyo AVR auto-discovery is disabled too.
 
-
 The binding has the following configuration options, which can be set for "binding:onkyo":
 
 | Parameter   | Name         | Description                                                              | Required |
 |-------------|--------------|--------------------------------------------------------------------------|----------|
 | callbackUrl | Callback URL | URL to use for playing notification sounds, e.g. <http://192.168.0.2:8080> | no       |
 
+When an Onkyo receiver is used as an audio sink, the receiver connects to openHAB to get the audio stream.
+By default, the binding sends the URL for getting the audio stream based on the Primary Address (Network Settings configuration) and the openHAB HTTP port.
+Sometimes it's necessary to use the Callback URL to override the default, such as when using a reverse proxy or with some docker implementations.
+
 ## Thing Configuration
 
 The Onkyo AVR thing requires the ip address and the port to access it on.
-In the code `avr-livingroom` refers to the user defined unique id of your Onkyo device. A second device could be called avr2.
+In the code `avr-livingroom` refers to the user defined unique id of your Onkyo device.
+A second device could be called avr2.
 In the thing file, this looks e.g. like
 
 Model specific
@@ -81,13 +87,13 @@ Generic model
 onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128]
 ```
 
-Optionally you can specify the refresh interval by refreshInterval parameter.
+Optionally you can specify the refresh interval by `refreshInterval` parameter.
 
 ```text
 onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128, refreshInterval=30]
 ```
 
-Maximum volume level can also be configured by volumeLimit parameter.
+Maximum volume level can also be configured by `volumeLimit` parameter.
 This prevent setting receiver volume level too high, which could damage your speakers or receiver.
 
 ```text
@@ -120,46 +126,47 @@ The binding will send value 200 for maximum volume to the receiver.
 
 The Onkyo AVR supports the following channels (some channels are model specific):
 
-| Channel Type ID           | Item Type | Description                                                                                                      |
-|---------------------------|-----------|------------------------------------------------------------------------------------------------------------------|
-| zone1#power               | Switch    | Power on/off your device                                                                                         |
-| zone1#mute                | Switch    | Mute/unmute zone 1                                                                                               |
-| zone1#input               | Number    | The input for zone 1                                                                                             |
-| zone1#volume              | Dimmer    | Volume of zone 1                                                                                                 |
-| zone2#power               | Switch    | Power on/off zone 2                                                                                              |
-| zone2#mute                | Switch    | Mute/unmute zone 2                                                                                               |
-| zone2#input               | Number    | The input for zone 2                                                                                             |
-| zone2#volume              | Dimmer    | Volume of zone 2                                                                                                 |
-| zone3#power               | Switch    | Power on/off zone 3                                                                                              |
-| zone3#mute                | Switch    | Mute/unmute zone 3                                                                                               |
-| zone3#input               | Number    | The input for zone 3                                                                                             |
-| zone3#volume              | Dimmer    | Volume of zone 3                                                                                                 |
-| player#control            | Player    | Control the Zone Player, e.g.  play/pause/next/previous/ffward/rewind (available if playing from Network or USB) |
-| player#title              | String    | Title of the current song (available if playing from Network or USB)                                             |
-| player#album              | String    | Album name of the current song (available if playing from Network or USB)                                        |
-| player#artist             | String    | Artist name of the current song (available if playing from Network or USB)                                       |
-| player#currentPlayingTime | String    | Current playing time of the current song (available if playing from Network or USB)                              |
-| player#listenmode         | Number    | Current listening mode e.g. Stereo, 5.1ch Surround,..                                                            |
-| player#playuri            | String    | Plays the URI provided to the channel                                                                            |
-| player#albumArt           | Image     | Image of the current album art of the current song                                                               |
-| player#albumArtUrl        | String    | Url to the current album art of the current song                                                                 |
-| netmenu#title             | String    | Title of the current NET service                                                                                 |
-| netmenu#control           | String    | Control the USB/Net Menu, e.g. Up/Down/Select/Back/PageUp/PageDown/Select&lsqb0-9&rsqb                                   |
-| netmenu#selection         | Number    | The number of the currently selected USB/Net Menu entry (0-9)                                                    |
-| netmenu#item0             | String    | The text of USB/Net Menu entry 0                                                                                 |
-| netmenu#item1             | String    | The text of USB/Net Menu entry 1                                                                                 |
-| netmenu#item2             | String    | The text of USB/Net Menu entry 2                                                                                 |
-| netmenu#item3             | String    | The text of USB/Net Menu entry 3                                                                                 |
-| netmenu#item4             | String    | The text of USB/Net Menu entry 4                                                                                 |
-| netmenu#item5             | String    | The text of USB/Net Menu entry 5                                                                                 |
-| netmenu#item6             | String    | The text of USB/Net Menu entry 6                                                                                 |
-| netmenu#item7             | String    | The text of USB/Net Menu entry 7                                                                                 |
-| netmenu#item8             | String    | The text of USB/Net Menu entry 8                                                                                 |
-| netmenu#item9             | String    | The text of USB/Net Menu entry 9                                                                                 |
+| Channel Type ID           | Item Type | Description                                                                                                     |
+|---------------------------|-----------|-----------------------------------------------------------------------------------------------------------------|
+| zone1#power               | Switch    | Power on/off your device                                                                                        |
+| zone1#mute                | Switch    | Mute/unmute zone 1                                                                                              |
+| zone1#input               | Number    | The input for zone 1                                                                                            |
+| zone1#volume              | Dimmer    | Volume of zone 1                                                                                                |
+| zone2#power               | Switch    | Power on/off zone 2                                                                                             |
+| zone2#mute                | Switch    | Mute/unmute zone 2                                                                                              |
+| zone2#input               | Number    | The input for zone 2                                                                                            |
+| zone2#volume              | Dimmer    | Volume of zone 2                                                                                                |
+| zone3#power               | Switch    | Power on/off zone 3                                                                                             |
+| zone3#mute                | Switch    | Mute/unmute zone 3                                                                                              |
+| zone3#input               | Number    | The input for zone 3                                                                                            |
+| zone3#volume              | Dimmer    | Volume of zone 3                                                                                                |
+| player#control            | Player    | Control the Zone Player, e.g. play/pause/next/previous/ffward/rewind (available if playing from Network or USB) |
+| player#title              | String    | Title of the current song (available if playing from Network or USB)                                            |
+| player#album              | String    | Album name of the current song (available if playing from Network or USB)                                       |
+| player#artist             | String    | Artist name of the current song (available if playing from Network or USB)                                      |
+| player#currentPlayingTime | String    | Current playing time of the current song (available if playing from Network or USB)                             |
+| player#listenmode         | Number    | Current listening mode e.g. Stereo, 5.1ch Surround, ...                                                         |
+| player#playuri            | String    | Plays the URI provided to the channel                                                                           |
+| player#albumArt           | Image     | Image of the current album art of the current song                                                              |
+| player#albumArtUrl        | String    | URL to the current album art of the current song                                                                |
+| netmenu#title             | String    | Title of the current NET service                                                                                |
+| netmenu#control           | String    | Control the USB/Net Menu, e.g. Up/Down/Select/Back/PageUp/PageDown/Select&lsqb0-9&rsqb                          |
+| netmenu#selection         | Number    | The number of the currently selected USB/Net Menu entry (0-9)                                                   |
+| netmenu#item0             | String    | The text of USB/Net Menu entry 0                                                                                |
+| netmenu#item1             | String    | The text of USB/Net Menu entry 1                                                                                |
+| netmenu#item2             | String    | The text of USB/Net Menu entry 2                                                                                |
+| netmenu#item3             | String    | The text of USB/Net Menu entry 3                                                                                |
+| netmenu#item4             | String    | The text of USB/Net Menu entry 4                                                                                |
+| netmenu#item5             | String    | The text of USB/Net Menu entry 5                                                                                |
+| netmenu#item6             | String    | The text of USB/Net Menu entry 6                                                                                |
+| netmenu#item7             | String    | The text of USB/Net Menu entry 7                                                                                |
+| netmenu#item8             | String    | The text of USB/Net Menu entry 8                                                                                |
+| netmenu#item9             | String    | The text of USB/Net Menu entry 9                                                                                |
 
 ## Rule Actions
 
-This binding includes a rule action which allows to send raw eISCP messages to the receiver. The rule action can be used to send commands to the receiver that are not supported by channels.
+This binding includes a rule action which allows to send raw eISCP messages to the receiver.
+The rule action can be used to send commands to the receiver that are not supported by channels.
 There is a separate instance for each receiver, which can be retrieved through
 
 ```
@@ -172,7 +179,9 @@ Once this action instance is retrieved, you can invoke the `onkyoActions.sendRaw
 ```
 onkyoActions.sendRawCommand("CTL", "UP")
 ```
-This command for instance increases the volume for the center channel. For a description of all commands you can e.g. search [this GitHub project](https://github.com/miracle2k/onkyo-eiscp/tree/master/commands/main).
+
+This command for instance increases the volume for the center channel.
+For a description of all commands you can e.g. search [this GitHub project](https://github.com/miracle2k/onkyo-eiscp/tree/master/commands/main).
 
 Also note that when sending multiple commands there has to be a `Thread::sleep(100)` in between the commands because the action does not wait for a response from the receiver.
 
@@ -226,7 +235,7 @@ String avrLrPlayer_CurrentPlayingTime "CurrentPlayingTime [%s]" <clock>       { 
 Number avrLrPlayer_Listenmode         "Listenmode [%d]"         <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#listenmode" }
 String avrLrPlayer_PlayURI            "PlayURI [%s]"            <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#playuri" }
 Image  avrLrPlayer_AlbumArt           "AlbumArt [%s]"           <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#albumArt" }
-String avrLrPlayer_AlbumArtUrl        "AlbumArtUrl [%s]"        <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#albumArtUrl" }
+String avrLrPlayer_AlbumArtUrl        "AlbumArtURL [%s]"        <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#albumArtUrl" }
 
 String avrLrNet_Title     "Title [%s]"     <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#title" }
 String avrLrNet_Control   "Control"        <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#control" }
