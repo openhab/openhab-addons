@@ -42,6 +42,7 @@
     <module>org.openhab.binding.leapmotion</module>
     <module>org.openhab.binding.lifx</module>
     <module>org.openhab.binding.lirc</module>
+    <module>org.openhab.binding.meteoblue</module>
     <module>org.openhab.binding.nest</module>
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.nibeheatpump</module>

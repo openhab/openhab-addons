@@ -66,7 +66,6 @@
 /addons/binding/org.openhab.binding.max/ @marcelrv
 /addons/binding/org.openhab.binding.max.test/ @marcelrv
 /addons/binding/org.openhab.binding.mcp23017/ @aogorek
-/addons/binding/org.openhab.binding.meteoblue/ @9037568
 /addons/binding/org.openhab.binding.meteostick/ @cdjackson
 /addons/binding/org.openhab.binding.miele/ @kgoderis
 /addons/binding/org.openhab.binding.mihome/ @pboos
@@ -197,6 +196,7 @@
 /bundles/org.openhab.binding.leapmotion/ @kaikreuzer
 /bundles/org.openhab.binding.lifx/ @wborn
 /bundles/org.openhab.binding.lirc/ @kabili207
+/bundles/org.openhab.binding.meteoblue/ @9037568
 /bundles/org.openhab.binding.nest/ @wborn
 /bundles/org.openhab.binding.network/ @davidgraeff @mettke
 /bundles/org.openhab.binding.nibeheatpump/ @paulianttila
