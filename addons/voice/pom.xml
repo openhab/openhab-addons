@@ -20,7 +20,6 @@
 	<!--<module>org.openhab.voice.kaldi</module>-->
     <module>org.openhab.voice.marytts</module>
     <module>org.openhab.voice.pollytts</module>
-    <module>org.openhab.voice.voicerss</module>
   </modules>
 
 </project>
