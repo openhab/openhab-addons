@@ -23,6 +23,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.storage.StorageService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -30,9 +31,15 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.groheondus.internal.AccountsServlet;
 import org.openhab.binding.groheondus.internal.discovery.GroheOndusDiscoveryService;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.http.HttpService;
 
 /**
  * @author Florian Schmidt and Arne Wohlert - Initial contribution
@@ -43,8 +50,30 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
+    private @Nullable HttpService httpService;
+    private @Nullable StorageService storageService;
+    private @Nullable AccountsServlet accountsServlet;
+
     private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_SENSEGUARD,
             THING_TYPE_SENSE, THING_TYPE_BRIDGE_ACCOUNT);
+
+    @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.DYNAMIC)
+    protected void setHttpService(HttpService httpService) {
+        this.httpService = httpService;
+    }
+
+    protected void unsetHttpService(HttpService httpService) {
+        this.httpService = null;
+    }
+
+    @Reference
+    protected void setStorageService(StorageService storageService) {
+        this.storageService = storageService;
+    }
+
+    protected void unsetStorageService(StorageService storageService) {
+        this.storageService = null;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -52,12 +81,41 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        HttpService httpService = this.httpService;
+        if (accountsServlet == null && httpService != null) {
+            accountsServlet = new AccountsServlet(httpService);
+        }
+    }
+
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        AccountsServlet accountsServlet = this.accountsServlet;
+        this.accountsServlet = null;
+        if (accountsServlet != null) {
+            accountsServlet.dispose();
+        }
+        super.deactivate(componentContext);
+    }
+
+    @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
+        HttpService httpService = this.httpService;
+        if (httpService == null) {
+            return null;
+        }
+        StorageService storageService = this.storageService;
+        if (storageService == null) {
+            return null;
+        }
+
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE_ACCOUNT.equals(thingTypeUID)) {
-            GroheOndusAccountHandler handler = new GroheOndusAccountHandler((Bridge) thing);
-            registerDeviceDiscoveryService(handler);
+            GroheOndusAccountHandler handler = new GroheOndusAccountHandler((Bridge) thing, httpService,
+                    storageService.getStorage(thing.getUID().toString(), String.class.getClassLoader()));
+            onAccountCreated(thing, handler);
             return handler;
         } else if (THING_TYPE_SENSEGUARD.equals(thingTypeUID)) {
             return new GroheOndusSenseGuardHandler(thing);
@@ -66,6 +124,13 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
+    }
+
+    private void onAccountCreated(Thing thing, GroheOndusAccountHandler handler) {
+        registerDeviceDiscoveryService(handler);
+        if (this.accountsServlet != null) {
+            this.accountsServlet.addAccount(thing);
+        }
     }
 
     @Override
