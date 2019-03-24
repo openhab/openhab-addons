@@ -74,6 +74,7 @@ import org.xml.sax.SAXException;
  * @author Paul Frank - Initial contribution
  * @author Marcel Verpaalen - parsing additional commands
  * @author Pauli Anttila - lot of refactoring
+ * @author Stewart Cossey - add dynamic state description provider
  */
 public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventListener {
 
@@ -774,7 +775,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         sendCommand(EiscpCommand.POWER_QUERY);
 
         if (connection != null && connection.isConnected()) {
-
             sendCommand(EiscpCommand.VOLUME_QUERY);
             sendCommand(EiscpCommand.SOURCE_QUERY);
             sendCommand(EiscpCommand.MUTE_QUERY);

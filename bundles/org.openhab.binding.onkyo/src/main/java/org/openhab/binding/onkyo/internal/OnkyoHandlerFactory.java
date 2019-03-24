@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Paul Frank - Initial contribution
+ * @author Stewart Cossey - added dynamic state descriptor provider functions
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.onkyo")
 public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
