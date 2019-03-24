@@ -239,7 +239,7 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
      * sends an immediate fade to the DMX output (for rule actions)
      *
      * @param channelString a String containing the channels
-     * @param fadeString a String containing the fade definition
+     * @param fadeString a String containing the fade/chase definition
      * @param resumeAfter a boolean if the previous state should be restored
      */
     public void immediateFade(String channelString, String fadeString, Boolean resumeAfter) {
@@ -257,7 +257,7 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
         }
 
         // parse fade config
-        ValueSet value = ValueSet.fromString(fadeString);
+        List<ValueSet> value = ValueSet.parseChaseConfig(fadeString);
         if (value.isEmpty()) {
             logger.warn("invalid fade configuration: {}", fadeString);
             return;
@@ -271,8 +271,10 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
             } else {
                 channel.clearAction();
             }
-            channel.addChannelAction(
-                    new FadeAction(value.getFadeTime(), value.getValue(channelCounter), value.getHoldTime()));
+            for (ValueSet step : value) {
+                channel.addChannelAction(
+                        new FadeAction(step.getFadeTime(), step.getValue(channelCounter), step.getHoldTime()));
+            }
             if (resumeAfter) {
                 channel.addChannelAction(new ResumeAction());
             }

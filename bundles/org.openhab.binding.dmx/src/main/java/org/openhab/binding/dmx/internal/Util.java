@@ -24,7 +24,6 @@ import org.slf4j.Logger;
  * @author Jan N. Klug - Initial contribution
  */
 public class Util {
-
     /**
      * inRange checks if a value is between two other values
      *
