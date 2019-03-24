@@ -199,6 +199,7 @@ public class LifxLightDiscovery extends AbstractDiscoveryService {
             }
         } catch (Exception e) {
             logger.debug("{} while discovering LIFX lights : {}", e.getClass().getSimpleName(), e.getMessage());
+            isScanning = false;
         }
     }
 
