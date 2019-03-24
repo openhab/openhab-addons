@@ -20,6 +20,9 @@ import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,8 +32,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This is a simple file based cache implementation.
- * <b>NOTE:</b> This class is a duplicate of
- * https://github.com/eclipse/smarthome/blob/master/extensions/binding/org.eclipse.smarthome.binding.openweathermap/src/main/java/org/eclipse/smarthome/binding/openweathermap/internal/utils/ByteArrayFileCache.java
  *
  * @author Christoph Weitkamp - Initial contribution
  */
@@ -39,20 +40,51 @@ public class ByteArrayFileCache {
 
     private final Logger logger = LoggerFactory.getLogger(ByteArrayFileCache.class);
 
-    private static final String CACHE_FOLDER_NAME = "cache";
-    public static final char EXTENSION_SEPARATOR = '.';
+    private static final String MD5_ALGORITHM = "MD5";
 
-    protected final File cacheFolder;
+    static final String CACHE_FOLDER_NAME = "cache";
+    private static final char EXTENSION_SEPARATOR = '.';
+    private static final char UNIX_SEPARATOR = '/';
+    private static final char WINDOWS_SEPARATOR = '\\';
 
+    private final File cacheFolder;
+
+    static final long ONE_DAY_IN_MILLIS = TimeUnit.DAYS.toMillis(1);
+    private int expiry = 0;
+
+    private static final Map<String, File> FILES_IN_CACHE = new ConcurrentHashMap<>();
+
+    /**
+     * Creates a new {@link ByteArrayFileCache} instance for a service. Creates a <code>cache</code> folder under
+     * <code>$userdata/cache/$servicePID</code>.
+     *
+     * @param servicePID PID of the service
+     */
     public ByteArrayFileCache(String servicePID) {
         // TODO track and limit folder size
         // TODO support user specific folder
-        cacheFolder = new File(new File(new File(ConfigConstants.getUserDataFolder()), CACHE_FOLDER_NAME), servicePID);
+        cacheFolder = new File(new File(ConfigConstants.getUserDataFolder(), CACHE_FOLDER_NAME), servicePID);
         if (!cacheFolder.exists()) {
             logger.debug("Creating cache folder '{}'", cacheFolder.getAbsolutePath());
             cacheFolder.mkdirs();
         }
         logger.debug("Using cache folder '{}'", cacheFolder.getAbsolutePath());
+    }
+
+    /**
+     * Creates a new {@link ByteArrayFileCache} instance for a service. Creates a <code>cache</code> folder under
+     * <code>$userdata/cache/$servicePID/</code>.
+     *
+     * @param servicePID PID of the service
+     * @param int the days for how long the files stay in the cache valid. Must be positive. 0 to
+     *            disables this functionality.
+     */
+    public ByteArrayFileCache(String servicePID, int expiry) {
+        this(servicePID);
+        if (expiry < 0) {
+            throw new IllegalArgumentException("Cache expiration time must be greater than or equal to 0");
+        }
+        this.expiry = expiry;
     }
 
     /**
@@ -76,6 +108,8 @@ public class ByteArrayFileCache {
         File fileInCache = getUniqueFile(key);
         if (fileInCache.exists()) {
             logger.debug("File '{}' present in cache", fileInCache.getName());
+            // update time of last use
+            fileInCache.setLastModified(System.currentTimeMillis());
         } else {
             writeFile(fileInCache, content);
         }
@@ -154,6 +188,35 @@ public class ByteArrayFileCache {
     }
 
     /**
+     * Removes expired files from the cache.
+     */
+    public void clearExpired() {
+        // exit if expiry is set to 0 (disabled)
+        if (expiry <= 0) {
+            return;
+        }
+        File[] filesInCache = cacheFolder.listFiles();
+        if (filesInCache != null && filesInCache.length > 0) {
+            logger.debug("Deleting expired files from cache");
+            Arrays.stream(filesInCache).filter(file -> isExpired(file)).forEach(File::delete);
+        }
+    }
+
+    /**
+     * Checks if the given {@link File} is expired.
+     *
+     * @param fileInCache the {@link File}
+     * @return <code>true</code> if the file is expired, <code>false</code> otherwise
+     */
+    private boolean isExpired(File fileInCache) {
+        // exit if expiry is set to 0 (disabled)
+        if (expiry <= 0) {
+            return false;
+        }
+        return expiry * ONE_DAY_IN_MILLIS < System.currentTimeMillis() - fileInCache.lastModified();
+    }
+
+    /**
      * Returns the content of the file associated with the given key, if it is present.
      *
      * @param key the key whose associated file is to be returned
@@ -172,6 +235,8 @@ public class ByteArrayFileCache {
     private byte[] readFile(File fileInCache) {
         if (fileInCache.exists()) {
             logger.debug("Reading file '{}' from cache", fileInCache.getName());
+            // update time of last use
+            fileInCache.setLastModified(System.currentTimeMillis());
             try {
                 return Files.readAllBytes(fileInCache.toPath());
             } catch (IOException e) {
@@ -189,11 +254,17 @@ public class ByteArrayFileCache {
      * @param key the key with which the file is to be associated
      * @return unique file for the file associated with the given key
      */
-    private File getUniqueFile(String key) {
-        // TODO: store / cache file internally for faster operations
-        String fileExtension = getFileExtension(key);
-        return new File(cacheFolder,
-                getUniqueFileName(key) + (fileExtension == null ? "" : EXTENSION_SEPARATOR + fileExtension));
+    File getUniqueFile(String key) {
+        String uniqueFileName = getUniqueFileName(key);
+        if (FILES_IN_CACHE.containsKey(uniqueFileName)) {
+            return FILES_IN_CACHE.get(uniqueFileName);
+        } else {
+            String fileExtension = getFileExtension(key);
+            File fileInCache = new File(cacheFolder,
+                    uniqueFileName + (fileExtension == null ? "" : EXTENSION_SEPARATOR + fileExtension));
+            FILES_IN_CACHE.put(uniqueFileName, fileInCache);
+            return fileInCache;
+        }
     }
 
     /**
@@ -202,14 +273,11 @@ public class ByteArrayFileCache {
      * @param fileName the file name to retrieve the extension of
      * @return the extension of the file or null if none exists
      */
-    private @Nullable String getFileExtension(String fileName) {
-        int index = fileName.lastIndexOf(EXTENSION_SEPARATOR);
-        // exclude file names starting with a dot
-        if (index > 0) {
-            return fileName.substring(index + 1);
-        } else {
-            return null;
-        }
+    @Nullable
+    String getFileExtension(String fileName) {
+        int extensionPos = fileName.lastIndexOf(EXTENSION_SEPARATOR);
+        int lastSeparatorPos = Math.max(fileName.lastIndexOf(UNIX_SEPARATOR), fileName.lastIndexOf(WINDOWS_SEPARATOR));
+        return lastSeparatorPos > extensionPos ? null : fileName.substring(extensionPos + 1);
     }
 
     /**
@@ -218,22 +286,22 @@ public class ByteArrayFileCache {
      * @param key the key with which the file is to be associated
      * @return unique file name for the file associated with the given key
      */
-    private String getUniqueFileName(String key) {
+    String getUniqueFileName(String key) {
         try {
+            MessageDigest md = MessageDigest.getInstance(MD5_ALGORITHM);
             byte[] bytesOfKey = key.getBytes(StandardCharsets.UTF_8);
-            MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] md5Hash = md.digest(bytesOfKey);
             BigInteger bigInt = new BigInteger(1, md5Hash);
-            StringBuilder fileNameHash = new StringBuilder(bigInt.toString(16));
+            String fileNameHash = bigInt.toString(16);
             // Now we need to zero pad it if you actually want the full 32 chars
             while (fileNameHash.length() < 32) {
-                fileNameHash.insert(0, "0");
+                fileNameHash = "0" + fileNameHash;
             }
-            return fileNameHash.toString();
+            return fileNameHash;
         } catch (NoSuchAlgorithmException ex) {
             // should not happen
             logger.error("Could not create MD5 hash for key '{}'", key, ex);
-            return key.toString();
+            return key;
         }
     }
 }
