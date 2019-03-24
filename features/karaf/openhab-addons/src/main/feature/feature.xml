@@ -1013,7 +1013,7 @@
 
     <feature name="openhab-transformation-xslt" description="XSLT Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.xslt/${project.version}</bundle>
+        <bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.xslt/${project.version}</bundle>
     </feature>
 
     <!-- voice -->
