@@ -127,7 +127,6 @@
     <module>org.openhab.binding.systeminfo</module>
     <module>org.openhab.binding.systeminfo.test</module>
     <module>org.openhab.binding.tado</module>
-    <module>org.openhab.binding.tankerkoenig</module>
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.toon</module>
     <module>org.openhab.binding.tplinksmarthome</module>
