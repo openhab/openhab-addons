@@ -38,6 +38,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -57,6 +58,29 @@ import com.google.gson.reflect.TypeToken;
  *
  */
 public class LxControl {
+
+    /**
+     * This class contains static configuration of the control and is used to make the fields transparent to the child
+     * classes that implement specific controls.
+     *
+     * @author Pawel Pieczul - initial contribution
+     *
+     */
+    public static class LxControlConfig {
+        private final LxServerHandlerApi thingHandler;
+        private final LxContainer room;
+        private final LxCategory category;
+
+        LxControlConfig(LxControlConfig config) {
+            this(config.thingHandler, config.room, config.category);
+        }
+
+        public LxControlConfig(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
+            this.room = room;
+            this.category = category;
+            this.thingHandler = thingHandler;
+        }
+    }
 
     /**
      * This class is used to instantiate a particular control object by the {@link LxControlFactory}
@@ -82,7 +106,8 @@ public class LxControl {
     }
 
     /**
-     * This class describes additional parameters of a control received from the Miniserver
+     * This class describes additional parameters of a control received from the Miniserver and is used during JSON
+     * deserialization.
      *
      * @author Pawel Pieczul - initial contribution
      *
@@ -99,21 +124,41 @@ public class LxControl {
         Map<String, String> outputs;
     }
 
+    /**
+     * A callback that should be implemented by child classes to process received commands. This callback can be
+     * provided for each channel created by the controls.
+     *
+     * @author Pawel Pieczul - initial contribution
+     *
+     */
     @FunctionalInterface
     interface CommandCallback {
         abstract void handleCommand(Command cmd) throws IOException;
     }
 
+    /**
+     * A callback that should be implemented by child classes to return current channel state. This callback can be
+     * provided for each channel created by the controls.
+     *
+     * @author Pawel Pieczul - initial contribution
+     *
+     */
     @FunctionalInterface
     interface StateCallback {
         abstract State getChannelState();
     }
 
+    /**
+     * A set of callbacks registered per each channel by the child classes.
+     *
+     * @author Pawel Pieczul - initial contribution
+     *
+     */
     private class Callbacks {
-        CommandCallback commandCallback;
-        StateCallback stateCallback;
+        private CommandCallback commandCallback;
+        private StateCallback stateCallback;
 
-        Callbacks(CommandCallback cC, StateCallback sC) {
+        private Callbacks(CommandCallback cC, StateCallback sC) {
             commandCallback = cC;
             stateCallback = sC;
         }
@@ -134,9 +179,7 @@ public class LxControl {
      * Parameters set when finalizing {@link LxConfig} object setup. They will be null right after constructing object.
      */
     transient String defaultChannelLabel;
-    transient LxServerHandlerApi thingHandler;
-    private transient LxContainer room;
-    private transient LxCategory category;
+    private transient LxControlConfig config;
 
     /*
      * Parameters set when object is connected to the openHAB by the binding handler
@@ -233,19 +276,6 @@ public class LxControl {
     }
 
     /**
-     * Call when control is no more needed - unlink it from containers
-     */
-    public void dispose() {
-        if (room != null) {
-            room.removeControl(this);
-        }
-        if (category != null) {
-            category.removeControl(this);
-        }
-        subControls.values().forEach(control -> control.dispose());
-    }
-
-    /**
      * Obtain control's name
      *
      * @return Human readable name of control
@@ -336,31 +366,27 @@ public class LxControl {
      * channels and any fields that derive their value from the parsed JSON configuration.
      * Before this method is called during configuration parsing, the control object must not be used.
      *
-     * @param thingHandler thing handler
-     * @param room         A room that this control and its subcontrols belong to
-     * @param category     A category that this control and its subcontrols belong to
+     * @param configToSet control's configuration
      */
-    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
+    public void initialize(LxControlConfig configToSet) {
         logger.debug("Initializing LxControl: {}", uuid);
 
-        if (this.thingHandler != null) {
+        if (config != null) {
             logger.error("Error, attempt to initialize control that is already initialized: {}", uuid);
             return;
         }
-        this.thingHandler = thingHandler;
+        config = configToSet;
 
         if (subControls == null) {
             subControls = new HashMap<>();
         }
 
-        if (room != null) {
-            this.room = room;
-            room.addControl(this);
+        if (config.room != null) {
+            config.room.addControl(this);
         }
 
-        if (category != null) {
-            this.category = category;
-            category.addControl(this);
+        if (config.category != null) {
+            config.category.addControl(this);
         }
 
         String label = getLabel();
@@ -369,14 +395,75 @@ public class LxControl {
             // of some malicious data attack, we'll prevent null pointer exception
             label = "Undefined name";
         }
-        String roomName = room != null ? room.getName() : null;
+        String roomName = config.room != null ? config.room.getName() : null;
         if (roomName != null) {
             label = roomName + " / " + label;
         }
         defaultChannelLabel = label;
 
         // Propagate to all subcontrols of this control object
-        subControls.values().forEach(c -> c.initialize(thingHandler, room, category));
+        subControls.values().forEach(c -> c.initialize(config));
+    }
+
+    /**
+     * Gets room UUID after it was deserialized by GSON
+     *
+     * @return room UUID
+     */
+    public LxUuid getRoomUuid() {
+        return roomUuid;
+    }
+
+    /**
+     * Gets category UUID after it was deserialized by GSON
+     *
+     * @return category UUID
+     */
+    public LxUuid getCategoryUuid() {
+        return categoryUuid;
+    }
+
+    /**
+     * Gets a GSON object for reuse
+     *
+     * @return GSON object
+     */
+    Gson getGson() {
+        if (config == null) {
+            logger.error("Attempt to get GSON from not finalized configuration!");
+            return null;
+        }
+        return config.thingHandler.getGson();
+    }
+
+    /**
+     * Adds a new control in the framework. Called when a control is dynamically created based on some control's state
+     * changes from the Miniserver.
+     *
+     * @param control a new control to be created
+     */
+    static void addControl(LxControl control) {
+        control.config.thingHandler.addControl(control);
+    }
+
+    /**
+     * Removes a control from the framework. Called when a control is dynamically deleted based on some control's state
+     * changes from the Miniserver.
+     *
+     * @param control a control to be removed
+     */
+    static void removeControl(LxControl control) {
+        control.config.thingHandler.removeControl(control);
+        control.dispose();
+    }
+
+    /**
+     * Gets control's configuration
+     *
+     * @return configuration
+     */
+    LxControlConfig getConfig() {
+        return config;
     }
 
     /**
@@ -385,7 +472,7 @@ public class LxControl {
      * @return control's room object
      */
     LxContainer getRoom() {
-        return room;
+        return config.room;
     }
 
     /**
@@ -394,15 +481,7 @@ public class LxControl {
      * @return control's category object
      */
     LxCategory getCategory() {
-        return category;
-    }
-
-    public LxUuid getRoomUuid() {
-        return roomUuid;
-    }
-
-    public LxUuid getCategoryUuid() {
-        return categoryUuid;
+        return config.category;
     }
 
     /**
@@ -414,13 +493,31 @@ public class LxControl {
      * @param state changed Miniserver state or null if not specified (any/all)
      */
     void onStateChange(LxControlState state) {
-        channels.forEach(channel -> {
-            ChannelUID channelId = channel.getUID();
-            State channelState = getChannelState(channelId);
-            if (channelState != null) {
-                thingHandler.setChannelState(channelId, channelState);
-            }
-        });
+        if (config == null) {
+            logger.error("Attempt to change state with not finalized configuration!: {}", state.getUuid());
+        } else {
+            channels.forEach(channel -> {
+                ChannelUID channelId = channel.getUID();
+                State channelState = getChannelState(channelId);
+                if (channelState != null) {
+                    config.thingHandler.setChannelState(channelId, channelState);
+                }
+            });
+        }
+    }
+
+    /**
+     * Changes the channel state in the framework.
+     *
+     * @param id    channel ID
+     * @param state new state value
+     */
+    void setChannelState(ChannelUID id, State state) {
+        if (config == null) {
+            logger.error("Attempt to set channel state with not finalized configuration!: {}", id);
+        } else {
+            config.thingHandler.setChannelState(id, state);
+        }
     }
 
     /**
@@ -507,10 +604,10 @@ public class LxControl {
      * @param description channel state description
      */
     void addChannelStateDescription(ChannelUID channelId, StateDescription description) {
-        if (thingHandler == null) {
+        if (config == null) {
             logger.error("Attempt to set channel state description with not finalized configuration!: {}", channelId);
         } else {
-            thingHandler.setChannelStateDescription(channelId, description);
+            config.thingHandler.setChannelStateDescription(channelId, description);
         }
     }
 
@@ -521,10 +618,10 @@ public class LxControl {
      * @throws IOException when communication error with Miniserver occurs
      */
     void sendAction(String action) throws IOException {
-        if (thingHandler == null) {
+        if (config == null) {
             logger.error("Attempt to send command with not finalized configuration!: {}", action);
         } else {
-            thingHandler.sendAction(uuid, action);
+            config.thingHandler.sendAction(uuid, action);
         }
     }
 
@@ -539,6 +636,19 @@ public class LxControl {
     }
 
     /**
+     * Call when control is no more needed - unlink it from containers
+     */
+    private void dispose() {
+        if (config.room != null) {
+            config.room.removeControl(this);
+        }
+        if (config.category != null) {
+            config.category.removeControl(this);
+        }
+        subControls.values().forEach(control -> control.dispose());
+    }
+
+    /**
      * Build channel ID for the control, based on control's UUID, thing's UUID and index of the channel for the control
      *
      * @param index index of a channel within control (0 for primary channel) all indexes greater than 0 will have
@@ -546,7 +656,7 @@ public class LxControl {
      * @return channel ID for the control and index
      */
     private ChannelUID getChannelId(int index) {
-        if (thingHandler == null) {
+        if (config == null) {
             logger.error("Attempt to get control's channel ID with not finalized configuration!: {}", index);
             return null;
         }
@@ -554,7 +664,7 @@ public class LxControl {
         if (index > 0) {
             controlId += "-" + index;
         }
-        return new ChannelUID(thingHandler.getThingId(), controlId);
+        return new ChannelUID(config.thingHandler.getThingId(), controlId);
     }
 
 }

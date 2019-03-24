@@ -46,7 +46,7 @@ public class LxDynamicStateDescriptionProvider implements DynamicStateDescriptio
      * @param channelUID  channel UID
      * @param description state description for the channel
      */
-    public void setDescription(ChannelUID channelUID, StateDescription description) {
+    void setDescription(ChannelUID channelUID, StateDescription description) {
         logger.debug("Adding state description for channel {}", channelUID);
         descriptions.put(channelUID, description);
     }
@@ -54,7 +54,7 @@ public class LxDynamicStateDescriptionProvider implements DynamicStateDescriptio
     /**
      * Clear all registered state descriptions
      */
-    public void removeAllDescriptions() {
+    void removeAllDescriptions() {
         logger.debug("Removing all state descriptions");
         descriptions.clear();
     }
@@ -64,7 +64,7 @@ public class LxDynamicStateDescriptionProvider implements DynamicStateDescriptio
      *
      * @param channelUID channel ID to remove description for
      */
-    public void removeDescription(ChannelUID channelUID) {
+    void removeDescription(ChannelUID channelUID) {
         logger.debug("Removing state description for channel {}", channelUID);
         descriptions.remove(channelUID);
     }

@@ -21,9 +21,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.types.LxCategory;
-import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -37,7 +34,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
  * @author Stephan Brunner - initial contribution
  *
  */
-public class LxControlDimmer extends LxControl {
+class LxControlDimmer extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
@@ -47,14 +44,10 @@ public class LxControlDimmer extends LxControl {
 
         @Override
         String getType() {
-            return TYPE_NAME;
+            return "dimmer";
         }
     }
 
-    /**
-     * A name by which Miniserver refers to dimmer controls
-     */
-    private static final String TYPE_NAME = "dimmer";
     /**
      * States
      */
@@ -72,13 +65,13 @@ public class LxControlDimmer extends LxControl {
      */
     private static final String CMD_OFF = "Off";
 
-    LxControlDimmer(LxUuid uuid) {
+    private LxControlDimmer(LxUuid uuid) {
         super(uuid);
     }
 
     @Override
-    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
-        super.initialize(thingHandler, room, category);
+    public void initialize(LxControlConfig config) {
+        super.initialize(config);
         addChannel("Dimmer", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_DIMMER), defaultChannelLabel,
                 "Dimmer", tags, this::handleCommands, this::getChannelState);
     }
@@ -98,8 +91,7 @@ public class LxControlDimmer extends LxControl {
             Double min = getStateDoubleValue(STATE_MIN);
             Double max = getStateDoubleValue(STATE_MAX);
             Double step = getStateDoubleValue(STATE_STEP);
-            if (value != null && max != null && min != null && step != null && min >= 0 && max >= 0
-                    && max > min) {
+            if (value != null && max != null && min != null && step != null && min >= 0 && max >= 0 && max > min) {
                 if ((IncreaseDecreaseType) command == IncreaseDecreaseType.INCREASE) {
                     value += step;
                     if (value > max) {

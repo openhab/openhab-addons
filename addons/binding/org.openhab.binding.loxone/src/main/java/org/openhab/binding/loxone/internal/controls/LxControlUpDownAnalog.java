@@ -24,9 +24,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.types.LxCategory;
-import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlUpDownAnalog extends LxControl {
+class LxControlUpDownAnalog extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
@@ -50,11 +47,9 @@ public class LxControlUpDownAnalog extends LxControl {
 
         @Override
         String getType() {
-            return TYPE_NAME;
+            return "updownanalog";
         }
     }
-
-    static final String TYPE_NAME = "updownanalog";
 
     private static final String STATE_VALUE = "value";
     private static final String STATE_ERROR = "error";
@@ -70,12 +65,12 @@ public class LxControlUpDownAnalog extends LxControl {
     }
 
     @Override
-    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
-        initialize(thingHandler, room, category, "Up/Down Analog");
+    public void initialize(LxControlConfig config) {
+        initialize(config, "Up/Down Analog");
     }
 
-    void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category, String channelDescription) {
-        super.initialize(thingHandler, room, category);
+    void initialize(LxControlConfig config, String channelDescription) {
+        super.initialize(config);
         channelId = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_NUMBER),
                 defaultChannelLabel, channelDescription, tags, this::handleCommands, this::getChannelState);
         if (details != null && details.min != null && details.max != null) {
@@ -101,7 +96,7 @@ public class LxControlUpDownAnalog extends LxControl {
                 sendAction(value.toString());
             } else {
                 // we'll update the state value to reflect current real value that has not been changed
-                thingHandler.setChannelState(channelId, getChannelState());
+                setChannelState(channelId, getChannelState());
             }
         }
     }

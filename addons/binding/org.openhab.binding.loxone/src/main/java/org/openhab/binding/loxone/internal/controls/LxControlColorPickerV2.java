@@ -25,9 +25,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.types.LxCategory;
-import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxTemperatureHSBType;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
@@ -42,7 +39,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
  * @author Michael Mattan - initial contribution
  *
  */
-public class LxControlColorPickerV2 extends LxControl {
+class LxControlColorPickerV2 extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
@@ -52,27 +49,22 @@ public class LxControlColorPickerV2 extends LxControl {
 
         @Override
         String getType() {
-            return TYPE_NAME;
+            return "colorpickerv2";
         }
     }
-
-    /**
-     * A name by which Miniserver refers to color picker v2 controls
-     */
-    private static final String TYPE_NAME = "colorpickerv2";
 
     /**
      * Color state
      */
     private static final String STATE_COLOR = "color";
 
-    LxControlColorPickerV2(LxUuid uuid) {
+    private LxControlColorPickerV2(LxUuid uuid) {
         super(uuid);
     }
 
     @Override
-    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
-        super.initialize(thingHandler, room, category);
+    public void initialize(LxControlConfig config) {
+        super.initialize(config);
         addChannel("Color", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_COLORPICKER), defaultChannelLabel,
                 "Color Picker", tags, this::handleCommands, this::getColor);
     }

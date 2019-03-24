@@ -32,9 +32,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.types.LxCategory;
-import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +57,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlLightControllerV2 extends LxControl {
+class LxControlLightControllerV2 extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
@@ -70,23 +67,18 @@ public class LxControlLightControllerV2 extends LxControl {
 
         @Override
         String getType() {
-            return TYPE_NAME;
+            return "lightcontrollerv2";
         }
     }
 
     /**
-     * A name by which Miniserver refers to light controller v2 controls
-     */
-    private static final String TYPE_NAME = "lightcontrollerv2";
-
-    /**
      * State with list of active moods
      */
-    public static final String STATE_ACTIVE_MOODS_LIST = "activemoods";
+    private static final String STATE_ACTIVE_MOODS_LIST = "activemoods";
     /**
      * State with list of available moods
      */
-    public static final String STATE_MOODS_LIST = "moodlist";
+    private static final String STATE_MOODS_LIST = "moodlist";
 
     /**
      * Command string used to set a given mood
@@ -118,13 +110,13 @@ public class LxControlLightControllerV2 extends LxControl {
     private List<Integer> activeMoods = new ArrayList<>();
     private ChannelUID channelId;
 
-    LxControlLightControllerV2(LxUuid uuid) {
+    private LxControlLightControllerV2(LxUuid uuid) {
         super(uuid);
     }
 
     @Override
-    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
-        super.initialize(thingHandler, room, category);
+    public void initialize(LxControlConfig config) {
+        super.initialize(config);
         // add only channel, state description will be added later when a control state update message is received
         channelId = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_LIGHT_CTRL),
                 defaultChannelLabel, "Light controller V2", tags, this::handleCommands, this::getChannelState);
@@ -170,7 +162,7 @@ public class LxControlLightControllerV2 extends LxControl {
                 onMoodsListChange((String) value);
             } else if (STATE_ACTIVE_MOODS_LIST.equals(stateName) && value instanceof String) {
                 // this state can be received before list of moods, but it contains a valid list of IDs
-                Integer[] array = thingHandler.getGson().fromJson((String) value, Integer[].class);
+                Integer[] array = getGson().fromJson((String) value, Integer[].class);
                 activeMoods = Arrays.asList(array).stream().filter(id -> isMoodOk(id)).collect(Collectors.toList());
                 // update all moods states - this will force update of channels too
                 moodList.values().forEach(mood -> mood.onStateChange(null));
@@ -233,7 +225,7 @@ public class LxControlLightControllerV2 extends LxControl {
      * @throws JsonSyntaxException error parsing json structure
      */
     private void onMoodsListChange(String text) throws JsonSyntaxException {
-        LxControlMood[] array = thingHandler.getGson().fromJson(text, LxControlMood[].class);
+        LxControlMood[] array = getGson().fromJson(text, LxControlMood[].class);
         Map<Integer, LxControlMood> newMoodList = new HashMap<>();
         Integer minMoodId = null;
         Integer maxMoodId = null;
@@ -243,7 +235,7 @@ public class LxControlLightControllerV2 extends LxControl {
                 logger.debug("Adding mood {} (id={}, name={})", id, mood.getName());
                 // mood-UUID = <controller-UUID>-M<mood-ID>
                 LxUuid moodUuid = new LxUuid(getUuid().toString() + "-M" + id);
-                mood.initialize(thingHandler, getRoom(), getCategory(), this, moodUuid);
+                mood.initialize(getConfig(), this, moodUuid);
                 newMoodList.put(id, mood);
                 if (minMoodId == null || minMoodId > id) {
                     minMoodId = id;
@@ -262,8 +254,8 @@ public class LxControlLightControllerV2 extends LxControl {
                     new BigDecimal(maxMoodId), BigDecimal.ONE, null, false, optionsList));
         }
 
-        moodList.values().forEach(m -> thingHandler.removeControl(m));
-        newMoodList.values().forEach(m -> thingHandler.addControl(m));
+        moodList.values().forEach(m -> removeControl(m));
+        newMoodList.values().forEach(m -> addControl(m));
         moodList = newMoodList;
     }
 }

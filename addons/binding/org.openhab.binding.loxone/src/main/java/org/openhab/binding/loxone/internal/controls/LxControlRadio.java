@@ -28,9 +28,6 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.types.LxCategory;
-import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -39,7 +36,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlRadio extends LxControl {
+class LxControlRadio extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
@@ -49,19 +46,14 @@ public class LxControlRadio extends LxControl {
 
         @Override
         String getType() {
-            return TYPE_NAME;
+            return "radio";
         }
     }
 
     /**
      * Number of outputs a radio controller may have
      */
-    public static final int MAX_RADIO_OUTPUTS = 16;
-
-    /**
-     * A name by which Miniserver refers to radio-button controls
-     */
-    private static final String TYPE_NAME = "radio";
+    private static final int MAX_RADIO_OUTPUTS = 16;
 
     /**
      * Radio-button has one state that is a number representing current active output
@@ -76,8 +68,8 @@ public class LxControlRadio extends LxControl {
     private Map<String, String> outputsMap;
 
     @Override
-    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
-        super.initialize(thingHandler, room, category);
+    public void initialize(LxControlConfig config) {
+        super.initialize(config);
         // add both channel and state description (all needed configuration is available)
         ChannelUID cid = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RADIO_BUTTON),
                 defaultChannelLabel, "Radio button", tags, this::handleCommands, this::getChannelState);
@@ -98,7 +90,7 @@ public class LxControlRadio extends LxControl {
         }
     }
 
-    LxControlRadio(LxUuid uuid) {
+    private LxControlRadio(LxUuid uuid) {
         super(uuid);
     }
 

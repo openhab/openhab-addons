@@ -20,9 +20,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.types.LxCategory;
-import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -39,7 +36,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlUpDownDigital extends LxControl {
+class LxControlUpDownDigital extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
@@ -49,11 +46,9 @@ public class LxControlUpDownDigital extends LxControl {
 
         @Override
         String getType() {
-            return TYPE_NAME;
+            return "updowndigital";
         }
     }
-
-    static final String TYPE_NAME = "updowndigital";
 
     private static final String CMD_UP_ON = "UpOn";
     private static final String CMD_UP_OFF = "UpOff";
@@ -70,13 +65,13 @@ public class LxControlUpDownDigital extends LxControl {
     }
 
     @Override
-    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
-        initialize(thingHandler, room, category, " / Up", "Up/Down Digital: Up", " / Down", "Up/Down Digital: Down");
+    public void initialize(LxControlConfig config) {
+        initialize(config, " / Up", "Up/Down Digital: Up", " / Down", "Up/Down Digital: Down");
     }
 
-    void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category, String upChannelLabel,
-            String upChannelDescription, String downChannelLabel, String downChannelDescription) {
-        super.initialize(thingHandler, room, category);
+    void initialize(LxControlConfig config, String upChannelLabel, String upChannelDescription, String downChannelLabel,
+            String downChannelDescription) {
+        super.initialize(config);
         upChannelId = addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH),
                 defaultChannelLabel + upChannelLabel, upChannelDescription, tags, this::handleUpCommands,
                 () -> upState);
@@ -112,7 +107,7 @@ public class LxControlUpDownDigital extends LxControl {
     private void setStates(OnOffType upState, OnOffType downState) {
         this.upState = upState;
         this.downState = downState;
-        thingHandler.setChannelState(upChannelId, upState);
-        thingHandler.setChannelState(downChannelId, downState);
+        setChannelState(upChannelId, upState);
+        setChannelState(downChannelId, downState);
     }
 }

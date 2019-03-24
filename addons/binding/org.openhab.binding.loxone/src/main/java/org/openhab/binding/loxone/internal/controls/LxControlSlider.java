@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.types.LxCategory;
-import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -26,7 +23,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlSlider extends LxControlUpDownAnalog {
+class LxControlSlider extends LxControlUpDownAnalog {
 
     static class Factory extends LxControlInstance {
         @Override
@@ -36,21 +33,16 @@ public class LxControlSlider extends LxControlUpDownAnalog {
 
         @Override
         String getType() {
-            return TYPE_NAME;
+            return "slider";
         }
     }
 
-    /**
-     * A name by which Miniserver refers to slider controls
-     */
-    private static final String TYPE_NAME = "slider";
-
-    public LxControlSlider(LxUuid uuid) {
+    private LxControlSlider(LxUuid uuid) {
         super(uuid);
     }
 
     @Override
-    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
-        super.initialize(thingHandler, room, category, "Slider");
+    public void initialize(LxControlConfig config) {
+        super.initialize(config, "Slider");
     }
 }

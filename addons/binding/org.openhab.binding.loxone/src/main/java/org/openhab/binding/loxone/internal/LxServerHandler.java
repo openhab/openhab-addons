@@ -107,7 +107,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     private final Logger logger = LoggerFactory.getLogger(LxServerHandler.class);
     private static AtomicInteger staticDebugId = new AtomicInteger(1);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+    static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(LxBindingConstants.THING_TYPE_MINISERVER);
 
     private QueuedThreadPool jettyThreadPool;
@@ -380,54 +380,6 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
      */
 
     /**
-     * Add a new control, its states, subcontrols and channels to the handler structures.
-     * Handler maintains maps of all controls (main controls + subcontrols), all channels for all controls and all
-     * states to match received openHAB commands and state updates from the Miniserver. States also contain links to
-     * possibly multiple control objects, as many controls can share the same state with the same state uuid.
-     * To create channels, {@link LxServerHandler#addThingChannels} method should be called separately. This allows
-     * creation of all channels for all controls with a single thing update.
-     *
-     * @param control a created control object to be added
-     */
-    void addControlStructures(LxControl control) {
-        LxUuid uuid = control.getUuid();
-        logger.debug("[{}] Adding control to handler: {}, {}", debugId, uuid, control.getName());
-        control.getStates().values().forEach(state -> {
-            Map<LxUuid, LxControlState> perUuid = states.get(state.getUuid());
-            if (perUuid == null) {
-                perUuid = new HashMap<>();
-                states.put(state.getUuid(), perUuid);
-            }
-            perUuid.put(uuid, state);
-        });
-        controls.put(control.getUuid(), control);
-        control.getChannels().forEach(channel -> channels.put(channel.getUID(), control));
-        control.getSubControls().values().forEach(subControl -> addControlStructures(subControl));
-    }
-
-    /**
-     * Adds channels to the thing, to make them available to the framework and user.
-     * This method will sort the channels according to their label.
-     * It is expected that input list contains no duplicate channel IDs.
-     *
-     * @param newChannels a list of channels to add to the thing
-     * @param purge       if true, old channels will be removed, otherwise merged
-     */
-    void addThingChannels(List<Channel> newChannels, boolean purge) {
-        List<Channel> channels = newChannels;
-        if (!purge) {
-            channels.addAll(getThing().getChannels());
-        }
-        channels.sort((c1, c2) -> {
-            String label = c1.getLabel();
-            return label == null ? 1 : label.compareTo(c2.getLabel());
-        });
-        ThingBuilder builder = editThing();
-        builder.withChannels(channels);
-        updateThing(builder.build());
-    }
-
-    /**
      * Dispose of all objects created from the Miniserver configuration.
      */
     void clearConfiguration() {
@@ -550,6 +502,54 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
             threadLock.unlock();
         }
 
+    }
+
+    /**
+     * Add a new control, its states, subcontrols and channels to the handler structures.
+     * Handler maintains maps of all controls (main controls + subcontrols), all channels for all controls and all
+     * states to match received openHAB commands and state updates from the Miniserver. States also contain links to
+     * possibly multiple control objects, as many controls can share the same state with the same state uuid.
+     * To create channels, {@link LxServerHandler#addThingChannels} method should be called separately. This allows
+     * creation of all channels for all controls with a single thing update.
+     *
+     * @param control a created control object to be added
+     */
+    private void addControlStructures(LxControl control) {
+        LxUuid uuid = control.getUuid();
+        logger.debug("[{}] Adding control to handler: {}, {}", debugId, uuid, control.getName());
+        control.getStates().values().forEach(state -> {
+            Map<LxUuid, LxControlState> perUuid = states.get(state.getUuid());
+            if (perUuid == null) {
+                perUuid = new HashMap<>();
+                states.put(state.getUuid(), perUuid);
+            }
+            perUuid.put(uuid, state);
+        });
+        controls.put(control.getUuid(), control);
+        control.getChannels().forEach(channel -> channels.put(channel.getUID(), control));
+        control.getSubControls().values().forEach(subControl -> addControlStructures(subControl));
+    }
+
+    /**
+     * Adds channels to the thing, to make them available to the framework and user.
+     * This method will sort the channels according to their label.
+     * It is expected that input list contains no duplicate channel IDs.
+     *
+     * @param newChannels a list of channels to add to the thing
+     * @param purge       if true, old channels will be removed, otherwise merged
+     */
+    private void addThingChannels(List<Channel> newChannels, boolean purge) {
+        List<Channel> channels = newChannels;
+        if (!purge) {
+            channels.addAll(getThing().getChannels());
+        }
+        channels.sort((c1, c2) -> {
+            String label = c1.getLabel();
+            return label == null ? 1 : label.compareTo(c2.getLabel());
+        });
+        ThingBuilder builder = editThing();
+        builder.withChannels(channels);
+        updateThing(builder.build());
     }
 
     /**

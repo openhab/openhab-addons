@@ -124,7 +124,7 @@ class LxWsSecurityToken extends LxWsSecurity {
     // AES encryption random initialization vector length
     private static final int IV_LENGTH_BYTES = 16;
 
-    public static final String CMD_GET_KEY_AND_SALT = "jdev/sys/getkey2/";
+    private static final String CMD_GET_KEY_AND_SALT = "jdev/sys/getkey2/";
     private static final String CMD_GET_PUBLIC_KEY = "jdev/sys/getPublicKey";
     private static final String CMD_KEY_EXCHANGE = "jdev/sys/keyexchange/";
     private static final String CMD_REQUEST_TOKEN = "jdev/sys/gettoken/";

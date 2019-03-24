@@ -25,7 +25,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlFactory {
+class LxControlFactory {
     static {
         CONTROLS = new HashMap<>();
         add(new LxControlColorPickerV2.Factory());
@@ -59,7 +59,7 @@ public class LxControlFactory {
      * @param type control type
      * @return created control object or null if error
      */
-    public static LxControl createControl(LxUuid uuid, String type) {
+    static LxControl createControl(LxUuid uuid, String type) {
         LxControlInstance control = CONTROLS.get(type.toLowerCase());
         if (control != null) {
             return control.create(uuid);

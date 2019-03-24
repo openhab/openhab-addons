@@ -22,9 +22,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.types.LxCategory;
-import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -39,7 +36,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
  * @author Stephan Brunner - initial contribution
  *
  */
-public class LxControlTimedSwitch extends LxControlPushbutton {
+class LxControlTimedSwitch extends LxControlPushbutton {
 
     static class Factory extends LxControlInstance {
         @Override
@@ -49,14 +46,9 @@ public class LxControlTimedSwitch extends LxControlPushbutton {
 
         @Override
         String getType() {
-            return TYPE_NAME;
+            return "timedswitch";
         }
     }
-
-    /**
-     * A name by which Miniserver refers to timed switch controls
-     */
-    private static final String TYPE_NAME = "timedswitch";
 
     /**
      * deactivationDelay - countdown until the output is deactivated.
@@ -66,13 +58,13 @@ public class LxControlTimedSwitch extends LxControlPushbutton {
      */
     private static final String STATE_DEACTIVATION_DELAY = "deactivationdelay";
 
-    LxControlTimedSwitch(LxUuid uuid) {
+    private LxControlTimedSwitch(LxUuid uuid) {
         super(uuid);
     }
 
     @Override
-    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
-        super.initialize(thingHandler, room, category);
+    public void initialize(LxControlConfig config) {
+        super.initialize(config);
         ChannelUID id = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_NUMBER),
                 defaultChannelLabel + " / Deactivation Delay", "Deactivation Delay", null, null,
                 this::getDeactivationState);

@@ -30,11 +30,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class LxControlState {
-    private LxUuid uuid;
-    private String name;
-    private Object stateValue;
-    private LxControl control;
+    private final LxUuid uuid;
+    private final String name;
+    private final LxControl control;
     private final Logger logger = LoggerFactory.getLogger(LxControlState.class);
+    private Object stateValue;
 
     /**
      * Create a control state object.
@@ -82,15 +82,6 @@ public class LxControlState {
     }
 
     /**
-     * Gets control to which state belongs
-     *
-     * @return state's control object
-     */
-    LxControl getControl() {
-        return control;
-    }
-
-    /**
      * Gets state's name.
      * <p>
      * State's name is proprietary per control type.
@@ -99,14 +90,5 @@ public class LxControlState {
      */
     String getName() {
         return name;
-    }
-
-    /**
-     * Sets state's name
-     *
-     * @param name state's name
-     */
-    void setName(String name) {
-        this.name = name;
     }
 }

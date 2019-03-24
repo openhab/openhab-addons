@@ -46,9 +46,9 @@ public abstract class LxWsSecurity {
     final LxServerHandlerApi thingHandler;
 
     LxErrorCode reason;
-    String details;
-    boolean cancel = false;
 
+    private String details;
+    private boolean cancel = false;
     private final Lock authenticationLock = new ReentrantLock();
 
     /**

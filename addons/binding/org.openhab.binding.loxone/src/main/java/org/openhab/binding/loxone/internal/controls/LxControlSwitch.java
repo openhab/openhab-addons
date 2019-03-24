@@ -21,9 +21,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.types.LxCategory;
-import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -38,7 +36,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlSwitch extends LxControl {
+class LxControlSwitch extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
@@ -48,14 +46,9 @@ public class LxControlSwitch extends LxControl {
 
         @Override
         String getType() {
-            return TYPE_NAME;
+            return "switch";
         }
     }
-
-    /**
-     * A name by which Miniserver refers to switch controls
-     */
-    static final String TYPE_NAME = "switch";
 
     /**
      * Switch has one state that can be on/off
@@ -76,8 +69,9 @@ public class LxControlSwitch extends LxControl {
     }
 
     @Override
-    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
-        super.initialize(thingHandler, room, category);
+    public void initialize(LxControlConfig config) {
+        super.initialize(config);
+        LxCategory category = getCategory();
         if (category != null && category.getType() == LxCategory.CategoryType.LIGHTS) {
             tags.add("Lighting");
         }

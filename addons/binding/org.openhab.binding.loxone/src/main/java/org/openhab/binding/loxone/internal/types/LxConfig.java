@@ -18,6 +18,7 @@ import java.util.Objects;
 
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.controls.LxControl;
+import org.openhab.binding.loxone.internal.controls.LxControl.LxControlConfig;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
@@ -32,9 +33,9 @@ import com.google.gson.annotations.SerializedName;
  */
 public class LxConfig {
 
-    public Map<LxUuid, LxContainer> rooms;
+    private Map<LxUuid, LxContainer> rooms;
     @SerializedName("cats")
-    public Map<LxUuid, LxCategory> categories;
+    private Map<LxUuid, LxCategory> categories;
     public Map<LxUuid, LxControl> controls;
 
     public class LxServerInfo {
@@ -55,11 +56,8 @@ public class LxConfig {
         rooms.values().removeIf(o -> (o == null || o.getUuid() == null));
         categories.values().removeIf(o -> (o == null || o.getUuid() == null));
         controls.values().removeIf(Objects::isNull);
-        controls.values().forEach(c -> {
-            LxContainer room = rooms.get(c.getRoomUuid());
-            LxCategory category = categories.get(c.getCategoryUuid());
-            c.initialize(thingHandler, room, category);
-        });
+        controls.values().forEach(c -> c.initialize(
+                new LxControlConfig(thingHandler, rooms.get(c.getRoomUuid()), categories.get(c.getCategoryUuid()))));
     }
 
     public static <T> T deserializeObject(JsonObject parent, String name, Type type,

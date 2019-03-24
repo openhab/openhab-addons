@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.types.LxCategory;
-import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -29,7 +26,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlLeftRightDigital extends LxControlUpDownDigital {
+class LxControlLeftRightDigital extends LxControlUpDownDigital {
 
     static class Factory extends LxControlInstance {
         @Override
@@ -39,20 +36,17 @@ public class LxControlLeftRightDigital extends LxControlUpDownDigital {
 
         @Override
         String getType() {
-            return TYPE_NAME;
+            return "leftrightdigital";
         }
     }
 
-    static final String TYPE_NAME = "leftrightdigital";
-
-    LxControlLeftRightDigital(LxUuid uuid) {
+    private LxControlLeftRightDigital(LxUuid uuid) {
         super(uuid);
     }
 
     @Override
-    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
-        super.initialize(thingHandler, room, category, " / Left", "Left/Right Digital: Left", " / Right",
-                "Left/Right Digital: Right");
+    public void initialize(LxControlConfig config) {
+        super.initialize(config, " / Left", "Left/Right Digital: Left", " / Right", "Left/Right Digital: Right");
 
     }
 }

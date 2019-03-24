@@ -24,9 +24,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.StateDescription;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.types.LxCategory;
-import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlValueSelector extends LxControl {
+class LxControlValueSelector extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
@@ -49,14 +46,9 @@ public class LxControlValueSelector extends LxControl {
 
         @Override
         String getType() {
-            return TYPE_NAME;
+            return "valueselector";
         }
     }
-
-    /**
-     * A name by which Miniserver refers to value selector controls
-     */
-    private static final String TYPE_NAME = "valueselector";
 
     private static final String STATE_VALUE = "value";
     private static final String STATE_MIN = "min";
@@ -72,13 +64,13 @@ public class LxControlValueSelector extends LxControl {
     private Double stepValue;
     private ChannelUID channelId;
 
-    LxControlValueSelector(LxUuid uuid) {
+    private LxControlValueSelector(LxUuid uuid) {
         super(uuid);
     }
 
     @Override
-    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
-        super.initialize(thingHandler, room, category);
+    public void initialize(LxControlConfig config) {
+        super.initialize(config);
         channelId = addChannel("Dimmer", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_DIMMER),
                 defaultChannelLabel, "Value Selector", tags, this::handleCommand, this::getChannelState);
         if (details != null) {

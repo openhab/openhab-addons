@@ -19,9 +19,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.types.LxCategory;
-import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -32,7 +29,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlTextState extends LxControl {
+class LxControlTextState extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
@@ -42,27 +39,22 @@ public class LxControlTextState extends LxControl {
 
         @Override
         String getType() {
-            return TYPE_NAME;
+            return "textstate";
         }
     }
-
-    /**
-     * A name by which Miniserver refers to text state controls
-     */
-    private static final String TYPE_NAME = "textstate";
 
     /**
      * A state which will receive an update of possible Text State values)
      */
     private static final String STATE_TEXT_AND_ICON = "textandicon";
 
-    LxControlTextState(LxUuid uuid) {
+    private LxControlTextState(LxUuid uuid) {
         super(uuid);
     }
 
     @Override
-    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
-        super.initialize(thingHandler, room, category);
+    public void initialize(LxControlConfig config) {
+        super.initialize(config);
         ChannelUID id = addChannel("String", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_TEXT),
                 defaultChannelLabel, "Text state", tags, null, this::getState);
         addChannelStateDescription(id, new StateDescription(null, null, null, null, true, null));

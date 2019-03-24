@@ -26,7 +26,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlPushbutton extends LxControlSwitch {
+class LxControlPushbutton extends LxControlSwitch {
 
     static class Factory extends LxControlInstance {
         @Override
@@ -36,14 +36,10 @@ public class LxControlPushbutton extends LxControlSwitch {
 
         @Override
         String getType() {
-            return TYPE_NAME;
+            return "pushbutton";
         }
     }
 
-    /**
-     * A name by which Miniserver refers to pushbutton controls
-     */
-    private static final String TYPE_NAME = "pushbutton";
     /**
      * Command string used to set control's state to ON and OFF (tap)
      */

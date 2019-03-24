@@ -76,7 +76,7 @@ public class LxWebSocket {
     private final String user;
     private final String password;
 
-    Session session;
+    private Session session;
     private String fwVersion;
     private ScheduledFuture<?> timeout;
     private LxWsBinaryHeader header;
@@ -104,7 +104,7 @@ public class LxWebSocket {
      * @param cfg          binding configuration
      * @param host         IP address of the Miniserver
      */
-    public LxWebSocket(int debugId, LxServerHandler thingHandler, LxBindingConfiguration cfg, InetAddress host) {
+    LxWebSocket(int debugId, LxServerHandler thingHandler, LxBindingConfiguration cfg, InetAddress host) {
         this.debugId = debugId;
         this.thingHandler = thingHandler;
         this.host = host;
@@ -469,23 +469,6 @@ public class LxWebSocket {
     }
 
     /**
-     * Stops scheduled timeout waiting for a Miniserver response
-     * The caller must take care of thread synchronization.
-     */
-    void stopResponseTimeout() {
-        webSocketLock.lock();
-        try {
-            logger.trace("[{}] stopping response timeout", debugId);
-            if (timeout != null) {
-                timeout.cancel(true);
-                timeout = null;
-            }
-        } finally {
-            webSocketLock.unlock();
-        }
-    }
-
-    /**
      * Disconnect websocket session - initiated from this end.
      *
      * @param code   error code for disconnecting the websocket
@@ -512,6 +495,23 @@ public class LxWebSocket {
     /*
      * Private methods
      */
+
+    /**
+     * Stops scheduled timeout waiting for a Miniserver response
+     * The caller must take care of thread synchronization.
+     */
+    private void stopResponseTimeout() {
+        webSocketLock.lock();
+        try {
+            logger.trace("[{}] stopping response timeout", debugId);
+            if (timeout != null) {
+                timeout.cancel(true);
+                timeout = null;
+            }
+        } finally {
+            webSocketLock.unlock();
+        }
+    }
 
     /**
      * Sends a command to the Miniserver and encrypts it if command can be encrypted and encryption is available.
@@ -631,5 +631,4 @@ public class LxWebSocket {
         logger.debug("[{}] Miniserver response timeout", debugId);
         disconnect(LxErrorCode.COMMUNICATION_ERROR, "Miniserver response timeout occured");
     }
-
 }

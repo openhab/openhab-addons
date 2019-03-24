@@ -18,9 +18,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.types.LxCategory;
-import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -32,7 +29,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlInfoOnlyDigital extends LxControl {
+class LxControlInfoOnlyDigital extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
@@ -42,26 +39,22 @@ public class LxControlInfoOnlyDigital extends LxControl {
 
         @Override
         String getType() {
-            return TYPE_NAME;
+            return "infoonlydigital";
         }
     }
 
-    /**
-     * A name by which Miniserver refers to digital virtual state controls
-     */
-    private static final String TYPE_NAME = "infoonlydigital";
     /**
      * InfoOnlyDigital has one state that can be on/off
      */
     private static final String STATE_ACTIVE = "active";
 
-    LxControlInfoOnlyDigital(LxUuid uuid) {
+    private LxControlInfoOnlyDigital(LxUuid uuid) {
         super(uuid);
     }
 
     @Override
-    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
-        super.initialize(thingHandler, room, category);
+    public void initialize(LxControlConfig config) {
+        super.initialize(config);
         addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_SWITCH), defaultChannelLabel,
                 "Digital virtual state", tags, null, this::getChannelState);
     }

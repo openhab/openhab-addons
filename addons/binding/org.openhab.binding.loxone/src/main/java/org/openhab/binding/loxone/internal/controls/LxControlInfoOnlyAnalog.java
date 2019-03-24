@@ -18,9 +18,6 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.StateDescription;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.types.LxCategory;
-import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -32,7 +29,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlInfoOnlyAnalog extends LxControl {
+class LxControlInfoOnlyAnalog extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
@@ -42,26 +39,22 @@ public class LxControlInfoOnlyAnalog extends LxControl {
 
         @Override
         String getType() {
-            return TYPE_NAME;
+            return "infoonlyanalog";
         }
     }
 
-    /**
-     * A name by which Miniserver refers to analog virtual state controls
-     */
-    private static final String TYPE_NAME = "infoonlyanalog";
     /**
      * InfoOnlyAnalog state with current value
      */
     private static final String STATE_VALUE = "value";
 
-    LxControlInfoOnlyAnalog(LxUuid uuid) {
+    private LxControlInfoOnlyAnalog(LxUuid uuid) {
         super(uuid);
     }
 
     @Override
-    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
-        super.initialize(thingHandler, room, category);
+    public void initialize(LxControlConfig config) {
+        super.initialize(config);
         ChannelUID cid = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_ANALOG),
                 defaultChannelLabel, "Analog virtual state", tags, null, this::getChannelState);
         String format;

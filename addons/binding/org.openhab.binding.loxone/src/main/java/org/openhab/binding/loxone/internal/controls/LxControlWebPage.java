@@ -18,9 +18,6 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.StateDescription;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.types.LxCategory;
-import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -29,7 +26,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlWebPage extends LxControl {
+class LxControlWebPage extends LxControl {
     static class Factory extends LxControlInstance {
         @Override
         LxControl create(LxUuid uuid) {
@@ -38,24 +35,20 @@ public class LxControlWebPage extends LxControl {
 
         @Override
         String getType() {
-            return TYPE_NAME;
+            return "webpage";
         }
     }
 
-    /**
-     * A name by which Miniserver refers to text state controls
-     */
-    private static final String TYPE_NAME = "webpage";
     private StringType url;
     private StringType urlHd;
 
-    LxControlWebPage(LxUuid uuid) {
+    private LxControlWebPage(LxUuid uuid) {
         super(uuid);
     }
 
     @Override
-    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
-        super.initialize(thingHandler, room, category);
+    public void initialize(LxControlConfig config) {
+        super.initialize(config);
         if (details != null) {
             if (details.url != null) {
                 url = new StringType(details.url);

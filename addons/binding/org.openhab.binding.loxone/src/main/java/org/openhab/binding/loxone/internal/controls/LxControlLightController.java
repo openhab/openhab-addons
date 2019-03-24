@@ -27,9 +27,6 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
-import org.openhab.binding.loxone.internal.LxServerHandlerApi;
-import org.openhab.binding.loxone.internal.types.LxCategory;
-import org.openhab.binding.loxone.internal.types.LxContainer;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -44,7 +41,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlLightController extends LxControl {
+class LxControlLightController extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override
@@ -54,7 +51,7 @@ public class LxControlLightController extends LxControl {
 
         @Override
         String getType() {
-            return TYPE_NAME;
+            return "lightcontroller";
         }
     }
 
@@ -64,18 +61,13 @@ public class LxControlLightController extends LxControl {
     private static final int NUM_OF_SCENES = 10;
 
     /**
-     * A name by which Miniserver refers to light controller controls
-     */
-    private static final String TYPE_NAME = "lightcontroller";
-
-    /**
      * Current active scene number (0-9)
      */
     private static final String STATE_ACTIVE_SCENE = "activescene";
     /**
      * List of available scenes (public state, so user can monitor scene list updates)
      */
-    public static final String STATE_SCENE_LIST = "scenelist";
+    private static final String STATE_SCENE_LIST = "scenelist";
     /**
      * Command string used to set control's state to ON
      */
@@ -97,13 +89,13 @@ public class LxControlLightController extends LxControl {
     private List<StateOption> sceneNames = new ArrayList<>();
     private ChannelUID channelId;
 
-    LxControlLightController(LxUuid uuid) {
+    private LxControlLightController(LxUuid uuid) {
         super(uuid);
     }
 
     @Override
-    public void initialize(LxServerHandlerApi thingHandler, LxContainer room, LxCategory category) {
-        super.initialize(thingHandler, room, category);
+    public void initialize(LxControlConfig config) {
+        super.initialize(config);
         // add only channel, state description will be added later when a control state update message is received
         channelId = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_LIGHT_CTRL),
                 defaultChannelLabel, "Light controller", tags, this::handleCommands, this::getChannelState);
