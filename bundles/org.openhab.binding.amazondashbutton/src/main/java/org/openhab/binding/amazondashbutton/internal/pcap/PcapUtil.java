@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.amazondashbutton.internal.pcap;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.core.Pcaps;
-
-import com.google.common.collect.Iterables;
 
 /**
  *
@@ -30,12 +32,12 @@ public class PcapUtil {
     /**
      * Returns all Pcap network interfaces relying on {@link Pcaps#findAllDevs()}.
      *
-     * @return A {@link Iterable} of all {@link PcapNetworkInterfaceWrapper}s
+     * @return A {@link Set} of all {@link PcapNetworkInterfaceWrapper}s
      */
-    public static Iterable<PcapNetworkInterfaceWrapper> getAllNetworkInterfaces() {
+    public static Set<PcapNetworkInterfaceWrapper> getAllNetworkInterfaces() {
         try {
-            final Iterable<PcapNetworkInterfaceWrapper> allNetworkInterfaces = Iterables
-                    .transform(Pcaps.findAllDevs(), PcapNetworkInterfaceWrapper.TRANSFORMER);
+            final Set<PcapNetworkInterfaceWrapper> allNetworkInterfaces = Collections.unmodifiableSet(Pcaps
+                    .findAllDevs().stream().map(PcapNetworkInterfaceWrapper.TRANSFORMER).collect(Collectors.toSet()));
             return allNetworkInterfaces;
         } catch (PcapNativeException e) {
             throw new RuntimeException(e);

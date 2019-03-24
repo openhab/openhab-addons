@@ -12,22 +12,19 @@
  */
 package org.openhab.binding.amazondashbutton.internal.pcap;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.pcap4j.core.PcapNetworkInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
 
 /**
  * The {@link PcapNetworkInterfaceService} is a singleton which can be obtained by calling {@link #instance()}.
@@ -56,14 +53,14 @@ public class PcapNetworkInterfaceService {
 
     private final Runnable pollingRunnable = () -> {
         synchronized (pcapNetworkInterfaces) {
-            final Set<PcapNetworkInterfaceWrapper> determinedNetworkInterfaces = Sets
-                    .newHashSet(determineBoundNetworkInterfaces());
-            final Set<PcapNetworkInterfaceWrapper> currentNetworkInterfaces = Sets.newHashSet(pcapNetworkInterfaces);
+            final Set<PcapNetworkInterfaceWrapper> determinedNetworkInterfaces = determineBoundNetworkInterfaces();
+            final Set<PcapNetworkInterfaceWrapper> currentNetworkInterfaces = new HashSet<>(pcapNetworkInterfaces);
 
-            final SetView<PcapNetworkInterfaceWrapper> newNetworkInterfaces = Sets
-                    .difference(determinedNetworkInterfaces, currentNetworkInterfaces);
-            final SetView<PcapNetworkInterfaceWrapper> removedNetworkInterfaces = Sets
-                    .difference(currentNetworkInterfaces, determinedNetworkInterfaces);
+            final Set<PcapNetworkInterfaceWrapper> newNetworkInterfaces = new HashSet<>(determinedNetworkInterfaces);
+            newNetworkInterfaces.removeIf(currentNetworkInterfaces::contains);
+
+            final Set<PcapNetworkInterfaceWrapper> removedNetworkInterfaces = new HashSet<>(currentNetworkInterfaces);
+            removedNetworkInterfaces.removeIf(determinedNetworkInterfaces::contains);
 
             pcapNetworkInterfaces.clear();
             pcapNetworkInterfaces.addAll(determinedNetworkInterfaces);
@@ -100,7 +97,7 @@ public class PcapNetworkInterfaceService {
      */
     public Set<PcapNetworkInterfaceWrapper> getNetworkInterfaces() {
         synchronized (pcapNetworkInterfaces) {
-            return ImmutableSet.copyOf(pcapNetworkInterfaces);
+            return Collections.unmodifiableSet(pcapNetworkInterfaces.stream().collect(Collectors.toSet()));
         }
     }
 
@@ -166,20 +163,18 @@ public class PcapNetworkInterfaceService {
      *
      * @return An {@link Iterable} of all {@link PcapNetworkInterfaceWrapper}s which are bound to an address
      */
-    private Iterable<PcapNetworkInterfaceWrapper> determineBoundNetworkInterfaces() {
-        final Iterable<PcapNetworkInterfaceWrapper> allNetworkInterfaces = PcapUtil.getAllNetworkInterfaces();
-        return Iterables.filter(allNetworkInterfaces, new Predicate<PcapNetworkInterfaceWrapper>() {
-
-            @Override
-            public boolean apply(PcapNetworkInterfaceWrapper networkInterface) {
-                final boolean suitable = !networkInterface.getAddresses().isEmpty();
-                if (!suitable) {
-                    logger.debug("{} is not a suitable network interfaces as no addresses are bound to it.",
-                            networkInterface.getName());
-                }
-                return suitable;
+    private Set<PcapNetworkInterfaceWrapper> determineBoundNetworkInterfaces() {
+        final Set<PcapNetworkInterfaceWrapper> allNetworkInterfaces = new HashSet<>();
+        PcapUtil.getAllNetworkInterfaces().forEach(allNetworkInterfaces::add);
+        allNetworkInterfaces.removeIf(networkInterface -> {
+            final boolean notSuitable = networkInterface.getAddresses().isEmpty();
+            if (notSuitable) {
+                logger.debug("{} is not a suitable network interfaces as no addresses are bound to it.",
+                        networkInterface.getName());
             }
+            return notSuitable;
         });
+        return allNetworkInterfaces;
     }
 
     private void updatePollingState() {
