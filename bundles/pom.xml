@@ -63,6 +63,7 @@
     <module>org.openhab.binding.serialbutton</module>
     <module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.spotify</module>
+    <module>org.openhab.binding.tankerkoenig</module>
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.unifi</module>
     <module>org.openhab.binding.valloxmv</module>
