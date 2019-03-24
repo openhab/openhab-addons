@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.deconz.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -21,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class BindingConstants {
 
     public static final String BINDING_ID = "deconz";
@@ -40,6 +42,7 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_WATERLEAKAGE_SENSOR = new ThingTypeUID(BINDING_ID,
             "waterleakagesensor");
     public static final ThingTypeUID THING_TYPE_ALARM_SENSOR = new ThingTypeUID(BINDING_ID, "alarmsensor");
+    public static final ThingTypeUID THING_TYPE_VIBRATION_SENSOR = new ThingTypeUID(BINDING_ID, "vibrationsensor");
 
     // List of all Channel ids
     public static final String CHANNEL_PRESENCE = "presence";
@@ -63,6 +66,7 @@ public class BindingConstants {
     public static final String CHANNEL_WATERLEAKAGE = "waterleakage";
     public static final String CHANNEL_ALARM = "alarm";
     public static final String CHANNEL_TAMPERED = "tampered";
+    public static final String CHANNEL_VIBRATION = "vibration";
     public static final String CHANNEL_BATTERY_LEVEL = "battery_level";
     public static final String CHANNEL_BATTERY_LOW = "battery_low";
 
