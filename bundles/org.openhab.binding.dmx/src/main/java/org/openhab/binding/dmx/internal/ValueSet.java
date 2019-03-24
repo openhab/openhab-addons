@@ -147,7 +147,7 @@ public class ValueSet {
     }
 
     /**
-     * parse this value set from a string
+     * parse a value set from a string
      *
      * @param valueSetConfig a string holding a complete value set configuration fadeTime:value,value2,...:holdTime
      * @return a new ValueSet
@@ -164,6 +164,27 @@ public class ValueSet {
         } else {
             return new ValueSet(0, -1);
         }
+    }
+
+    /**
+     * parses a chase configuration (list of value sets) from a string
+     *
+     * @param chaseConfigString a string containing the chaser definition
+     * @return a list of ValueSets containing the chase configuration
+     */
+    public static List<ValueSet> parseChaseConfig(String chaseConfigString) {
+        List<ValueSet> chaseConfig = new ArrayList<>();
+        String strippedConfig = chaseConfigString.replaceAll("(\\s)+", "");
+        for (String singleStepString : strippedConfig.split("\\|")) {
+            ValueSet value = ValueSet.fromString(singleStepString);
+            if (!value.isEmpty()) {
+                chaseConfig.add(value);
+            } else {
+                chaseConfig.clear();
+                return chaseConfig;
+            }
+        }
+        return chaseConfig;
     }
 
     @Override
