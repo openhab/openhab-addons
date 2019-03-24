@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 public class ChaserThingHandler extends DmxThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_CHASER);
 
-    private Logger logger = LoggerFactory.getLogger(ChaserThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ChaserThingHandler.class);
 
     private final List<DmxChannel> channels = new ArrayList<DmxChannel>();
     private List<ValueSet> values = new ArrayList<ValueSet>();
