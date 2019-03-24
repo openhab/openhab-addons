@@ -16,6 +16,7 @@ import static org.openhab.binding.lifx.internal.LifxBindingConstants.*;
 import static org.openhab.binding.lifx.internal.util.LifxMessageUtil.randomSourceId;
 import static org.openhab.binding.lifx.internal.util.LifxSelectorUtil.*;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -197,8 +198,9 @@ public class LifxLightDiscovery extends AbstractDiscoveryService {
             } else {
                 logger.info("A discovery scan for LIFX lights is already underway");
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.debug("{} while discovering LIFX lights : {}", e.getClass().getSimpleName(), e.getMessage());
+            isScanning = false;
         }
     }
 
