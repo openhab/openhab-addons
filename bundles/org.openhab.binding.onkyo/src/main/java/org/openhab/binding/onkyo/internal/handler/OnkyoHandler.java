@@ -482,7 +482,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     }
 
     private void processInfo(String infoXML) {
-
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder;
@@ -490,8 +489,8 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             InputSource is = new InputSource(new StringReader(infoXML));
             Document doc = builder.parse(is);
 
-            NodeList SelectableInputs = doc.getDocumentElement().getElementsByTagName("selector");
-            populateInputs(SelectableInputs);
+            NodeList selectableInputs = doc.getDocumentElement().getElementsByTagName("selector");
+            populateInputs(selectableInputs);
 
         } catch (ParserConfigurationException | SAXException | IOException e) {
             logger.debug("Error occured during Info XML parsing.", e);
