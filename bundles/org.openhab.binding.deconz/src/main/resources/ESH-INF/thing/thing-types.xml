@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="deconz">
-		<label>Deconz</label>
+		<label>deCONZ</label>
 		<description>A running deCONZ software instance</description>
 		<config-description>
 			<parameter name="host" type="text" required="true">

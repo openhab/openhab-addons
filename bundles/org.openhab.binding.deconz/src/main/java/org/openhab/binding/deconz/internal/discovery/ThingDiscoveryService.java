@@ -84,7 +84,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
      */
     private void addDevice(String sensorID, SensorMessage sensor) {
         ThingTypeUID thingTypeUID;
-        if (sensor.type.contains("Daylight")) { // Deconz specific: Software simulated daylight sensor
+        if (sensor.type.contains("Daylight")) { // deCONZ specific: Software simulated daylight sensor
             thingTypeUID = THING_TYPE_DAYLIGHT_SENSOR;
         } else if (sensor.type.contains("Power")) { // ZHAPower, CLIPPower
             thingTypeUID = THING_TYPE_POWER_SENSOR;
