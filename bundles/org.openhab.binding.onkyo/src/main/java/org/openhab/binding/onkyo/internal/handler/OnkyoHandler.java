@@ -350,6 +350,8 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_INPUTZONE3), options);
     }
 
+    private State lastPowerState = OnOffType.OFF;
+
     @Override
     public void statusUpdateReceived(String ip, EiscpMessage data) {
         logger.debug("Received status update from Onkyo Receiver @{}: data={}", connection.getConnectionName(), data);
@@ -374,7 +376,13 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                  * ZONE 1
                  */
                 case POWER:
-                    updateState(CHANNEL_POWER, convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class));
+                    State state = convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class);
+                    updateState(CHANNEL_POWER, state);
+                    if (configuration.refreshInterval == 0 && lastPowerState == OnOffType.OFF
+                            && state == OnOffType.ON) {
+                        sendCommand(EiscpCommand.INFO_QUERY);
+                    }
+                    lastPowerState = state;
                     break;
                 case MUTE:
                     updateState(CHANNEL_MUTE, convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class));
