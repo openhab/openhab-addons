@@ -402,6 +402,9 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
             case CHANNEL_TAMPERED:
                 updateState(channelUID, Boolean.TRUE.equals(state.tampered) ? OnOffType.ON : OnOffType.OFF);
                 break;
+            case CHANNEL_VIBRATION:
+                updateState(channelUID, Boolean.TRUE.equals(state.vibration) ? OnOffType.ON : OnOffType.OFF);
+                break;
             case CHANNEL_BUTTON:
                 if (buttonevent != null) {
                     updateState(channelUID, new DecimalType(buttonevent));
