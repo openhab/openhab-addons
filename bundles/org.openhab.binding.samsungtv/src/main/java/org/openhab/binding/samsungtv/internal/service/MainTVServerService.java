@@ -67,7 +67,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     private Set<EventListener> listeners = new CopyOnWriteArraySet<>();
 
     public MainTVServerService(UpnpIOService upnpIOService, String udn, int pollingInterval) {
-        logger.debug("Create a Samsung TV MainTVServer service");
+        logger.debug("Creating a Samsung TV MainTVServer service");
 
         if (upnpIOService != null) {
             service = upnpIOService;

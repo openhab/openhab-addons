@@ -35,6 +35,8 @@ public abstract class RemoteController implements AutoCloseable {
 
     public abstract void openConnection() throws RemoteControllerException;
 
+    public abstract boolean isConnected();
+
     public abstract void sendKey(KeyCode key) throws RemoteControllerException;
 
     public abstract void sendKeys(List<KeyCode> keys) throws RemoteControllerException;

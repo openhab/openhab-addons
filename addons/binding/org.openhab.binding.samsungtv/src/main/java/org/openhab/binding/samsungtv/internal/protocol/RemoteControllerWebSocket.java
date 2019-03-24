@@ -111,7 +111,8 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
 
     }
 
-    private boolean isConnected() {
+    @Override
+    public boolean isConnected() {
         return webSocketRemote.isConnected();
     }
 

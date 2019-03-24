@@ -153,7 +153,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.UNKNOWN);
 
         configuration = getConfigAs(SamsungTvConfiguration.class);
 
@@ -300,7 +300,9 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
                 startService(service);
             } else {
                 // open connection again if needed
-                service.start();
+                if (!service.checkConnection()) {
+                    service.start();
+                }
             }
 
             if (service.checkConnection()) {

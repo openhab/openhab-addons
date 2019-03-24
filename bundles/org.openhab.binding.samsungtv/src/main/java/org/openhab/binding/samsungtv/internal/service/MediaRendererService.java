@@ -67,7 +67,7 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
     private Set<EventListener> listeners = new CopyOnWriteArraySet<>();
 
     public MediaRendererService(UpnpIOService upnpIOService, String udn, int pollingInterval) {
-        logger.debug("Create a Samsung TV MediaRenderer service");
+        logger.debug("Creating a Samsung TV MediaRenderer service");
 
         if (upnpIOService != null) {
             service = upnpIOService;

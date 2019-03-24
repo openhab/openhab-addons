@@ -271,7 +271,8 @@ public class RemoteControllerLegacy extends RemoteController {
         logger.debug("Command(s) successfully sent");
     }
 
-    private boolean isConnected() {
+    @Override
+    public boolean isConnected() {
         return socket != null && !socket.isClosed() && socket.isConnected();
     }
 
@@ -322,9 +323,13 @@ public class RemoteControllerLegacy extends RemoteController {
         byte high = (byte) reader.read();
         int len = (high << 8) + low;
 
-        char[] buffer = new char[len];
-        reader.read(buffer);
-        return buffer;
+        if (len > 0) {
+            char[] buffer = new char[len];
+            reader.read(buffer);
+            return buffer;
+        } else {
+            return new char[] {};
+        }
     }
 
     private void sendKeyData(KeyCode key) throws RemoteControllerException {
