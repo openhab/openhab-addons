@@ -780,6 +780,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
             sendCommand(EiscpCommand.MUTE_QUERY);
             sendCommand(EiscpCommand.NETUSB_TITLE_QUERY);
             sendCommand(EiscpCommand.LISTEN_MODE_QUERY);
+            sendCommand(EiscpCommand.INFO_QUERY);
 
             if (isChannelAvailable(CHANNEL_POWERZONE2)) {
                 sendCommand(EiscpCommand.ZONE2_POWER_QUERY);
