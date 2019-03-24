@@ -153,8 +153,6 @@
 /addons/transform/org.openhab.transform.jinja.test/ @jochen314
 /addons/transform/org.openhab.transform.scale/ @clinique
 /addons/transform/org.openhab.transform.scale.test/ @clinique
-/addons/transform/org.openhab.transform.xslt/ @openhab/2-x-add-ons-maintainers
-/addons/transform/org.openhab.transform.xslt.test/ @openhab/2-x-add-ons-maintainers
 /addons/voice/org.openhab.voice.kaldi/ @kaikreuzer
 /addons/voice/org.openhab.voice.marytts/ @kaikreuzer
 /addons/voice/org.openhab.voice.pollytts/ @hillmanr
@@ -216,6 +214,7 @@
 /bundles/org.openhab.transform.map/ @openhab/2-x-add-ons-maintainers
 /bundles/org.openhab.transform.regex/ @openhab/2-x-add-ons-maintainers
 /bundles/org.openhab.transform.xpath/ @openhab/2-x-add-ons-maintainers
+/bundles/org.openhab.transform.xslt/ @openhab/2-x-add-ons-maintainers
 /bundles/org.openhab.voice.googletts/ @gbicskei
 /bundles/org.openhab.voice.mactts/ @kaikreuzer
 /bundles/org.openhab.voice.picotts/ @FlorianSW
