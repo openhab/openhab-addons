@@ -26,8 +26,6 @@
     <module>org.openhab.transform.xpath.test</module>
     <module>org.openhab.transform.jinja</module>
     <module>org.openhab.transform.jinja.test</module>
-    <module>org.openhab.transform.jsonpath</module>
-    <module>org.openhab.transform.jsonpath.test</module>
     <module>org.openhab.transform.xslt</module>
     <module>org.openhab.transform.xslt.test</module>
   </modules>

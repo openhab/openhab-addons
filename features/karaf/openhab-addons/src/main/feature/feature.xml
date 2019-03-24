@@ -988,7 +988,7 @@
         <bundle dependency="true">mvn:com.jayway.jsonpath/json-path/2.1.0</bundle>
         <bundle dependency="true">mvn:net.minidev/accessors-smart/1.1</bundle>
         <bundle dependency="true">mvn:net.minidev/json-smart/2.2</bundle>
-        <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.jsonpath/${project.version}</bundle>
+        <bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.jsonpath/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-transformation-map" description="Map Transformation" version="${project.version}">
