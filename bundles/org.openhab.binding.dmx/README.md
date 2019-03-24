@@ -223,6 +223,7 @@ dmxActions.sendFade("1:41/3","10000:255,255,255:-1", false)
 ```
 
 The parameters are the same as in a chaser thing configuration.
+Defining more than one step in `fadeString` is supported, too.
 
 ## Full Example
 
