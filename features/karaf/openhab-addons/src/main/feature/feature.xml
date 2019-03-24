@@ -1008,7 +1008,7 @@
 
     <feature name="openhab-transformation-xpath" description="XPath Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.xpath/${project.version}</bundle>
+        <bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.xpath/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-transformation-xslt" description="XSLT Transformation" version="${project.version}">
