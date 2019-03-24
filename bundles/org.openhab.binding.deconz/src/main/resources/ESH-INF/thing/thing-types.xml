@@ -7,17 +7,8 @@
 	<bridge-type id="deconz">
 		<label>deCONZ</label>
 		<description>A running deCONZ software instance</description>
-		<config-description>
-			<parameter name="host" type="text" required="true">
-				<label>Host Address</label>
-				<context>network-address</context>
-				<description>IP address or host name and port</description>
-			</parameter>
-			<parameter name="apikey" type="text" required="false">
-				<label>API Key</label>
-				<description>If no API Key is provided, a new one will be requested. You need to authorize the access on the deCONZ web interface.</description>
-			</parameter>
-		</config-description>
+
+		<config-description-ref uri="thing-type:deconz:bridge" />
 	</bridge-type>
 
 	<thing-type id="presencesensor">
@@ -30,12 +21,10 @@
 			<channel typeId="presence" id="presence" />
 			<channel typeId="last_updated" id="last_updated" />
 		</channels>
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Sensor ID</label>
-				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
-			</parameter>
-		</config-description>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor" />
 	</thing-type>
 
 	<channel-type id="presence">
@@ -63,12 +52,10 @@
 			<channel typeId="power" id="power" />
 			<channel typeId="last_updated" id="last_updated" />
 		</channels>
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Sensor ID</label>
-				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
-			</parameter>
-		</config-description>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor" />
 	</thing-type>
 
 	<channel-type id="power">
@@ -105,12 +92,10 @@
 			<channel typeId="consumption" id="consumption"></channel>
 			<channel typeId="last_updated" id="last_updated"></channel>
 		</channels>
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Sensor ID</label>
-				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
-			</parameter>
-		</config-description>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor" />
 	</thing-type>
 
 	<channel-type id="consumption">
@@ -131,18 +116,17 @@
 			<channel typeId="button" id="button" />
 			<channel typeId="last_updated" id="last_updated" />
 		</channels>
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Sensor ID</label>
-				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
-			</parameter>
-		</config-description>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor" />
 	</thing-type>
 
 	<channel-type id="buttonevent">
 		<kind>Trigger</kind>
 		<label>Button Trigger</label>
-		<description>This channel is triggered on a button event. The trigger payload consists of the button event number.</description>
+		<description>This channel is triggered on a button event. The trigger payload consists of the button event number.
+		</description>
 		<event></event>
 	</channel-type>
 
@@ -166,12 +150,10 @@
 			<channel typeId="daylight" id="daylight" />
 			<channel typeId="last_updated" id="last_updated" />
 		</channels>
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Sensor ID</label>
-				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
-			</parameter>
-		</config-description>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor" />
 	</thing-type>
 
 	<channel-type id="lightlux">
@@ -212,12 +194,10 @@
 			<channel typeId="temperature" id="temperature" />
 			<channel typeId="last_updated" id="last_updated" />
 		</channels>
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Sensor ID</label>
-				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
-			</parameter>
-		</config-description>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor" />
 	</thing-type>
 
 	<channel-type id="temperature">
@@ -237,12 +217,10 @@
 			<channel typeId="humidity" id="humidity" />
 			<channel typeId="last_updated" id="last_updated" />
 		</channels>
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Sensor ID</label>
-				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
-			</parameter>
-		</config-description>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor" />
 	</thing-type>
 
 	<channel-type id="humidity">
@@ -262,12 +240,10 @@
 			<channel typeId="pressure" id="pressure"></channel>
 			<channel typeId="last_updated" id="last_updated"></channel>
 		</channels>
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Sensor ID</label>
-				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
-			</parameter>
-		</config-description>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor" />
 	</thing-type>
 
 	<channel-type id="pressure">
@@ -287,12 +263,10 @@
 			<channel typeId="value" id="value"></channel>
 			<channel typeId="light" id="light"></channel>
 		</channels>
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Sensor ID</label>
-				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
-			</parameter>
-		</config-description>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor" />
 	</thing-type>
 
 	<channel-type id="value">
@@ -325,12 +299,10 @@
 			<channel typeId="open" id="open" />
 			<channel typeId="last_updated" id="last_updated" />
 		</channels>
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Sensor ID</label>
-				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
-			</parameter>
-		</config-description>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor" />
 	</thing-type>
 
 	<channel-type id="open">
@@ -350,12 +322,10 @@
 			<channel typeId="waterleakage" id="waterleakage" />
 			<channel typeId="last_updated" id="last_updated" />
 		</channels>
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Sensor ID</label>
-				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
-			</parameter>
-		</config-description>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor" />
 	</thing-type>
 
 	<channel-type id="waterleakage">
@@ -375,18 +345,46 @@
 			<channel typeId="alarm" id="alarm" />
 			<channel typeId="last_updated" id="last_updated" />
 		</channels>
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Sensor ID</label>
-				<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
-			</parameter>
-		</config-description>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor" />
 	</thing-type>
 
 	<channel-type id="alarm">
 		<item-type>Switch</item-type>
 		<label>Alarm</label>
 		<description>Alarm was triggered.</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="tampered">
+		<item-type>Switch</item-type>
+		<label>Tampered</label>
+		<description>A zone is being tampered.</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<thing-type id="vibrationsensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz" />
+		</supported-bridge-type-refs>
+		<label>Vibration Sensor</label>
+		<description>A vibration sensor</description>
+		<channels>
+			<channel typeId="vibration" id="vibration" />
+			<channel typeId="last_updated" id="last_updated" />
+		</channels>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor" />
+	</thing-type>
+
+	<channel-type id="vibration">
+		<item-type>Switch</item-type>
+		<label>Vibration</label>
+		<description>Vibration was detected.</description>
 		<state readOnly="true" />
 	</channel-type>
 
