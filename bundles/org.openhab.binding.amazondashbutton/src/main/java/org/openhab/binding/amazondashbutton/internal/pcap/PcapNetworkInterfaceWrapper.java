@@ -13,15 +13,14 @@
 package org.openhab.binding.amazondashbutton.internal.pcap;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
 import org.pcap4j.core.PcapAddress;
 import org.pcap4j.core.PcapHandle;
 import org.pcap4j.core.PcapNativeException;
 import org.pcap4j.core.PcapNetworkInterface;
 import org.pcap4j.core.PcapNetworkInterface.PromiscuousMode;
-
-import com.google.common.base.Function;
-import com.google.common.base.Objects;
 
 /**
  * This wrapper is needed as {@link PcapNetworkInterface#equals(Object)} and {@link PcapNetworkInterface#hashCode()} are
@@ -81,7 +80,7 @@ public class PcapNetworkInterfaceWrapper {
             return false;
         }
         final PcapNetworkInterfaceWrapper other = (PcapNetworkInterfaceWrapper) obj;
-        return Objects.equal(this.getName(), other.getName());
+        return Objects.equals(this.getName(), other.getName());
     }
 
     @Override
