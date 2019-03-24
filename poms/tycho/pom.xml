@@ -157,6 +157,48 @@
             <checkstyleFilter>${tychodirRoot}/../../tools/checkstyle_suppressions.xml</checkstyleFilter>
           </configuration>
         </plugin>
+
+        <plugin>
+          <groupId>com.mycila</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <version>3.0</version>
+          <configuration>
+            <basedir>${basedirRoot}</basedir>
+            <header>licenses/epl-2.0/header.txt</header>
+            <quiet>false</quiet>
+            <failIfMissing>true</failIfMissing>
+            <strictCheck>true</strictCheck>
+            <aggregate>true</aggregate>
+            <mapping>
+              <xml>xml-header-style</xml>
+            </mapping>
+            <headerDefinitions>
+              <headerDefinition>licenses/epl-2.0/xml-header-style.xml</headerDefinition>
+            </headerDefinitions>
+            <includes>
+              <include>**/org/openhab/**/*.java</include>
+              <include>**/feature.xml</include>
+            </includes>
+            <excludes>
+              <exclude>target/**</exclude>
+              <exclude>**/pom.xml</exclude>
+              <exclude>_*.java</exclude>
+            </excludes>
+            <useDefaultExcludes>true</useDefaultExcludes>
+            <properties>
+              <year>2019</year>
+            </properties>
+            <encoding>UTF-8</encoding>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
       </plugins>
     </pluginManagement>
     <plugins>
