@@ -42,12 +42,12 @@ import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
  */
 @NonNullByDefault
 public class ThingDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR,
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR,
                     THING_TYPE_CONSUMPTION_SENSOR, THING_TYPE_LIGHT_SENSOR, THING_TYPE_TEMPERATURE_SENSOR,
                     THING_TYPE_HUMIDITY_SENSOR, THING_TYPE_PRESSURE_SENSOR, THING_TYPE_SWITCH,
-                    THING_TYPE_OPENCLOSE_SENSOR, THING_TYPE_WATERLEAKAGE_SENSOR, THING_TYPE_ALARM_SENSOR)
-            .collect(Collectors.toSet()));
+                    THING_TYPE_OPENCLOSE_SENSOR, THING_TYPE_WATERLEAKAGE_SENSOR, THING_TYPE_ALARM_SENSOR,
+                    THING_TYPE_VIBRATION_SENSOR).collect(Collectors.toSet()));
 
     private @Nullable DeconzBridgeHandler handler;
     private @Nullable ScheduledFuture<?> scanningJob;
@@ -108,6 +108,8 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
             thingTypeUID = THING_TYPE_WATERLEAKAGE_SENSOR;
         } else if (sensor.type.contains("ZHAAlarm")) {
             thingTypeUID = THING_TYPE_ALARM_SENSOR; // ZHAAlarm
+        } else if (sensor.type.contains("ZHAVibration")) {
+            thingTypeUID = THING_TYPE_VIBRATION_SENSOR; // ZHAVibration
         } else {
             return;
         }
