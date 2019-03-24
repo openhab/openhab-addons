@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>2.5.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.io.mqttembeddedbroker</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: IO :: MQTT Broker Moquette</name>
+
+   <dependencies>
+    <dependency>
+      <groupId>io.moquette</groupId>
+      <artifactId>moquette-broker</artifactId>
+      <version>0.12.1</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/com.h2database/h2-mvstore -->
+	<dependency>
+	    <groupId>com.h2database</groupId>
+	    <artifactId>h2-mvstore</artifactId>
+	    <version>1.4.186</version>
+	    <scope>test</scope>
+	</dependency>
+    
+  </dependencies>
+</project>
