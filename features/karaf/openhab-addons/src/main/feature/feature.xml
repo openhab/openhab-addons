@@ -993,7 +993,7 @@
 
     <feature name="openhab-transformation-map" description="Map Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.map/${project.version}</bundle>
+        <bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.map/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-transformation-scale" description="Scale Transformation" version="${project.version}">

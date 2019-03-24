@@ -18,8 +18,6 @@
 
   <modules>
     <module>org.openhab.transform.javascript</module>
-    <module>org.openhab.transform.map</module>
-    <module>org.openhab.transform.map.test</module>
     <module>org.openhab.transform.scale</module>
     <module>org.openhab.transform.scale.test</module>
     <module>org.openhab.transform.jinja</module>
