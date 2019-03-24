@@ -22,8 +22,6 @@
     <module>org.openhab.transform.map.test</module>
     <module>org.openhab.transform.scale</module>
     <module>org.openhab.transform.scale.test</module>
-    <module>org.openhab.transform.xpath</module>
-    <module>org.openhab.transform.xpath.test</module>
     <module>org.openhab.transform.jinja</module>
     <module>org.openhab.transform.jinja.test</module>
     <module>org.openhab.transform.xslt</module>
