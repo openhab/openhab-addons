@@ -155,8 +155,6 @@
 /addons/transform/org.openhab.transform.jsonpath.test/ @clinique
 /addons/transform/org.openhab.transform.map/ @openhab/2-x-add-ons-maintainers
 /addons/transform/org.openhab.transform.map.test/ @openhab/2-x-add-ons-maintainers
-/addons/transform/org.openhab.transform.regex/ @openhab/2-x-add-ons-maintainers
-/addons/transform/org.openhab.transform.regex.test/ @openhab/2-x-add-ons-maintainers
 /addons/transform/org.openhab.transform.scale/ @clinique
 /addons/transform/org.openhab.transform.scale.test/ @clinique
 /addons/transform/org.openhab.transform.xpath/ @openhab/2-x-add-ons-maintainers
@@ -220,6 +218,7 @@
 /bundles/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer
 /bundles/org.openhab.persistence.mapdb/ @mkhl
 /bundles/org.openhab.transform.exec/ @openhab/2-x-add-ons-maintainers
+/bundles/org.openhab.transform.regex/ @openhab/2-x-add-ons-maintainers
 /bundles/org.openhab.voice.googletts/ @gbicskei
 /bundles/org.openhab.voice.mactts/ @kaikreuzer
 /bundles/org.openhab.voice.picotts/ @FlorianSW
