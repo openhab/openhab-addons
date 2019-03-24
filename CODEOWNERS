@@ -53,7 +53,6 @@
 /addons/binding/org.openhab.binding.km200/ @Markinus
 /addons/binding/org.openhab.binding.knx/ @sjka
 /addons/binding/org.openhab.binding.knx.test/ @sjka
-/addons/binding/org.openhab.binding.kodi/ @pail23 @cweitkamp
 /addons/binding/org.openhab.binding.konnected/ @volfan6415
 /addons/binding/org.openhab.binding.kostalinverter/ @cschneider
 /addons/binding/org.openhab.binding.lametrictime/ @syphr42
@@ -193,6 +192,7 @@
 /bundles/org.openhab.binding.hdanywhere/ @kgoderis
 /bundles/org.openhab.binding.hyperion/ @tavalin
 /bundles/org.openhab.binding.irtrans/ @kgoderis
+/bundles/org.openhab.binding.kodi/ @pail23 @cweitkamp
 /bundles/org.openhab.binding.leapmotion/ @kaikreuzer
 /bundles/org.openhab.binding.lifx/ @wborn
 /bundles/org.openhab.binding.lirc/ @kabili207
