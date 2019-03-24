@@ -149,7 +149,6 @@
 /addons/io/org.openhab.io.transport.modbus/ @ssalonen
 /addons/io/org.openhab.io.transport.modbus.test/ @ssalonen
 /addons/io/org.openhab.io.webaudio/ @kaikreuzer
-/addons/transform/org.openhab.transform.exec/ @openhab/2-x-add-ons-maintainers
 /addons/transform/org.openhab.transform.javascript/ @openhab/2-x-add-ons-maintainers
 /addons/transform/org.openhab.transform.jinja/ @jochen314 
 /addons/transform/org.openhab.transform.jinja.test/ @jochen314
@@ -220,6 +219,7 @@
 /bundles/org.openhab.extensionservice.marketplace/ @kaikreuzer
 /bundles/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer
 /bundles/org.openhab.persistence.mapdb/ @mkhl
+/bundles/org.openhab.transform.exec/ @openhab/2-x-add-ons-maintainers
 /bundles/org.openhab.voice.googletts/ @gbicskei
 /bundles/org.openhab.voice.mactts/ @kaikreuzer
 /bundles/org.openhab.voice.picotts/ @FlorianSW

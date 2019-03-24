@@ -970,7 +970,7 @@
 
     <feature name="openhab-transformation-exec" description="Exec Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.exec/${project.version}</bundle>
+        <bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.exec/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-transformation-javascript" description="Javascript Transformation" version="${project.version}">
