@@ -38,7 +38,7 @@ import org.w3c.dom.Node;
  * of a Yamaha receiver with HTTP/xml.
  * No state will be saved in here, but in {@link SystemControlState} instead.
  *
- * @author David Gräff <david.graeff@tu-dortmund.de>
+ * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - DAB support, Spotify support, better feature detection
  */
 public class DeviceInformationXML implements DeviceInformation {
@@ -119,7 +119,7 @@ public class DeviceInformationXML implements DeviceInformation {
 
         detectZoneBSupport(con);
 
-        logger.info("Found zones: {}, features: {}", state.zones, state.features);
+        logger.debug("Found zones: {}, features: {}", state.zones, state.features);
     }
 
     /**
@@ -137,7 +137,7 @@ public class DeviceInformationXML implements DeviceInformation {
             Node basicStatusNode = getZoneResponse(con, Main_Zone, ZONE_BASIC_STATUS_CMD, ZONE_BASIC_STATUS_PATH);
             String power = getNodeContentOrEmpty(basicStatusNode, "Power_Control/Zone_B_Power_Info");
             if (StringUtils.isNotEmpty(power)) {
-                logger.info("Zone_2 emulation enabled via Zone_B");
+                logger.debug("Zone_2 emulation enabled via Zone_B");
                 state.zones.add(Zone_2);
                 state.features.add(Feature.ZONE_B);
             }

@@ -16,11 +16,13 @@ import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingC
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -38,8 +40,8 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.yamahareceiver.internal.ChannelsTypeProviderAvailableInputs;
@@ -73,7 +75,6 @@ import org.openhab.binding.yamahareceiver.internal.state.PresetInfoState;
 import org.openhab.binding.yamahareceiver.internal.state.PresetInfoStateListener;
 import org.openhab.binding.yamahareceiver.internal.state.ZoneControlState;
 import org.openhab.binding.yamahareceiver.internal.state.ZoneControlStateListener;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,10 +98,8 @@ public class YamahaZoneThingHandler extends BaseThingHandler
     private YamahaZoneConfig zoneConfig;
 
     /// ChannelType providers
-    protected ChannelsTypeProviderPreset channelsTypeProviderPreset;
-    protected ChannelsTypeProviderAvailableInputs channelsTypeProviderAvailableInputs;
-    private ServiceRegistration<?> servicePreset;
-    private ServiceRegistration<?> serviceAvailableInputs;
+    public @NonNullByDefault({}) ChannelsTypeProviderPreset channelsTypeProviderPreset;
+    public @NonNullByDefault({}) ChannelsTypeProviderAvailableInputs channelsTypeProviderAvailableInputs;
 
     /// State
     protected ZoneControlState zoneState = new ZoneControlState();
@@ -119,6 +118,14 @@ public class YamahaZoneThingHandler extends BaseThingHandler
 
     public YamahaZoneThingHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        Collection<Class<? extends ThingHandlerService>> l = new ArrayList<>();
+        l.add(ChannelsTypeProviderPreset.class);
+        l.add(ChannelsTypeProviderAvailableInputs.class);
+        return l;
     }
 
     /**
@@ -169,16 +176,6 @@ public class YamahaZoneThingHandler extends BaseThingHandler
             return;
         }
 
-        channelsTypeProviderPreset = new ChannelsTypeProviderPreset(thing.getUID());
-        channelsTypeProviderAvailableInputs = new ChannelsTypeProviderAvailableInputs(thing.getUID());
-        // Allow bundleContext to be null for tests
-        if (bundleContext != null) {
-            servicePreset = bundleContext.registerService(ChannelTypeProvider.class.getName(),
-                    channelsTypeProviderPreset, new Hashtable<>());
-            serviceAvailableInputs = bundleContext.registerService(ChannelTypeProvider.class.getName(),
-                    channelsTypeProviderAvailableInputs, new Hashtable<>());
-        }
-
         YamahaBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
             bridgeStatusChanged(bridgeHandler.getThing().getStatusInfo());
@@ -187,16 +184,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
 
     @Override
     public void dispose() {
-        if (serviceAvailableInputs != null) {
-            serviceAvailableInputs.unregister();
-            channelsTypeProviderAvailableInputs = null;
-            serviceAvailableInputs = null;
-        }
-        if (servicePreset != null) {
-            servicePreset.unregister();
-            channelsTypeProviderPreset = null;
-            servicePreset = null;
-        }
+
     }
 
     protected YamahaBridgeHandler getBridgeHandler() {
@@ -482,9 +470,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
      */
     private void refreshFromState(ChannelUID channelUID) {
         String id = channelUID.getId();
-        if (id == null) {
-            return;
-        }
+
         if (id.equals(grpZone(CHANNEL_POWER))) {
             updateState(channelUID, zoneState.power ? OnOffType.ON : OnOffType.OFF);
 

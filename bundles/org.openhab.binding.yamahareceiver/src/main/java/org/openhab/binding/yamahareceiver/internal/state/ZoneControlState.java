@@ -17,8 +17,7 @@ import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingC
 /**
  * The state of a specific zone of a Yamaha receiver.
  *
- * @author David Graeff <david.graeff@web.de>
- *
+ * @author David Graeff - Initial contribution
  */
 public class ZoneControlState {
     public boolean power = false;

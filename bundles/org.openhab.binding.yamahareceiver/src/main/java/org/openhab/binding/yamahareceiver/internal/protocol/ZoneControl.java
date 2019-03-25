@@ -21,7 +21,6 @@ import org.openhab.binding.yamahareceiver.internal.state.ZoneControlState;
  *
  * @author David Graeff - Initial contribution
  */
-
 public interface ZoneControl extends IStateUpdatable {
     /**
      * Switches the zone on/off (off equals network standby here).

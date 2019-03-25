@@ -17,20 +17,21 @@ import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingC
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
+import org.openhab.binding.yamahareceiver.internal.handler.YamahaBridgeHandler;
 import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * After the AVR bridge thing has been added and a connection could be established,
@@ -39,32 +40,23 @@ import org.osgi.framework.ServiceRegistration;
  * @author David Gräff - Initial contribution
  * @author Tomasz Maruszak - Introduced config object
  */
-public class ZoneDiscoveryService extends AbstractDiscoveryService {
-    private final ServiceRegistration<?> reg;
+@NonNullByDefault
+public class ZoneDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+    private @NonNullByDefault({}) ThingHandler handler;
 
     /**
      * Constructs a zone discovery service.
      * Registers this zone discovery service programmatically.
      * Call {@link ZoneDiscoveryService#destroy()} to unregister the service after use.
      */
-    public ZoneDiscoveryService(BundleContext bundleContext) {
+    public ZoneDiscoveryService() {
         super(YamahaReceiverBindingConstants.ZONE_THING_TYPES_UIDS, 0, false);
-        // Allow bundleContext to be null for the test suite
-        if (bundleContext != null) {
-            reg = bundleContext.registerService(DiscoveryService.class.getName(), this, new Hashtable<>());
-        } else {
-            reg = null;
-        }
     }
 
-    /**
-     * Unregisters this service from the OSGi service registry.
-     * This object cannot be used aynmore after calling this method.
-     */
-    public void destroy() {
-        if (reg != null) {
-            reg.unregister();
-        }
+    @Deactivate
+    @Override
+    public void deactivate() {
+        super.deactivate();
     }
 
     @Override
@@ -100,5 +92,17 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService {
 
             thingDiscovered(discoveryResult);
         }
+    }
+
+    @NonNullByDefault({})
+    @Override
+    public void setThingHandler(ThingHandler handler) {
+        this.handler = handler;
+        ((YamahaBridgeHandler) handler).setZoneDiscoveryService(this);
+    }
+
+    @Override
+    public ThingHandler getThingHandler() {
+        return this.handler;
     }
 }

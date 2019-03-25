@@ -15,18 +15,21 @@ package org.openhab.binding.yamahareceiver.internal.config;
 import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Main settings.
  *
  * @author Tomasz Maruszak - Initial contribution.
  */
+@NonNullByDefault
 public class YamahaBridgeConfig {
 
     /**
      * The host name of the Yamaha AVR.
      */
-    private String host;
+    private @Nullable String host;
     /**
      * Port under which the control interface is exposed on the Yamaha AVR.
      */
@@ -44,7 +47,7 @@ public class YamahaBridgeConfig {
      */
     private String inputMapping = "";
 
-    public String getHost() {
+    public @Nullable String getHost() {
         return host;
     }
 
@@ -61,10 +64,11 @@ public class YamahaBridgeConfig {
     }
 
     public Optional<String> getHostWithPort() {
-        if (StringUtils.isEmpty(host)) {
+        final String str = host;
+        if (StringUtils.isEmpty(str)) {
             return Optional.empty();
         }
-        return Optional.of(host + ":" + port);
+        return Optional.of(str + ":" + port);
     }
 
     public String getInputMapping() {

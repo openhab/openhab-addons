@@ -25,7 +25,6 @@ import java.util.stream.Stream;
  * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - Spotify support, adding Server to supported preset inputs
  */
-
 public interface InputWithPlayControl extends IStateUpdatable {
     /**
      * List all inputs that are compatible with this kind of control

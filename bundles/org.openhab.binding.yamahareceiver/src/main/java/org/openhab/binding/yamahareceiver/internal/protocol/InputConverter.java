@@ -13,7 +13,6 @@
 package org.openhab.binding.yamahareceiver.internal.protocol;
 
 /**
- *
  * Performs conversion logic between canonical input names and underlying Yamaha protocol.
  *
  * For example, AVRs when setting input 'AUDIO_X' (or HDMI_X) need the input to be sent in this form.

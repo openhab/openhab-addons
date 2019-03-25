@@ -25,7 +25,6 @@ import java.util.stream.Stream;
  * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - Adding Spotify, Server to supported preset inputs
  */
-
 public interface InputWithPresetControl extends IStateUpdatable {
 
     int PRESET_CHANNELS = 40;

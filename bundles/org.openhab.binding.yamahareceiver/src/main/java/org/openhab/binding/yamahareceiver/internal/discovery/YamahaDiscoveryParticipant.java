@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
@@ -39,6 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Tomasz Maruszak - Introduced config object, migrated to newer UPnP api
  */
 @Component(immediate = true)
+@NonNullByDefault
 public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(YamahaDiscoveryParticipant.class);
@@ -51,7 +54,7 @@ public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
     }
 
     @Override
-    public DiscoveryResult createResult(RemoteDevice device) {
+    public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         ThingUID uid = getThingUID(device);
         if (uid == null) {
             return null;
@@ -84,7 +87,8 @@ public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
         return result;
     }
 
-    public static ThingUID getThingUID(String manufacturer, String deviceType, String udn) {
+    public static @Nullable ThingUID getThingUID(@Nullable String manufacturer, @Nullable String deviceType,
+            String udn) {
         if (manufacturer == null || deviceType == null) {
             return null;
         }
@@ -97,7 +101,7 @@ public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
     }
 
     @Override
-    public ThingUID getThingUID(RemoteDevice device) {
+    public @Nullable ThingUID getThingUID(RemoteDevice device) {
         String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
         String deviceType = device.getType().getType();
 

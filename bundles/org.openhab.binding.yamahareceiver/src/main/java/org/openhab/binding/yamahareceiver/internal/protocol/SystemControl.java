@@ -19,7 +19,6 @@ import java.io.IOException;
  *
  * @author David Graeff - Initial contribution
  */
-
 public interface SystemControl extends IStateUpdatable {
     /**
      * Switches the AVR on/off (off equals network standby here).

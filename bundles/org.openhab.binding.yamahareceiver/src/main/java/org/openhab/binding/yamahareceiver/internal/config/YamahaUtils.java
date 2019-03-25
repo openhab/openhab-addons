@@ -12,22 +12,26 @@
  */
 package org.openhab.binding.yamahareceiver.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Utilities used by the Yamaha binding
  *
  * @author Tomasz Maruszak - Initial contribution
  */
+@NonNullByDefault
 public class YamahaUtils {
 
     /**
      * Tries to parse a string into Enum, if unsuccessful returns null.
-     * 
+     *
      * @param c
      * @param string
      * @param <T>
      * @return Enum value or null if unsuccessful
      */
-    public static <T extends Enum<T>> T tryParseEnum(Class<T> c, String string) {
+    public static @Nullable <T extends Enum<T>> T tryParseEnum(Class<T> c, @Nullable String string) {
         if (string != null) {
             try {
                 return Enum.valueOf(c, string);

@@ -25,7 +25,6 @@ import java.util.stream.Stream;
  * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - refactoring
  */
-
 public interface InputWithNavigationControl extends IStateUpdatable {
     /**
      * List all inputs that are compatible with this kind of control

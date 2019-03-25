@@ -18,7 +18,6 @@ import java.io.IOException;
  * To offer a method to retrieve a specific state, a protocol part would extend this interface.
  *
  * @author David Graeff - Initial contribution
- *
  */
 public interface IStateUpdatable {
     /**

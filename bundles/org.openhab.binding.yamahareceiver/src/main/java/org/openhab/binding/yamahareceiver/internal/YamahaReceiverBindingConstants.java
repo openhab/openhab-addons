@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * The {@link YamahaReceiverBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author David Graeff <david.graeff@web.de>
+ * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - DAB support, Spotify support, refactoring
  */
 @NonNullByDefault

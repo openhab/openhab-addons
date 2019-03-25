@@ -18,7 +18,6 @@ package org.openhab.binding.yamahareceiver.internal.protocol;
  *
  * @author David Graeff - Initial contribution
  */
-
 public class ReceivedMessageParseException extends Exception {
 
     private static final long serialVersionUID = 2703218443322787635L;

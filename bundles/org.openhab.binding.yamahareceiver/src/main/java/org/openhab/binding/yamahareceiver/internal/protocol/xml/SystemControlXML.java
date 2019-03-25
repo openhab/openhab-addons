@@ -87,17 +87,17 @@ public class SystemControlXML implements SystemControl {
         partyModeSupported = descriptorXML.hasFeature(
                 d -> MODELS_WITH_PARTY_SUPPORT.contains(d.getUnitName())
                         || d.system.hasCommandEnding("System,Party_Mode,Mode"),
-                () -> logger.info("The {} channel is not supported on your model", CHANNEL_PARTY_MODE));
+                () -> logger.debug("The {} channel is not supported on your model", CHANNEL_PARTY_MODE));
 
         partyModeMuteSupported = descriptorXML.hasFeature(
                 d -> MODELS_WITH_PARTY_SUPPORT.contains(d.getUnitName())
                         || d.system.hasCommandEnding("System,Party_Mode,Volume,Mute"),
-                () -> logger.info("The {} channel is not supported on your model", CHANNEL_PARTY_MODE_MUTE));
+                () -> logger.debug("The {} channel is not supported on your model", CHANNEL_PARTY_MODE_MUTE));
 
         partyModeVolumeSupported = descriptorXML.hasFeature(
                 d -> MODELS_WITH_PARTY_SUPPORT.contains(d.getUnitName())
                         || d.system.hasCommandEnding("System,Party_Mode,Volume,Lvl"),
-                () -> logger.info("The {} channel is not supported on your model", CHANNEL_PARTY_MODE_VOLUME));
+                () -> logger.debug("The {} channel is not supported on your model", CHANNEL_PARTY_MODE_VOLUME));
     }
 
     @Override

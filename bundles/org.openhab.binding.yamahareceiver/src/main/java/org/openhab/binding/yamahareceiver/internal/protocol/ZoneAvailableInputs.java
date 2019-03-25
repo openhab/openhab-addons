@@ -17,6 +17,5 @@ package org.openhab.binding.yamahareceiver.internal.protocol;
  *
  * @author David Graeff - Initial contribution
  */
-
 public interface ZoneAvailableInputs extends IStateUpdatable {
 }

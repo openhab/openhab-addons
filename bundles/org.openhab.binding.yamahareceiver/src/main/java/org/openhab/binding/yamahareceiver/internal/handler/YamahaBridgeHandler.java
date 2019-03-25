@@ -15,6 +15,8 @@ package org.openhab.binding.yamahareceiver.internal.handler;
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -22,6 +24,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -31,6 +34,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -323,13 +327,23 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
         this.thing = thing;
     }
 
+    @Override
+    public Collection<@NonNull Class<? extends @NonNull ThingHandlerService>> getServices() {
+        return Collections.singleton(ZoneDiscoveryService.class);
+    }
+
+    /**
+     * Called by the zone discovery service to let this handler have a reference.
+     */
+    public void setZoneDiscoveryService(ZoneDiscoveryService s) {
+        this.zoneDiscoveryService = s;
+    }
+
     /**
      * Calls createCommunicationObject if the host name is configured correctly.
      */
     @Override
     public void initialize() {
-        zoneDiscoveryService = new ZoneDiscoveryService(bundleContext);
-
         bridgeConfig = getConfigAs(YamahaBridgeConfig.class);
         logger.trace("Initialize of {} with host '{}' and port {}", getThing().getLabel(), bridgeConfig.getHost(),
                 bridgeConfig.getPort());
@@ -339,6 +353,11 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
             String msg = "Host or port not set. Double check your thing settings.";
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             logger.warn(msg);
+            return;
+        }
+
+        if (this.zoneDiscoveryService == null) {
+            logger.warn("Zone discovery service not ready!");
             return;
         }
 

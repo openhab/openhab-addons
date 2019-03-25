@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - Refactoring
- *
  */
 public abstract class AbstractConnection {
     private Logger logger = LoggerFactory.getLogger(AbstractConnection.class);

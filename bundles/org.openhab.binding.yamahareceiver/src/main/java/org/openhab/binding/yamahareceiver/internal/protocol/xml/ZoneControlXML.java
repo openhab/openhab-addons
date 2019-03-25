@@ -45,7 +45,6 @@ import org.w3c.dom.Node;
  * @author Ben Jones
  * @author Tomasz Maruszak - Refactoring, input mapping fix, added Straight surround, volume DB fix and config
  *         improvement.
- *
  */
 public class ZoneControlXML implements ZoneControl {
 
@@ -107,8 +106,8 @@ public class ZoneControlXML implements ZoneControl {
         logger.trace("Zone {} - compatibility detection", getZone());
 
         // Note: Detection if scene is supported
-        sceneSelSupported = zoneDescriptor.hasCommandEnding("Scene,Scene_Sel",
-                () -> logger.info("Zone {} - the {} channel is not supported on your model", getZone(), CHANNEL_SCENE));
+        sceneSelSupported = zoneDescriptor.hasCommandEnding("Scene,Scene_Sel", () -> logger
+                .debug("Zone {} - the {} channel is not supported on your model", getZone(), CHANNEL_SCENE));
 
         // Note: Detection if dialogue level is supported
         dialogueLevelSupported = zoneDescriptor.hasAnyCommandEnding("Sound_Video,Dialogue_Adjust,Dialogue_Lvl",
@@ -118,7 +117,7 @@ public class ZoneControlXML implements ZoneControl {
             logger.debug("Zone {} - adjusting command to: {}", getZone(), dialogueLevel);
         }
         if (!dialogueLevelSupported) {
-            logger.info("Zone {} - the {} channel is not supported on your model", getZone(), CHANNEL_DIALOGUE_LEVEL);
+            logger.debug("Zone {} - the {} channel is not supported on your model", getZone(), CHANNEL_DIALOGUE_LEVEL);
         }
 
         // Note: Detection for RX-V3900, which uses <Vol> instead of <Volume>
