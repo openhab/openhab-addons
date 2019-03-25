@@ -74,6 +74,9 @@ public class XMPPClient implements IncomingChatMessageListener {
             ReconnectionManager.setEnabledPerDefault(true);
 
             connection.connect().login();
+
+            ChatManager chatManager = ChatManager.getInstanceFor(connection);
+            chatManager.addIncomingListener(this);
         } catch (SmackException | IOException | XMPPException | InterruptedException e) {
             logger.error("XMPP CONNECTION ERROR", e);
         }
