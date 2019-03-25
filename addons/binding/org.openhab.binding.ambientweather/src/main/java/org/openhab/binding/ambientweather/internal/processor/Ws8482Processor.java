@@ -51,8 +51,8 @@ public class Ws8482Processor extends AbstractProcessor {
     @Override
     public void processWeatherData(AmbientWeatherStationHandler handler, String station, String jsonData) {
         try {
-            EventDataJson data = gson.fromJson(jsonData, EventDataJson.class);
             logger.debug("Station {}: Updating weather data channels", station);
+            EventDataJson data = ProcessorFactory.getGson().fromJson(jsonData, EventDataJson.class);
 
             // Update the weather data channels for the WS-8482
             handler.updateChannel(CHGRP_WS8482 + "#" + CH_OBSERVATION_TIME,
