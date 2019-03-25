@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.naming.ConfigurationException;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection.Protocol;
 import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionObserver;
@@ -175,10 +176,15 @@ public class MqttEmbeddedBrokerServiceTest {
         // Stop server -> close persistence storage and sync it to disk
         subject.deactivate();
 
-        File jksFile = new File("userdata/persist.mqtt");
+        File jksFile = new File(subject.getPersistenceFilename());
         assertTrue(jksFile.exists());
 
-        MVStore mvStore = new MVStore.Builder().fileName("userdata/persist.mqtt").autoCommitDisabled().open();
+        // The original file is still open, create a temp file for examination
+        File temp = File.createTempFile("abc", ".tmp");
+        temp.deleteOnExit();
+        FileUtils.copyFile(jksFile, temp);
+
+        MVStore mvStore = new MVStore.Builder().fileName(temp.getAbsolutePath()).autoCommitDisabled().open();
         MVMap<Topic, RetainedMessage> openMap = mvStore.openMap("retained_store");
 
         assertThat(openMap.size(), is(1));
