@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_38;
 
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_DIMMER;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -44,31 +46,53 @@ public class A5_38_08_Dimming extends _4BSMessage {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command outputCommand,
             State currentState, Configuration config) {
+        switch (channelTypeId) {
+            case CHANNEL_DIMMER:
+                byte dimmValue;
 
-        EnOceanChannelDimmerConfig c = config.as(EnOceanChannelDimmerConfig.class);
-        byte rampingTime = (c.rampingTime == null) ? Zero : c.rampingTime.byteValue();
+                if (outputCommand instanceof DecimalType) {
+                    dimmValue = ((DecimalType) outputCommand).byteValue();
+                } else if (outputCommand instanceof OnOffType) {
+                    dimmValue = ((OnOffType) outputCommand == OnOffType.ON) ? Switch100Percent : Zero;
+                } else {
+                    throw new IllegalArgumentException(outputCommand.toFullString() + " is no valid dimming command.");
+                }
 
-        if (outputCommand instanceof DecimalType) {
-            if (((DecimalType) outputCommand).equals(DecimalType.ZERO)) {
-                setData(CommandId, Zero, rampingTime, (byte) (TeachInBit | SwitchOff));
-            } else {
-                setData(CommandId, ((DecimalType) outputCommand).byteValue(), rampingTime,
-                        (byte) (TeachInBit | SwitchOn));
-            }
-        } else if ((OnOffType) outputCommand == OnOffType.ON) {
-            setData(CommandId, Switch100Percent, rampingTime, (byte) (TeachInBit | SwitchOn));
-        } else {
-            setData(CommandId, Zero, rampingTime, (byte) (TeachInBit | SwitchOff));
+                EnOceanChannelDimmerConfig c = config.as(EnOceanChannelDimmerConfig.class);
+
+                boolean eltakoDimmer = (c.eltakoDimmer == null) ? true : c.eltakoDimmer;
+                boolean storeValue = (c.storeValue == null) ? false : c.storeValue;
+
+                byte storeByte = 0x00;
+
+                if (!eltakoDimmer) {
+                    dimmValue = (byte) (dimmValue * 2.55);
+
+                    if (storeValue) {
+                        storeByte = 0x02;
+                    }
+                } else {
+                    if (storeValue) {
+                        storeByte = 0x04;
+                    }
+                }
+
+                byte rampingTime = (c.rampingTime == null) ? Zero : c.rampingTime.byteValue();
+                byte switchingCommand = (dimmValue == Zero) ? SwitchOff : SwitchOn;
+
+                setData(CommandId, dimmValue, rampingTime, (byte) (TeachInBit | storeByte | switchingCommand));
+
+                break;
         }
     }
 
     @Override
     public State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
 
-            if (getDB_0() == (TeachInBit | SwitchOff)) {
-                return new PercentType(0);
-            } else {
-                return new PercentType(getDB_2Value());
-            }
+        if (getDB_0() == (TeachInBit | SwitchOff)) {
+            return new PercentType(0);
+        } else {
+            return new PercentType(getDB_2Value());
         }
     }
+}
