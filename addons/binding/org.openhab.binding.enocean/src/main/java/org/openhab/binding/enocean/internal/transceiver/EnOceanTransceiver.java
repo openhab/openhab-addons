@@ -45,7 +45,6 @@ public abstract class EnOceanTransceiver {
 
     // Thread management
     private Future<?> readingTask;
-    private Future<?> timeOut;
 
     private Logger logger = LoggerFactory.getLogger(EnOceanTransceiver.class);
 
@@ -100,7 +99,7 @@ public abstract class EnOceanTransceiver {
 
                             // slowdown sending of message to avoid hickups at receivers
                             // Todo tweak sending intervall (250 ist just a first try)
-                            timeOut = scheduler.schedule(() -> {
+                            scheduler.schedule(() -> {
                                 try {
                                     sendNext();
                                 } catch (IOException e) {
@@ -387,39 +386,34 @@ public abstract class EnOceanTransceiver {
     }
 
     protected void informListeners(ERP1Message msg) {
+        byte[] senderId = msg.getSenderId();
 
-        try {
-            byte[] senderId = msg.getSenderId();
+        if (senderId != null) {
+            if (filteredDeviceId != null && senderId[0] == filteredDeviceId[0] && senderId[1] == filteredDeviceId[1]
+                    && senderId[2] == filteredDeviceId[2]) {
+                // filter away own messages which are received through a repeater
+                return;
+            }
 
-            if (senderId != null) {
-                if (filteredDeviceId != null && senderId[0] == filteredDeviceId[0] && senderId[1] == filteredDeviceId[1]
-                        && senderId[2] == filteredDeviceId[2]) {
-                    // filter away own messages which are received through a repeater
+            if (teachInListener != null) {
+                if (msg.getIsTeachIn() || (msg.getRORG() == RORG.RPS)) {
+                    logger.info("Received teach in message from {}", HexUtils.bytesToHex(msg.getSenderId()));
+                    teachInListener.espPacketReceived(msg);
                     return;
                 }
-
-                if (teachInListener != null) {
-                    if (msg.getIsTeachIn() || (msg.getRORG() == RORG.RPS)) {
-                        logger.info("Received teach in message from {}", HexUtils.bytesToHex(msg.getSenderId()));
-                        teachInListener.espPacketReceived(msg);
-                        return;
-                    }
-                } else {
-                    if (msg.getIsTeachIn()) {
-                        logger.info("Discard message because this is a teach-in telegram from {}!",
-                                HexUtils.bytesToHex(msg.getSenderId()));
-                        return;
-                    }
-                }
-
-                long s = Long.parseLong(HexUtils.bytesToHex(senderId), 16);
-                HashSet<ESP3PacketListener> pl = listeners.get(s);
-                if (pl != null) {
-                    pl.forEach(l -> l.espPacketReceived(msg));
+            } else {
+                if (msg.getIsTeachIn()) {
+                    logger.info("Discard message because this is a teach-in telegram from {}!",
+                            HexUtils.bytesToHex(msg.getSenderId()));
+                    return;
                 }
             }
-        } catch (Exception e) {
-            logger.error("Exception in informListeners", e);
+
+            long s = Long.parseLong(HexUtils.bytesToHex(senderId), 16);
+            HashSet<ESP3PacketListener> pl = listeners.get(s);
+            if (pl != null) {
+                pl.forEach(l -> l.espPacketReceived(msg));
+            }
         }
     }
 

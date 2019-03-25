@@ -236,7 +236,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                 logger.debug("Not gonna send this message...");
             }
 
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             logger.error("Exception while sending telegram!", e);
         }
     }

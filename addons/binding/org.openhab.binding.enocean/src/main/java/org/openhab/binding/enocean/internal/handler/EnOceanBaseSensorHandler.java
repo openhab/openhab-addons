@@ -150,57 +150,52 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
             return;
         }
 
-        try {
+        ERP1Message msg = (ERP1Message) packet;
+        EEPType receivingEEPType = receivingEEPTypes.get(msg.getRORG());
+        if (receivingEEPType == null) {
+            return;
+        }
 
-            ERP1Message msg = (ERP1Message) packet;
-            EEPType receivingEEPType = receivingEEPTypes.get(msg.getRORG());
-            if (receivingEEPType == null) {
-                return;
-            }
+        EEP eep = EEPFactory.buildEEP(receivingEEPType, (ERP1Message) packet);
+        logger.debug("ESP Packet payload {} for {} received", HexUtils.bytesToHex(packet.getPayload()),
+                config.enoceanId);
 
-            EEP eep = EEPFactory.buildEEP(receivingEEPType, (ERP1Message) packet);
-            logger.debug("ESP Packet payload {} for {} received", HexUtils.bytesToHex(packet.getPayload()),
-                    config.enoceanId);
+        if (eep.isValid()) {
+            Supplier<Stream<Channel>> streamSupplier = () -> getLinkedChannels().stream();
+            byte[] senderId = msg.getSenderId();
 
-            if (eep.isValid()) {
-                Supplier<Stream<Channel>> streamSupplier = () -> getLinkedChannels().stream();
-                byte[] senderId = msg.getSenderId();
+            // try to interpret received message for all linked channels
+            streamSupplier.get().filter(stateFilter(receivingEEPType, senderId)).forEach(channel -> {
+                ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
 
-                // try to interpret received message for all linked channels
-                streamSupplier.get().filter(stateFilter(receivingEEPType, senderId)).forEach(channel -> {
-                    ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+                String channelTypeId = (channelTypeUID != null) ? channelTypeUID.getId() : "";
+                String channelId = channel.getUID().getId();
+                Configuration channelConfig = channel.getConfiguration();
 
-                    String channelTypeId = (channelTypeUID != null) ? channelTypeUID.getId() : "";
-                    String channelId = channel.getUID().getId();
-                    Configuration channelConfig = channel.getConfiguration();
+                State currentState = getCurrentState(channelId);
+                State result = eep.convertToState(channelId, channelTypeId, channelConfig, currentState);
 
-                    State currentState = getCurrentState(channelId);
-                    State result = eep.convertToState(channelId, channelTypeId, channelConfig, currentState);
+                // if message can be interpreted (result != UnDefType.UNDEF) => update item state
+                if (result != null && result != UnDefType.UNDEF) {
+                    updateState(channelId, result);
+                    setCurrentState(channelTypeId, result); // update internal state map
+                }
+            });
 
-                    // if message can be interpreted (result != UnDefType.UNDEF) => update item state
-                    if (result != null && result != UnDefType.UNDEF) {
-                        updateState(channelId, result);
-                        setCurrentState(channelTypeId, result); // update internal state map
-                    }
-                });
+            streamSupplier.get().filter(triggerFilter(receivingEEPType, senderId)).forEach(channel -> {
+                ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
 
-                streamSupplier.get().filter(triggerFilter(receivingEEPType, senderId)).forEach(channel -> {
-                    ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+                String channelTypeId = (channelTypeUID != null) ? channelTypeUID.getId() : "";
+                String channelId = channel.getUID().getId();
+                Configuration channelConfig = channel.getConfiguration();
 
-                    String channelTypeId = (channelTypeUID != null) ? channelTypeUID.getId() : "";
-                    String channelId = channel.getUID().getId();
-                    Configuration channelConfig = channel.getConfiguration();
-
-                    String lastEvent = lastEvents.get(channelId);
-                    String event = eep.convertToEvent(channelId, channelTypeId, lastEvent, channelConfig);
-                    if (event != null) {
-                        triggerChannel(channel.getUID(), event);
-                        lastEvents.put(channelId, event);
-                    }
-                });
-            }
-        } catch (Exception e) {
-            logger.debug(e.getMessage());
+                String lastEvent = lastEvents.get(channelId);
+                String event = eep.convertToEvent(channelId, channelTypeId, lastEvent, channelConfig);
+                if (event != null) {
+                    triggerChannel(channel.getUID(), event);
+                    lastEvents.put(channelId, event);
+                }
+            });
         }
     }
 }
