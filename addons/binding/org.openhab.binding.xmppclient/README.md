@@ -4,24 +4,65 @@ XMPPClient binding provides support for sending and receiving XMPP (Jabber) mess
 
 ## Supported Things
 
-
+xmppBridge - Basic XMPP (Jabber) client thing, that can send and recieve messages.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+**xmppBridge** parameters:
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+| Name   |      Label      |  Description |
+|----------|-------------|------|
+| host | Server Hostname/IP | The IP/Hostname of the XMPP server |
+| port | XMPP server Port | The typical port is 5222 |
+| username | Username | The XMPP username |
+| password | Password | The XMPP password |
+
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+**publishTrigger** parameters:
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
-
-## Full Example
-
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+| Name   |      Label      |  Description |
+|----------|-------------|------|
+| payload | Payload condition | An optional condition on the value |
+| separator | Separator character | The trigger channel payload usually only contains the received text. If you define a separator character, for example '#', the sender UID and received text will be in the trigger channel payload. For example: pavel@example.com#My Message Text |
 
 ## Example Rules
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+Send message:
+
+```
+rule "Leak detected"
+when
+    Item Xi_Leak changed
+then
+    if(Xi_Leak.state == ON) {
+        val actions = getActions("xmpp","xmppclient:xmppBridge:xmpp")
+        actions.publishXMPP("pavel@example.com","Warning! Leak detected!")
+    }
+end
+```
+
+Receive message:
+
+```
+rule "Turn off all lights without separator"
+when
+    Channel "xmppclient:xmppBridge:xmpp:xmpp_command" triggered
+then
+    var actionName = receivedEvent.getEvent()
+    if(actionName.toLowerCase() == "turn off lights") {
+        Group_Light_Home_All.sendCommand(OFF)
+    }
+end
+
+rule "Turn off all lights with separator"
+when
+    Channel "xmppclient:xmppBridge:xmpp:xmpp_command" triggered
+then
+    var actionName = receivedEvent.getEvent().split("#")
+    if(actionName.get(1).toLowerCase() == "turn off lights") {
+        Group_Light_Home_All.sendCommand(OFF)
+    }
+end
+```
