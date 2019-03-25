@@ -27,14 +27,12 @@ public class OpenClosedTypeWSBooleanValueConverter implements Converter<WSBoolea
     @Override
     public OpenClosedType convertFromResourceValue(@NonNull WSBooleanValue from,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        return from.booleanValue() ^ convertData.getInverted() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+        return from.value ^ convertData.getInverted() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
     }
 
     @Override
     public WSBooleanValue convertFromOHType(@NonNull OpenClosedType from, @NonNull WSBooleanValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        WSBooleanValue v = new WSBooleanValue(value);
-        v.setValue(from == OpenClosedType.OPEN ^ convertData.getInverted());
-        return v;
+        return new WSBooleanValue(value.resourceID, from == OpenClosedType.OPEN ^ convertData.getInverted());
     }
 }

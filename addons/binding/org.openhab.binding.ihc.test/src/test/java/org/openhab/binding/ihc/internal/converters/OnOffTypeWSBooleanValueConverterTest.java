@@ -31,11 +31,11 @@ public class OnOffTypeWSBooleanValueConverterTest {
     @Test
     public void testOn() throws ConversionException {
         final boolean inverted = false;
-        WSBooleanValue val = new WSBooleanValue(12345);
+        WSBooleanValue val = new WSBooleanValue(12345, false);
 
         val = convertFromOHType(val, OnOffType.ON, new ConverterAdditionalInfo(null, inverted));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(true, val.booleanValue());
+        assertEquals(12345, val.resourceID);
+        assertEquals(true, val.value);
 
         OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OnOffType.ON, type);
@@ -45,10 +45,10 @@ public class OnOffTypeWSBooleanValueConverterTest {
     public void testOff() throws ConversionException {
         final boolean inverted = false;
 
-        WSBooleanValue val = new WSBooleanValue(12345);
+        WSBooleanValue val = new WSBooleanValue(12345, true);
         val = convertFromOHType(val, OnOffType.OFF, new ConverterAdditionalInfo(null, inverted));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(false, val.booleanValue());
+        assertEquals(12345, val.resourceID);
+        assertEquals(false, val.value);
 
         OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OnOffType.OFF, type);
@@ -58,10 +58,10 @@ public class OnOffTypeWSBooleanValueConverterTest {
     public void testOnInverted() throws ConversionException {
         final boolean inverted = true;
 
-        WSBooleanValue val = new WSBooleanValue(12345);
+        WSBooleanValue val = new WSBooleanValue(12345, true);
         val = convertFromOHType(val, OnOffType.ON, new ConverterAdditionalInfo(null, inverted));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(false, val.booleanValue());
+        assertEquals(12345, val.resourceID);
+        assertEquals(false, val.value);
 
         OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OnOffType.ON, type);
@@ -71,10 +71,10 @@ public class OnOffTypeWSBooleanValueConverterTest {
     public void testOffInverted() throws ConversionException {
         final boolean inverted = true;
 
-        WSBooleanValue val = new WSBooleanValue(12345);
+        WSBooleanValue val = new WSBooleanValue(12345, false);
         val = convertFromOHType(val, OnOffType.OFF, new ConverterAdditionalInfo(null, inverted));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(true, val.booleanValue());
+        assertEquals(12345, val.resourceID);
+        assertEquals(true, val.value);
 
         OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OnOffType.OFF, type);

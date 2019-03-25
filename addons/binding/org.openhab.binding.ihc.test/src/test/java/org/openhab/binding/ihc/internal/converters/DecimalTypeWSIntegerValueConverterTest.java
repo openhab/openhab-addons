@@ -33,8 +33,10 @@ public class DecimalTypeWSIntegerValueConverterTest {
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
 
         val = convertFromOHType(val, new DecimalType(2), new ConverterAdditionalInfo(null, false));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(2, val.getInteger());
+        assertEquals(12345, val.resourceID);
+        assertEquals(2, val.value);
+        assertEquals(-100, val.minimumValue);
+        assertEquals(100, val.maximumValue);
 
         DecimalType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, false));
         assertEquals(new DecimalType(2), type);

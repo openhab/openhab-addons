@@ -19,60 +19,13 @@ package org.openhab.binding.ihc.internal.ws.resourcevalues;
  */
 public class WSSceneShutterSimpleValue extends WSResourceValue {
 
-    protected int delayTime;
-    protected boolean shutterPositionIsUp;
-
-    public WSSceneShutterSimpleValue() {
-    }
-
-    public WSSceneShutterSimpleValue(int resourceID) {
-        super(resourceID);
-    }
+    public final int delayTime;
+    public final boolean shutterPositionIsUp;
 
     public WSSceneShutterSimpleValue(int resourceID, int delayTime, boolean shutterPositionIsUp) {
         super(resourceID);
         this.delayTime = delayTime;
         this.shutterPositionIsUp = shutterPositionIsUp;
-    }
-
-    public WSSceneShutterSimpleValue(WSResourceValue from) {
-        super(from.resourceID);
-        if (from instanceof WSSceneShutterSimpleValue) {
-            this.delayTime = ((WSSceneShutterSimpleValue) from).delayTime;
-            this.shutterPositionIsUp = ((WSSceneShutterSimpleValue) from).shutterPositionIsUp;
-        }
-    }
-
-    /**
-     * Gets the value of the delayTime property.
-     *
-     */
-    public int getDelayTime() {
-        return delayTime;
-    }
-
-    /**
-     * Sets the value of the delayTime property.
-     *
-     */
-    public void setDelayTime(int value) {
-        this.delayTime = value;
-    }
-
-    /**
-     * Gets the value of the shutterPositionIsUp property.
-     *
-     */
-    public boolean isShutterPositionIsUp() {
-        return shutterPositionIsUp;
-    }
-
-    /**
-     * Sets the value of the shutterPositionIsUp property.
-     *
-     */
-    public void setShutterPositionIsUp(boolean value) {
-        this.shutterPositionIsUp = value;
     }
 
     @Override

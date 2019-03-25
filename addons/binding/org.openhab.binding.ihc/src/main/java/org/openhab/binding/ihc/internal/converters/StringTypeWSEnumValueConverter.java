@@ -28,27 +28,19 @@ public class StringTypeWSEnumValueConverter implements Converter<WSEnumValue, St
     @Override
     public StringType convertFromResourceValue(@NonNull WSEnumValue from, @NonNull ConverterAdditionalInfo convertData)
             throws ConversionException {
-        return new StringType(from.getEnumName());
+        return new StringType(from.enumName);
     }
 
     @Override
     public WSEnumValue convertFromOHType(@NonNull StringType from, @NonNull WSEnumValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         if (convertData.getEnumValues() != null) {
-            boolean found = false;
-            WSEnumValue v = new WSEnumValue(value);
             for (IhcEnumValue item : convertData.getEnumValues()) {
                 if (item.getName().equals(from.toString())) {
-                    v.setEnumValueID(item.getId());
-                    v.setEnumName(item.getName());
-                    found = true;
-                    break;
+                    return new WSEnumValue(value.resourceID, value.definitionTypeID, item.getId(), item.getName());
                 }
             }
-            if (!found) {
-                throw new ConversionException("Can't find enum value for string " + value.toString());
-            }
-            return v;
+            throw new ConversionException("Can't find enum value for string " + value.toString());
         } else {
             throw new ConversionException("Enum list is null");
         }

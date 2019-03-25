@@ -27,14 +27,12 @@ public class DecimalTypeWSWeekdayValueConverter implements Converter<WSWeekdayVa
     @Override
     public DecimalType convertFromResourceValue(@NonNull WSWeekdayValue from,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        return new DecimalType(from.getWeekdayNumber());
+        return new DecimalType(from.weekdayNumber);
     }
 
     @Override
     public WSWeekdayValue convertFromOHType(@NonNull DecimalType from, @NonNull WSWeekdayValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        WSWeekdayValue v = new WSWeekdayValue(value);
-        v.setWeekdayNumber(from.intValue());
-        return v;
+        return new WSWeekdayValue(value.resourceID, from.intValue());
     }
 }

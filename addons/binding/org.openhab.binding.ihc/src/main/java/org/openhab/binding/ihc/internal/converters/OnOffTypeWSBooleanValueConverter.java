@@ -27,14 +27,12 @@ public class OnOffTypeWSBooleanValueConverter implements Converter<WSBooleanValu
     @Override
     public OnOffType convertFromResourceValue(@NonNull WSBooleanValue from,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        return from.booleanValue() ^ convertData.getInverted() ? OnOffType.ON : OnOffType.OFF;
+        return from.value ^ convertData.getInverted() ? OnOffType.ON : OnOffType.OFF;
     }
 
     @Override
     public WSBooleanValue convertFromOHType(@NonNull OnOffType from, @NonNull WSBooleanValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        WSBooleanValue v = new WSBooleanValue(value);
-        v.setValue(from == OnOffType.ON ^ convertData.getInverted());
-        return v;
+        return new WSBooleanValue(value.resourceID, from == OnOffType.ON ^ convertData.getInverted());
     }
 }

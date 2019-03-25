@@ -42,10 +42,10 @@ public class StringTypeWSEnumValueConverterTest {
         WSEnumValue val = new WSEnumValue(12345, 5555, 0, "");
 
         val = convertFromOHType(val, new StringType("testC"), new ConverterAdditionalInfo(enumValues, false));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(5555, val.getDefinitionTypeID());
-        assertEquals(103, val.getEnumValueID());
-        assertEquals("testC", val.getEnumName());
+        assertEquals(12345, val.resourceID);
+        assertEquals(5555, val.definitionTypeID);
+        assertEquals(103, val.enumValueID);
+        assertEquals("testC", val.enumName);
 
         StringType type = convertFromResourceValue(val, new ConverterAdditionalInfo(enumValues, false));
         assertEquals(new StringType("testC"), type);

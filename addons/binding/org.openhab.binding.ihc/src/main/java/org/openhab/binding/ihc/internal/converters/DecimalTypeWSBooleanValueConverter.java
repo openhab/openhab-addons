@@ -27,14 +27,12 @@ public class DecimalTypeWSBooleanValueConverter implements Converter<WSBooleanVa
     @Override
     public DecimalType convertFromResourceValue(@NonNull WSBooleanValue from,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        return new DecimalType(from.booleanValue() ? 1 : 0);
+        return new DecimalType(from.value ? 1 : 0);
     }
 
     @Override
     public WSBooleanValue convertFromOHType(@NonNull DecimalType from, @NonNull WSBooleanValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        WSBooleanValue v = new WSBooleanValue(value);
-        v.setValue(from.intValue() > 0);
-        return v;
+        return new WSBooleanValue(value.resourceID, from.intValue() > 0);
     }
 }

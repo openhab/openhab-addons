@@ -19,45 +19,11 @@ package org.openhab.binding.ihc.internal.ws.resourcevalues;
  */
 public class WSPhoneNumberValue extends WSResourceValue {
 
-    protected String number;
-
-    public WSPhoneNumberValue() {
-    }
-
-    public WSPhoneNumberValue(int resourceID) {
-        super(resourceID);
-    }
+    public final String number;
 
     public WSPhoneNumberValue(int resourceID, String number) {
         super(resourceID);
         this.number = number;
-    }
-
-    public WSPhoneNumberValue(WSResourceValue from) {
-        super(from.resourceID);
-        if (from instanceof WSPhoneNumberValue) {
-            this.number = ((WSPhoneNumberValue) from).number;
-        }
-    }
-
-    /**
-     * Gets the value of the number property.
-     *
-     * @return possible object is {@link String }
-     *
-     */
-    public String getNumber() {
-        return number;
-    }
-
-    /**
-     * Sets the value of the number property.
-     *
-     * @param value allowed object is {@link String }
-     *
-     */
-    public void setNumber(String value) {
-        this.number = value;
     }
 
     @Override
