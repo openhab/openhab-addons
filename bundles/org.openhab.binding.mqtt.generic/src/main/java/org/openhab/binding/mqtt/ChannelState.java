@@ -316,38 +316,45 @@ public class ChannelState implements MqttMessageSubscriber {
      * Publishes a value on MQTT. A command topic needs to be set in the configuration.
      *
      * @param command The command to send
-     * @return A future that completes with true if the publishing worked and false and/or exceptionally otherwise.
+     * @return A future that completes with true if the publishing worked and false if it is a readonly topic
+     *         and exceptionally otherwise.
      */
-    public CompletableFuture<@Nullable Void> publishValue(Command command) {
+    public CompletableFuture<Boolean> publishValue(Command command) {
         cachedValue.update(command);
 
         String mqttCommandValue = cachedValue.getMQTTpublishValue();
 
         final MqttBrokerConnection connection = this.connection;
 
-        if (!readOnly && connection != null) {
-            // Formatter: Applied before the channel state value is published to the MQTT broker.
-            if (config.formatBeforePublish.length() > 0) {
-                try (Formatter formatter = new Formatter()) {
-                    Formatter format = formatter.format(config.formatBeforePublish, mqttCommandValue);
-                    mqttCommandValue = format.toString();
-                } catch (IllegalFormatException e) {
-                    logger.debug("Format pattern incorrect for {}", channelUID, e);
-                }
-            }
-            // Outgoing transformations
-            for (ChannelStateTransformation t : transformationsOut) {
-                mqttCommandValue = t.processValue(mqttCommandValue);
-            }
-            // Send retained messages if this is a stateful channel
-            return connection.publish(config.commandTopic, mqttCommandValue.getBytes(), 1, config.retained)
-                    .thenRun(() -> {
-                    });
-        } else {
-            CompletableFuture<@Nullable Void> f = new CompletableFuture<>();
-            f.completeExceptionally(new IllegalStateException("No connection or readOnly channel!"));
+        if (connection == null) {
+            CompletableFuture<Boolean> f = new CompletableFuture<>();
+            f.completeExceptionally(new IllegalStateException(
+                    "The connection object has not been set. start() should have been called!"));
             return f;
         }
+
+        if (readOnly) {
+            logger.debug(
+                    "You have tried to publish {} to the mqtt topic '{}' that was marked read-only. You can't 'set' anything on a sensor state topic for example.",
+                    mqttCommandValue, config.commandTopic);
+            return CompletableFuture.completedFuture(false);
+        }
+
+        // Formatter: Applied before the channel state value is published to the MQTT broker.
+        if (config.formatBeforePublish.length() > 0) {
+            try (Formatter formatter = new Formatter()) {
+                Formatter format = formatter.format(config.formatBeforePublish, mqttCommandValue);
+                mqttCommandValue = format.toString();
+            } catch (IllegalFormatException e) {
+                logger.debug("Format pattern incorrect for {}", channelUID, e);
+            }
+        }
+        // Outgoing transformations
+        for (ChannelStateTransformation t : transformationsOut) {
+            mqttCommandValue = t.processValue(mqttCommandValue);
+        }
+        // Send retained messages if this is a stateful channel
+        return connection.publish(config.commandTopic, mqttCommandValue.getBytes(), 1, config.retained);
     }
 
     /**

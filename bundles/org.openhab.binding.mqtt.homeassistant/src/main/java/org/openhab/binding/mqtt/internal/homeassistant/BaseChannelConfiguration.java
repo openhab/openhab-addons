@@ -103,18 +103,6 @@ public abstract class BaseChannelConfiguration {
         public String getId() {
             return StringUtils.join(identifiers, "_");
         }
-
-        public void addDeviceProperties(Map<String, Object> properties) {
-            if (manufacturer != null) {
-                properties.put(Thing.PROPERTY_VENDOR, manufacturer);
-            }
-            if (model != null) {
-                properties.put(Thing.PROPERTY_MODEL_ID, model);
-            }
-            if (sw_version != null) {
-                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, sw_version);
-            }
-        }
     }
 
     static class Connection {
@@ -122,9 +110,23 @@ public abstract class BaseChannelConfiguration {
         protected @Nullable String identifier;
     }
 
-    public void addDeviceProperties(Map<String, Object> properties) {
-        if (device != null) {
-            device.addDeviceProperties(properties);
+    public Map<String, Object> appendToProperties(Map<String, Object> properties) {
+        final Device device_ = device;
+        if (device_ == null) {
+            return properties;
         }
+        final String manufacturer = device_.manufacturer;
+        if (manufacturer != null) {
+            properties.put(Thing.PROPERTY_VENDOR, manufacturer);
+        }
+        final String model = device_.model;
+        if (model != null) {
+            properties.put(Thing.PROPERTY_MODEL_ID, model);
+        }
+        final String sw_version = device_.sw_version;
+        if (sw_version != null) {
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, sw_version);
+        }
+        return properties;
     }
 }

@@ -118,10 +118,10 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
             return;
         }
 
-        final CompletableFuture<@Nullable Void> future = data.publishValue(command);
+        final CompletableFuture<Boolean> future = data.publishValue(command);
         future.exceptionally(e -> {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-            return null;
+            return false;
         }).thenRun(() -> logger.debug("Successfully published value {} to topic {}", command, data.getStateTopic()));
     }
 

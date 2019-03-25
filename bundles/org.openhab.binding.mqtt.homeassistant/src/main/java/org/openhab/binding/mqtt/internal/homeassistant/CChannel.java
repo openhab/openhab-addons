@@ -209,6 +209,7 @@ public class CChannel {
             TransformationServiceProvider transformationProvider = componentConfiguration
                     .getTransformationServiceProvider();
 
+            final String templateIn = this.templateIn;
             if (templateIn != null && transformationProvider != null) {
                 channelState
                         .addTransformation(new ChannelStateTransformation(JINJA, templateIn, transformationProvider));
