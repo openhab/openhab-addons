@@ -65,6 +65,11 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     public void initialize() {
         synchronized (this) {
             logger.trace("Initializing {} from status {}", this.getThing().getUID(), this.getThing().getStatus());
+            if (this.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                // If the bridge was online then first change it to offline.
+                // this ensures that children will be notified about the change
+                updateStatus(ThingStatus.OFFLINE);
+            }
             try {
                 configure();
                 @Nullable
