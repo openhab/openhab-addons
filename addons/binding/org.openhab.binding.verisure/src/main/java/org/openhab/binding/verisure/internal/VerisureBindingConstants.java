@@ -49,6 +49,7 @@ public class VerisureBindingConstants {
     public static final String CHANNEL_STATUS = "status";
     public static final String CHANNEL_STATE = "state";
     public static final String CHANNEL_LABEL = "label";
+    public static final String CHANNEL_USER_NAME = "userName";
     public static final String CHANNEL_WEBACCOUNT = "webAccount";
     public static final String CHANNEL_USER_LOCATION_NAME = "userLocationName";
     public static final String CHANNEL_USER_LOCATION_STATUS = "userLocationStatus";

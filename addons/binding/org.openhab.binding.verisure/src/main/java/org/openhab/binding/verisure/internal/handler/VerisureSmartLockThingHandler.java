@@ -322,7 +322,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_SITE_INSTALLATION_ID);
             BigDecimal siteId = status.getSiteId();
             if (siteId != null) {
-                updateState(cuid, new DecimalType(status.getSiteId().longValue()));
+                updateState(cuid, new DecimalType(siteId.longValue()));
             }
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_SITE_INSTALLATION_NAME);
             StringType instName = new StringType(status.getSiteName());

@@ -433,7 +433,9 @@ public class VerisureSession {
                 for (VerisureThingJSON thing : things) {
                     int instInst = inst.getInstallationInstance();
                     if (thing instanceof VerisureUserPresenceJSON) {
-                        thing.setDeviceId(Integer.toString(instInst));
+                        String deviceId = ((VerisureUserPresenceJSON) thing).getWebAccount() + "_"
+                                + Integer.toString(instInst);
+                        thing.setDeviceId(deviceId.replaceAll("[^a-zA-Z0-9_]", "_"));
                     } else if (thing instanceof VerisureAlarmJSON) {
                         String type = ((VerisureAlarmJSON) thing).getType();
                         if ("ARM_STATE".equals(type)) {

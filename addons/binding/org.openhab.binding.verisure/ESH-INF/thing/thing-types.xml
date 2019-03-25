@@ -301,6 +301,7 @@
 		<description>Verisure Presence information about your configured Verisure users.</description>
 
 		<channels>
+			<channel id="userName" typeId="userName" />
 			<channel id="webAccount" typeId="webAccount" />
 			<channel id="userLocationStatus" typeId="userLocationStatus" />
 			<channel id="userLocationName" typeId="userLocationName" />
@@ -347,13 +348,19 @@
 				<description>Unique Id.</description>
 			</parameter>
 		</config-description>
-
 	</thing-type>
 
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Current Status</label>
 		<description>Information on current status.</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="userName">
+		<item-type>String</item-type>
+		<label>User Name</label>
+		<description>Name of the user.</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 

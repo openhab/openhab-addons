@@ -242,7 +242,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 #### Configuration Options
 
 *   deviceId - Device Id
-    *   Since User presence lacks a Verisure ID, the following naming convention is used for User presence on first site: 'userpresence_1'
+    *   Since User presence lacks a Verisure ID, it is constructed from the user's email address, where the '@' sign is exchanged by '_", and the site numbering where first site is 1. The following naming convention is used for User presence on first site for a user with email address test@gmail.com: 'userpresence_test_gmail_com_1'
 
 #### Channels
 
@@ -250,7 +250,8 @@ Only the bridge require manual configuration. The devices and sensors can be add
  
 | Channel Type ID    | Item Type | Description                                                 | 
 |--------------------|-----------|-------------------------------------------------------------|                                                                                                                                          
-| webAccount         | String    | This channel reports the user's email.                      |
+| userName           | String    | This channel reports the user's name.              |
+| webAccount         | String    | This channel reports the user's email address.              |
 | userLocationStatus | String    | This channel reports the user presence (HOME/AWAY).         |
 | userLocationName   | String    | This channel reports the name of the location (can be null).|
 | siteName           | String    | This channel reports the name of the site.                  |
@@ -286,9 +287,9 @@ Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", passwor
      Thing smartLock JannesSmartLock "Verisure Entrance Yale Doorman"  [ deviceId="3C44_6NPO" ]
      Thing smartPlug JannesSmartPlug "Verisure SmartPlug" [ deviceId="3D7G_MANV" ]
      Thing waterDetector JannesVattenDetetktor "Verisure Water Detector" [ deviceId="3WET_QRH5" ] 
+     Thing userPresence JannesUserPresence "Verisure User Presence" [ deviceId="userpresence_test_gmail_com_2" ]
 }
 ````
-
 
 ### Items-file
 
@@ -319,12 +320,15 @@ String DoorWindowLocation              "Door Window Location"    {channel="veris
 String DoorWindowStatus                "Door Window Status"      {channel="verisure:doorWindowSensor:myverisure:1SG5_GHGT:state"}
 
 // UserLocation
-String UserLocationEmail               "User Location Email"     {channel="verisure:userPresence:myverisure:userpresence_2:webAccount"}
-String UserLocationStatus              "User Location Status"    {channel="verisure:userPresence:myverisure:userpresence_2:userLocationStatus"}
-String UserLocationName                "User Location Name"      {channel="verisure:userPresence:myverisure:userpresence_2:userLocationName"}
-String UserLocationEmailGlava          "User Location Email Glava"     {channel="verisure:userPresence:myverisure:userpresence_1:webAccount"}
-String UserLocationStatusGlava         "User Location Status Glava"    {channel="verisure:userPresence:myverisure:userpresence_1:userLocationStatus"}
-String UserLocationNameGlava           "User Location Name Glava"      {channel="verisure:userPresence:myverisure:userpresence_1:userLocationName"}
+String UserName                        "User Name"               {channel="verisure:userPresence:myverisure:JannesUserPresence:userName"}
+String UserLocationEmail               "User Location Email"     {channel="verisure:userPresence:myverisure:JannesUserPresence:webAccount"}
+String UserLocationStatus              "User Location Status"    {channel="verisure:userPresence:myverisure:JannesUserPresence:userLocationStatus"}
+String UserLocationName                "User Location Name"      {channel="verisure:userPresence:myverisure:JannesUserPresence:userLocationName"}
+
+String UserNameGlava                   "User Name Glava"               {channel="verisure:userPresence:myverisure:userpresence_test_gmail_com_1:userName"}
+String UserLocationEmailGlava          "User Location Email Glava"     {channel="verisure:userPresence:myverisure:userpresence_test_gmail_com_1:webAccount"}
+String UserLocationStatusGlava         "User Location Status Glava"    {channel="verisure:userPresence:myverisure:userpresence_test_gmail_com_1:userLocationStatus"}
+String UserLocationNameGlava           "User Location Name Glava"      {channel="verisure:userPresence:myverisure:userpresence_test_gmail_com_1:userLocationName"}
 ````
 
 ### Sitemap
@@ -344,15 +348,19 @@ String UserLocationNameGlava           "User Location Name Glava"      {channel=
             Frame label="Yale Doorman SmartLock Volume"  {
                 Switch  item=SmartLockVolume  icon="lock" label="Yale Doorman SmartLock Volume"  mappings=["SILENCE"="Silence", "LOW"="Low", "HIGH"="High"]
             }
-            Text item=AlarmStatus
-            Text item=AlarmNumericStatus
+            Text item=AlarmStatus label="Alarm Status [%s]"
+            Text item=AlarmNumericStatus label="Alarm Numeric Status [%d]"
             Text item=AlarmAlarmStatus
-            Text item=AlarmHomeInstallationName
-            Text item=AlarmChangedByUser
+            Text item=AlarmHomeInstallationName label="Alarm Installation [%s]"
+            Text item=AlarmChangedByUser label="Changed by user [%s]"
             Text item=AlarmTimeStamp
-            Text item=SmartLockStatus
-            Text item=SmartLockCurrentStatus
-            Text item=SmartLockNumericStatus
+            Text item=SmartLockStatus abel="SmartLock status [%s]"
+            Text item=SmartLockCurrentStatus label="SmartLock Current Status [%s]"
+            Text item=SmartLockNumericStatus label="Smart Lock Numeric Status [%d]"
+            Text item=SmartLockLastUpdated
+            Text item=SmartLockOperatedBy label="Changed by user [%s]"
+            Text item=DoorWindowStatus label="Door State"
+            Text item=DoorWindowLocation
         }
     }
 
