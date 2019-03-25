@@ -243,7 +243,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
                 id = list.get(source);
             }
         } else {
-            logger.error("Source list query failed, result='{}'", result.get("Result"));
+            logger.warn("Source list query failed, result='{}'", result.get("Result"));
         }
 
         if (source != null && id != null) {
@@ -253,10 +253,10 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
             if (result.get("Result").equals("OK")) {
                 logger.debug("Command successfully executed");
             } else {
-                logger.error("Command execution failed, result='{}'", result.get("Result"));
+                logger.warn("Command execution failed, result='{}'", result.get("Result"));
             }
         } else {
-            logger.error("Source id for '{}' couldn't be found", command.toString());
+            logger.warn("Source id for '{}' couldn't be found", command.toString());
         }
     }
 
@@ -268,7 +268,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         if (result.get("Result").equals("OK")) {
             logger.debug("Command successfully executed");
         } else {
-            logger.error("Command execution failed, result='{}'", result.get("Result"));
+            logger.warn("Command execution failed, result='{}'", result.get("Result"));
         }
     }
 
@@ -279,7 +279,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         if (result.get("Result").equals("OK")) {
             logger.debug("Command successfully executed");
         } else {
-            logger.error("Command execution failed, result='{}'", result.get("Result"));
+            logger.warn("Command execution failed, result='{}'", result.get("Result"));
         }
     }
 

@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
  * Websocket class to retrieve artmode status (on o.a. the Frame TV's)
  *
  * @author Arjan Mels - Initial contribution
- *
  */
 class WebSocketArt extends WebSocketBase {
     private final Logger logger = LoggerFactory.getLogger(WebSocketBase.class);
@@ -80,7 +79,7 @@ class WebSocketArt extends WebSocketBase {
             }
 
         } catch (Exception e) {
-            logger.error("{}: Error ({}) in message: {}", this.getClass().getSimpleName(), e.getMessage(), msg, e);
+            logger.warn("{}: Error ({}) in message: {}", this.getClass().getSimpleName(), e.getMessage(), msg, e);
         }
     }
 

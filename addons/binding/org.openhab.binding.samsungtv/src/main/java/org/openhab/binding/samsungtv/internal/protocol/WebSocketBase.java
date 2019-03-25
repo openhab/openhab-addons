@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
  * Websocket base class
  *
  * @author Arjan Mels - Initial contribution
- *
  */
 class WebSocketBase extends WebSocketAdapter {
     private final Logger logger = LoggerFactory.getLogger(WebSocketBase.class);
@@ -52,7 +51,7 @@ class WebSocketBase extends WebSocketAdapter {
 
     @Override
     public void onWebSocketError(Throwable error) {
-        logger.error("{} connection error: {}", this.getClass().getSimpleName(), error.getMessage());
+        logger.warn("{} connection error: {}", this.getClass().getSimpleName(), error.getMessage());
         super.onWebSocketError(error);
         isConnecting = false;
     }
@@ -99,7 +98,7 @@ class WebSocketBase extends WebSocketAdapter {
                 logger.warn("{} sending command while socket not connected: {}", this.getClass().getSimpleName(), cmd);
             }
         } catch (Exception e) {
-            logger.error("{}: cannot send command", this.getClass().getSimpleName(), e);
+            logger.warn("{}: cannot send command", this.getClass().getSimpleName(), e);
         }
     }
 

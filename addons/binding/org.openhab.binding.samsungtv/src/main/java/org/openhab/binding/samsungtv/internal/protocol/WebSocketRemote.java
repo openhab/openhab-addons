@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
  * Websocket class for remote control
  *
  * @author Arjan Mels - Initial contribution
- *
  */
 class WebSocketRemote extends WebSocketBase {
     private final Logger logger = LoggerFactory.getLogger(WebSocketBase.class);
@@ -102,7 +101,7 @@ class WebSocketRemote extends WebSocketBase {
 
             }
         } catch (Exception e) {
-            logger.error("{}: Error ({}) in message: {}", this.getClass().getSimpleName(), e.getMessage(), msg, e);
+            logger.warn("{}: Error ({}) in message: {}", this.getClass().getSimpleName(), e.getMessage(), msg, e);
         }
     }
 
