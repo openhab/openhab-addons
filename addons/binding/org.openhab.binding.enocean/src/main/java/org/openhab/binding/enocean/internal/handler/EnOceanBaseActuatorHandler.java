@@ -203,16 +203,11 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             }
 
             // receiving status cannot be refreshed
-            ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
-            if (channelTypeUID != null) {
-                String channelTypeId = channelTypeUID.getId();
-
-                switch (channelTypeId) {
-                    case CHANNEL_RSSI:
-                    case CHANNEL_REPEATCOUNT:
-                    case CHANNEL_LASTRECEIVED:
-                        return;
-                }
+            switch (channelTypeId) {
+                case CHANNEL_RSSI:
+                case CHANNEL_REPEATCOUNT:
+                case CHANNEL_LASTRECEIVED:
+                    return;
             }
         }
 
