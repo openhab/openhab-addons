@@ -73,7 +73,7 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
     // for weather stations assigned to an API key
     private AmbientWeatherEventListener listener;
 
-    private final Gson gson;
+    private final Gson gson = new Gson();
 
     private Runnable validateKeysRunnable = new Runnable() {
         @Override
@@ -105,7 +105,7 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Bridge: Application and API keys are valid with {} stations", stations.size());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Connecting to service");
                 // Start up the real-time API listener
-                listener.start(applicationKey, apiKey);
+                listener.start(applicationKey, apiKey, gson);
             } catch (JsonSyntaxException e) {
                 logger.debug("Bridge: Got JsonSyntaxException: {}", e.getMessage());
                 updateThingStatus(e.getMessage(), "Error parsing json response");
@@ -117,7 +117,6 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
 
     public AmbientWeatherBridgeHandler(Bridge bridge) {
         super(bridge);
-        gson = new Gson();
         listener = new AmbientWeatherEventListener(this);
     }
 

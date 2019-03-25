@@ -24,7 +24,6 @@ import org.openhab.binding.ambientweather.internal.handler.AmbientWeatherStation
 import org.openhab.binding.ambientweather.internal.json.EventDataJson;
 import org.openhab.binding.ambientweather.internal.util.PressureTrend;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -51,7 +50,6 @@ public class Ws0900ipProcessor extends AbstractProcessor {
 
     @Override
     public void processWeatherData(AmbientWeatherStationHandler handler, String station, String jsonData) {
-        Gson gson = new Gson();
         try {
             EventDataJson data = gson.fromJson(jsonData, EventDataJson.class);
             logger.debug("Station {}: Updating weather data channels", station);

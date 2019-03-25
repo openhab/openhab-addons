@@ -22,7 +22,6 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openhab.binding.ambientweather.internal.handler.AmbientWeatherStationHandler;
 import org.openhab.binding.ambientweather.internal.json.EventDataJson;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -51,7 +50,6 @@ public class Ws8482Processor extends AbstractProcessor {
 
     @Override
     public void processWeatherData(AmbientWeatherStationHandler handler, String station, String jsonData) {
-        Gson gson = new Gson();
         try {
             EventDataJson data = gson.fromJson(jsonData, EventDataJson.class);
             logger.debug("Station {}: Updating weather data channels", station);

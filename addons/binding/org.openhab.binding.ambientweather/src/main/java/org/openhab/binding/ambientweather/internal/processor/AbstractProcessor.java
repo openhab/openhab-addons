@@ -23,6 +23,8 @@ import org.openhab.binding.ambientweather.internal.handler.AmbientWeatherStation
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link AbstractProcessor} is the generic/error processor
  * for info and weather updates from weather stations that are currently
@@ -33,6 +35,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class AbstractProcessor {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+    /*
+     * Use the single Gson instance from the processor factory.
+     */
+    protected final Gson gson = ProcessorFactory.getGson();
 
     /*
      * Used to extract remote sensor data from the data event Json

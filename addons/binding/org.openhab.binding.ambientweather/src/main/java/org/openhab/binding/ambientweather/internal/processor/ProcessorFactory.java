@@ -15,6 +15,8 @@ package org.openhab.binding.ambientweather.internal.processor;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link ProcessorFactory} is responsible for returning the right
  * processor for handling info update and weather data events.
@@ -34,6 +36,26 @@ public class ProcessorFactory {
     private static final Ws8482Processor WS8482_PROCESSOR = new Ws8482Processor();
     private static final Ws0900ipProcessor WS0900IP_PROCESSOR = new Ws0900ipProcessor();
 
+    // Single Gson instance shared by processors
+    private static final Gson GSON = new Gson();
+
+    /**
+     * Individual weather station processors use this one Gson instance,
+     * rather than create their own.
+     *
+     * @return instance of a Gson object
+     */
+    public static Gson getGson() {
+        return (GSON);
+    }
+
+    /**
+     * Get a processor for a specific weather station type.
+     *
+     * @param thing
+     * @return instance of a weather station processor
+     * @throws ProcessorNotFoundException
+     */
     public static AbstractProcessor getProcessor(Thing thing) throws ProcessorNotFoundException {
         // Return the processor for this thing type
         String thingType = thing.getThingTypeUID().getAsString().toLowerCase();

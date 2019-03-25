@@ -66,7 +66,6 @@ public class AmbientWeatherEventListener {
     private AmbientWeatherBridgeHandler bridgeHandler;
 
     public AmbientWeatherEventListener(AmbientWeatherBridgeHandler bridgeHandler) {
-        gson = new Gson();
         this.bridgeHandler = bridgeHandler;
     }
 
@@ -125,10 +124,11 @@ public class AmbientWeatherEventListener {
     /*
      * Start the event listener for the Ambient Weather real-time API
      */
-    public void start(String applicationKey, String apiKey) {
+    public void start(String applicationKey, String apiKey, Gson gson) {
         logger.debug("Listener: Event listener starting");
         this.applicationKey = applicationKey;
         this.apiKey = apiKey;
+        this.gson = gson;
         connectToService();
     }
 
