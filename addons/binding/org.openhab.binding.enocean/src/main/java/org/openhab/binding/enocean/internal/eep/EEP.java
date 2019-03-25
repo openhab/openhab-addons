@@ -15,7 +15,7 @@ package org.openhab.binding.enocean.internal.eep;
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.Arrays;
-import java.util.Hashtable;
+import java.util.Map;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -78,7 +78,7 @@ public abstract class EEP {
     }
 
     public void convertFromCommand(String channelId, String channelTypeId, Command command,
-            Hashtable<String, State> currentState, Configuration config) {
+            Map<String, State> currentState, Configuration config) {
         if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
             throw new IllegalArgumentException(String.format("Command %s of channel %s(%s) is not supported",
                     command.toString(), channelId, channelTypeId));
@@ -230,7 +230,7 @@ public abstract class EEP {
     }
 
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Hashtable<String, State> currentState, Configuration config) {
+            Map<String, State> currentState, Configuration config) {
         logger.warn("No implementation for sending data from channel {}/{} for this EEP!", channelId, channelTypeId);
     }
 

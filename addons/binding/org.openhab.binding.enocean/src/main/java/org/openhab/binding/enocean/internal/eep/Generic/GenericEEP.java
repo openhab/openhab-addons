@@ -16,9 +16,9 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.PARAM
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -80,7 +80,7 @@ public class GenericEEP extends EEP {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Hashtable<String, State> currentState, Configuration config) {
+            Map<String, State> currentState, Configuration config) {
         if (config != null) {
             EnOceanChannelTransformationConfig transformationInfo = config.as(EnOceanChannelTransformationConfig.class);
 

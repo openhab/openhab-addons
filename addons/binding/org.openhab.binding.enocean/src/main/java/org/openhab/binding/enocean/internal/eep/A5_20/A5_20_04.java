@@ -14,7 +14,7 @@ package org.openhab.binding.enocean.internal.eep.A5_20;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
-import java.util.Hashtable;
+import java.util.Map;
 
 import javax.measure.quantity.Temperature;
 
@@ -61,7 +61,7 @@ public class A5_20_04 extends A5_20 {
         // return getBit(getDB_0Value(), 6) ? "triggered" : null;
     }
 
-    private byte getPos(Hashtable<String, State> currentState) {
+    private byte getPos(Map<String, State> currentState) {
         State current = currentState.get(CHANNEL_VALVE_POSITION);
 
         if ((current != null) && (current instanceof DecimalType)) {
@@ -75,7 +75,7 @@ public class A5_20_04 extends A5_20 {
         return 25; // 25 %
     }
 
-    private byte getTsp(Hashtable<String, State> currentState) {
+    private byte getTsp(Map<String, State> currentState) {
         State current = currentState.get(CHANNEL_TEMPERATURE_SETPOINT);
 
         double value = 20.0; // 20 °C
@@ -96,7 +96,7 @@ public class A5_20_04 extends A5_20 {
         return (byte) ((value - 10.0) * (255.0 / 20.0));
     }
 
-    private byte getMc(Hashtable<String, State> currentState) {
+    private byte getMc(Map<String, State> currentState) {
         State current = currentState.get(CHANNEL_MEASUREMENT_CONTROL);
 
         if ((current != null) && (current instanceof OnOffType)) {
@@ -110,7 +110,7 @@ public class A5_20_04 extends A5_20 {
         return 0x00; // on
     }
 
-    private byte getWuc(Hashtable<String, State> currentState) {
+    private byte getWuc(Map<String, State> currentState) {
         State current = currentState.get(CHANNEL_WAKEUPCYCLE);
 
         if ((current != null) && (current instanceof DecimalType)) {
@@ -124,7 +124,7 @@ public class A5_20_04 extends A5_20 {
         return 0x13; // 19 = 600 sec = 10 min
     }
 
-    private byte getDso(Hashtable<String, State> currentState) {
+    private byte getDso(Map<String, State> currentState) {
         State current = currentState.get(CHANNEL_DISPLAY_ORIENTATION);
 
         if ((current != null) && (current instanceof DecimalType)) {
@@ -138,7 +138,7 @@ public class A5_20_04 extends A5_20 {
         return 0x00; // 0°
     }
 
-    private byte getBlc(Hashtable<String, State> currentState) {
+    private byte getBlc(Map<String, State> currentState) {
         State current = currentState.get(CHANNEL_BUTTON_LOCK);
 
         if ((current != null) && (current instanceof OnOffType)) {
@@ -152,7 +152,7 @@ public class A5_20_04 extends A5_20 {
         return 0x00; // unlocked
     }
 
-    private byte getSer(Hashtable<String, State> currentState) {
+    private byte getSer(Map<String, State> currentState) {
         State current = currentState.get(CHANNEL_SERVICECOMMAND);
 
         if ((current != null) && (current instanceof DecimalType)) {
@@ -168,7 +168,7 @@ public class A5_20_04 extends A5_20 {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Hashtable<String, State> currentState, Configuration config) {
+            Map<String, State> currentState, Configuration config) {
 
         if (CHANNEL_SEND_COMMAND.equals(channelId) && (command.equals(OnOffType.ON))) {
             byte db3 = getPos(currentState);

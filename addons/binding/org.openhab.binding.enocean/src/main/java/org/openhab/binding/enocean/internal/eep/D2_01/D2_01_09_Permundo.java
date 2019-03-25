@@ -14,7 +14,7 @@ package org.openhab.binding.enocean.internal.eep.D2_01;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
-import java.util.Hashtable;
+import java.util.Map;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -42,7 +42,7 @@ public class D2_01_09_Permundo extends D2_01 {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Hashtable<String, State> currentState, Configuration config) {
+            Map<String, State> currentState, Configuration config) {
 
         if (channelId.equals(CHANNEL_REPEATERMODE)) {
             setRepeaterMode(command);

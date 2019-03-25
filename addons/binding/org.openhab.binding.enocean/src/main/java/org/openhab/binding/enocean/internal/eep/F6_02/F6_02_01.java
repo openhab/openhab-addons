@@ -14,7 +14,7 @@ package org.openhab.binding.enocean.internal.eep.F6_02;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
-import java.util.Hashtable;
+import java.util.Map;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -84,7 +84,7 @@ public class F6_02_01 extends _RPSMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Hashtable<String, State> currentState, Configuration config) {
+            Map<String, State> currentState, Configuration config) {
 
         if (command instanceof StringType) {
 
