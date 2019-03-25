@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.yamahareceiver.internal.config;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.util.Optional;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Main settings.

@@ -33,6 +33,7 @@ public interface SystemControl extends IStateUpdatable {
 
     /**
      * Enables party mode.
+     *
      * @param on
      * @throws IOException
      * @throws ReceivedMessageParseException
@@ -41,6 +42,7 @@ public interface SystemControl extends IStateUpdatable {
 
     /**
      * Enables mute for party mode.
+     *
      * @param on
      * @throws IOException
      * @throws ReceivedMessageParseException
@@ -49,6 +51,7 @@ public interface SystemControl extends IStateUpdatable {
 
     /**
      * Increment or decrement the volume for party mode.
+     *
      * @param increment
      * @throws IOException
      * @throws ReceivedMessageParseException

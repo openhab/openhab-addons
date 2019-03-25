@@ -12,25 +12,24 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.INPUT_SPOTIFY;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.PLAYBACK_STATUS_CMD;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getResponse;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.*;
+
+import java.io.IOException;
+
 import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.yamahareceiver.internal.config.YamahaBridgeConfig;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPlayControl;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
-import org.openhab.binding.yamahareceiver.internal.config.YamahaBridgeConfig;
 import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
 import org.openhab.binding.yamahareceiver.internal.state.PlayInfoState;
 import org.openhab.binding.yamahareceiver.internal.state.PlayInfoStateListener;
 import org.openhab.binding.yamahareceiver.internal.state.PresetInfoState;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
-
-import java.io.IOException;
-
-import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.*;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.PLAYBACK_STATUS_CMD;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getResponse;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.*;
 
 /**
  * This class implements the Yamaha Receiver protocol related to navigation functionally. USB, NET_RADIO, IPOD and
@@ -55,7 +54,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
     private final PlayInfoStateListener observer;
     private final YamahaBridgeConfig bridgeConfig;
 
-    protected CommandTemplate playCmd = new CommandTemplate("<Play_Control><Playback>%s</Playback></Play_Control>", "Play_Info/Playback_Info");
+    protected CommandTemplate playCmd = new CommandTemplate("<Play_Control><Playback>%s</Playback></Play_Control>",
+            "Play_Info/Playback_Info");
     protected CommandTemplate skipCmd = new CommandTemplate("<Play_Control><Playback>%s</Playback></Play_Control>");
     protected String skipForwardValue = "Skip Fwd";
     protected String skipBackwardValue = "Skip Rev";
@@ -65,13 +65,10 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
      * as controlling the playback and choosing a preset item.
      *
      * @param inputID The input ID like USB or NET_RADIO.
-     * @param com     The Yamaha communication object to send http requests.
+     * @param com The Yamaha communication object to send http requests.
      */
-    public InputWithPlayControlXML(String inputID,
-                                   AbstractConnection com,
-                                   PlayInfoStateListener observer,
-                                   YamahaBridgeConfig bridgeConfig,
-                                   DeviceInformationState deviceInformationState) {
+    public InputWithPlayControlXML(String inputID, AbstractConnection com, PlayInfoStateListener observer,
+            YamahaBridgeConfig bridgeConfig, DeviceInformationState deviceInformationState) {
         super(LoggerFactory.getLogger(InputWithPlayControlXML.class), inputID, com, deviceInformationState);
 
         this.observer = observer;
@@ -204,29 +201,29 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
             return;
         }
 
-        //<YAMAHA_AV rsp="GET" RC="0">
-        //    <Spotify>
-        //        <Play_Info>
-        //            <Feature_Availability>Ready</Feature_Availability>
-        //            <Playback_Info>Play</Playback_Info>
-        //            <Meta_Info>
-        //                <Artist>Way Out West</Artist>
-        //                <Album>Tuesday Maybe</Album>
-        //                <Track>Tuesday Maybe</Track>
-        //            </Meta_Info>
-        //            <Album_ART>
-        //                <URL>/YamahaRemoteControl/AlbumART/AlbumART3929.jpg</URL>
-        //                <ID>39290</ID>
-        //                <Format>JPEG</Format>
-        //            </Album_ART>
-        //            <Input_Logo>
-        //                <URL_S>/YamahaRemoteControl/Logos/logo005.png</URL_S>
-        //                <URL_M></URL_M>
-        //                <URL_L></URL_L>
-        //            </Input_Logo>
-        //        </Play_Info>
-        //    </Spotify>
-        //</YAMAHA_AV>
+        // <YAMAHA_AV rsp="GET" RC="0">
+        // <Spotify>
+        // <Play_Info>
+        // <Feature_Availability>Ready</Feature_Availability>
+        // <Playback_Info>Play</Playback_Info>
+        // <Meta_Info>
+        // <Artist>Way Out West</Artist>
+        // <Album>Tuesday Maybe</Album>
+        // <Track>Tuesday Maybe</Track>
+        // </Meta_Info>
+        // <Album_ART>
+        // <URL>/YamahaRemoteControl/AlbumART/AlbumART3929.jpg</URL>
+        // <ID>39290</ID>
+        // <Format>JPEG</Format>
+        // </Album_ART>
+        // <Input_Logo>
+        // <URL_S>/YamahaRemoteControl/Logos/logo005.png</URL_S>
+        // <URL_M></URL_M>
+        // <URL_L></URL_L>
+        // </Input_Logo>
+        // </Play_Info>
+        // </Spotify>
+        // </YAMAHA_AV>
 
         AbstractConnection con = comReference.get();
         Node node = getResponse(con, wrInput(PLAYBACK_STATUS_CMD), inputElement);
@@ -236,10 +233,14 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
         msg.playbackMode = getNodeContentOrDefault(node, playCmd.getPath(), msg.playbackMode);
 
         // elements for these are named differently per model and per input, so we try to match any known element
-        msg.station = getAnyNodeContentOrDefault(node, msg.station, "Play_Info/Meta_Info/Radio_Text_A", "Play_Info/Meta_Info/Station", "Play_Info/RDS/Program_Service");
-        msg.artist = getAnyNodeContentOrDefault(node, msg.artist, "Play_Info/Meta_Info/Artist", "Play_Info/Title/Artist", "Play_Info/RDS/Radio_Text_A");
-        msg.album = getAnyNodeContentOrDefault(node, msg.album, "Play_Info/Meta_Info/Album", "Play_Info/Title/Album", "Play_Info/RDS/Program_Type");
-        msg.song = getAnyNodeContentOrDefault(node, msg.song, "Play_Info/Meta_Info/Track", "Play_Info/Meta_Info/Song", "Play_Info/Title/Song", "Play_Info/RDS/Radio_Text_B");
+        msg.station = getAnyNodeContentOrDefault(node, msg.station, "Play_Info/Meta_Info/Radio_Text_A",
+                "Play_Info/Meta_Info/Station", "Play_Info/RDS/Program_Service");
+        msg.artist = getAnyNodeContentOrDefault(node, msg.artist, "Play_Info/Meta_Info/Artist",
+                "Play_Info/Title/Artist", "Play_Info/RDS/Radio_Text_A");
+        msg.album = getAnyNodeContentOrDefault(node, msg.album, "Play_Info/Meta_Info/Album", "Play_Info/Title/Album",
+                "Play_Info/RDS/Program_Type");
+        msg.song = getAnyNodeContentOrDefault(node, msg.song, "Play_Info/Meta_Info/Track", "Play_Info/Meta_Info/Song",
+                "Play_Info/Title/Song", "Play_Info/RDS/Radio_Text_B");
 
         // Spotify and NET RADIO input supports song cover image (at least on RX-S601D)
         String songImageUrl = getNodeContentOrEmpty(node, "Play_Info/Album_ART/URL");
@@ -247,8 +248,8 @@ public class InputWithPlayControlXML extends AbstractInputControlXML implements 
                 ? String.format("http://%s%s", con.getHost(), songImageUrl)
                 : bridgeConfig.getAlbumUrl();
 
-        logger.trace("Playback: {}, Station: {}, Artist: {}, Album: {}, Song: {}, SongImageUrl: {}",
-                msg.playbackMode, msg.station, msg.artist, msg.album, msg.song, msg.songImageUrl);
+        logger.trace("Playback: {}, Station: {}, Artist: {}, Album: {}, Song: {}, SongImageUrl: {}", msg.playbackMode,
+                msg.station, msg.artist, msg.album, msg.song, msg.songImageUrl);
 
         observer.playInfoUpdated(msg);
     }

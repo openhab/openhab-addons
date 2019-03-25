@@ -32,9 +32,7 @@ class CommandTemplate {
     }
 
     public CommandTemplate replace(String oldToken, String newToken) {
-        return new CommandTemplate(
-                command.replace(oldToken, newToken),
-                path.replace(oldToken, newToken));
+        return new CommandTemplate(command.replace(oldToken, newToken), path.replace(oldToken, newToken));
     }
 
     public String apply(Object... args) {

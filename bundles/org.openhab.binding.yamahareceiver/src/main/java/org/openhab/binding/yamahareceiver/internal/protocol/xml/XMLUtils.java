@@ -12,6 +12,14 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
 import org.slf4j.Logger;
@@ -22,13 +30,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * Utility methods for XML handling
@@ -63,9 +64,7 @@ public class XMLUtils {
         if (node == null) {
             return Stream.empty();
         }
-        return toStream(node.getChildNodes())
-                .filter(x -> x.getNodeType() == Node.ELEMENT_NODE)
-                .map(x -> (Element) x);
+        return toStream(node.getChildNodes()).filter(x -> x.getNodeType() == Node.ELEMENT_NODE).map(x -> (Element) x);
     }
 
     static Stream<Node> toStream(NodeList nodeList) {
@@ -78,7 +77,8 @@ public class XMLUtils {
      * @param root
      * @param nodePath
      * @return
-     * @throws ReceivedMessageParseException when the child node does not exist throws {@link ReceivedMessageParseException}.
+     * @throws ReceivedMessageParseException when the child node does not exist throws
+     *             {@link ReceivedMessageParseException}.
      */
     static Node getNodeOrFail(Node root, String nodePath) throws ReceivedMessageParseException {
         Node node = getNode(root, nodePath);
@@ -125,7 +125,6 @@ public class XMLUtils {
         return defaultValue;
     }
 
-
     /**
      * Finds the node starting with the root and following the path. If the node is found it's inner text is returned,
      * otherwise the default provided value.
@@ -153,7 +152,8 @@ public class XMLUtils {
             try {
                 return Integer.valueOf(node.getTextContent());
             } catch (NumberFormatException e) {
-                LOG.trace("The value '{}' of node with path {} could not been parsed to an integer. Applying default of {}",
+                LOG.trace(
+                        "The value '{}' of node with path {} could not been parsed to an integer. Applying default of {}",
                         node.getTextContent(), nodePath, defaultValue);
             }
         }
@@ -170,8 +170,7 @@ public class XMLUtils {
     public static Document xml(String message) throws IOException, ReceivedMessageParseException {
 
         // Ensure the message contains XML declaration
-        String response = message.startsWith("<?xml")
-                ? message
+        String response = message.startsWith("<?xml") ? message
                 : "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + message;
 
         try {

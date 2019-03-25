@@ -25,6 +25,7 @@ public interface InputConverter {
 
     /**
      * Converts the canonical input name to name used by the protocol
+     *
      * @param name canonical name
      * @return command name
      */
@@ -32,6 +33,7 @@ public interface InputConverter {
 
     /**
      * Converts the state name used by the protocol to canonical input name
+     *
      * @param name state name
      * @return canonical name
      */

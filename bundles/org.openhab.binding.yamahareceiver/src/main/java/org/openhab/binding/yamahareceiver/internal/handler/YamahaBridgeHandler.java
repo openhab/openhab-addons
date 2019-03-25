@@ -12,24 +12,6 @@
  */
 package org.openhab.binding.yamahareceiver.internal.handler;
 
-import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.*;
-import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
-import org.eclipse.smarthome.core.thing.binding.builder.ThingStatusInfoBuilder;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.yamahareceiver.internal.config.YamahaBridgeConfig;
-import org.openhab.binding.yamahareceiver.internal.discovery.ZoneDiscoveryService;
-import org.openhab.binding.yamahareceiver.internal.protocol.*;
-import org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolFactory;
-import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
-import org.openhab.binding.yamahareceiver.internal.state.SystemControlState;
-import org.openhab.binding.yamahareceiver.internal.state.SystemControlStateListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
 
 import java.io.IOException;
@@ -39,6 +21,34 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingStatusInfoBuilder;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.yamahareceiver.internal.config.YamahaBridgeConfig;
+import org.openhab.binding.yamahareceiver.internal.discovery.ZoneDiscoveryService;
+import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
+import org.openhab.binding.yamahareceiver.internal.protocol.ConnectionStateListener;
+import org.openhab.binding.yamahareceiver.internal.protocol.DeviceInformation;
+import org.openhab.binding.yamahareceiver.internal.protocol.InputConverter;
+import org.openhab.binding.yamahareceiver.internal.protocol.ProtocolFactory;
+import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
+import org.openhab.binding.yamahareceiver.internal.protocol.SystemControl;
+import org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolFactory;
+import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
+import org.openhab.binding.yamahareceiver.internal.state.SystemControlState;
+import org.openhab.binding.yamahareceiver.internal.state.SystemControlStateListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link YamahaBridgeHandler} is responsible for fetching basic information about the
@@ -84,7 +94,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
 
     /**
      * @return Return the protocol communication object. This may be null
-     * if the bridge is offline.
+     *         if the bridge is offline.
      */
     public AbstractConnection getConnection() {
         return connection;
@@ -92,6 +102,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
 
     /**
      * Gets the current protocol factory.
+     *
      * @return
      */
     public ProtocolFactory getProtocolFactory() {
@@ -100,6 +111,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
 
     /**
      * Sets the current protocol factory.
+     *
      * @param protocolFactory
      */
     public void setProtocolFactory(ProtocolFactory protocolFactory) {
@@ -154,13 +166,17 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
                     break;
                 case CHANNEL_PARTY_MODE_VOLUME:
                     if (command instanceof IncreaseDecreaseType) {
-                        systemControl.setPartyModeVolume(((IncreaseDecreaseType) command) == IncreaseDecreaseType.INCREASE);
+                        systemControl
+                                .setPartyModeVolume(((IncreaseDecreaseType) command) == IncreaseDecreaseType.INCREASE);
                     } else {
-                        logger.warn("Only {} and {} commands are supported for {}", IncreaseDecreaseType.DECREASE, IncreaseDecreaseType.DECREASE, id);
+                        logger.warn("Only {} and {} commands are supported for {}", IncreaseDecreaseType.DECREASE,
+                                IncreaseDecreaseType.DECREASE, id);
                     }
                     break;
                 default:
-                    logger.warn("Channel {} not supported on the yamaha device directly! Try with the zone things instead.", id);
+                    logger.warn(
+                            "Channel {} not supported on the yamaha device directly! Try with the zone things instead.",
+                            id);
             }
         } catch (IOException | ReceivedMessageParseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -189,12 +205,14 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
      * Sets up a refresh timer (using the scheduler) with the given interval.
      *
      * @param initialWaitTime The delay before the first refresh. Maybe 0 to immediately
-     *                        initiate a refresh.
+     *            initiate a refresh.
      */
     private void setupRefreshTimer(int initialWaitTime) {
         cancelRefreshTimer();
-        logger.trace("Setting up refresh timer with fixed delay {} seconds, starting in {} seconds", bridgeConfig.getRefreshInterval(), initialWaitTime);
-        refreshTimer = scheduler.scheduleWithFixedDelay(() -> updateAllZoneInformation(), initialWaitTime, bridgeConfig.getRefreshInterval(), TimeUnit.SECONDS);
+        logger.trace("Setting up refresh timer with fixed delay {} seconds, starting in {} seconds",
+                bridgeConfig.getRefreshInterval(), initialWaitTime);
+        refreshTimer = scheduler.scheduleWithFixedDelay(() -> updateAllZoneInformation(), initialWaitTime,
+                bridgeConfig.getRefreshInterval(), TimeUnit.SECONDS);
     }
 
     /**
@@ -284,7 +302,8 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
         updateConfiguration(configurationObject);
 
         bridgeConfig = configurationObject.as(YamahaBridgeConfig.class);
-        logger.trace("Update configuration of {} with host '{}' and port {}", getThing().getLabel(), bridgeConfig.getHost(), bridgeConfig.getPort());
+        logger.trace("Update configuration of {} with host '{}' and port {}", getThing().getLabel(),
+                bridgeConfig.getHost(), bridgeConfig.getPort());
 
         Optional<String> host = bridgeConfig.getHostWithPort();
         if (host.isPresent()) {
@@ -312,7 +331,8 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
         zoneDiscoveryService = new ZoneDiscoveryService(bundleContext);
 
         bridgeConfig = getConfigAs(YamahaBridgeConfig.class);
-        logger.trace("Initialize of {} with host '{}' and port {}", getThing().getLabel(), bridgeConfig.getHost(), bridgeConfig.getPort());
+        logger.trace("Initialize of {} with host '{}' and port {}", getThing().getLabel(), bridgeConfig.getHost(),
+                bridgeConfig.getPort());
 
         Optional<String> host = bridgeConfig.getHostWithPort();
         if (!host.isPresent()) {

@@ -21,6 +21,7 @@ public class YamahaUtils {
 
     /**
      * Tries to parse a string into Enum, if unsuccessful returns null.
+     * 
      * @param c
      * @param string
      * @param <T>

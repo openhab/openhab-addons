@@ -67,6 +67,7 @@ public interface ZoneControl extends IStateUpdatable {
 
     /**
      * Sets the active scene for the zone.
+     *
      * @param scene
      * @throws IOException
      * @throws ReceivedMessageParseException

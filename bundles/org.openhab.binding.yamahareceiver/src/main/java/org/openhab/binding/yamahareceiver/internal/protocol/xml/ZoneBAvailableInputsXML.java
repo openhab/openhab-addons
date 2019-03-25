@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
+import java.util.function.Supplier;
+
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputConverter;
 import org.openhab.binding.yamahareceiver.internal.state.AvailableInputStateListener;
 import org.slf4j.LoggerFactory;
-
-import java.util.function.Supplier;
 
 /**
  * Special case of {@link ZoneAvailableInputsXML} that emulates Zone_2 for Yamaha HTR-xxx using Zone_B features.
@@ -27,9 +27,8 @@ import java.util.function.Supplier;
  */
 public class ZoneBAvailableInputsXML extends ZoneAvailableInputsXML {
 
-    public ZoneBAvailableInputsXML(AbstractConnection con,
-                                   AvailableInputStateListener observer,
-                                   Supplier<InputConverter> inputConverterSupplier) {
+    public ZoneBAvailableInputsXML(AbstractConnection con, AvailableInputStateListener observer,
+            Supplier<InputConverter> inputConverterSupplier) {
 
         super(con, Zone.Main_Zone, observer, inputConverterSupplier);
         this.logger = LoggerFactory.getLogger(ZoneBAvailableInputsXML.class);

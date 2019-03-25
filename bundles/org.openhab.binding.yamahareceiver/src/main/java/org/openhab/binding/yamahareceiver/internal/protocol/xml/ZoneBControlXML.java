@@ -12,15 +12,15 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
-import org.openhab.binding.yamahareceiver.internal.protocol.InputConverter;
+import java.util.function.Supplier;
+
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.config.YamahaZoneConfig;
+import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
+import org.openhab.binding.yamahareceiver.internal.protocol.InputConverter;
 import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
 import org.openhab.binding.yamahareceiver.internal.state.ZoneControlStateListener;
 import org.slf4j.LoggerFactory;
-
-import java.util.function.Supplier;
 
 /**
  * Special case of {@link ZoneControlXML} that emulates Zone_2 for Yamaha HTR-xxx using Zone_B features.
@@ -29,11 +29,8 @@ import java.util.function.Supplier;
  */
 public class ZoneBControlXML extends ZoneControlXML {
 
-    public ZoneBControlXML(AbstractConnection con,
-                           YamahaZoneConfig zoneSettings,
-                           ZoneControlStateListener observer,
-                           DeviceInformationState deviceInformationState,
-                           Supplier<InputConverter> inputConverterSupplier) {
+    public ZoneBControlXML(AbstractConnection con, YamahaZoneConfig zoneSettings, ZoneControlStateListener observer,
+            DeviceInformationState deviceInformationState, Supplier<InputConverter> inputConverterSupplier) {
 
         // Commands will need to be send to Main_Zone
         super(con, Zone.Main_Zone, zoneSettings, observer, deviceInformationState, inputConverterSupplier);
@@ -51,8 +48,11 @@ public class ZoneBControlXML extends ZoneControlXML {
         super.applyModelVariations();
 
         // Apply custom templates for HTR-xxx
-        this.power = new CommandTemplate("<Power_Control><Zone_B_Power>%s</Zone_B_Power></Power_Control>", "Power_Control/Zone_B_Power_Info");
+        this.power = new CommandTemplate("<Power_Control><Zone_B_Power>%s</Zone_B_Power></Power_Control>",
+                "Power_Control/Zone_B_Power_Info");
         this.mute = new CommandTemplate("<Volume><Zone_B><Mute>%s</Mute></Zone_B></Volume>", "Volume/Zone_B/Mute");
-        this.volume = new CommandTemplate("<Volume><Zone_B><Lvl><Val>%d</Val><Exp>1</Exp><Unit>dB</Unit></Lvl></Zone_B></Volume>", "Volume/Zone_B/Lvl/Val");
+        this.volume = new CommandTemplate(
+                "<Volume><Zone_B><Lvl><Val>%d</Val><Exp>1</Exp><Unit>dB</Unit></Lvl></Zone_B></Volume>",
+                "Volume/Zone_B/Lvl/Val");
     }
 }

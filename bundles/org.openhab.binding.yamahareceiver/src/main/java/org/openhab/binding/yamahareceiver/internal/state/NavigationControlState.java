@@ -51,6 +51,7 @@ public class NavigationControlState implements Invalidateable {
         }
     }
 
+    @Override
     public void invalidate() {
         this.menuName = "N/A";
         this.maxLine = 0;

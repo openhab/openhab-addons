@@ -12,6 +12,15 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.*;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.*;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.*;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.*;
+
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
@@ -23,18 +32,6 @@ import org.openhab.binding.yamahareceiver.internal.state.SystemControlState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
-
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.Set;
-
-import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.Main_Zone;
-import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.Zone_2;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.*;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getResponse;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getZoneResponse;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getNode;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getNodeContentOrEmpty;
 
 /**
  * The system control protocol class is used to control basic non-zone functionality
@@ -60,26 +57,26 @@ public class DeviceInformationXML implements DeviceInformation {
      *
      * Example:
      * <Feature_Existence>
-     *   <Main_Zone>1</Main_Zone>
-     *   <Zone_2>1</Zone_2>
-     *   <Zone_3>0</Zone_3>
-     *   <Zone_4>0</Zone_4>
-     *   <Tuner>0</Tuner>
-     *   <DAB>1</DAB>
-     *   <HD_Radio>0</HD_Radio>
-     *   <Rhapsody>0</Rhapsody>
-     *   <Napster>0</Napster>
-     *   <SiriusXM>0</SiriusXM>
-     *   <Spotify>1</Spotify>
-     *   <Pandora>0</Pandora>
-     *   <JUKE>1</JUKE>
-     *   <MusicCast_Link>1</MusicCast_Link>
-     *   <SERVER>1</SERVER>
-     *   <NET_RADIO>1</NET_RADIO>
-     *   <Bluetooth>1</Bluetooth>
-     *   <USB>1</USB>
-     *   <iPod_USB>1</iPod_USB>
-     *   <AirPlay>1</AirPlay>
+     * <Main_Zone>1</Main_Zone>
+     * <Zone_2>1</Zone_2>
+     * <Zone_3>0</Zone_3>
+     * <Zone_4>0</Zone_4>
+     * <Tuner>0</Tuner>
+     * <DAB>1</DAB>
+     * <HD_Radio>0</HD_Radio>
+     * <Rhapsody>0</Rhapsody>
+     * <Napster>0</Napster>
+     * <SiriusXM>0</SiriusXM>
+     * <Spotify>1</Spotify>
+     * <Pandora>0</Pandora>
+     * <JUKE>1</JUKE>
+     * <MusicCast_Link>1</MusicCast_Link>
+     * <SERVER>1</SERVER>
+     * <NET_RADIO>1</NET_RADIO>
+     * <Bluetooth>1</Bluetooth>
+     * <USB>1</USB>
+     * <iPod_USB>1</iPod_USB>
+     * <AirPlay>1</AirPlay>
      * </Feature_Existence>
      *
      * @throws IOException
@@ -110,7 +107,8 @@ public class DeviceInformationXML implements DeviceInformation {
                 checkFeature(featureNode, zone.toString(), zone, state.zones);
             }
 
-            XMLConstants.FEATURE_BY_YNC_TAG.forEach((name, feature) -> checkFeature(featureNode, name, feature, state.features));
+            XMLConstants.FEATURE_BY_YNC_TAG
+                    .forEach((name, feature) -> checkFeature(featureNode, name, feature, state.features));
 
         } else {
             // on older models (RX-V3900) the Feature_Existence element does not exist
@@ -126,6 +124,7 @@ public class DeviceInformationXML implements DeviceInformation {
 
     /**
      * Detect if Zone_B is supported (HTR-4069). This will allow Zone_2 to be emulated by the Zone_B feature.
+     *
      * @param con
      * @throws IOException
      * @throws ReceivedMessageParseException

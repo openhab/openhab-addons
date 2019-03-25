@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.yamahareceiver.internal.state;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants;
 

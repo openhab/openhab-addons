@@ -62,11 +62,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
      * @param inputID The input ID like USB or NET_RADIO.
      * @param con The Yamaha communication object to send http requests.
      */
-    public InputWithNavigationControlXML(NavigationControlState state,
-                                         String inputID,
-                                         AbstractConnection con,
-                                         NavigationControlStateListener observer,
-                                         DeviceInformationState deviceInformationState) {
+    public InputWithNavigationControlXML(NavigationControlState state, String inputID, AbstractConnection con,
+            NavigationControlStateListener observer, DeviceInformationState deviceInformationState) {
 
         super(LoggerFactory.getLogger(InputWithNavigationControlXML.class), inputID, con, deviceInformationState);
 
@@ -76,6 +73,7 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
 
     /**
      * Sends a cursor command to Yamaha.
+     *
      * @param command
      * @throws IOException
      * @throws ReceivedMessageParseException
@@ -94,7 +92,6 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
     public void goBack() throws IOException, ReceivedMessageParseException {
         navigateCursor("Back");
     }
-
 
     /**
      * Navigate up
@@ -162,7 +159,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
         } else {
             navigateCursor("Back to Home");
             if (state.menuLayer > 0) {
-                observer.navigationError("The going back to root command failed for your receiver. Trying to use a different command.");
+                observer.navigationError(
+                        "The going back to root command failed for your receiver. Trying to use a different command.");
                 useAlternativeBackToHomeCmd = true;
                 return goToRoot();
             }
@@ -258,7 +256,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
 
             int index = findItemOnCurrentPage(name);
             if (index > 0) {
-                com.send(wrInput("<List_Control><Direct_Sel>Line_" + String.valueOf(index) + "</Direct_Sel></List_Control>"));
+                com.send(wrInput(
+                        "<List_Control><Direct_Sel>Line_" + String.valueOf(index) + "</Direct_Sel></List_Control>"));
                 update();
                 return true;
             }
@@ -327,7 +326,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
         state.maxLine = maxLines;
 
         for (int i = 1; i < 8; ++i) {
-            state.items[i - 1] = XMLUtils.getNodeContentOrDefault(currentMenu, "Current_List/Line_" + i + "/Txt", (String) null);
+            state.items[i - 1] = XMLUtils.getNodeContentOrDefault(currentMenu, "Current_List/Line_" + i + "/Txt",
+                    (String) null);
         }
 
         if (observer != null) {

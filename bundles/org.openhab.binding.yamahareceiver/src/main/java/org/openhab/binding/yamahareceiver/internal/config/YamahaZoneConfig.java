@@ -20,13 +20,14 @@ import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstant
  * @author Tomasz Maruszak - Initial contribution.
  */
 public class YamahaZoneConfig {
-
     /**
-     * Zone name, will be one of {@link org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone}.
+     * Zone name, will be one of
+     * {@link org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone}.
      */
     private String zone = "";
     /**
-     * Volume relative change factor when sending {@link org.eclipse.smarthome.core.library.types.IncreaseDecreaseType} commands.
+     * Volume relative change factor when sending {@link org.eclipse.smarthome.core.library.types.IncreaseDecreaseType}
+     * commands.
      */
     private float volumeRelativeChangeFactor = 0.5f; // Default: 0.5 percent
     /**
@@ -64,6 +65,7 @@ public class YamahaZoneConfig {
 
     /**
      * Converts from volume percentage to volume dB.
+     *
      * @param volume volume percentage
      * @return volume dB
      */
@@ -73,6 +75,7 @@ public class YamahaZoneConfig {
 
     /**
      * Converts from volume dB to volume percentage.
+     *
      * @param volumeDb volume dB
      * @return volume percentage
      */

@@ -12,6 +12,20 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
+import static java.util.stream.Collectors.*;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getChildElements;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
@@ -22,15 +36,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.function.*;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toSet;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getChildElements;
 
 /**
  *
@@ -61,6 +66,7 @@ public class DeviceDescriptorXML {
 
     /**
      * Checks if the condition is met, on false result calls the runnable.
+     *
      * @param predicate
      * @param falseAction
      * @return
@@ -73,7 +79,6 @@ public class DeviceDescriptorXML {
         return result;
     }
 
-
     public static abstract class HasCommands {
 
         public final Set<String> commands;
@@ -81,7 +86,8 @@ public class DeviceDescriptorXML {
         public HasCommands(Element element) {
             Element cmdList = (Element) XMLUtils.getNode(element, "Cmd_List");
             if (cmdList != null) {
-                commands = XMLUtils.toStream(cmdList.getElementsByTagName("Define")).map(x -> x.getTextContent()).collect(toSet());
+                commands = XMLUtils.toStream(cmdList.getElementsByTagName("Define")).map(x -> x.getTextContent())
+                        .collect(toSet());
             } else {
                 commands = new HashSet<>();
             }
@@ -97,6 +103,7 @@ public class DeviceDescriptorXML {
 
         /**
          * Checks if the command is available, on false result calls the runnable.
+         *
          * @param command
          * @param falseAction
          * @return
@@ -146,6 +153,7 @@ public class DeviceDescriptorXML {
 
     /**
      * Get the descriptor XML from the AVR and parse
+     *
      * @param con
      */
     public void load(XMLConnection con) {
@@ -155,13 +163,10 @@ public class DeviceDescriptorXML {
 
         unitName = descNode.getAttributes().getNamedItem("Unit_Name").getTextContent();
 
-        system = buildFeatureLookup(descNode, "Unit",
-                tag -> tag,
-                (tag, e) -> new SystemDescriptor(e))
+        system = buildFeatureLookup(descNode, "Unit", tag -> tag, (tag, e) -> new SystemDescriptor(e))
                 .getOrDefault("System", null); // there will be only one System entry
 
-        zones = buildFeatureLookup(descNode, "Subunit",
-                tag -> YamahaUtils.tryParseEnum(Zone.class, tag),
+        zones = buildFeatureLookup(descNode, "Subunit", tag -> YamahaUtils.tryParseEnum(Zone.class, tag),
                 (zone, e) -> new ZoneDescriptor(zone, e));
 
         features = buildFeatureLookup(descNode, "Source_Device",
@@ -173,11 +178,12 @@ public class DeviceDescriptorXML {
 
     /**
      * Tires to get the XML descriptor for the AVR
+     *
      * @param con
      * @return
      */
     private Node tryGetDescriptor(XMLConnection con) {
-        for (String path: Arrays.asList("/YamahaRemoteControl/desc.xml", "/YamahaRemoteControl/UnitDesc.xml")) {
+        for (String path : Arrays.asList("/YamahaRemoteControl/desc.xml", "/YamahaRemoteControl/UnitDesc.xml")) {
             try {
                 String descXml = con.getResponse(path);
                 Document doc = XMLUtils.xml(descXml);
@@ -200,7 +206,8 @@ public class DeviceDescriptorXML {
         return null;
     }
 
-    private <T, V> Map<T, V> buildFeatureLookup(Node descNode, String funcValue, Function<String, T> converter, BiFunction<T, Element, V> factory) {
+    private <T, V> Map<T, V> buildFeatureLookup(Node descNode, String funcValue, Function<String, T> converter,
+            BiFunction<T, Element, V> factory) {
         Map<T, V> groupedElements = new HashMap<>();
 
         if (descNode != null) {

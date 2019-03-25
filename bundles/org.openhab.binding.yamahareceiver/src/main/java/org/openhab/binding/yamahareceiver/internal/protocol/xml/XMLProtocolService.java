@@ -12,26 +12,21 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
+import static java.util.stream.Collectors.joining;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.*;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
-import static java.util.stream.Collectors.joining;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.ZONE_INPUT_PATH;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.ZONE_INPUT_QUERY;
 
 /**
  * Provides services for XML protocol
@@ -44,6 +39,7 @@ public class XMLProtocolService {
 
     /**
      * Sends a command to the specified zone.
+     *
      * @param con
      * @param zone
      * @param cmd
@@ -51,12 +47,14 @@ public class XMLProtocolService {
      * @throws IOException
      * @throws ReceivedMessageParseException
      */
-    public static Node getZoneResponse(AbstractConnection con, Zone zone, String cmd) throws IOException, ReceivedMessageParseException {
+    public static Node getZoneResponse(AbstractConnection con, Zone zone, String cmd)
+            throws IOException, ReceivedMessageParseException {
         return getResponse(con, XMLUtils.wrZone(zone, cmd), zone.toString());
     }
 
     /**
      * Sends a command to the specified zone.
+     *
      * @param con
      * @param zone
      * @param cmd
@@ -65,19 +63,22 @@ public class XMLProtocolService {
      * @throws IOException
      * @throws ReceivedMessageParseException
      */
-    public static Node getZoneResponse(AbstractConnection con, Zone zone, String cmd, String path) throws IOException, ReceivedMessageParseException {
+    public static Node getZoneResponse(AbstractConnection con, Zone zone, String cmd, String path)
+            throws IOException, ReceivedMessageParseException {
         return getResponse(con, XMLUtils.wrZone(zone, cmd), zone + "/" + path);
     }
 
     /**
      * Send the command and retrieve the node at the specified element path.
+     *
      * @param cmd
      * @param path
      * @return
      * @throws IOException
      * @throws ReceivedMessageParseException
      */
-    public static Node getResponse(AbstractConnection con, String cmd, String path) throws IOException, ReceivedMessageParseException {
+    public static Node getResponse(AbstractConnection con, String cmd, String path)
+            throws IOException, ReceivedMessageParseException {
         String response = con.sendReceive(cmd);
         Document doc = XMLUtils.xml(response);
         if (doc.getFirstChild() == null) {
@@ -89,6 +90,7 @@ public class XMLProtocolService {
 
     /**
      * Sends a request to retrieve the input values available for the zone.
+     *
      * @param con
      * @param zone
      * @return

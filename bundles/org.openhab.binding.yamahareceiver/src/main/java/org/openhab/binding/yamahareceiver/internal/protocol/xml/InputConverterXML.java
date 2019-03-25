@@ -12,21 +12,23 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
+import static java.util.stream.Collectors.toSet;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.*;
+
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
+
 import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.InputConverter;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.*;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toSet;
-import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
-import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.*;
 
 /**
  * XML implementation of {@link InputConverter}.
@@ -83,7 +85,8 @@ public class InputConverterXML implements InputConverter {
                     String value = keyValue[1];
 
                     if (map.putIfAbsent(key, value) != null) {
-                        logger.warn("Invalid setting: {} entry: {} - key: {} was already provided before", setting, entry, key);
+                        logger.warn("Invalid setting: {} entry: {} - key: {} was already provided before", setting,
+                                entry, key);
                     }
                 }
             }
@@ -93,23 +96,16 @@ public class InputConverterXML implements InputConverter {
 
     private Set<String> createInputsWithoutMapping() throws IOException, ReceivedMessageParseException {
         // Tested on RX-S601D, RX-V479
-        Set<String> inputsWithoutMapping = Stream
-                .of(INPUT_SPOTIFY, INPUT_BLUETOOTH)
-                .collect(toSet());
+        Set<String> inputsWithoutMapping = Stream.of(INPUT_SPOTIFY, INPUT_BLUETOOTH).collect(toSet());
 
-        Set<String> nativeInputNames = XMLProtocolService.getInputs(comReference.get(), Zone.Main_Zone)
-                .stream()
-                .filter(x -> x.isWritable())
-                .map(x -> x.getParam())
-                .collect(toSet());
+        Set<String> nativeInputNames = XMLProtocolService.getInputs(comReference.get(), Zone.Main_Zone).stream()
+                .filter(x -> x.isWritable()).map(x -> x.getParam()).collect(toSet());
 
         // When native input returned matches any of 'HDMIx', 'AUDIOx' or 'NET RADIO', ensure no conversion happens.
         // Tested on RX-S601D, RX-V479
         nativeInputNames.stream()
-                .filter(x -> startsWithAndLength(x, "HDMI", 1)
-                        || startsWithAndLength(x, "AUDIO", 1)
-                        || x.equals(INPUT_NET_RADIO)
-                        || x.equals(INPUT_MUSIC_CAST_LINK))
+                .filter(x -> startsWithAndLength(x, "HDMI", 1) || startsWithAndLength(x, "AUDIO", 1)
+                        || x.equals(INPUT_NET_RADIO) || x.equals(INPUT_MUSIC_CAST_LINK))
                 .forEach(x -> inputsWithoutMapping.add(x));
 
         return inputsWithoutMapping;

@@ -23,6 +23,7 @@ public class SystemControlState implements Invalidateable {
     public boolean partyMode;
 
     // If we lost the connection, invalidate the state.
+    @Override
     public void invalidate() {
         power = false;
         partyMode = false;

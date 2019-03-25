@@ -12,17 +12,17 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature;
-import org.openhab.binding.yamahareceiver.internal.config.YamahaUtils;
-import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
-import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
-import org.slf4j.Logger;
-
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.*;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature;
+import org.openhab.binding.yamahareceiver.internal.config.YamahaUtils;
+import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
+import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
+import org.slf4j.Logger;
 
 /**
  * Provides basis for all input controls
@@ -52,7 +52,8 @@ public abstract class AbstractInputControlXML {
         return map;
     }
 
-    protected AbstractInputControlXML(Logger logger, String inputID, AbstractConnection con, DeviceInformationState deviceInformationState) {
+    protected AbstractInputControlXML(Logger logger, String inputID, AbstractConnection con,
+            DeviceInformationState deviceInformationState) {
         this.logger = logger;
         this.comReference = new WeakReference<>(con);
         this.inputID = inputID;

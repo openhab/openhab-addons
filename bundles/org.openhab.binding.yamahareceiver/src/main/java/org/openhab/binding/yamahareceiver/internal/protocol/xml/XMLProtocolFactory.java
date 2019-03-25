@@ -12,13 +12,32 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
+import java.util.function.Supplier;
+
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants;
 import org.openhab.binding.yamahareceiver.internal.config.YamahaBridgeConfig;
 import org.openhab.binding.yamahareceiver.internal.config.YamahaZoneConfig;
-import org.openhab.binding.yamahareceiver.internal.protocol.*;
-import org.openhab.binding.yamahareceiver.internal.state.*;
-
-import java.util.function.Supplier;
+import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
+import org.openhab.binding.yamahareceiver.internal.protocol.ConnectionStateListener;
+import org.openhab.binding.yamahareceiver.internal.protocol.DeviceInformation;
+import org.openhab.binding.yamahareceiver.internal.protocol.InputConverter;
+import org.openhab.binding.yamahareceiver.internal.protocol.InputWithNavigationControl;
+import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPlayControl;
+import org.openhab.binding.yamahareceiver.internal.protocol.InputWithPresetControl;
+import org.openhab.binding.yamahareceiver.internal.protocol.InputWithTunerBandControl;
+import org.openhab.binding.yamahareceiver.internal.protocol.ProtocolFactory;
+import org.openhab.binding.yamahareceiver.internal.protocol.SystemControl;
+import org.openhab.binding.yamahareceiver.internal.protocol.ZoneAvailableInputs;
+import org.openhab.binding.yamahareceiver.internal.protocol.ZoneControl;
+import org.openhab.binding.yamahareceiver.internal.state.AvailableInputStateListener;
+import org.openhab.binding.yamahareceiver.internal.state.DabBandStateListener;
+import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
+import org.openhab.binding.yamahareceiver.internal.state.NavigationControlState;
+import org.openhab.binding.yamahareceiver.internal.state.NavigationControlStateListener;
+import org.openhab.binding.yamahareceiver.internal.state.PlayInfoStateListener;
+import org.openhab.binding.yamahareceiver.internal.state.PresetInfoStateListener;
+import org.openhab.binding.yamahareceiver.internal.state.SystemControlStateListener;
+import org.openhab.binding.yamahareceiver.internal.state.ZoneControlStateListener;
 
 /**
  * Implementation of {@link ProtocolFactory} for XML protocol.
@@ -26,70 +45,67 @@ import java.util.function.Supplier;
  * @author Tomasz Maruszak - Initial contribution.
  */
 public class XMLProtocolFactory implements ProtocolFactory {
+    @Override
     public void createConnection(String host, ConnectionStateListener connectionStateListener) {
         connectionStateListener.connectionEstablished(new XMLConnection(host));
     }
 
-    public SystemControl SystemControl(AbstractConnection connection,
-                                       SystemControlStateListener listener,
-                                       DeviceInformationState deviceInformationState) {
+    @Override
+    public SystemControl SystemControl(AbstractConnection connection, SystemControlStateListener listener,
+            DeviceInformationState deviceInformationState) {
 
         return new SystemControlXML(connection, listener, deviceInformationState);
     }
 
-    public InputWithPlayControl InputWithPlayControl(AbstractConnection connection,
-                                                     String currentInputID,
-                                                     PlayInfoStateListener listener,
-                                                     YamahaBridgeConfig bridgeConfig,
-                                                     DeviceInformationState deviceInformationState) {
+    @Override
+    public InputWithPlayControl InputWithPlayControl(AbstractConnection connection, String currentInputID,
+            PlayInfoStateListener listener, YamahaBridgeConfig bridgeConfig,
+            DeviceInformationState deviceInformationState) {
 
         return new InputWithPlayControlXML(currentInputID, connection, listener, bridgeConfig, deviceInformationState);
     }
 
-    public InputWithPresetControl InputWithPresetControl(AbstractConnection connection,
-                                                         String currentInputID,
-                                                         PresetInfoStateListener listener,
-                                                         DeviceInformationState deviceInformationState) {
+    @Override
+    public InputWithPresetControl InputWithPresetControl(AbstractConnection connection, String currentInputID,
+            PresetInfoStateListener listener, DeviceInformationState deviceInformationState) {
 
         return new InputWithPresetControlXML(currentInputID, connection, listener, deviceInformationState);
     }
 
-    public InputWithTunerBandControl InputWithDabBandControl(String currentInputID,
-                                                             AbstractConnection connection,
-                                                             DabBandStateListener observerForBand,
-                                                             PresetInfoStateListener observerForPreset,
-                                                             PlayInfoStateListener observerForPlayInfo,
-                                                             DeviceInformationState deviceInformationState) {
+    @Override
+    public InputWithTunerBandControl InputWithDabBandControl(String currentInputID, AbstractConnection connection,
+            DabBandStateListener observerForBand, PresetInfoStateListener observerForPreset,
+            PlayInfoStateListener observerForPlayInfo, DeviceInformationState deviceInformationState) {
 
-        return new InputWithTunerDABControlXML(currentInputID, connection, observerForBand, observerForPreset, observerForPlayInfo, deviceInformationState);
+        return new InputWithTunerDABControlXML(currentInputID, connection, observerForBand, observerForPreset,
+                observerForPlayInfo, deviceInformationState);
     }
 
+    @Override
     public InputWithNavigationControl InputWithNavigationControl(AbstractConnection connection,
-                                                                 NavigationControlState state,
-                                                                 String inputID,
-                                                                 NavigationControlStateListener observer,
-                                                                 DeviceInformationState deviceInformationState) {
+            NavigationControlState state, String inputID, NavigationControlStateListener observer,
+            DeviceInformationState deviceInformationState) {
 
         return new InputWithNavigationControlXML(state, inputID, connection, observer, deviceInformationState);
     }
 
-    public ZoneControl ZoneControl(AbstractConnection connection,
-                                   YamahaZoneConfig zoneSettings,
-                                   ZoneControlStateListener listener,
-                                   Supplier<InputConverter> inputConverterSupplier,
-                                   DeviceInformationState deviceInformationState) {
+    @Override
+    public ZoneControl ZoneControl(AbstractConnection connection, YamahaZoneConfig zoneSettings,
+            ZoneControlStateListener listener, Supplier<InputConverter> inputConverterSupplier,
+            DeviceInformationState deviceInformationState) {
 
         if (isZoneB(zoneSettings.getZone(), deviceInformationState)) {
-            return new ZoneBControlXML(connection, zoneSettings, listener, deviceInformationState, inputConverterSupplier);
+            return new ZoneBControlXML(connection, zoneSettings, listener, deviceInformationState,
+                    inputConverterSupplier);
         }
-        return new ZoneControlXML(connection, zoneSettings.getZone(), zoneSettings, listener, deviceInformationState, inputConverterSupplier);
+        return new ZoneControlXML(connection, zoneSettings.getZone(), zoneSettings, listener, deviceInformationState,
+                inputConverterSupplier);
     }
 
-    public ZoneAvailableInputs ZoneAvailableInputs(AbstractConnection connection,
-                                                   YamahaZoneConfig zoneSettings,
-                                                   AvailableInputStateListener listener,
-                                                   Supplier<InputConverter> inputConverterSupplier,
-                                                   DeviceInformationState deviceInformationState) {
+    @Override
+    public ZoneAvailableInputs ZoneAvailableInputs(AbstractConnection connection, YamahaZoneConfig zoneSettings,
+            AvailableInputStateListener listener, Supplier<InputConverter> inputConverterSupplier,
+            DeviceInformationState deviceInformationState) {
 
         if (isZoneB(zoneSettings.getZone(), deviceInformationState)) {
             return new ZoneBAvailableInputsXML(connection, listener, inputConverterSupplier);
@@ -105,16 +121,17 @@ public class XMLProtocolFactory implements ProtocolFactory {
      * @return
      */
     private boolean isZoneB(YamahaReceiverBindingConstants.Zone zone, DeviceInformationState deviceInformationState) {
-        return YamahaReceiverBindingConstants.Zone.Zone_2.equals(zone) && deviceInformationState.features.contains(YamahaReceiverBindingConstants.Feature.ZONE_B);
+        return YamahaReceiverBindingConstants.Zone.Zone_2.equals(zone)
+                && deviceInformationState.features.contains(YamahaReceiverBindingConstants.Feature.ZONE_B);
     }
 
-    public DeviceInformation DeviceInformation(AbstractConnection connection,
-                                               DeviceInformationState state) {
+    @Override
+    public DeviceInformation DeviceInformation(AbstractConnection connection, DeviceInformationState state) {
         return new DeviceInformationXML(connection, state);
     }
 
-    public InputConverter InputConverter(AbstractConnection connection,
-                                         String setting) {
+    @Override
+    public InputConverter InputConverter(AbstractConnection connection, String setting) {
 
         return new InputConverterXML(connection, setting);
     }

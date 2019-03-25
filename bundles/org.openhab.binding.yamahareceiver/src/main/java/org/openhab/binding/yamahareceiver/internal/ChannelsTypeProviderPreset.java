@@ -82,8 +82,7 @@ public class ChannelsTypeProviderPreset implements ChannelTypeProvider {
 
     private StateDescription getDefaultStateDescription() {
         List<StateOption> options = IntStream.rangeClosed(1, 40)
-                .mapToObj(i -> new StateOption(Integer.toString(i), "Item_" + i))
-                .collect(toList());
+                .mapToObj(i -> new StateOption(Integer.toString(i), "Item_" + i)).collect(toList());
 
         StateDescription state = new StateDescription(null, null, null, "%s", false, options);
         return state;
@@ -91,8 +90,7 @@ public class ChannelsTypeProviderPreset implements ChannelTypeProvider {
 
     public void changePresetNames(List<PresetInfoState.Preset> presets) {
         List<StateOption> options = presets.stream()
-                .map(preset -> new StateOption(String.valueOf(preset.getValue()), preset.getName()))
-                .collect(toList());
+                .map(preset -> new StateOption(String.valueOf(preset.getValue()), preset.getName())).collect(toList());
 
         StateDescription state = new StateDescription(null, null, null, "%s", false, options);
         createChannelType(state);

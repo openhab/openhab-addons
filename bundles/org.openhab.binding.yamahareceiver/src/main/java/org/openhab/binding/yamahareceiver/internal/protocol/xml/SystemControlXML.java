@@ -12,6 +12,17 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Models.RX_A2000;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.*;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getResponse;
+
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
 import org.openhab.binding.yamahareceiver.internal.protocol.SystemControl;
@@ -21,18 +32,6 @@ import org.openhab.binding.yamahareceiver.internal.state.SystemControlStateListe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
-
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
-import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Models.RX_A2000;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.*;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getResponse;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getZoneResponse;
 
 /**
  * The system control protocol class is used to control basic non-zone functionality
@@ -45,24 +44,27 @@ import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtoc
 public class SystemControlXML implements SystemControl {
 
     private final Logger logger = LoggerFactory.getLogger(SystemControlXML.class);
-    
+
     private static final Set<String> MODELS_WITH_PARTY_SUPPORT = new HashSet<>(Arrays.asList(RX_A2000));
 
     private WeakReference<AbstractConnection> comReference;
     private SystemControlStateListener observer;
     private final DeviceDescriptorXML descriptorXML;
 
-    protected CommandTemplate power = new CommandTemplate("<System><Power_Control><Power>%s</Power></Power_Control></System>", "System/Power_Control/Power");
-    protected CommandTemplate partyMode = new CommandTemplate("<System><Party_Mode><Mode>%s</Mode></Party_Mode></System>", "System/Party_Mode/Mode");
+    protected CommandTemplate power = new CommandTemplate(
+            "<System><Power_Control><Power>%s</Power></Power_Control></System>", "System/Power_Control/Power");
+    protected CommandTemplate partyMode = new CommandTemplate(
+            "<System><Party_Mode><Mode>%s</Mode></Party_Mode></System>", "System/Party_Mode/Mode");
     protected boolean partyModeSupported;
-    protected CommandTemplate partyModeMute = new CommandTemplate("<System><Party_Mode><Volume><Mute>%s</Mute></Volume></Party_Mode></System>");
+    protected CommandTemplate partyModeMute = new CommandTemplate(
+            "<System><Party_Mode><Volume><Mute>%s</Mute></Volume></Party_Mode></System>");
     protected boolean partyModeMuteSupported;
-    protected CommandTemplate partyModeVolume = new CommandTemplate("<System><Party_Mode><Volume><Lvl>%s</Lvl></Volume></Party_Mode></System>");
+    protected CommandTemplate partyModeVolume = new CommandTemplate(
+            "<System><Party_Mode><Volume><Lvl>%s</Lvl></Volume></Party_Mode></System>");
     protected boolean partyModeVolumeSupported;
 
-    public SystemControlXML(AbstractConnection xml,
-                            SystemControlStateListener observer,
-                            DeviceInformationState deviceInformationState) {
+    public SystemControlXML(AbstractConnection xml, SystemControlStateListener observer,
+            DeviceInformationState deviceInformationState) {
 
         this.comReference = new WeakReference<>(xml);
         this.observer = observer;
@@ -83,17 +85,20 @@ public class SystemControlXML implements SystemControl {
         logger.trace("Compatibility detection");
 
         partyModeSupported = descriptorXML.hasFeature(
-                d -> MODELS_WITH_PARTY_SUPPORT.contains(d.getUnitName()) || d.system.hasCommandEnding("System,Party_Mode,Mode"),
+                d -> MODELS_WITH_PARTY_SUPPORT.contains(d.getUnitName())
+                        || d.system.hasCommandEnding("System,Party_Mode,Mode"),
                 () -> logger.info("The {} channel is not supported on your model", CHANNEL_PARTY_MODE));
 
         partyModeMuteSupported = descriptorXML.hasFeature(
-                d -> MODELS_WITH_PARTY_SUPPORT.contains(d.getUnitName()) || d.system.hasCommandEnding("System,Party_Mode,Volume,Mute"),
+                d -> MODELS_WITH_PARTY_SUPPORT.contains(d.getUnitName())
+                        || d.system.hasCommandEnding("System,Party_Mode,Volume,Mute"),
                 () -> logger.info("The {} channel is not supported on your model", CHANNEL_PARTY_MODE_MUTE));
 
         partyModeVolumeSupported = descriptorXML.hasFeature(
-                d -> MODELS_WITH_PARTY_SUPPORT.contains(d.getUnitName()) || d.system.hasCommandEnding("System,Party_Mode,Volume,Lvl"),
+                d -> MODELS_WITH_PARTY_SUPPORT.contains(d.getUnitName())
+                        || d.system.hasCommandEnding("System,Party_Mode,Volume,Lvl"),
                 () -> logger.info("The {} channel is not supported on your model", CHANNEL_PARTY_MODE_VOLUME));
-        }
+    }
 
     @Override
     public void setPower(boolean power) throws IOException, ReceivedMessageParseException {
@@ -151,8 +156,7 @@ public class SystemControlXML implements SystemControl {
             state.partyMode = node != null && ON.equals(node.getTextContent());
         }
 
-        logger.debug("System state - power: {}, partyMode: {}",
-                state.power, state.partyMode);
+        logger.debug("System state - power: {}, partyMode: {}", state.power, state.partyMode);
 
         observer.systemControlStateChanged(state);
     }

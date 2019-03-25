@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.GET_PARAM;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getResponse;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.*;
+
+import java.io.IOException;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
@@ -23,12 +29,6 @@ import org.openhab.binding.yamahareceiver.internal.state.PresetInfoState;
 import org.openhab.binding.yamahareceiver.internal.state.PresetInfoStateListener;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
-
-import java.io.IOException;
-
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.GET_PARAM;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getResponse;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.*;
 
 /**
  * This class implements the Yamaha Receiver protocol related to navigation functionally. USB, NET_RADIO, IPOD and
@@ -50,7 +50,9 @@ import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.
  */
 public class InputWithPresetControlXML extends AbstractInputControlXML implements InputWithPresetControl {
 
-    protected CommandTemplate preset = new CommandTemplate("<Play_Control><Preset><Preset_Sel>%s</Preset_Sel></Preset></Play_Control>", "Play_Control/Preset/Preset_Sel");
+    protected CommandTemplate preset = new CommandTemplate(
+            "<Play_Control><Preset><Preset_Sel>%s</Preset_Sel></Preset></Play_Control>",
+            "Play_Control/Preset/Preset_Sel");
 
     private final PresetInfoStateListener observer;
 
@@ -61,10 +63,8 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
      * @param inputID The input ID like USB or NET_RADIO.
      * @param con The Yamaha communication object to send http requests.
      */
-    public InputWithPresetControlXML(String inputID,
-                                     AbstractConnection con,
-                                     PresetInfoStateListener observer,
-                                     DeviceInformationState deviceInformationState) {
+    public InputWithPresetControlXML(String inputID, AbstractConnection con, PresetInfoStateListener observer,
+            DeviceInformationState deviceInformationState) {
         super(LoggerFactory.getLogger(InputWithPresetControlXML.class), inputID, con, deviceInformationState);
 
         this.observer = observer;
@@ -89,13 +89,16 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
      *
      * @throws Exception
      */
+    @Override
     public void update() throws IOException, ReceivedMessageParseException {
         if (observer == null) {
             return;
         }
 
         AbstractConnection con = comReference.get();
-        Node response = getResponse(con, wrInput("<Play_Control><Preset><Preset_Sel_Item>GetParam</Preset_Sel_Item></Preset></Play_Control>"), inputElement);
+        Node response = getResponse(con,
+                wrInput("<Play_Control><Preset><Preset_Sel_Item>GetParam</Preset_Sel_Item></Preset></Play_Control>"),
+                inputElement);
 
         PresetInfoState msg = new PresetInfoState();
 
@@ -166,6 +169,7 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
      * @param presetChannel The preset position [1,40]
      * @throws Exception
      */
+    @Override
     public void selectItemByPresetNumber(int presetChannel) throws IOException, ReceivedMessageParseException {
         String presetValue;
 

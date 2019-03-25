@@ -12,11 +12,6 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import org.apache.commons.lang.StringUtils;
-import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -30,6 +25,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Arrays;
 import java.util.Optional;
+
+import org.apache.commons.lang.StringUtils;
+import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * All other protocol classes in this directory use this class for communication. An object
@@ -56,7 +56,8 @@ public class XMLConnection extends AbstractConnection {
         R apply(T t) throws IOException;
     }
 
-    private <T> T postMessage(String prefix, String message, String suffix, CheckedConsumer<HttpURLConnection, T> responseConsumer) throws IOException {
+    private <T> T postMessage(String prefix, String message, String suffix,
+            CheckedConsumer<HttpURLConnection, T> responseConsumer) throws IOException {
         if (message.startsWith("<?xml")) {
             throw new IOException("No preformatted xml allowed!");
         }
@@ -123,7 +124,8 @@ public class XMLConnection extends AbstractConnection {
         // Read response
 
         Charset responseCharset = getResponseCharset(connection, StandardCharsets.UTF_8);
-        try (BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream(), responseCharset))) {
+        try (BufferedReader rd = new BufferedReader(
+                new InputStreamReader(connection.getInputStream(), responseCharset))) {
             String line;
             StringBuilder responseBuffer = new StringBuilder();
             while ((line = rd.readLine()) != null) {
@@ -174,11 +176,9 @@ public class XMLConnection extends AbstractConnection {
         // Example:
         // Content-Type:text/xml; charset="utf-8"
 
-        Optional<String> charsetName = Arrays.stream(values)
-                .map(x -> x.trim())
+        Optional<String> charsetName = Arrays.stream(values).map(x -> x.trim())
                 .filter(x -> x.toLowerCase().startsWith(HEADER_CHARSET_PART))
-                .map(x -> x.substring(HEADER_CHARSET_PART.length() + 1, x.length() - 1))
-                .findFirst();
+                .map(x -> x.substring(HEADER_CHARSET_PART.length() + 1, x.length() - 1)).findFirst();
 
         if (charsetName.isPresent() && !StringUtils.isEmpty(charsetName.get())) {
             try {
@@ -194,6 +194,7 @@ public class XMLConnection extends AbstractConnection {
 
     /**
      * Creates an {@link URL} object to the Yamaha control endpoint
+     *
      * @return
      * @throws MalformedURLException
      */
@@ -203,6 +204,7 @@ public class XMLConnection extends AbstractConnection {
 
     /**
      * Creates an {@link URL} object to Yamaha
+     *
      * @return
      * @throws MalformedURLException
      */

@@ -42,11 +42,14 @@ public class PresetInfoState implements Invalidateable {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             Preset preset = (Preset) o;
-            return value == preset.value &&
-                    Objects.equals(name, preset.name);
+            return value == preset.value && Objects.equals(name, preset.name);
         }
 
         @Override
@@ -59,6 +62,7 @@ public class PresetInfoState implements Invalidateable {
     public final List<Preset> presetChannelNames = new ArrayList<>();
     public boolean presetChannelNamesChanged = false;
 
+    @Override
     public void invalidate() {
         presetChannel = 0;
         presetChannelNames.clear();

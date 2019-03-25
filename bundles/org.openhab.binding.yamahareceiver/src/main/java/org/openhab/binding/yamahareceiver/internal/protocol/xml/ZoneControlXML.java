@@ -12,6 +12,16 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.*;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.*;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getZoneResponse;
+import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.*;
+
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.function.Supplier;
+
 import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.config.YamahaZoneConfig;
@@ -26,19 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.function.Supplier;
-
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.ZONE_BASIC_STATUS_CMD;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.ZONE_BASIC_STATUS_PATH;
-import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.CHANNEL_DIALOGUE_LEVEL;
-import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.CHANNEL_SCENE;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.*;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getZoneResponse;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getNodeContentOrDefault;
-import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.getNodeContentOrEmpty;
-
 /**
  * The zone protocol class is used to control one zone of a Yamaha receiver with HTTP/xml.
  * No state will be saved in here, but in {@link ZoneControlState} instead.
@@ -46,7 +43,8 @@ import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLUtils.
  * @author David Gräff - Refactored
  * @author Eric Thill
  * @author Ben Jones
- * @author Tomasz Maruszak - Refactoring, input mapping fix, added Straight surround, volume DB fix and config improvement.
+ * @author Tomasz Maruszak - Refactoring, input mapping fix, added Straight surround, volume DB fix and config
+ *         improvement.
  *
  */
 public class ZoneControlXML implements ZoneControl {
@@ -62,24 +60,30 @@ public class ZoneControlXML implements ZoneControl {
     private final YamahaZoneConfig zoneConfig;
     private final DeviceDescriptorXML.ZoneDescriptor zoneDescriptor;
 
-    protected CommandTemplate power = new CommandTemplate("<Power_Control><Power>%s</Power></Power_Control>", "Power_Control/Power");
+    protected CommandTemplate power = new CommandTemplate("<Power_Control><Power>%s</Power></Power_Control>",
+            "Power_Control/Power");
     protected CommandTemplate mute = new CommandTemplate("<Volume><Mute>%s</Mute></Volume>", "Volume/Mute");
-    protected CommandTemplate volume = new CommandTemplate("<Volume><Lvl><Val>%d</Val><Exp>1</Exp><Unit>dB</Unit></Lvl></Volume>", "Volume/Lvl/Val");
-    protected CommandTemplate inputSel = new CommandTemplate("<Input><Input_Sel>%s</Input_Sel></Input>", "Input/Input_Sel");
+    protected CommandTemplate volume = new CommandTemplate(
+            "<Volume><Lvl><Val>%d</Val><Exp>1</Exp><Unit>dB</Unit></Lvl></Volume>", "Volume/Lvl/Val");
+    protected CommandTemplate inputSel = new CommandTemplate("<Input><Input_Sel>%s</Input_Sel></Input>",
+            "Input/Input_Sel");
     protected String inputSelNamePath = "Input/Input_Sel_Item_Info/Title";
-    protected CommandTemplate surroundSelProgram = new CommandTemplate("<Surround><Program_Sel><Current><Sound_Program>%s</Sound_Program></Current></Program_Sel></Surround>", "Surround/Program_Sel/Current/Sound_Program");
-    protected CommandTemplate surroundSelStraight = new CommandTemplate("<Surround><Program_Sel><Current><Straight>On</Straight></Current></Program_Sel></Surround>", "Surround/Program_Sel/Current/Straight");
+    protected CommandTemplate surroundSelProgram = new CommandTemplate(
+            "<Surround><Program_Sel><Current><Sound_Program>%s</Sound_Program></Current></Program_Sel></Surround>",
+            "Surround/Program_Sel/Current/Sound_Program");
+    protected CommandTemplate surroundSelStraight = new CommandTemplate(
+            "<Surround><Program_Sel><Current><Straight>On</Straight></Current></Program_Sel></Surround>",
+            "Surround/Program_Sel/Current/Straight");
     protected CommandTemplate sceneSel = new CommandTemplate("<Scene><Scene_Sel>%s</Scene_Sel></Scene>");
     protected boolean sceneSelSupported = false;
-    protected CommandTemplate dialogueLevel = new CommandTemplate("<Sound_Video><Dialogue_Adjust><Dialogue_Lvl>%d</Dialogue_Lvl></Dialogue_Adjust></Sound_Video>", "Sound_Video/Dialogue_Adjust/Dialogue_Lvl");
+    protected CommandTemplate dialogueLevel = new CommandTemplate(
+            "<Sound_Video><Dialogue_Adjust><Dialogue_Lvl>%d</Dialogue_Lvl></Dialogue_Adjust></Sound_Video>",
+            "Sound_Video/Dialogue_Adjust/Dialogue_Lvl");
     protected boolean dialogueLevelSupported = false;
 
-    public ZoneControlXML(AbstractConnection con,
-                          Zone zone,
-                          YamahaZoneConfig zoneSettings,
-                          ZoneControlStateListener observer,
-                          DeviceInformationState deviceInformationState,
-                          Supplier<InputConverter> inputConverterSupplier) {
+    public ZoneControlXML(AbstractConnection con, Zone zone, YamahaZoneConfig zoneSettings,
+            ZoneControlStateListener observer, DeviceInformationState deviceInformationState,
+            Supplier<InputConverter> inputConverterSupplier) {
 
         this.comReference = new WeakReference<>(con);
         this.zone = zone;
@@ -107,7 +111,8 @@ public class ZoneControlXML implements ZoneControl {
                 () -> logger.info("Zone {} - the {} channel is not supported on your model", getZone(), CHANNEL_SCENE));
 
         // Note: Detection if dialogue level is supported
-        dialogueLevelSupported = zoneDescriptor.hasAnyCommandEnding("Sound_Video,Dialogue_Adjust,Dialogue_Lvl", "Sound_Video,Dialogue_Adjust,Dialogue_Lift");
+        dialogueLevelSupported = zoneDescriptor.hasAnyCommandEnding("Sound_Video,Dialogue_Adjust,Dialogue_Lvl",
+                "Sound_Video,Dialogue_Adjust,Dialogue_Lift");
         if (zoneDescriptor.hasCommandEnding("Sound_Video,Dialogue_Adjust,Dialogue_Lift")) {
             dialogueLevel = dialogueLevel.replace("Dialogue_Lvl", "Dialogue_Lift");
             logger.debug("Zone {} - adjusting command to: {}", getZone(), dialogueLevel);
@@ -128,14 +133,17 @@ public class ZoneControlXML implements ZoneControl {
 
         try {
             // Note: Detection for RX-V3900, which has a different XML node for surround program
-            Node basicStatusNode = getZoneResponse(comReference.get(), getZone(), ZONE_BASIC_STATUS_CMD, ZONE_BASIC_STATUS_PATH);
+            Node basicStatusNode = getZoneResponse(comReference.get(), getZone(), ZONE_BASIC_STATUS_CMD,
+                    ZONE_BASIC_STATUS_PATH);
             String surroundProgram = getNodeContentOrEmpty(basicStatusNode, "Surr/Pgm_Sel/Pgm");
 
             if (StringUtils.isNotEmpty(surroundProgram)) {
-                surroundSelProgram = new CommandTemplate("<Surr><Pgm_Sel><Straight>Off</Straight><Pgm>%s</Pgm></Pgm_Sel></Surr>", "Surr/Pgm_Sel/Pgm");
+                surroundSelProgram = new CommandTemplate(
+                        "<Surr><Pgm_Sel><Straight>Off</Straight><Pgm>%s</Pgm></Pgm_Sel></Surr>", "Surr/Pgm_Sel/Pgm");
                 logger.debug("Zone {} - adjusting command to: {}", getZone(), surroundSelProgram);
 
-                surroundSelStraight = new CommandTemplate("<Surr><Pgm_Sel><Straight>On</Straight></Pgm_Sel></Surr>", "Surr/Pgm_Sel/Straight");
+                surroundSelStraight = new CommandTemplate("<Surr><Pgm_Sel><Straight>On</Straight></Pgm_Sel></Surr>",
+                        "Surr/Pgm_Sel/Straight");
                 logger.debug("Zone {} - adjusting command to: {}", getZone(), surroundSelStraight);
             }
 
@@ -217,7 +225,8 @@ public class ZoneControlXML implements ZoneControl {
      * @throws IOException
      */
     @Override
-    public void setVolumeRelative(ZoneControlState state, float percent) throws IOException, ReceivedMessageParseException {
+    public void setVolumeRelative(ZoneControlState state, float percent)
+            throws IOException, ReceivedMessageParseException {
         setVolume(zoneConfig.getVolumePercentage(state.volumeDB) + percent);
     }
 
@@ -231,8 +240,7 @@ public class ZoneControlXML implements ZoneControl {
 
     @Override
     public void setSurroundProgram(String name) throws IOException, ReceivedMessageParseException {
-        String cmd = name.equalsIgnoreCase(SURROUND_PROGRAM_STRAIGHT)
-                ? surroundSelStraight.apply()
+        String cmd = name.equalsIgnoreCase(SURROUND_PROGRAM_STRAIGHT) ? surroundSelStraight.apply()
                 : surroundSelProgram.apply(name);
 
         sendCommand(cmd);
@@ -299,8 +307,8 @@ public class ZoneControlXML implements ZoneControl {
         value = getNodeContentOrDefault(statusNode, dialogueLevel.getPath(), "0");
         state.dialogueLevel = Integer.parseInt(value);
 
-        logger.debug("Zone {} state - power: {}, mute: {}, volumeDB: {}, input: {}, surroundProgram: {}",
-                getZone(), state.power, state.mute, state.volumeDB, state.inputID, state.surroundProgram);
+        logger.debug("Zone {} state - power: {}, mute: {}, volumeDB: {}, input: {}, surroundProgram: {}", getZone(),
+                state.power, state.mute, state.volumeDB, state.inputID, state.surroundProgram);
 
         observer.zoneStateChanged(state);
     }

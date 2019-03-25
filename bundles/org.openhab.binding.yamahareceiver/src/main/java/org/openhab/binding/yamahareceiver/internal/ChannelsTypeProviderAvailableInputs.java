@@ -83,13 +83,14 @@ public class ChannelsTypeProviderAvailableInputs implements ChannelTypeProvider 
     }
 
     private StateDescription getDefaultStateDescription() {
-        List<StateOption> options = new ArrayList<StateOption>();
+        List<StateOption> options = new ArrayList<>();
         options.add(new StateOption(INPUT_NET_RADIO, "Net Radio"));
         options.add(new StateOption(INPUT_PC, "PC"));
         options.add(new StateOption(INPUT_USB, "USB"));
         options.add(new StateOption(INPUT_TUNER, "Tuner"));
         options.add(new StateOption("MULTI_CH", "Multi Channel"));
-        // Note: this might need review in the future, it should be 'HDMI 1', the 'HDMI_1' are XML node names, not source names.
+        // Note: this might need review in the future, it should be 'HDMI 1', the 'HDMI_1' are XML node names, not
+        // source names.
         options.add(new StateOption("HDMI_1", "HDMI 1"));
         options.add(new StateOption("HDMI_2", "HDMI 2"));
         options.add(new StateOption("HDMI_3", "HDMI 3"));

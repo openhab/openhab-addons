@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.yamahareceiver.internal.state;
 
-import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.VALUE_EMPTY;
-import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.VALUE_NA;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
 
 /**
  * The play information state with current station, artist, song name
@@ -24,7 +23,8 @@ import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingC
  */
 public class PlayInfoState implements Invalidateable {
 
-    public String station = VALUE_NA; // NET_RADIO. Will also be used for TUNER where Radio_Text_A/B will be used instead.
+    public String station = VALUE_NA; // NET_RADIO. Will also be used for TUNER where Radio_Text_A/B will be used
+                                      // instead.
     public String artist = VALUE_NA; // USB, iPOD, PC
     public String album = VALUE_NA; // USB, iPOD, PC
     public String song = VALUE_NA; // USB, iPOD, PC
@@ -32,6 +32,7 @@ public class PlayInfoState implements Invalidateable {
 
     public String playbackMode = "Stop"; // All inputs
 
+    @Override
     public void invalidate() {
         this.playbackMode = VALUE_NA;
         this.station = VALUE_NA;
