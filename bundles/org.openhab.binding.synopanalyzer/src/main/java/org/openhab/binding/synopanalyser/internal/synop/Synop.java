@@ -314,9 +314,9 @@ public abstract class Synop {
     public String getWindUnit() {
         if (getWindIndicator() == Constants.WS_WILDTYPE_IN_MPS
                 || getWindIndicator() == Constants.WS_ANEMOMETER_IN_MPS) {
-            return "m/s";
+            return Constants.WS_MPS;
         } else {
-            return "knots";
+            return Constants.WS_KNOTS;
         }
     }
 

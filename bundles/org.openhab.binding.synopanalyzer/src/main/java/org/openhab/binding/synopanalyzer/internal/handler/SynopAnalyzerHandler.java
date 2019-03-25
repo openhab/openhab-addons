@@ -65,11 +65,10 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
     private static final String OGIMET_SYNOP_PATH = "http://www.ogimet.com/cgi-bin/getsynop?block=";
     private static final int REQUEST_TIMEOUT = 5000;
     private static final DateTimeFormatter SYNOP_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHH00");
-    private static final String MPS = "m/s";
     private static final double KASTEN_POWER = 3.4;
     private static final double OCTA_MAX = 8.0;
 
-    private Logger logger = LoggerFactory.getLogger(SynopAnalyzerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SynopAnalyzerHandler.class);
 
     private @NonNullByDefault({}) ScheduledFuture<?> executionJob;
     private @NonNullByDefault({}) SynopAnalyzerConfiguration configuration;
@@ -144,7 +143,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                 return new DecimalType(kc);
             case OVERCAST:
                 String overcast = synop.getOvercast();
-                return overcast == null ? UnDefType.NULL : new StringType(synop.getOvercast());
+                return overcast != null ? new StringType(synop.getOvercast()) : UnDefType.NULL;
             case PRESSURE:
                 return new QuantityType<>(synop.getPressure(), PRESSURE_UNIT);
             case TEMPERATURE:
@@ -192,7 +191,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
      */
     private QuantityType<Speed> getWindStrength(Synop synop) {
         return new QuantityType<>(synop.getWindSpeed(),
-                MPS.equalsIgnoreCase(synop.getWindUnit()) ? WIND_SPEED_UNIT_MS : WIND_SPEED_UNIT_KNOT);
+                Constants.WS_MPS.equalsIgnoreCase(synop.getWindUnit()) ? WIND_SPEED_UNIT_MS : WIND_SPEED_UNIT_KNOT);
     }
 
     private Synop createSynopObject(String synopMessage) {

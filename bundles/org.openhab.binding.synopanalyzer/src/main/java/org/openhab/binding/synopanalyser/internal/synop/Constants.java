@@ -42,6 +42,9 @@ public class Constants {
     public static final int WS_WILDTYPE_IN_KNOT = 3;
     public static final int WS_ANEMOMETER_IN_KNOT = 4;
 
+    public static final String WS_MPS = "m/s";
+    public static final String WS_KNOTS = "knots";
+
     /*
      * DFG - DOWNFALL GROUP VALUES FROM '0' TO '4'
      */
