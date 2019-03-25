@@ -43,7 +43,7 @@ then
 end
 ```
 
-Receive message:
+Receive and process message:
 
 ```
 rule "Turn off all lights without separator"
@@ -56,13 +56,16 @@ then
     }
 end
 
-rule "Turn off all lights with separator"
+rule "Turn off all lights with separator and reply"
 when
     Channel "xmppclient:xmppBridge:xmpp:xmpp_command" triggered
 then
     var actionName = receivedEvent.getEvent().split("#")
     if(actionName.get(1).toLowerCase() == "turn off lights") {
         Group_Light_Home_All.sendCommand(OFF)
+
+        val actions = getActions("xmpp","xmppclient:xmppBridge:xmpp")
+        actions.publishXMPP(actionName.get(0),"All lights was turned off")
     }
 end
 ```

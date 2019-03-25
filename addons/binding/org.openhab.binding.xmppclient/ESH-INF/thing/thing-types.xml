@@ -43,7 +43,7 @@
 			</parameter>
 			<parameter name="separator" type="text" required="false">
 				<label>Separator character</label>
-				<description>The trigger channel payload usually only contains the received text. If you define a separator character, for example '#', the sender UID and received text will be in the trigger channel payload. For example: pavel@parabox.org#My Message Text.</description>
+				<description>The trigger channel payload usually only contains the received text. If you define a separator character, for example '#', the sender UID and received text will be in the trigger channel payload. For example: pavel@example.com#My Message Text.</description>
 			</parameter>
 		</config-description>
 	</channel-type>
