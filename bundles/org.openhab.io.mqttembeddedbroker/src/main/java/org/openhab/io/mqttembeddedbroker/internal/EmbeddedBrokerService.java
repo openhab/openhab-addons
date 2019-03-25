@@ -177,9 +177,9 @@ public class EmbeddedBrokerService
         }
 
         if (!config.persistenceFile.isEmpty()) {
-            String persistenceFilename = config.persistenceFile;
+            final String persistenceFilename = config.persistenceFile;
             if (!Paths.get(persistenceFilename).isAbsolute()) {
-                persistenceFilename = Paths.get(ConfigConstants.getUserDataFolder()).toAbsolutePath()
+                this.persistenceFilename = Paths.get(ConfigConstants.getUserDataFolder()).toAbsolutePath()
                         .resolve(persistenceFilename).toString();
             }
 
