@@ -31,7 +31,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.ambientweather.internal.config.BridgeConfig;
-import org.openhab.binding.ambientweather.internal.json.DevicesJson;
+import org.openhab.binding.ambientweather.internal.model.DevicesJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -20,7 +20,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openhab.binding.ambientweather.internal.handler.AmbientWeatherStationHandler;
-import org.openhab.binding.ambientweather.internal.json.EventDataJson;
+import org.openhab.binding.ambientweather.internal.model.EventDataJson;
 
 import com.google.gson.JsonSyntaxException;
 

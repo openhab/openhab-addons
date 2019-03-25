@@ -19,9 +19,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
-import org.openhab.binding.ambientweather.internal.json.DevicesJson;
-import org.openhab.binding.ambientweather.internal.json.EventDataGenericJson;
-import org.openhab.binding.ambientweather.internal.json.EventSubscribedJson;
+import org.openhab.binding.ambientweather.internal.model.DevicesJson;
+import org.openhab.binding.ambientweather.internal.model.EventDataGenericJson;
+import org.openhab.binding.ambientweather.internal.model.EventSubscribedJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

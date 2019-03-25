@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ambientweather.internal.json;
+package org.openhab.binding.ambientweather.internal.model;
 
 /**
  * The {@link EventDataGenericJson} is the JSOn object
