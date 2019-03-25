@@ -38,14 +38,21 @@
 		</channels>
 
 		<config-description>
+
+			<parameter name="latitude" type="decimal" required="true">
+				<label>Latitude</label>
+				<description>The latitude of the predictions</description>
+			</parameter>
+
 			<parameter name="longitude" type="decimal" required="true">
 				<label>Longitude</label>
 				<description>The longitude of the predictions</description>
 			</parameter>
 
-			<parameter name="latitude" type="decimal" required="true">
-				<label>Latitude</label>
-				<description>The latitude of the predictions</description>
+			<parameter name="refreshIntervalMinutes" type="integer" required="true" min="5" unit="min">
+				<label>Refresh interval</label>
+				<description>Refresh interval in minutes</description>
+				<default>5</default>
 			</parameter>
 		</config-description>
 

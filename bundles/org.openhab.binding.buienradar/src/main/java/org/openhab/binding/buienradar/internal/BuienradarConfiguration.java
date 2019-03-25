@@ -28,4 +28,9 @@ public class BuienradarConfiguration {
      * Latitude of the measurements
      */
     public Double latitude;
+
+    /**
+     * Refresh interval for retrieving results from buienradar.
+     */
+    public Integer refreshIntervalMinutes;
 }

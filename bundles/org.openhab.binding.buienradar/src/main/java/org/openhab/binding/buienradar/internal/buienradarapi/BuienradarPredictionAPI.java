@@ -13,10 +13,14 @@
 package org.openhab.binding.buienradar.internal.buienradarapi;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +38,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class BuienradarPredictionAPI implements PredictionAPI {
+    private static final ZoneId ZONE_AMSTERDAM = ZoneId.of("Europe/Amsterdam");
+
     private static final String BASE_ADDRESS = "https://gpsgadget.buienradar.nl/data/raintext";
 
     private static final int TIMEOUT = 15000;
@@ -46,15 +52,13 @@ public class BuienradarPredictionAPI implements PredictionAPI {
      * @return The real intensity in mm / hour
      * @throws BuienradarParseException when the intensity string could not be parsed.
      */
-    public static double parseIntensity(String intensityStr) throws BuienradarParseException {
-        assert (intensityStr.length() == 3);
-        final int lastZero = intensityStr.lastIndexOf('0');
-        final String trimmedStr = lastZero == -1 || lastZero == 2 ? intensityStr : intensityStr.substring(lastZero + 1);
+    public static BigDecimal parseIntensity(String intensityStr) throws BuienradarParseException {
         try {
             // Intensity in mm / hour = 10^((value-109)/32)
-            return Math.pow(10.0, (Integer.parseInt(trimmedStr) - 109) / 32.0);
+            double unrounded = Math.pow(10.0, (Integer.parseInt(intensityStr) - 109) / 32.0);
+            return BigDecimal.valueOf(unrounded).setScale(2, RoundingMode.HALF_EVEN);
         } catch (NumberFormatException e) {
-            throw new BuienradarParseException("Could not parse intensityStr", e);
+            throw new BuienradarParseException("Could not parse intensity part of API", e);
         }
     }
 
@@ -78,10 +82,12 @@ public class BuienradarPredictionAPI implements PredictionAPI {
         final int minute = Integer.parseInt(timeElements[1]);
         final LocalTime time = LocalTime.of(hour, minute);
 
-        final ZonedDateTime tryDateTime = time.atDate(now.toLocalDate()).atZone(ZoneId.of("Europe/Amsterdam"));
+        final LocalDate localDateInAmsterdam = now.withZoneSameInstant(ZONE_AMSTERDAM).toLocalDate();
+
+        final ZonedDateTime tryDateTime = time.atDate(localDateInAmsterdam).atZone(ZONE_AMSTERDAM);
         if (tryDateTime.plusMinutes(20).isBefore(now)) {
             // Check me: could this go wrong at DTS days?
-            return time.atDate(now.toLocalDate().plusDays(1)).atZone(ZoneId.of("Europe/Amsterdam"));
+            return time.atDate(localDateInAmsterdam.plusDays(1)).atZone(ZONE_AMSTERDAM);
         } else {
             return tryDateTime;
         }
@@ -101,12 +107,12 @@ public class BuienradarPredictionAPI implements PredictionAPI {
             throw new BuienradarParseException(
                     String.format("Expected two line elements, but found %s", lineElements.length));
         }
-        final double intensityOut = parseIntensity(lineElements[0]);
+        final BigDecimal intensityOut = parseIntensity(lineElements[0]);
         final ZonedDateTime dateTime = parseDateTime(lineElements[1], now);
         return new Prediction() {
 
             @Override
-            public final double getIntensity() {
+            public final BigDecimal getIntensity() {
                 return intensityOut;
             }
 
@@ -121,10 +127,16 @@ public class BuienradarPredictionAPI implements PredictionAPI {
     public List<Prediction> getPredictions(double lat, double lon) throws IOException {
         final String address = String.format(BASE_ADDRESS + "?lat=%.6f&lon=%.6f", lat, lon);
         final String result = HttpUtil.executeUrl("GET", address, TIMEOUT);
+
+        if (result.trim().isEmpty()) {
+            logger.error(String.format("Buienradar API at URI %s return empty result", address));
+            return Collections.emptyList();
+        }
         final List<Prediction> predictions = new ArrayList<Prediction>(24);
         final List<String> errors = new LinkedList<String>();
         logger.debug("Returned result from buienradar: {}", result);
-        for (String line : result.split("\n")) {
+        final String[] lines = result.split("\n");
+        for (String line : lines) {
             try {
                 predictions.add(parseLine(line, ZonedDateTime.now()));
             } catch (BuienradarParseException e) {

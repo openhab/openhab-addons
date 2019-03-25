@@ -14,6 +14,7 @@ package org.openhab.binding.buienradar;
 
 import static org.junit.Assert.assertEquals;
 
+import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -25,25 +26,41 @@ import org.openhab.binding.buienradar.internal.buienradarapi.Prediction;
 public class BuienradarPredictionAPITest {
     private static final ZonedDateTime NOW = ZonedDateTime.of(2019, 3, 10, 20, 37, 0, 0, ZoneId.of("Europe/Amsterdam"));
 
+    private static final ZonedDateTime NOW_LONDON = ZonedDateTime.of(2019, 3, 10, 20, 37, 0, 0,
+            ZoneId.of("Europe/London"));
+
     @Test
     public void testParseIntensity000() throws BuienradarParseException {
-        assertEquals(3.9241e-4, BuienradarPredictionAPI.parseIntensity("000"), 1e-5);
+        assertEquals(BigDecimal.valueOf(0, 2), BuienradarPredictionAPI.parseIntensity("000"));
     }
 
     @Test
     public void testParseIntensity050() throws BuienradarParseException {
-        assertEquals(0.01433, BuienradarPredictionAPI.parseIntensity("050"), 1e-5);
+        assertEquals(BigDecimal.valueOf(1, 2), BuienradarPredictionAPI.parseIntensity("050"));
     }
 
     @Test
     public void testParseIntensity500() throws BuienradarParseException {
-        assertEquals(1.654817e12, BuienradarPredictionAPI.parseIntensity("500"), 1e7);
+        assertEquals(BigDecimal.valueOf(165481709994318L, 2), BuienradarPredictionAPI.parseIntensity("500"));
+    }
+
+    @Test
+    public void testParseIntensity101() throws BuienradarParseException {
+        assertEquals(BigDecimal.valueOf(56, 2), BuienradarPredictionAPI.parseIntensity("101"));
     }
 
     @Test
     public void testParseDateTime() throws BuienradarParseException {
         final ZonedDateTime parsed = BuienradarPredictionAPI.parseDateTime("20:45", NOW);
         assertEquals(ZonedDateTime.of(2019, 3, 10, 20, 45, 0, 0, ZoneId.of("Europe/Amsterdam")), parsed);
+    }
+
+    @Test
+    public void testParseDateTimeLondon() throws BuienradarParseException {
+        // 20:37 in London is *before* 20:45 in Amsterdam, therefore, it should be parsed as a timestamp happening
+        // tomorrow.
+        final ZonedDateTime parsed = BuienradarPredictionAPI.parseDateTime("20:45", NOW_LONDON);
+        assertEquals(ZonedDateTime.of(2019, 3, 11, 20, 45, 0, 0, ZoneId.of("Europe/Amsterdam")), parsed);
     }
 
     @Test
@@ -56,7 +73,7 @@ public class BuienradarPredictionAPITest {
     public void testParseLine() throws BuienradarParseException {
         final Prediction parsed = BuienradarPredictionAPI.parseLine("000|19:35", NOW);
         assertEquals(ZonedDateTime.of(2019, 3, 11, 19, 35, 0, 0, ZoneId.of("Europe/Amsterdam")), parsed.getDateTime());
-        assertEquals(3.9241e-4, parsed.getIntensity(), 1e-5);
+        assertEquals(BigDecimal.valueOf(0, 2), parsed.getIntensity());
     }
 
 }

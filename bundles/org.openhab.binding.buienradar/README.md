@@ -6,8 +6,7 @@ This allows us to warn of upcoming rainfal when there are still open windows, or
 
 ## Supported Things
 
-The webservice supports one thing, which can be added manually via the web interface. The thing needs longitude and latitude
-of the location which needs forecasts.
+The webservice supports one thing, which can be added manually via the web interface. The thing needs longitude and latitude of the location which needs forecasts.
 
 ## Discovery
 

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.buienradar.internal.buienradarapi;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,7 +27,7 @@ public interface Prediction {
     /**
      * Intensity of rain in mm/hour
      */
-    double getIntensity();
+    BigDecimal getIntensity();
 
     /**
      * Date-time of prediction.
