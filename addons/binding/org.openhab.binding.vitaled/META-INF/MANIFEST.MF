@@ -22,5 +22,6 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.vitaled,
  org.openhab.binding.vitaled.handler,
+ org.openhab.core.library.types,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

@@ -64,6 +64,11 @@
 				<label>White Light</label>
 			<description>White Light in %</description>
 			</channel>
+			
+			<channel id="color" typeId="color">
+				<label>HSB Color</label>
+				<description>Color</description>
+			</channel>
 			<!-- Colour gradients -->
 			<channel id="colourSaturation" typeId="colourSaturation">
 				<label>Colour Saturation</label>
@@ -160,6 +165,17 @@
 		<category>ColorLight</category>
 		<state min="0" max="100" step="1" pattern="%.0f %%" readOnly="false"></state>
 	</channel-type>
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>The color channel allows to control the color of a light.
+			It is also possible to dim values and switch the light on and off.
+		</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>	
 	<channel-type id="colourSaturation">
 		<item-type>Number</item-type>
 		<label>Colour Saturation</label>
