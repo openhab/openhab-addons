@@ -70,10 +70,6 @@
 /addons/binding/org.openhab.binding.minecraft/ @ibaton
 /addons/binding/org.openhab.binding.modbus/ @ssalonen
 /addons/binding/org.openhab.binding.modbus.test/ @ssalonen
-/addons/binding/org.openhab.binding.mqtt/ @davidgraeff
-/addons/binding/org.openhab.binding.mqtt.generic/ @davidgraeff
-/addons/binding/org.openhab.binding.mqtt.generic.test/ @davidgraeff
-/addons/binding/org.openhab.binding.mqtt.test/ @davidgraeff
 /addons/binding/org.openhab.binding.nanoleaf/ @raepple
 /addons/binding/org.openhab.binding.neato/ @jjlauterbach
 /addons/binding/org.openhab.binding.neeo/ @tmrobert8
@@ -182,6 +178,10 @@
 /bundles/org.openhab.binding.lifx/ @wborn
 /bundles/org.openhab.binding.lirc/ @kabili207
 /bundles/org.openhab.binding.meteoblue/ @9037568
+/bundles/org.openhab.binding.mqtt/ @davidgraeff
+/bundles/org.openhab.binding.mqtt.generic/ @davidgraeff
+/bundles/org.openhab.binding.mqtt.homeassistant/ @davidgraeff
+/bundles/org.openhab.binding.mqtt.homie/ @davidgraeff
 /bundles/org.openhab.binding.nest/ @wborn
 /bundles/org.openhab.binding.network/ @davidgraeff @mettke
 /bundles/org.openhab.binding.nibeheatpump/ @paulianttila
@@ -221,6 +221,8 @@
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
 /itests/org.openhab.binding.dmx.tests/ @J-N-K
+/itests/org.openhab.binding.mqtt.homeassistant.tests/ @wborn
+/itests/org.openhab.binding.mqtt.homie.tests/ @wborn
 /itests/org.openhab.binding.nest.tests/ @wborn
 /itests/org.openhab.binding.onewire.tests/ @J-N-K
 /itests/org.openhab.persistence.mapdb.tests/ @mkhl
