@@ -66,6 +66,8 @@ Configuration with default_state and pull_mode:
 Thing mcp23017:mcp23017:chipA  "MCP23017 chip A" [address=20,bus=1] {
     Type output_pin : output#A0 [default_state="HIGH"]
     Type output_pin : output#A1 [default_state="LOW"]
+    Type output_pin : output#A2 [active_low="y"]
+    Type output_pin : output#A2 [default_state="LOW", active_low="y"]
 
     Type input_pin : input#B0 [pull_mode="PULL_UP"]
     Type input_pin : input#B1 [pull_mode="OFF"]

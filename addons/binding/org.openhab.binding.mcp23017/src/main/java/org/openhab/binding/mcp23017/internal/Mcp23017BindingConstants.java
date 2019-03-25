@@ -39,6 +39,10 @@ public class Mcp23017BindingConstants {
     public static final String PIN = "pin";
     public static final String PULL_MODE = "pull_mode";
     public static final String DEFAULT_PULL_MODE = "OFF";
+    
+    public static final String ACTIVE_LOW = "active_low";
+    
+    public static final String ACTIVE_LOW_ENABLED = "y";
 
     public static final String CHANNEL_GROUP_INPUT = "input";
     public static final String CHANNEL_GROUP_OUTPUT = "output";
