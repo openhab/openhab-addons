@@ -23,4 +23,5 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class PublishTriggerChannelConfig {
     public @Nullable String payload;
+    public String separator = "";
 }

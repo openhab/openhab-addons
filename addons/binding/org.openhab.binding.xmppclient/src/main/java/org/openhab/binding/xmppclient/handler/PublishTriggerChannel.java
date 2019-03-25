@@ -47,13 +47,19 @@ public class PublishTriggerChannel implements XMPPClientMessageSubscriber {
     }
 
     @Override
-    public void processMessage(String topic, String payload) {
+    public void processMessage(String from, String payload) {
         // Check condition if exists
         String expectedPayload = config.payload;
         if ((expectedPayload != null) && (!expectedPayload.isEmpty()) && !payload.equals(expectedPayload)) {
             return;
         }
-        handler.triggerChannel(uid, payload);
+        String eventValue = "";
+        if((config.separator != null) && !config.separator.isEmpty()) {
+            eventValue = from + config.separator + payload;
+        } else {
+            eventValue = payload;
+        }
+        handler.triggerChannel(uid, eventValue);
     }
 
     @Override

@@ -15,7 +15,7 @@
 			</parameter>
 			<parameter name="port" type="integer">
 				<label>XMPP server Port</label>
-				<description>The port is optional, if none is provided, the typical ports 5222 is used.</description>
+				<description>The typical port is 5222.</description>
 				<context>network-address</context>
 			</parameter>
 
@@ -40,6 +40,10 @@
 			<parameter name="payload" type="text" required="false">
 				<label>Payload condition</label>
 				<description>An optional condition on the value</description>
+			</parameter>
+			<parameter name="separator" type="text" required="false">
+				<label>Separator character</label>
+				<description>The trigger channel payload usually only contains the received text. If you define a separator character, for example '#', the sender UID and received text will be in the trigger channel payload. For example: pavel@parabox.org#My Message Text.</description>
 			</parameter>
 		</config-description>
 	</channel-type>
