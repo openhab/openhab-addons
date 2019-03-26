@@ -21,7 +21,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.modbus.discovery.ModbusDiscoveryParticipant;
-import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -32,7 +31,12 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * Discovery service for Modbus bridges.
- * New bridges (TCP or Serial Modbus endpoint) should be registered with this service.
+ *
+ * This service acts as a rendezvous point between the different Modbus endpoints and any
+ * bundles that implement auto discovery through an endpoint.
+ *
+ * New bridges (TCP or Serial Modbus endpoint) should register with this service. This is
+ * handled automatically by the ModbusEndpointDiscoveryService.
  * Also any bundles that perform auto discovery should register a ModbusDiscoveryParticipant.
  * This ModbusDiscoveryParticipants will be called by the service when
  * a discovery scan is requested.
@@ -45,8 +49,8 @@ public class ModbusDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusDiscoveryService.class);
 
-    // Set of handlers that allow discovery
-    private final Set<ModbusEndpointThingHandler> handlers = new CopyOnWriteArraySet<>();
+    // Set of services that support Modbus discovery
+    private final Set<ModbusThingHandlerDiscoveryService> services = new CopyOnWriteArraySet<>();
 
     // Set of the registered participants
     private final Set<ModbusDiscoveryParticipant> participants = new CopyOnWriteArraySet<>();
@@ -56,9 +60,6 @@ public class ModbusDiscoveryService extends AbstractDiscoveryService {
     private final Set<ThingTypeUID> supportedThingTypes = new CopyOnWriteArraySet<>();
 
     private static final int SEARCH_TIME = 5;
-
-    // Number of running discovery processes
-    private int discoveryProcessCount = 0;
 
     /**
      * Constructor for the discovery service.
@@ -72,31 +73,39 @@ public class ModbusDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
+     * ThingHandlerService
      * Begin a discovery scan over each endpoint
      */
     @Override
     protected void startScan() {
         logger.trace("ModbusDiscoveryService starting scan");
-        for (ModbusEndpointThingHandler handler : handlers) {
-            if (handler.isDiscoveryEnabled()) {
-                logger.debug("Starting scan for handler {}", handler);
-                new ModbusDiscoveryProcess(this, participants, handler).start();
-                discoveryProcessCount++;
-            }
+
+        if (participants.size() == 0) {
+            // There's no point on continuing if there are no participants at the moment
+            stopScan();
+            return;
         }
-        if (discoveryProcessCount == 0) {
+
+        boolean scanStarted = false;
+        for (ModbusThingHandlerDiscoveryService service : services) {
+            scanStarted |= service.startScan(this);
+        }
+        if (!scanStarted) {
             stopScan();
         }
     }
 
     /**
-     * Interface to notify us when a discovery process has been finished
+     * Interface to notify us when a handler has finished it's discovery process
      */
     protected void scanFinished() {
-        if (--discoveryProcessCount == 0) {
-            logger.trace("All endpoints finished scanning, stopping scan");
-            stopScan();
+        for (ModbusThingHandlerDiscoveryService service : services) {
+            if (service.scanInProgress()) {
+                return;
+            }
         }
+        logger.trace("All endpoints finished scanning, stopping scan");
+        stopScan();
     }
 
     /**
@@ -122,23 +131,25 @@ public class ModbusDiscoveryService extends AbstractDiscoveryService {
 
     /**
      * This reference is used to register any new Modbus bridge with the discovery service
+     * Running bridges have a ModbusThingHandlerDiscoveryService connected
+     * which will be responsible for the discovery
      *
      * @param handler the Modbus bridge handler
      */
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
-    protected void addModbusEndpoint(ModbusEndpointThingHandler handler) {
-        logger.trace("Received new handler: {}", handler);
-        handlers.add(handler);
+    protected void addModbusEndpoint(ModbusThingHandlerDiscoveryService service) {
+        logger.trace("Received new handler: {}", service);
+        services.add(service);
     }
 
     /**
-     * Remove an already registered Modbus bridge handler
+     * Remove an already registered thing handler discovery component
      *
      * @param handler the handler that has been removed
      */
-    protected void removeModbusEndpoint(ModbusEndpointThingHandler handler) {
-        logger.trace("Removed handler: {}", handler);
-        handlers.remove(handler);
+    protected void removeModbusEndpoint(ModbusThingHandlerDiscoveryService service) {
+        logger.trace("Removed handler: {}", service);
+        services.remove(service);
     }
 
     /**
@@ -165,4 +176,12 @@ public class ModbusDiscoveryService extends AbstractDiscoveryService {
         participants.remove(participant);
     }
 
+    /**
+     * Return the set of participants
+     *
+     * @return a set of the participants. Note: this is a copy of the original set
+     */
+    public Set<ModbusDiscoveryParticipant> getDiscoveryParticipants() {
+        return new CopyOnWriteArraySet<>(participants);
+    }
 }

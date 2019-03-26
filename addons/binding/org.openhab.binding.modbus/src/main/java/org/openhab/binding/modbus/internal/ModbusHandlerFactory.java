@@ -14,10 +14,7 @@ package org.openhab.binding.modbus.internal;
 
 import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal.*;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,18 +22,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.UID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusPollerThingHandlerImpl;
 import org.openhab.binding.modbus.internal.handler.ModbusSerialThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
 import org.openhab.io.transport.modbus.ModbusManager;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -57,11 +50,6 @@ public class ModbusHandlerFactory extends BaseThingHandlerFactory {
     @NonNullByDefault({})
     private ModbusManager manager;
 
-    /**
-     * Map of the registered services. We register handlers for auto discover
-     */
-    private final Map<ThingUID, ServiceRegistration<?>> serviceRegs = new HashMap<>();
-
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
     static {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_MODBUS_TCP);
@@ -80,12 +68,10 @@ public class ModbusHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_MODBUS_TCP)) {
             logger.debug("createHandler Modbus tcp");
-            ModbusEndpointThingHandler handler = new ModbusTcpThingHandler((Bridge) thing, () -> manager);
-            return registerEndpointHandler(handler);
+            return new ModbusTcpThingHandler((Bridge) thing, () -> manager);
         } else if (thingTypeUID.equals(THING_TYPE_MODBUS_SERIAL)) {
             logger.debug("createHandler Modbus serial");
-            ModbusEndpointThingHandler handler = new ModbusSerialThingHandler((Bridge) thing, () -> manager);
-            return registerEndpointHandler(handler);
+            return new ModbusSerialThingHandler((Bridge) thing, () -> manager);
         } else if (thingTypeUID.equals(THING_TYPE_MODBUS_POLLER)) {
             logger.debug("createHandler Modbus poller");
             return new ModbusPollerThingHandlerImpl((Bridge) thing, () -> manager);
@@ -109,27 +95,4 @@ public class ModbusHandlerFactory extends BaseThingHandlerFactory {
         this.manager = null;
     }
 
-    /**
-     * Register an endpoint handler (bridge) for discovery
-     *
-     * @param the endpoint handler that gets published
-     * @return the thing handler that was received
-     */
-    private synchronized ThingHandler registerEndpointHandler(ModbusEndpointThingHandler handler) {
-        serviceRegs.put(handler.getUID(), bundleContext.registerService(ModbusEndpointThingHandler.class.getName(),
-                handler, new Hashtable<String, Object>()));
-        return (ThingHandler) handler;
-    }
-
-    @SuppressWarnings("null")
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof ModbusEndpointThingHandler) {
-            UID uid = ((ModbusEndpointThingHandler) thingHandler).getUID();
-            ServiceRegistration<?> serviceReg = this.serviceRegs.remove(uid);
-            if (serviceReg != null) {
-                serviceReg.unregister();
-            }
-        }
-    }
 }

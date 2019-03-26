@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.modbus.internal.handler;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -19,6 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
+import org.openhab.binding.modbus.discovery.internal.ModbusEndpointDiscoveryService;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.binding.modbus.internal.config.ModbusSerialConfiguration;
 import org.openhab.io.transport.modbus.ModbusManager;
@@ -102,6 +106,11 @@ public class ModbusSerialThingHandler
     @Override
     public ThingUID getUID() {
         return getThing().getUID();
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(ModbusEndpointDiscoveryService.class);
     }
 
 }
