@@ -63,17 +63,14 @@ public class XMPPClientHandler extends BaseBridgeHandler {
         return Collections.singleton(XMPPActions.class);
     }
 
-    /**
-     * Does nothing
-     */
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // No commands to handle
-    }
-
     @Override
     protected void triggerChannel(ChannelUID channelUID, String event) {
         super.triggerChannel(channelUID, event);
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        // not supported
     }
 
     @Override
