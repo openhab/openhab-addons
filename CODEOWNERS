@@ -19,7 +19,6 @@
 /addons/binding/org.openhab.binding.chromecast/ @kaikreuzer
 /addons/binding/org.openhab.binding.chromecast.test/ @kaikreuzer
 /addons/binding/org.openhab.binding.cm11a/ @BobRak
-/addons/binding/org.openhab.binding.digitalstrom/ @MichaelOchel @msiegele
 /addons/binding/org.openhab.binding.dscalarm/ @RSStephens
 /addons/binding/org.openhab.binding.dsmr/ @Hilbrand
 /addons/binding/org.openhab.binding.dsmr.test/ @Hilbrand
@@ -113,8 +112,6 @@
 /addons/binding/org.openhab.binding.toon/ @jongj
 /addons/binding/org.openhab.binding.tplinksmarthome/ @Hilbrand
 /addons/binding/org.openhab.binding.tplinksmarthome.test/ @Hilbrand
-/addons/binding/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
-/addons/binding/org.openhab.binding.tradfri.test/ @cweitkamp @kaikreuzer
 /addons/binding/org.openhab.binding.urtsi/ @OLibutzki
 /addons/binding/org.openhab.binding.velbus/ @cedricboon
 /addons/binding/org.openhab.binding.vitotronic/ @steand
@@ -160,6 +157,7 @@
 /bundles/org.openhab.binding.daikin/ @caffineehacker
 /bundles/org.openhab.binding.deconz/ @davidgraeff
 /bundles/org.openhab.binding.denonmarantz/ @jwveldhuis
+/bundles/org.openhab.binding.digitalstrom/ @MichaelOchel @msiegele
 /bundles/org.openhab.binding.dlinksmarthome/ @MikeJMajor
 /bundles/org.openhab.binding.dmx/ @J-N-K
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
@@ -200,6 +198,7 @@
 /bundles/org.openhab.binding.spotify/ @Hilbrand
 /bundles/org.openhab.binding.tankerkoenig/ @dolic @JueBag
 /bundles/org.openhab.binding.tesla/ @kgoderis
+/bundles/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /bundles/org.openhab.binding.unifi/ @mgbowman
 /bundles/org.openhab.binding.valloxmv/ @bjoernbrings
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo
@@ -225,6 +224,7 @@
 /itests/org.openhab.binding.mqtt.homie.tests/ @wborn
 /itests/org.openhab.binding.nest.tests/ @wborn
 /itests/org.openhab.binding.onewire.tests/ @J-N-K
+/itests/org.openhab.binding.tradfri.tests/ @cweitkamp @kaikreuzer
 /itests/org.openhab.persistence.mapdb.tests/ @mkhl
 
 # PLEASE HELP ADDING FURTHER LINES HERE!

@@ -31,6 +31,7 @@
     <module>org.openhab.binding.daikin</module>
     <module>org.openhab.binding.deconz</module>
     <module>org.openhab.binding.denonmarantz</module>
+    <module>org.openhab.binding.digitalstrom</module>
     <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dmx</module>
     <module>org.openhab.binding.dwdunwetter</module>
@@ -71,6 +72,7 @@
     <module>org.openhab.binding.spotify</module>
     <module>org.openhab.binding.tankerkoenig</module>
     <module>org.openhab.binding.tesla</module>
+    <module>org.openhab.binding.tradfri</module>
     <module>org.openhab.binding.unifi</module>
     <module>org.openhab.binding.valloxmv</module>
     <module>org.openhab.binding.weatherunderground</module>
