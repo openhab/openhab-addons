@@ -14,7 +14,7 @@
 				<description>The ip address of the elk alarm system.</description>
 				<context>network-address</context> 
 			</parameter>
-			<parameter name="port" type="integer">
+			<parameter name="port" type="integer" min="0" max="65335">
 				<label>Port</label>
 				<description>The port to connect to on the elk alarm system.</description>
 			</parameter>
