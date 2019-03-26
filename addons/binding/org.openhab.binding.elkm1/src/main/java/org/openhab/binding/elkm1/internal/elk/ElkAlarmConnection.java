@@ -132,19 +132,22 @@ public class ElkAlarmConnection {
     public boolean sslLogin() {
         ((SSLSocket) socket).setEnabledProtocols(new String[] { "TLSv1" });
         try {
-            BufferedWriter out = new BufferedWriter(
-                    new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-            out.write(config.username + "\r\n");
-            out.write(config.password + "\r\n");
-            out.flush();
+            try (BufferedWriter out = new BufferedWriter(
+                    new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8))) {
+                out.write(config.username + "\r\n");
+                out.write(config.password + "\r\n");
+                out.flush();
+            }
 
-            // Read back username and password
-            logger.debug("Elk Login Readback: ", in.readLine());
-            logger.debug("Elk Login Readback: ", in.readLine());
-            logger.debug("Elk Login Readback: ", in.readLine());
-            logger.debug("Elk Login Readback: ", in.readLine());
+            try (BufferedReader in = new BufferedReader(
+                    new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8))) {
+
+                // Read back username and password
+                logger.debug("Elk Login Readback: ", in.readLine());
+                logger.debug("Elk Login Readback: ", in.readLine());
+                logger.debug("Elk Login Readback: ", in.readLine());
+                logger.debug("Elk Login Readback: ", in.readLine());
+            }
         } catch (IOException e) {
             logger.error("Unable to open connection to Elk alarm: {}:{}", config.ipAddress, config.port, e);
             return false;
