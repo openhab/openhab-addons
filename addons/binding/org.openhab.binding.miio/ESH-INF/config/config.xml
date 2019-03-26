@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config-description:config-descriptions
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:miio:config">
 		<parameter name="host" type="text" required="true">

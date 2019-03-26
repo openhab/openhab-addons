@@ -109,12 +109,15 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
     }
 
     private void handleOutputCommand(ChannelUID channelUID, Command command) {
-        GpioPinDigitalOutput outputPin = pinStateHolder.getOutputPin(channelUID);
-        logger.debug("got output pin {} for channel {} and command {}", outputPin, channelUID, command);
-        if (OnOffType.ON == command) {
-            GPIODataHolder.GPIO.setState(PinState.HIGH, outputPin);
-        } else if (OnOffType.OFF == command) {
-            GPIODataHolder.GPIO.setState(PinState.LOW, outputPin);
+        if (command instanceof OnOffType) {
+            GpioPinDigitalOutput outputPin = pinStateHolder.getOutputPin(channelUID);
+            Configuration configuration = this.getThing().getChannel(channelUID.getId()).getConfiguration();
+
+            // invertLogic is null if not configured
+            boolean activeLowFlag = ACTIVE_LOW_ENABLED.equalsIgnoreCase(configuration.get(ACTIVE_LOW).toString());
+            PinState pinState = command == OnOffType.ON ^ activeLowFlag ? PinState.HIGH : PinState.LOW;
+            logger.debug("got output pin {} for channel {} and command {} [active_low={}, new_state={}]", outputPin, channelUID, command, activeLowFlag, pinState);            
+            GPIODataHolder.GPIO.setState(pinState, outputPin);
         }
     }
 
