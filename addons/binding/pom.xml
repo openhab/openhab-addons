@@ -31,7 +31,6 @@
     <module>org.openhab.binding.chromecast.test</module>
     <module>org.openhab.binding.cm11a</module>
     <module>org.openhab.binding.daikin</module>
-    <module>org.openhab.binding.digitalstrom</module>
     <module>org.openhab.binding.dscalarm</module>
     <module>org.openhab.binding.dsmr</module>
     <module>org.openhab.binding.dsmr.test</module>
