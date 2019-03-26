@@ -132,8 +132,10 @@ public class ElkAlarmConnection {
     public boolean sslLogin() {
         ((SSLSocket) socket).setEnabledProtocols(new String[] { "TLSv1" });
         try {
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF8"));
+            BufferedWriter out = new BufferedWriter(
+                    new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
             out.write(config.username + "\r\n");
             out.write(config.password + "\r\n");
             out.flush();
