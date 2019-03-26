@@ -859,6 +859,15 @@
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.windcentrale/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-xmppclient" description="XMPP Client Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle dependency="true" start-level="80">mvn:org.igniterealtime.smack/smack-java7/4.3.1</bundle>
+        <bundle dependency="true" start-level="80">mvn:org.igniterealtime.smack/smack-extensions/4.3.1</bundle>
+        <bundle dependency="true" start-level="80">mvn:org.igniterealtime.smack/smack-im/4.3.1</bundle>
+        <bundle dependency="true" start-level="80">mvn:org.igniterealtime.smack/smack-tcp/4.3.1</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.xmppclient/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-yamahareceiver" description="Yamaha Receiver Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
