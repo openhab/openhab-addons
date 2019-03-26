@@ -272,7 +272,7 @@ public class ElkAlarmConnection {
                                 listen.handleElkMessage(message);
                             }
                         }
-                        logger.debug("Processed Elk message: {} as {}", line, message.toString());
+                        logger.debug("Processed Elk message: {} as {}", line, message);
                     } else {
                         logger.info("Unknown Elk message: {}", line);
                     }
