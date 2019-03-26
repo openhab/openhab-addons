@@ -29,8 +29,8 @@ import org.eclipse.smarthome.core.i18n.LocationProvider;
 import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.darksky.internal.handler.AbstractDarkSkyHandler;
 import org.openhab.binding.darksky.internal.handler.DarkSkyAPIHandler;
+import org.openhab.binding.darksky.internal.handler.DarkSkyWeatherAndForecastHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,7 @@ public class DarkSkyDiscoveryService extends AbstractDiscoveryService {
      */
     public DarkSkyDiscoveryService(DarkSkyAPIHandler bridgeHandler, LocationProvider locationProvider,
             LocaleProvider localeProvider, TranslationProvider i18nProvider) {
-        super(AbstractDarkSkyHandler.SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT_SECONDS);
+        super(DarkSkyWeatherAndForecastHandler.SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT_SECONDS);
         this.bridgeHandler = bridgeHandler;
         this.locationProvider = locationProvider;
         this.localeProvider = localeProvider;

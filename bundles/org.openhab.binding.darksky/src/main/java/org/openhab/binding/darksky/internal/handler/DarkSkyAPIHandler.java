@@ -140,7 +140,7 @@ public class DarkSkyAPIHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         scheduler.schedule(() -> {
-            updateThing((AbstractDarkSkyHandler) childHandler, childThing);
+            updateThing((DarkSkyWeatherAndForecastHandler) childHandler, childThing);
             determineBridgeStatus();
         }, INITIAL_DELAY_IN_SECONDS, TimeUnit.SECONDS);
     }
@@ -164,14 +164,14 @@ public class DarkSkyAPIHandler extends BaseBridgeHandler {
     private void updateThings() {
         ThingStatus status = ThingStatus.OFFLINE;
         for (Thing thing : getThing().getThings()) {
-            if (ThingStatus.ONLINE.equals(updateThing((AbstractDarkSkyHandler) thing.getHandler(), thing))) {
+            if (ThingStatus.ONLINE.equals(updateThing((DarkSkyWeatherAndForecastHandler) thing.getHandler(), thing))) {
                 status = ThingStatus.ONLINE;
             }
         }
         updateStatus(status);
     }
 
-    private ThingStatus updateThing(@Nullable AbstractDarkSkyHandler handler, Thing thing) {
+    private ThingStatus updateThing(@Nullable DarkSkyWeatherAndForecastHandler handler, Thing thing) {
         if (handler != null && connection != null) {
             handler.updateData(connection);
             return thing.getStatus();

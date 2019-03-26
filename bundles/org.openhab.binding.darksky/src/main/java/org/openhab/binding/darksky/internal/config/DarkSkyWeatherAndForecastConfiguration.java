@@ -22,10 +22,19 @@ import org.openhab.binding.darksky.internal.handler.DarkSkyWeatherAndForecastHan
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-public class DarkSkyWeatherAndForecastConfiguration extends DarkSkyLocationConfiguration {
+public class DarkSkyWeatherAndForecastConfiguration {
 
+    private @NonNullByDefault({}) String location;
     private int forecastHours;
     private int forecastDays;
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
     public int getForecastHours() {
         return forecastHours;

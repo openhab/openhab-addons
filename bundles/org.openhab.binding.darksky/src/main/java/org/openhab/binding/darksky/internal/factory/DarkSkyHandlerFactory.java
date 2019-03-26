@@ -38,7 +38,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.darksky.internal.discovery.DarkSkyDiscoveryService;
-import org.openhab.binding.darksky.internal.handler.AbstractDarkSkyHandler;
 import org.openhab.binding.darksky.internal.handler.DarkSkyAPIHandler;
 import org.openhab.binding.darksky.internal.handler.DarkSkyWeatherAndForecastHandler;
 import org.osgi.framework.ServiceRegistration;
@@ -55,8 +54,10 @@ import org.osgi.service.component.annotations.Reference;
 public class DarkSkyHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.concat(DarkSkyAPIHandler.SUPPORTED_THING_TYPES.stream(),
-                    AbstractDarkSkyHandler.SUPPORTED_THING_TYPES.stream()).collect(Collectors.toSet()));
+            .unmodifiableSet(Stream
+                    .concat(DarkSkyAPIHandler.SUPPORTED_THING_TYPES.stream(),
+                            DarkSkyWeatherAndForecastHandler.SUPPORTED_THING_TYPES.stream())
+                    .collect(Collectors.toSet()));
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private @NonNullByDefault({}) HttpClient httpClient;
