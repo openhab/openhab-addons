@@ -60,7 +60,6 @@
 /addons/binding/org.openhab.binding.max.test/ @marcelrv
 /addons/binding/org.openhab.binding.mcp23017/ @aogorek
 /addons/binding/org.openhab.binding.meteostick/ @cdjackson
-/addons/binding/org.openhab.binding.miele/ @kgoderis
 /addons/binding/org.openhab.binding.mihome/ @pboos
 /addons/binding/org.openhab.binding.miio/ @marcelrv
 /addons/binding/org.openhab.binding.milight/ @davidgraeff
@@ -176,6 +175,7 @@
 /bundles/org.openhab.binding.lifx/ @wborn
 /bundles/org.openhab.binding.lirc/ @kabili207
 /bundles/org.openhab.binding.meteoblue/ @9037568
+/bundles/org.openhab.binding.miele/ @kgoderis
 /bundles/org.openhab.binding.mqtt/ @davidgraeff
 /bundles/org.openhab.binding.mqtt.generic/ @davidgraeff
 /bundles/org.openhab.binding.mqtt.homeassistant/ @davidgraeff
