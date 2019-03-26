@@ -62,6 +62,7 @@
 
     <bnd.importpackage></bnd.importpackage>
     <bnd.includeresource></bnd.includeresource>
+    
   </properties>
 
   <repositories>
@@ -519,7 +520,7 @@ Import-Package: \\
                     <artifactId>directory-maven-plugin</artifactId>
                     <versionRange>[0.3.1,)</versionRange>
                     <goals>
-                      <goal>highest-basedir</goal>
+                      <goal>directory-of</goal>
                     </goals>
                   </pluginExecutionFilter>
                   <action>
@@ -535,8 +536,8 @@ Import-Package: \\
           <artifactId>sat-plugin</artifactId>
           <version>${sat.version}</version>
           <configuration>
-            <checkstyleProperties>${basedirRoot}/../tools/checkstyle/ruleset.properties</checkstyleProperties>
-            <checkstyleFilter>${basedirRoot}/../tools/checkstyle/suppressions.xml</checkstyleFilter>
+            <checkstyleProperties>${basedirRoot}/../../tools/checkstyle/ruleset.properties</checkstyleProperties>
+            <checkstyleFilter>${basedirRoot}/../../tools/checkstyle/suppressions.xml</checkstyleFilter>
           </configuration>
           <executions>
             <execution>
@@ -563,11 +564,15 @@ Import-Package: \\
           <execution>
             <id>directories</id>
             <goals>
-              <goal>highest-basedir</goal>
+              <goal>directory-of</goal>
             </goals>
             <phase>initialize</phase>
             <configuration>
               <property>basedirRoot</property>
+			  <project>
+			    <groupId>org.openhab.addons</groupId>
+				<artifactId>org.openhab.addons.reactor</artifactId>
+			  </project>
             </configuration>
           </execution>
         </executions>
