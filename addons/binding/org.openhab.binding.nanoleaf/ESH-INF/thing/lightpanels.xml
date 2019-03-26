@@ -55,12 +55,12 @@
 		</state>
 	</channel-type>
 
-    <channel-type id="colorTemperature">
-        <item-type>Dimmer</item-type>
-        <label>@text/channel-type.nanoleaf.colorTemperature.label</label>
-        <description>@text/channel-type.nanoleaf.colorTemperature.description</description>
-        <state min="0" max="100" step="1" />
-    </channel-type>
+	<channel-type id="colorTemperature">
+		<item-type>Dimmer</item-type>
+		<label>@text/channel-type.nanoleaf.colorTemperature.label</label>
+		<description>@text/channel-type.nanoleaf.colorTemperature.description</description>
+		<state min="0" max="100" step="1" />
+	</channel-type>
 
 	<channel-type id="colorTemperatureAbs">
 		<item-type>Number</item-type>
