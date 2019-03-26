@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <binding:binding id="mihome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Xiaomi Mi Smart Home Binding</name>
 	<description>Connects to Xiaomi Smart Gateway v2 and allows to communicate with Xiaomi Mi Smart Home suite (also called Xiaomi Aqara). 
