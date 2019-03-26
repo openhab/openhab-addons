@@ -19,7 +19,6 @@
 /addons/binding/org.openhab.binding.chromecast/ @kaikreuzer
 /addons/binding/org.openhab.binding.chromecast.test/ @kaikreuzer
 /addons/binding/org.openhab.binding.cm11a/ @BobRak
-/addons/binding/org.openhab.binding.daikin/ @caffineehacker
 /addons/binding/org.openhab.binding.dscalarm/ @RSStephens
 /addons/binding/org.openhab.binding.dsmr/ @Hilbrand
 /addons/binding/org.openhab.binding.dsmr.test/ @Hilbrand
@@ -155,6 +154,7 @@
 /bundles/org.openhab.binding.bigassfan/ @mhilbush
 /bundles/org.openhab.binding.bosesoundtouch/ @marvkis @tratho
 /bundles/org.openhab.binding.coolmasternet/ @projectgus
+/bundles/org.openhab.binding.daikin/ @caffineehacker
 /bundles/org.openhab.binding.deconz/ @davidgraeff
 /bundles/org.openhab.binding.denonmarantz/ @jwveldhuis
 /bundles/org.openhab.binding.digitalstrom/ @MichaelOchel @msiegele
