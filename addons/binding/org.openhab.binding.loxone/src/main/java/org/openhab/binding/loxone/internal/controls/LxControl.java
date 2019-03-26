@@ -22,6 +22,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
@@ -122,6 +125,7 @@ public class LxControl {
         String url;
         String urlHd;
         Map<String, String> outputs;
+        Boolean presenceConnected;
     }
 
     /**
@@ -516,7 +520,9 @@ public class LxControl {
         if (config == null) {
             logger.error("Attempt to set channel state with not finalized configuration!: {}", id);
         } else {
-            config.thingHandler.setChannelState(id, state);
+            if (state != null) {
+                config.thingHandler.setChannelState(id, state);
+            }
         }
     }
 
@@ -548,6 +554,20 @@ public class LxControl {
     }
 
     /**
+     * Gets value of a state object of given name, if exists, and converts it to decimal type value.
+     *
+     * @param name state name
+     * @return state value
+     */
+    State getStateDecimalValue(String name) {
+        Double value = getStateDoubleValue(name);
+        if (value != null) {
+            return new DecimalType(value);
+        }
+        return null;
+    }
+
+    /**
      * Gets text value of a state object of given name, if exists
      *
      * @param name name of state object
@@ -560,6 +580,37 @@ public class LxControl {
             if (value instanceof String) {
                 return (String) value;
             }
+        }
+        return null;
+    }
+
+    /**
+     * Gets text value of a state object of given name, if exists and converts it to string type
+     *
+     * @param name name of state object
+     * @return state object's text value
+     */
+    State getStateStringValue(String name) {
+        String value = getStateTextValue(name);
+        if (value != null) {
+            return new StringType(value);
+        }
+        return null;
+    }
+
+    /**
+     * Gets double value of a state object of given name, if exists and converts it to switch type
+     *
+     * @param name name of state object
+     * @return state object's text value
+     */
+    State getStateOnOffValue(String name) {
+        Double value = getStateDoubleValue(name);
+        if (value != null) {
+            if (value == 1.0) {
+                return OnOffType.ON;
+            }
+            return OnOffType.OFF;
         }
         return null;
     }

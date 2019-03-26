@@ -152,7 +152,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
                 logger.error("[{}] Received command {} for unknown control.", debugId, command);
             }
         } catch (IOException e) {
-            updateStatusToOffline(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            setOffline(LxErrorCode.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

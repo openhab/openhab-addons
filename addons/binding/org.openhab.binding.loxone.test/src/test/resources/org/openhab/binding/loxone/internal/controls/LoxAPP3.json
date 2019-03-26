@@ -561,6 +561,90 @@
 					}
 				}
 			}
+		},
+		"133d5db0-0333-5865-ffff403fb0c34b9e": {
+			"name": "Burglar Alarm With Presence",
+			"type": "Alarm",
+			"uuidAction": "133d5db0-0333-5865-ffff403fb0c34b9e",
+			"room": "0b734138-037d-034e-ffff403fb0c34b9e",
+			"cat": "0fe650c2-0004-d446-ffff504f9410790f",
+			"defaultRating": 0,
+			"isFavorite": false,
+			"isSecured": false,
+			"details": {
+				"alert": true,
+				"presenceConnected": true
+			},
+			"states": {
+				"armed": "133d5db0-0333-5858-ffff7a9f2275d9c1",
+				"nextLevel": "133d5db0-0333-5832-ffff7a9f2275d9c1",
+				"nextLevelDelay": "133d5db0-0333-5833-ffff7a9f2275d9c1",
+				"nextLevelDelayTotal": "133d5db0-0333-5834-ffff7a9f2275d9c1",
+				"level": "133d5db0-0333-5835-ffff7a9f2275d9c1",
+				"startTime": "133d5db0-0333-5836-ffff7a9f2275d9c1",
+				"armedDelay": "133d5db0-0333-5861-ffff7a9f2275d9c1",
+				"armedDelayTotal": "133d5db0-0333-584b-ffff7a9f2275d9c1",
+				"sensors": "133d5db0-0333-5865-ffff403fb0c34b9e",
+				"disabledMove": "133d5db0-0333-5837-ffff7a9f2275d9c1"
+			},
+			"subControls": {
+				"133d5db0-0333-5865-ffff403fb0c34b9e/sensors": {
+					"name": "sensors",
+					"type": "Tracker",
+					"uuidAction": "133d5db0-0333-5865-ffff403fb0c34b9e/sensors",
+					"defaultRating": 0,
+					"isFavorite": false,
+					"isSecured": false,
+					"details": {
+						"maxEntries": 40
+					},
+					"states": {
+						"entries": "133d5db0-0333-5865-ffff403fb0c34b9e"
+					}
+				}
+			}
+		},
+		"233d5db0-0333-5865-ffff403fb0c34b9e": {
+			"name": "Burglar Alarm No Presence",
+			"type": "Alarm",
+			"uuidAction": "233d5db0-0333-5865-ffff403fb0c34b9e",
+			"room": "0b734138-037d-034e-ffff403fb0c34b9e",
+			"cat": "0fe650c2-0004-d446-ffff504f9410790f",
+			"defaultRating": 0,
+			"isFavorite": false,
+			"isSecured": false,
+			"details": {
+				"alert": true,
+				"presenceConnected": false
+			},
+			"states": {
+				"armed": "233d5db0-0333-5858-ffff7a9f2275d9c1",
+				"nextLevel": "233d5db0-0333-5832-ffff7a9f2275d9c1",
+				"nextLevelDelay": "233d5db0-0333-5833-ffff7a9f2275d9c1",
+				"nextLevelDelayTotal": "233d5db0-0333-5834-ffff7a9f2275d9c1",
+				"level": "233d5db0-0333-5835-ffff7a9f2275d9c1",
+				"startTime": "233d5db0-0333-5836-ffff7a9f2275d9c1",
+				"armedDelay": "233d5db0-0333-5861-ffff7a9f2275d9c1",
+				"armedDelayTotal": "233d5db0-0333-584b-ffff7a9f2275d9c1",
+				"sensors": "233d5db0-0333-5865-ffff403fb0c34b9e",
+				"disabledMove": "233d5db0-0333-5837-ffff7a9f2275d9c1"
+			},
+			"subControls": {
+				"233d5db0-0333-5865-ffff403fb0c34b9e/sensors": {
+					"name": "sensors",
+					"type": "Tracker",
+					"uuidAction": "233d5db0-0333-5865-ffff403fb0c34b9e/sensors",
+					"defaultRating": 0,
+					"isFavorite": false,
+					"isSecured": false,
+					"details": {
+						"maxEntries": 40
+					},
+					"states": {
+						"entries": "233d5db0-0333-5865-ffff403fb0c34b9e"
+					}
+				}
+			}
 		}
 	},
 	"weatherServer": {

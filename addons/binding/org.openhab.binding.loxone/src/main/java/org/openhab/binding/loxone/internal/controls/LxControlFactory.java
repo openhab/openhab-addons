@@ -28,6 +28,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
 class LxControlFactory {
     static {
         CONTROLS = new HashMap<>();
+        add(new LxControlAlarm.Factory());
         add(new LxControlColorPickerV2.Factory());
         add(new LxControlDimmer.Factory());
         add(new LxControlInfoOnlyAnalog.Factory());

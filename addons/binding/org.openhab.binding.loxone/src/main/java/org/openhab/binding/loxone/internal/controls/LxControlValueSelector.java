@@ -84,8 +84,8 @@ class LxControlValueSelector extends LxControl {
     }
 
     private void handleCommand(Command command) throws IOException {
-        if (minValue == null || maxValue == null) {
-            logger.debug("Value selector min or max value missing.");
+        if (minValue == null || maxValue == null || minValue >= maxValue) {
+            logger.debug("Value selector min or max value missing or min>max.");
             return;
         }
         if (command instanceof OnOffType) {
@@ -123,7 +123,7 @@ class LxControlValueSelector extends LxControl {
 
     private PercentType getChannelState() {
         Double value = getStateDoubleValue(STATE_VALUE);
-        if (value != null) {
+        if (value != null && minValue != null && maxValue != null && minValue < maxValue) {
             value = (value - minValue) * 100.0 / (maxValue - minValue);
             return new PercentType(value.intValue());
         }
@@ -161,15 +161,9 @@ class LxControlValueSelector extends LxControl {
         } catch (NumberFormatException e) {
             logger.debug("Error parsing value for state {}: {}", stateName, e.getMessage());
         }
-        if (minValue != null && maxValue != null && stepValue != null) {
-            if (minValue >= maxValue) {
-                logger.warn("Value selector min value >= max value: {}, {}", minValue, maxValue);
-                minValue = null;
-                maxValue = null;
-            } else {
-                addChannelStateDescription(channelId, new StateDescription(new BigDecimal(minValue),
-                        new BigDecimal(maxValue), new BigDecimal(stepValue), format, false, null));
-            }
+        if (minValue != null && maxValue != null && stepValue != null && minValue < maxValue) {
+            addChannelStateDescription(channelId, new StateDescription(new BigDecimal(minValue),
+                    new BigDecimal(maxValue), new BigDecimal(stepValue), format, false, null));
         }
     }
 }

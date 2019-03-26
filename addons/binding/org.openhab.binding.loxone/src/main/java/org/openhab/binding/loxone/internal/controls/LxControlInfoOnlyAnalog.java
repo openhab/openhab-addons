@@ -14,7 +14,6 @@ package org.openhab.binding.loxone.internal.controls;
 
 import static org.openhab.binding.loxone.internal.LxBindingConstants.*;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.StateDescription;
@@ -56,7 +55,7 @@ class LxControlInfoOnlyAnalog extends LxControl {
     public void initialize(LxControlConfig config) {
         super.initialize(config);
         ChannelUID cid = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_ANALOG),
-                defaultChannelLabel, "Analog virtual state", tags, null, this::getChannelState);
+                defaultChannelLabel, "Analog virtual state", tags, null, () -> getStateDecimalValue(STATE_VALUE));
         String format;
         if (details != null && details.format != null) {
             format = details.format;
@@ -65,12 +64,4 @@ class LxControlInfoOnlyAnalog extends LxControl {
         }
         addChannelStateDescription(cid, new StateDescription(null, null, null, format, true, null));
     }
-
-    private DecimalType getChannelState() {
-        Double value = getStateDoubleValue(STATE_VALUE);
-        if (value != null) {
-            return new DecimalType(value);
-        }
-        return null;
-    };
 }

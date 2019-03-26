@@ -42,6 +42,7 @@ public class LxBindingConstants {
     public static final String MINISERVER_CHANNEL_TYPE_RO_SWITCH = "roSwitchTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_RO_ANALOG = "roAnalogTypeId";
     public static final String MINISERVER_CHANNEL_TYPE_RO_NUMBER = "roNumberTypeId";
+    public static final String MINISERVER_CHANNEL_TYPE_RO_DATETIME = "roDateTimeTypeId";
 
     // Miniserver properties and parameters
     public static final String MINISERVER_PARAM_HOST = "host";

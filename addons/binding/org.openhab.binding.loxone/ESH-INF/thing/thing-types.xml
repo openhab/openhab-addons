@@ -199,5 +199,12 @@
 		<description>Loxone's Color Picker V2 control</description>
 	</channel-type>
 
+	<channel-type id="roDateTimeTypeId">
+		<item-type>DateTime</item-type>
+		<label>Date Time</label>
+		<description>Date and time of an event</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
 </thing:thing-descriptions>
 

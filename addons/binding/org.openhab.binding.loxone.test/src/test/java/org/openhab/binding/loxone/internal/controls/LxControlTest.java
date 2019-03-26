@@ -76,7 +76,7 @@ class LxControlTest {
     }
 
     void testChannel(LxControl ctrl, String itemType, String namePostFix, BigDecimal min, BigDecimal max,
-            BigDecimal step, String format, boolean readOnly, List<StateOption> options) {
+            BigDecimal step, String format, Boolean readOnly, List<StateOption> options) {
         assertNotNull(ctrl);
         Channel c = getChannel(getExpectedName(ctrl.getLabel(), ctrl.getRoom().getName(), namePostFix), ctrl);
         assertNotNull(c);
@@ -85,13 +85,13 @@ class LxControlTest {
         assertEquals(itemType, c.getAcceptedItemType());
         assertEquals(ChannelKind.STATE, c.getKind());
         StateDescription d = handler.stateDescriptions.get(c.getUID());
-        if (readOnly || min != null || max != null || step != null || format != null || options != null) {
+        if (readOnly != null || min != null || max != null || step != null || format != null || options != null) {
             assertNotNull(d);
             assertEquals(min, d.getMinimum());
             assertEquals(max, d.getMaximum());
             assertEquals(step, d.getStep());
             assertEquals(format, d.getPattern());
-            assertTrue(readOnly == d.isReadOnly());
+            assertEquals(readOnly, d.isReadOnly());
             List<StateOption> opts = d.getOptions();
             if (options == null) {
                 assertTrue(opts == null || opts.isEmpty());
@@ -111,28 +111,37 @@ class LxControlTest {
     }
 
     void testChannel(String itemType, String namePostFix, BigDecimal min, BigDecimal max, BigDecimal step,
-            String format, boolean readOnly, List<StateOption> options) {
+            String format, Boolean readOnly, List<StateOption> options) {
         LxControl ctrl = getControl(controlUuid);
         testChannel(ctrl, itemType, namePostFix, min, max, step, format, readOnly, options);
     }
 
     void testChannel(String itemType) {
-        testChannel(itemType, null, null, null, null, null, false, null);
+        testChannel(itemType, null, null, null, null, null, null, null);
     }
 
     void testChannel(LxControl ctrl, String itemType) {
-        testChannel(ctrl, itemType, null, null, null, null, null, false, null);
+        testChannel(ctrl, itemType, null, null, null, null, null, null, null);
     }
 
     void testChannel(String itemType, String namePostFix) {
-        testChannel(itemType, namePostFix, null, null, null, null, false, null);
+        testChannel(itemType, namePostFix, null, null, null, null, null, null);
     }
 
-    void testChannelState(LxControl ctrl, String namePostFix, State expectedValue) {
+    State getChannelState(LxControl ctrl, String namePostFix) {
         assertNotNull(ctrl);
         Channel c = getChannel(getExpectedName(ctrl.getLabel(), ctrl.getRoom().getName(), namePostFix), ctrl);
         assertNotNull(c);
-        State current = ctrl.getChannelState(c.getUID());
+        return ctrl.getChannelState(c.getUID());
+    }
+
+    State getChannelState(String namePostFix) {
+        LxControl ctrl = getControl(controlUuid);
+        return getChannelState(ctrl, namePostFix);
+    }
+
+    void testChannelState(LxControl ctrl, String namePostFix, State expectedValue) {
+        State current = getChannelState(ctrl, namePostFix);
         if (expectedValue != null) {
             assertNotNull(current);
         }

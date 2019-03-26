@@ -14,10 +14,8 @@ package org.openhab.binding.loxone.internal.controls;
 
 import static org.openhab.binding.loxone.internal.LxBindingConstants.*;
 
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
@@ -56,15 +54,7 @@ class LxControlTracker extends LxControl {
     public void initialize(LxControlConfig config) {
         super.initialize(config);
         ChannelUID id = addChannel("String", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_TEXT),
-                defaultChannelLabel, "Tracker", tags, null, this::getState);
+                defaultChannelLabel, "Tracker", tags, null, () -> getStateStringValue(STATE_ENTRIES));
         addChannelStateDescription(id, new StateDescription(null, null, null, null, true, null));
-    }
-
-    private State getState() {
-        String value = getStateTextValue(STATE_ENTRIES);
-        if (value != null) {
-            return new StringType(value);
-        }
-        return null;
     }
 }

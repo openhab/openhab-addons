@@ -483,9 +483,9 @@ public class LxWebSocket {
         }
         stopResponseTimeout();
         if (session != null) {
-            logger.debug("[{}] closing session");
+            logger.debug("[{}] Closing session", debugId);
             session.close(StatusCode.NORMAL, reason);
-            logger.debug("[{}] session closed");
+            logger.debug("[{}] Session closed", debugId);
         } else {
             logger.debug("[{}] Disconnecting websocket, but no session, reason : {}", debugId, reason);
             thingHandler.setOffline(LxErrorCode.COMMUNICATION_ERROR, reason);
