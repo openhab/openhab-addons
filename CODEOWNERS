@@ -1,5 +1,4 @@
-# This file helps GitHub doing automatic review requests for new PRs.
-# It should always list the active maintainers of certain add-ons.
+# This file helps GitHub doing automatic review requests for new PRs. It should always list the active maintainers of certain add-ons.
 
 # As a fallback, if no specific maintainer is listed below, assign the PR to the repo maintainers team:
 *       @openhab/2-x-add-ons-maintainers
@@ -204,6 +203,7 @@
 /bundles/org.openhab.binding.valloxmv/ @bjoernbrings
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo
 /bundles/org.openhab.binding.windcentrale/ @marcelrv
+/bundles/org.openhab.binding.xmppclient/ @pavel-gololobov
 /bundles/org.openhab.extensionservice.marketplace/ @kaikreuzer
 /bundles/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer
 /bundles/org.openhab.persistence.mapdb/ @mkhl
