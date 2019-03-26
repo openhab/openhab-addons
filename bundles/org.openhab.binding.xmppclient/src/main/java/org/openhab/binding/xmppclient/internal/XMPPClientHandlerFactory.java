@@ -16,8 +16,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.xmppclient.XMPPClientBindingConstants;
 import org.openhab.binding.xmppclient.handler.XMPPClientHandler;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -34,10 +32,8 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Pavel Gololobov - Initial contribution
  */
-@NonNullByDefault
 @Component(configurationPid = "binding.xmppclient", service = ThingHandlerFactory.class)
 public class XMPPClientHandlerFactory extends BaseThingHandlerFactory {
-
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream //
             .of(XMPPClientBindingConstants.BRIDGE_TYPE_XMPP) //
@@ -49,13 +45,12 @@ public class XMPPClientHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected @Nullable ThingHandler createHandler(Thing thing) {
+    protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(XMPPClientBindingConstants.BRIDGE_TYPE_XMPP)) {
             return new XMPPClientHandler((Bridge) thing);
         }
-
         return null;
     }
 }
