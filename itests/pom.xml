@@ -23,6 +23,7 @@
     <module>org.openhab.binding.nest.tests</module>
     <module>org.openhab.binding.mqtt.homeassistant.tests</module>
     <module>org.openhab.binding.mqtt.homie.tests</module>
+    <module>org.openhab.binding.tradfri.tests</module>
     <module>org.openhab.persistence.mapdb.tests</module>
   </modules>
 
