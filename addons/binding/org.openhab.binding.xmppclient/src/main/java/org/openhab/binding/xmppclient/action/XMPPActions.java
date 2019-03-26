@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 @ThingActionsScope(name = "xmpp")
 @NonNullByDefault
 public class XMPPActions implements ThingActions {
+
     private static final Logger logger = LoggerFactory.getLogger(XMPPActions.class);
     private @Nullable XMPPClientHandler handler;
 
@@ -53,17 +54,17 @@ public class XMPPActions implements ThingActions {
 
         XMPPClientHandler clientHandler = handler;
         if (clientHandler == null) {
-            logger.warn("XMPP ThingHandler is null!");
+            logger.warn("XMPP ThingHandler is null");
             return;
         }
 
         XMPPClient connection = clientHandler.getXMPPClient();
         if (connection == null) {
-            logger.warn("XMPP ThingHandler connection is null!");
+            logger.warn("XMPP ThingHandler connection is null");
             return;
         }
         if ((to == null) || (text == null)) {
-            logger.debug("Skipping XMPP messaging to {} value {}", to, text);
+            logger.info("Skipping XMPP messaging to {} value {}", to, text);
             return;
         }
         connection.sendMessage(to, text);
@@ -71,13 +72,13 @@ public class XMPPActions implements ThingActions {
 
     public static void publishXMPP(@Nullable ThingActions actions, @Nullable String to, @Nullable String text) {
         if(actions == null) {
-            logger.error("Sending error, actions is NULL");
+            logger.warn("Sending error, actions is NULL");
             throw new IllegalArgumentException("actions is NULL");
         }
         if (actions instanceof XMPPActions) {
             ((XMPPActions) actions).publishXMPP(to, text);
         } else {
-            logger.error("Sending error, instance of actions is {}", actions.getClass().getName());
+            logger.warn("Sending error, instance of actions is {}", actions.getClass().getName());
             throw new IllegalArgumentException("actions is not an XMPPActions class");
         }
     }

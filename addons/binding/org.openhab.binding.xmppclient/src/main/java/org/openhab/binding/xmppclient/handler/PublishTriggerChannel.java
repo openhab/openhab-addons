@@ -54,7 +54,7 @@ public class PublishTriggerChannel implements XMPPClientMessageSubscriber {
             return;
         }
         String eventValue = "";
-        if((config.separator != null) && !config.separator.isEmpty()) {
+        if(!config.separator.isEmpty()) {
             eventValue = from + config.separator + payload;
         } else {
             eventValue = payload;

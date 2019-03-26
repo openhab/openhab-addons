@@ -19,12 +19,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Pavel Gololobov - Initial contribution
  */
-@NonNullByDefault
 public class XMPPClientConfiguration {
-
     public String host;
     public Integer port;
     public String username;
     public String password;
-
 }

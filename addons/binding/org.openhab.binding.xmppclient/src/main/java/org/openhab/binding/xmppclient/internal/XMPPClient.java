@@ -47,12 +47,12 @@ public class XMPPClient implements IncomingChatMessageListener {
     private Set<XMPPClientMessageSubscriber> subscribers = new HashSet<>();
 
     public void subscribe(XMPPClientMessageSubscriber channel) {
-        logger.info("Channel {} subscribed", channel.getName());
+        logger.debug("Channel {} subscribed", channel.getName());
         subscribers.add(channel);
     }
 
     public void unsubscribe(XMPPClientMessageSubscriber channel) {
-        logger.info("Channel {} unsubscribed", channel.getName());
+        logger.debug("Channel {} unsubscribed", channel.getName());
         subscribers.remove(channel);
     }
 
@@ -78,7 +78,7 @@ public class XMPPClient implements IncomingChatMessageListener {
             ChatManager chatManager = ChatManager.getInstanceFor(connection);
             chatManager.addIncomingListener(this);
         } catch (SmackException | IOException | XMPPException | InterruptedException e) {
-            logger.error("XMPP CONNECTION ERROR", e);
+            logger.warn("XMPP connection error", e);
         }
     }
 
@@ -90,7 +90,7 @@ public class XMPPClient implements IncomingChatMessageListener {
 
     public void sendMessage(String to, String message) {
         if(connection == null) {
-            logger.error("XMPP CONNECTION IS NULL");
+            logger.warn("XMPP connection is null");
             return;
         }
         try {
@@ -101,15 +101,15 @@ public class XMPPClient implements IncomingChatMessageListener {
             Chat chat = chatManager.chatWith(jid);
             chat.send(message);
         } catch (XmppStringprepException | SmackException.NotConnectedException | InterruptedException e) {
-            logger.error("XMPP SENDING ERROR", e);
+            logger.warn("XMPP message sending error", e);
         }
     }
 
     @Override
     public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
-        logger.info("XMPP {} says {}", from.asBareJid().toString(), message.getBody());
+        logger.debug("XMPP {} says {}", from.asBareJid().toString(), message.getBody());
         for(XMPPClientMessageSubscriber subscriber : subscribers) {
-            logger.info("Push to subscriber {}", subscriber.getName());
+            logger.debug("Push to subscriber {}", subscriber.getName());
             subscriber.processMessage(from.asBareJid().toString(), message.getBody());
         }
     }
