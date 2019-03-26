@@ -10,8 +10,8 @@ BEGIN{
 	print "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 	print "<thing:thing-descriptions bindingId=\"nibeheatpump\""
 	print "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-	print "xmlns:thing=\"http://eclipse.org/smarthome/schemas/thing-description/v1.0.0\" "
-	print "xsi:schemaLocation=\"http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd\">"
+	print "xmlns:thing=\"https://openhab.org/schemas/thing-description/v1.0.0\" "
+	print "xsi:schemaLocation=\"https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd\">"
 	print ""
 }
 NR>5{
