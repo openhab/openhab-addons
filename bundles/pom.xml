@@ -51,8 +51,8 @@
     <module>org.openhab.binding.meteoblue</module>
     <module>org.openhab.binding.mqtt</module>
     <module>org.openhab.binding.mqtt.generic</module>
-    <module>org.openhab.binding.mqtt.homie</module>
     <module>org.openhab.binding.mqtt.homeassistant</module>
+    <module>org.openhab.binding.mqtt.homie</module>
     <module>org.openhab.binding.nest</module>
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.nibeheatpump</module>
@@ -75,6 +75,7 @@
     <module>org.openhab.binding.unifi</module>
     <module>org.openhab.binding.valloxmv</module>
     <module>org.openhab.binding.weatherunderground</module>
+    <module>org.openhab.binding.wifiled</module>
     <module>org.openhab.binding.windcentrale</module>
     <module>org.openhab.extensionservice.marketplace</module>
     <module>org.openhab.extensionservice.marketplace.automation</module>
