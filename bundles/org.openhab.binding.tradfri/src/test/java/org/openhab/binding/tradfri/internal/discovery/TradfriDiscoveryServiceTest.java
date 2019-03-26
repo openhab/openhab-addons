@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tradfri.discovery;
+package org.openhab.binding.tradfri.internal.discovery;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;

@@ -114,7 +114,6 @@
 /addons/binding/org.openhab.binding.toon/ @jongj
 /addons/binding/org.openhab.binding.tplinksmarthome/ @Hilbrand
 /addons/binding/org.openhab.binding.tplinksmarthome.test/ @Hilbrand
-/bundles/org.openhab.binding.tradfri.test/ @cweitkamp @kaikreuzer
 /addons/binding/org.openhab.binding.urtsi/ @OLibutzki
 /addons/binding/org.openhab.binding.velbus/ @cedricboon
 /addons/binding/org.openhab.binding.vitotronic/ @steand
@@ -225,6 +224,7 @@
 /itests/org.openhab.binding.mqtt.homie.tests/ @wborn
 /itests/org.openhab.binding.nest.tests/ @wborn
 /itests/org.openhab.binding.onewire.tests/ @J-N-K
+/itests/org.openhab.binding.tradfri.tests/ @cweitkamp @kaikreuzer
 /itests/org.openhab.persistence.mapdb.tests/ @mkhl
 
 # PLEASE HELP ADDING FURTHER LINES HERE!

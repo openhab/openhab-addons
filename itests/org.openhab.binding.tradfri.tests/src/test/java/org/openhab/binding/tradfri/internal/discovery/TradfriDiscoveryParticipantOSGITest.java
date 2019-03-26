@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tradfri.discovery;
+package org.openhab.binding.tradfri.internal.discovery;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -29,7 +29,6 @@ import org.eclipse.smarthome.test.java.JavaOSGiTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.openhab.binding.tradfri.internal.discovery.TradfriDiscoveryParticipant;
 
 /**
  * Tests for {@link TradfriDiscoveryParticipant}.

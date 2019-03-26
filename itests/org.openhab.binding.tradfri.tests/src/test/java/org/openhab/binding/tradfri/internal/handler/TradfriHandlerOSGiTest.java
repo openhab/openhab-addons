@@ -10,13 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tradfri;
+package org.openhab.binding.tradfri.internal.handler;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
-import static org.openhab.binding.tradfri.internal.config.TradfriDeviceConfig.*;
+import static org.openhab.binding.tradfri.internal.config.TradfriDeviceConfig.CONFIG_ID;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,14 +33,13 @@ import org.eclipse.smarthome.test.storage.VolatileStorageService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.tradfri.internal.handler.TradfriGatewayHandler;
 
 /**
  * Tests cases for {@link TradfriGatewayHandler}.
  *
  * @author Kai Kreuzer - Initial contribution
  */
-public class TradfriHandlerTest extends JavaOSGiTest {
+public class TradfriHandlerOSGiTest extends JavaOSGiTest {
 
     private ManagedThingProvider managedThingProvider;
     private VolatileStorageService volatileStorageService = new VolatileStorageService();
