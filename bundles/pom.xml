@@ -28,6 +28,7 @@
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.bosesoundtouch</module>
     <module>org.openhab.binding.coolmasternet</module>
+    <module>org.openhab.binding.daikin</module>
     <module>org.openhab.binding.deconz</module>
     <module>org.openhab.binding.denonmarantz</module>
     <module>org.openhab.binding.digitalstrom</module>
