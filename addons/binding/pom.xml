@@ -126,8 +126,6 @@
     <module>org.openhab.binding.toon</module>
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tplinksmarthome.test</module>
-    <module>org.openhab.binding.tradfri</module>
-    <module>org.openhab.binding.tradfri.test</module>
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.velbus</module>
     <module>org.openhab.binding.vitotronic</module>

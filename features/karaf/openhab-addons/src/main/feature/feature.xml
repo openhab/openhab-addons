@@ -815,7 +815,7 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-coap</feature>
         <feature>openhab-transport-mdns</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.tradfri/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.tradfri/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-unifi" description="UniFi Binding" version="${project.version}">
