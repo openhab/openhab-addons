@@ -35,12 +35,11 @@
       </exclusions>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.h2database/h2-mvstore -->
-	<dependency>
-	    <groupId>com.h2database</groupId>
-	    <artifactId>h2-mvstore</artifactId>
-	    <version>1.4.186</version>
-	    <scope>test</scope>
-	</dependency>
-    
+    <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2-mvstore</artifactId>
+        <version>1.4.199</version>
+        <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
