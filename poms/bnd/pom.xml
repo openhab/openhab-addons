@@ -57,11 +57,12 @@
 
     <bnd.version>4.2.0</bnd.version>
     <karaf.version>4.2.2</karaf.version>
-    <sat.version>0.5.0</sat.version>
+    <sat.version>0.6.1</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
 
     <bnd.importpackage></bnd.importpackage>
     <bnd.includeresource></bnd.includeresource>
+    
   </properties>
 
   <repositories>
@@ -96,6 +97,10 @@
     <pluginRepository>
       <id>jcenter</id>
       <url>https://jcenter.bintray.com</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>openhab-artifactory-release</id>
+      <url>https://openhab.jfrog.io/openhab/libs-release</url>
     </pluginRepository>
   </pluginRepositories>
 
@@ -509,14 +514,69 @@ Import-Package: \\
                     <ignore></ignore>
                   </action>
                 </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.commonjava.maven.plugins</groupId>
+                    <artifactId>directory-maven-plugin</artifactId>
+                    <versionRange>[0.3.1,)</versionRange>
+                    <goals>
+                      <goal>directory-of</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.openhab.tools.sat</groupId>
+          <artifactId>sat-plugin</artifactId>
+          <version>${sat.version}</version>
+          <configuration>
+            <checkstyleProperties>${basedirRoot}/../../tools/checkstyle/ruleset.properties</checkstyleProperties>
+            <checkstyleFilter>${basedirRoot}/../../tools/checkstyle/suppressions.xml</checkstyleFilter>
+          </configuration>
+          <executions>
+            <execution>
+              <id>sat-all</id>
+              <goals>
+                <goal>checkstyle</goal>
+                <goal>pmd</goal>
+                <goal>spotbugs</goal>
+                <goal>report</goal>
+              </goals>
+              <phase>verify</phase>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
     </pluginManagement>
 
     <plugins>
+      <plugin>
+        <groupId>org.commonjava.maven.plugins</groupId>
+        <artifactId>directory-maven-plugin</artifactId>
+        <version>0.3.1</version>
+        <executions>
+          <execution>
+            <id>directories</id>
+            <goals>
+              <goal>directory-of</goal>
+            </goals>
+            <phase>initialize</phase>
+            <configuration>
+              <property>basedirRoot</property>
+			  <project>
+			    <groupId>org.openhab.addons</groupId>
+				<artifactId>org.openhab.addons.reactor</artifactId>
+			  </project>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -540,6 +600,47 @@ Import-Package: \\
   </build>
 
   <profiles>
+    <profile>
+      <id>skip-check</id>
+      <activation>
+        <property>
+          <name>skipChecks</name>
+        </property>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.openhab.tools.sat</groupId>
+              <artifactId>sat-plugin</artifactId>
+              <version>${sat.version}</version>
+              <executions>
+                <execution>
+                  <id>sat-all</id>
+                  <phase>none</phase>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+    <profile>
+      <id>check-bundles</id>
+      <activation>
+        <file>
+          <exists>src</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.openhab.tools.sat</groupId>
+            <artifactId>sat-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>add-libraries-cli</id>
       <activation>
