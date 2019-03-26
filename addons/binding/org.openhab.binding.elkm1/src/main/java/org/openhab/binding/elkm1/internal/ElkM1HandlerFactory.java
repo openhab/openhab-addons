@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.elkm1")
 public class ElkM1HandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(ElkM1BridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ElkM1BridgeHandler.class);
     private static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
             Arrays.asList(ElkM1BindingConstants.THING_TYPE_BRIDGE, ElkM1BindingConstants.THING_TYPE_ZONE,
                     ElkM1BindingConstants.THING_TYPE_AREA));

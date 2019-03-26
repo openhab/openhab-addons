@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
  * @author David Bennett - Initial contribution
  */
 public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener {
-    private Logger logger = LoggerFactory.getLogger(ElkM1BridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ElkM1BridgeHandler.class);
 
     private ElkAlarmConnection connection;
     private ElkMessageFactory messageFactory;

@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author David Bennett - Initial Contribution
  */
 public class ElkM1DiscoveryHandler extends AbstractDiscoveryService implements ElkM1HandlerListener {
-    private Logger logger = LoggerFactory.getLogger(ElkM1DiscoveryHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ElkM1DiscoveryHandler.class);
 
     private ElkM1BridgeHandler bridge;
 

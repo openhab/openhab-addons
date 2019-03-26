@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author David Bennett - Initial Contribution
  */
 public class ElkM1AreaHandler extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(ElkM1AreaHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ElkM1AreaHandler.class);
 
     public ElkM1AreaHandler(Thing thing) {
         super(thing);
