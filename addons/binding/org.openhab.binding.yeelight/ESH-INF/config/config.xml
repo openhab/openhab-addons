@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
-        https://openhab.org/schemas/config-description-1.0.0.xsd">
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:device:base">
 		<parameter name="deviceId" type="text" required="true">
