@@ -270,14 +270,13 @@ public class NetworkUtils {
                 throw new IOException("Received no output from ping process.");
             }
             do {
-                if (line.contains("host unreachable") || line.contains("timed out")
-                        || line.contains("could not find host")) {
-                    return false;
+                if (line.contains("TTL=")) {
+                    return true;
                 }
                 line = r.readLine();
             } while (line != null);
 
-            return true;
+            return false;
         }
     }
 
