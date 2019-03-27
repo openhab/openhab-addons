@@ -10,7 +10,7 @@
     <version>3.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.openhab.addons.features.karaf.openhab-addons-external</artifactId>
+  <artifactId>org.openhab.addons.features.karaf.openhab-addons-external3</artifactId>
   <packaging>pom</packaging>
 
   <name>openHAB Add-ons :: Features :: Karaf :: Add-ons External</name>
@@ -30,26 +30,13 @@
             <phase>package</phase>
             <configuration>
               <artifacts>
-                <artifact>
-                  <file>src/main/resources/conf/voicerss.cfg</file>
-                  <type>cfg</type>
-                  <classifier>voicerss</classifier>
-                </artifact>
-                <artifact>
-                  <file>src/main/resources/conf/openhabcloud.cfg</file>
-                  <type>cfg</type>
-                  <classifier>openhabcloud</classifier>
-                </artifact>
-                <artifact>
-                  <file>src/main/resources/lib/libLeap.dylib</file>
-                  <type>lib</type>
-                  <classifier>libLeap</classifier>
-                </artifact>
-                <artifact>
-                  <file>src/main/resources/lib/libLeapJava.dylib</file>
-                  <type>lib</type>
-                  <classifier>libLeapJava</classifier>
-                </artifact>
+                <artifact><file>src/main/resources/conf/dynamodb.cfg</file><type>cfg</type><classifier>dynamodb</classifier></artifact>
+                <artifact><file>src/main/resources/conf/influxdb.cfg</file><type>cfg</type><classifier>influxdb</classifier></artifact>
+                <artifact><file>src/main/resources/conf/jdbc.cfg</file><type>cfg</type><classifier>jdbc</classifier></artifact>
+                <artifact><file>src/main/resources/conf/jpa.cfg</file><type>cfg</type><classifier>jpa</classifier></artifact>
+                <artifact><file>src/main/resources/conf/mapdb.cfg</file><type>cfg</type><classifier>mapdb</classifier></artifact>
+                <artifact><file>src/main/resources/conf/mysql.cfg</file><type>cfg</type><classifier>mysql</classifier></artifact>
+                <artifact><file>src/main/resources/conf/rrd4j.cfg</file><type>cfg</type><classifier>rrd4j</classifier></artifact>
               </artifacts>
             </configuration>
           </execution>

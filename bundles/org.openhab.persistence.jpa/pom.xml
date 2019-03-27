@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.openhab.addons.bundles</groupId>
+		<artifactId>org.openhab.addons.reactor.bundles</artifactId>
+		<version>3.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>org.openhab.persistence.jpa</artifactId>
+
+    <name>openHAB Add-ons :: Bundles :: Persistence Service :: JPA</name>
+
+    <properties>
+        <bnd.importpackage>!com.ibm.*,!com.sun.*,!oracle.*,!org.apache.bval.*,!org.apache.geronimo.*,!org.apache.avalon.*,!org.apache.log,!org.apache.tools.*,!org.apache.xerces.*,!org.jboss.*,!org.postgresql.*,!org.slf4j.impl,!weblogic.*,!javax.rmi</bnd.importpackage>
+    </properties>
+
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.apache.openjpa/openjpa-all -->
+		<dependency>
+			<groupId>org.apache.openjpa</groupId>
+			<artifactId>openjpa-all</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.derby/derby -->
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derby</artifactId>
+			<version>10.11.1.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.openjpa</groupId>
+				<artifactId>openjpa-maven-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+				    <excludes>org/apache/bval/**</excludes>
+					<includes>**/model/*.class</includes>
+					<addDefaultConstructor>true</addDefaultConstructor>
+					<enforcePropertyRestrictions>true</enforcePropertyRestrictions>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.openjpa</groupId>
+						<artifactId>openjpa</artifactId>
+						<!-- set the version to be the same as the level in your runtime -->
+						<version>3.1.0</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<id>enhancer</id>
+						<goals>
+							<goal>enhance</goal>
+						</goals>
+						<phase>process-classes</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

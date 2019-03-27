@@ -10,7 +10,7 @@
     <version>3.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.openhab.addons.features.karaf.openhab-addons</artifactId>
+  <artifactId>org.openhab.addons.features.karaf.openhab-addons3</artifactId>
   <packaging>feature</packaging>
 
   <name>openHAB Add-ons :: Features :: Karaf :: Add-ons</name>
@@ -19,7 +19,7 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>org.openhab.addons.features.karaf.openhab-addons-external</artifactId>
+      <artifactId>org.openhab.addons.features.karaf.openhab-addons-external3</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
