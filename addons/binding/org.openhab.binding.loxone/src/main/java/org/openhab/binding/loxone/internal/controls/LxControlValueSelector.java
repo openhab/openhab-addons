@@ -17,6 +17,7 @@ import static org.openhab.binding.loxone.internal.LxBindingConstants.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -63,6 +64,7 @@ class LxControlValueSelector extends LxControl {
     private Double maxValue;
     private Double stepValue;
     private ChannelUID channelId;
+    private ChannelUID numberChannelId;
 
     private LxControlValueSelector(LxUuid uuid) {
         super(uuid);
@@ -73,6 +75,10 @@ class LxControlValueSelector extends LxControl {
         super.initialize(config);
         channelId = addChannel("Dimmer", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_DIMMER),
                 defaultChannelLabel, "Value Selector", tags, this::handleCommand, this::getChannelState);
+        numberChannelId = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_NUMBER),
+                defaultChannelLabel + " / Number", "Value Selector by number", tags, this::handleNumberCommand,
+                this::getChannelNumberState);
+
         if (details != null) {
             if (details.format != null) {
                 this.format = details.format;
@@ -121,11 +127,34 @@ class LxControlValueSelector extends LxControl {
         }
     }
 
+    private void handleNumberCommand(Command command) throws IOException {
+        if (minValue == null || maxValue == null || minValue >= maxValue) {
+            logger.debug("Value selector min or max value missing or min>max.");
+            return;
+        }
+        if (command instanceof DecimalType) {
+            Double value = ((DecimalType) command).doubleValue();
+            if (value < minValue || value > maxValue) {
+                logger.debug("Value {} out of {}-{} range", value, minValue, maxValue);
+                return;
+            }
+            sendAction(value.toString());
+        }
+    }
+
     private PercentType getChannelState() {
         Double value = getStateDoubleValue(STATE_VALUE);
-        if (value != null && minValue != null && maxValue != null && minValue < maxValue) {
-            value = (value - minValue) * 100.0 / (maxValue - minValue);
+        if (value != null && minValue != null && maxValue != null && minValue <= value && value <= maxValue) {
+            value = ((value - minValue) * 100.0) / (maxValue - minValue);
             return new PercentType(value.intValue());
+        }
+        return null;
+    }
+
+    private DecimalType getChannelNumberState() {
+        Double value = getStateDoubleValue(STATE_VALUE);
+        if (value != null && minValue != null && maxValue != null && minValue <= value && value <= maxValue) {
+            return new DecimalType(value);
         }
         return null;
     }
@@ -162,8 +191,10 @@ class LxControlValueSelector extends LxControl {
             logger.debug("Error parsing value for state {}: {}", stateName, e.getMessage());
         }
         if (minValue != null && maxValue != null && stepValue != null && minValue < maxValue) {
-            addChannelStateDescription(channelId, new StateDescription(new BigDecimal(minValue),
-                    new BigDecimal(maxValue), new BigDecimal(stepValue), format, false, null));
+            StateDescription description = new StateDescription(new BigDecimal(minValue), new BigDecimal(maxValue),
+                    new BigDecimal(stepValue), format, false, null);
+            addChannelStateDescription(channelId, description);
+            addChannelStateDescription(numberChannelId, description);
         }
     }
 }
