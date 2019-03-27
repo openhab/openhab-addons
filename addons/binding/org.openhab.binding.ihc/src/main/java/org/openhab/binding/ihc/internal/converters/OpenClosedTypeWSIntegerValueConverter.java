@@ -27,23 +27,22 @@ public class OpenClosedTypeWSIntegerValueConverter implements Converter<WSIntege
     @Override
     public OpenClosedType convertFromResourceValue(@NonNull WSIntegerValue from,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        return from.getInteger() > 0 ^ convertData.getInverted() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+        return from.value > 0 ^ convertData.getInverted() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
     }
 
     @Override
     public WSIntegerValue convertFromOHType(@NonNull OpenClosedType from, @NonNull WSIntegerValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        int newVal = from == OpenClosedType.OPEN ? 1 : 0;
+        int newVal = from == OpenClosedType.OPEN ? value.maximumValue : value.minimumValue;
 
         if (convertData.getInverted()) {
-            newVal = newVal == 1 ? 0 : 1;
+            newVal = newVal == value.maximumValue ? value.minimumValue : value.maximumValue;
         }
-        if (newVal >= value.getMinimumValue() && newVal <= value.getMaximumValue()) {
-            value.setInteger(newVal);
-            return value;
+        if (newVal >= value.minimumValue && newVal <= value.maximumValue) {
+            return new WSIntegerValue(value.resourceID, newVal, value.minimumValue, value.maximumValue);
         } else {
-            throw new ConversionException("Value is not between acceptable limits (min=" + value.getMinimumValue()
-                    + ", max=" + value.getMaximumValue() + ")");
+            throw new ConversionException("Value is not between acceptable limits (min=" + value.minimumValue + ", max="
+                    + value.maximumValue + ")");
         }
     }
 }

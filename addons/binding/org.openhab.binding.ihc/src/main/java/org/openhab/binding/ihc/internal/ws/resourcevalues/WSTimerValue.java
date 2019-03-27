@@ -19,34 +19,11 @@ package org.openhab.binding.ihc.internal.ws.resourcevalues;
  */
 public class WSTimerValue extends WSResourceValue {
 
-    protected long milliseconds;
-
-    public WSTimerValue() {
-    }
-
-    public WSTimerValue(int resourceID) {
-        super(resourceID);
-    }
+    public final long milliseconds;
 
     public WSTimerValue(int resourceID, long milliseconds) {
         super(resourceID);
         this.milliseconds = milliseconds;
-    }
-
-    /**
-     * Gets the value of the milliseconds property.
-     *
-     */
-    public long getMilliseconds() {
-        return milliseconds;
-    }
-
-    /**
-     * Sets the value of the milliseconds property.
-     *
-     */
-    public void setMilliseconds(long value) {
-        this.milliseconds = value;
     }
 
     @Override
