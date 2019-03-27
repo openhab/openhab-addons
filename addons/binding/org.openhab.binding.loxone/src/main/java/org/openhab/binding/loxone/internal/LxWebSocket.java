@@ -431,7 +431,14 @@ public class LxWebSocket {
             throw new IOException("Error sending command " + command);
         }
         if (!response.isResponseOk()) {
-            throw new IOException("Received response is not ok to command " + command);
+            if (response.getResponseCode() == LxErrorCode.USER_UNAUTHORIZED) {
+                // we don't support per-control passwords, because the controls should have been filtered to remove
+                // secured ones, it is an unexpected situation to receive this error code, but generally we can continue
+                // operation
+                logger.warn("[{}] User not authorised to operate on control {}", debugId, id);
+            } else {
+                throw new IOException("Received response is not ok to command " + command);
+            }
         }
     }
 

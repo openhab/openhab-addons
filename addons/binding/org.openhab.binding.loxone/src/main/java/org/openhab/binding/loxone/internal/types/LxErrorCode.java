@@ -66,6 +66,7 @@ public enum LxErrorCode {
             case 420:
                 return USER_AUTHENTICATION_TIMEOUT;
             case 401:
+            case 500:
                 return USER_UNAUTHORIZED;
             case 4003:
                 return TOO_MANY_FAILED_LOGIN_ATTEMPTS;

@@ -196,6 +196,20 @@
 		}
 	},
 	"controls": {
+	       "4f2f6b5d-0349-83b1-ffff403fb0c34b9e": {
+            "name": "Secure Switch Button - should be skipped",
+            "type": "Switch",
+            "uuidAction": "4f2f6b5d-0349-83b1-ffff403fb0c34b9e",
+            "room": "0b734138-038c-0382-ffff403fb0c34b9e",
+            "cat": "0b734138-033e-02d4-ffff403fb0c34b9e",
+            "defaultRating": 0,
+            "isFavorite": false,
+            "isSecured": true,
+            "defaultIcon": null,
+            "states": {
+                "active": "4f2f6b5d-0349-83b0-ffff25eb4cff8f56"
+            }
+        },
 		"132d2791-00f8-d532-ffff403fb0c34b9e": {
 			"name": "Webpage 1",
 			"type": "Webpage",

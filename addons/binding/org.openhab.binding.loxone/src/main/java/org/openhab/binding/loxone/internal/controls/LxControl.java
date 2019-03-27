@@ -175,6 +175,7 @@ public class LxControl {
     LxControlDetails details;
     private String name;
     private LxUuid roomUuid;
+    private Boolean isSecured;
     private LxUuid categoryUuid;
     private Map<LxUuid, LxControl> subControls;
     private final Map<String, LxControlState> states;
@@ -333,6 +334,15 @@ public class LxControl {
      */
     public Map<String, LxControlState> getStates() {
         return states;
+    }
+
+    /**
+     * Gets information is password is required to operate on this control object
+     *
+     * @return true is control is secured
+     */
+    public Boolean isSecured() {
+        return isSecured != null && isSecured;
     }
 
     /**

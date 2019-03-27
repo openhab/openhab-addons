@@ -14,7 +14,6 @@ package org.openhab.binding.loxone.internal.types;
 
 import java.lang.reflect.Type;
 import java.util.Map;
-import java.util.Objects;
 
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.controls.LxControl;
@@ -55,7 +54,7 @@ public class LxConfig {
     public void finalize(LxServerHandlerApi thingHandler) {
         rooms.values().removeIf(o -> (o == null || o.getUuid() == null));
         categories.values().removeIf(o -> (o == null || o.getUuid() == null));
-        controls.values().removeIf(Objects::isNull);
+        controls.values().removeIf(c -> c == null || c.isSecured());
         controls.values().forEach(c -> c.initialize(
                 new LxControlConfig(thingHandler, rooms.get(c.getRoomUuid()), categories.get(c.getCategoryUuid()))));
     }
