@@ -97,7 +97,6 @@
 /addons/binding/org.openhab.binding.smaenergymeter/ @monnimeter
 /addons/binding/org.openhab.binding.smartmeter/ @msteigenberger
 /addons/binding/org.openhab.binding.smartmeter.test/ @msteigenberger
-/addons/binding/org.openhab.binding.solaredge/ @alexf2015
 /addons/binding/org.openhab.binding.solarlog/ @johannrichard
 /addons/binding/org.openhab.binding.somfytahoma/ @octa22
 /addons/binding/org.openhab.binding.sonyaudio/ @freke
@@ -189,6 +188,7 @@
 /bundles/org.openhab.binding.rfxcom/ @martinvw @paulianttila
 /bundles/org.openhab.binding.sensebox/ @hakan42
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
+/bundles/org.openhab.binding.solaredge/ @alexf2015
 /bundles/org.openhab.binding.sonos/ @kgoderis @lolodomo
 /bundles/org.openhab.binding.spotify/ @Hilbrand
 /bundles/org.openhab.binding.synopanalyzer/ @clinique
