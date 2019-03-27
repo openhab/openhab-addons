@@ -682,7 +682,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.openhab.binding</groupId>
+      <groupId>org.openhab.bundles</groupId>
       <artifactId>org.openhab.binding.synopanalyzer</artifactId>
       <version>${project.version}</version>
     </dependency>
