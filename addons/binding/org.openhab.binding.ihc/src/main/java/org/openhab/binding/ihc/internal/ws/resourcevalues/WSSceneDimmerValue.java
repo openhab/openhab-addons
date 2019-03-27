@@ -19,70 +19,15 @@ package org.openhab.binding.ihc.internal.ws.resourcevalues;
  */
 public class WSSceneDimmerValue extends WSResourceValue {
 
-    protected int delayTime;
-    protected int dimmerPercentage;
-    protected int rampTime;
-
-    public WSSceneDimmerValue() {
-    }
-
-    public WSSceneDimmerValue(int resourceID) {
-        super(resourceID);
-    }
+    public final int delayTime;
+    public final int dimmerPercentage;
+    public final int rampTime;
 
     public WSSceneDimmerValue(int resourceID, int delayTime, int dimmerPercentage, int rampTime) {
         super(resourceID);
         this.delayTime = delayTime;
         this.dimmerPercentage = dimmerPercentage;
         this.rampTime = rampTime;
-    }
-
-    /**
-     * Gets the value of the delayTime property.
-     *
-     */
-    public int getDelayTime() {
-        return delayTime;
-    }
-
-    /**
-     * Sets the value of the delayTime property.
-     *
-     */
-    public void setDelayTime(int value) {
-        this.delayTime = value;
-    }
-
-    /**
-     * Gets the value of the dimmerPercentage property.
-     *
-     */
-    public int getDimmerPercentage() {
-        return dimmerPercentage;
-    }
-
-    /**
-     * Sets the value of the dimmerPercentage property.
-     *
-     */
-    public void setDimmerPercentage(int value) {
-        this.dimmerPercentage = value;
-    }
-
-    /**
-     * Gets the value of the rampTime property.
-     *
-     */
-    public int getRampTime() {
-        return rampTime;
-    }
-
-    /**
-     * Sets the value of the rampTime property.
-     *
-     */
-    public void setRampTime(int value) {
-        this.rampTime = value;
     }
 
     @Override

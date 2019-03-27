@@ -31,13 +31,13 @@ public class DateTimeTypeWSDateValueConverterTest {
     @Test
     public void testConversion() throws ConversionException {
         final DateTimeType dateTimeType = new DateTimeType("2000-12-30T00:00:00");
-        WSDateValue val = new WSDateValue(12345);
+        WSDateValue val = new WSDateValue(12345, (short) 1999, (byte) 1, (byte) 1);
 
         val = convertFromOHType(val, dateTimeType, null);
-        assertEquals(12345, val.getResourceID());
-        assertEquals(2000, val.getYear());
-        assertEquals(12, val.getMonth());
-        assertEquals(30, val.getDay());
+        assertEquals(12345, val.resourceID);
+        assertEquals(2000, val.year);
+        assertEquals(12, val.month);
+        assertEquals(30, val.day);
 
         DateTimeType type = convertFromResourceValue(val, null);
         assertEquals(dateTimeType.format("yyyy-MM-dd"), type.format("yyyy-MM-dd"));

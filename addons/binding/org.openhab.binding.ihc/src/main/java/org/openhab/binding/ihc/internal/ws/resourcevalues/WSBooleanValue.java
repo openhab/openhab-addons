@@ -19,33 +19,10 @@ package org.openhab.binding.ihc.internal.ws.resourcevalues;
  */
 public class WSBooleanValue extends WSResourceValue {
 
-    protected boolean value;
-
-    public WSBooleanValue() {
-    }
-
-    public WSBooleanValue(int resourceID) {
-        super(resourceID);
-    }
+    public final boolean value;
 
     public WSBooleanValue(int resourceID, boolean value) {
         super(resourceID);
-        this.value = value;
-    }
-
-    /**
-     * Gets the value of the value property.
-     *
-     */
-    public boolean booleanValue() {
-        return value;
-    }
-
-    /**
-     * Sets the value of the value property.
-     *
-     */
-    public void setValue(boolean value) {
         this.value = value;
     }
 

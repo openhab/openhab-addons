@@ -141,67 +141,67 @@ public class IhcResourceInteractionServiceTest {
     @Test
     public void testWSBooleanValueQuery() throws IhcExecption {
         final WSBooleanValue val = (WSBooleanValue) ihcResourceInteractionService.resourceQuery(11111);
-        assertEquals(11111, val.getResourceID());
-        assertEquals(true, val.booleanValue());
+        assertEquals(11111, val.resourceID);
+        assertEquals(true, val.value);
     }
 
     @Test
     public void testWSFloatingPointValueQuery() throws IhcExecption {
         final WSFloatingPointValue val = (WSFloatingPointValue) ihcResourceInteractionService.resourceQuery(22222);
-        assertEquals(22222, val.getResourceID());
-        assertEquals(24.399999618530273, val.getFloatingPointValue(), 0.000001);
-        assertEquals(-1000.0, val.getMinimumValue(), 0.01);
-        assertEquals(1000.0, val.getMaximumValue(), 0.01);
+        assertEquals(22222, val.resourceID);
+        assertEquals(24.399999618530273, val.value, 0.000001);
+        assertEquals(-1000.0, val.minimumValue, 0.01);
+        assertEquals(1000.0, val.maximumValue, 0.01);
     }
 
     @Test
     public void testWSEnumValueQuery() throws IhcExecption {
         final WSEnumValue val = (WSEnumValue) ihcResourceInteractionService.resourceQuery(33333);
-        assertEquals(33333, val.getResourceID());
-        assertEquals(4236359, val.getDefinitionTypeID());
-        assertEquals(4236872, val.getEnumValueID());
-        assertEquals("test value", val.getEnumName());
+        assertEquals(33333, val.resourceID);
+        assertEquals(4236359, val.definitionTypeID);
+        assertEquals(4236872, val.enumValueID);
+        assertEquals("test value", val.enumName);
     }
 
     @Test
     public void testWSIntegerValueQuery() throws IhcExecption {
         final WSIntegerValue val = (WSIntegerValue) ihcResourceInteractionService.resourceQuery(44444);
-        assertEquals(44444, val.getResourceID());
-        assertEquals(424561, val.getInteger());
-        assertEquals(-2147483648, val.getMinimumValue());
-        assertEquals(2147483647, val.getMaximumValue());
+        assertEquals(44444, val.resourceID);
+        assertEquals(424561, val.value);
+        assertEquals(-2147483648, val.minimumValue);
+        assertEquals(2147483647, val.maximumValue);
     }
 
     @Test
     public void testWSTimerValueQuery() throws IhcExecption {
         final WSTimerValue val = (WSTimerValue) ihcResourceInteractionService.resourceQuery(55555);
-        assertEquals(55555, val.getResourceID());
-        assertEquals(13851, val.getMilliseconds());
+        assertEquals(55555, val.resourceID);
+        assertEquals(13851, val.milliseconds);
     }
 
     @Test
     public void testWSWeekdayValueQuery() throws IhcExecption {
         final WSWeekdayValue val = (WSWeekdayValue) ihcResourceInteractionService.resourceQuery(66666);
-        assertEquals(66666, val.getResourceID());
-        assertEquals(2, val.getWeekdayNumber());
+        assertEquals(66666, val.resourceID);
+        assertEquals(2, val.weekdayNumber);
     }
 
     @Test
     public void testWSDateValueQuery() throws IhcExecption {
         final WSDateValue val = (WSDateValue) ihcResourceInteractionService.resourceQuery(77777);
-        assertEquals(77777, val.getResourceID());
-        assertEquals(2018, val.getYear());
-        assertEquals(10, val.getMonth());
-        assertEquals(22, val.getDay());
+        assertEquals(77777, val.resourceID);
+        assertEquals(2018, val.year);
+        assertEquals(10, val.month);
+        assertEquals(22, val.day);
     }
 
     @Test
     public void testWSTimeValueQuery() throws IhcExecption {
         final WSTimeValue val = (WSTimeValue) ihcResourceInteractionService.resourceQuery(88888);
-        assertEquals(88888, val.getResourceID());
-        assertEquals(16, val.getHours());
-        assertEquals(32, val.getMinutes());
-        assertEquals(45, val.getSeconds());
+        assertEquals(88888, val.resourceID);
+        assertEquals(16, val.hours);
+        assertEquals(32, val.minutes);
+        assertEquals(45, val.seconds);
     }
 
     @Test
@@ -268,47 +268,47 @@ public class IhcResourceInteractionServiceTest {
         List<WSResourceValue> found = new ArrayList<WSResourceValue>();
 
         for (WSResourceValue val : list) {
-            switch (val.getResourceID()) {
+            switch (val.resourceID) {
                 case 10454030:
-                    assertEquals(2018, ((WSDateValue) val).getYear());
-                    assertEquals(9, ((WSDateValue) val).getMonth());
-                    assertEquals(28, ((WSDateValue) val).getDay());
+                    assertEquals(2018, ((WSDateValue) val).year);
+                    assertEquals(9, ((WSDateValue) val).month);
+                    assertEquals(28, ((WSDateValue) val).day);
                     found.add(val);
                     break;
                 case 10454541:
-                    assertEquals(10, ((WSTimeValue) val).getHours());
-                    assertEquals(20, ((WSTimeValue) val).getMinutes());
-                    assertEquals(30, ((WSTimeValue) val).getSeconds());
+                    assertEquals(10, ((WSTimeValue) val).hours);
+                    assertEquals(20, ((WSTimeValue) val).minutes);
+                    assertEquals(30, ((WSTimeValue) val).seconds);
                     found.add(val);
                     break;
                 case 10447883:
-                    assertEquals(456789, ((WSIntegerValue) val).getInteger());
-                    assertEquals(-2147483648, ((WSIntegerValue) val).getMinimumValue());
-                    assertEquals(2147483647, ((WSIntegerValue) val).getMaximumValue());
+                    assertEquals(456789, ((WSIntegerValue) val).value);
+                    assertEquals(-2147483648, ((WSIntegerValue) val).minimumValue);
+                    assertEquals(2147483647, ((WSIntegerValue) val).maximumValue);
                     found.add(val);
                     break;
                 case 4133210:
-                    assertEquals(false, ((WSBooleanValue) val).booleanValue());
+                    assertEquals(false, ((WSBooleanValue) val).value);
                     found.add(val);
                     break;
                 case 3988827:
-                    assertEquals(true, ((WSBooleanValue) val).booleanValue());
+                    assertEquals(true, ((WSBooleanValue) val).value);
                     found.add(val);
                     break;
                 case 4159252:
-                    assertEquals(24.50, ((WSFloatingPointValue) val).getFloatingPointValue(), 0.01);
-                    assertEquals(-1000.00, ((WSFloatingPointValue) val).getMinimumValue(), 0.01);
-                    assertEquals(1000.00, ((WSFloatingPointValue) val).getMaximumValue(), 0.01);
+                    assertEquals(24.50, ((WSFloatingPointValue) val).value, 0.01);
+                    assertEquals(-1000.00, ((WSFloatingPointValue) val).minimumValue, 0.01);
+                    assertEquals(1000.00, ((WSFloatingPointValue) val).maximumValue, 0.01);
                     found.add(val);
                     break;
                 case 3515401:
-                    assertEquals(2, ((WSWeekdayValue) val).getWeekdayNumber());
+                    assertEquals(2, ((WSWeekdayValue) val).weekdayNumber);
                     found.add(val);
                     break;
                 case 7419663:
-                    assertEquals(4236359, ((WSEnumValue) val).getDefinitionTypeID());
-                    assertEquals(4236872, ((WSEnumValue) val).getEnumValueID());
-                    assertEquals("testVal", ((WSEnumValue) val).getEnumName());
+                    assertEquals(4236359, ((WSEnumValue) val).definitionTypeID);
+                    assertEquals(4236872, ((WSEnumValue) val).enumValueID);
+                    assertEquals("testVal", ((WSEnumValue) val).enumName);
                     found.add(val);
                     break;
             }

@@ -33,10 +33,10 @@ public class DecimalTypeWSEnumValueConverterTest {
         WSEnumValue val = new WSEnumValue(12345, 100, 0, "testB");
 
         val = convertFromOHType(val, new DecimalType(2), new ConverterAdditionalInfo(null, false));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(100, val.getDefinitionTypeID());
-        assertEquals(2, val.getEnumValueID());
-        assertEquals("testB", val.getEnumName());
+        assertEquals(12345, val.resourceID);
+        assertEquals(100, val.definitionTypeID);
+        assertEquals(2, val.enumValueID);
+        assertEquals("testB", val.enumName);
 
         DecimalType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, false));
         assertEquals(new DecimalType(2), type);
