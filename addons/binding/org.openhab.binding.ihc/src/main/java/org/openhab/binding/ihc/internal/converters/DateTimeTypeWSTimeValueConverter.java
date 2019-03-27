@@ -41,28 +41,23 @@ public class DateTimeTypeWSTimeValueConverter implements Converter<WSTimeValue, 
     public WSTimeValue convertFromOHType(@NonNull DateTimeType from, @NonNull WSTimeValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
         Calendar cal = GregorianCalendar.from(from.getZonedDateTime());
-        int hours = cal.get(Calendar.HOUR_OF_DAY);
-        int minutes = cal.get(Calendar.MINUTE);
-        int seconds = cal.get(Calendar.SECOND);
-        value.setHours(hours);
-        value.setMinutes(minutes);
-        value.setSeconds(seconds);
-        return value;
+        return new WSTimeValue(value.resourceID, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE),
+                cal.get(Calendar.SECOND));
     }
 
     private Calendar dateTimeToCalendar(WSDateValue date, WSTimeValue time) {
         Calendar cal = new GregorianCalendar(2000, 01, 01);
         if (date != null) {
-            short year = date.getYear();
-            short month = date.getMonth();
-            short day = date.getDay();
+            short year = date.year;
+            short month = date.month;
+            short day = date.day;
 
             cal.set(year, month - 1, day, 0, 0, 0);
         }
         if (time != null) {
-            int hour = time.getHours();
-            int minute = time.getMinutes();
-            int second = time.getSeconds();
+            int hour = time.hours;
+            int minute = time.minutes;
+            int second = time.seconds;
             cal.set(2000, 0, 1, hour, minute, second);
         }
         return cal;

@@ -31,13 +31,13 @@ public class DateTimeTypeWSTimeValueConverterTest {
     @Test
     public void testConversion() throws ConversionException {
         final DateTimeType dateTimeType = new DateTimeType("2000-12-30T13:59:30");
-        WSTimeValue val = new WSTimeValue(12345);
+        WSTimeValue val = new WSTimeValue(12345, 0, 0, 0);
 
         val = convertFromOHType(val, dateTimeType, null);
-        assertEquals(12345, val.getResourceID());
-        assertEquals(13, val.getHours());
-        assertEquals(59, val.getMinutes());
-        assertEquals(30, val.getSeconds());
+        assertEquals(12345, val.resourceID);
+        assertEquals(13, val.hours);
+        assertEquals(59, val.minutes);
+        assertEquals(30, val.seconds);
 
         DateTimeType type = convertFromResourceValue(val, null);
         assertEquals(dateTimeType.format("HH:mm:ss"), type.format("HH:mm:ss"));

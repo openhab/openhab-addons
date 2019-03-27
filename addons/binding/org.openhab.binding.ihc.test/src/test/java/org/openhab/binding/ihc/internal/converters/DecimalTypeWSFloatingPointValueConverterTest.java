@@ -33,8 +33,10 @@ public class DecimalTypeWSFloatingPointValueConverterTest {
         WSFloatingPointValue val = new WSFloatingPointValue(12345, 0, -100, 100);
 
         val = convertFromOHType(val, new DecimalType(2.54), new ConverterAdditionalInfo(null, false));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(2.54, val.getFloatingPointValue(), 0.001);
+        assertEquals(12345, val.resourceID);
+        assertEquals(-100, val.minimumValue, 0.001);
+        assertEquals(100, val.maximumValue, 0.001);
+        assertEquals(2.54, val.value, 0.001);
 
         DecimalType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, false));
         assertEquals(new DecimalType(2.54), type);

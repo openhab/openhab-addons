@@ -31,11 +31,11 @@ public class UpDownTypeWSBooleanValueConverterTest {
     @Test
     public void testOpen() throws ConversionException {
         final boolean inverted = false;
-        WSBooleanValue val = new WSBooleanValue(12345);
+        WSBooleanValue val = new WSBooleanValue(12345, false);
 
         val = convertFromOHType(val, UpDownType.UP, new ConverterAdditionalInfo(null, inverted));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(true, val.booleanValue());
+        assertEquals(12345, val.resourceID);
+        assertEquals(true, val.value);
 
         UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(UpDownType.UP, type);
@@ -45,10 +45,10 @@ public class UpDownTypeWSBooleanValueConverterTest {
     public void testClosed() throws ConversionException {
         final boolean inverted = false;
 
-        WSBooleanValue val = new WSBooleanValue(12345);
+        WSBooleanValue val = new WSBooleanValue(12345, true);
         val = convertFromOHType(val, UpDownType.DOWN, new ConverterAdditionalInfo(null, inverted));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(false, val.booleanValue());
+        assertEquals(12345, val.resourceID);
+        assertEquals(false, val.value);
 
         UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(UpDownType.DOWN, type);
@@ -58,10 +58,10 @@ public class UpDownTypeWSBooleanValueConverterTest {
     public void testOpenInverted() throws ConversionException {
         final boolean inverted = true;
 
-        WSBooleanValue val = new WSBooleanValue(12345);
+        WSBooleanValue val = new WSBooleanValue(12345, true);
         val = convertFromOHType(val, UpDownType.UP, new ConverterAdditionalInfo(null, inverted));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(false, val.booleanValue());
+        assertEquals(12345, val.resourceID);
+        assertEquals(false, val.value);
 
         UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(UpDownType.UP, type);
@@ -71,10 +71,10 @@ public class UpDownTypeWSBooleanValueConverterTest {
     public void testClosedInverted() throws ConversionException {
         final boolean inverted = true;
 
-        WSBooleanValue val = new WSBooleanValue(12345);
+        WSBooleanValue val = new WSBooleanValue(12345, false);
         val = convertFromOHType(val, UpDownType.DOWN, new ConverterAdditionalInfo(null, inverted));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(true, val.booleanValue());
+        assertEquals(12345, val.resourceID);
+        assertEquals(true, val.value);
 
         UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(UpDownType.DOWN, type);

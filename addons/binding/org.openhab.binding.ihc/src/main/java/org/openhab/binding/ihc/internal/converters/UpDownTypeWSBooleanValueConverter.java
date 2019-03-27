@@ -27,13 +27,12 @@ public class UpDownTypeWSBooleanValueConverter implements Converter<WSBooleanVal
     @Override
     public UpDownType convertFromResourceValue(@NonNull WSBooleanValue from,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        return from.booleanValue() ^ convertData.getInverted() ? UpDownType.UP : UpDownType.DOWN;
+        return from.value ^ convertData.getInverted() ? UpDownType.UP : UpDownType.DOWN;
     }
 
     @Override
     public WSBooleanValue convertFromOHType(@NonNull UpDownType from, @NonNull WSBooleanValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        value.setValue(from == UpDownType.UP ^ convertData.getInverted());
-        return value;
+        return new WSBooleanValue(value.resourceID, from == UpDownType.UP ^ convertData.getInverted());
     }
 }

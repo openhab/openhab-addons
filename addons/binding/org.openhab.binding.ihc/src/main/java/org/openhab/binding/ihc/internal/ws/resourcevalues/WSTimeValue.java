@@ -19,70 +19,15 @@ package org.openhab.binding.ihc.internal.ws.resourcevalues;
  */
 public class WSTimeValue extends WSResourceValue {
 
-    protected int hours;
-    protected int minutes;
-    protected int seconds;
-
-    public WSTimeValue() {
-    }
-
-    public WSTimeValue(int resourceID) {
-        super(resourceID);
-    }
+    public final int hours;
+    public final int minutes;
+    public final int seconds;
 
     public WSTimeValue(int resourceID, int hours, int minutes, int seconds) {
         super(resourceID);
         this.hours = hours;
         this.minutes = minutes;
         this.seconds = seconds;
-    }
-
-    /**
-     * Gets the value of the hours property.
-     *
-     */
-    public int getHours() {
-        return hours;
-    }
-
-    /**
-     * Sets the value of the hours property.
-     *
-     */
-    public void setHours(int value) {
-        this.hours = value;
-    }
-
-    /**
-     * Gets the value of the minutes property.
-     *
-     */
-    public int getMinutes() {
-        return minutes;
-    }
-
-    /**
-     * Sets the value of the minutes property.
-     *
-     */
-    public void setMinutes(int value) {
-        this.minutes = value;
-    }
-
-    /**
-     * Gets the value of the seconds property.
-     *
-     */
-    public int getSeconds() {
-        return seconds;
-    }
-
-    /**
-     * Sets the value of the seconds property.
-     *
-     */
-    public void setSeconds(int value) {
-        this.seconds = value;
     }
 
     @Override

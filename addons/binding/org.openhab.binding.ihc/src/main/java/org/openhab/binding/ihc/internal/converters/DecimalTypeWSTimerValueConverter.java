@@ -27,13 +27,12 @@ public class DecimalTypeWSTimerValueConverter implements Converter<WSTimerValue,
     @Override
     public DecimalType convertFromResourceValue(@NonNull WSTimerValue from,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        return new DecimalType(from.getMilliseconds());
+        return new DecimalType(from.milliseconds);
     }
 
     @Override
     public WSTimerValue convertFromOHType(@NonNull DecimalType from, @NonNull WSTimerValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        value.setMilliseconds(from.longValue());
-        return value;
+        return new WSTimerValue(value.resourceID, from.longValue());
     }
 }

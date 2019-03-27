@@ -27,18 +27,17 @@ public class PercentTypeWSIntegerValueConverter implements Converter<WSIntegerVa
     @Override
     public PercentType convertFromResourceValue(@NonNull WSIntegerValue from,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        return new PercentType(from.getInteger());
+        return new PercentType(from.value);
     }
 
     @Override
     public WSIntegerValue convertFromOHType(@NonNull PercentType from, @NonNull WSIntegerValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        if (from.intValue() >= value.getMinimumValue() && from.intValue() <= value.getMaximumValue()) {
-            value.setInteger(from.intValue());
-            return value;
+        if (from.intValue() >= value.minimumValue && from.intValue() <= value.maximumValue) {
+            return new WSIntegerValue(value.resourceID, from.intValue(), value.minimumValue, value.maximumValue);
         } else {
-            throw new ConversionException("Value is not between acceptable limits (min=" + value.getMinimumValue()
-                    + ", max=" + value.getMaximumValue() + ")");
+            throw new ConversionException("Value is not between acceptable limits (min=" + value.minimumValue + ", max="
+                    + value.maximumValue + ")");
         }
     }
 }

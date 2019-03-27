@@ -27,23 +27,22 @@ public class OnOffTypeWSIntegerValueConverter implements Converter<WSIntegerValu
     @Override
     public OnOffType convertFromResourceValue(@NonNull WSIntegerValue from,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        return from.getInteger() > 0 ^ convertData.getInverted() ? OnOffType.ON : OnOffType.OFF;
+        return from.value > 0 ^ convertData.getInverted() ? OnOffType.ON : OnOffType.OFF;
     }
 
     @Override
     public WSIntegerValue convertFromOHType(@NonNull OnOffType from, @NonNull WSIntegerValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        int newVal = from == OnOffType.ON ? 1 : 0;
+        int newVal = from == OnOffType.ON ? value.maximumValue : value.minimumValue;
 
         if (convertData.getInverted()) {
-            newVal = newVal == 1 ? 0 : 1;
+            newVal = newVal == value.maximumValue ? value.minimumValue : value.maximumValue;
         }
-        if (newVal >= value.getMinimumValue() && newVal <= value.getMaximumValue()) {
-            value.setInteger(newVal);
-            return value;
+        if (newVal >= value.minimumValue && newVal <= value.maximumValue) {
+            return new WSIntegerValue(value.resourceID, newVal, value.minimumValue, value.maximumValue);
         } else {
-            throw new ConversionException("Value is not between acceptable limits (min=" + value.getMinimumValue()
-                    + ", max=" + value.getMaximumValue() + ")");
+            throw new ConversionException("Value is not between acceptable limits (min=" + value.minimumValue + ", max="
+                    + value.maximumValue + ")");
         }
     }
 }

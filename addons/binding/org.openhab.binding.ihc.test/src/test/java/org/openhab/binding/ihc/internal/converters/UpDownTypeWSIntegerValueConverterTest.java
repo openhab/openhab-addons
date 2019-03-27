@@ -31,11 +31,13 @@ public class UpDownTypeWSIntegerValueConverterTest {
     @Test
     public void testOpen() throws ConversionException {
         final boolean inverted = false;
-        WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
+        WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
 
         val = convertFromOHType(val, UpDownType.UP, new ConverterAdditionalInfo(null, inverted));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(1, val.getInteger());
+        assertEquals(12345, val.resourceID);
+        assertEquals(-100, val.minimumValue);
+        assertEquals(100, val.maximumValue);
+        assertEquals(100, val.value);
 
         UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(UpDownType.UP, type);
@@ -45,10 +47,12 @@ public class UpDownTypeWSIntegerValueConverterTest {
     public void testClosed() throws ConversionException {
         final boolean inverted = false;
 
-        WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
+        WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
         val = convertFromOHType(val, UpDownType.DOWN, new ConverterAdditionalInfo(null, inverted));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(0, val.getInteger());
+        assertEquals(12345, val.resourceID);
+        assertEquals(-100, val.minimumValue);
+        assertEquals(100, val.maximumValue);
+        assertEquals(-100, val.value);
 
         UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(UpDownType.DOWN, type);
@@ -58,10 +62,12 @@ public class UpDownTypeWSIntegerValueConverterTest {
     public void testOpenInverted() throws ConversionException {
         final boolean inverted = true;
 
-        WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
+        WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
         val = convertFromOHType(val, UpDownType.UP, new ConverterAdditionalInfo(null, inverted));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(0, val.getInteger());
+        assertEquals(12345, val.resourceID);
+        assertEquals(-100, val.minimumValue);
+        assertEquals(100, val.maximumValue);
+        assertEquals(-100, val.value);
 
         UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(UpDownType.UP, type);
@@ -71,10 +77,12 @@ public class UpDownTypeWSIntegerValueConverterTest {
     public void testClosedInverted() throws ConversionException {
         final boolean inverted = true;
 
-        WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
+        WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
         val = convertFromOHType(val, UpDownType.DOWN, new ConverterAdditionalInfo(null, inverted));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(1, val.getInteger());
+        assertEquals(12345, val.resourceID);
+        assertEquals(-100, val.minimumValue);
+        assertEquals(100, val.maximumValue);
+        assertEquals(100, val.value);
 
         UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(UpDownType.DOWN, type);

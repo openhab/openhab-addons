@@ -19,29 +19,10 @@ package org.openhab.binding.ihc.internal.ws.resourcevalues;
  */
 public class WSResourceValue {
 
-    protected int resourceID;
-
-    public WSResourceValue() {
-    }
+    public final int resourceID;
 
     public WSResourceValue(int resourceID) {
         this.resourceID = resourceID;
-    }
-
-    /**
-     * Gets the value of the resource ID property.
-     *
-     */
-    public int getResourceID() {
-        return resourceID;
-    }
-
-    /**
-     * Sets the value of the resource ID property.
-     *
-     */
-    public void setResourceID(int value) {
-        this.resourceID = value;
     }
 
     @Override

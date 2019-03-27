@@ -19,34 +19,11 @@ package org.openhab.binding.ihc.internal.ws.resourcevalues;
  */
 public class WSWeekdayValue extends WSResourceValue {
 
-    protected int weekdayNumber;
-
-    public WSWeekdayValue() {
-    }
-
-    public WSWeekdayValue(int resourceID) {
-        super(resourceID);
-    }
+    public final int weekdayNumber;
 
     public WSWeekdayValue(int resourceID, int weekdayNumber) {
         super(resourceID);
         this.weekdayNumber = weekdayNumber;
-    }
-
-    /**
-     * Gets the value of the weekdayNumber property.
-     *
-     */
-    public int getWeekdayNumber() {
-        return weekdayNumber;
-    }
-
-    /**
-     * Sets the value of the weekdayNumber property.
-     *
-     */
-    public void setWeekdayNumber(int value) {
-        this.weekdayNumber = value;
     }
 
     @Override

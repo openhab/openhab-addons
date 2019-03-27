@@ -30,20 +30,19 @@ public class DecimalTypeWSFloatingPointValueConverter implements Converter<WSFlo
     @Override
     public DecimalType convertFromResourceValue(@NonNull WSFloatingPointValue from,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        double d = from.getFloatingPointValue();
-        BigDecimal bd = new BigDecimal(d).setScale(2, RoundingMode.HALF_EVEN);
+        BigDecimal bd = new BigDecimal(from.value).setScale(2, RoundingMode.HALF_EVEN);
         return new DecimalType(bd);
     }
 
     @Override
     public WSFloatingPointValue convertFromOHType(@NonNull DecimalType from, @NonNull WSFloatingPointValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        if (from.doubleValue() >= value.getMinimumValue() && from.doubleValue() <= value.getMaximumValue()) {
-            value.setFloatingPointValue(from.doubleValue());
-            return value;
+        if (from.doubleValue() >= value.minimumValue && from.doubleValue() <= value.maximumValue) {
+            return new WSFloatingPointValue(value.resourceID, from.doubleValue(), value.minimumValue,
+                    value.maximumValue);
         } else {
-            throw new ConversionException("Value is not between acceptable limits (min=" + value.getMinimumValue()
-                    + ", max=" + value.getMaximumValue() + ")");
+            throw new ConversionException("Value is not between acceptable limits (min=" + value.minimumValue + ", max="
+                    + value.maximumValue + ")");
         }
     }
 }
