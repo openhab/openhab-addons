@@ -31,11 +31,13 @@ public class OnOffTypeWSIntegerValueConverterTest {
     @Test
     public void testOn() throws ConversionException {
         final boolean inverted = false;
-        WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
+        WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
 
         val = convertFromOHType(val, OnOffType.ON, new ConverterAdditionalInfo(null, inverted));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(1, val.getInteger());
+        assertEquals(12345, val.resourceID);
+        assertEquals(100, val.value);
+        assertEquals(-100, val.minimumValue);
+        assertEquals(100, val.maximumValue);
 
         OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OnOffType.ON, type);
@@ -45,10 +47,12 @@ public class OnOffTypeWSIntegerValueConverterTest {
     public void testOff() throws ConversionException {
         final boolean inverted = false;
 
-        WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
+        WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
         val = convertFromOHType(val, OnOffType.OFF, new ConverterAdditionalInfo(null, inverted));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(0, val.getInteger());
+        assertEquals(12345, val.resourceID);
+        assertEquals(-100, val.value);
+        assertEquals(-100, val.minimumValue);
+        assertEquals(100, val.maximumValue);
 
         OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OnOffType.OFF, type);
@@ -58,10 +62,12 @@ public class OnOffTypeWSIntegerValueConverterTest {
     public void testOnInverted() throws ConversionException {
         final boolean inverted = true;
 
-        WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
+        WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
         val = convertFromOHType(val, OnOffType.ON, new ConverterAdditionalInfo(null, inverted));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(0, val.getInteger());
+        assertEquals(12345, val.resourceID);
+        assertEquals(-100, val.value);
+        assertEquals(-100, val.minimumValue);
+        assertEquals(100, val.maximumValue);
 
         OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OnOffType.ON, type);
@@ -71,10 +77,12 @@ public class OnOffTypeWSIntegerValueConverterTest {
     public void testOffInverted() throws ConversionException {
         final boolean inverted = true;
 
-        WSIntegerValue val = new WSIntegerValue(12345, 0, 0, 1);
+        WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
         val = convertFromOHType(val, OnOffType.OFF, new ConverterAdditionalInfo(null, inverted));
-        assertEquals(12345, val.getResourceID());
-        assertEquals(1, val.getInteger());
+        assertEquals(12345, val.resourceID);
+        assertEquals(100, val.value);
+        assertEquals(-100, val.minimumValue);
+        assertEquals(100, val.maximumValue);
 
         OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
         assertEquals(OnOffType.OFF, type);

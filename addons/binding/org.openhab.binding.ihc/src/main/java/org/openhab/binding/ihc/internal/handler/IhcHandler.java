@@ -388,7 +388,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
     private void sendNormalCommand(ChannelUID channelUID, ChannelParams params, Command command, WSResourceValue value)
             throws IhcExecption, ConversionException {
-        logger.debug("Send command '{}' to resource '{}'", command, value.getResourceID());
+        logger.debug("Send command '{}' to resource '{}'", command, value.resourceID);
         ConverterAdditionalInfo converterAdditionalInfo = new ConverterAdditionalInfo(getEnumValues(value),
                 params.isInverted());
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(value.getClass(),
@@ -402,14 +402,14 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
     private ArrayList<IhcEnumValue> getEnumValues(WSResourceValue value) {
         if (value instanceof WSEnumValue) {
-            return enumDictionary.getEnumValues(((WSEnumValue) value).getDefinitionTypeID());
+            return enumDictionary.getEnumValues(((WSEnumValue) value).definitionTypeID);
         }
         return null;
     }
 
     private void sendPulseCommand(ChannelUID channelUID, ChannelParams params, WSResourceValue value,
             Integer pulseWidth) throws IhcExecption, ConversionException {
-        logger.debug("Send {}ms pulse to resource: {}", pulseWidth, value.getResourceID());
+        logger.debug("Send {}ms pulse to resource: {}", pulseWidth, value.resourceID);
         logger.debug("Channel params: {}", params);
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(value.getClass(),
                 OnOffType.class);
@@ -703,7 +703,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         thing.getChannels().forEach(channel -> {
             try {
                 ChannelParams params = new ChannelParams(channel);
-                if (params.getResourceId() != null && params.getResourceId().intValue() == value.getResourceID()) {
+                if (params.getResourceId() != null && params.getResourceId().intValue() == value.resourceID) {
                     updateChannelState(channel, params, value);
                 }
             } catch (ConversionException e) {
@@ -742,17 +742,17 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
     private void checkPotentialButtonPresses(WSResourceValue value) {
         if (value instanceof WSBooleanValue) {
-            if (((WSBooleanValue) value).booleanValue()) {
+            if (((WSBooleanValue) value).value) {
                 // potential button press
-                lastUpdate.put(value.getResourceID(), LocalDateTime.now());
-                updateTriggers(value.getResourceID(), Duration.ZERO);
+                lastUpdate.put(value.resourceID, LocalDateTime.now());
+                updateTriggers(value.resourceID, Duration.ZERO);
             } else {
                 // potential button release
-                LocalDateTime lastUpdateTime = lastUpdate.get(value.getResourceID());
+                LocalDateTime lastUpdateTime = lastUpdate.get(value.resourceID);
                 if (lastUpdateTime != null) {
                     Duration duration = Duration.between(lastUpdateTime, LocalDateTime.now());
                     logger.debug("Time between uddates: {}", duration);
-                    updateTriggers(value.getResourceID(), duration);
+                    updateTriggers(value.resourceID, duration);
                 }
             }
         }

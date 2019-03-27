@@ -19,52 +19,13 @@ package org.openhab.binding.ihc.internal.ws.resourcevalues;
  */
 public class WSSceneRelayValue extends WSResourceValue {
 
-    protected int delayTime;
-    protected boolean relayValue;
-
-    public WSSceneRelayValue() {
-    }
-
-    public WSSceneRelayValue(int resourceID) {
-        super(resourceID);
-    }
+    public final int delayTime;
+    public final boolean relayValue;
 
     public WSSceneRelayValue(int resourceID, int delayTime, boolean relayValue) {
         super(resourceID);
         this.delayTime = delayTime;
         this.relayValue = relayValue;
-    }
-
-    /**
-     * Gets the value of the delayTime property.
-     *
-     */
-    public int getDelayTime() {
-        return delayTime;
-    }
-
-    /**
-     * Sets the value of the delayTime property.
-     *
-     */
-    public void setDelayTime(int value) {
-        this.delayTime = value;
-    }
-
-    /**
-     * Gets the value of the relayValue property.
-     *
-     */
-    public boolean isRelayValue() {
-        return relayValue;
-    }
-
-    /**
-     * Sets the value of the relayValue property.
-     *
-     */
-    public void setRelayValue(boolean value) {
-        this.relayValue = value;
     }
 
     @Override
