@@ -119,8 +119,6 @@
     <module>org.openhab.binding.tado</module>
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.toon</module>
-    <module>org.openhab.binding.tplinksmarthome</module>
-    <module>org.openhab.binding.tplinksmarthome.test</module>
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.velbus</module>
     <module>org.openhab.binding.vitotronic</module>
