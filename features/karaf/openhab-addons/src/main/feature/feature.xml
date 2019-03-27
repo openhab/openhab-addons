@@ -731,7 +731,7 @@
 
     <feature name="openhab-binding-solaredge" description="SolarEdge Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.solaredge/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.solaredge/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-solarlog" description="SolarLog Binding" version="${project.version}">
