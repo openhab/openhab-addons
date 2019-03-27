@@ -32,6 +32,7 @@
     <module>org.openhab.binding.denonmarantz</module>
     <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dmx</module>
+    <module>org.openhab.binding.dsmr</module>
     <module>org.openhab.binding.dwdunwetter</module>
     <module>org.openhab.binding.evohome</module>
     <module>org.openhab.binding.feican</module>

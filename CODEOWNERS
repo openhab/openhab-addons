@@ -22,8 +22,6 @@
 /addons/binding/org.openhab.binding.daikin/ @caffineehacker
 /addons/binding/org.openhab.binding.digitalstrom/ @MichaelOchel @msiegele
 /addons/binding/org.openhab.binding.dscalarm/ @RSStephens
-/addons/binding/org.openhab.binding.dsmr/ @Hilbrand
-/addons/binding/org.openhab.binding.dsmr.test/ @Hilbrand
 /addons/binding/org.openhab.binding.elerotransmitterstick/ @vbier
 /addons/binding/org.openhab.binding.enocean/ @fruggy83
 /addons/binding/org.openhab.binding.exec/ @kgoderis
@@ -162,6 +160,7 @@
 /bundles/org.openhab.binding.denonmarantz/ @jwveldhuis
 /bundles/org.openhab.binding.dlinksmarthome/ @MikeJMajor
 /bundles/org.openhab.binding.dmx/ @J-N-K
+/bundles/org.openhab.binding.dsmr/ @Hilbrand
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
 /bundles/org.openhab.binding.evohome/ @Nebula83
 /bundles/org.openhab.binding.feican/ @Hilbrand
