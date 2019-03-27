@@ -38,7 +38,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlLightingControllerV2Test extends LxControlTest {
+public class LxControlLightControllerV2Test extends LxControlTest {
     @Before
     public void setup() {
         setupControl("1076668f-0101-7076-ffff403fb0c34b9e", "0b734138-03ac-03f0-ffff403fb0c34b9e",
@@ -47,7 +47,7 @@ public class LxControlLightingControllerV2Test extends LxControlTest {
 
     @Test
     public void testControlCreation() {
-        testControlCreation(LxControlSwitch.class, 1, 5, 1, 6, 4);
+        testControlCreation(LxControlLightControllerV2.class, 1, 5, 1, 6, 4);
         testSubControl(LxControlSwitch.class, "Overall Switch");
         testSubControl(LxControlSwitch.class, "Hall Study Lights");
         testSubControl(LxControlSwitch.class, "Roof Lights");
@@ -249,7 +249,7 @@ public class LxControlLightingControllerV2Test extends LxControlTest {
     }
 
     private String loadMoodList(String name) {
-        InputStream stream = LxControlLightingControllerV2Test.class.getResourceAsStream(name);
+        InputStream stream = LxControlLightControllerV2Test.class.getResourceAsStream(name);
         assertNotNull(stream);
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         assertNotNull(reader);

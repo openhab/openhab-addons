@@ -215,6 +215,7 @@ public class LxControl {
                 return null;
             }
             control.name = controlName;
+            control.isSecured = LxConfig.deserializeObject(parent, "isSecured", Boolean.class, context);
             control.roomUuid = LxConfig.deserializeObject(parent, "room", LxUuid.class, context);
             control.categoryUuid = LxConfig.deserializeObject(parent, "cat", LxUuid.class, context);
             control.details = LxConfig.deserializeObject(parent, "details", LxControlDetails.class, context);
