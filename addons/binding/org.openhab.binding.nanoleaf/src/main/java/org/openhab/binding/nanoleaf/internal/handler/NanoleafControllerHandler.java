@@ -64,7 +64,6 @@ import org.openhab.binding.nanoleaf.internal.model.On;
 import org.openhab.binding.nanoleaf.internal.model.Rhythm;
 import org.openhab.binding.nanoleaf.internal.model.Sat;
 import org.openhab.binding.nanoleaf.internal.model.State;
-import org.openhab.binding.nanoleaf.internal.model.Write;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -473,20 +472,6 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                 getControllerConfig(), API_GET_CONTROLLER_INFO, HttpMethod.GET));
         ControllerInfo controllerInfo = gson.fromJson(controllerlInfoJSON.getContentAsString(), ControllerInfo.class);
         return controllerInfo;
-    }
-
-    private Write receiveEffectData(String effectName) throws NanoleafException, NanoleafUnauthorizedException {
-        Effects effects = new Effects();
-        Write effectDataRequest = new Write();
-        effectDataRequest.setCommand("request");
-        effectDataRequest.setAnimName(effectName);
-        effects.setWrite(effectDataRequest);
-        Request receiveEffectDataRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(), API_EFFECT,
-                HttpMethod.PUT);
-        receiveEffectDataRequest.content(new StringContentProvider(gson.toJson(effects)), "application/json");
-        ContentResponse effectDataResponseJSON = OpenAPIUtils.sendOpenAPIRequest(receiveEffectDataRequest);
-        Write effectDataResponse = gson.fromJson(effectDataResponseJSON.getContentAsString(), Write.class);
-        return effectDataResponse;
     }
 
     private void sendStateCommand(String channel, Command command) throws NanoleafException {
