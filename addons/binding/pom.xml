@@ -109,7 +109,6 @@
     <module>org.openhab.binding.solarlog</module>
     <module>org.openhab.binding.somfytahoma</module>
     <module>org.openhab.binding.sonyaudio</module>
-    <module>org.openhab.binding.squeezebox</module>
     <module>org.openhab.binding.systeminfo</module>
     <module>org.openhab.binding.systeminfo.test</module>
     <module>org.openhab.binding.tado</module>

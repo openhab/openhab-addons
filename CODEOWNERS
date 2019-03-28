@@ -97,7 +97,6 @@
 /addons/binding/org.openhab.binding.solarlog/ @johannrichard
 /addons/binding/org.openhab.binding.somfytahoma/ @octa22
 /addons/binding/org.openhab.binding.sonyaudio/ @freke
-/addons/binding/org.openhab.binding.squeezebox/ @digitaldan @mhilbush
 /addons/binding/org.openhab.binding.systeminfo/ @svilenvul
 /addons/binding/org.openhab.binding.systeminfo.test/ @svilenvul
 /addons/binding/org.openhab.binding.tado/ @dfrommi
@@ -190,6 +189,7 @@
 /bundles/org.openhab.binding.solaredge/ @alexf2015
 /bundles/org.openhab.binding.sonos/ @kgoderis @lolodomo
 /bundles/org.openhab.binding.spotify/ @Hilbrand
+/bundles/org.openhab.binding.squeezebox/ @digitaldan @mhilbush
 /bundles/org.openhab.binding.synopanalyzer/ @clinique
 /bundles/org.openhab.binding.tankerkoenig/ @dolic @JueBag
 /bundles/org.openhab.binding.tesla/ @kgoderis
