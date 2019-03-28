@@ -12,6 +12,8 @@
  */
 package org.openhab.io.hueemulation.internal.dto.response;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This object describes the right hand side of "success".
  * The response looks like this:
@@ -26,10 +28,15 @@ package org.openhab.io.hueemulation.internal.dto.response;
  *
  * @author David Graeff - Initial contribution
  */
-public class HueSuccessResponseCreateUser implements HueSuccessResponse {
+@NonNullByDefault
+public class HueSuccessResponseCreateUser extends HueSuccessResponse {
     public String username;
+    // For DTLS setup of the new hue entertain DTLS/UDP protocol
+    // The PSK identity matches the “username”, and the PSK key matches the “clientkey”.
+    public String clientkey;
 
-    public HueSuccessResponseCreateUser(String username) {
+    public HueSuccessResponseCreateUser(String username, String clientkey) {
         this.username = username;
+        this.clientkey = clientkey;
     }
 }

@@ -12,6 +12,8 @@
  */
 package org.openhab.io.hueemulation.internal.dto;
 
+import org.eclipse.smarthome.core.library.types.OnOffType;
+
 /**
  * Hue API state object for plugs
  *
@@ -26,6 +28,10 @@ public class HueStatePlug extends AbstractHueState {
 
     public HueStatePlug(boolean on) {
         this.on = on;
+    }
+
+    public OnOffType toOnOffType() {
+        return on ? OnOffType.ON : OnOffType.OFF;
     }
 
     @Override

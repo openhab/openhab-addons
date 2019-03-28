@@ -13,7 +13,9 @@
 package org.openhab.io.hueemulation.internal;
 
 /**
- * Device type
+ * The pure item type is not enough to decide how we expose an item.
+ * We need to consider the assigned tags and category as well. This
+ * computed device type is stored next to the item itself.
  *
  * @author David Graeff - Initial contribution
  */

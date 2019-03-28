@@ -15,29 +15,34 @@ package org.openhab.io.hueemulation.internal.dto;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Hue user object. Used by {@link HueAuthorizedConfig}.
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class HueUserAuth {
     public String name = "";
     public String createDate = "";
     public String lastUseDate = "";
 
+    public String clientKey = "";
+
     /**
      * For de-serialization.
      */
-    public HueUserAuth() {
+    HueUserAuth() {
     }
 
     /**
      * Create a new user
      *
-     * @param name Visible name
+     * @param apikey The hue "username"
      */
-    public HueUserAuth(String name) {
-        this.name = name;
+    public HueUserAuth(String appName, String deviceName) {
+        this.name = appName + "#" + deviceName;
         this.createDate = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 }

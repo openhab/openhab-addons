@@ -37,7 +37,7 @@ import com.google.gson.JsonSerializer;
  *
  * @author David Graeff - Initial contribution
  */
-public class HueSuccessResponseStateChanged implements HueSuccessResponse {
+public class HueSuccessResponseStateChanged extends HueSuccessResponse {
     private transient Object value;
     private transient String relURI;
 
@@ -47,7 +47,6 @@ public class HueSuccessResponseStateChanged implements HueSuccessResponse {
     }
 
     public static class Serializer implements JsonSerializer<HueSuccessResponseStateChanged> {
-
         @Override
         public JsonElement serialize(HueSuccessResponseStateChanged product, Type type, JsonSerializationContext jsc) {
             JsonObject jObj = new JsonObject();

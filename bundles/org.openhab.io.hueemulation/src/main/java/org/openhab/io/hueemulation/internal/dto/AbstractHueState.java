@@ -31,4 +31,8 @@ public class AbstractHueState {
     }
 
     public String alert = AlertEnum.none.name();
+
+    public <T extends AbstractHueState> T as(Class<T> type) throws ClassCastException {
+        return type.cast(this);
+    }
 }

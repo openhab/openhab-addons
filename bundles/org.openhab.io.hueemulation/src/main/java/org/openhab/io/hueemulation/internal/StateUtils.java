@@ -10,150 +10,56 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.io.hueemulation.internal.dto;
+package org.openhab.io.hueemulation.internal;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.library.CoreItemFactory;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.io.hueemulation.internal.DeviceType;
+import org.openhab.io.hueemulation.internal.dto.AbstractHueState;
+import org.openhab.io.hueemulation.internal.dto.HueStateBulb;
+import org.openhab.io.hueemulation.internal.dto.HueStateColorBulb;
 import org.openhab.io.hueemulation.internal.dto.HueStateColorBulb.ColorMode;
+import org.openhab.io.hueemulation.internal.dto.HueStatePlug;
+import org.openhab.io.hueemulation.internal.dto.changerequest.HueStateChange;
+import org.openhab.io.hueemulation.internal.dto.response.HueResponse;
+import org.openhab.io.hueemulation.internal.dto.response.HueResponse.HueErrorMessage;
+import org.openhab.io.hueemulation.internal.dto.response.HueSuccessResponseStateChanged;
 
 /**
- * Hue API device object
+ * This utility class provides all kind of functions to convert between openHAB item states to Hue states and back
+ * as well as applying a hue state change request to a hue state or openHAB item state.
+ * <p>
+ * It also provides methods to determine the hue type (plug, white bulb, coloured bulb), given an item.
  *
- * @author Dan Cunningham - Initial contribution
- * @author David Graeff - Color lights and plugs
- * @author Florian Lentz - XY Support
+ * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class HueDevice {
-    public AbstractHueState state = new AbstractHueState();
-    public final String type;
-    public final String modelid;
-    public final String uniqueid;
-    public final String manufacturername;
-    public final @Nullable String productname;
-    public final String swversion;
-    public final @Nullable String luminaireuniqueid = null;
-    public final @Nullable String swconfigid;
-    public final @Nullable String productid;
-    public @Nullable Boolean friendsOfHue = true;
-    public final @Nullable String colorGamut;
-    public @Nullable Boolean hascolor = null;
-
-    public String name;
-    /** Associated item UID */
-    public transient Item item;
-    public transient DeviceType deviceType;
-
-    public static class Config {
-        public final String archetype = "classicbulb";
-        public final String function = "functional";
-        public final String direction = "omnidirectional";
-    };
-
-    public Config config = new Config();
-
-    public static class Streaming {
-        public boolean renderer = false;
-        public boolean proxy = false;
-    };
-
-    public static class Capabilities {
-        public boolean certified = false;
-        public final Streaming streaming = new Streaming();
-        public final Object control = new Object();
-    };
-
-    public Capabilities capabilities = new Capabilities();
+public class StateUtils {
 
     /**
-     * Create a hue device.
+     * Compute the hue state from a given item state and a device type.
      *
-     * @param targetType The state type
-     * @param item
-     * @param name
-     * @param uniqueid
-     * @param deviceType
+     * @param itemState The item state
+     * @param deviceType The device type
+     * @return A hue light state
      */
-    public HueDevice(Item item, String uniqueid, DeviceType deviceType) {
-        String label = item.getLabel();
-        this.item = item;
-        this.deviceType = deviceType;
-        this.uniqueid = uniqueid;
-        switch (deviceType) {
-            case ColorType:
-                this.name = label != null ? label : "";
-                this.type = "Extended color light";
-                this.modelid = "LCT010";
-                this.colorGamut = "C";
-                this.manufacturername = "Philips";
-                this.swconfigid = "F921C859";
-                this.swversion = "1.15.2_r19181";
-                this.productid = "Philips-LCT010-1-A19ECLv4";
-                this.productname = null;
-                this.hascolor = true;
-                this.capabilities.certified = true;
-                break;
-            case WhiteType:
-                /** Hue White A19 - 3nd gen - white, 2700K only */
-                this.name = label != null ? label : "";
-                this.type = "Dimmable Light";
-                this.modelid = "LWB006";
-                this.colorGamut = null;
-                this.manufacturername = "Philips";
-                this.swconfigid = null;
-                this.swversion = "66012040";
-                this.productid = null;
-                this.hascolor = false;
-                this.productname = null;
-                this.capabilities.certified = true;
-                break;
-            case WhiteTemperatureType:
-                this.name = label != null ? label : "";
-                this.type = "Color Temperature Light";
-                this.modelid = "LTW001";
-                this.colorGamut = "2200K-6500K";
-                this.manufacturername = "Philips";
-                this.swconfigid = null;
-                this.swversion = "66012040";
-                this.productid = null;
-                this.hascolor = false;
-                this.productname = null;
-                this.capabilities.certified = true;
-                break;
-            default:
-            case SwitchType:
-                /**
-                 * Pretend to be an OSRAM plug, there is no native Philips Hue plug on the market.
-                 * Those are supported by most of the external apps and Alexa.
-                 */
-                this.name = label != null ? label : "";
-                this.type = "On/Off plug-in unit";
-                this.modelid = "Plug 01";
-                this.colorGamut = null;
-                this.manufacturername = "OSRAM";
-                this.productname = "On/Off plug";
-                this.swconfigid = null;
-                this.swversion = "V1.04.12";
-                this.productid = null;
-                this.hascolor = false;
-                this.friendsOfHue = null;
-                break;
+    public static AbstractHueState colorStateFromItemState(State itemState, @Nullable DeviceType deviceType) {
+        if (deviceType == null) {
+            return new HueStatePlug(false);
         }
-
-        setState(item.getState());
-    }
-
-    private void setState(State itemState) {
+        AbstractHueState state;
         switch (deviceType) {
             case ColorType:
                 if (itemState instanceof HSBType) {
@@ -191,29 +97,74 @@ public class HueDevice {
                     state = new HueStatePlug(false);
                 }
         }
+        return state;
     }
 
-    private <T extends AbstractHueState> T as(Class<T> type) throws ClassCastException {
-        return type.cast(state);
+    /**
+     * Computes an openHAB item state, given a hue state.
+     *
+     * <p>
+     * This only proxies to the respective call
+     * on the concrete hue state implementation.
+     *
+     * @throws IllegalStateException Thrown if the concrete hue state is not yet handled by this method.
+     */
+    public static State itemStateByHueState(AbstractHueState state) throws IllegalStateException {
+        if (state instanceof HueStateColorBulb) {
+            return state.as(HueStateColorBulb.class).toHSBType();
+        } else if (state instanceof HueStateBulb) {
+            return state.as(HueStateBulb.class).toBrightnessType();
+        } else if (state instanceof HueStatePlug) {
+            return state.as(HueStatePlug.class).toOnOffType();
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    /**
+     * An openHAB state is usually also a command. Cast the state.
+     *
+     * @throws IllegalStateException Throws if the cast fails.
+     */
+    public static Command commandByItemState(State state) throws IllegalStateException {
+        if (state instanceof Command) {
+            return (Command) state;
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    /**
+     * Computes an openHAB command, given a hue state change request.
+     *
+     * @param changeRequest The change request
+     */
+    public static @Nullable Command computeCommandByChangeRequest(HueStateChange changeRequest) {
+        List<HueResponse> responses = new ArrayList<>();
+        return computeCommandByState(responses, "", new HueStateColorBulb(false), changeRequest);
     }
 
     /**
      * Apply the new received state from the REST PUT request.
      *
-     * @param newState New state
-     * @param successApplied Output map "state-name"->value: All successfully applied items are added in here
-     * @param errorApplied Output: All erroneous items are added in here
+     * @param responses Creates a response entry for each success and each error. There is one entry per non-null field
+     *            of {@link HueStateChange} created.
+     * @param prefix The response entry prefix, for example "/groups/mygroupid/state/"
+     * @param state The current item state
+     * @param newState A state change DTO
      * @return Return a command computed via the incoming state object.
      */
-    public @Nullable Command applyState(HueStateChange newState, Map<String, Object> successApplied,
-            List<String> errorApplied) {
-        // First synchronize the internal state information with the framework
-        setState(item.getState());
+    public static @Nullable Command computeCommandByState(List<HueResponse> responses, String prefix,
+            AbstractHueState state, HueStateChange newState) {
+
+        // Apply new state and collect success, error items
+        Map<String, Object> successApplied = new TreeMap<>();
+        List<String> errorApplied = new ArrayList<>();
 
         Command command = null;
         if (newState.on != null) {
             try {
-                as(HueStatePlug.class).on = newState.on;
+                state.as(HueStatePlug.class).on = newState.on;
                 command = OnOffType.from(newState.on);
                 successApplied.put("on", newState.on);
             } catch (ClassCastException e) {
@@ -223,7 +174,7 @@ public class HueDevice {
 
         if (newState.bri != null) {
             try {
-                as(HueStateBulb.class).bri = newState.bri;
+                state.as(HueStateBulb.class).bri = newState.bri;
                 command = new PercentType((int) (newState.bri * 100.0 / HueStateBulb.MAX_BRI + 0.5));
                 successApplied.put("bri", newState.bri);
             } catch (ClassCastException e) {
@@ -233,7 +184,7 @@ public class HueDevice {
 
         if (newState.bri_inc != null) {
             try {
-                int newBri = as(HueStateBulb.class).bri + newState.bri_inc;
+                int newBri = state.as(HueStateBulb.class).bri + newState.bri_inc;
                 if (newBri < 0 || newBri > HueStateBulb.MAX_BRI) {
                     throw new IllegalArgumentException();
                 }
@@ -249,7 +200,7 @@ public class HueDevice {
         if (newState.sat != null) {
 
             try {
-                HueStateColorBulb c = as(HueStateColorBulb.class);
+                HueStateColorBulb c = state.as(HueStateColorBulb.class);
                 c.sat = newState.sat;
                 c.colormode = ColorMode.hs;
                 command = c.toHSBType();
@@ -261,7 +212,7 @@ public class HueDevice {
 
         if (newState.sat_inc != null) {
             try {
-                HueStateColorBulb c = as(HueStateColorBulb.class);
+                HueStateColorBulb c = state.as(HueStateColorBulb.class);
                 int newV = c.sat + newState.sat_inc;
                 if (newV < 0 || newV > HueStateColorBulb.MAX_SAT) {
                     throw new IllegalArgumentException();
@@ -279,7 +230,7 @@ public class HueDevice {
 
         if (newState.hue != null) {
             try {
-                HueStateColorBulb c = as(HueStateColorBulb.class);
+                HueStateColorBulb c = state.as(HueStateColorBulb.class);
                 c.colormode = ColorMode.hs;
                 c.hue = newState.hue;
                 command = c.toHSBType();
@@ -291,7 +242,7 @@ public class HueDevice {
 
         if (newState.hue_inc != null) {
             try {
-                HueStateColorBulb c = as(HueStateColorBulb.class);
+                HueStateColorBulb c = state.as(HueStateColorBulb.class);
                 int newV = c.hue + newState.hue_inc;
                 if (newV < 0 || newV > HueStateColorBulb.MAX_HUE) {
                     throw new IllegalArgumentException();
@@ -314,7 +265,7 @@ public class HueDevice {
 
                 // Adjusting the color temperature implies setting the mode to ct
                 if (state instanceof HueStateColorBulb) {
-                    HueStateColorBulb c = as(HueStateColorBulb.class);
+                    HueStateColorBulb c = state.as(HueStateColorBulb.class);
                     c.sat = 0;
                     c.colormode = ColorMode.ct;
                     command = c.toHSBType();
@@ -334,7 +285,7 @@ public class HueDevice {
 
                 // Adjusting the color temperature implies setting the mode to ct
                 if (state instanceof HueStateColorBulb) {
-                    HueStateColorBulb c = as(HueStateColorBulb.class);
+                    HueStateColorBulb c = state.as(HueStateColorBulb.class);
                     if (c.colormode != ColorMode.ct) {
                         c.sat = 0;
                         command = c.toHSBType();
@@ -358,9 +309,9 @@ public class HueDevice {
         }
         if (newState.xy != null) {
             try {
-                HueStateColorBulb c = as(HueStateColorBulb.class);
+                HueStateColorBulb c = state.as(HueStateColorBulb.class);
                 c.colormode = ColorMode.xy;
-                c.bri = as(HueStateBulb.class).bri;
+                c.bri = state.as(HueStateBulb.class).bri;
                 c.xy[0] = newState.xy.get(0);
                 c.xy[1] = newState.xy.get(1);
                 command = c.toHSBType();
@@ -371,14 +322,14 @@ public class HueDevice {
         }
         if (newState.xy_inc != null) {
             try {
-                HueStateColorBulb c = as(HueStateColorBulb.class);
+                HueStateColorBulb c = state.as(HueStateColorBulb.class);
                 double newX = c.xy[0] + newState.xy_inc.get(0);
                 double newY = c.xy[1] + newState.xy_inc.get(1);
                 if (newX < 0 || newX > 1 || newY < 0 || newY > 1) {
                     throw new IllegalArgumentException();
                 }
                 c.colormode = ColorMode.xy;
-                c.bri = as(HueStateBulb.class).bri;
+                c.bri = state.as(HueStateBulb.class).bri;
                 c.xy[0] = newX;
                 c.xy[1] = newY;
                 command = c.toHSBType();
@@ -390,30 +341,76 @@ public class HueDevice {
             }
         }
 
+        // Generate the response. The response consists of a list with an entry each for all
+        // submitted change requests. If for example "on" and "bri" was send, 2 entries in the response are
+        // expected.
+        successApplied.forEach((t, v) -> {
+            responses.add(new HueResponse(new HueSuccessResponseStateChanged(prefix + "/" + t, v)));
+        });
+        errorApplied.forEach(v -> {
+            responses.add(
+                    new HueResponse(new HueErrorMessage(HueResponse.NOT_AVAILABLE, prefix + "/" + v, "Could not set")));
+        });
+
         return command;
     }
 
-    public void updateItem(Item element) {
-        item = element;
-        setState(item.getState());
+    public static @Nullable DeviceType determineTargetType(ConfigStore cs, Item element) {
+        String category = element.getCategory();
+        String type = element.getType();
+        Set<String> tags = element.getTags();
 
-        // Just update the item label and item reference
-        String label = element.getLabel();
-        if (label != null) {
-            name = label;
+        // Determine type, heuristically
+        DeviceType t = null;
+
+        // The user wants this item to be not exposed
+        if (cs.ignoreItemsFilter.stream().anyMatch(tags::contains)) {
+            return null;
         }
-    }
 
-    /**
-     * Synchronizes the item state with the hue state object
-     */
-    public void updateState() {
-        setState(item.getState());
-    }
+        // First consider the category
+        if (category != null) {
+            switch (category) {
+                case "ColorLight":
+                    t = DeviceType.ColorType;
+                    break;
+                case "Light":
+                    t = DeviceType.SwitchType;
+            }
+        }
 
-    @Override
-    public String toString() {
-        StringBuilder b = new StringBuilder();
-        return b.append(name).append(": ").append(type).append("\n\t").append(state.toString()).toString();
+        // Then the tags
+        if (cs.switchFilter.stream().anyMatch(tags::contains)) {
+            t = DeviceType.SwitchType;
+        }
+        if (cs.whiteFilter.stream().anyMatch(tags::contains)) {
+            t = DeviceType.WhiteTemperatureType;
+        }
+        if (cs.colorFilter.stream().anyMatch(tags::contains)) {
+            t = DeviceType.ColorType;
+        }
+
+        // Last but not least, the item type
+        if (t == null) {
+            switch (type) {
+                case CoreItemFactory.COLOR:
+                    if (cs.colorFilter.size() == 0) {
+                        t = DeviceType.ColorType;
+                    }
+                    break;
+                case CoreItemFactory.DIMMER:
+                case CoreItemFactory.ROLLERSHUTTER:
+                    if (cs.whiteFilter.size() == 0) {
+                        t = DeviceType.WhiteTemperatureType;
+                    }
+                    break;
+                case CoreItemFactory.SWITCH:
+                    if (cs.switchFilter.size() == 0) {
+                        t = DeviceType.SwitchType;
+                    }
+                    break;
+            }
+        }
+        return t;
     }
 }

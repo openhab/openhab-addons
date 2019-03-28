@@ -13,7 +13,6 @@
 package org.openhab.io.hueemulation.internal.dto.changerequest;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Hue API create user object
@@ -23,8 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class HueCreateUser {
-    /** The device label/name */
+    /** ApplicationName#DeviceName */
     public String devicetype = "";
-    /** Caller suggested API key ("username"). Usually empty to generate one. Newer hue bridges always generate one. */
-    public @Nullable String username;
 }

@@ -12,12 +12,18 @@
  */
 package org.openhab.io.hueemulation.internal.dto.response;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * This object describes the right hand side of "success".
+ * Hue API response base type
  *
  * @author David Graeff - Initial contribution
  */
-public class HueSuccessResponseStartSearchLights implements HueSuccessResponse {
-    public HueSuccessResponseStartSearchLights() {
+@NonNullByDefault
+public class HueResponseSuccessSimple {
+    public final String success;
+
+    public HueResponseSuccessSimple(String success) {
+        this.success = success;
     }
 }

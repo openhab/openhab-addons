@@ -1076,6 +1076,8 @@
 
     <feature name="openhab-misc-hueemulation" description="Hue Emulation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-upnp</feature>
+        <feature>openhab-core-automation</feature>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.io.hueemulation/${project.version}</bundle>
     </feature>
 

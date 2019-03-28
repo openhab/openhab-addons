@@ -85,14 +85,15 @@ public class HueStateColorBulb extends HueStateBulb {
     public HSBType toHSBType() {
         if (colormode == ColorMode.xy) {
             int i;
-            double d = this.xy[0];
-            d = this.xy[1];
-            double y = ((double) this.bri) / 100.0d;
+            double y = (this.bri) / 100.0d;
             double x = (y / this.xy[1]) * this.xy[0];
             double z = (y / this.xy[1]) * ((1.0d - this.xy[0]) - this.xy[1]);
-            int r = (int) (Math.abs(((1.4628067016601562d * x) - (0.18406230211257935d * y)) - (0.2743605971336365d * z)) * 255.0d);
-            int g = (int) (Math.abs((((-x) * 0.5217933058738708d) + (1.4472380876541138d * y)) + (0.06772270053625107d * z)) * 255.0d);
-            int b = (int) (Math.abs(((0.03493420034646988d * x) - (0.09689299762248993d * y)) + (1.288409948348999d * z)) * 255.0d);
+            int r = (int) (Math.abs(
+                    ((1.4628067016601562d * x) - (0.18406230211257935d * y)) - (0.2743605971336365d * z)) * 255.0d);
+            int g = (int) (Math.abs(
+                    (((-x) * 0.5217933058738708d) + (1.4472380876541138d * y)) + (0.06772270053625107d * z)) * 255.0d);
+            int b = (int) (Math.abs(
+                    ((0.03493420034646988d * x) - (0.09689299762248993d * y)) + (1.288409948348999d * z)) * 255.0d);
             if (r < g) {
                 i = r;
             } else {
@@ -108,32 +109,34 @@ public class HueStateColorBulb extends HueStateBulb {
             }
             double delta = maxValue - minValue;
             if (maxValue <= 0.0d) {
-                return new HSBType(new DecimalType(0), new PercentType(100), new PercentType((this.bri * 100) / MAX_BRI));
+                return new HSBType(new DecimalType(0), new PercentType(100),
+                        new PercentType((this.bri * 100) / MAX_BRI));
             }
             double h;
-            if (((double) r) >= maxValue) {
-                h = ((double) (g - b)) / delta;
-            } else if (((double) g) >= maxValue) {
-                h = 2.0d + (((double) (b - r)) / delta);
+            if ((r) >= maxValue) {
+                h = (g - b) / delta;
+            } else if ((g) >= maxValue) {
+                h = 2.0d + ((b - r) / delta);
             } else {
-                h = 4.0d + (((double) (r - g)) / delta);
+                h = 4.0d + ((r - g) / delta);
             }
             h *= 60.0d;
             if (h < 0.0d) {
                 h += 360.0d;
             }
             double hueSat = Math.floor((delta / maxValue) * 254.0d);
-            int percentSat = (int) ((100.0d * hueSat) / ((double) MAX_SAT));
+            int percentSat = (int) ((100.0d * hueSat) / (MAX_SAT));
             if (!this.on) {
                 this.bri = 0;
             }
-            return new HSBType(new DecimalType((Math.floor(182.04d * h) * 360.0d) / ((double) MAX_HUE)), new PercentType(percentSat), new PercentType((this.bri * 100) / MAX_BRI));
-       
+            return new HSBType(new DecimalType((Math.floor(182.04d * h) * 360.0d) / (MAX_HUE)),
+                    new PercentType(percentSat), new PercentType((this.bri * 100) / MAX_BRI));
+
         } else {
             int bri = this.bri * 100 / MAX_BRI;
             int sat = this.sat * 100 / MAX_SAT;
             int hue = this.hue * 360 / MAX_HUE;
-   
+
             if (!this.on) {
                 bri = 0;
             }

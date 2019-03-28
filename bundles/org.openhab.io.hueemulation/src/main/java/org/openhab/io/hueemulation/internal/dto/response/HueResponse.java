@@ -26,8 +26,17 @@ public class HueResponse {
     public static final int INVALID_JSON = 2;
     public static final int NOT_AVAILABLE = 3;
     public static final int METHOD_NOT_ALLOWED = 4;
+    public static final int ARGUMENTS_INVALID = 7;
+    public static final int SENSOR_NOT_CLIP_SENSOR = 8;
     public static final int LINK_BUTTON_NOT_PRESSED = 101;
     public static final int INTERNAL_ERROR = 901;
+
+    public static final int RULE_ENGINE_FULL = 601; // The Rule Engine has reached its maximum capacity of 100 rules.
+    public static final int CONDITION_ERROR = 607; // Rule conditions contain errors or operator combination is not
+                                                   // allowed
+    public static final int ACTION_ERROR = 608; // Rule actions contain errors or multiple actions with the same
+                                                // resource address.
+    public static final int TOO_MANY_ITEMS = 11; // Too many items in the list (too many conditions or too many actions)
 
     public final @Nullable HueErrorMessage error;
     public final @Nullable HueSuccessResponse success;

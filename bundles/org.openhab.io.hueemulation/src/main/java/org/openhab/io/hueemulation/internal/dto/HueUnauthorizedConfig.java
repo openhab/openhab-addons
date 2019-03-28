@@ -12,15 +12,19 @@
  */
 package org.openhab.io.hueemulation.internal.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Hue API config object. Also accessible for non-authorized users.
  * Enpoint: /api/config
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class HueUnauthorizedConfig {
-    public String apiversion = "1.16.0";
-    public String bridgeid = "00212EFFFF022F6E";
+    public String apiversion = "1.18.0";
+    public String bridgeid = ""; // Example: 00212EFFFF022F6E
     public String datastoreversion = "60";
     public String starterkitid = "";
     public String modelid = "BSB002";
@@ -29,5 +33,5 @@ public class HueUnauthorizedConfig {
     public String swversion = "2.5.46";
     public String mac = "b8:27:eb:1d:d8:0c";
     public boolean factorynew = false;
-    public String replacesbridgeid = null;
+    public @Nullable String replacesbridgeid = null;
 }

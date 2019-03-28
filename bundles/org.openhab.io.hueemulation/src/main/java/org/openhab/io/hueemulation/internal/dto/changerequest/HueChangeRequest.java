@@ -16,11 +16,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Multiple endpoints support POST changes, for example:
+ * Multiple endpoints support PUT changes, for example:
  * <ul>
  * <li>Config: Allows to change the bridge name, dhcp, portalservices, linkbutton
  * <li>Light: Allows to change the name
  * <li>Group: Allows to change the name
+ * <li>Srnsor: Allows to change the name
  * </ul>
  *
  * @author David Graeff - Initial contribution

@@ -17,5 +17,5 @@ package org.openhab.io.hueemulation.internal.dto.response;
  *
  * @author David Graeff - Initial contribution
  */
-public interface HueSuccessResponse {
+public class HueSuccessResponse {
 }

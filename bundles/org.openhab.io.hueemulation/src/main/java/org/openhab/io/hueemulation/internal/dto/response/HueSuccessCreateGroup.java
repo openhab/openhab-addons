@@ -26,10 +26,10 @@ package org.openhab.io.hueemulation.internal.dto.response;
  *
  * @author David Graeff - Initial contribution
  */
-public class HueSuccessCreateGroup implements HueSuccessResponse {
-    public int id;
+public class HueSuccessCreateGroup extends HueSuccessResponse {
+    public String id;
 
-    public HueSuccessCreateGroup(int id) {
+    public HueSuccessCreateGroup(String id) {
         this.id = id;
     }
 }

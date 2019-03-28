@@ -29,33 +29,51 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class HueDataStore {
     public HueAuthorizedConfig config = new HueAuthorizedConfig();
-    public TreeMap<Integer, HueDevice> lights = new TreeMap<>();
-    public TreeMap<Integer, HueGroup> groups = new TreeMap<>();
-    public Map<Integer, Dummy> scenes = new TreeMap<>();
-    public Map<Integer, Dummy> rules = new TreeMap<>();
-    public Map<Integer, Dummy> sensors = new TreeMap<>();
-    public Map<Integer, Dummy> schedules = new TreeMap<>();
+    public TreeMap<String, HueLightEntry> lights = new TreeMap<>();
+    public TreeMap<String, HueGroupEntry> groups = new TreeMap<>();
+    public Map<String, HueSceneEntry> scenes = new TreeMap<>();
+    public Map<String, HueRuleEntry> rules = new TreeMap<>();
+    public Map<String, HueSensorEntry> sensors = new TreeMap<>();
+    public Map<String, HueScheduleEntry> schedules = new TreeMap<>();
     public Map<Integer, Dummy> resourcelinks = Collections.emptyMap();
+    public Map<String, HueCapability> capabilities = new TreeMap<>();
 
     public HueDataStore() {
         resetGroupsAndLights();
+        capabilities.put("lights", new HueCapability());
+        capabilities.put("groups", new HueCapability());
+        capabilities.put("scenes", new HueCapability());
+        capabilities.put("rules", new HueCapability());
+        capabilities.put("sensors", new HueCapability());
+        capabilities.put("schedules", new HueCapability());
+        capabilities.put("resourcelinks", new HueCapability());
     }
 
     public void resetGroupsAndLights() {
         groups.clear();
         lights.clear();
         // There must be a group 0 all the time!
-        groups.put(0, new HueGroup("All lights", null, Collections.emptyMap()));
+        groups.put("0", new HueGroupEntry("All lights", null, null));
     }
 
-    public int generateNextLightHueID() {
-        return lights.size() == 0 ? 1 : new Integer(lights.lastKey().intValue() + 1);
-    }
-
-    public int generateNextGroupHueID() {
-        return groups.size() == 0 ? 1 : new Integer(groups.lastKey().intValue() + 1);
+    public void resetSensors() {
+        sensors.clear();
     }
 
     public static class Dummy {
+    }
+
+    /**
+     * Return a unique group id.
+     */
+    public String nextGroupID() {
+        int nextId = groups.size();
+        while (true) {
+            String id = "hueemulation" + String.valueOf(nextId);
+            if (!groups.containsKey(id)) {
+                return id;
+            }
+            ++nextId;
+        }
     }
 }

@@ -12,10 +12,6 @@
  */
 package org.openhab.io.hueemulation.internal;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -28,16 +24,21 @@ import org.eclipse.jdt.annotation.Nullable;
 public class HueEmulationConfig {
     public boolean pairingEnabled = false;
     public static final String CONFIG_PAIRING_ENABLED = "pairingEnabled";
+
     /**
      * The Amazon echos have no means to recreate a new api key and they don't care about the 403-forbidden http status
      * code. If the addon has pruned its api-key list, echos will not be able to discover new devices. Set this option
      * to just create a new user on the fly.
      */
-    public boolean createNewUserOnEveryEndpoint = true;
+    public boolean createNewUserOnEveryEndpoint = false;
     public static final String CONFIG_CREATE_NEW_USER_ON_THE_FLY = "createNewUserOnEveryEndpoint";
+    public boolean temporarilyEmulateV1bridge = false;
+    public static final String CONFIG_EMULATE_V1 = "temporarilyEmulateV1bridge";
+    public boolean permanentV1bridge = false;
+
     /** Pairing timeout in seconds */
     public int pairingTimeout = 60;
-    public @Nullable String discoveryIp;
+    public @Nullable String discoveryIps;
     public int discoveryHttpPort = 0;
     /** Comma separated list of tags */
     public String restrictToTagsSwitches = "Switchable";
@@ -45,16 +46,10 @@ public class HueEmulationConfig {
     public String restrictToTagsColorLights = "ColorLighting";
     /** Comma separated list of tags */
     public String restrictToTagsWhiteLights = "Lighting";
+    /** Comma separated list of tags */
+    public String ignoreItemsWithTags = "internal";
 
-    public Set<String> switchTags() {
-        return Stream.of(restrictToTagsSwitches.split(",")).map(String::trim).collect(Collectors.toSet());
-    }
-
-    public Set<String> colorTags() {
-        return Stream.of(restrictToTagsColorLights.split(",")).map(String::trim).collect(Collectors.toSet());
-    }
-
-    public Set<String> whiteTags() {
-        return Stream.of(restrictToTagsWhiteLights.split(",")).map(String::trim).collect(Collectors.toSet());
-    }
+    public static final String CONFIG_UUID = "uuid";
+    public String uuid = "";
+    public String devicename = "openHAB";
 }
