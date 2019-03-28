@@ -13,8 +13,13 @@
 
   <name>openHAB Add-ons :: Bundles :: HarmonyHub Binding</name>
 
-  <properties>
-    <bnd.importpackage>com.martiansoftware.jsap.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.kohsuke.args4j;resolution:=optional,org.kohsuke.args4j.spi;resolution:=optional</bnd.importpackage>
-  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>com.github.digitaldan</groupId>
+      <artifactId>harmony-client</artifactId>
+      <version>1.1.4</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 
 </project>
