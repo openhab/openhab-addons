@@ -75,6 +75,7 @@
     <module>org.openhab.binding.solaredge</module>
     <module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.spotify</module>
+    <module>org.openhab.binding.squeezebox</module>
     <module>org.openhab.binding.synopanalyzer</module>
     <module>org.openhab.binding.tankerkoenig</module>
     <module>org.openhab.binding.tesla</module>
