@@ -17,12 +17,7 @@
 		<dependency>
 			<groupId>org.openhab.core.bundles</groupId>
 			<artifactId>org.openhab.core</artifactId>
-			<version>${ohc.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openhab.core.bundles</groupId>
-			<artifactId>org.openhab.core.ui.dashboard</artifactId>
-			<version>${ohc.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 	
