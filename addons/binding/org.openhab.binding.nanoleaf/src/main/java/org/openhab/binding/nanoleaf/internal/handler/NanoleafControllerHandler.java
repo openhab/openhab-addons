@@ -14,7 +14,6 @@ package org.openhab.binding.nanoleaf.internal.handler;
 
 import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -59,10 +58,11 @@ import org.openhab.binding.nanoleaf.internal.model.Brightness;
 import org.openhab.binding.nanoleaf.internal.model.ControllerInfo;
 import org.openhab.binding.nanoleaf.internal.model.Ct;
 import org.openhab.binding.nanoleaf.internal.model.Effects;
+import org.openhab.binding.nanoleaf.internal.model.Hue;
 import org.openhab.binding.nanoleaf.internal.model.IntegerState;
 import org.openhab.binding.nanoleaf.internal.model.On;
-import org.openhab.binding.nanoleaf.internal.model.Palette;
 import org.openhab.binding.nanoleaf.internal.model.Rhythm;
+import org.openhab.binding.nanoleaf.internal.model.Sat;
 import org.openhab.binding.nanoleaf.internal.model.State;
 import org.openhab.binding.nanoleaf.internal.model.Write;
 import org.slf4j.Logger;
@@ -173,32 +173,10 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             } else {
                 switch (channelUID.getId()) {
                     case CHANNEL_POWER:
-                        sendStateCommand(On.class.getName(), command);
-                        break;
                     case CHANNEL_COLOR:
-                        if (command instanceof OnOffType) {
-                            // On/Off command - turns controller on/off
-                            sendStateCommand(On.class.getName(), command);
-                            break;
-                        } else if (command instanceof HSBType) {
-                            // regular color HSB command
-                            sendEffectCommand(command);
-                            break;
-                        } else if (command instanceof PercentType) {
-                            // brightness command
-                            sendStateCommand(Brightness.class.getName(), command);
-                            break;
-                        } else if (command instanceof IncreaseDecreaseType) {
-                            // increase/decrease brightness
-                            sendStateCommand(Brightness.class.getName(), command);
-                            break;
-                        }
-                        break;
                     case CHANNEL_COLOR_TEMPERATURE:
-                        sendStateCommand(Ct.class.getName(), command);
-                        break;
                     case CHANNEL_COLOR_TEMPERATURE_ABS:
-                        sendStateCommand(Ct.class.getName(), command);
+                        sendStateCommand(channelUID.getId(), command);
                         break;
                     case CHANNEL_EFFECT:
                         sendEffectCommand(command);
@@ -452,7 +430,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     private void updateFromControllerInfo() throws NanoleafException, NanoleafUnauthorizedException {
         logger.debug("Update channels for controller {}", thing.getUID());
         this.controllerInfo = receiveControllerInfo();
-        updateState(CHANNEL_POWER, controllerInfo.getState().getOn().getValue() ? OnOffType.ON : OnOffType.OFF);
+        boolean isOn = controllerInfo.getState().getOn().getValue();
+        updateState(CHANNEL_POWER, isOn ? OnOffType.ON : OnOffType.OFF);
         updateState(CHANNEL_COLOR_TEMPERATURE_ABS,
                 new DecimalType(controllerInfo.getState().getColorTemperature().getValue().intValue()));
         Float colorTempPercent = (controllerInfo.getState().getColorTemperature().getValue().floatValue()
@@ -462,11 +441,10 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                 * PercentType.HUNDRED.intValue();
         updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(colorTempPercent.intValue()));
         updateState(CHANNEL_EFFECT, new StringType(controllerInfo.getEffects().getSelect()));
-        Write colorData = receiveEffectData(EFFECT_NAME_STATIC_COLOR);
         updateState(CHANNEL_COLOR,
-                new HSBType(new DecimalType(colorData.getPalette().get(0).getHue().longValue()),
-                        new PercentType(colorData.getPalette().get(0).getSaturation().intValue()),
-                        new PercentType(colorData.getPalette().get(0).getBrightness().intValue())));
+                new HSBType(new DecimalType(controllerInfo.getState().getHue().getValue()),
+                        new PercentType(controllerInfo.getState().getSaturation().getValue()),
+                        new PercentType(isOn ? controllerInfo.getState().getBrightness().getValue() : 0)));
         updateState(CHANNEL_COLOR_MODE, new StringType(controllerInfo.getState().getColorMode()));
         updateState(CHANNEL_RHYTHM_ACTIVE,
                 controllerInfo.getRhythm().getRhythmActive().booleanValue() ? OnOffType.ON : OnOffType.OFF);
@@ -483,7 +461,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         // update the color channels of each panel
         this.getThing().getThings().forEach(child -> {
             NanoleafPanelHandler panelHandler = (NanoleafPanelHandler) child.getHandler();
-            if (panelHandler instanceof NanoleafPanelHandler) {
+            if (panelHandler != null) {
                 logger.debug("Update color channel for panel {}", panelHandler.getThing().getUID());
                 panelHandler.updatePanelColorChannel();
             }
@@ -511,73 +489,102 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         return effectDataResponse;
     }
 
-    private void sendStateCommand(String stateClass, Command command) throws NanoleafException {
-        try {
-            State stateObject = new State();
-            if (command instanceof PercentType) {
-                IntegerState state = (IntegerState) Class.forName(stateClass).newInstance();
-                if (Brightness.class.getName().equals(stateClass)) {
-                    state.setValue(((PercentType) command).intValue());
+    private void sendStateCommand(String channel, Command command) throws NanoleafException {
+        State stateObject = new State();
+        switch (channel) {
+            case CHANNEL_POWER:
+                if (command instanceof OnOffType) {
+                    // On/Off command - turns controller on/off
+                    BooleanState state = new On();
+                    state.setValue(OnOffType.ON.equals(command));
+                    stateObject.setState(state);
                 } else {
+                    logger.warn("Unhandled command type: {}", command.getClass().getName());
+                    return;
+                }
+                break;
+            case CHANNEL_COLOR:
+                if (command instanceof OnOffType) {
+                    // On/Off command - turns controller on/off
+                    BooleanState state = new On();
+                    state.setValue(OnOffType.ON.equals(command));
+                    stateObject.setState(state);
+                } else if (command instanceof HSBType) {
+                    // regular color HSB command
+                    IntegerState h = new Hue();
+                    IntegerState s = new Sat();
+                    IntegerState b = new Brightness();
+                    h.setValue(((HSBType) command).getHue().intValue());
+                    s.setValue(((HSBType) command).getSaturation().intValue());
+                    b.setValue(((HSBType) command).getBrightness().intValue());
+                    stateObject.setState(h);
+                    stateObject.setState(s);
+                    stateObject.setState(b);
+                } else if (command instanceof PercentType) {
+                    // brightness command
+                    IntegerState b = new Brightness();
+                    b.setValue(((PercentType) command).intValue());
+                    stateObject.setState(b);
+                } else if (command instanceof IncreaseDecreaseType) {
+                    // increase/decrease brightness
+                    if (controllerInfo != null) {
+                        Brightness brightness = controllerInfo.getState().getBrightness();
+                        if (command.equals(IncreaseDecreaseType.INCREASE)) {
+                            brightness.setValue(Math.min(brightness.getMax().intValue(),
+                                    brightness.getValue() + BRIGHTNESS_STEP_SIZE));
+                        } else {
+                            brightness.setValue(Math.max(brightness.getMin().intValue(),
+                                    brightness.getValue() - BRIGHTNESS_STEP_SIZE));
+                        }
+                        stateObject.setState(brightness);
+                        logger.debug("Setting controller brightness to {}", brightness.getValue());
+                        // update controller info in case new command is sent before next update job interval
+                        controllerInfo.getState().setBrightness(brightness);
+                    }
+                } else {
+                    logger.warn("Unhandled command type: {}", command.getClass().getName());
+                    return;
+                }
+                break;
+            case CHANNEL_COLOR_TEMPERATURE:
+                if (command instanceof PercentType) {
                     // Color temperature (percent)
+                    IntegerState state = new Ct();
                     state.setValue(Math.round((controllerInfo.getState().getColorTemperature().getMax()
                             - controllerInfo.getState().getColorTemperature().getMin())
                             * ((PercentType) command).intValue() / PercentType.HUNDRED.floatValue()
                             + controllerInfo.getState().getColorTemperature().getMin()));
+                    stateObject.setState(state);
+                } else {
+                    logger.warn("Unhandled command type: {}", command.getClass().getName());
+                    return;
                 }
-                stateObject.setState(state);
-            } else if (command instanceof DecimalType) {
-                IntegerState state = (IntegerState) Class.forName(stateClass).newInstance();
-                state.setValue(((DecimalType) command).intValue());
-                stateObject.setState(state);
-            } else if (command instanceof OnOffType) {
-                BooleanState state = (BooleanState) Class.forName(stateClass).newInstance();
-                state.setValue(OnOffType.ON.equals(command));
-                stateObject.setState(state);
-            } else if (command instanceof IncreaseDecreaseType) {
-                if (controllerInfo != null) {
-                    Brightness brightness = controllerInfo.getState().getBrightness();
-                    if (command.equals(IncreaseDecreaseType.INCREASE)) {
-                        brightness.setValue(
-                                Math.min(brightness.getMax().intValue(), brightness.getValue() + BRIGHTNESS_STEP_SIZE));
-                    } else {
-                        brightness.setValue(
-                                Math.max(brightness.getMin().intValue(), brightness.getValue() - BRIGHTNESS_STEP_SIZE));
-                    }
-                    stateObject.setState(brightness);
-                    logger.debug("Setting controller brightness to {}", brightness.getValue());
-                    // update controller info in case new command is sent before next update job interval
-                    controllerInfo.getState().setBrightness(brightness);
+                break;
+            case CHANNEL_COLOR_TEMPERATURE_ABS:
+                if (command instanceof DecimalType) {
+                    // Color temperature (absolute)
+                    IntegerState state = new Ct();
+                    state.setValue(((DecimalType) command).intValue());
+                    stateObject.setState(state);
+                } else {
+                    logger.warn("Unhandled command type: {}", command.getClass().getName());
+                    return;
                 }
-            } else {
+                break;
+            default:
                 logger.warn("Unhandled command type: {}", command.getClass().getName());
                 return;
-            }
-            Request setNewStateRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(), API_SET_VALUE,
-                    HttpMethod.PUT);
-            setNewStateRequest.content(new StringContentProvider(gson.toJson(stateObject)), "application/json");
-            OpenAPIUtils.sendOpenAPIRequest(setNewStateRequest);
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            throw new NanoleafException(String.format("Send state command failed: %s", e.getMessage()));
         }
+
+        Request setNewStateRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(), API_SET_VALUE,
+                HttpMethod.PUT);
+        setNewStateRequest.content(new StringContentProvider(gson.toJson(stateObject)), "application/json");
+        OpenAPIUtils.sendOpenAPIRequest(setNewStateRequest);
     }
 
     private void sendEffectCommand(Command command) throws NanoleafException {
         Effects effects = new Effects();
-        if (command instanceof HSBType) {
-            Write write = new Write();
-            write.setCommand("display");
-            write.setAnimType("solid");
-            Palette palette = new Palette();
-            palette.setBrightness(((HSBType) command).getBrightness().intValue());
-            palette.setHue(((HSBType) command).getHue().intValue());
-            palette.setSaturation(((HSBType) command).getSaturation().intValue());
-            List<Palette> palettes = new ArrayList<Palette>();
-            palettes.add(palette);
-            write.setPalette(palettes);
-            write.setColorType("HSB");
-            effects.setWrite(write);
-        } else if (command instanceof StringType) {
+        if (command instanceof StringType) {
             effects.setSelect(command.toString());
         } else {
             logger.warn("Unhandled command type: {}", command.getClass().getName());
