@@ -16,6 +16,11 @@ import static org.openhab.binding.helios.internal.HeliosBindingConstants.*;
 
 import java.util.Collection;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -24,8 +29,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.helios.internal.handler.HeliosHandler221;
 import org.openhab.binding.helios.internal.handler.HeliosHandler27;
 import org.osgi.service.component.annotations.Component;
-
-import com.google.common.collect.Lists;
 
 /**
  * The {@link HeliosHandlerFactory} is responsible for creating things and thing
@@ -36,8 +39,8 @@ import com.google.common.collect.Lists;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.helios")
 public class HeliosHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists
-            .newArrayList(HELIOS_VARIO_IP_2_7_TYPE, HELIOS_VARIO_IP_2_21_TYPE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+             Stream.of(HELIOS_VARIO_IP_2_7_TYPE, HELIOS_VARIO_IP_2_21_TYPE).collect(Collectors.toSet()));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

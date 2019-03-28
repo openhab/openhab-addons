@@ -34,7 +34,6 @@
 /addons/binding/org.openhab.binding.gardena/ @gerrieg
 /addons/binding/org.openhab.binding.groheondus/ @FlorianSW
 /addons/binding/org.openhab.binding.hdpowerview/ @beowulfe
-/addons/binding/org.openhab.binding.helios/ @kgoderis
 /addons/binding/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
 /addons/binding/org.openhab.binding.homematic.test/ @FStolte @gerrieg @mdicke2s
 /addons/binding/org.openhab.binding.hue/ @cweitkamp
@@ -159,6 +158,7 @@
 /bundles/org.openhab.binding.gpstracker/ @gbicskei
 /bundles/org.openhab.binding.harmonyhub/ @digitaldan
 /bundles/org.openhab.binding.hdanywhere/ @kgoderis
+/bundles/org.openhab.binding.helios/ @kgoderis
 /bundles/org.openhab.binding.hyperion/ @tavalin
 /bundles/org.openhab.binding.irtrans/ @kgoderis
 /bundles/org.openhab.binding.keba/ @kgoderis
