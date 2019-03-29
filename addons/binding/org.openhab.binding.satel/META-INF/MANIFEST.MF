@@ -5,17 +5,12 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Satel Binding
 Bundle-SymbolicName: org.openhab.binding.satel;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
-Export-Package: 
- org.openhab.binding.satel,
- org.openhab.binding.satel.handler
 Import-Package: 
  gnu.io,
  org.apache.commons.lang,
- org.openhab.binding.satel,
- org.openhab.binding.satel.handler,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.core.status,

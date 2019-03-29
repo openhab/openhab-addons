@@ -43,7 +43,7 @@ Useful tools
 
 ## Supported Things
 
-This binding support 6 different things types
+This binding supports 4 different things types
 
 | Thing    | Type   | Description                                                                                                                                                                                                                               |
 | -------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -63,35 +63,10 @@ Other than the things themselves, there is no binding configuration.
 
 ## Serial Port Configuration
 
-Without correct configuration, the binding might not be able to open the serial port for communication, and you will see an error message in the logs.
-Following section gives serial configuration advice with different platforms.
+With serial Modbus slaves, configuration of the serial port in openHAB is important.
+Otherwise you might encounter errors preventing all communication.
 
-### Windows
-
-No special configuration is needed, you can use the COM port number (e.g. `COM4`) in the thing configuration.
-
-### Linux
-
-If you can see issues related to opening the serial port with Linux, and you are using **non standard serial ports** (e.g. `/dev/ttyAMA0`) you might have to configure openHAB to detect and access the port correctly:
-
-* Adapt java command line arguments to include `-Dgnu.io.rxtx.SerialPorts=/dev/ttyAMA0` (where `/dev/ttyAMA0` is the serial port). If you have multiple serial ports to configure, separate them with colon (`:`). Depending on openHAB installation method, you should modify `start.sh`, `start_debug.sh`, `start.bat`, or  `start_debug.bat` (standalone/manual installation) or `EXTRA_JAVA_OPTS` in `/etc/default/openhab2` (debian installation)
-* Depending on linux distribution, you might need to add the user running openHAB to `dialout` user group. With Debian openHAB installation: `sudo usermod -a -G dialout openhab`. The user will need to logout from all login instances and log back in to see their new group added. If the user added to this group still cannot get permission, rebooting the box to ensure the new group permission is attached to the user is suggested.
-* When using more than one USB-Serial converters, it may happen that the `/dev/ttyUSB0` device is named `/dev/ttyUSB1` after a reboot. To prevent this problem, alias names can be assigned to serial devices by adding them to `/etc/udev/rules.d/99-com.rules`. Example:
-
-```bash
-SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="AE01F0PD", SYMLINK+="ttyMySensors"
-SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{serial}=="0001", SYMLINK+="ttyCulStick"
-```
-
-You need to find relevant pieces of information using e.g. `udevadm` command line utility:
-
-```
-udevadm info -a -p $(udevadm info -q path -n /dev/ttyACM0)
-```
-
-### MacOS
-
-When working with a Mac, it may be necessary to install a driver for the USB-RS232 converter (e.g. [osx-pl2303](http://osx-pl2303.sourceforge.net/) or [pl2303](http://mac.softpedia.com/get/Drivers/PL2303-OS-X-driver.shtml) and create the `/var/lock` folder; see the [rxtx troubleshooting guide](http://rxtx.qbang.org/wiki/index.php/Trouble_shooting#Mac_OS_X_users).
+See [general documentation about serial port configuration](/docs/administration/serial.html) to configure the serial port correctly.
 
 ## Thing Configuration
 
@@ -135,7 +110,7 @@ Advanced parameters
 | `reconnectAfterMillis`          |          | integer | `0`                | The connection is kept open at least the time specified here. Value of zero means that connection is disconnected after every MODBUS transaction. In milliseconds. |
 | `connectTimeoutMillis`          |          | integer | `10000`            | The maximum time that is waited when establishing the connection. Value of zero means that system/OS default is respected. In milliseconds.                        |
 
-**Note:** Advanced parameters must be equal to all `tcp` things sharing the same `host` and `port`.
+**Note:** Advanced parameters must be equal for all `tcp` things sharing the same `host` and `port`.
 
 The advanced parameters have conservative defaults, meaning that they should work for most users.
 In some cases when extreme performance is required (e.g. poll period below 10 ms), one might want to decrease the delay parameters, especially `timeBetweenTransactionsMillis`. Similarly, with some slower devices on might need to increase the values.
@@ -148,10 +123,10 @@ Basic parameters
 
 | Parameter | Type    | Required | Default if omitted | Description                                                                                                                                                                                               |     |
 | --------- | ------- | -------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
-| port      | text    | ✓        |                    | Serial port to use, for example `/dev/ttyS0` or `COM1`                                                                                                                                                    |     |
+| port      | text    | ✓        |                    | Serial port to use, for example `"/dev/ttyS0"` or `"COM1"`                                                                                                                                                |     |
 | id        | integer |          | `1`                | Slave id. Also known as station address or unit identifier. See [Wikipedia](https://en.wikipedia.org/wiki/Modbus) and [simplymodbus](http://www.simplymodbus.ca/index.html) articles for more information |     |
 | baud      | integer | ✓        |                    | Baud of the connection. Valid values are: `75`, `110`, `300`, `1200`, `2400`, `4800`, `9600`, `19200`, `38400`, `57600`, `115200`.                                                                        |     |
-| stopBits  | text    | ✓        |                    | Stop bits. Valid values are: `"1"`, `"1.5"`, `"2"`.                                                                                                                                                       |     |
+| stopBits  | text    | ✓        |                    | Stop bits. Valid values are: `"1.0"`, `"1.5"`, `"2.0"`.                                                                                                                                                       |     |
 | parity    | text    | ✓        |                    | Parity. Valid values are: `"none"`, `"even"`, `"odd"`.                                                                                                                                                    |     |
 | dataBits  | integer | ✓        |                    | Data bits. Valid values are: `5`, `6`, `7` and `8`.                                                                                                                                                       |     |
 | encoding  | text    | ✓        |                    | Encoding. Valid values are: `"ascii"`, `"rtu"`, `"bin"`.                                                                                                                                                  |     |
@@ -164,11 +139,11 @@ Advanced parameters
 | `receiveTimeoutMillis`          |          | integer | `1500`             | Timeout for read operations. In milliseconds.                                                                                              |
 | `flowControlIn`                 |          | text    | `"none"`           | Type of flow control for receiving. Valid values are: `"none"`, `"xon/xoff in"`, `"rts/cts in"`.                                           |
 | `flowControlOut`                |          | text    | `"none"`           | Type of flow control for sending. Valid values are: `"none"`, `"xon/xoff out"`, `"rts/cts out"`.                                           |
-| `timeBetweenTransactionsMillis` |          | integer | `60`               | How long to delay we must have at minimum between two consecutive MODBUS transactions. In milliseconds.                                    |
+| `timeBetweenTransactionsMillis` |          | integer | `35`               | How long to delay we must have at minimum between two consecutive MODBUS transactions. In milliseconds.                                    |
 | `connectMaxTries`               |          | integer | `1`                | How many times we try to establish the connection. Should be at least 1.                                                                   |
 | `connectTimeoutMillis`          |          | integer | `10000`            | The maximum time that is waited when establishing the connection. Value of zero means thatsystem/OS default is respected. In milliseconds. |
 
-With the exception of `id` parameters should be equal to all `serial` things sharing the same `port`.
+With the exception of `id` parameters should be equal for all `serial` things sharing the same `port`.
 
 These parameters have conservative defaults, meaning that they should work for most users.
 In some cases when extreme performance is required (e.g. poll period below 10ms), one might want to decrease the delay parameters, especially `timeBetweenTransactionsMillis`.
@@ -180,14 +155,14 @@ With low baud rates and/or long read requests (that is, many items polled), ther
 
 `poller` thing takes care of polling the Modbus serial slave or Modbus TCP server data regularly.
 
-| Parameter     | Type    | Required | Default if omitted | Description                                                                                                                                                                            |
-| ------------- | ------- | -------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `start`       | integer |          | `0`                | Address of the first register, coil, or discrete input to poll. Input as zero-based index number.                                                                                      |
-| `length`      | integer | ✓        | (-)                | Number of registers, coils or discrete inputs to read.                                                                                                                                 |
-| `type`        | text    | ✓        | (-)                | Type of modbus items to poll. This matches directly to Modbus request type or function code (FC). Valid values are: `coil` (FC01), `discrete` (FC02), `holding`(FC03), `input` (FC04). |
-| `refresh`     | integer |          | `500`              | Poll interval in milliseconds. Use zero to disable automatic polling.                                                                                                                  |
-| `maxTries`    | integer |          | `3`                | Maximum tries when reading. <br /><br />Number of tries when reading data, if some of the reading fail. For single try, enter 1.                                                       |
-| `cacheMillis` | integer |          | `50`               | Duration for data cache to be valid, in milliseconds. This cache is used only to serve `REFRESH`  commands. Use zero to disable the caching.                                           |
+| Parameter     | Type    | Required | Default if omitted | Description                                                                                                                                                                                    |
+| ------------- | ------- | -------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `start`       | integer |          | `0`                | Address of the first register, coil, or discrete input to poll. Input as zero-based index number.                                                                                              |
+| `length`      | integer | ✓        | (-)                | Number of registers, coils or discrete inputs to read.                                                                                                                                         |
+| `type`        | text    | ✓        | (-)                | Type of modbus items to poll. This matches directly to Modbus request type or function code (FC). Valid values are: `"coil"` (FC01), `"discrete"` (FC02), `"holding"`(FC03), `"input"` (FC04). |
+| `refresh`     | integer |          | `500`              | Poll interval in milliseconds. Use zero to disable automatic polling.                                                                                                                          |
+| `maxTries`    | integer |          | `3`                | Maximum tries when reading. <br /><br />Number of tries when reading data, if some of the reading fail. For single try, enter 1.                                                               |
+| `cacheMillis` | integer |          | `50`               | Duration for data cache to be valid, in milliseconds. This cache is used only to serve `REFRESH`  commands. Use zero to disable the caching.                                                   |
 
 Note: Polling can be manually triggered by sending `REFRESH` command to item bound to channel of `data` thing.
 When manually triggering polling, a new poll is executed as soon as possible, and sibling `data` things (i.e. things that share the same `poller` bridge) are updated.
@@ -198,19 +173,20 @@ See [Refresh command](#refresh-command) section for more details.
 
 `data` is responsible of extracting relevant piece of data (e.g. a number `3.14`) from binary received from the slave.
 Similarly, `data` thing is responsible of converting openHAB commands to write requests to the Modbus slave.
+n.b. note that some numerics like 'readStart' need to be entered as 'text'.
 
 | Parameter                                   | Type    | Required | Default if omitted | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------- | ------- | -------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `readValueType`                             | text    |          | (empty)            | How data is read from modbus. Use empty for write-only things.<br /><br />Bit value type must be used with coils and discrete inputs. With registers all value types are applicable. Valid values are: `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"uint32"`, `"uint32_swap"`, `"int16"`, `"uint16"`, `"int8"`, `"uint8"`, or `"bit"`. See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                                                                                       |
+| `readValueType`                             | text    |          | (empty)            | How data is read from modbus. Use empty for write-only things.<br /><br />Bit value type must be used with coils and discrete inputs. With registers all value types are applicable. Valid values are: `"int64"`, `"int64_swap"`, `"uint64"`, `"uint64_swap"`, `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"uint32"`, `"uint32_swap"`, `"int16"`, `"uint16"`, `"int8"`, `"uint8"`, or `"bit"`. See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                               |
 | `readStart`                                 | text    |          | (empty)            | Start address to start reading the value. Use empty for write-only things. <br /><br />Input as zero-based index number, e.g. in place of `400001` (first holding register), use the address `"0"`.  Must be between (poller start) and (poller start + poller length - 1) (inclusive).<br /><br />With registers and value type less than 16 bits, you must use `"X.Y"` format where `Y` specifies the sub-element to read from the 16 bit register:<ul> <li>For example, `"3.1"` would mean pick second bit from register index `3` with bit value type. </li><li>With int8 valuetype, it would pick the high byte of register index `3`.</li></ul> |
 | `readTransform`                             | text    |          | `"default"`        | Transformation to apply to polled data, after it has been converted to number using `readValueType`. <br /><br />Use "default" to communicate that no transformation is done and value should be passed as is.<br />Use `"SERVICENAME(ARG)"` to use transformation service `SERVICENAME` with argument `ARG`. <br />Any other value than the above types will be interpreted as static text, in which case the actual content of the polled value is ignored.                                                                                                                                                                                         |
-| `writeValueType`                            | text    |          | (empty)            | How data is written to modbus. Only applicable to registers. Valid values are: `float32`, `float32_swap`, `int32`, `int32_swap`, `int16`. See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `writeStart`                                | text    |          | (empty)            | Start address of the first holding register or coil in the write. Use empty for read-only things. <br />Use zero based address, e.g. in place of 400001 (first holding register), use the address 0. This address is passed to data frame as is.                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `writeValueType`                            | text    |          | (empty)            | How data is written to modbus. Only applicable to registers. Valid values are: `"int64"`, `"int64_swap"`, `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"int16"`. See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                                                                                                                                                                                                                                                              |
+| `writeStart`                                | text    |          | (empty)            | Start address of the first holding register or coil in the write. Use empty for read-only things. <br />Use zero based address, e.g. in place of `400001` (first holding register), use the address `"0"`. This address is passed to data frame as is.                                                                                                                                                                                                                                                                                                                                                                                                |
 | `writeType`                                 | text    |          | (empty)            | Type of data to write. Use empty for read-only things. Valid values: `"coil"` or `"holding"`.<br /><br /> Coil uses function code (FC) FC05 or FC15. Holding register uses FC06 or FC16. See `writeMultipleEvenWithSingleRegisterOrCoil` parameter.                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `writeTransform`                            | text    |          | `"default"`        | Transformation to apply to received commands.<br /><br />Use `"default"` to communicate that no transformation is done and value should be passed as is.    <br />Use `"SERVICENAME(ARG)"` to use transformation service `SERVICENAME` with argument `ARG`.    <br />Any other value than the above types will be interpreted as static text, in which case the actual content of the command value is ignored.                                                                                                                                                                                                                                       |
-| `writeMultipleEvenWithSingleRegisterOrCoil` | boolean |          | `false`            | Whether single register / coil of data is written using FC16 ("Write Multiple Holding Registers") / FC15 ("Write Multiple Coils"), respectively. <br /><br />If false, FC06 ("Write single holding register") / FC05 ("Write single coil") are used with single register and single coil, respectively.                                                                                                                                                                                                                                                                                                                                               |
+| `writeMultipleEvenWithSingleRegisterOrCoil` | boolean |          | `false`            | Controls how single register / coil of data is written.<br /> By default, or when 'false, FC06 ("Write single holding register") / FC05 ("Write single coil"). Or when 'true', using FC16 ("Write Multiple Holding Registers") / FC15 ("Write Multiple Coils").                                                                                                                                                                                                                                                                                                                                               |
 | `writeMaxTries`                             | integer |          | `3`                | Maximum tries when writing <br /><br />Number of tries when writing data, if some of the writes fail. For single try, enter `1`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-
+| `updateUnchangedValuesEveryMillis`          | integer |          | `1000`             | Interval to update unchanged values. <br /><br />Modbus binding by default is not updating the item and channel state every time new data is polled from a slave, for performance reasons. Instead, the state is updated whenever it differs from previously updated state, or when enough time has passed since the last update. The time interval can be adjusted using this parameter. Use value of `0` if you like to update state with every poll, even though the value has not changed. In milliseconds.                                                                                                                                       |
 
 ## Channels
 
@@ -252,13 +228,14 @@ For example, in the following example, item `Temperature_Modbus_Livingroom` is b
 Number  Temperature_Modbus_Livingroom                       "Temperature Living room [%.1f °C]"           <temperature>   { channel="modbus:data:siemensplc:holding:livingroom_temperature:number" }
 ```
 
-Make sure you bind item to a channel that is compatible, or use transformations to make it compatible. See [Transformations](#transformations) section for more information on transformation.
+Make sure you bind item to a channel that is compatible, or use transformations to make it compatible.
+See [Transformations](#transformations) section for more information on transformation.
 
 ### `autoupdate` parameter with items
 
-Please note that Modbus protocol is polling, and commands in openHAB might take some time to propagate. This might produce some transient effects with item values when parameters are changed.
-
-By default, openHAB has `autoupdate` enabled. This means that item _state_ is updated according to received commands. In some situations this might have unexpected side effects with polling bindings such as Modbus - see example below.
+By default, openHAB has `autoupdate` enabled.
+This means that item _state_ is updated according to received commands.
+In some situations this might have unexpected side effects with polling bindings such as Modbus - see example below.
 
 Typically, you see something like this
 
@@ -284,7 +261,8 @@ Let's go through it step by step
 4 [vent.ItemStateChangedEvent] - Kitchen_Bar_Table_Light changed from OFF to ON
 ```
 
-To prevent this "state fluctuation" (`OFF` -> `ON` -> `OFF` -> `ON`), some people prefer like to disable `autoupdate` with polling bindings. With `autoupdate` disabled, one would get
+To prevent this "state fluctuation" (`OFF` -> `ON` -> `OFF` -> `ON`), some people prefer to disable `autoupdate` on Items used with polling bindings.
+With `autoupdate` disabled, one would get
 
 ```java
 // openHAB UI switch changed command is sent
@@ -298,9 +276,8 @@ To prevent this "state fluctuation" (`OFF` -> `ON` -> `OFF` -> `ON`), some peopl
 Item state has no "fluctuation", it updates from `OFF` to `ON`.
 
 To summarize (credits to [rossko57's community post](https://community.openhab.org/t/rule-to-postupdate-an-item-works-but-item-falls-back-after-some-seconds/19986/2?u=ssalonen)):
-
-* `autoupdate=false`: monitor the _actual_ state of device
-* `autoupdate=true`: allows more faster display of the _expected_ state in a sitemap
+* `autoupdate="false"`: monitor the _actual_ state of device
+* `autoupdate="true"`: (or defaulted) allows faster display of the _expected_ state in a sitemap
 
 You can disable `autoupdate` as follows:
 
@@ -308,7 +285,7 @@ You can disable `autoupdate` as follows:
 Number  Temperature_Modbus_Livingroom                       "Temperature Living room [%.1f °C]"           <temperature>   { channel="modbus:data:siemensplc:holding:livingroom_temperature:number", autoupdate="false" }
 ```
 
-Main documentation on `autoupdate` in [Items section of openHAB docs](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax). 
+Main documentation on `autoupdate` in [Items section of openHAB docs](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax).
 
 
 ## Details
@@ -326,14 +303,17 @@ Main documentation on `autoupdate` in [Items section of openHAB docs](https://ww
 >
 > This translates into [entity] addresses between 0 and 9,998 in data frames.
 
+Note that entity begins counting at 1, data frame address at 0.
+
 The openHAB modbus binding uses data frame entity addresses when referring to modbus entities.
 That is, the entity address configured in modbus binding is passed to modbus protocol frame as-is.
 For example, Modbus `poller` thing with `start=3`, `length=2` and `type=holding` will read modbus entities with the following numbers 40004 and 40005.
+The manufacturer of any modbus device may choose to use either notation, you may have to infer which, or use trial and error.
 
 ### Value Types On Read And Write
 
 This section explains the detailed descriptions of different value types on read and write.
-Note that value types less than 16 bits are not supported on write (see [poller thing](#poller-thing) documentation for details).
+Note that value types less than 16 bits are not supported on write to holding registers (see [poller thing](#poller-thing) documentation for details).
 
 See [Full examples](#full-examples) section for practical examples.
 
@@ -354,7 +334,7 @@ See [Full examples](#full-examples) section for practical examples.
 
 #### `uint8`:
 
-- same as `int8` except values are interpreted as unsigned integers
+- same as `int8` except value is interpreted as unsigned integer
 
 #### `int16`:
 
@@ -363,7 +343,7 @@ See [Full examples](#full-examples) section for practical examples.
 
 #### `uint16`:
 
-- same as `int16` except values are interpreted as unsigned integers
+- same as `int16` except value is interpreted as unsigned integer
 
 #### `int32`:
 
@@ -373,7 +353,7 @@ See [Full examples](#full-examples) section for practical examples.
 
 #### `uint32`:
 
-- same as `int32` except values are interpreted as unsigned integers
+- same as `int32` except value is interpreted as unsigned integer
 
 #### `float32`:
 
@@ -381,14 +361,24 @@ See [Full examples](#full-examples) section for practical examples.
 - it assumed that the first register contains the most significant 16 bits
 - it is assumed that each register is encoded in most significant bit first order
 
+#### `int64`:
+
+- registers `index`, `(index + 1)`, `(index + 2)`, `(index + 3)` are interpreted as signed 64bit integer.
+- it assumed that the first register contains the most significant 16 bits
+- it is assumed that each register is encoded in most significant bit first order
+
+#### `uint64`:
+
+- same as `int64` except value is interpreted as unsigned integer
+
 The MODBUS specification defines each 16bit word to be encoded as Big Endian,
 but there is no specification on the order of those words within 32bit or larger data types.
-The net result is that when you have a master and slave that operate with the same
-Endian mode things work fine, but add a device with a different Endian mode and it is
-very hard to correct. To resolve this the binding supports a second set of valuetypes
-that have the words swapped.
+The net result is that when you have a master and slave that operate with the same Endian mode things work fine,
+but add a device with a different Endian mode and it is very hard to correct.
+To resolve this the binding supports a second set of valuetypes that have the words swapped.
 
-If you get strange values using the `int32`, `uint32` or `float32` valuetypes then just try the `int32_swap`, `uint32_swap` or `float32_swap` valuetype, depending upon what your data type is.
+If you get strange values using the `int32`, `uint32`, `float32`, `int64`, or `uint64` valuetypes then just try the `int32_swap`, `uint32_swap`, `float32_swap`, `int64_swap`, or `uint64_swap` valuetype, depending upon what your data type is.
+
 
 #### `int32_swap`:
 
@@ -398,7 +388,7 @@ If you get strange values using the `int32`, `uint32` or `float32` valuetypes th
 
 #### `uint32_swap`:
 
-- same as `int32_swap` except values are interpreted as unsigned integers
+- same as `int32_swap` except value is interpreted as unsigned integer
 
 #### `float32_swap`:
 
@@ -406,6 +396,13 @@ If you get strange values using the `int32`, `uint32` or `float32` valuetypes th
 - it assumed that the first register contains the least significant 16 bits
 - it is assumed that each register is encoded in most significant bit first order (Big Endian)
 
+#### `int64_swap`:
+
+- same as `int64` but registers swapped, that is, registers (index + 3), (index + 2), (index + 1), (index + 1) are interpreted as signed 64bit integer
+
+#### `uint64_swap`:
+
+- same as `uint64` except value is interpreted as unsigned integer
 
 ### REFRESH Command
 
@@ -426,10 +423,16 @@ Data received is stored in list of bits (discrete inputs and coils), or in list 
 1. Extract a single number from the polled data, using specified location `readStart` and number "value type" `readValueType`.
 As an example, we can tell the binding to extract 32-bit float (`readValueType="float32"`) from register index `readStart="105"`.
 1. Number is converted to string (e.g. `"3.14"`) and passed as input to the transformation.
-Note that in case `readTransform="default"`, a default transformation provided by the binding is used. See [Transformations](#transformations) section for more details.
-1. For each [data channel](#channels), we try to convert the transformation output of previous step to a State type (e.g. `ON`/`OFF`, or `DecimalType`) accepted by the channel. If all the conversions fail (e.g. trying to convert `ON` to a number), the data channel is not updated.
+  Note that in case `readTransform="default"`, a default transformation provided by the binding is used.
+  See [Transformations](#transformations) section for more details.
+1. For each [data channel](#channels), we try to convert the transformation output of previous step to a State type (e.g. `ON`/`OFF`, or `DecimalType`) accepted by the channel.
+  If all the conversions fail (e.g. trying to convert `ON` to a number), the data channel is not updated.
 
-In case of read errors, all data channels are left unchanged, and `lastReadError` channel is updated with current time. Examples of errors include connection errors, IO errors on read, and explicit exception responses from the slave.
+In case of read errors, all data channels are left unchanged, and `lastReadError` channel is updated with current time.
+Examples of errors include connection errors, IO errors on read, and explicit exception responses from the slave.
+
+Note: there is a performance optimization that channel state is only updated when enough time has passed since last update, or when the state differs from previous update.
+See `updateUnchangedValuesEveryMillis` parameter in `data` thing.
 
 ### Write Steps
 
@@ -440,20 +443,26 @@ Commands passed to openHAB items that are bound to a [data channel](#channels) a
 1. Command is sent to openHAB item, that is bound to a [data channel](#channels).
 Command must be such that it is accepted by the item in the first place
 1. Command is converted to string (e.g. `"3.14"`) and passed to the transformation.
-Note that in case `readTransform="default"`, a default transformation provided by the binding is used. See [Transformations](#transformations) section for more details.
-3. We try to convert transformation output to number (`DecimalType`), `OPEN`/`CLOSED` (`OpenClosedType`), and `ON`/`OFF` (`OnOffType`); in this order. First successful conversion is stored.
-For example, `"3.14"` would convert to number (`DecimalType`), while `"CLOSED"` would convert to `CLOSED` (of `OpenClosedType`).'
+Note that in case `readTransform="default"`, a default transformation provided by the binding is used.
+  See [Transformations](#transformations) section for more details.
+3. We try to convert transformation output to number (`DecimalType`), `OPEN`/`CLOSED` (`OpenClosedType`), and `ON`/`OFF` (`OnOffType`); in this order.
+  First successful conversion is stored.
+  For example, `"3.14"` would convert to number (`DecimalType`), while `"CLOSED"` would convert to `CLOSED` (of `OpenClosedType`).'
 In case all conversions fail, the command is discarded and nothing is written to the Modbus slave.
 5. Next step depends on the `writeType`:
-   * `writeType="coil"`: the command from the transformation is converted to boolean. Non-zero numbers, `ON`, and `OPEN` are considered `true`; and rest as `false`.
-   * `writeType="holding"`: First, the command from the transformation is converted `1`/`0` number in case of `OPEN`/`ON` or `CLOSED`/`OFF`. The number is converted to one or more registers using `writeValueType`. For example, number `3.14` would be converted to two registers when `writeValueType="float32"`: [0x4048, 0xF5C3].
-6. Boolean (`writeType="coil"`) or registers (`writeType="holding"`) are written to the Modbus slave using `FC05`, `FC06`, `FC15`, or `FC16`, depending on the value of `writeMultipleEvenWithSingleRegisterOrCoil`. Write address is specified by `writeStart`.
+   * `writeType="coil"`: the command from the transformation is converted to boolean.
+     Non-zero numbers, `ON`, and `OPEN` are considered `true`; and rest as `false`.
+   * `writeType="holding"`: First, the command from the transformation is converted `1`/`0` number in case of `OPEN`/`ON` or `CLOSED`/`OFF`. The number is converted to one or more registers using `writeValueType`.
+   For example, number `3.14` would be converted to two registers when `writeValueType="float32"`: [0x4048, 0xF5C3].
+6. Boolean (`writeType="coil"`) or registers (`writeType="holding"`) are written to the Modbus slave using `FC05`, `FC06`, `FC15`, or `FC16`, depending on the value of `writeMultipleEvenWithSingleRegisterOrCoil`.
+  Write address is specified by `writeStart`.
 
 #### Advanced Write Using JSON
 
 There are some more advanced use cases which need more control how the command is converted to set of bits or requests.
 Due to this reason, one can return a special [JSON](https://en.wikipedia.org/wiki/JSON) output from the transformation (step 3).
-The JSON directly specifies the write requests to send to Modbus slave. In this case, steps 4. and 5. are skipped.
+The JSON directly specifies the write requests to send to Modbus slave.
+In this case, steps 4. and 5. are skipped.
 
 For example, if the transformation returns the following JSON
 
@@ -476,7 +485,8 @@ For example, if the transformation returns the following JSON
 Two write requests would be sent to the Modbus slave
 
 1. FC16 (write multiple holding register), with start address 5412, having three registers of data (1, 0, and 5).
-2. FC06 (write single holding register), with start address 555, and single register of data (3). Write is tried maximum of 10 times in case some of the writes fail.
+2. FC06 (write single holding register), with start address 555, and single register of data (3).
+  Write is tried maximum of 10 times in case some of the writes fail.
 
 The JSON transformation output can be useful when you need full control how the write goes, for example in case where the write address depends on the incoming command.
 Actually, you can omit specifying `writeStart`, `writeValueType` and `writeType` with JSON transformation output altogether.
@@ -503,7 +513,8 @@ Note that transformation is only one part of the overall process how polled data
 Consult [Read steps](#read-steps) and [Write steps](#write-steps) for more details.
 Specifically, note that you might not need transformations at all in some uses cases.
 
-Please also note that you should install relevant transformations, as necessary. For example, `openhab-transformation-javascript` feature provides the javascript (`JS`) transformation.
+Please also note that you should install relevant transformations in openHAB as necessary.
+For example, `openhab-transformation-javascript` feature provides the javascript (`JS`) transformation.
 
 #### Transform On Read
 
@@ -569,9 +580,9 @@ In this case, boolean input is considered to be either number `0`/`1`, `ON`/`OFF
 // function to invert Modbus binary states
 // variable "input" contains data passed by OpenHAB binding
 (function(inputData) {
-    var out = inputData ;      // allow Undefined to pass through
+    var out = inputData ;      // allow UNDEF to pass through
     if (inputData == '1' || inputData == 'ON' || inputData == 'OPEN') {
-        out = '0' ;
+        out = '0' ;  // change to OFF or OPEN depending on your Item type
     } else if (inputData == '0' || inputData == 'OFF' || inputData == 'CLOSED') {
         out = '1' ;
     }
@@ -731,7 +742,7 @@ sitemap modbus_ex2 label="modbus_ex2"
 
 ### Scaling Example
 
-This example divides value on read, and multiplies them on write.
+This example divides value on read, and multiplies them on write, using JS transforms.
 
 `things/modbus_ex_scaling.things`:
 
@@ -762,6 +773,74 @@ sitemap modbus_ex_scaling label="modbus_ex_scaling"
 ```
 
 See [transformation example](#transformation-example-scaling) for the `divide10.js` and `multiply10.js`.
+
+### Dimmer Example
+
+Dimmer type Items are not a straightforward match to Modbus registers, as they feature a numeric value which is limited to 0-100 Percent, as well as handling ON/OFF commands.
+
+Transforms can be used to match and scale both reading and writing.
+
+Example for a dimmer device where 255 register value = 100% for fully ON:
+
+`things/modbus_ex_dimmer.things`:
+
+```xtend
+Bridge modbus:tcp:remoteTCP [ host="192.168.0.10", port=502 ]  {
+   Bridge poller MBDimmer [ start=4700, length=2, refresh=1000, type="holding" ]  {
+	         Thing data DimmerReg [ readStart="4700", readValueType="uint16", readTransform="JS(dimread255.js)", writeStart="4700", writeValueType="uint16", writeType="holding", writeTransform="JS(dimwrite255.js)" ]
+   }
+}
+```
+
+`items/modbus_ex_dimmer.items`:
+```xtend
+Dimmer myDimmer "My Dimmer d2 [%.1f]"   { channel="modbus:data:remoteTCP:MBDimmer:DimmerReg:dimmer" }
+```
+
+`sitemaps/modbus_ex_dimmer.sitemap`:
+
+```xtend
+sitemap modbus_ex_dimmer label="modbus_ex_dimmer"
+{
+    Frame {
+        Switch item=myDimmer
+        Slider item=myDimmer
+    }
+}
+```
+
+`transform/dimread255.js`:
+```javascript
+// Wrap everything in a function (no global variable pollution)
+// variable "input" contains data string passed by binding
+(function(inputData) {
+    // here set the 100% equivalent register value
+    var MAX_SCALE = 255;
+    // convert to percent
+    return Math.round( parseFloat(inputData, 10) * 100 / MAX_SCALE );
+})(input)
+```
+
+`transform/dimwrite255.js`:
+```javascript
+// variable "input" contains command string passed by openHAB
+(function(inputData) {
+    // here set the 100% equivalent register value
+    var MAX_SCALE = 255;
+    var out = 0
+    if (inputData == 'ON') {
+          // set max
+         out = MAX_SCALE
+    } else if (inputData == 'OFF') {
+         out = 0
+    } else {
+         // scale from percent
+         out = Math.round( parseFloat(inputData, 10) * MAX_SCALE / 100 )
+    }
+    return out
+})(input)
+```
+
 
 ### Rollershutter Example
 
@@ -828,7 +907,7 @@ sitemap modbus_ex_rollershutter label="modbus_ex_rollershutter" {
 
 ```javascript
 // Wrap everything in a function
-// variable "input" contains data passed by openhab
+// variable "input" contains data passed by openHAB
 (function(cmd) {
     var cmdToValue = {"UP": 1,  "DOWN": -1, "MOVE": 1, "STOP": 0};
     var cmdToAddress = {"UP": 1, "DOWN": 1, "MOVE": 2, "STOP": 2};
@@ -939,10 +1018,198 @@ Old binding had converted the input based on item type.
 The old binding had `trigger` parameter in item configuration to react only to some openHAB commands, or to some polled states.
 There is no trigger anymore but one can use transformations to accomplish the same thing. See [Transformations](#transformations) for examples.
 
-### Support For 32 Bit Value Types In Writing
+### Support For 32, 64 Bit Value Types In Writing
 
-The new binding supports 32 bit values types when writing.
+The new binding supports 32 and 64 bit values types when writing.
 
+### How to manually migrate
+
+Here is a step by step example for a migration from a 1.x configuration to a equivalent 2.x configuration. 
+It does not cover all features the 1.x configuration offers, but it should serve as an example on how to get it done.
+Please note that although you can do all this stuff also using PaperUI, the file based approach is strongly recommended if you need to migrate more than only a handful of Items.
+
+The 1.x modbus configuration to be updated defined 4 slaves:
+
+`modbus.cfg`
+
+```
+    poll=500
+
+    tcp.slave1.connection=192.168.2.9:502
+    tcp.slave1.type=coil
+    tcp.slave1.start=12288
+    tcp.slave1.length=128
+    tcp.slave1.updateunchangeditems=false
+
+    tcp.slave2.connection=192.168.2.9:502
+    tcp.slave2.type=holding
+    tcp.slave2.start=12338
+    tcp.slave2.length=100
+    tcp.slave2.updateunchangeditems=false
+
+    tcp.slave3.connection=192.168.2.9:502
+    tcp.slave3.type=holding
+    tcp.slave3.start=12438
+    tcp.slave3.length=100
+    tcp.slave3.updateunchangeditems=false
+
+    tcp.slave4.connection=192.168.2.9:502
+    tcp.slave4.type=holding
+    tcp.slave4.start=12538
+    tcp.slave4.length=100
+    tcp.slave4.updateunchangeditems=false
+```
+
+As you can see, all the slaves poll the same modbus device (actually a Wago 750-841 controller). 
+We now have to create `Things` for this slaves.
+
+The 2.x modbus binding uses a three-level definition. 
+Level one defines a `Bridge` for every modbus device that is to be addressed. 
+The 1.x configuration in this example only addresses one device, so there will be one top level bridge.
+
+```
+Bridge modbus:tcp:wago [ host="192.168.2.9", port=502 ] {
+
+}
+```
+Host and Port are taken from the 1.x modbus config.
+
+Within the top level `Bridge` there are one or more second level bridges that replace the former `slave` configurations.
+The poll frequency can now be set per `poller`, so you may want to define different poll cycles up to your needs.
+The slave `Bridge` configs go inside the top level config.
+For the four `poller`s defined in this example the 2.x configuration looks like this:
+
+```
+Bridge modbus:tcp:wago [ host="192.168.2.9", port=502, id=1 ] {
+
+    Bridge poller wago_slave1 [ start=12288, length=128, refresh=500, type="coil" ] {
+    }
+
+    Bridge poller wago_slave2 [ start=12338, length=100, refresh=4000, type="holding" ] {
+    }
+
+    Bridge poller wago_slave3 [ start=12438, length=100, refresh=5000, type="holding" ] {
+    }
+
+    Bridge poller wago_slave4 [ start=12538, length=100, refresh=10000, type="holding" ] {
+    }
+}
+```
+
+Address, length and type can be directly taken over from the 1.x config.
+
+The third (and most complex) part is the definition of data `Thing` objects for every `Item` bound to modbus.
+This definitions go into the corresponding 2nd level `Bridge` definitions.
+Here it is especially important that the modbus binding now uses absolute addresses all over the place, while the addresses in the item definition for the 1.x binding were relative to the start address of the slave definition before.
+For less work in the following final step, the update of the `Item` configuration, the naming of the `data` things in this example uses the offset of the modbus value within the `poller` as suffix, starting with 0(!). 
+See below for details.
+
+Here a few examples of the Item configuration from the 1.x binding:
+
+The first Item polled with the first `poller` used this configuration (with offset 0):
+
+```
+Switch FooSwitch  "Foo Switch"  {modbus="slave1:0"} 
+```
+
+Now we have to define a `Thing` that can later be bound to that Item.
+
+The `slave1` `poller` uses `12288` as start address. 
+So we define the first data Thing within the `poller` `wago_slave1` with this address and choose a name that ends with `0`:
+
+```
+Thing data wago_s1_000 [ readStart="12288", readValueType="bit", writeStart="12288", writeValueType="bit", writeType="coil" ]
+```
+
+The second Item of the 1.x binding (offset `1`) is defined as follows.
+
+```
+Switch BarSwitch  "Bar Switch" {modbus="slave1:1"}
+```
+
+This leads to the thing definition
+
+```
+Thing data wago_s1_001 [ readStart="12289", readValueType="bit", writeStart="12289", writeValueType="bit", writeType="coil" ]
+```
+
+Note the absolute address `12289` (12288+1) which has to be used here.
+
+Incorporating this definitions into the thing file leads to:
+
+`wago.things`:
+
+```
+Bridge modbus:tcp:wago [ host="192.168.2.9", port=502, id=1 ] {
+
+    Bridge poller wago_slave1 [ start=12288, length=128, refresh=500, type="coil" ] {
+        Thing data wago_s1_000 [ readStart="12288", readValueType="bit", writeStart="12288", writeValueType="bit", writeType="coil" ]
+        Thing data wago_s1_001 [ readStart="12289", readValueType="bit", writeStart="12289", writeValueType="bit", writeType="coil" ]
+    }
+
+    Bridge poller wago_slave2 [ start=12338, length=100, refresh=4000, type="holding" ] {
+    }
+
+    Bridge poller wago_slave3 [ start=12438, length=100, refresh=5000, type="holding" ] {
+    }
+
+    Bridge poller wago_slave4 [ start=12538, length=100, refresh=10000, type="holding" ] {
+    }
+}
+```
+
+Save this in the `things` subdirectory of your openHAB 2 config. 
+Watch the file `events.log` as it lists your new added `data` `Things`. 
+Given that there are no config errors, they quickly change from `INITIALIZING` to `ONLINE`. 
+
+Finally the Item definition has to be changed to refer to the new created `data` `Thing`. 
+You can copy the names you need for this directly from the `events.log` file:
+
+```
+Switch FooSwitch  "Foo Switch" {modbus="slave1:0"} 
+Switch BarSwitch  "Bar Switch" {modbus="slave1:1"}
+```
+
+turn into
+
+```
+Switch FooSwitch  "Foo Switch" {channel="modbus:data:wago:wago_slave1:wago_s1_000:switch", autopudate="false"} 
+Switch BarSwitch  "Bar Switch" {channel="modbus:data:wago:wago_slave1:wago_s1_001:switch", autoupdate="false"}
+```
+
+If you have many Items to change and used the naming scheme recommended above, you can now use the following search-and-replace expressions in your editor:
+
+Replace 
+
+`{modbus="slave1:`
+
+by 
+
+`{channel="modbus:data:wago:wago_slave1:wago_s1_00`
+
+in all lines which used single digits for the address in the 1.x config.
+Instead of `wago`, `wago_slave1` and `wago_s1_00` you have to use the names you have chosen for your `Bridge`, `poller` and `data` things.
+Similar expressions are to be used for two-digit and three-digit relative addresses.
+
+Replace 
+
+`"}`
+
+by 
+
+`:switch"}`
+
+in all lines dealing with switches.
+For other Item types use the respective replace strings.
+
+That way you can update even a large amount of Item definitions in only a few steps.
+
+The definition of `autoupdate` is optional; please refer to [`autoupdate`](#autoupdate-parameter-with-items) to check whether you need it or not.
+
+Continue to add `data` `Thing`s for all your other Items the same way and link them to your Items.
+
+Save your updated item file and check whether updates come in as expected.
+ 
 ## Troubleshooting
 
 ### Thing Status

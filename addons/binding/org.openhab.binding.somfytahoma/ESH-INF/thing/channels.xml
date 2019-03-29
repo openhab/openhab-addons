@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="somfytahoma" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="control_silent">
 		<item-type>Rollershutter</item-type>
@@ -159,4 +159,17 @@
 		<description>A lock having ON/OFF state (unlocked/locked)</description>
 	</channel-type>
 
+	<channel-type id="handle_state">
+		<item-type>String</item-type>
+		<label>Handle State</label>
+		<description>A state of the Somfy Window Handle</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>The temperature value of the sensor</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.neeo.internal.discovery;
 
-import static org.openhab.binding.neeo.NeeoConstants.BRIDGE_TYPE_BRAIN;
+import static org.openhab.binding.neeo.internal.NeeoConstants.BRIDGE_TYPE_BRAIN;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -28,7 +32,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.neeo.NeeoConstants;
+import org.openhab.binding.neeo.internal.NeeoConstants;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Tim Roberts - initial contribution
  */
 @NonNullByDefault
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component(immediate = true)
 public class NeeoBrainDiscovery implements MDNSDiscoveryParticipant {
 
     /** The logger */

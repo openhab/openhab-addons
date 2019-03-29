@@ -1,34 +1,41 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.netatmo.internal.station;
 
 import io.rudolph.netatmo.api.aircare.model.DashboardData;
 import io.rudolph.netatmo.api.common.model.Device;
 import io.rudolph.netatmo.api.common.model.StationResults;
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.netatmo.internal.handler.BaseDeviceHandler;
 import org.openhab.binding.netatmo.internal.WeatherUtils;
+import org.openhab.binding.netatmo.internal.handler.BaseDeviceHandler;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 /**
  * {@link NAMainHandler} is the base class for all current Netatmo
  * weather station equipments (both modules and devices)
  *
- * @author Gaël L'hopital - Initial contribution OH2 version
+ * @author Gaël L'hopital - Initial contribution
  */
 public class NAMainHandler extends BaseDeviceHandler {
 
-    public NAMainHandler(@NonNull Thing thing) {
+    public NAMainHandler(Thing thing) {
         super(thing);
     }
 
@@ -58,51 +65,64 @@ public class NAMainHandler extends BaseDeviceHandler {
     protected State getNAThingProperty(String channelId) {
         if (device != null) {
             DashboardData dashboardData = device.getDashboardData();
-            switch (channelId) {
-                case CHANNEL_CO2:
-                    return toQuantityType(dashboardData.getCO2(), API_CO2_UNIT);
-                case CHANNEL_TEMPERATURE:
-                    return toQuantityType(dashboardData.getTemperature(), API_TEMPERATURE_UNIT);
-                case CHANNEL_MIN_TEMP:
-                    return toQuantityType(dashboardData.getMinTemp(), API_TEMPERATURE_UNIT);
-                case CHANNEL_MAX_TEMP:
-                    return toQuantityType(dashboardData.getMaxTemp(), API_TEMPERATURE_UNIT);
-                case CHANNEL_TEMP_TREND:
-                    return toStringType(dashboardData.getTempTrend());
-                case CHANNEL_NOISE:
-                    return toQuantityType(dashboardData.getNoise(), API_NOISE_UNIT);
-                case CHANNEL_PRESSURE:
-                    return toQuantityType(dashboardData.getPressure(), API_PRESSURE_UNIT);
-                case CHANNEL_PRESS_TREND:
-                    return toStringType(dashboardData.getPressureTrend());
-                case CHANNEL_ABSOLUTE_PRESSURE:
-                    return toQuantityType(dashboardData.getAbsolutePressure(), API_PRESSURE_UNIT);
-                case CHANNEL_TIMEUTC:
-                    return toDateTimeType(dashboardData.getTimeUtc());
-                case CHANNEL_DATE_MIN_TEMP:
-                    return toDateTimeType(dashboardData.getDateMinTemp());
-                case CHANNEL_DATE_MAX_TEMP:
-                    return toDateTimeType(dashboardData.getDateMaxTemp());
-                case CHANNEL_HUMIDITY:
-                    return toQuantityType(dashboardData.getHumidity(), API_HUMIDITY_UNIT);
-                case CHANNEL_HUMIDEX:
-                    return toDecimalType(
-                            WeatherUtils.getHumidex(dashboardData.getTemperature(), dashboardData.getHumidity()));
-                case CHANNEL_HEATINDEX:
-                    return toQuantityType(
-                            WeatherUtils.getHeatIndex(dashboardData.getTemperature(), dashboardData.getHumidity()),
-                            API_TEMPERATURE_UNIT);
-                case CHANNEL_DEWPOINT:
-                    return toQuantityType(
-                            WeatherUtils.getDewPoint(dashboardData.getTemperature(), dashboardData.getHumidity()),
-                            API_TEMPERATURE_UNIT);
-                case CHANNEL_DEWPOINTDEP:
-                    Double dewPoint = WeatherUtils.getDewPoint(dashboardData.getTemperature(),
-                            dashboardData.getHumidity());
-                    return toQuantityType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewPoint),
-                            API_TEMPERATURE_UNIT);
+            if (dashboardData != null) {
+                switch (channelId) {
+                    case CHANNEL_CO2:
+                        return toQuantityType(dashboardData.getCO2(), API_CO2_UNIT);
+                    case CHANNEL_TEMPERATURE:
+                        return toQuantityType(dashboardData.getTemperature(), API_TEMPERATURE_UNIT);
+                    case CHANNEL_MIN_TEMP:
+                        return toQuantityType(dashboardData.getMinTemp(), API_TEMPERATURE_UNIT);
+                    case CHANNEL_MAX_TEMP:
+                        return toQuantityType(dashboardData.getMaxTemp(), API_TEMPERATURE_UNIT);
+                    case CHANNEL_TEMP_TREND:
+                        return toStringType(dashboardData.getTempTrend());
+                    case CHANNEL_NOISE:
+                        return toQuantityType(dashboardData.getNoise(), API_NOISE_UNIT);
+                    case CHANNEL_PRESSURE:
+                        return toQuantityType(dashboardData.getPressure(), API_PRESSURE_UNIT);
+                    case CHANNEL_PRESS_TREND:
+                        return toStringType(dashboardData.getPressureTrend());
+                    case CHANNEL_ABSOLUTE_PRESSURE:
+                        return toQuantityType(dashboardData.getAbsolutePressure(), API_PRESSURE_UNIT);
+                    case CHANNEL_TIMEUTC:
+                        return toDateTimeType(dashboardData.getTimeUtc());
+                    case CHANNEL_DATE_MIN_TEMP:
+                        return toDateTimeType(dashboardData.getDateMinTemp());
+                    case CHANNEL_DATE_MAX_TEMP:
+                        return toDateTimeType(dashboardData.getDateMaxTemp());
+                    case CHANNEL_HUMIDITY:
+                        return toQuantityType(dashboardData.getHumidity(), API_HUMIDITY_UNIT);
+                    case CHANNEL_HUMIDEX:
+                        return toDecimalType(
+                                WeatherUtils.getHumidex(dashboardData.getTemperature(), dashboardData.getHumidity()));
+                    case CHANNEL_HEATINDEX:
+                        return toQuantityType(
+                                WeatherUtils.getHeatIndex(dashboardData.getTemperature(), dashboardData.getHumidity()),
+                                API_TEMPERATURE_UNIT);
+                    case CHANNEL_DEWPOINT:
+                        return toQuantityType(
+                                WeatherUtils.getDewPoint(dashboardData.getTemperature(), dashboardData.getHumidity()),
+                                API_TEMPERATURE_UNIT);
+                    case CHANNEL_DEWPOINTDEP:
+                        Double dewPoint = WeatherUtils.getDewPoint(dashboardData.getTemperature(),
+                                dashboardData.getHumidity());
+                        return toQuantityType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewPoint),
+                                API_TEMPERATURE_UNIT);
+                }
             }
         }
         return super.getNAThingProperty(channelId);
+    }
+
+    @Override
+    protected @Nullable Long getDataTimestamp() {
+        if (device != null) {
+            LocalDateTime lastStored = device.getLastStatusStore();
+            if (lastStored != null) {
+                return lastStored.toInstant(ZoneOffset.UTC).toEpochMilli();
+            }
+        }
+        return null;
     }
 }

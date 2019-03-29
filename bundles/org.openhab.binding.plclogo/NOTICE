@@ -1,0 +1,21 @@
+This content is produced and maintained by the openHAB project.
+
+* Project home: https://www.openhab.org
+
+== Declared Project Licenses
+
+This program and the accompanying materials are made available under the terms
+of the Eclipse Public License 2.0 which is available at
+https://www.eclipse.org/legal/epl-2.0/.
+
+== Source Code
+
+https://github.com/openhab/openhab2-addons
+
+== Third-party Content
+
+Moka7
+* License: EPL 1.0 License
+* Project: http://snap7.sourceforge.net/moka7.html
+* Source: https://sourceforge.net/p/snap7/discussion/bugfix/thread/0cd95d96
+      for a send of single bit was integrated into this copy of the library

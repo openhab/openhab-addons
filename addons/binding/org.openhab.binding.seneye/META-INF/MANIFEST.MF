@@ -7,12 +7,8 @@ Bundle-Name: Seneye Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.seneye;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.seneye,
- org.openhab.binding.seneye.handler
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
- com.google.common.collect,
  com.google.gson,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.client,
@@ -31,8 +27,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.seneye,
- org.openhab.binding.seneye.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

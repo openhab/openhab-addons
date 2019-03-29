@@ -7,15 +7,11 @@ Bundle-Name: Xiaomi Mi Smart Home Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.mihome;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.mihome,
- org.openhab.binding.mihome.handler
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
+ com.google.gson,
  javax.measure,
  javax.measure.quantity,
- com.google.common.collect,
- com.google.gson,
  org.apache.commons.lang,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
@@ -30,8 +26,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.link,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.mihome,
- org.openhab.binding.mihome.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

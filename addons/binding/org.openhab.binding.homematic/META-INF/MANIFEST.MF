@@ -1,0 +1,56 @@
+Manifest-Version: 1.0
+Bundle-ActivationPolicy: lazy
+Bundle-Copyright: Eclipse Public License v2.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Homematic Binding
+Bundle-SymbolicName: org.openhab.binding.homematic;singleton:=true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
+Bundle-ClassPath: .
+Export-Package: 
+ org.openhab.binding.homematic.type
+Import-Package: 
+ com.thoughtworks.xstream,
+ com.thoughtworks.xstream.annotations,
+ com.thoughtworks.xstream.io,
+ com.thoughtworks.xstream.io.xml,
+ javax.measure,
+ javax.measure.quantity,
+ javax.servlet,
+ javax.servlet.http,
+ javax.xml.bind,
+ org.apache.commons.lang,
+ org.apache.commons.lang.builder,
+ org.apache.commons.lang.math,
+ org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.jetty.client,
+ org.eclipse.jetty.client.api,
+ org.eclipse.jetty.client.util,
+ org.eclipse.jetty.http,
+ org.eclipse.jetty.server,
+ org.eclipse.jetty.server.handler,
+ org.eclipse.jetty.util,
+ org.eclipse.jetty.util.component,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.core.validation,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.upnp,
+ org.eclipse.smarthome.core.common,
+ org.eclipse.smarthome.core.items,
+ org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
+ org.eclipse.smarthome.core.net,
+ org.eclipse.smarthome.core.thing,
+ org.eclipse.smarthome.core.thing.binding,
+ org.eclipse.smarthome.core.thing.binding.builder,
+ org.eclipse.smarthome.core.thing.link,
+ org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.io.net.http,
+ org.jupnp.model.meta,
+ org.osgi.framework,
+ org.osgi.service.component,
+ org.slf4j
+Service-Component: OSGI-INF/*.xml
+Automatic-Module-Name: org.openhab.binding.homematic

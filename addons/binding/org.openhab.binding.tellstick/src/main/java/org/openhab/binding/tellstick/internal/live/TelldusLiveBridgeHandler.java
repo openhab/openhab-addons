@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.tellstick.internal.live;
 
@@ -22,21 +26,21 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.tellstick.handler.DeviceStatusListener;
-import org.openhab.binding.tellstick.handler.TelldusBridgeHandler;
-import org.openhab.binding.tellstick.handler.TelldusDeviceController;
-import org.openhab.binding.tellstick.handler.TelldusDevicesHandler;
 import org.openhab.binding.tellstick.internal.conf.TelldusLiveConfiguration;
+import org.openhab.binding.tellstick.internal.handler.DeviceStatusListener;
+import org.openhab.binding.tellstick.internal.handler.TelldusBridgeHandler;
+import org.openhab.binding.tellstick.internal.handler.TelldusDeviceController;
+import org.openhab.binding.tellstick.internal.handler.TelldusDevicesHandler;
 import org.openhab.binding.tellstick.internal.live.xml.DataTypeValue;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetDevice;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetDevices;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensor;
+import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensorEvent;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellstick.device.TellstickDeviceEvent;
 import org.tellstick.device.TellstickException;
-import org.tellstick.device.TellstickSensorEvent;
 import org.tellstick.device.iface.Device;
 
 /**
@@ -44,8 +48,7 @@ import org.tellstick.device.iface.Device;
  * to the framework. All {@link TelldusDevicesHandler}s use the
  * {@link TelldusLiveDeviceController} to execute the actual commands.
  *
- * @author Jarle Hjortland
- *
+ * @author Jarle Hjortland - Initial contribution
  */
 public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements TelldusBridgeHandler {
 
@@ -71,6 +74,9 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
         if (pollingJob != null) {
             pollingJob.cancel(true);
         }
+        if (this.controller != null) {
+            this.controller.dispose();
+        }
         deviceList = null;
         sensorList = null;
         super.dispose();
@@ -80,9 +86,6 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
     public void initialize() {
         logger.debug("Initializing TelldusLive bridge handler.");
         TelldusLiveConfiguration configuration = getConfigAs(TelldusLiveConfiguration.class);
-        // workaround for issue #92: getHandler() returns NULL after
-        // configuration update. :
-        getThing().setHandler(this);
         this.controller = new TelldusLiveDeviceController();
         this.controller.connectHttpClient(configuration.publicKey, configuration.privateKey, configuration.token,
                 configuration.tokenSecret);
@@ -222,7 +225,7 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
                     for (DeviceStatusListener listener : deviceStatusListeners) {
                         for (DataTypeValue type : sensor.getData()) {
                             listener.onDeviceStateChanged(getThing(), sensor,
-                                    new TellstickSensorEvent(sensor.getId(), type.getValue(), type.getName(),
+                                    new TellstickNetSensorEvent(sensor.getId(), type.getValue(), type,
                                             sensor.getProtocol(), sensor.getModel(), System.currentTimeMillis()));
                         }
                     }
@@ -259,20 +262,12 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
         if (deviceStatusListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
-        boolean result = deviceStatusListeners.add(deviceStatusListener);
-        if (result) {
-            // onUpdate();
-        }
-        return result;
+        return deviceStatusListeners.add(deviceStatusListener);
     }
 
     @Override
     public boolean unregisterDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
-        boolean result = deviceStatusListeners.remove(deviceStatusListener);
-        if (result) {
-            // onUpdate();
-        }
-        return result;
+        return deviceStatusListeners.remove(deviceStatusListener);
     }
 
     private Device getDevice(String id, List<TellstickNetDevice> devices) {

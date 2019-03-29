@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.satel.internal;
 
-import static org.openhab.binding.satel.SatelBindingConstants.*;
+import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -26,16 +30,17 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.satel.handler.Ethm1BridgeHandler;
-import org.openhab.binding.satel.handler.IntRSBridgeHandler;
-import org.openhab.binding.satel.handler.SatelBridgeHandler;
-import org.openhab.binding.satel.handler.SatelOutputHandler;
-import org.openhab.binding.satel.handler.SatelPartitionHandler;
-import org.openhab.binding.satel.handler.SatelShutterHandler;
-import org.openhab.binding.satel.handler.SatelSystemHandler;
-import org.openhab.binding.satel.handler.SatelZoneHandler;
 import org.openhab.binding.satel.internal.config.SatelThingConfig;
 import org.openhab.binding.satel.internal.discovery.SatelDeviceDiscoveryService;
+import org.openhab.binding.satel.internal.handler.Ethm1BridgeHandler;
+import org.openhab.binding.satel.internal.handler.IntRSBridgeHandler;
+import org.openhab.binding.satel.internal.handler.SatelBridgeHandler;
+import org.openhab.binding.satel.internal.handler.SatelEventLogHandler;
+import org.openhab.binding.satel.internal.handler.SatelOutputHandler;
+import org.openhab.binding.satel.internal.handler.SatelPartitionHandler;
+import org.openhab.binding.satel.internal.handler.SatelShutterHandler;
+import org.openhab.binding.satel.internal.handler.SatelSystemHandler;
+import org.openhab.binding.satel.internal.handler.SatelZoneHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
@@ -62,14 +67,15 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
             ThingUID bridgeUID) {
-        if (thingUID == null) {
+        ThingUID effectiveUID = thingUID;
+        if (effectiveUID == null) {
             if (DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
-                thingUID = getDeviceUID(thingTypeUID, thingUID, configuration, bridgeUID);
-            } else if (VIRTUAL_THING_TYPES_UIDS.contains(thingTypeUID)) {
-                thingUID = new ThingUID(thingTypeUID, bridgeUID.getId());
+                effectiveUID = getDeviceUID(thingTypeUID, thingUID, configuration, bridgeUID);
+            } else if (VIRTUAL_THING_TYPES_UIDS.contains(thingTypeUID) && bridgeUID != null) {
+                effectiveUID = new ThingUID(thingTypeUID, bridgeUID.getId());
             }
         }
-        return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
+        return super.createThing(thingTypeUID, configuration, effectiveUID, bridgeUID);
     }
 
     @Override
@@ -94,6 +100,8 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
             return new SatelShutterHandler(thing);
         } else if (SatelSystemHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new SatelSystemHandler(thing);
+        } else if (SatelEventLogHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            return new SatelEventLogHandler(thing);
         }
 
         return null;

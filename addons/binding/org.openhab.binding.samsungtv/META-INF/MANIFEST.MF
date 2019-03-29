@@ -6,16 +6,13 @@ Bundle-Name: Samsung Tv Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.samsungtv;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.samsungtv,
- org.openhab.binding.samsungtv.handler
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
- com.google.common.collect,
  org.apache.commons.net.util,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.config.discovery.upnp,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
@@ -27,7 +24,5 @@ Import-Package:
  org.jupnp.model.meta,
  org.jupnp.model.types,
  org.jupnp.registry,
- org.openhab.binding.samsungtv,
- org.openhab.binding.samsungtv.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

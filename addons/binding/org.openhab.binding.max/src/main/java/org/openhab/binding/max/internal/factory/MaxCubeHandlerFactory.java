@@ -1,12 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.max.internal.factory;
+
+import static org.openhab.binding.max.internal.MaxBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -21,7 +27,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.max.MaxBindingConstants;
 import org.openhab.binding.max.internal.discovery.MaxDeviceDiscoveryService;
 import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler;
 import org.openhab.binding.max.internal.handler.MaxDevicesHandler;
@@ -45,7 +50,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
             ThingUID bridgeUID) {
-        if (MaxBindingConstants.CUBEBRIDGE_THING_TYPE.equals(thingTypeUID)) {
+        if (CUBEBRIDGE_THING_TYPE.equals(thingTypeUID)) {
             ThingUID cubeBridgeUID = getBridgeThingUID(thingTypeUID, thingUID, configuration);
             return super.createThing(thingTypeUID, configuration, cubeBridgeUID, null);
         }
@@ -58,7 +63,7 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return MaxBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
@@ -105,14 +110,15 @@ public class MaxCubeHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected ThingHandler createHandler(Thing thing) {
-        if (thing.getThingTypeUID().equals(MaxBindingConstants.CUBEBRIDGE_THING_TYPE)) {
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (CUBEBRIDGE_THING_TYPE.equals(thingTypeUID)) {
             MaxCubeBridgeHandler handler = new MaxCubeBridgeHandler((Bridge) thing);
             registerDeviceDiscoveryService(handler);
             return handler;
-        } else if (supportsThingType(thing.getThingTypeUID())) {
+        } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new MaxDevicesHandler(thing);
         } else {
-            logger.debug("ThingHandler not found for {}", thing.getThingTypeUID());
+            logger.debug("ThingHandler not found for {}", thingTypeUID);
             return null;
         }
     }

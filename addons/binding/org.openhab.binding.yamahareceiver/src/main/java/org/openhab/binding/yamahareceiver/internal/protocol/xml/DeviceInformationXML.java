@@ -1,16 +1,20 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
 import org.apache.commons.lang.StringUtils;
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Feature;
-import org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.protocol.AbstractConnection;
 import org.openhab.binding.yamahareceiver.internal.protocol.DeviceInformation;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
@@ -24,8 +28,8 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Set;
 
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone.Main_Zone;
-import static org.openhab.binding.yamahareceiver.YamahaReceiverBindingConstants.Zone.Zone_2;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.Main_Zone;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.Zone_2;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.*;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getResponse;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolService.getZoneResponse;

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="nikohomecontrol"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd"><!--Niko Home Control Gateway Bridge Type -->
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd"><!--Niko Home Control Gateway Bridge Type -->
 
 	<bridge-type id="bridge">
 		<label>Niko Home Control Bridge</label>
@@ -88,12 +88,6 @@
 				<description>Niko Home Control IP Interface Action Object ID</description>
 				<advanced>false</advanced>
 			</parameter>
-			<parameter name="overruleTime" type="integer" required="false">
-				<label>Overrule time</label>
-				<description>Default overrule duration in minutes when an overrule temperature is set without providing overrule time, 60 minutes by default</description>
-				<default>60</default>
-				<advanced>true</advanced>
-			</parameter>
 		</config-description>
 	</thing-type>
 	<thing-type id="thermostat">
@@ -113,6 +107,12 @@
 				<label>Thermostat ID</label>
 				<description>Niko Home Control IP Interface Thermostat Object ID</description>
 				<advanced>false</advanced>
+			</parameter>
+			<parameter name="overruleTime" type="integer" required="false">
+				<label>Overrule time</label>
+				<description>Default overrule duration in minutes when an overrule temperature is set without providing overrule time, 60 minutes by default</description>
+				<default>60</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>

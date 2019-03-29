@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.mihome.internal.socket;
 
@@ -12,12 +16,13 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.openhab.binding.mihome.handler.XiaomiBridgeHandler;
 import org.openhab.binding.mihome.internal.discovery.XiaomiBridgeDiscoveryService;
+import org.openhab.binding.mihome.internal.handler.XiaomiBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,11 +141,11 @@ public abstract class XiaomiSocket {
      *
      * @param message - Message to be sent
      * @param address - Address, to which the message shall be sent
-     * @param port - - Port, through which the message shall be sent
+     * @param port - Port, through which the message shall be sent
      */
     public void sendMessage(String message, InetAddress address, int port) {
         try {
-            byte[] sendData = message.getBytes("UTF-8");
+            byte[] sendData = message.getBytes(StandardCharsets.UTF_8);
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, address, port);
             logger.trace("Sending message: {} to {}:{}", message, address, port);
             getSocket().send(sendPacket);

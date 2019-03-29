@@ -1,16 +1,19 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.satel.internal.discovery;
 
-import static org.openhab.binding.satel.SatelBindingConstants.*;
+import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,11 +28,11 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.type.ThingType;
-import org.openhab.binding.satel.handler.SatelBridgeHandler;
 import org.openhab.binding.satel.internal.command.ReadDeviceInfoCommand;
 import org.openhab.binding.satel.internal.command.ReadDeviceInfoCommand.DeviceType;
 import org.openhab.binding.satel.internal.command.SatelCommand;
 import org.openhab.binding.satel.internal.config.SatelThingConfig;
+import org.openhab.binding.satel.internal.handler.SatelBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +70,7 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
             // add virtual things by default
             for (ThingTypeUID thingTypeUID : VIRTUAL_THING_TYPES_UIDS) {
                 ThingType thingType = thingTypeProvider.apply(thingTypeUID);
-                addThing(THING_TYPE_SYSTEM, null, thingType.getLabel(), Collections.emptyMap());
+                addThing(thingTypeUID, null, thingType.getLabel(), Collections.emptyMap());
             }
         }
         if (!scanStopped) {
@@ -90,26 +93,20 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
     private void scanForDevices(DeviceType deviceType, int maxNumber) {
         logger.debug("Scanning for {} started", deviceType.name());
         for (int i = 1; i <= maxNumber && !scanStopped; ++i) {
-            try {
-                ReadDeviceInfoCommand cmd = new ReadDeviceInfoCommand(deviceType, i);
-                cmd.ignoreResponseError();
-                if (bridgeHandler.sendCommand(cmd, false)) {
-                    String name = cmd.getName(bridgeHandler.getEncoding());
-                    int deviceKind = cmd.getDeviceKind();
-                    logger.debug("Found device: type={}, id={}, name={}, kind/function={}", deviceType.name(), i, name,
-                            deviceKind);
-                    if (isDeviceAvailable(deviceType, deviceKind)) {
-                        addDevice(deviceType, deviceKind, i, name);
-                    }
-                } else if (cmd.getState() != SatelCommand.State.FAILED) {
-                    // serious failure, disconnection or so
-                    scanStopped = true;
-                    logger.error("Unexpected failure during scan for {} using {}", deviceType.name(),
-                            bridgeHandler.getThing().getUID().toString());
+            ReadDeviceInfoCommand cmd = new ReadDeviceInfoCommand(deviceType, i);
+            cmd.ignoreResponseError();
+            if (bridgeHandler.sendCommand(cmd, false)) {
+                String name = cmd.getName(bridgeHandler.getEncoding());
+                int deviceKind = cmd.getDeviceKind();
+                logger.debug("Found device: type={}, id={}, name={}, kind/function={}", deviceType.name(), i, name,
+                        deviceKind);
+                if (isDeviceAvailable(deviceType, deviceKind)) {
+                    addDevice(deviceType, deviceKind, i, name);
                 }
-            } catch (UnsupportedEncodingException e) {
+            } else if (cmd.getState() != SatelCommand.State.FAILED) {
+                // serious failure, disconnection or so
                 scanStopped = true;
-                logger.error("Unsupported encoding '{}' configured for the bridge: {}", bridgeHandler.getEncoding(),
+                logger.error("Unexpected failure during scan for {} using {}", deviceType.name(),
                         bridgeHandler.getThing().getUID().toString());
             }
         }

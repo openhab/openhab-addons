@@ -8,6 +8,7 @@ The devices are very affordable and you can get them from your favourite chinese
 After setup, you can disconnect the gateway from the internet to keep your sensor information private.
 
 ## Supported devices
+
 | Device | Picture |
 | --- | --- |
 | Gateway v2 (with radio support) or v3  | ![](https://ae01.alicdn.com/kf/HTB1gF76ciqAXuNjy1Xdq6yYcVXa4/Original-Xiaomi-Mi-Gateway-2-Smart-Home-Kit-Multi-functional-Gateway-Work-with-Mi-Door-Sensor.jpg_300x300.jpg) |
@@ -30,11 +31,6 @@ After setup, you can disconnect the gateway from the internet to keep your senso
 | Aqara Water Leak Sensor | ![](https://ae01.alicdn.com/kf/HTB1zWulSVXXXXaVXXXXq6xXFXXXW/2018-Newest-Xiaomi-Mijia-Aqara-Water-Immersing-Sensor-Flood-Water-Leak-Detector-for-Home-Remote-Alarm.jpg_300x300.jpg) |
 | Honeywell Gas Detector | ![](https://ae01.alicdn.com/kf/HTB1F_ffQpXXXXaxXpXXq6xXFXXXS/Xiaomi-Mijia-Honeywell-Smart-Gas-Alarm-CH4-berwachung-Decke-Wand-Montiert-Einfach-Installieren-Typ-Mihome-APP.jpg_300x300.jpg) |
 | Honeywell Smoke Detector | ![](https://ae01.alicdn.com/kf/HTB12DGKQpXXXXaeaXXXq6xXFXXXK/Xiaomi-Mijia-Honeywell-Smart-Fire-Alarm-Detector-Progressive-Sound-Photoelectric-Smoke-Sensor-Remote-Linkage-Mihome-APP.jpg_300x300.jpg) |
-
-___Coming soon___
-
-| Device | Picture |
-| --- | --- |
 | Aqara Fingerprint & Keyless Card & PIN Lock | ![](https://ae01.alicdn.com/kf/HTB1lsuqjjuhSKJjSspaq6xFgFXaD/Original-xiaomi-Mijia-aqara-Smart-door-lock-Digital-Touch-Screen-Keyless-Fingerprint-Password-work-to-mi.jpg_300x300.jpg) |
 
 ## Setup
@@ -42,7 +38,7 @@ ___Coming soon___
 *   Install the binding
 *   Is your gateway already configured to connect to your WiFi? If not:
 
-    	1. Install MiHome app from [Google Play](https://play.google.com/store/apps/details?id=com.xiaomi.smarthome) or [AppStore](https://itunes.apple.com/app/mi-home-xiaomi-for-your-smarthome/id957323480) (your phone may need to be changed to English language first)
+    	1.  Install MiHome app from [Google Play](https://play.google.com/store/apps/details?id=com.xiaomi.smarthome) or [AppStore](https://itunes.apple.com/app/mi-home-xiaomi-for-your-smarthome/id957323480) (your phone may need to be changed to English language first)
     	2.  In the app create a Mi Home account and make sure to set your region to Mainland (China) under Settings -> Locale
     	3.  If asked, update your gateway to the latest firmware (note that update window may pop up sequentially)
 
@@ -58,8 +54,7 @@ ___Coming soon___
 
 *   In openHAB you should now be able to discover the Xiaomi Gateway
 *   From now on you don't really need the app anymore. Only if you want to update the gateway firmware or if you want to add devices (see below). But adding devices can also be done without the app (see below)
-*   Enter the previously noted developer key in openHAB Paper UI -> Configuration -> Things -> Xiaomi Gateway -> Edit -> Developer Key. Save
-    (This is required if you want to be able to send controls to the devices like the light of the gateway)
+*   Enter the previously noted developer key in openHAB Paper UI -> Configuration -> Things -> Xiaomi Gateway -> Edit -> Developer Key. Save (This is required if you want to be able to send controls to the devices like the light of the gateway)
 
 ## Connecting devices to the gateway
 
@@ -69,19 +64,29 @@ There are three ways of connecting supported devices to the gateway:
 *   Offline - manual
 
     1.  Click 3 times on the Gateway's button
-    2.  Gateway will flash in blue and you will hear female voice in Chinese
+    2.  Gateway will flash in blue and you will hear female voice in Chinese, you have 30 seconds to include your new device
     3.  Place the needle into the sensor and hold it for at least 3 seconds
     4.  You'll hear confirmation message in Chinese
     5.  The device appears in openHAB thing Inbox
 
-__If you don't want to hear the Chinese voice every time, you can disable it by setting the volume to minimum in the MiHome App (same for the blinking light)__
 * With the binding
 
-    - after adding the gateway make sure you have entered the right developer key
-    - setup a Switch Item for the channel `mihome:gateway:xxxxxxxxxxx:joinPermission` (see Examples) or control the switch via PaperUI
-    - after switching you have 30 seconds to include your new device
+    1.  after adding the gateway make sure you have entered the right developer key
+    2.  in PaperUI, go to your Inbox and trigger a discovery for the binding
+    3.  the gateway flashes in blue and you hear a female voice in Chinese, you have 30 seconds to include your new device
+    4.  follow the instructions for your device to pair it to the gateway
+    5.  you'll hear a confirmation message in Chinese
+    6.  The device appears in openHAB thing Inbox
 
-__The devices don't need an Internet connection to be working after you have set up the developer mode BUT you won't be able to connect to them via App anymore - easiest way is to block their outgoing Internet connection in your router and enable it later, when you want to check for updates etc__
+__Hints:__
+
+* If you don't want to hear the Chinese voice every time, you can disable it by setting the volume to minimum in the MiHome App (same for the blinking light)
+
+* The devices don't need an Internet connection to be working after you have set up the developer mode BUT you won't be able to connect to them via App anymore - easiest way is to block their outgoing Internet connection in your router and enable it later, when you want to check for updates etc. This will ensure that your smart home data stays only with you!
+
+## Removing devices from the gateway
+
+If you remove a Thing in PapaerUI it will also trigger the gateway to unpair the device. It will only reappear in your Inbox, if you connect it to the gateway again. Just follow the instructions in ["Connecting devices to the gateway"](#connecting-devices-to-the-gateway).
 
 ## Network configuration
 
@@ -94,127 +99,122 @@ __The devices don't need an Internet connection to be working after you have set
 
 ```
 Bridge mihome:bridge:f0b429XXXXXX "Xiaomi Gateway" [ serialNumber="f0b429XXXXXX", ipAddress="192.168.0.3", port=9898, key="XXXXXXXXXXXXXXXX", pollingInterval=6000 ] {
-    Thing mihome:gateway:f0b429XXXXXX "Xiaomi Mi Smart Home Gateway" [itemId="f0b429XXXXXX"]
-
-    Thing mihome:sensor_ht:158d0001XXXXXX "Xiaomi Temperature Sensor" [itemId="158d0001XXXXXX"]
-    
-    Thing mihome:sensor_weather_v1:158d0001XXXXXX "Xiaomi Aqara Temp, Hum and Press Sensor" [itemId="158d0001XXXXXX"]
-
-    Thing mihome:sensor_motion:158d0001XXXXXX "Xiaomi Motion Sensor" [itemId="158d0001XXXXXX"]
-
-    Thing mihome:sensor_plug:158d0001XXXXXX "Xiaomi Plug" [itemId="158d0001XXXXXX"]
-
-    Thing mihome:sensor_magnet:158d0001XXXXXX "Xiaomi Door Sensor" [itemId="158d0001XXXXXX"]
-
-    Thing mihome:sensor_switch:158d0001XXXXXX "Xiaomi Mi Wireless Switch" [itemId="158d0001XXXXXX"]
-
-    Thing mihome:86sw2:158d0001XXXXXX "Aqara Wireless Wall Switch" [itemId="158d0001XXXXXX"]
+  Things:
+    gateway f0b429XXXXXX "Xiaomi Mi Smart Home Gateway" [itemId="f0b429XXXXXX"]
+    sensor_ht 158d0001XXXXXX "Xiaomi Temperature Sensor" [itemId="158d0001XXXXXX"]
+    sensor_weather_v1 158d0001XXXXXX "Xiaomi Aqara Temp, Hum and Press Sensor" [itemId="158d0001XXXXXX"]
+    sensor_motion 158d0001XXXXXX "Xiaomi Motion Sensor" [itemId="158d0001XXXXXX"]
+    sensor_plug 158d0001XXXXXX "Xiaomi Plug" [itemId="158d0001XXXXXX"]
+    sensor_magnet 158d0001XXXXXX "Xiaomi Door Sensor" [itemId="158d0001XXXXXX"]
+    sensor_switch 158d0001XXXXXX "Xiaomi Mi Wireless Switch" [itemId="158d0001XXXXXX"]
+    86sw2 158d0001XXXXXX "Aqara Wireless Wall Switch" [itemId="158d0001XXXXXX"]
 }
 ```
 
 ### xiaomi.items:
 
 ```
-// Gateway
-Switch Gateway_AddDevice { channel="mihome:gateway:<ID>:joinPermission" }
-Switch Gateway_LightSwitch <light> { channel="mihome:gateway:<ID>:brightness" }
-Dimmer Gateway_Brightness <dimmablelight> { channel="mihome:gateway:<ID>:brightness" }
-Color Gateway_Color <rgb> { channel="mihome:gateway:<ID>:color" }
-Dimmer Gateway_ColorTemperature <heating> { channel="mihome:gateway:<ID>:colorTemperature" }
-Number Gateway_AmbientLight <sun> { channel="mihome:gateway:<ID>:illumination" }
-Number Gateway_Sound <soundvolume-0> { channel="mihome:gateway:<ID>:sound" }
-Switch Gateway_SoundSwitch <soundvolume_mute> { channel="mihome:gateway:<ID>:enableSound" }
-Dimmer Gateway_SoundVolume <soundvolume> { channel="mihome:gateway:<ID>:volume" }
+// Replace <GwID> with itemId of gateway from Things file
+// Replace <ID> with itemId of item from Things file
+// Gateway 
+Switch Gateway_LightSwitch <light> { channel="mihome:gateway:<GwID>:<ID>:brightness" }
+Dimmer Gateway_Brightness <dimmablelight> { channel="mihome:gateway:<GwID>:<ID>:brightness" }
+Color Gateway_Color <rgb> { channel="mihome:gateway:<GwID>:<ID>:color" }
+Dimmer Gateway_ColorTemperature <heating> { channel="mihome:gateway:<GwID>:<ID>:colorTemperature" }
+Number Gateway_AmbientLight <sun> { channel="mihome:gateway:<GwID>:<ID>:illumination" }
+Number Gateway_Sound <soundvolume-0> { channel="mihome:gateway:<GwID>:<ID>:sound" }
+Switch Gateway_SoundSwitch <soundvolume_mute> { channel="mihome:gateway:<GwID>:<ID>:enableSound" }
+Dimmer Gateway_SoundVolume <soundvolume> { channel="mihome:gateway:<GwID>:<ID>:volume" }
 
 // Temperature and Humidity Sensor
-Number:Temperature HT_Temperature <temperature> { channel="mihome:sensor_ht:<ID>:temperature" }
-Number:Dimensionless HT_Humidity <humidity> { channel="mihome:sensor_ht:<ID>:humidity" }
-Number HT_Battery <battery> { channel="mihome:sensor_ht:<ID>:batteryLevel" }
-Switch HT_BatteryLow <energy> { channel="mihome:sensor_ht:<ID>:lowBattery" }
+Number:Temperature HT_Temperature <temperature> { channel="mihome:sensor_ht:<GwID>:<ID>:temperature" }
+Number:Dimensionless HT_Humidity <humidity> { channel="mihome:sensor_ht:<GwID>:<ID>:humidity" }
+Number HT_Battery <battery> { channel="mihome:sensor_ht:<GwID>:<ID>:batteryLevel" }
+Switch HT_BatteryLow <energy> { channel="mihome:sensor_ht:<GwID>:<ID>:lowBattery" }
 
 // Aqara Temperature, Humidity and pressure Sensor
-Number:Temperature HTP_Temperature <temperature> { channel="mihome:sensor_weather_v1:<ID>:temperature" }
-Number:Dimensionless HTP_Humidity <humidity> { channel="mihome:sensor_weather_v1:<ID>:humidity" }
-Number:Pressure HTP_Pressure <pressure> { channel="mihome:sensor_weather_v1:<ID>:pressure" }
-Number HTP_Battery <battery> { channel="mihome:sensor_weather_v1:<ID>:batteryLevel" }
-Switch HTP_BatteryLow <energy> { channel="mihome:sensor_weather_v1:<ID>:lowBattery" }
+Number:Temperature HTP_Temperature <temperature> { channel="mihome:sensor_weather_v1:<GwID>:<ID>:temperature" }
+Number:Dimensionless HTP_Humidity <humidity> { channel="mihome:sensor_weather_v1:<GwID>:<ID>:humidity" }
+Number:Pressure HTP_Pressure <pressure> { channel="mihome:sensor_weather_v1:<GwID>:<ID>:pressure" }
+Number HTP_Battery <battery> { channel="mihome:sensor_weather_v1:<GwID>:<ID>:batteryLevel" }
+Switch HTP_BatteryLow <energy> { channel="mihome:sensor_weather_v1:<GwID>:<ID>:lowBattery" }
 
 // Mijia & Aqara Door/Window Sensor
-Contact WindowSwitch_Status <window>  { channel="mihome:sensor_magnet:<ID>:isOpen" }
+Contact WindowSwitch_Status <window>  { channel="mihome:sensor_magnet:<GwID>:<ID>:isOpen" }
 // minimum 30 seconds
-Number WindowSwitch_AlarmTimer <clock> { channel="mihome:sensor_magnet:<ID>:isOpenAlarmTimer" }
-DateTime WindowSwitch_LastOpened "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_magnet:<ID>:lastOpened" }
-Number WindowSwitch_Battery <battery> { channel="mihome:sensor_magnet:<ID>:batteryLevel" }
-Switch WindowSwitch_BatteryLow <energy> { channel="mihome:sensor_magnet:<ID>:lowBattery" }
+Number WindowSwitch_AlarmTimer <clock> { channel="mihome:sensor_magnet:<GwID>:<ID>:isOpenAlarmTimer" }
+DateTime WindowSwitch_LastOpened "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_magnet:<GwID>:<ID>:lastOpened" }
+Number WindowSwitch_Battery <battery> { channel="mihome:sensor_magnet:<GwID>:<ID>:batteryLevel" }
+Switch WindowSwitch_BatteryLow <energy> { channel="mihome:sensor_magnet:<GwID>:<ID>:lowBattery" }
 
 // Mijia Motion Sensor
-Switch MotionSensor_MotionStatus <motion>  { channel="mihome:sensor_motion:<ID>:motion" }
+Switch MotionSensor_MotionStatus <motion>  { channel="mihome:sensor_motion:<GwID>:<ID>:motion" }
 // minimum 5 seconds - remember that the sensor only triggers every minute to save energy
-Number MotionSensor_MotionTimer <clock> { channel="mihome:sensor_motion:<ID>:motionOffTimer" }
-DateTime MotionSensor_LastMotion "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_motion:<ID>:lastMotion" }
-Number MotionSensor_Battery <battery> { channel="mihome:sensor_motion:<ID>:batteryLevel" }
-Switch MotionSensor_BatteryLow <energy> { channel="mihome:sensor_motion:<ID>:lowBattery" }
+Number MotionSensor_MotionTimer <clock> { channel="mihome:sensor_motion:<GwID>:<ID>:motionOffTimer" }
+DateTime MotionSensor_LastMotion "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_motion:<GwID>:<ID>:lastMotion" }
+Number MotionSensor_Battery <battery> { channel="mihome:sensor_motion:<GwID>:<ID>:batteryLevel" }
+Switch MotionSensor_BatteryLow <energy> { channel="mihome:sensor_motion:<GwID>:<ID>:lowBattery" }
 
 // Aqara Motion Sensor
-Switch MotionSensor_MotionStatus <motion>  { channel="mihome:sensor_motion_aq2:<ID>:motion" }
+Switch MotionSensor_MotionStatus <motion>  { channel="mihome:sensor_motion_aq2:<GwID>:<ID>:motion" }
 // minimum 5 seconds - the sensor only triggers once every minute to save energy
-Number MotionSensor_MotionTimer <clock> { channel="mihome:sensor_motion_aq2:<ID>:motionOffTimer" }
-DateTime MotionSensor_LastMotion "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_motion_aq2:<ID>:lastMotion" }
-Number MotionSensor_Battery <battery> { channel="mihome:sensor_motion_aq2:<ID>:batteryLevel" }
-Switch MotionSensor_BatteryLow <energy> { channel="mihome:sensor_motion_aq2:<ID>:lowBattery" }
-Number MotionSensor_Lux "LUX [%.1f]" <sun> { channel="mihome:sensor_motion_aq2:<ID>:illumination" }
+Number MotionSensor_MotionTimer <clock> { channel="mihome:sensor_motion_aq2:<GwID>:<ID>:motionOffTimer" }
+DateTime MotionSensor_LastMotion "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_motion_aq2:<GwID>:<ID>:lastMotion" }
+Number MotionSensor_Battery <battery> { channel="mihome:sensor_motion_aq2:<GwID>:<ID>:batteryLevel" }
+Switch MotionSensor_BatteryLow <energy> { channel="mihome:sensor_motion_aq2:<GwID>:<ID>:lowBattery" }
+Number MotionSensor_Lux "LUX [%.1f]" <sun> { channel="mihome:sensor_motion_aq2:<GwID>:<ID>:illumination" }
 
 // Smart Socket
-Switch Plug_Switch <switch> { channel="mihome:sensor_plug:<ID>:power" }
-Switch Plug_Active <switch> { channel="mihome:sensor_plug:<ID>:inUse" }
-Number Plug_Power <energy> { channel="mihome:sensor_plug:<ID>:loadPower" }
-Number Plug_Consumption <line-incline> { channel="mihome:sensor_plug:<ID>:powerConsumed" }
+Switch Plug_Switch <switch> { channel="mihome:sensor_plug:<GwID>:<ID>:power" }
+Switch Plug_Active <switch> { channel="mihome:sensor_plug:<GwID>:<ID>:inUse" }
+Number Plug_Power <energy> { channel="mihome:sensor_plug:<GwID>:<ID>:loadPower" }
+Number Plug_Consumption <line-incline> { channel="mihome:sensor_plug:<GwID>:<ID>:powerConsumed" }
 
 // Mijia & Aqara Cube Controller - see "xiaomi.rules" for action triggers
-DateTime Cube_LastAction "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_cube:<ID>:lastAction" }
-Number:Angle Cube_RotationAngle { channel="mihome:sensor_cube:<ID>:rotationAngle" }
-Number:Time Cube_RotationTime { channel="mihome:sensor_cube:<ID>:rotationTime" }
-Number Cube_Battery <battery> { channel="mihome:sensor_cube:<ID>:batteryLevel" }
-Switch Cube_BatteryLow <energy> { channel="mihome:sensor_cube:<ID>:lowBattery" }
+DateTime Cube_LastAction "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_cube:<GwID>:<ID>:lastAction" }
+Number:Angle Cube_RotationAngle { channel="mihome:sensor_cube:<GwID>:<ID>:rotationAngle" }
+Number:Time Cube_RotationTime { channel="mihome:sensor_cube:<GwID>:<ID>:rotationTime" }
+Number Cube_Battery <battery> { channel="mihome:sensor_cube:<GwID>:<ID>:batteryLevel" }
+Switch Cube_BatteryLow <energy> { channel="mihome:sensor_cube:<GwID>:<ID>:lowBattery" }
 
 // Aqara Smart Motion Sensor - see "xiaomi.rules" for action triggers
-DateTime Vibration_LastAction "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_vibration:<ID>:lastAction" }
-Number Vibration_TiltAngle { channel="mihome:sensor_vibration:<ID>:tiltAngle" }
-Number Vibration_CoordinateX { channel="mihome:sensor_vibration:<ID>:coordinateX" }
-Number Vibration_CoordinateY { channel="mihome:sensor_vibration:<ID>:coordinateY" }
-Number Vibration_CoordinateZ { channel="mihome:sensor_vibration:<ID>:coordinateZ" }
-Number Vibration_BedActivity { channel="mihome:sensor_vibration:<ID>:bedActivity" }
-Number Vibration_Battery <battery> { channel="mihome:sensor_vibration:<ID>:batteryLevel" }
-Switch Vibration_BatteryLow <energy> { channel="mihome:sensor_vibration:<ID>:lowBattery" }
+DateTime Vibration_LastAction "[%1$tY-%1$tm-%1$td  %1$tH:%1$tM]" <clock-on> { channel="mihome:sensor_vibration:<GwID>:<ID>:lastAction" }
+Number Vibration_TiltAngle { channel="mihome:sensor_vibration:<GwID>:<ID>:tiltAngle" }
+Number Vibration_CoordinateX { channel="mihome:sensor_vibration:<GwID>:<ID>:coordinateX" }
+Number Vibration_CoordinateY { channel="mihome:sensor_vibration:<GwID>:<ID>:coordinateY" }
+Number Vibration_CoordinateZ { channel="mihome:sensor_vibration:<GwID>:<ID>:coordinateZ" }
+Number Vibration_BedActivity { channel="mihome:sensor_vibration:<GwID>:<ID>:bedActivity" }
+Number Vibration_Battery <battery> { channel="mihome:sensor_vibration:<GwID>:<ID>:batteryLevel" }
+Switch Vibration_BatteryLow <energy> { channel="mihome:sensor_vibration:<GwID>:<ID>:lowBattery" }
 
 // Mijia & Aqara Wireless Switch - see "xiaomi.rules" for action triggers
-Number Switch_Battery <battery> { channel="mihome:sensor_switch:<ID>:batteryLevel" }
-Switch Switch_BatteryLow <energy> { channel="mihome:sensor_switch:<ID>:lowBattery" }
+Number Switch_Battery <battery> { channel="mihome:sensor_switch:<GwID>:<ID>:batteryLevel" }
+Switch Switch_BatteryLow <energy> { channel="mihome:sensor_switch:<GwID>:<ID>:lowBattery" }
 
 // Aqara Wirelss Light Control (1 Button) - see "xiaomi.rules" for action triggers
-Number AqaraSwitch1_Battery <battery> { channel="mihome:86sw1:<ID>:batteryLevel" }
-Switch AqaraSwitch1_BatteryLow <energy> { channel="mihome:86sw1:<ID>:lowBattery" }
+Number AqaraSwitch1_Battery <battery> { channel="mihome:86sw1:<GwID>:<ID>:batteryLevel" }
+Switch AqaraSwitch1_BatteryLow <energy> { channel="mihome:86sw1:<GwID>:<ID>:lowBattery" }
 
 // Aqara Wirelss Light Control (2 Button) - see "xiaomi.rules" for action triggers
-Number AqaraSwitch2_Battery <battery> { channel="mihome:86sw2:<ID>:batteryLevel" }
-Switch AqaraSwitch2_BatteryLow <energy> { channel="mihome:86sw2:<ID>:lowBattery" }
+Number AqaraSwitch2_Battery <battery> { channel="mihome:86sw2:<GwID>:<ID>:batteryLevel" }
+Switch AqaraSwitch2_BatteryLow <energy> { channel="mihome:86sw2:<GwID>:<ID>:lowBattery" }
 
 // Aqara Wall Switch (1 Button)
-Switch AqaraWallSwitch <switch> { channel="mihome:ctrl_neutral1:<ID>:ch1" }
+Switch AqaraWallSwitch <switch> { channel="mihome:ctrl_neutral1:<GwID>:<ID>:ch1" }
 
 // Aqara Wall Switch (2 Button)
-Switch AqaraWallSwitch1 <switch> { channel="mihome:ctrl_neutral2:<ID>:ch1" }
-Switch AqaraWallSwitch2 <switch> { channel="mihome:ctrl_neutral2:<ID>:ch2" }
+Switch AqaraWallSwitch1 <switch> { channel="mihome:ctrl_neutral2:<GwID>:<ID>:ch1" }
+Switch AqaraWallSwitch2 <switch> { channel="mihome:ctrl_neutral2:<GwID>:<ID>:ch2" }
 
 // Aqara Wall Switch (1 Button & without neutral line)
-Switch AqaraWallSwitch <switch> { channel="mihome:ctrl_ln1:<ID>:ch1" }
+Switch AqaraWallSwitch <switch> { channel="mihome:ctrl_ln1:<GwID>:<ID>:ch1" }
 
 // Aqara Wall Switch (2 Button & without neutral line)
-Switch AqaraWallSwitch1 <switch> { channel="mihome:ctrl_ln2:<ID>:ch1" }
-Switch AqaraWallSwitch2 <switch> { channel="mihome:ctrl_ln2:<ID>:ch2" }
+Switch AqaraWallSwitch1 <switch> { channel="mihome:ctrl_ln2:<GwID>:<ID>:ch1" }
+Switch AqaraWallSwitch2 <switch> { channel="mihome:ctrl_ln2:<GwID>:<ID>:ch2" }
 
 // Aqara Curtain Motor
-Rollershutter CurtainMotorControl <blinds> { channel="curtain:<ID>:curtainControl" }
+Rollershutter CurtainMotorControl <blinds> { channel="curtain:<GwID>:<ID>:curtainControl" }
 ```
 
 ### xiaomi.rules:
@@ -222,7 +222,7 @@ Rollershutter CurtainMotorControl <blinds> { channel="curtain:<ID>:curtainContro
 ```
 rule "Mijia & Aqara Wireless Switch"
 when
-    Channel "mihome:sensor_switch:<ID>:button" triggered
+    Channel "mihome:sensor_switch:<GwID>:<ID>:button" triggered
 then
     var actionName = receivedEvent.getEvent()
     switch(actionName) {
@@ -243,7 +243,7 @@ end
 
 rule "Mijia & Aqara Cube Controller"
 when
-    Channel 'mihome:sensor_cube:<ID>:action' triggered
+    Channel 'mihome:sensor_cube:<GwID>:<ID>:action' triggered
 then
     var actionName = receivedEvent.getEvent()
     switch(actionName) {
@@ -279,7 +279,7 @@ end
 
 rule "Aqara Smart Motion Sensor"
 when
-    Channel 'mihome:sensor_vibration:<ID>:action' triggered
+    Channel 'mihome:sensor_vibration:<GwID>:<ID>:action' triggered
 then
     var actionName = receivedEvent.getEvent()
     switch(actionName) {
@@ -320,35 +320,35 @@ end
 
 rule "Mijia & Aqara Door/Window Sensor - Window is open for longer than WindowSwitch_AlarmTimer"
 when
-    Channel "mihome:sensor_magnet:<ID>:isOpenAlarm" triggered ALARM
+    Channel "mihome:sensor_magnet:<GwID>:<ID>:isOpenAlarm" triggered ALARM
 then
     <ACTION>
 end
 
 rule "Aqara Wirelss Light Control (1 Button)"
 when
-    Channel "mihome:86sw1:<ID>:ch1" triggered SHORT_PRESSED
+    Channel "mihome:86sw1:<GwID>:<ID>:ch1" triggered SHORT_PRESSED
 then
     <ACTION>
 end
 
 rule "Aqara Wirelss Light Control (2 Button)"
 when
-    Channel "mihome:86sw2:<ID>:ch1" triggered SHORT_PRESSED
+    Channel "mihome:86sw2:<GwID>:<ID>:ch1" triggered SHORT_PRESSED
 then
     <ACTION>
 end
 
 rule "Aqara Wirelss Light Control (2 Button)"
 when
-    Channel "mihome:86sw2:<ID>:ch2" triggered SHORT_PRESSED
+    Channel "mihome:86sw2:<GwID>:<ID>:ch2" triggered SHORT_PRESSED
 then
     <ACTION>
 end
 
 rule "Aqara Wirelss Light Control (2 Button)"
 when
-    Channel "mihome:86sw2:<ID>:dual_ch" triggered SHORT_PRESSED
+    Channel "mihome:86sw2:<GwID>:<ID>:dual_ch" triggered SHORT_PRESSED
 then
     <ACTION>
 end
@@ -365,11 +365,11 @@ rule "Play quiet knock-knock ringtone with the Xiaomi Gateway"
 when
     // Item ExampleSwitch changed to ON
 then
-    sendCommand(Gateway_SoundVolume, 2)
-    sendCommand(Gateway_Sound, 11)
+    Gateway_SoundVolume.sendCommand(2)
+    Gateway_Sound.sendCommand(11)
     Thread::sleep(2000) /* wait for 2 seconds */
-    sendCommand(Gateway_Sound, 10000)
-    sendCommand(Gateway_SoundVolume, 0)
+    Gateway_Sound.sendCommand(10000)
+    Gateway_SoundVolume.sendCommand(0)
 end
 ```
 
@@ -411,71 +411,141 @@ sitemap xiaomi label="Xiaomi" {
 }
 ```
 
-## Supporting new devices
-The Xiaomi ecosystem grows at a steady rate. So there is a good chance that in the future even more devices get added to the suite. This section describes, how to get the necessary information to support new device types.
+## Handling unsupported devices
 
-### Preconditions
-- you know how to access the [openHAB Console](https://www.openhab.org/docs/administration/console.html)
-- you have connected your gateway to openHAB and the communication is working
+The Xiaomi ecosystem grows at a steady rate. So there is a good chance that in the future even more devices get added to the suite. This section describes, how to get the necessary information to support new device types. While a device is not supported yet, it is still possible to access it's informations.
 
-### Enable debug logging for the binding
-- Enter ```log:set TRACE org.openhab.binding.mihome``` in the console to enable full logs.
-
-    _When you are done you can disable the extended logging with ```log:set DEFAULT org.openhab.binding.mihome```_
-
-- Exit the console and start [viewing the logs](https://www.openhab.org/docs/tutorial/logs.html).
+Make sure you have connected your gateway to openHAB and the communication is working.
 
 ### Connect the new device
+
 - Go through the normal procedure to add a device to the gateway
-- The device won't show up in your inbox, but it will send messages to the gateway which you can see in the logs
-- Analyse the logs and find the model name of the new device
+- The device will show up in your inbox as a new unsupported device and it's model name
+- Add the device as a new thing of type "basic device", now you have different channels to receive and send messages from/to the device
+    - raw messages from the device
+    - the data from the four different type of messages (see their details in the next chapter)
+    - parameters you can send to the device
 
-_Example: Aqara Vibration Sensor_
+### Gather information about the new device for future support
 
-    2018-09-08 00:58:14.903 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-
-### Gather information about the new device
 The devices send different types of messages to the gateway.
 You have to capture as many of them as possible, so that the device is fully supported in the end.
 
 1. Heartbeat (transmitted usually every 60 minutes)
-2. Report (device reports new values)
+2. Report (device reports new sensor or status values)
 3. Read ACK (binding refreshes all sensor values after a restart of openHAB)
-4. Write ACK (device has received a command) __not avaiable for sensor devices__
-
-___You can filter the log to show only relevant information, just replace {deviceName} with the model name of the new device___
-
-    tail -f /var/log/openhab2/openhab.log -f /var/log/openhab2/events.log | grep {deviceName}
-
-_Example: Aqara Vibration Sensor_
-
-```
-user@computer:~$ tail -f /var/log/openhab2/openhab.log -f /var/log/openhab2/events.log | grep vibration
-2018-09-08 00:58:14.878 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"status\":\"vibrate\"}"}
-2018-09-08 00:58:14.903 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:11.952 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"status\":\"vibrate\"}"}
-2018-09-08 01:00:11.984 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:13.064 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"status\":\"tilt\"}"}
-2018-09-08 01:00:13.073 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:13.089 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"final_tilt_angle\":\"71\"}"}
-2018-09-08 01:00:13.105 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:15.131 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"coordination\":\"71,1080,286\"}"}
-2018-09-08 01:00:15.168 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:18.179 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"status\":\"tilt\"}"}
-2018-09-08 01:00:18.187 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:19.216 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"coordination\":\"10,84,1248\"}"}
-2018-09-08 01:00:19.247 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:21.468 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"status\":\"free_fall\"}"}
-2018-09-08 01:00:21.502 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:22.494 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"coordination\":\"87,51,1247\"}"}
-2018-09-08 01:00:22.527 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:26.587 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"final_tilt_angle\":\"19\"}"}
-2018-09-08 01:00:26.619 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:00:28.630 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"coordination\":\"475,119,1147\"}"}
-2018-09-08 01:00:28.660 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-2018-09-08 01:05:30.418 [TRACE] [g.mihome.handler.XiaomiBridgeHandler] - Received message {"cmd":"report","model":"vibration","sid":"158d0002a92499","short_id":2226,"data":"{\"bed_activity\":\"158\"}"}
-2018-09-08 01:05:30.441 [DEBUG] [discovery.XiaomiItemDiscoveryService] - Unknown discovered model: vibration
-```
+4. Write ACK (device has received a command) __not avaiable for sensor-only devices__
 
 ### Open a new issue or get your hands dirty
-Every little help is welcome, be part of the community!
+
+Every little help is welcome, be part of the community! 
+Post an issue in the Github repository with as much information as possible about the new device:
+- brand and link to device description
+- model name
+- content of all the different message types
+
+Or implement the support by youself and submit a pull request.
+
+### Handle the message contents of a basic device thing with items
+
+You can access the whole message contents of the basic device thing with String items. That way you can make use of your device, even if it is not supported yet!
+The following examples are a demonstration, where a basic device thing for the gateway was manually added.
+
+```
+String Gateway_Raw { channel="mihome:basic:xxx:lastMessage" }
+String Gateway_Heartbeat { channel="mihome:basic:xxx:heartbeatMessage" }
+```
+
+_Example for a raw message from the gateway: ```{"cmd":"heartbeat","model":"gateway","sid":"xxx","short_id":"0","token":"xxx","data":"{\"ip\":\"192.168.0.124\"}"}```_
+
+_Example for the same message from the heartbeat channel - only the data is returned: ```{"ip":"192.168.0.124"}```_
+
+These messages are in JSON format, which also gives you the ability to parse single values.
+
+_Example for the retrieved IP from the heartbeat message and transformed with JSONPATH transfomration: ```String Gateway_IP {channel="mihome:basic:xxx:heartbeatMessage"[profile="transform:JSONPATH", function="$.ip"]}```_
+
+ The item will get the value `192.168.0.124`.
+
+### Write commands to a basic device
+
+You can write commands to devices which support it, usually all battery powered devices are not able to receive commands.
+The commands have to be issued as attributes of a JSON Object, e.g. instead of writing ```{"attr":"value"}``` you have to write ```"attr":"value"``` or ```"channel_0":"on", "channel_1":"on"``` to the item.
+
+The following example uses a rule to enable device pairing on the gateway:
+
+__mihome.items__
+
+```
+String Gateway_Write { channel="mihome:basic:xxx:writeMessage" }
+Switch Gateway_AddDevicesSwitch
+```
+
+__mihome.rules__
+
+```
+rule "Enable device pairing with gateway as basic device thing"
+when
+    Item Gateway_AddDevicesSwitch changed to ON
+then
+    Gateway_Write.sendCommand("\"join_permission\":\"yes\"")
+end
+```
+You can also send multiple command at once:
+```
+GatewayWrite.sendCommand("\"rgb\":150000,\"join_permission\":\"yes\"")
+```
+
+Make sure to write numbers without quotes and strings with quotes. Also, quotes have to be escaped.
+
+## Debugging
+
+If you experience any unexpected behaviour or just want to know what is going on behind the scenes, you can enable debug logging. This makes possible following the communication between the binding and the gateway.
+
+### Enable debug logging for the binding
+
+- Login to the [openHAB Console](https://www.openhab.org/docs/administration/console.html)
+- Enter ```log:set TRACE org.openhab.binding.mihome``` in the console to enable full logs
+
+    _When you are done you can disable the extended logging with ```log:set DEFAULT org.openhab.binding.mihome```_
+
+- Enter ```log:tail``` in the console or exit the console and start [viewing the logs](https://www.openhab.org/docs/tutorial/logs.html)
+
+## Troubleshooting
+
+For the binding to function properly it is very important, that your network config allows the machine running openHAB to receive multicast traffic. In case you want to check if the communication between the machine and the gateway is working, you can find some hints here.
+- Set up the developer communication as described in the Setup section
+
+### Check if your linux machine receives multicast traffic
+
+- Login to the linux console
+- make sure you have __netcat__ installed
+- Enter ```netcat -ukl 9898```
+- At least every 10 seconds you should see a message coming in from the gateway which looks like
+    ```{"cmd":"heartbeat","model":"gateway","sid":"`xxx","short_id":"0","token":"xxx","data":"{\"ip\":\"`xxx\"}"}```
+
+### Check if your Windows/Mac machine receives multicast traffic
+
+- Download Wireshark
+- Start and select the network interface which is connected to the same network as the gateway
+- Filter for the multicast messages with the expression ```udp.dstport== 9898 && data.text```
+- At least every 10 seconds you should see a message coming in from the gateway which looks like
+    ```{"cmd":"heartbeat","model":"gateway","sid":"`xxx","short_id":"0","token":"xxx","data":"{\"ip\":\"`xxx\"}"}```
+
+__My gateway shows up in openHAB and I have added all devices, but I don't get any value updates:__
+- Most likely your machine is not receiving multicast messages
+- Check your network config:
+    - Routers often block multicast - enable it
+    - Make sure the gateway and the machine are in the same subnet
+    - Try to connect your machine via Ethernet instead of Wifi
+    - Make sure you don't have any firewall rules blocking multicast
+
+__I have connected my gateway to the network but it doesn't show up in openHAB:__
+- Make sure to have the developer mode enabled in the MiHome app
+- Reinstall the binding
+- Try to update the firmware of the gateway
+- Make sure you have a supported gateway hardware
+- Search the openHAB Community forum
+- Contact Xiaomi support - get your gateway replaced
+
+__Nothing works, I'm frustrated and have thrown my gateway into the bin. Now I don't know what to do with all the sensors:__
+Check out the Zigbee2Mqtt project on Github. It allows you to use the sensors without the gateway and get their values through MQTT. You will need some hardware to act as a gateway which is not expensive. You can find more information and a list of supported Xiaomi devices in the Github repository.

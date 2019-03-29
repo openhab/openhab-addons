@@ -8,12 +8,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.silvercrestwifisocket;singleton
  :=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.silvercrestwifisocket,
- org.openhab.binding.silvercrestwifisocket.handler
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
- com.google.common.collect,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
@@ -21,8 +17,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.silvercrestwifisocket,
- org.openhab.binding.silvercrestwifisocket.handler,
  org.osgi.framework,
  org.osgi.service.component,
  org.slf4j

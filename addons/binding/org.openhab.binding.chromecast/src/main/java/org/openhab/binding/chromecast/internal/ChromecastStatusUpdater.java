@@ -1,40 +1,45 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.chromecast.internal;
 
 import static org.eclipse.smarthome.core.types.UnDefType.UNDEF;
-import static org.openhab.binding.chromecast.ChromecastBindingConstants.*;
+import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants.*;
 import static su.litvak.chromecast.api.v2.MediaStatus.PlayerState.*;
 
 import java.time.Instant;
-import java.util.Calendar;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.PointType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.chromecast.ChromecastBindingConstants;
-import org.openhab.binding.chromecast.handler.ChromecastHandler;
+import org.openhab.binding.chromecast.internal.handler.ChromecastHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,6 +137,8 @@ public class ChromecastStatusUpdater {
 
         // In-between songs? It's thinking? It's not doing anything
         if (mediaStatus == null) {
+            callback.updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
+            callback.updateState(CHANNEL_STOP, OnOffType.ON);
             callback.updateState(CHANNEL_CURRENT_TIME, UNDEF);
             updateMediaInfoStatus(null);
             return;
@@ -142,17 +149,20 @@ public class ChromecastStatusUpdater {
                 break;
             case PAUSED:
                 callback.updateState(CHANNEL_CONTROL, PlayPauseType.PAUSE);
+                callback.updateState(CHANNEL_STOP, OnOffType.OFF);
                 break;
             case BUFFERING:
+            case LOADING:
             case PLAYING:
                 callback.updateState(CHANNEL_CONTROL, PlayPauseType.PLAY);
+                callback.updateState(CHANNEL_STOP, OnOffType.OFF);
                 break;
             default:
-                logger.debug("Unknown mediaStatus: {}", mediaStatus.playerState);
+                logger.debug("Unknown media status: {}", mediaStatus.playerState);
                 break;
         }
 
-        callback.updateState(CHANNEL_CURRENT_TIME, new DecimalType(mediaStatus.currentTime));
+        callback.updateState(CHANNEL_CURRENT_TIME, new QuantityType<>(mediaStatus.currentTime, SmartHomeUnits.SECOND));
 
         // If we're playing, paused or buffering but don't have any MEDIA information don't null everything out.
         Media media = mediaStatus.media;
@@ -172,7 +182,7 @@ public class ChromecastStatusUpdater {
 
             // duration can be null when a new song is about to play.
             if (media.duration != null) {
-                duration = new DecimalType(media.duration);
+                duration = new QuantityType<>(media.duration, SmartHomeUnits.SECOND);
             }
         }
 
@@ -187,9 +197,9 @@ public class ChromecastStatusUpdater {
         updateImage(metadata);
 
         thing.getChannels().stream() //
-                .map(channel -> channel.getChannelTypeUID().getId())
-                .filter(channel -> ArrayUtils.contains(METADATA_SIMPLE_CHANNELS, channel))
-                .forEach(channel -> updateChannel(channel, metadata));
+                .map(channel -> channel.getUID())
+                .filter(channelUID -> METADATA_SIMPLE_CHANNELS.contains(channelUID.getId()))
+                .forEach(channelUID -> updateChannel(channelUID, metadata));
     }
 
     /** Lat/lon are combined into 1 channel so we have to handle them as a special case. */
@@ -251,12 +261,12 @@ public class ChromecastStatusUpdater {
         }
     }
 
-    private void updateChannel(String channelId, Map<String, Object> metadata) {
-        if (!callback.isLinked(channelId)) {
+    private void updateChannel(ChannelUID channelUID, Map<String, Object> metadata) {
+        if (!callback.isLinked(channelUID)) {
             return;
         }
 
-        Object value = getValue(channelId, metadata);
+        Object value = getValue(channelUID.getId(), metadata);
         State state;
 
         if (value == null) {
@@ -267,14 +277,14 @@ public class ChromecastStatusUpdater {
             state = new DecimalType(((Integer) value).longValue());
         } else if (value instanceof String) {
             state = new StringType(value.toString());
-        } else if (value instanceof Calendar) {
-            state = new DateTimeType((Calendar) value);
+        } else if (value instanceof ZonedDateTime) {
+            state = new DateTimeType((ZonedDateTime) value);
         } else {
             state = UNDEF;
-            logger.warn("Update channel {}: Unsupported value type {}", channelId, value.getClass().getSimpleName());
+            logger.warn("Update channel {}: Unsupported value type {}", channelUID, value.getClass().getSimpleName());
         }
 
-        callback.updateState(channelId, state);
+        callback.updateState(channelUID, state);
     }
 
     private Object getValue(String channelId, Map<String, Object> metadata) {
@@ -282,19 +292,11 @@ public class ChromecastStatusUpdater {
             return null;
         }
 
-        if (channelId.equals(ChromecastBindingConstants.CHANNEL_BROADCAST_DATE)
-                || channelId.equals(ChromecastBindingConstants.CHANNEL_RELEASE_DATE)
-                || channelId.equals(ChromecastBindingConstants.CHANNEL_CREATION_DATE)) {
+        if (CHANNEL_BROADCAST_DATE.equals(channelId) || CHANNEL_RELEASE_DATE.equals(channelId)
+                || CHANNEL_CREATION_DATE.equals(channelId)) {
             String dateString = (String) metadata.get(channelId);
-            if (dateString == null) {
-                return null;
-            }
-
-            Instant instant = Instant.parse(dateString);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(Date.from(instant));
-
-            return calendar;
+            return (dateString == null) ? null
+                    : ZonedDateTime.ofInstant(Instant.parse(dateString), ZoneId.systemDefault());
         }
 
         return metadata.get(channelId);

@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.neato.internal;
 
@@ -87,10 +91,10 @@ public class NeatoRobot {
             sha256Hmac = Mac.getInstance("HmacSHA256");
             String stringToSign = this.serialNumber.toLowerCase() + "\n" + dateString + "\n" + body;
 
-            SecretKeySpec secretKey = new SecretKeySpec(this.secret.getBytes("UTF-8"), "HmacSHA256");
+            SecretKeySpec secretKey = new SecretKeySpec(this.secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
             sha256Hmac.init(secretKey);
 
-            byte[] signature = sha256Hmac.doFinal(stringToSign.getBytes("UTF-8"));
+            byte[] signature = sha256Hmac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));
             String hexString = Hex.encodeHexString(signature);
 
             // Properties headers = new Properties
@@ -127,12 +131,24 @@ public class NeatoRobot {
                 request.addParam("modifier", 1);
             } else if ("minimal-2".equalsIgnoreCase(houseCleaningStr)) {
                 request.addParam("navigationMode", this.state.getCleaning().getNavigationModeValue());
-            } else if ("basic-3".equalsIgnoreCase(houseCleaningStr)) {
-                request.addParam("mode", this.state.getCleaning().getModeValue());
-                request.addParam("category", this.state.getCleaning().getCategoryValue());
-                request.addParam("navigationMode", this.state.getCleaning().getNavigationModeValue());
             } else {
-                logger.error("Unknown service for houseCleaning: {}. Will not start house cleaning!", houseCleaningStr);
+                if (!"basic-3".equalsIgnoreCase(houseCleaningStr) && !"basic-4".equalsIgnoreCase(houseCleaningStr)) {
+                    logger.debug(
+                            "Unknown service for houseCleaning: {}. Will attempt to start cleaning using basic-4 message",
+                            houseCleaningStr);
+                }
+
+                request.addParam("mode", this.state.getCleaning().getModeValue());
+                request.addParam("category", "2");
+
+                Integer navigationMode = this.state.getCleaning().getNavigationModeValue();
+                if (Integer.valueOf(2).equals(this.state.getCleaning().getModeValue())) {
+                    // From the Neato API Docs...
+                    // Note that navigationMode can only be set to 3 if mode is 2,
+                    // otherwise an error will be returned.
+                    navigationMode = 3;
+                }
+                request.addParam("navigationMode", navigationMode);
             }
         } else if ("pause".equalsIgnoreCase(command.toString())) {
             request.setCmd("pauseCleaning");

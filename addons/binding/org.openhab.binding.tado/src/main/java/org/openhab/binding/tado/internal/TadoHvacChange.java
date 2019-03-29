@@ -1,20 +1,23 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.tado.internal;
 
 import java.io.IOException;
 
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.tado.TadoBindingConstants.FanSpeed;
-import org.openhab.binding.tado.TadoBindingConstants.HvacMode;
-import org.openhab.binding.tado.TadoBindingConstants.OperationMode;
-import org.openhab.binding.tado.handler.TadoZoneHandler;
+import org.openhab.binding.tado.internal.TadoBindingConstants.FanSpeed;
+import org.openhab.binding.tado.internal.TadoBindingConstants.HvacMode;
+import org.openhab.binding.tado.internal.TadoBindingConstants.OperationMode;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
 import org.openhab.binding.tado.internal.api.model.Overlay;
@@ -23,6 +26,7 @@ import org.openhab.binding.tado.internal.api.model.OverlayTerminationConditionTy
 import org.openhab.binding.tado.internal.builder.TerminationConditionBuilder;
 import org.openhab.binding.tado.internal.builder.ZoneSettingsBuilder;
 import org.openhab.binding.tado.internal.builder.ZoneStateProvider;
+import org.openhab.binding.tado.internal.handler.TadoZoneHandler;
 
 /**
  * Builder for incremental creation of zone overlays.

@@ -7,10 +7,7 @@ Bundle-Name: Urtsi Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.urtsi;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.urtsi,
- org.openhab.binding.urtsi.handler
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  com.google.common.base,
  com.google.common.collect,
@@ -24,7 +21,5 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.urtsi,
- org.openhab.binding.urtsi.handler,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

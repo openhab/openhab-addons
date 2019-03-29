@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.lutron.internal.discovery;
 
-import static org.openhab.binding.lutron.LutronBindingConstants.*;
+import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 
 import java.io.IOException;
 import java.net.URL;
@@ -23,16 +27,18 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.lutron.handler.IPBridgeHandler;
 import org.openhab.binding.lutron.internal.LutronHandlerFactory;
 import org.openhab.binding.lutron.internal.discovery.project.Area;
 import org.openhab.binding.lutron.internal.discovery.project.Device;
 import org.openhab.binding.lutron.internal.discovery.project.DeviceGroup;
 import org.openhab.binding.lutron.internal.discovery.project.DeviceNode;
 import org.openhab.binding.lutron.internal.discovery.project.DeviceType;
+import org.openhab.binding.lutron.internal.discovery.project.GreenMode;
 import org.openhab.binding.lutron.internal.discovery.project.Output;
 import org.openhab.binding.lutron.internal.discovery.project.OutputType;
 import org.openhab.binding.lutron.internal.discovery.project.Project;
+import org.openhab.binding.lutron.internal.discovery.project.Timeclock;
+import org.openhab.binding.lutron.internal.handler.IPBridgeHandler;
 import org.openhab.binding.lutron.internal.xml.DbXmlInfoReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Allan Tong - Initial contribution
  * @author Bob Adair - Added support for phase-selectable dimmers, Pico, tabletop keypads, switch modules, VCRX,
- *         and repeater virtual buttons
+ *         repeater virtual buttons, Timeclock, and Green Mode
  */
 public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
@@ -91,7 +97,12 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
             for (Area area : project.getAreas()) {
                 processArea(area, locationContext);
             }
-
+            for (Timeclock timeclock : project.getTimeclocks()) {
+                processTimeclocks(timeclock, locationContext);
+            }
+            for (GreenMode greenMode : project.getGreenModes()) {
+                processGreenModes(greenMode, locationContext);
+            }
         } else {
             logger.info("Could not read project file at {}", address);
         }
@@ -175,7 +186,11 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
             switch (type) {
                 case INC:
                 case MLV:
+                case ECO_SYSTEM_FLUORESCENT:
+                case FLUORESCENT_DB:
+                case ZERO_TO_TEN:
                 case AUTO_DETECT:
+                case CEILING_FAN_TYPE:
                     notifyDiscovery(THING_TYPE_DIMMER, output.getIntegrationId(), label);
                     break;
 
@@ -200,6 +215,16 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
         } else {
             logger.warn("Unrecognized output type {}", output.getType());
         }
+    }
+
+    private void processTimeclocks(Timeclock timeclock, Stack<String> context) {
+        String label = generateLabel(context, timeclock.getName());
+        notifyDiscovery(THING_TYPE_TIMECLOCK, timeclock.getIntegrationId(), label);
+    }
+
+    private void processGreenModes(GreenMode greenmode, Stack<String> context) {
+        String label = generateLabel(context, greenmode.getName());
+        notifyDiscovery(THING_TYPE_GREENMODE, greenmode.getIntegrationId(), label);
     }
 
     private void notifyDiscovery(ThingTypeUID thingTypeUID, Integer integrationId, String label) {

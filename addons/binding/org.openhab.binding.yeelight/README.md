@@ -22,11 +22,12 @@ Yeelight smart LED devices announce themselves on the network through UPnP, so t
 
 ## Thing Configuration
 
-All Yeelight things require the `deviceId` from the device as a configuration parameter:
+All Yeelight things require the `deviceId` from the device as a configuration parameter. This table shows all available parameters:
 
-| Parameter           | Values                                    | Mandatory |
-|---------------------|-------------------------------------------|-----------|
-| deviceId            | ID of the Yeelight device                 | Yes       |
+| Parameter           | Values                                         | Mandatory |
+|---------------------|------------------------------------------------|-----------|
+| deviceId            | ID of the Yeelight device                      | Yes       |
+| duration            | Duration for changing between different states | No        |
 
 ## Channels
 
@@ -36,18 +37,36 @@ All devices support some of the following channels:
 |--------|------|------|
 |`brightness` | `Dimmer` | This channel supports adjusting the brightness value, it is available on `dolphin` and `ceiling`.|
 |`color` | `Color` | This channel supports color control, it is available on `wonder` and `stripe`.|
-|`colorTemperature` | `Dimmer` | This channel supports adjusting the color temperature, it is available on `wonder` and `stripe` and `ceiling.|
+|`colorTemperature` | `Dimmer` | This channel supports adjusting the color temperature, it is available on `wonder` and `stripe` and `ceiling`.|
+|`command` | `String` | This channel sends a command directly to the device, it is available on all Yeelight Things.|
 
 ## Full Example
 
 Things:
 
 ```
-Thing yeelight:stripe:1 [ deviceId="0x000000000321a1bc" ]
+Thing yeelight:stripe:1 [ deviceId="0x000000000321a1bc", duration=1000 ]
 ```
 
 Items:
 
 ```
 Color YeelightLEDColor { channel="yeelight:stripe:1:color" }
+Switch YeelightLEDSwitch { channel="yeelight:stripe:1:color" }
+String YeelightLEDCommand { channel="yeelight:stripe:1:command" }
 ```
+
+Rules:
+
+```
+rule "Yeelight Custom Command"
+when
+        Time is noon
+then
+        YeelightLEDCommand.sendCommand("set_power;\"on\",\"smooth\",2000")
+end
+```
+
+Note that `set_power` is the command, then a separator `;` must be used. `\"on\",\"smooth\",2000` are the parameters.
+
+Full list of commands can be found [here](https://www.yeelight.com/download/Yeelight_Inter-Operation_Spec.pdf).

@@ -5,7 +5,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: FTP Upload Binding
 Bundle-SymbolicName: org.openhab.binding.ftpupload;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/ftplet-api-1.1.0.jar,
@@ -21,6 +21,7 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.core.util,
  org.eclipse.smarthome.io.net.http,
  org.osgi.service.component,
  org.slf4j

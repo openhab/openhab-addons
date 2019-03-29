@@ -1,19 +1,24 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.pentair.internal;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link PentairBindingConstants} class defines common constants, which are
@@ -69,6 +74,15 @@ public class PentairBindingConstants {
     public static final String EASYTOUCH_AUX6 = "aux6";
     public static final String EASYTOUCH_AUX7 = "aux7";
 
+    public static final String EASYTOUCH_FEATURE1 = "feature1";
+    public static final String EASYTOUCH_FEATURE2 = "feature2";
+    public static final String EASYTOUCH_FEATURE3 = "feature3";
+    public static final String EASYTOUCH_FEATURE4 = "feature4";
+    public static final String EASYTOUCH_FEATURE5 = "feature5";
+    public static final String EASYTOUCH_FEATURE6 = "feature6";
+    public static final String EASYTOUCH_FEATURE7 = "feature7";
+    public static final String EASYTOUCH_FEATURE8 = "feature8";
+
     public static final String INTELLICHLOR_SALTOUTPUT = "saltoutput";
     public static final String INTELLICHLOR_SALINITY = "salinity";
 
@@ -88,6 +102,7 @@ public class PentairBindingConstants {
     public static final Integer PROPERTY_PORT = 10000;
 
     // Set of all supported Thing Type UIDs
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(IP_BRIDGE_THING_TYPE,
-            SERIAL_BRIDGE_THING_TYPE, EASYTOUCH_THING_TYPE, INTELLIFLO_THING_TYPE, INTELLICHLOR_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(IP_BRIDGE_THING_TYPE, SERIAL_BRIDGE_THING_TYPE, EASYTOUCH_THING_TYPE,
+                    INTELLIFLO_THING_TYPE, INTELLICHLOR_THING_TYPE).collect(Collectors.toSet()));
 }

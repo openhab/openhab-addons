@@ -5,12 +5,10 @@ Bundle-Name: Modbus Binding Tests
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.modbus.test;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
-Export-Package: org.openhab.binding.modbus;uses:="org.eclipse.smarthome.test"
+Bundle-Version: 2.5.0.qualifier
 Fragment-Host: org.openhab.binding.modbus
 Require-Bundle: org.hamcrest
 Import-Package: 
- com.google.common.collect,
  net.bytebuddy.dynamic.loading,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,

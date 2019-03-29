@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:config-description="http://eclipse.org/smarthome/schemas/config-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/config-description/v1.0.0 http://eclipse.org/smarthome/schemas/config-description-1.0.0.xsd">
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:somfytahoma:device">
 		<parameter name="url" type="text">
@@ -33,13 +33,13 @@
 			<required>true</required>
 		</parameter>
 
-		<parameter name="refresh" type="integer" required="false">
+		<parameter name="refresh" type="integer" required="false" min="10">
 			<label>Refresh</label>
 			<description>Specifies the refresh time in seconds for polling events from Tahoma cloud</description>
 			<default>30</default>
 		</parameter>
 
-		<parameter name="statusTimeout" type="integer" required="false">
+		<parameter name="statusTimeout" type="integer" required="false" min="60">
 			<label>Status timeout</label>
 			<description>Specifies the timeout in seconds after which the status is got from Tahoma cloud</description>
 			<default>300</default>

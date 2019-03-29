@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.systeminfo.test;
 
@@ -57,10 +61,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openhab.binding.systeminfo.SysteminfoBindingConstants;
-import org.openhab.binding.systeminfo.handler.SysteminfoHandler;
+import org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants;
 import org.openhab.binding.systeminfo.internal.SysteminfoHandlerFactory;
 import org.openhab.binding.systeminfo.internal.discovery.SysteminfoDiscoveryService;
+import org.openhab.binding.systeminfo.internal.handler.SysteminfoHandler;
 import org.openhab.binding.systeminfo.internal.model.DeviceNotFoundException;
 import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
 

@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.toon.internal.discovery;
 
-import static org.openhab.binding.toon.ToonBindingConstants.*;
+import static org.openhab.binding.toon.internal.ToonBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,13 +23,13 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.toon.handler.ToonBridgeHandler;
 import org.openhab.binding.toon.internal.ToonApiClient;
 import org.openhab.binding.toon.internal.api.Agreement;
 import org.openhab.binding.toon.internal.api.DeviceConfig;
 import org.openhab.binding.toon.internal.api.DeviceConfigInfo;
 import org.openhab.binding.toon.internal.api.ToonConnectionException;
 import org.openhab.binding.toon.internal.api.ToonState;
+import org.openhab.binding.toon.internal.handler.ToonBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

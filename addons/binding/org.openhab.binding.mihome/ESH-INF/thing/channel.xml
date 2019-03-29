@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="mihome"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="sw-btn">
 		<item-type>Switch</item-type>
@@ -14,6 +14,12 @@
 		<label>Curtain</label>
 		<category>Blinds</category>
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="rawMessage">
+		<item-type>String</item-type>
+		<label>Raw Message</label>
+		<description>Channel for raw messages. No parsing is done on these messages.</description>
 	</channel-type>
 
 	<channel-type id="brightness">
@@ -68,11 +74,6 @@
 		<description>This channel controls the volume of the gateway for playing sounds</description>
 		<category>SoundVolume</category>
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
-	</channel-type>
-
-	<channel-type id="joinPermission">
-		<item-type>Switch</item-type>
-		<label>Enable Device Inclusion</label>
 	</channel-type>
 
 	<channel-type id="enableSound">
@@ -142,10 +143,10 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="isOpenAlarm">
+	<channel-type id="alarm">
 		<kind>trigger</kind>
-		<label>Opened window alarm</label>
-		<description>Triggers ALARM event, when window sensor is not getting "closed" for configured amount of time</description>
+		<label>Alarm Trigger</label>
+		<description>Triggers ALARM event</description>
 		<event>
 			<options>
 				<option value="ALARM">alarm</option>
@@ -156,14 +157,14 @@
 	<channel-type id="isOpenAlarmTimer">
 		<item-type>Number</item-type>
 		<label>Alarm Timer</label>
-		<description>Time in seconds, after which ALARM event is triggered, when window is open (Default 300 sec, Min 30 sec)</description>
+		<description>Time in seconds, after which ALARM event is triggered, when open (Default 300 sec, Min 30 sec)</description>
 		<state readOnly="false" min="30" pattern="%d s" step="1"></state>
 	</channel-type>
 
 	<channel-type id="lastOpened">
 		<item-type>DateTime</item-type>
 		<label>Last Time Opened (Date/Time)</label>
-		<description>Date/time when window was last opened</description>
+		<description>Date/time when last opened</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -245,6 +246,12 @@
 				<option value="LONG_RELEASED">long click release</option>
 			</options>
 		</event>
+	</channel-type>
+
+	<channel-type id="idNumber">
+		<item-type>Number</item-type>
+		<label>ID</label>
+		<state readOnly="true"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

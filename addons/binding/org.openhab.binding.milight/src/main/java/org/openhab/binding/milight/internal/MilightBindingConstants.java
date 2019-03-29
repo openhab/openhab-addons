@@ -1,19 +1,24 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.milight.internal;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.Sets;
 
 /**
  * The {@link MilightBinding} class defines common constants, which are
@@ -37,10 +42,8 @@ public class MilightBindingConstants {
     public static final ThingTypeUID RGB_W_THING_TYPE = new ThingTypeUID(BINDING_ID, "rgbwLed");
     public static final ThingTypeUID WHITE_THING_TYPE = new ThingTypeUID(BINDING_ID, "whiteLed");
 
-    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Sets.newHashSet(BRIDGEV3_THING_TYPE,
-            BRIDGEV6_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets.newHashSet(RGB_V2_THING_TYPE,
-            RGB_THING_TYPE, WHITE_THING_TYPE, RGB_W_THING_TYPE, RGB_CW_WW_THING_TYPE, RGB_IBOX_THING_TYPE);
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(BRIDGEV3_THING_TYPE, BRIDGEV6_THING_TYPE).collect(Collectors.toSet()));
 
     // List of all Channel ids
     public static final String CHANNEL_COLOR = "ledcolor";
@@ -59,16 +62,9 @@ public class MilightBindingConstants {
     public static final int PORT_VER3 = 8899;
     public static final int PORT_VER6 = 5987;
 
-    public static final String CONFIG_HOST_NAME = "ADDR";
-    public static final String CONFIG_CUSTOM_PORT = "CUSTOM_PORT";
-    public static final String CONFIG_PROTOCOL_VERSION = "CONFIG_PROTOCOL_VERSION";
-    public static final String CONFIG_ID = "ID";
-    public static final String CONFIG_REFRESH_SEC = "REFRESH_IN_SEC";
-    public static final String CONFIG_PASSWORD_BYTE_1 = "PASSWORD_BYTE_1";
-    public static final String CONFIG_PASSWORD_BYTE_2 = "PASSWORD_BYTE_2";
-    public static final String CONFIG_REPEAT = "REPEAT";
-    public static final String CONFIG_WAIT_BETWEEN_COMMANDS = "WAIT_BETWEEN_COMMANDS";
-
     public static final String PROPERTY_SESSIONID = "sessionid";
     public static final String PROPERTY_SESSIONCONFIRMED = "sessionid_last_refresh";
+
+    public static final byte[] DISCOVER_MSG_V3 = "Link_Wi-Fi".getBytes();
+    public static final byte[] DISCOVER_MSG_V6 = "HF-A11ASSISTHREAD".getBytes();
 }

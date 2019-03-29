@@ -73,7 +73,7 @@ The information *@ "World"* is optional.
 ### icloud.items
 
 ```php
-Group    "iPhone" iCloud_Group
+Group    iCloud_Group "iPhone"
 
 String   iPhone_BatteryStatus             "Battery Status [%s]" <battery> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryStatus"}
 Number   iPhone_BatteryLevel              "Battery Level [%d %%]"   <battery> (iCloud_Group) {channel="icloud:device:myaccount:myiPhone8:batteryLevel"}
@@ -97,7 +97,7 @@ sitemap icloud label="iCloud" {
         Text item=iPhone_LocationLastUpdate
         Switch item=iPhone_FindMyPhone mappings=[ ON="Find!" ]
         Switch item=iPhone_Refresh mappings=[ REFRESH='Refresh now' ]
-        // mapview for web UI, invisible in iOS client
+        // Mapview for BasicUI and Applications (Android/iOS)
         Mapview item=iPhone_Location height=10
     }
 }

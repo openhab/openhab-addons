@@ -166,7 +166,7 @@ A typical item configuration for a LaCrosse temperature sensor looks like this:
 Number:Dimensionless Humidty_LR "Living Room [%.1f %unit%]" <humidity> {channel="jeelink:lacrosse:42:humidity"}
 Number:Temperature Temperature_LR "Living Room [%.1f %unit%]" <temperature> {channel="jeelink:lacrosse:42:temperature"}
 Contact Battery_Low_LR "Battery Low Living Room" {channel="jeelink:lacrosse:42:batteryLow"}
-Contact Battery_New_LR "Battery New Living Room" {channel="jeelink:lacrosse:42:batteryLow"}
+Contact Battery_New_LR "Battery New Living Room" {channel="jeelink:lacrosse:42:batteryNew"}
 ```
 
 A typical item configuration for a PCA301 power monitoring wireless sockets looks like this:
@@ -183,7 +183,7 @@ A typical item configuration for a TX22 temperature and humidity sensor looks li
 Number:Dimensionless Humidity "Outside [%.1f %unit%]" <humidity> {channel="jeelink:tx22:42:humidity"}
 Number:Temperature Temperature "Outside [%.1f %unit%]" <temperature> {channel="jeelink:tx22:42:temperature"}
 Contact Battery_Low_LR "Battery Low Outside" {channel="jeelink:tx22:42:batteryLow"}
-Contact Battery_New_LR "Battery New Outside" {channel="jeelink:tx22:42:batteryLow"}
+Contact Battery_New_LR "Battery New Outside" {channel="jeelink:tx22:42:batteryNew"}
 Number:Length Rain "Outside [%.1f %unit%]" {channel="jeelink:tx22:42:rain"}
 Number:Speed WindStrength "Wind [%.1f %unit%]" {channel="jeelink:tx22:42:windStrength"}
 Number:Angle WindDir "Wind dir [%.1f %unit%]" {channel="jeelink:tx22:42:windAngle"}

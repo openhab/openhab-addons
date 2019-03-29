@@ -10,10 +10,7 @@ Bundle-Name: ZWay Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.zway;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
-Export-Package: 
- org.openhab.binding.zway,
- org.openhab.binding.zway.handler
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  com.google.common.collect,
  com.google.gson,
@@ -41,8 +38,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.link,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.zway,
- org.openhab.binding.zway.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

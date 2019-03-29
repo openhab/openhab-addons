@@ -2,8 +2,8 @@
 
 [ $# -lt 2 ] && { echo "Usage: $0 <BindingIdInCamelCase> <Author>"; exit 1; }
 
-bindingVersion=2.4.0-SNAPSHOT
-archetypeVersion=0.10.0-SNAPSHOT
+bindingVersion=2.5.0-SNAPSHOT
+archetypeVersion=0.11.0-SNAPSHOT
 
 camelcaseId=$1
 id=`echo $camelcaseId | tr '[:upper:]' '[:lower:]'`
@@ -26,5 +26,5 @@ mvn -s ../archetype-settings.xml archetype:generate -N \
 
 directory="org.openhab.binding.$id/"
 
-cp ../../src/etc/about.html "$directory"
+cp ../../src/etc/NOTICE "$directory"
 

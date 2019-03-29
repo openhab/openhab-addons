@@ -5,9 +5,7 @@ Bundle-Name: openHAB Max! Binding Tests
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.max.test;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
-Export-Package: org.openhab.binding.max.test;uses:="org.eclipse.smarthom
- e.test"
+Bundle-Version: 2.5.0.qualifier
 Fragment-Host: org.openhab.binding.max
 Import-Package: 
  org.eclipse.jdt.annotation;resolution:=optional,
@@ -21,7 +19,5 @@ Import-Package:
  org.junit,
  org.junit.runner,
  org.junit.runners,
- org.openhab.binding.max,
- org.openhab.binding.max.test,
  org.osgi.service.device,
  org.slf4j
