@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Current color</description>
+		<config-description-ref uri="thing-type:net:channel-config" />
+	</channel-type>
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+		<description>Current open/closed contact state</description>
+		<state readOnly="true" />
+		<config-description-ref uri="thing-type:net:channel-config" />
+	</channel-type>
+	<channel-type id="datetime">
+		<item-type>DateTime</item-type>
+		<label>Date/Time</label>
+		<description>Current date and/or time</description>
+		<config-description-ref uri="thing-type:net:channel-config" />
+	</channel-type>
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<description>Current level of the dimmer</description>
+		<state min="0" max="100" step="1" />
+		<config-description-ref uri="thing-type:net:channel-config" />
+	</channel-type>
+	<channel-type id="image">
+		<item-type>Image</item-type>
+		<label>Image</label>
+		<description>Current image to display</description>
+		<state readOnly="true" />
+		<config-description-ref uri="thing-type:net:channel-config" />
+	</channel-type>
+	<channel-type id="location">
+		<item-type>Location</item-type>
+		<label>Location</label>
+		<description>Current GPS coordinates as Latitude,Longitude,Altitude</description>
+		<config-description-ref uri="thing-type:net:channel-config" />
+	</channel-type>
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Number</label>
+		<description>Current decimal value</description>
+		<config-description-ref uri="thing-type:net:channel-config" />
+	</channel-type>
+	<channel-type id="player">
+		<item-type>Player</item-type>
+		<label>Controls</label>
+		<description>Player controls</description>
+		<config-description-ref uri="thing-type:net:channel-config" />
+	</channel-type>
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Controls</label>
+		<description>Roller shutter controls</description>
+		<config-description-ref uri="thing-type:net:channel-config" />
+	</channel-type>
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>String</label>
+		<description>String value</description>
+		<config-description-ref uri="thing-type:net:channel-config" />
+	</channel-type>
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Current state of the switch</description>
+		<config-description-ref uri="thing-type:net:channel-config" />
+	</channel-type>
+</thing:thing-descriptions>

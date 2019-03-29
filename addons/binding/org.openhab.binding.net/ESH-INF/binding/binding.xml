@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>Network Protocol Binding</name>
-	<description>Binding for network protocols like UDP</description>
+	<description>Binding for network protocols like UDP, TCP and HTTP</description>
 	<author>Pauli Anttila</author>
 
 </binding:binding>

@@ -1,44 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="udp-server">
-		<label>UDP server</label>
-		<description>Server to receive UDP datagrams</description>
+    <bridge-type id="udp-server">
+        <label>UDP server</label>
+        <description>Server to receive UDP datagrams</description>
 
-		<channels>
-			<channel typeId="datagramReceived" id="datagramReceived" />
-		</channels>
+        <channels>
+            <channel typeId="dataReceived" id="dataReceived" />
+        </channels>
 
-		<config-description>
-			<parameter name="port" type="integer">
-				<label>UDP Port</label>
-				<description>UDP port to listening datagrams.</description>
-				<default>5000</default>
-			</parameter>
-			<parameter name="maxpdu" type="integer">
-				<label>Max PDU size</label>
-				<description>Maximum size of the datagrams.</description>
-				<default>1500</default>
-			</parameter>
-			<parameter name="charset" type="text" required="true">
+        <config-description>
+            <parameter name="port" type="integer">
+                <label>UDP Port</label>
+                <description>UDP port to listening datagrams.</description>
+                <default>5000</default>
+            </parameter>
+            <parameter name="convertTo" type="text" required="true">
                 <label>Charset</label>
                 <description></description>
                 <options>
-                    <option value="HEXSTRING">HexString</option>
                     <option value="ASCII">ASCII</option>
-                    <option value="UTF-8">UTF-8</option>
+                    <option value="BINARY">BINARY</option>
+                    <option value="HEXASTRING">HEXASTRING</option>
+                    <option value="UTF8">UTF8</option>
                 </options>
-                <default>HexString</default>
+                <default>HEXASTRING</default>
             </parameter>
-		</config-description>
-	</thing-type>
+        </config-description>
+    </bridge-type>
 
-	<channel-type id="datagramReceived">
-		<kind>trigger</kind>
-		<label>New Datagram Received</label>
-		<description>Fires when a new UDP datagram is received.</description>
-	</channel-type>
+    <channel-type id="dataReceived">
+        <kind>trigger</kind>
+        <label>Datagram Received</label>
+        <description>Fires when UDP datagram is received.</description>
+    </channel-type>
 
 </thing:thing-descriptions>

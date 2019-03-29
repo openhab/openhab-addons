@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="http-server">
+		<label>HTTP server</label>
+		<description>Server to receive HTTP data</description>
+
+		<channels>
+			<channel typeId="dataReceived" id="dataReceived" />
+		</channels>
+
+		<config-description>
+			<parameter name="port" type="integer">
+				<label>HTTP Port</label>
+				<description>HTTP port to listening data.</description>
+				<default>5000</default>
+			</parameter>
+			<parameter name="tls" type="boolean">
+                <label>Use TLS</label>
+                <description>Secure HTTP server with TLS.</description>
+                <default>false</default>
+            </parameter>
+			<parameter name="convertTo" type="text" required="true">
+                <label>Charset</label>
+                <description></description>
+                <options>
+                    <option value="ASCII">ASCII</option>
+                    <option value="BINARY">BINARY</option>
+                    <option value="HEXASTRING">HEXASTRING</option>
+                    <option value="UTF8">UTF8</option>
+                </options>
+                <default>HEXASTRING</default>
+            </parameter>
+		</config-description>
+	</bridge-type>
+
+	<channel-type id="dataReceived">
+		<kind>trigger</kind>
+		<label>HTTP Data Received</label>
+		<description>Fires when HTTP data is received.</description>
+	</channel-type>
+
+</thing:thing-descriptions>

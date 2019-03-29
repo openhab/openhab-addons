@@ -12,33 +12,33 @@
  */
 package org.openhab.binding.net.internal.handler;
 
+import java.security.cert.CertificateException;
+
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.net.internal.config.ServerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import reactor.core.publisher.Flux;
-import reactor.netty.Connection;
-import reactor.netty.udp.UdpServer;
+import reactor.netty.DisposableServer;
+import reactor.netty.http.server.HttpServer;
 
 /**
- * The {@link UdpServerHandler} is responsible for handling UDP server thing functionality.
+ * The {@link HttpServerHandler} is responsible for handling HTTP server thing functionality.
  *
  * @author Pauli Anttila - Initial contribution
  *
  */
-public class UdpServerHandler extends AbstractServerBridge {
+public class HttpServerHandler extends AbstractServerBridge {
 
-    private final Logger logger = LoggerFactory.getLogger(UdpServerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(HttpServerHandler.class);
 
     private ServerConfiguration configuration;
-    private Connection server;
+    private DisposableServer server;
 
-    public UdpServerHandler(Bridge bridge) {
+    public HttpServerHandler(Bridge bridge) {
         super(bridge);
     }
 
@@ -53,12 +53,11 @@ public class UdpServerHandler extends AbstractServerBridge {
         logger.debug("Using configuration: {}", configuration);
 
         try {
-            startServer();
+            startServer(configuration.tls);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.debug("Exception occurred during initalization: {}. ", e.getMessage(), e);
             shutdownServer();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 
@@ -68,23 +67,34 @@ public class UdpServerHandler extends AbstractServerBridge {
         shutdownServer();
     }
 
-    private void startServer() {
-        logger.debug("Start UDP server");
+    private void startServer(boolean tls) {
+        logger.debug("Start HTTP server");
 
-        server = UdpServer.create().port(configuration.port).handle((in, out) -> {
-            in.receive().asByteArray().subscribe(bytes -> {
-                sendData(configuration.convertTo, bytes);
+        HttpServer httpServer = HttpServer.create().port(configuration.port);
+
+        if (tls) {
+            httpServer = httpServer.secure(sslContextSpec -> {
+                try {
+                    sslContextSpec.sslContext(SecureContextBuilder.getInstance().getSslContextBuilder());
+                } catch (CertificateException e) {
+                    logger.warn("SSL context builder error: reason {}.", e.getMessage(), e);
+                }
             });
-            return Flux.never();
-        }).bind().block();
-        logger.debug("UDP server started");
+        }
+
+        server = httpServer.route(routes -> routes.post("/**", (req, resp) -> req.receive().asString().flatMap(s -> {
+            sendData(configuration.convertTo, s.getBytes());
+            return resp.status(200).send();
+        }))).bindNow();
+
+        logger.debug("HTTP server started");
     }
 
     private void shutdownServer() {
-        logger.debug("Shutdown UDP server");
+        logger.debug("Shutdown HTTP server");
         if (server != null) {
             server.disposeNow();
         }
-        logger.debug("UDP server stopped");
+        logger.debug("HTTP server stopped");
     }
 }

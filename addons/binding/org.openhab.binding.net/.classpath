@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/crccalc-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/netty-all-4.1.33.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/reactor-core-3.2.6.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/reactor-netty-0.8.5.RELEASE.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="lib" path="lib/reactive-streams-1.0.2.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

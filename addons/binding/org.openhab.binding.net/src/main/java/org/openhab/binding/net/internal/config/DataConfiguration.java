@@ -12,20 +12,6 @@
  */
 package org.openhab.binding.net.internal.config;
 
-import org.openhab.binding.net.internal.handler.UdpServerHandler;
+public class DataConfiguration {
 
-/**
- * Configuration class for {@link UdpServerHandler }.
- *
- * @author Pauli Anttila - Initial contribution
- */
-public class UdpServerConfiguration {
-    public int port;
-    public int maxpdu;
-    public String charset;
-
-    @Override
-    public String toString() {
-        return "[" + "port=" + port + ", maxpdu=" + maxpdu + ", charset=" + charset + "]";
-    }
 }

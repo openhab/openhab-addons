@@ -1,7 +1,12 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.binding.net
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/netty-all-4.1.33.Final.jar,
+ lib/reactor-core-3.2.6.RELEASE.jar,
+ lib/reactor-netty-0.8.5.RELEASE.jar,
+ lib/reactive-streams-1.0.2.jar,
+ lib/crccalc-1.0.jar
 Bundle-ManifestVersion: 2
 Bundle-Name: Network Protocol Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -9,6 +14,8 @@ Bundle-SymbolicName: org.openhab.binding.net;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Import-Package: 
+ com.google.common.collect;version="15.0.0",
+ org.apache.commons.lang;version="2.6.0",
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.types,
@@ -16,7 +23,11 @@ Import-Package:
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
+ org.eclipse.smarthome.core.transform,
  org.eclipse.smarthome.core.types,
  org.eclipse.smarthome.core.util,
+ org.openhab.core.automation.annotation;resolution:=optional,
+ org.osgi.framework,
+ org.osgi.service.component,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

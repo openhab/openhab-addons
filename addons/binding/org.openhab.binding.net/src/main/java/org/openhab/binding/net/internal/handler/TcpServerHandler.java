@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.net.internal.handler;
 
+import java.security.cert.CertificateException;
+
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -22,23 +24,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import reactor.core.publisher.Flux;
-import reactor.netty.Connection;
-import reactor.netty.udp.UdpServer;
+import reactor.netty.DisposableServer;
+import reactor.netty.tcp.TcpServer;
 
 /**
- * The {@link UdpServerHandler} is responsible for handling UDP server thing functionality.
+ * The {@link TcpServerHandler} is responsible for handling TCP server thing functionality.
  *
  * @author Pauli Anttila - Initial contribution
  *
  */
-public class UdpServerHandler extends AbstractServerBridge {
+public class TcpServerHandler extends AbstractServerBridge {
 
-    private final Logger logger = LoggerFactory.getLogger(UdpServerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(TcpServerHandler.class);
 
     private ServerConfiguration configuration;
-    private Connection server;
+    private DisposableServer server;
 
-    public UdpServerHandler(Bridge bridge) {
+    public TcpServerHandler(Bridge bridge) {
         super(bridge);
     }
 
@@ -53,7 +55,7 @@ public class UdpServerHandler extends AbstractServerBridge {
         logger.debug("Using configuration: {}", configuration);
 
         try {
-            startServer();
+            startServer(configuration.tls);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.debug("Exception occurred during initalization: {}. ", e.getMessage(), e);
@@ -68,23 +70,36 @@ public class UdpServerHandler extends AbstractServerBridge {
         shutdownServer();
     }
 
-    private void startServer() {
-        logger.debug("Start UDP server");
+    private void startServer(boolean tls) {
+        logger.debug("Start TCP server");
 
-        server = UdpServer.create().port(configuration.port).handle((in, out) -> {
+        TcpServer tcpServer = TcpServer.create().port(configuration.port);
+
+        if (tls) {
+            tcpServer = tcpServer.secure(sslContextSpec -> {
+                try {
+                    sslContextSpec.sslContext(SecureContextBuilder.getInstance().getSslContextBuilder());
+                } catch (CertificateException e) {
+                    logger.warn("SSL context builder error: reason {}.", e.getMessage(), e);
+                }
+            });
+        }
+
+        server = tcpServer.handle((in, out) -> {
             in.receive().asByteArray().subscribe(bytes -> {
                 sendData(configuration.convertTo, bytes);
             });
             return Flux.never();
         }).bind().block();
-        logger.debug("UDP server started");
+        logger.debug("TCP server started");
     }
 
     private void shutdownServer() {
-        logger.debug("Shutdown UDP server");
+        logger.debug("Shutdown TCP server");
         if (server != null) {
             server.disposeNow();
         }
-        logger.debug("UDP server stopped");
+        logger.debug("TCP server stopped");
     }
+
 }

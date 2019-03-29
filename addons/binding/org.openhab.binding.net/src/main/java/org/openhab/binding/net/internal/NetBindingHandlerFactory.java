@@ -12,22 +12,31 @@
  */
 package org.openhab.binding.net.internal;
 
-import static org.openhab.binding.net.internal.NetBindingConstants.THING_UDP;
+import static org.openhab.binding.net.internal.NetBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.core.transform.TransformationHelper;
+import org.eclipse.smarthome.core.transform.TransformationService;
+import org.openhab.binding.net.internal.handler.DataHandler;
+import org.openhab.binding.net.internal.handler.HttpServerHandler;
+import org.openhab.binding.net.internal.handler.TcpServerHandler;
 import org.openhab.binding.net.internal.handler.UdpServerHandler;
+import org.openhab.binding.net.internal.transformation.TransformationServiceProvider;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+
+import com.google.common.collect.Sets;
 
 /**
  * The {@link NetBindingHandlerFactory} is responsible for creating things and thing
@@ -37,24 +46,47 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.net")
 @NonNullByDefault
-public class NetBindingHandlerFactory extends BaseThingHandlerFactory {
+public class NetBindingHandlerFactory extends BaseThingHandlerFactory implements TransformationServiceProvider {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_UDP).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.union(NetBindingConstants.SUPPORTED_THING_TYPES,
+            NetBindingConstants.SUPPORTED_BRIDGE_TYPES);
+
+    @Activate
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+    }
+
+    @Deactivate
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        super.deactivate(componentContext);
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_UDP)) {
-            return new UdpServerHandler(thing);
+        if (thingTypeUID.equals(BRIDGE_UDP_SERVER)) {
+            return new UdpServerHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(BRIDGE_TCP_SERVER)) {
+            return new TcpServerHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(BRIDGE_HTTP_SERVER)) {
+            return new HttpServerHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(THING_DATA_HANDLER)) {
+            return new DataHandler(thing, this);
         }
 
         return null;
+    }
+
+    @Override
+    public @Nullable TransformationService getTransformationService(String type) {
+        return TransformationHelper.getTransformationService(bundleContext, type);
     }
 }
