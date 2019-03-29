@@ -122,7 +122,7 @@
 
     <feature name="openhab-binding-daikin" description="Daikin Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.daikin/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.daikin/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-denonmarantz" description="DenonMarantz Binding" version="${project.version}">
@@ -142,7 +142,7 @@
     <feature name="openhab-binding-digitalstrom" description="digitalSTROM Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.digitalstrom/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.digitalstrom/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-dlinksmarthome" description="D-Link Smart Home Binding" version="${project.version}">
@@ -244,7 +244,7 @@
     
     <feature name="openhab-binding-gardena" description="Gardena Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.gardena/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.gardena/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-globalcache" description="GlobalCache Binding" version="${project.version}">
@@ -270,7 +270,13 @@
     
     <feature name="openhab-binding-helios" description="Helios Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.helios/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.ws.xmlschema/xmlschema-core/2.2.4</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxws-api-2.2/2.9.0</bundle>
+        <bundle dependency="true">mvn:org.apache.cxf/cxf-core/3.1.9</bundle>
+        <bundle dependency="true">mvn:org.apache.cxf.services.wsn/cxf-services-wsn-api/3.1.9</bundle>
+        <bundle dependency="true">mvn:org.apache.felix/org.apache.felix.framework/6.0.2</bundle>
+        <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-ws-metadata_2.0_spec/1.1.3</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.helios/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-homematic" description="Homematic Binding" version="${project.version}">
@@ -338,7 +344,7 @@
 
     <feature name="openhab-binding-keba" description="Keba Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.keba/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.keba/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-km200" description="KM200 Binding" version="${project.version}">
@@ -350,7 +356,11 @@
     <feature name="openhab-binding-knx" description="KNX Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.knx/${project.version}</bundle>
+        <feature prerequisite="true">wrap</feature>
+        <bundle dependency="true">wrap:mvn:com.github.calimero/calimero-core/2.4$Bundle-Name=Calimero%20Core&amp;Bundle-SymbolicName=com.github.calimero.calimero-core&amp;Bundle-Version=2.4</bundle>
+        <bundle dependency="true">wrap:mvn:com.github.calimero/calimero-device/2.4$Bundle-Name=Calimero%20KNX%20Device&amp;Bundle-SymbolicName=com.github.calimero.calimero-device&amp;Bundle-Version=2.4</bundle>
+        <bundle dependency="true">wrap:mvn:com.github.calimero/calimero-rxtx/2.4$Bundle-Name=Calimero%20rxtx%20Adapter&amp;Bundle-SymbolicName=com.github.calimero.calimero-rxtx&amp;Bundle-Version=2.4</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.knx/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-kodi" description="Kodi Binding" version="${project.version}">
@@ -364,7 +374,7 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-http</feature>
         <feature>openhab-transport-upnp</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.konnected/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.konnected/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-kostalinverter" description="Kostal Inverter Binding" version="${project.version}">
@@ -389,7 +399,7 @@
     <feature name="openhab-binding-lgtvserial" description="LG TV Serial Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.lgtvserial/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.lgtvserial/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-lgwebos" description="LG webOS Binding" version="${project.version}">
@@ -450,12 +460,12 @@
     <feature name="openhab-binding-miele" description="Miele@home Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.miele/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.miele/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-mihome" description="Xiaomi Mi Smart Home Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.mihome/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.mihome/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-miio" description="Xiaomi Mi IO Binding" version="${project.version}">
@@ -605,7 +615,7 @@
     <feature name="openhab-binding-phc" description="PHC Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.phc/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.phc/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-pioneeravr" description="PioneerAVR Binding" version="${project.version}">
@@ -642,7 +652,7 @@
     <feature name="openhab-binding-regoheatpump" description="RegoHeatPump Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.regoheatpump/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.regoheatpump/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-rme" description="RME Binding" version="${project.version}">
@@ -692,7 +702,7 @@
 
     <feature name="openhab-binding-seneye" description="Seneye Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.seneye/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.seneye/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-serialbutton" description="Serial Button Binding" version="${project.version}">
@@ -724,12 +734,12 @@
 
     <feature name="openhab-binding-solaredge" description="SolarEdge Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.solaredge/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.solaredge/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-solarlog" description="SolarLog Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.solarlog/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.solarlog/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-somfytahoma" description="Somfy Tahoma Binding" version="${project.version}">
@@ -761,12 +771,12 @@
     <feature name="openhab-binding-squeezebox" description="Squeezebox Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.squeezebox/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.squeezebox/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-synopanalyzer" description="Synop Analyzer Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.synopanalyzer/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.synopanalyzer/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-systeminfo" description="System Info Binding" version="${project.version}">
@@ -796,19 +806,19 @@
 
     <feature name="openhab-binding-toon" description="Toon Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.toon/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.toon/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-tplinksmarthome" description="TP-Link Smart Home Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.tplinksmarthome/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.tplinksmarthome/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-tradfri" description="TRÅDFRI Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-coap</feature>
         <feature>openhab-transport-mdns</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.tradfri/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.tradfri/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-unifi" description="UniFi Binding" version="${project.version}">
@@ -830,7 +840,7 @@
     <feature name="openhab-binding-velbus" description="Velbus Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.velbus/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.velbus/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-vitotronic" description="Vitotronic Binding" version="${project.version}">
@@ -851,7 +861,7 @@
 
     <feature name="openhab-binding-wifiled" description="WiFi LED Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.wifiled/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.wifiled/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-windcentrale" description="Windcentrale Binding" version="${project.version}">
@@ -867,7 +877,7 @@
 
     <feature name="openhab-binding-yeelight" description="Yeelight Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.yeelight/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.yeelight/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-zoneminder" description="ZoneMinder Binding" version="${project.version}">

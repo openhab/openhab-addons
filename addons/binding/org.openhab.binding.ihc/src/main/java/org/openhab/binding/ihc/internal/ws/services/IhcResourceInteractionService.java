@@ -75,7 +75,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
             if (nodeList != null && nodeList.getLength() == 1) {
                 WSResourceValue val = parseResourceValue(nodeList.item(0));
 
-                if (val != null && val.getResourceID() == resoureId) {
+                if (val != null && val.resourceID == resoureId) {
                     return val;
                 } else {
                     throw new IhcExecption("No resource id found");
@@ -151,9 +151,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
             // Parse week day value
             value = getValue(n, "weekdayNumber");
             if (StringUtils.isNotBlank(value)) {
-                WSWeekdayValue val = new WSWeekdayValue(id);
-                val.setWeekdayNumber(Integer.valueOf(value));
-                return val;
+                return new WSWeekdayValue(id, Integer.valueOf(value));
             }
 
             // Unknown value type
@@ -170,8 +168,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
      * Update resource value to controller.
      *
      *
-     * @param value
-     *            Resource value.
+     * @param value Resource value.
      * @return True if value is successfully updated.
      */
     public boolean resourceUpdate(WSResourceValue value) throws IhcExecption {
@@ -217,7 +214,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 + "</soap:Envelope>";
         // @formatter:on
 
-        String query = String.format(soapQuery, value.booleanValue() ? "true" : "false", value.getResourceID());
+        String query = String.format(soapQuery, value.value ? "true" : "false", value.resourceID);
         return doResourceUpdate(query);
     }
 
@@ -240,8 +237,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 + "</soap:Envelope>";
         // @formatter:on
 
-        String query = String.format(soapQuery, value.getMaximumValue(), value.getMinimumValue(),
-                value.getFloatingPointValue(), value.getResourceID());
+        String query = String.format(soapQuery, value.maximumValue, value.minimumValue, value.value, value.resourceID);
         return doResourceUpdate(query);
     }
 
@@ -264,8 +260,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 + "</soap:Envelope>";
         // @formatter:on
 
-        String query = String.format(soapQuery, value.getMaximumValue(), value.getMinimumValue(), value.getInteger(),
-                value.getResourceID());
+        String query = String.format(soapQuery, value.maximumValue, value.minimumValue, value.value, value.resourceID);
         return doResourceUpdate(query);
     }
 
@@ -286,7 +281,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 + "</soap:Envelope>";
         // @formatter:on
 
-        String query = String.format(soapQuery, value.getMilliseconds(), value.getResourceID());
+        String query = String.format(soapQuery, value.milliseconds, value.resourceID);
         return doResourceUpdate(query);
     }
 
@@ -307,7 +302,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 + "</soap:Envelope>";
         // @formatter:on
 
-        String query = String.format(soapQuery, value.getWeekdayNumber(), value.getResourceID());
+        String query = String.format(soapQuery, value.weekdayNumber, value.resourceID);
         return doResourceUpdate(query);
     }
 
@@ -330,8 +325,8 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 + "</soap:Envelope>";
         // @formatter:on
 
-        String query = String.format(soapQuery, value.getDefinitionTypeID(), value.getEnumValueID(),
-                value.getEnumName(), value.getResourceID());
+        String query = String.format(soapQuery, value.definitionTypeID, value.enumValueID, value.enumName,
+                value.resourceID);
         return doResourceUpdate(query);
     }
 
@@ -354,8 +349,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 + "</soap:Envelope>";
         // @formatter:on
 
-        String query = String.format(soapQuery, value.getHours(), value.getMinutes(), value.getSeconds(),
-                value.getResourceID());
+        String query = String.format(soapQuery, value.hours, value.minutes, value.seconds, value.resourceID);
         return doResourceUpdate(query);
     }
 
@@ -378,8 +372,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
                 + "</soap:Envelope>";
         // @formatter:on
 
-        String query = String.format(soapQuery, value.getMonth(), value.getYear(), value.getDay(),
-                value.getResourceID());
+        String query = String.format(soapQuery, value.month, value.year, value.day, value.resourceID);
         return doResourceUpdate(query);
     }
 
@@ -396,8 +389,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
     /**
      * Enable resources runtime value notifications.
      *
-     * @param resourceIdList
-     *            List of resource Identifiers.
+     * @param resourceIdList List of resource Identifiers.
      * @return True is connection successfully opened.
      */
     public void enableRuntimeValueNotifications(Set<Integer> resourceIdList) throws IhcExecption {
@@ -428,8 +420,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
      * Runtime value notification should firstly be activated by
      * enableRuntimeValueNotifications function.
      *
-     * @param timeoutInSeconds
-     *            How many seconds to wait notifications.
+     * @param timeoutInSeconds How many seconds to wait notifications.
      * @return List of received runtime value notifications.
      * @throws SocketTimeoutException
      * @throws IhcTimeoutExecption

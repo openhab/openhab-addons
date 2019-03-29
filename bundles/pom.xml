@@ -28,8 +28,10 @@
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.bosesoundtouch</module>
     <module>org.openhab.binding.coolmasternet</module>
+    <module>org.openhab.binding.daikin</module>
     <module>org.openhab.binding.deconz</module>
     <module>org.openhab.binding.denonmarantz</module>
+    <module>org.openhab.binding.digitalstrom</module>
     <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dmx</module>
     <module>org.openhab.binding.dwdunwetter</module>
@@ -37,21 +39,29 @@
     <module>org.openhab.binding.feican</module>
     <module>org.openhab.binding.folding</module>
     <module>org.openhab.binding.freebox</module>
+    <module>org.openhab.binding.gardena</module>
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.gpstracker</module>
     <module>org.openhab.binding.harmonyhub</module>
     <module>org.openhab.binding.hdanywhere</module>
+    <module>org.openhab.binding.helios</module>
     <module>org.openhab.binding.hyperion</module>
     <module>org.openhab.binding.irtrans</module>
+    <module>org.openhab.binding.keba</module>
+    <module>org.openhab.binding.knx</module>
     <module>org.openhab.binding.kodi</module>
+    <module>org.openhab.binding.konnected</module>
     <module>org.openhab.binding.leapmotion</module>
+    <module>org.openhab.binding.lgtvserial</module>
     <module>org.openhab.binding.lifx</module>
     <module>org.openhab.binding.lirc</module>
     <module>org.openhab.binding.meteoblue</module>
+    <module>org.openhab.binding.miele</module>
+    <module>org.openhab.binding.mihome</module>
     <module>org.openhab.binding.mqtt</module>
     <module>org.openhab.binding.mqtt.generic</module>
-    <module>org.openhab.binding.mqtt.homie</module>
     <module>org.openhab.binding.mqtt.homeassistant</module>
+    <module>org.openhab.binding.mqtt.homie</module>
     <module>org.openhab.binding.nest</module>
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.nibeheatpump</module>
@@ -59,23 +69,35 @@
     <module>org.openhab.binding.onewire</module>
     <module>org.openhab.binding.openuv</module>
     <module>org.openhab.binding.openweathermap</module>
+    <module>org.openhab.binding.phc</module>
     <module>org.openhab.binding.plclogo</module>
     <module>org.openhab.binding.plugwise</module>
     <module>org.openhab.binding.powermax</module>
     <module>org.openhab.binding.pulseaudio</module>
+    <module>org.openhab.binding.regoheatpump</module>
     <module>org.openhab.binding.rfxcom</module>
     <module>org.openhab.binding.robonect</module>
     <module>org.openhab.binding.seneye</module>
     <module>org.openhab.binding.sensebox</module>
     <module>org.openhab.binding.serialbutton</module>
+    <module>org.openhab.binding.solaredge</module>
+    <module>org.openhab.binding.solarlog</module>
     <module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.spotify</module>
+    <module>org.openhab.binding.squeezebox</module>
+    <module>org.openhab.binding.synopanalyzer</module>
     <module>org.openhab.binding.tankerkoenig</module>
     <module>org.openhab.binding.tesla</module>
+    <module>org.openhab.binding.toon</module>
+    <module>org.openhab.binding.tplinksmarthome</module>
+    <module>org.openhab.binding.tradfri</module>
     <module>org.openhab.binding.unifi</module>
     <module>org.openhab.binding.valloxmv</module>
+    <module>org.openhab.binding.velbus</module>
     <module>org.openhab.binding.weatherunderground</module>
+    <module>org.openhab.binding.wifiled</module>
     <module>org.openhab.binding.windcentrale</module>
+    <module>org.openhab.binding.yeelight</module>
     <module>org.openhab.extensionservice.marketplace</module>
     <module>org.openhab.extensionservice.marketplace.automation</module>
     <module>org.openhab.io.mqttembeddedbroker</module>
