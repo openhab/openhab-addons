@@ -62,7 +62,7 @@
     <feature name="openhab-binding-autelis" description="Autelis Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.autelis/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.autelis/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-avmfritz" description="AVM FRITZ!Box Binding" version="${project.version}">

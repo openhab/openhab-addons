@@ -24,6 +24,7 @@
     <module>org.openhab.binding.amazondashbutton</module>
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.atlona</module>
+    <module>org.openhab.binding.autelis</module>
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.bigassfan</module>
     <module>org.openhab.binding.bosesoundtouch</module>
