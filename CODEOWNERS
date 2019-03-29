@@ -89,8 +89,6 @@
 /addons/binding/org.openhab.binding.pioneeravr/ @Stratehm
 /addons/binding/org.openhab.binding.regoheatpump/ @crnjan
 /addons/binding/org.openhab.binding.rme/ @kgoderis
-/addons/binding/org.openhab.binding.robonect/ @reyem
-/addons/binding/org.openhab.binding.robonect.test/ @reyem
 /addons/binding/org.openhab.binding.rotelra1x/ @fa2k
 /addons/binding/org.openhab.binding.russound/ @tmrobert8
 /addons/binding/org.openhab.binding.samsungtv/ @paulianttila
@@ -194,6 +192,7 @@
 /bundles/org.openhab.binding.powermax/ @lolodomo
 /bundles/org.openhab.binding.pulseaudio/ @peuter
 /bundles/org.openhab.binding.rfxcom/ @martinvw @paulianttila
+/bundles/org.openhab.binding.robonect/ @reyem
 /bundles/org.openhab.binding.sensebox/ @hakan42
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
 /bundles/org.openhab.binding.sonos/ @kgoderis @lolodomo

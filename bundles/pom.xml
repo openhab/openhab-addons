@@ -64,6 +64,7 @@
     <module>org.openhab.binding.powermax</module>
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.rfxcom</module>
+    <module>org.openhab.binding.robonect</module>
     <module>org.openhab.binding.sensebox</module>
     <module>org.openhab.binding.serialbutton</module>
     <module>org.openhab.binding.sonos</module>
