@@ -15,6 +15,8 @@ package org.openhab.binding.km200.internal.handler;
 import static org.openhab.binding.km200.internal.KM200BindingConstants.THING_TYPE_KMDEVICE;
 
 import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -52,7 +54,6 @@ import org.openhab.binding.km200.internal.KM200Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.net.InetAddresses;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
@@ -170,8 +171,8 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                     String ip = (String) configuration.get("ip4Address");
                     if (StringUtils.isNotBlank(ip)) {
                         try {
-                            InetAddresses.forString(ip);
-                        } catch (IllegalArgumentException e) {
+                            InetAddress.getByName(ip);
+                        } catch (UnknownHostException e) {
                             logger.debug("IP4_address is not valid!: {}", ip);
                         }
                         getDevice().setIP4Address(ip);
