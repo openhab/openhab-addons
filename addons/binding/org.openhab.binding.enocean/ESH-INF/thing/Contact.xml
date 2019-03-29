@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enocean"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="contact">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Single Input Contact</label>
+		<description>Single input contact sensor (EEP: D5-00)</description>
+
+		<config-description>
+			<parameter name="enoceanId" type="text">
+				<label>EnOceanId</label>
+				<description>EnOceanId of device this thing belongs to</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="receivingEEPId" type="text" multiple="true">
+				<label>EEP</label>
+				<description>EEP which is used by contact</description>
+				<options>
+					<option value="D5_00_01">D5-00-01 single input</option>
+					<option value="A5_14_01">A5-14-01 Single input contact, supply voltage monitor</option>
+					<option value="A5_14_01_ELTAKO">Eltako battery status</option>
+				</options>
+				<default>D5_00_01</default>
+				<multipleLimit>2</multipleLimit>
+				<limitToOptions>true</limitToOptions>
+				<required>true</required>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -10,18 +10,18 @@ IF %ARGC% NEQ 2 (
 	exit /B 1
 )
 
-SET BindingVersion="2.4.0-SNAPSHOT"
-SET ArchetypeVersion="0.10.0-SNAPSHOT"
+SET BindingVersion="2.5.0-SNAPSHOT"
+SET ArchetypeVersion="0.11.0-SNAPSHOT"
 
-SET BindingIdInCamelCase=%1
+SET BindingIdInCamelCase=%~1
 SET BindingIdInLowerCase=%BindingIdInCamelCase%
-SET Author=%2
+SET Author=%~2
 
 call :LoCase BindingIdInLowerCase
 
 call mvn -s ../archetype-settings.xml archetype:generate -N -DarchetypeGroupId=org.eclipse.smarthome.archetype -DarchetypeArtifactId=org.eclipse.smarthome.archetype.binding -DarchetypeVersion=%ArchetypeVersion% -DgroupId=org.openhab.binding -DartifactId=org.openhab.binding.%BindingIdInLowerCase% -Dpackage=org.openhab.binding.%BindingIdInLowerCase% -Dversion=%BindingVersion% -DbindingId=%BindingIdInLowerCase% -DbindingIdCamelCase=%BindingIdInCamelCase% -DvendorName=openHAB -Dnamespace=org.openhab -Dauthor="%Author%"
 
-COPY ..\..\src\etc\about.html org.openhab.binding.%BindingIdInLowerCase%\
+COPY ..\..\src\etc\NOTICE org.openhab.binding.%BindingIdInLowerCase%\
 
 (SET BindingIdInLowerCase=)
 (SET BindingIdInCamelCase=)

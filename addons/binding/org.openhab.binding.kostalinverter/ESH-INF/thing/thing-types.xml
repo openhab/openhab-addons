@@ -1,17 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="kostalinverter"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="kostalinverter">
 		<label>Kostal Inverter</label>
 		<description>Kostal Inverter</description>
 		<channels>
-			<channel typeId="acPower" id="acPower"></channel>
-			<channel typeId="totalEnergy" id="totalEnergy"></channel>
-			<channel typeId="dayEnergy" id="dayEnergy"></channel>
-			<channel typeId="status" id="status"></channel>
+			<channel typeId="device-local-ac-current-power" id="acPower" />
+			<channel typeId="statistic-yield-total" id="totalEnergy" />
+			<channel typeId="statistic-yield-day" id="dayEnergy" />
+			<channel typeId="status" id="status" />
+			<channel typeId="device-local-pvstring-1-voltage" id="str1Voltage" />
+			<channel typeId="device-local-pvstring-1-amperage" id="str1Current" />
+			<channel typeId="device-local-pvstring-2-voltage" id="str2Voltage" />
+			<channel typeId="device-local-pvstring-2-amperage" id="str2Current" />
+			<channel typeId="device-local-ac-phase-1-current-voltage" id="l1Voltage" />
+			<channel typeId="device-local-ac-phase-1-current-power" id="l1Power" />
+			<channel typeId="device-local-ac-phase-2-current-voltage" id="l2Voltage" />
+			<channel typeId="device-local-ac-phase-2-current-power" id="l2Power" />
+			<channel typeId="device-local-ac-phase-3-current-voltage" id="l3Voltage" />
+			<channel typeId="device-local-ac-phase-3-current-power" id="l3Power" />
 		</channels>
 
 		<config-description>
@@ -38,31 +48,4 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<channel-type id="acPower">
-		<item-type>Number:Power</item-type>
-		<label>AC Power</label>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
-	</channel-type>
-
-	<channel-type id="totalEnergy">
-		<item-type>Number:Energy</item-type>
-		<label>Total Energy</label>
-		<state readOnly="true" pattern="%.2f %unit%" />
-	</channel-type>
-
-	<channel-type id="dayEnergy">
-		<item-type>Number:Energy</item-type>
-		<label>Day Energy</label>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
-	</channel-type>
-
-	<channel-type id="status">
-		<item-type>String</item-type>
-		<label>Status</label>
-		<state readOnly="true" />
-	</channel-type>
-
 </thing:thing-descriptions>

@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.io.neeo.internal;
 
@@ -186,7 +190,7 @@ public class NeeoDeviceDefinitions {
      * {@link NeeoDevice} that is bound (according to the {@link NeeoDeviceKeys}) and then will determine if the item
      * name has been bound on that {@link NeeoDevice}.
      *
-     * @param keys a non-null {@link NeeoDeviceKeys}
+     * @param keys     a non-null {@link NeeoDeviceKeys}
      * @param itemName a non-null, non-empty item name to use
      * @return true if bound, false otherwise
      */
@@ -227,7 +231,7 @@ public class NeeoDeviceDefinitions {
      * Gets the list of {@link NeeoDevice} and {@link NeeoDeviceChannel} that are currently bound for the given itemName
      * (or all if the itemName is null)
      *
-     * @param keys a non-null {@link NeeoDeviceKeys}
+     * @param keys     a non-null {@link NeeoDeviceKeys}
      * @param itemName a possibly null, possibly empty item name to use
      * @return a non-null, possibly empty list
      */

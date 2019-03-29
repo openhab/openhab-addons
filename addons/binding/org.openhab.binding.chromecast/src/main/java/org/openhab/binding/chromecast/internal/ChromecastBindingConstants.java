@@ -1,15 +1,21 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.chromecast.internal;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -30,20 +36,18 @@ public class ChromecastBindingConstants {
     public static final ThingTypeUID THING_TYPE_AUDIO = new ThingTypeUID(BINDING_ID, "audio");
     public static final ThingTypeUID THING_TYPE_AUDIOGROUP = new ThingTypeUID(BINDING_ID, "audiogroup");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
-    static {
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_AUDIO);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_AUDIOGROUP);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CHROMECAST);
-    }
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_AUDIO, THING_TYPE_AUDIOGROUP, THING_TYPE_CHROMECAST).collect(Collectors.toSet()));
 
     // Config Parameters
     public static final String HOST = "ipAddress";
     public static final String PORT = "port";
     public static final String REFRESH_RATE_SECONDS = "refreshRate";
+    public static final String DEVICE_ID = "deviceId";
 
     // Channel IDs
     public static final String CHANNEL_CONTROL = "control";
+    public static final String CHANNEL_STOP = "stop";
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_MUTE = "mute";
     public static final String CHANNEL_PLAY_URI = "playuri";
@@ -82,10 +86,13 @@ public class ChromecastBindingConstants {
      * These are channels that map directly. Images and location are unique channels that
      * don't fit this description.
      */
-    public static final String[] METADATA_SIMPLE_CHANNELS = { CHANNEL_ALBUM_ARTIST, CHANNEL_ALBUM_NAME, CHANNEL_ARTIST,
-            CHANNEL_BROADCAST_DATE, CHANNEL_COMPOSER, CHANNEL_CREATION_DATE, CHANNEL_DISC_NUMBER,
-            CHANNEL_EPISODE_NUMBER, CHANNEL_LOCATION_NAME, CHANNEL_RELEASE_DATE, CHANNEL_SEASON_NUMBER,
-            CHANNEL_SERIES_TITLE, CHANNEL_STUDIO, CHANNEL_SUBTITLE, CHANNEL_TITLE, CHANNEL_TRACK_NUMBER, };
+    public static final Set<String> METADATA_SIMPLE_CHANNELS = Collections
+            .unmodifiableSet(Stream
+                    .of(CHANNEL_ALBUM_ARTIST, CHANNEL_ALBUM_NAME, CHANNEL_ARTIST, CHANNEL_BROADCAST_DATE,
+                            CHANNEL_COMPOSER, CHANNEL_CREATION_DATE, CHANNEL_DISC_NUMBER, CHANNEL_EPISODE_NUMBER,
+                            CHANNEL_LOCATION_NAME, CHANNEL_RELEASE_DATE, CHANNEL_SEASON_NUMBER, CHANNEL_SERIES_TITLE,
+                            CHANNEL_STUDIO, CHANNEL_SUBTITLE, CHANNEL_TITLE, CHANNEL_TRACK_NUMBER)
+                    .collect(Collectors.toSet()));
 
     // We don't key these metadata keys directly to a channel, they get linked together
     // into a Location channel.

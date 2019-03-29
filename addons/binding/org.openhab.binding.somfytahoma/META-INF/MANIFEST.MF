@@ -1,9 +1,10 @@
 Manifest-Version: 1.0
+Automatic-Module-Name: org.openhab.binding.somfytahoma
 Bundle-ManifestVersion: 2
 Bundle-Name: SomfyTahoma Binding
 Bundle-SymbolicName: org.openhab.binding.somfytahoma;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Import-Package: com.google.gson,
@@ -27,10 +28,6 @@ Import-Package: com.google.gson,
  org.eclipse.smarthome.core.thing.binding.builder,
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
- org.openhab.binding.somfytahoma,
- org.openhab.binding.somfytahoma.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.somfytahoma,
- org.openhab.binding.somfytahoma.handler

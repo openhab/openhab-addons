@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.chromecast.internal;
 
@@ -13,11 +17,11 @@ import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants
 
 import java.io.IOException;
 
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
-import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -42,6 +46,8 @@ public class ChromecastCommander {
     private final ChromecastScheduler scheduler;
     private final ChromecastStatusUpdater statusUpdater;
 
+    private static final int VOLUMESTEP = 10;
+
     public ChromecastCommander(ChromeCast chromeCast, ChromecastScheduler scheduler,
             ChromecastStatusUpdater statusUpdater) {
         this.chromeCast = chromeCast;
@@ -62,6 +68,9 @@ public class ChromecastCommander {
         switch (channelUID.getId()) {
             case CHANNEL_CONTROL:
                 handleControl(command);
+                break;
+            case CHANNEL_STOP:
+                handleStop(command);
                 break;
             case CHANNEL_VOLUME:
                 handleVolume(command);
@@ -139,15 +148,6 @@ public class ChromecastCommander {
                 return;
             }
 
-            if (command instanceof StopMoveType) {
-                final StopMoveType stopMoveType = (StopMoveType) command;
-                if (stopMoveType == StopMoveType.STOP) {
-                    chromeCast.stopApp();
-                    statusUpdater.updateMediaStatus(null);
-                }
-                return;
-            }
-
             if (command instanceof PlayPauseType) {
                 MediaStatus mediaStatus = chromeCast.getMediaStatus();
                 logger.debug("mediaStatus {}", mediaStatus);
@@ -166,22 +166,43 @@ public class ChromecastCommander {
                     logger.info("{} command not supported by current media", command);
                 }
             }
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             logger.debug("{} command failed: {}", command, e.getMessage());
             statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
-    public void handleVolume(final Command command) {
-        if (command instanceof PercentType) {
-            final PercentType num = (PercentType) command;
+    private void handleStop(final Command command) {
+        if (command == OnOffType.ON) {
             try {
-                chromeCast.setVolumeByIncrement(num.floatValue() / 100);
+                chromeCast.stopApp();
                 statusUpdater.updateStatus(ThingStatus.ONLINE);
             } catch (final IOException ex) {
-                logger.debug("Set volume failed: {}", ex.getMessage());
+                logger.debug("{} command failed: {}", command, ex.getMessage());
                 statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, ex.getMessage());
             }
+        }
+    }
+
+    public void handleVolume(final Command command) {
+        if (command instanceof PercentType) {
+            setVolumeInternal((PercentType) command);
+        } else if (command == IncreaseDecreaseType.INCREASE) {
+            setVolumeInternal(new PercentType(
+                    Math.max(statusUpdater.getVolume().intValue() + VOLUMESTEP, PercentType.ZERO.intValue())));
+        } else if (command == IncreaseDecreaseType.DECREASE) {
+            setVolumeInternal(new PercentType(
+                    Math.min(statusUpdater.getVolume().intValue() - VOLUMESTEP, PercentType.HUNDRED.intValue())));
+        }
+    }
+
+    private void setVolumeInternal(PercentType volume) {
+        try {
+            chromeCast.setVolumeByIncrement(volume.floatValue() / 100);
+            statusUpdater.updateStatus(ThingStatus.ONLINE);
+        } catch (final IOException ex) {
+            logger.debug("Set volume failed: {}", ex.getMessage());
+            statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, ex.getMessage());
         }
     }
 

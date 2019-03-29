@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.io.transport.modbus;
 
@@ -30,17 +34,22 @@ public class ModbusConstants {
      *
      */
     public static enum ValueType {
-        BIT("bit", 1),
-        INT8("int8", 8),
-        UINT8("uint8", 8),
-        INT16("int16", 16),
-        UINT16("uint16", 16),
-        INT32("int32", 32),
-        UINT32("uint32", 32),
-        FLOAT32("float32", 32),
-        INT32_SWAP("int32_swap", 32),
-        UINT32_SWAP("uint32_swap", 32),
-        FLOAT32_SWAP("float32_swap", 32);
+    BIT("bit", 1),
+    INT8("int8", 8),
+    UINT8("uint8", 8),
+    INT16("int16", 16),
+    UINT16("uint16", 16),
+    INT32("int32", 32),
+    UINT32("uint32", 32),
+    FLOAT32("float32", 32),
+    INT64("int64", 64),
+    UINT64("uint64", 64),
+
+    INT32_SWAP("int32_swap", 32),
+    UINT32_SWAP("uint32_swap", 32),
+    FLOAT32_SWAP("float32_swap", 32),
+    INT64_SWAP("int64_swap", 64),
+    UINT64_SWAP("uint64_swap", 64);
 
         private final String configValue;
         private final int bits;

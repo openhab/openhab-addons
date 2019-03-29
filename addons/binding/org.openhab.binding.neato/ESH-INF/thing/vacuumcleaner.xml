@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="neato"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="neatoaccount">
 		<label>Neato Account</label>
@@ -163,12 +163,13 @@
 	<channel-type id="cleaning-category">
 		<item-type>String</item-type>
 		<label>Cleaning Category</label>
-		<description>Current or Last category of the cleaning. Manual, Normal House Cleaning or Spot Cleaning.</description>
+		<description>Current or last category of the cleaning.</description>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="MANUAL">Manual Cleaning</option>
 				<option value="SPOT">Spot Cleaning</option>
 				<option value="HOUSE">House Cleaning</option>
+				<option value="MAP">Map Cleaning</option>
 			</options>
 		</state>
 	</channel-type>
@@ -176,7 +177,7 @@
 	<channel-type id="cleaning-mode">
 		<item-type>String</item-type>
 		<label>Cleaning Mode</label>
-		<description>Current or Last cleaning mode. Eco or Turbo.</description>
+		<description>Current or last cleaning mode.</description>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="ECO">Eco</option>
@@ -188,11 +189,12 @@
 	<channel-type id="cleaning-modifier">
 		<item-type>String</item-type>
 		<label>Cleaning Modifier</label>
-		<description>Modifier of current or last cleaning. Normal or Double.</description>
+		<description>Modifier of current or last cleaning.</description>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="NORMAL">Normal</option>
 				<option value="DOUBLE">Double</option>
+				<option value="DEEP">Deep</option>
 			</options>
 		</state>
 	</channel-type>

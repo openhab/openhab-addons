@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.tellstick.internal.live.xml;
 
@@ -19,8 +23,7 @@ import org.tellstick.enums.DeviceType;
 /**
  * Class used to deserialize XML from Telldus Live.
  *
- * @author Jarle Hjortland
- *
+ * @author Jarle Hjortland - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TellstickNetDevice implements Device {
@@ -95,12 +98,6 @@ public class TellstickNetDevice implements Device {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return "TellstickNetDevice [deviceId=" + deviceId + ", name=" + name + ", online=" + online + ", state=" + state
-                + ", statevalue=" + statevalue + ", updated=" + updated + "]";
-    }
-
     public boolean getOnline() {
         return online;
     }
@@ -136,7 +133,7 @@ public class TellstickNetDevice implements Device {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
+        int prime = 31;
         int result = 1;
         result = prime * result + deviceId;
         return result;
@@ -167,4 +164,11 @@ public class TellstickNetDevice implements Device {
     public void setMethods(int methods) {
         this.methods = methods;
     }
+
+    @Override
+    public String toString() {
+        return "TellstickNetDevice [deviceId=" + deviceId + ", name=" + name + ", online=" + online + ", state=" + state
+                + ", statevalue=" + statevalue + ", updated=" + updated + "]";
+    }
+
 }

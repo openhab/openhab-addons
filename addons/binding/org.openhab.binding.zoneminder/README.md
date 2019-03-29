@@ -126,12 +126,12 @@ when
     Item zmMonitor1_Mode changed
 then
 	if (zmMonitor1_Mode.state==ON) {
-		sendCommand(zmMonitor1_Function, "Modect")
-		sendCommand(zmMonitor1_Enabled, ON)
+		zmMonitor1_Function.sendCommand("Modect")
+		zmMonitor1_Enabled.sendCommand(ON)
 	}
 	else {
-		sendCommand(zmMonitor1_Function, "Monitor")
-		sendCommand(zmMonitor1_Enabled, OFF)
+		zmMonitor1_Function.sendCommand("Monitor")
+		zmMonitor1_Enabled.sendCommand(OFF)
 	}
 end
 ```

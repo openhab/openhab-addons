@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.netatmo.internal.handler;
 
@@ -19,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
@@ -41,8 +44,7 @@ import retrofit.RetrofitError;
  * {@link NetatmoDeviceHandler} is the handler for a given
  * device accessed through the Netatmo Bridge
  *
- * @author Gaël L'hopital - Initial contribution OH2 version
- *
+ * @author Gaël L'hopital - Initial contribution
  */
 public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingHandler {
 
@@ -53,7 +55,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     protected DEVICE device;
     protected Map<String, Object> childs = new ConcurrentHashMap<>();
 
-    public NetatmoDeviceHandler(@NonNull Thing thing) {
+    public NetatmoDeviceHandler(Thing thing) {
         super(thing);
     }
 
