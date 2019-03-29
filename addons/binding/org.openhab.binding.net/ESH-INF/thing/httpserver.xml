@@ -18,21 +18,21 @@
 				<default>5000</default>
 			</parameter>
 			<parameter name="tls" type="boolean">
-                <label>Use TLS</label>
-                <description>Secure HTTP server with TLS.</description>
-                <default>false</default>
-            </parameter>
+				<label>Use TLS</label>
+				<description>Secure HTTP server with TLS.</description>
+				<default>false</default>
+			</parameter>
 			<parameter name="convertTo" type="text" required="true">
-                <label>Charset</label>
-                <description></description>
-                <options>
-                    <option value="ASCII">ASCII</option>
-                    <option value="BINARY">BINARY</option>
-                    <option value="HEXASTRING">HEXASTRING</option>
-                    <option value="UTF8">UTF8</option>
-                </options>
-                <default>HEXASTRING</default>
-            </parameter>
+				<label>Charset</label>
+				<description></description>
+				<options>
+					<option value="ASCII">ASCII</option>
+					<option value="BINARY">BINARY</option>
+					<option value="HEXASTRING">HEXASTRING</option>
+					<option value="UTF8">UTF8</option>
+				</options>
+				<default>HEXASTRING</default>
+			</parameter>
 		</config-description>
 	</bridge-type>
 

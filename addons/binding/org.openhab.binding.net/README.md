@@ -9,15 +9,15 @@ This binding supports following Bridge ThingTypes:
 
 | ThingType     | Description                                                            |
 | --------------|------------------------------------------------------------------------|
-| `udp`         | UDP server.                                                             |
-| `tcp`         | TCP and TCP with TLS servers.                                           |
-| `http`        | HTTP and HTTPS servers.                                                 |
+| `udp`         | UDP server.                                                            |
+| `tcp`         | TCP and TCP with TLS servers.                                          |
+| `http`        | HTTP and HTTPS servers.                                                |
 
 This binding supports following ThingTypes:
 
 
-| ThingType     | Description                                                            |
-| --------------|------------------------------------------------------------------------|
+| ThingType      | Description                                                              |
+| ---------------|--------------------------------------------------------------------------|
 | `data-handler` | Data handler to parse incoming data from `udp`, `tcp` and `http` things. |
 
 
@@ -27,18 +27,18 @@ Data-handler thing can be use also stand alone thing and data can be inject via 
 
 The `udp` Thing has the following configuration parameters: 
 
-| Parameter      | Type    | Required | Default if omitted   | Description                                                  |
-| ---------------| ------- | -------- | -------------------- |--------------------------------------------------------------|
-| `port`         | integer |   no     | `5000`               | Server UDP port.                                              |
-| `convertTo`     | string |   yes     |                     | Convert incoming data to ASCII, BINARY, HEXASTRING or UTF8.   |
+| Parameter      | Type    | Required | Default if omitted   | Description                                                |
+| ---------------| ------- | -------- | --------------------|-------------------------------------------------------------|
+| `port`         | integer |   no     | `5000`               | Server UDP port.                                           |
+| `convertTo`     | string |   yes     |                     | Convert incoming data to ASCII, BINARY, HEXASTRING or UTF8. |
 
 The `tcp` and `http` Thing has the following configuration parameters: 
 
-| Parameter      | Type    | Required | Default if omitted   | Description                                    |
-| ---------------| ------- | -------- | -------------------- |------------------------------------------------|
-| `port`         | integer |   no     | `5000`               | Server UDP port.                                              |
-| `convertTo`     | string |   yes     |                     | Convert incoming data to ASCII, BINARY, HEXASTRING or UTF8.   |
-| `tls`          | boolean |   no     | `false`              | Secure server with TLS.   |
+| Parameter      | Type    | Required | Default if omitted   | Description                                                |
+| ---------------| ------- | -------- | -------------------- |------------------------------------------------------------|
+| `port`         | integer |   no     | `5000`               | Server UDP port.                                           |
+| `convertTo`     | string |   yes     |                     | Convert incoming data to ASCII, BINARY, HEXASTRING or UTF8. |
+| `tls`          | boolean |   no     | `false`              | Secure server with TLS.                                    |
 
 The `data-handler` Thing doesn't support any configuration parameters.
 
