@@ -57,6 +57,7 @@
     <module>org.openhab.binding.lirc</module>
     <module>org.openhab.binding.meteoblue</module>
     <module>org.openhab.binding.miele</module>
+    <module>org.openhab.binding.mihome</module>
     <module>org.openhab.binding.mqtt</module>
     <module>org.openhab.binding.mqtt.generic</module>
     <module>org.openhab.binding.mqtt.homeassistant</module>
