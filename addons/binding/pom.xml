@@ -84,7 +84,6 @@
     <module>org.openhab.binding.onkyo</module>
     <module>org.openhab.binding.opensprinkler</module>
     <module>org.openhab.binding.orvibo</module>
-    <module>org.openhab.binding.pentair</module>
     <module>org.openhab.binding.pioneeravr</module>
     <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.robonect</module>
