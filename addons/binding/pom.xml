@@ -52,7 +52,6 @@
     <module>org.openhab.binding.ihc.test</module>
     <module>org.openhab.binding.innogysmarthome</module>
     <module>org.openhab.binding.ipp</module>
-    <module>org.openhab.binding.jeelink</module>
     <module>org.openhab.binding.km200</module>
     <module>org.openhab.binding.kostalinverter</module>
     <module>org.openhab.binding.kvv</module>
