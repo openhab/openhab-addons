@@ -29,7 +29,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.openhab.binding.omnilink.config.OmnilinkBridgeConfig;
@@ -45,6 +44,7 @@ import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniNotConnectedException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
+import com.digitaldan.jomnilinkII.MessageTypes.EventLogData;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
 import com.digitaldan.jomnilinkII.MessageTypes.SystemFeatures;
@@ -62,42 +62,35 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.ZoneStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.AllOnOffEvent;
 import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.ButtonEvent;
 import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.SystemEvent;
+import com.google.gson.Gson;
 
 /**
  *
  * @author Craig Hamilton
  *
  */
-public class OmnilinkBridgeHandler extends BaseBridgeHandler implements NotificationListener {
+public class OmnilinkBridgeHandler extends BaseBridgeHandler implements NotificationListener, DisconnectListener {
 
     private Logger logger = LoggerFactory.getLogger(OmnilinkBridgeHandler.class);
     private Connection omniConnection;
     private @Nullable ScheduledFuture<?> connectJob;
+    private @Nullable ScheduledFuture<?> eventPollingJob;
     private final int autoReconnectPeriod = 60;
     private TemperatureFormat temperatureFormat;
     private Optional<AudioPlayer> audioPlayer = Optional.empty();
-    private Optional<EventLogPoller> eventLogPoller = Optional.empty();
-    private final DisconnectListener retryingDisconnectListener;
+    private final Gson gson = new Gson();
+    private int eventLogNumber = 0;
 
     public OmnilinkBridgeHandler(Bridge bridge) {
         super(bridge);
-        retryingDisconnectListener = new DisconnectListener() {
-            @Override
-            public void notConnectedEvent(Exception e) {
-                logger.debug("Received omnilink not connected event: {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                scheduleReconnectJob();
-            }
-        };
     }
 
     public void sendOmnilinkCommand(final int message, final int param1, final int param2)
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
-
         try {
             omniConnection.controllerCommand(message, param1, param2);
         } catch (IOException | OmniNotConnectedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
         }
 
@@ -108,10 +101,9 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         try {
             return omniConnection.reqSecurityCodeValidation(area, digit1, digit2, digit3, digit4);
         } catch (IOException | OmniNotConnectedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
         }
-
     }
 
     public void activateKeypadEmergency(int area, int emergencyType)
@@ -119,10 +111,9 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         try {
             omniConnection.activateKeypadEmergency(area, emergencyType);
         } catch (IOException | OmniNotConnectedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
         }
-
     }
 
     public SystemInformation reqSystemInformation()
@@ -130,7 +121,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         try {
             return omniConnection.reqSystemInformation();
         } catch (IOException | OmniNotConnectedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
         }
     }
@@ -140,7 +131,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         try {
             return omniConnection.reqSystemFormats();
         } catch (IOException | OmniNotConnectedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
         }
     }
@@ -150,7 +141,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         try {
             return omniConnection.reqSystemFeatures();
         } catch (IOException | OmniNotConnectedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
         }
     }
@@ -206,7 +197,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     private void makeOmnilinkConnection() {
-
         if (this.omniConnection != null && this.omniConnection.connected()) {
             return;
         }
@@ -217,9 +207,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             omniConnection = new Connection(config.getIpAddress(), config.getPort(),
                     config.getKey1() + ":" + config.getKey2());
             temperatureFormat = TemperatureFormat.valueOf(reqSystemFormats().getTempFormat());
-            // HAI only supports one audio player - cycle through features until we find a feature that is
-            // an
-            // audio player.
+            // HAI only supports one audio player - cycle through features until we find a feature that is an audio
+            // player.
             audioPlayer = reqSystemFeatures().getFeatures().stream()
                     .map(featureCode -> AudioPlayer.getAudioPlayerForFeatureCode(featureCode))
                     .filter(Optional::isPresent).findFirst().orElse(Optional.empty());
@@ -227,20 +216,18 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             temperatureFormat = TemperatureFormat.valueOf(reqSystemFormats().getTempFormat());
 
             if (config.getLogPollingSeconds() > 0) {
-                eventLogPoller = Optional
-                        .of(new EventLogPoller(OmnilinkBridgeHandler.this, config.getLogPollingSeconds()));
+                startEventPolling(config.getLogPollingSeconds());
             }
 
             omniConnection.addNotificationListener(OmnilinkBridgeHandler.this);
-            omniConnection.addDisconnectListener(retryingDisconnectListener);
+            omniConnection.addDisconnectListener(this);
             omniConnection.enableNotifications();
 
             updateStatus(ThingStatus.ONLINE);
             cancelReconnectJob(false);
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("{}", e.toString());
-            // throw e;
+            logger.debug("Error connecting to omni {}", e);
         } catch (IOException e) {
             if (e.getCause() != null && e.getCause().getMessage().contains("Connection timed out")) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -252,14 +239,11 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-            logger.debug("{}", e.toString());
-            // throw e;
+            logger.debug("Error connecting to omni {}", e);
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("{}", e.toString());
-            // throw e;
+            setOfflineAndReconnect(e.getMessage());
+            logger.debug("Error connecting to omni {}", e);
         }
-
     }
 
     @SuppressWarnings("null")
@@ -309,7 +293,6 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 // Aux Sensors can be either temp or humidity, need to check both.
                 Optional<Thing> tempThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_TEMP_SENSOR,
                         status.getNumber());
-
                 if (tempThing.isPresent()) {
                     tempThing.map(Thing::getHandler)
                             .ifPresent(theHandler -> ((TempSensorHandler) theHandler).updateChannels(auxSensorStatus));
@@ -318,19 +301,11 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                             status.getNumber());
                     humidityThing.map(Thing::getHandler).ifPresent(
                             theHandler -> ((HumiditySensorHandler) theHandler).updateChannels(auxSensorStatus));
-
                 }
-
             } else {
                 logger.debug("Received Object Status Notification that was not processed: {}", objectStatus);
             }
-
         }
-    }
-
-    @Override
-    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        logger.debug("childHandlerDisposed called with '{}', childThing '{}'", childHandler, childThing);
     }
 
     @SuppressWarnings("null")
@@ -402,9 +377,14 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         }
     }
 
+    @Override
+    public void notConnectedEvent(Exception e) {
+        logger.debug("Received omnilink not connected event: {}", e.getMessage());
+        setOfflineAndReconnect(e.getMessage());
+    }
+
     private void getSystemStatus() throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
             OmniUnknownMessageTypeException {
-
         if (omniConnection != null) {
             SystemStatus status = omniConnection.reqSystemStatus();
             logger.debug("received system status: {}", status);
@@ -416,10 +396,8 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                     .append(String.format("%02d", status.getMinute())).append(":")
                     .append(String.format("%02d", status.getSecond())).toString();
             DateTimeType sysDateTime = new DateTimeType(dateString);
-
             updateState(OmnilinkBindingConstants.CHANNEL_SYSTEMDATE, new DateTimeType(dateString));
             logger.debug("System date is: {}", sysDateTime);
-
         }
     }
 
@@ -428,10 +406,9 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         try {
             return omniConnection.reqObjectProperties(objectType, objectNum, direction, filter1, filter2, filter3);
         } catch (OmniNotConnectedException | IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
         }
-
     }
 
     public Message requestAudioSourceStatus(final int source, final int position)
@@ -439,7 +416,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         try {
             return omniConnection.reqAudioSourceStatus(source, position);
         } catch (OmniNotConnectedException | IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
         }
     }
@@ -450,7 +427,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         try {
             return omniConnection.reqObjectStatus(objType, startObject, endObject, extended);
         } catch (OmniNotConnectedException | IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
         }
     }
@@ -472,14 +449,11 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     @Override
     public void dispose() {
         updateStatus(ThingStatus.OFFLINE);
+        cancelReconnectJob(true);
+        cancelEventPolling();
         if (omniConnection != null) {
-            // must remove this before disconnect, as this tries to create another connection
-            omniConnection.removeDisconnecListener(retryingDisconnectListener);
+            omniConnection.removeDisconnecListener(this);
             omniConnection.disconnect();
-        }
-        AudioSourceHandler.shutdownExecutor();
-        if (eventLogPoller.isPresent()) {
-            eventLogPoller.get().shutdown();
         }
     }
 
@@ -514,34 +488,18 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             throw new BridgeOfflineException(e);
         }
-
-    }
-
-    /**
-     * Post a new event log message
-     *
-     * @param json Message in json format to post
-     */
-    public void eventLogMessage(String json) {
-        logger.debug("Receieved event log message: {}", json);
-        updateState(OmnilinkBindingConstants.CHANNEL_EVENT_LOG, new StringType(json));
-
     }
 
     @Override
     public void initialize() {
-        if (!scheduleReconnectJob()) {
-            makeOmnilinkConnection();
-        }
+        scheduleReconnectJob();
     }
 
-    private boolean scheduleReconnectJob() {
-        if (autoReconnectPeriod > 0) {
+    private void scheduleReconnectJob() {
+        ScheduledFuture<?> currentReconnectJob = connectJob;
+        if (currentReconnectJob == null || currentReconnectJob.isDone()) {
             connectJob = super.scheduler.scheduleWithFixedDelay(() -> makeOmnilinkConnection(), 0, autoReconnectPeriod,
                     TimeUnit.SECONDS);
-            return true;
-        } else {
-            return false;
         }
     }
 
@@ -549,8 +507,55 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         ScheduledFuture<?> currentReconnectJob = connectJob;
         if (currentReconnectJob != null) {
             currentReconnectJob.cancel(kill);
-            connectJob = null;
         }
     }
 
+    private void setOfflineAndReconnect(String message) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        cancelEventPolling();
+        if (omniConnection != null) {
+            omniConnection.removeDisconnecListener(this);
+        }
+        scheduleReconnectJob();
+    }
+
+    private void startEventPolling(int interval) {
+        ScheduledFuture<?> eventPollingJobFuture = eventPollingJob;
+        if (eventPollingJobFuture == null || eventPollingJobFuture.isDone()) {
+            eventLogNumber = 0;
+            eventPollingJob = super.scheduler.scheduleWithFixedDelay(() -> pollEvents(), 0, interval, TimeUnit.SECONDS);
+        }
+    }
+
+    private void cancelEventPolling() {
+        ScheduledFuture<?> eventPollingJobFuture = eventPollingJob;
+        if (eventPollingJobFuture != null) {
+            eventPollingJobFuture.cancel(true);
+        }
+    }
+
+    private void pollEvents() {
+        // On first run, direction is -1 (most recent event), after its 1 for the next log message
+        try {
+            Message message;
+            do {
+                logger.debug("Polling for event log messages.");
+                int direction = eventLogNumber == 0 ? -1 : 1;
+                message = reqEventLogData(eventLogNumber, direction);
+                if (message.getMessageType() == Message.MESG_TYPE_EVENT_LOG_DATA) {
+                    EventLogData logData = (EventLogData) message;
+                    logger.debug("Processing event log message number: {}", logData.getEventNumber());
+                    eventLogNumber = logData.getEventNumber();
+                    String json = gson.toJson(logData);
+                    logger.debug("Receieved event log message: {}", json);
+                    updateState(OmnilinkBindingConstants.CHANNEL_EVENT_LOG, new StringType(json));
+                }
+            } while (message.getMessageType() != Message.MESG_TYPE_END_OF_DATA);
+
+        } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
+            logger.warn("Exception Polling Event Log", e);
+        } catch (NullPointerException e) {
+            logger.debug("NPE.  Omni connection probably not set up.", e);
+        }
+    }
 }

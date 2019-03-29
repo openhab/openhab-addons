@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.omnilink.handler;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -32,24 +30,8 @@ import com.digitaldan.jomnilinkII.MessageTypes.AudioSourceStatus;
 public class AudioSourceHandler extends AbstractOmnilinkHandler {
 
     private final static Logger logger = LoggerFactory.getLogger(AudioSourceHandler.class);
-
     private final static long POLL_DELAY = 5; // 5 Second polling
-
-    private static ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-
     private ScheduledFuture<?> scheduledPolling = null;
-
-    public static synchronized void shutdownExecutor() {
-        logger.debug("Shutting down audio polling executor service");
-        executorService.shutdownNow();
-    }
-
-    private static synchronized void startExecutor() {
-        if (executorService.isShutdown()) {
-            logger.debug("Starting audio polling executor service");
-            executorService = Executors.newSingleThreadScheduledExecutor();
-        }
-    }
 
     public AudioSourceHandler(Thing thing) {
         super(thing);
@@ -57,10 +39,7 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
 
     @Override
     public void initialize() {
-        if (scheduledPolling != null) {
-            scheduledPolling.cancel(false);
-        }
-
+        cancelPolling();
         boolean autoStart = ((Boolean) getThing().getConfiguration()
                 .get(OmnilinkBindingConstants.THING_PROPERTIES_AUTO_START)).booleanValue();
         int sourceNumber = getThingNumber();
@@ -81,12 +60,9 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
     }
 
     private synchronized void cancelPolling() {
-        if (scheduledPolling != null) {
-            if (scheduledPolling.isDone() == false) {
-                int sourceNumber = getThingNumber();
-                logger.debug("Cancelling polling for Audio Source {}", sourceNumber);
-                scheduledPolling.cancel(false);
-            }
+        if (scheduledPolling != null && !scheduledPolling.isDone()) {
+            logger.debug("Cancelling polling for Audio Source {}", getThingNumber());
+            scheduledPolling.cancel(false);
         }
     }
 
@@ -94,15 +70,13 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
         cancelPolling();
         int sourceNumber = getThingNumber();
         logger.debug("Scheduling polling for Audio Source {}", sourceNumber);
-        startExecutor();
-        scheduledPolling = executorService.scheduleWithFixedDelay(new PollAudioSource(getThingNumber()), 0, POLL_DELAY,
+        scheduledPolling = super.scheduler.scheduleWithFixedDelay(() -> pollAudioSource(), 0, POLL_DELAY,
                 TimeUnit.SECONDS);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelID = channelUID.getId();
-
         switch (channelID) {
             case OmnilinkBindingConstants.CHANNEL_AUDIO_SOURCE_POLLING:
                 if (command == RefreshType.REFRESH) {
@@ -124,61 +98,49 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
             default:
                 logger.warn("Channel ID ({}) not processed", channelID);
                 break;
-
         }
-
     }
 
-    private class PollAudioSource implements Runnable {
-
-        private final int sourceNumber;
-
-        private PollAudioSource(int sourceNumber) {
-            this.sourceNumber = sourceNumber;
-        }
-
-        @Override
-        public void run() {
-            logger.debug("Polling Audio Source {} Status", sourceNumber);
-            try {
-                int position = 0;
-                Message message;
-                while ((message = getOmnilinkBridgeHander().requestAudioSourceStatus(sourceNumber, position))
-                        .getMessageType() == Message.MESG_TYPE_AUDIO_SOURCE_STATUS) {
-                    AudioSourceStatus audioSourceStatus = (AudioSourceStatus) message;
-                    position = audioSourceStatus.getPosition();
-                    switch (position) {
-                        case 1:
-                            updateState(OmnilinkBindingConstants.CHANNEL_AUDIO_SOURCE_TEXT1,
-                                    new StringType(audioSourceStatus.getSourceData()));
-                            break;
-                        case 2:
-                            updateState(OmnilinkBindingConstants.CHANNEL_AUDIO_SOURCE_TEXT2,
-                                    new StringType(audioSourceStatus.getSourceData()));
-                            break;
-                        case 3:
-                            updateState(OmnilinkBindingConstants.CHANNEL_AUDIO_SOURCE_TEXT3,
-                                    new StringType(audioSourceStatus.getSourceData()));
-                            break;
-                        case 4:
-                            updateState(OmnilinkBindingConstants.CHANNEL_AUDIO_SOURCE_TEXT4,
-                                    new StringType(audioSourceStatus.getSourceData()));
-                            break;
-                        case 5:
-                            updateState(OmnilinkBindingConstants.CHANNEL_AUDIO_SOURCE_TEXT5,
-                                    new StringType(audioSourceStatus.getSourceData()));
-                            break;
-                        case 6:
-                            updateState(OmnilinkBindingConstants.CHANNEL_AUDIO_SOURCE_TEXT6,
-                                    new StringType(audioSourceStatus.getSourceData()));
-                            break;
-                    }
-
+    public void pollAudioSource() {
+        int sourceNumber = getThingNumber();
+        logger.debug("Polling Audio Source {} Status", sourceNumber);
+        try {
+            int position = 0;
+            Message message;
+            while ((message = getOmnilinkBridgeHander().requestAudioSourceStatus(sourceNumber, position))
+                    .getMessageType() == Message.MESG_TYPE_AUDIO_SOURCE_STATUS) {
+                AudioSourceStatus audioSourceStatus = (AudioSourceStatus) message;
+                position = audioSourceStatus.getPosition();
+                switch (position) {
+                    case 1:
+                        updateState(OmnilinkBindingConstants.CHANNEL_AUDIO_SOURCE_TEXT1,
+                                new StringType(audioSourceStatus.getSourceData()));
+                        break;
+                    case 2:
+                        updateState(OmnilinkBindingConstants.CHANNEL_AUDIO_SOURCE_TEXT2,
+                                new StringType(audioSourceStatus.getSourceData()));
+                        break;
+                    case 3:
+                        updateState(OmnilinkBindingConstants.CHANNEL_AUDIO_SOURCE_TEXT3,
+                                new StringType(audioSourceStatus.getSourceData()));
+                        break;
+                    case 4:
+                        updateState(OmnilinkBindingConstants.CHANNEL_AUDIO_SOURCE_TEXT4,
+                                new StringType(audioSourceStatus.getSourceData()));
+                        break;
+                    case 5:
+                        updateState(OmnilinkBindingConstants.CHANNEL_AUDIO_SOURCE_TEXT5,
+                                new StringType(audioSourceStatus.getSourceData()));
+                        break;
+                    case 6:
+                        updateState(OmnilinkBindingConstants.CHANNEL_AUDIO_SOURCE_TEXT6,
+                                new StringType(audioSourceStatus.getSourceData()));
+                        break;
                 }
-            } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
-                logger.warn("Exception Polling Audio Status", e);
-            }
 
+            }
+        } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
+            logger.warn("Exception Polling Audio Status", e);
         }
 
     }

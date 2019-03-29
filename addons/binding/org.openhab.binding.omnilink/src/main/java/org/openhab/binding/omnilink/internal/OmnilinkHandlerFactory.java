@@ -51,6 +51,14 @@ import org.slf4j.LoggerFactory;
  */
 public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
 
+    private static final Logger logger = LoggerFactory.getLogger(OmnilinkHandlerFactory.class);
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_OMNI_AREA, THING_TYPE_ZONE, THING_TYPE_BRIDGE, THING_TYPE_FLAG,
+                    THING_TYPE_ROOM, THING_TYPE_BUTTON, THING_TYPE_UNIT_UPB, THING_TYPE_THERMOSTAT, THING_TYPE_CONSOLE,
+                    THING_TYPE_AUDIO_ZONE, THING_TYPE_AUDIO_SOURCE, THING_TYPE_TEMP_SENSOR, THING_TYPE_HUMIDITY_SENSOR,
+                    THING_TYPE_LOCK).collect(Collectors.toSet()));
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
+
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
         // if the omnilink bridge, let's fix up discovery
@@ -61,16 +69,6 @@ public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
             discovery.unregister();
         }
     }
-
-    private static final Logger logger = LoggerFactory.getLogger(OmnilinkHandlerFactory.class);
-
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_OMNI_AREA, THING_TYPE_ZONE, THING_TYPE_BRIDGE, THING_TYPE_FLAG,
-                    THING_TYPE_ROOM, THING_TYPE_BUTTON, THING_TYPE_UNIT_UPB, THING_TYPE_THERMOSTAT, THING_TYPE_CONSOLE,
-                    THING_TYPE_AUDIO_ZONE, THING_TYPE_AUDIO_SOURCE, THING_TYPE_TEMP_SENSOR, THING_TYPE_HUMIDITY_SENSOR,
-                    THING_TYPE_LOCK).collect(Collectors.toSet()));
-
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<ThingUID, ServiceRegistration<?>>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -122,13 +120,10 @@ public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
      */
     private void registerOmnilnkBridgeDiscoveryService(OmnilinkBridgeHandler bridgeHandler) {
         OmnilinkDiscoveryService discoveryService = new OmnilinkDiscoveryService(bridgeHandler);
-
         ServiceRegistration<?> discoveryServiceRegistration = bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>());
         discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), discoveryServiceRegistration);
-
-        logger.debug(
-                "registerOmnilinkBridgeDiscoveryService(): Bridge Handler - {}, Class Name - {}, Discovery Service - {}",
+        logger.debug("registerOmnilinkDiscoveryService(): Bridge Handler - {}, Class Name - {}, Discovery Service - {}",
                 bridgeHandler, DiscoveryService.class.getName(), discoveryService);
     }
 
