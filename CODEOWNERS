@@ -75,7 +75,6 @@
 /addons/binding/org.openhab.binding.orvibo/ @tavalin
 /addons/binding/org.openhab.binding.pentair/ @jsjames
 /addons/binding/org.openhab.binding.pioneeravr/ @Stratehm
-/addons/binding/org.openhab.binding.regoheatpump/ @crnjan
 /addons/binding/org.openhab.binding.rme/ @kgoderis
 /addons/binding/org.openhab.binding.robonect/ @reyem
 /addons/binding/org.openhab.binding.robonect.test/ @reyem
@@ -182,6 +181,7 @@
 /bundles/org.openhab.binding.plugwise/ @wborn
 /bundles/org.openhab.binding.powermax/ @lolodomo
 /bundles/org.openhab.binding.pulseaudio/ @peuter
+/bundles/org.openhab.binding.regoheatpump/ @crnjan
 /bundles/org.openhab.binding.rfxcom/ @martinvw @paulianttila
 /bundles/org.openhab.binding.sensebox/ @hakan42
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
