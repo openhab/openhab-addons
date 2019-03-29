@@ -56,6 +56,7 @@ public class RefreshStrategy {
         expireData();
     }
 
+    @SuppressWarnings("null")
     public void setDataTimeStamp(Integer dataTimestamp) {
         if (searchRefreshInterval) {
             if (dataTimestamp0 == null) {
