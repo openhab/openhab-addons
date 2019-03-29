@@ -94,7 +94,6 @@
 /addons/binding/org.openhab.binding.systeminfo.test/ @svilenvul
 /addons/binding/org.openhab.binding.tado/ @dfrommi
 /addons/binding/org.openhab.binding.tellstick/ @jarlebh
-/addons/binding/org.openhab.binding.toon/ @jongj
 /addons/binding/org.openhab.binding.urtsi/ @OLibutzki
 /addons/binding/org.openhab.binding.vitotronic/ @steand
 /addons/binding/org.openhab.binding.wemo/ @hmerk
@@ -192,6 +191,7 @@
 /bundles/org.openhab.binding.synopanalyzer/ @clinique
 /bundles/org.openhab.binding.tankerkoenig/ @dolic @JueBag
 /bundles/org.openhab.binding.tesla/ @kgoderis
+/bundles/org.openhab.binding.toon/ @jongj
 /bundles/org.openhab.binding.tplinksmarthome/ @Hilbrand
 /bundles/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /bundles/org.openhab.binding.unifi/ @mgbowman
