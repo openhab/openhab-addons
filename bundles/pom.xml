@@ -86,6 +86,7 @@
     <module>org.openhab.binding.synopanalyzer</module>
     <module>org.openhab.binding.tankerkoenig</module>
     <module>org.openhab.binding.tesla</module>
+    <module>org.openhab.binding.toon</module>
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tradfri</module>
     <module>org.openhab.binding.unifi</module>
