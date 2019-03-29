@@ -15,44 +15,20 @@
   <name>openHAB Add-ons :: Bundles :: D-Link Smart Home Binding</name>
 
   <dependencies>
-    <!-- JAXB -->
     <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <version>2.3.1</version>
+      <groupId>org.openhab</groupId>
+      <artifactId>jaxb</artifactId>
+      <version>${jaxb.version}</version>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-impl</artifactId>
-      <version>2.3.2</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-core</artifactId>
-      <version>2.3.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <!-- JAX-WS -->
-    <dependency>
-      <groupId>javax.xml.soap</groupId>
-      <artifactId>javax.xml.soap-api</artifactId>
-      <version>1.4.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.xml.ws</groupId>
-      <artifactId>jaxws-rt</artifactId>
-      <version>2.3.2</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.xml.messaging.saaj</groupId>
-      <artifactId>saaj-impl</artifactId>
-      <version>1.5.1</version>
+      <groupId>org.openhab</groupId>
+      <artifactId>jax-ws</artifactId>
+      <version>${jaxws.version}</version>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  
+
 </project>

@@ -59,6 +59,8 @@
     <karaf.version>4.2.2</karaf.version>
     <sat.version>0.6.1</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
+    <jaxb.version>1.0.0</jaxb.version>
+    <jaxws.version>1.0.0</jaxws.version>
 
     <bnd.importpackage></bnd.importpackage>
     <bnd.includeresource></bnd.includeresource>
