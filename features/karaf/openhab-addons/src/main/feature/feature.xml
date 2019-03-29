@@ -46,7 +46,7 @@
 
     <feature name="openhab-binding-amazonechocontrol" description="Amazon Echo Control Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.amazonechocontrol/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.amazonechocontrol/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-astro" description="Astro Binding" version="${project.version}">
