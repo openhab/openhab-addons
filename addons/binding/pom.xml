@@ -105,7 +105,6 @@
     <module>org.openhab.binding.tado</module>
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.urtsi</module>
-    <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.wemo</module>
     <module>org.openhab.binding.wemo.test</module>
     <module>org.openhab.binding.yamahareceiver</module>

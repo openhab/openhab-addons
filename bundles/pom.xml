@@ -94,6 +94,7 @@
     <module>org.openhab.binding.unifi</module>
     <module>org.openhab.binding.valloxmv</module>
     <module>org.openhab.binding.velbus</module>
+    <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.weatherunderground</module>
     <module>org.openhab.binding.wifiled</module>
     <module>org.openhab.binding.windcentrale</module>
