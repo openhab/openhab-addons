@@ -23,9 +23,9 @@ import org.slf4j.LoggerFactory;
 import java.time.ZoneOffset;
 import java.util.List;
 
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_CONNECTED_BOILER;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.PARENT_ID;
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
 
 /**
  * {@link RelayHandler} is the class used to handle the plug

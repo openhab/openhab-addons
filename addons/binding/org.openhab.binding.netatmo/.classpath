@@ -16,7 +16,7 @@
 	<classpathentry kind="lib" path="lib/kotlin-stdlib-jdk8-1.2.51.jar"/>
 	<classpathentry kind="lib" path="lib/kotlinx-coroutines-core-0.24.0.jar"/>
 	<classpathentry kind="lib" path="lib/logging-interceptor-3.11.0.jar"/>
-	<classpathentry kind="lib" path="lib/netatmo-java-api-0.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/netatmo-java-api-0.4.2.jar"/>
 	<classpathentry kind="lib" path="lib/okhttp-3.11.0.jar"/>
 	<classpathentry kind="lib" path="lib/okio-1.15.0.jar"/>
 	<classpathentry kind="lib" path="lib/retrofit2-kotlin-coroutines-experimental-adapter-1.0.0.jar"/>
