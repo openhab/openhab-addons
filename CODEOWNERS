@@ -100,7 +100,6 @@
 /addons/binding/org.openhab.binding.tellstick/ @jarlebh
 /addons/binding/org.openhab.binding.toon/ @jongj
 /addons/binding/org.openhab.binding.urtsi/ @OLibutzki
-/addons/binding/org.openhab.binding.velbus/ @cedricboon
 /addons/binding/org.openhab.binding.vitotronic/ @steand
 /addons/binding/org.openhab.binding.wemo/ @hmerk
 /addons/binding/org.openhab.binding.wemo.test/ @hmerk
@@ -197,6 +196,7 @@
 /bundles/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /bundles/org.openhab.binding.unifi/ @mgbowman
 /bundles/org.openhab.binding.valloxmv/ @bjoernbrings
+/bundles/org.openhab.binding.velbus/ @cedricboon
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo
 /bundles/org.openhab.binding.wifiled/ @rvt @xylo
 /bundles/org.openhab.binding.windcentrale/ @marcelrv
