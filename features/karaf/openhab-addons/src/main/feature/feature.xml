@@ -730,7 +730,7 @@
 
     <feature name="openhab-binding-smaenergymeter" description="SMA Energy Monitor Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.smaenergymeter/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.smaenergymeter/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-smartmeter" description="Smartmeter Binding" version="${project.version}">

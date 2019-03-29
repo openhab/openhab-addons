@@ -95,7 +95,6 @@
     <module>org.openhab.binding.satel</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>
     <module>org.openhab.binding.sleepiq</module>
-    <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.smartmeter</module>
     <module>org.openhab.binding.smartmeter.test</module>
     <module>org.openhab.binding.somfytahoma</module>
