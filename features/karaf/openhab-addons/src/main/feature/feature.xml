@@ -709,7 +709,7 @@
 
     <feature name="openhab-binding-seneye" description="Seneye Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.seneye/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.seneye/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-serialbutton" description="Serial Button Binding" version="${project.version}">
