@@ -374,7 +374,7 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-http</feature>
         <feature>openhab-transport-upnp</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.konnected/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.konnected/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-kostalinverter" description="Kostal Inverter Binding" version="${project.version}">
