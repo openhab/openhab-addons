@@ -244,7 +244,7 @@
     
     <feature name="openhab-binding-gardena" description="Gardena Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.gardena/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.gardena/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-globalcache" description="GlobalCache Binding" version="${project.version}">

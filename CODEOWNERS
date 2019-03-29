@@ -31,7 +31,6 @@
 /addons/binding/org.openhab.binding.fsinternetradio/ @paphko
 /addons/binding/org.openhab.binding.fsinternetradio.test/ @paphko
 /addons/binding/org.openhab.binding.ftpupload/ @paulianttila
-/addons/binding/org.openhab.binding.gardena/ @gerrieg
 /addons/binding/org.openhab.binding.groheondus/ @FlorianSW
 /addons/binding/org.openhab.binding.hdpowerview/ @beowulfe
 /addons/binding/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
@@ -152,6 +151,7 @@
 /bundles/org.openhab.binding.feican/ @Hilbrand
 /bundles/org.openhab.binding.folding/ @fa2k
 /bundles/org.openhab.binding.freebox/ @lolodomo
+/bundles/org.openhab.binding.gardena/ @gerrieg
 /bundles/org.openhab.binding.globalcache/ @mhilbush
 /bundles/org.openhab.binding.gpstracker/ @gbicskei
 /bundles/org.openhab.binding.harmonyhub/ @digitaldan
