@@ -65,6 +65,7 @@
     <module>org.openhab.binding.onewire</module>
     <module>org.openhab.binding.openuv</module>
     <module>org.openhab.binding.openweathermap</module>
+    <module>org.openhab.binding.phc</module>
     <module>org.openhab.binding.plclogo</module>
     <module>org.openhab.binding.plugwise</module>
     <module>org.openhab.binding.powermax</module>

@@ -622,7 +622,7 @@
     <feature name="openhab-binding-phc" description="PHC Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.phc/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.phc/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-pioneeravr" description="PioneerAVR Binding" version="${project.version}">
