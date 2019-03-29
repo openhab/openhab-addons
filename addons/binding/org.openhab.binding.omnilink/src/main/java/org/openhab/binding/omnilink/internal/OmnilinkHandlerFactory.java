@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.omnilink.discovery.OmnilinkDiscoveryService;
 import org.openhab.binding.omnilink.handler.AreaHandler;
 import org.openhab.binding.omnilink.handler.AudioSourceHandler;
@@ -40,6 +41,7 @@ import org.openhab.binding.omnilink.handler.ThermostatHandler;
 import org.openhab.binding.omnilink.handler.UpbUnitHandler;
 import org.openhab.binding.omnilink.handler.ZoneHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +51,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Craig - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.omnilink")
 public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(OmnilinkHandlerFactory.class);
