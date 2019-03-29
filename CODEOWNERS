@@ -66,7 +66,6 @@
 /addons/binding/org.openhab.binding.ntp/ @marcelrv
 /addons/binding/org.openhab.binding.ntp.test/ @marcelrv
 /addons/binding/org.openhab.binding.nuki/ @mkatter
-/addons/binding/org.openhab.binding.oceanic/ @kgoderis
 /addons/binding/org.openhab.binding.onebusaway/ @sdwilsh
 /addons/binding/org.openhab.binding.onewiregpio/ @aogorek
 /addons/binding/org.openhab.binding.onkyo/ @pail23 @paulianttila
@@ -165,6 +164,7 @@
 /bundles/org.openhab.binding.network/ @davidgraeff @mettke
 /bundles/org.openhab.binding.nibeheatpump/ @paulianttila
 /bundles/org.openhab.binding.nibeuplink/ @alexf2015
+/bundles/org.openhab.binding.oceanic/ @kgoderis
 /bundles/org.openhab.binding.onewire/ @J-N-K
 /bundles/org.openhab.binding.openuv/ @clinique
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp

@@ -67,6 +67,7 @@
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.nibeheatpump</module>
     <module>org.openhab.binding.nibeuplink</module>
+    <module>org.openhab.binding.oceanic</module>
     <module>org.openhab.binding.onewire</module>
     <module>org.openhab.binding.openuv</module>
     <module>org.openhab.binding.openweathermap</module>
