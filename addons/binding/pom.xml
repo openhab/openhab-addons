@@ -100,7 +100,6 @@
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.smartmeter</module>
     <module>org.openhab.binding.smartmeter.test</module>
-    <module>org.openhab.binding.solarlog</module>
     <module>org.openhab.binding.somfytahoma</module>
     <module>org.openhab.binding.sonyaudio</module>
     <module>org.openhab.binding.systeminfo</module>
