@@ -31,9 +31,6 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-
 /**
  * An UpnpDiscoveryParticipant which allows to discover Pioneer AVRs.
  *
@@ -141,12 +138,7 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
      * @return
      */
     private boolean isSupportedDeviceModel(String deviceModel, Set<String> supportedDeviceModels) {
-        return StringUtils.isNotBlank(deviceModel)
-                && !Collections2.filter(supportedDeviceModels, new Predicate<String>() {
-                    @Override
-                    public boolean apply(String input) {
-                        return StringUtils.startsWithIgnoreCase(deviceModel, input);
-                    }
-                }).isEmpty();
+        return StringUtils.isNotBlank(deviceModel) && supportedDeviceModels.stream()
+                .anyMatch(input -> StringUtils.startsWithIgnoreCase(deviceModel, input));
     }
 }
