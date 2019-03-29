@@ -99,7 +99,6 @@
     <module>org.openhab.binding.smartmeter</module>
     <module>org.openhab.binding.smartmeter.test</module>
     <module>org.openhab.binding.somfytahoma</module>
-    <module>org.openhab.binding.sonyaudio</module>
     <module>org.openhab.binding.systeminfo</module>
     <module>org.openhab.binding.systeminfo.test</module>
     <module>org.openhab.binding.tado</module>

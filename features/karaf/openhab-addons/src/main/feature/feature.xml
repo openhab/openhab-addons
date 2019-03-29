@@ -766,7 +766,7 @@
 
     <feature name="openhab-binding-sonyaudio" description="Sony Audio Binding" version="${project.version}">
         <feature>openhab-transport-upnp</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.sonyaudio/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.sonyaudio/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-spotify" description="Spotify Binding" version="${project.version}">
