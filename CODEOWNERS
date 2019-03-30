@@ -39,7 +39,6 @@
 /addons/binding/org.openhab.binding.ihc.test/ @paulianttila
 /addons/binding/org.openhab.binding.innogysmarthome/ @ollie-dev
 /addons/binding/org.openhab.binding.ipp/ @peuter
-/addons/binding/org.openhab.binding.km200/ @Markinus
 /addons/binding/org.openhab.binding.kostalinverter/ @cschneider
 /addons/binding/org.openhab.binding.lametrictime/ @syphr42
 /addons/binding/org.openhab.binding.lgwebos/ @sprehn
@@ -146,6 +145,7 @@
 /bundles/org.openhab.binding.irtrans/ @kgoderis
 /bundles/org.openhab.binding.jeelink/ @vbier
 /bundles/org.openhab.binding.keba/ @kgoderis
+/bundles/org.openhab.binding.km200/ @Markinus
 /bundles/org.openhab.binding.knx/ @sjka
 /bundles/org.openhab.binding.kodi/ @pail23 @cweitkamp
 /bundles/org.openhab.binding.konnected/ @volfan6415
