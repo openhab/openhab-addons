@@ -18,7 +18,6 @@
 /addons/binding/org.openhab.binding.chromecast.test/ @kaikreuzer
 /addons/binding/org.openhab.binding.dsmr/ @Hilbrand
 /addons/binding/org.openhab.binding.dsmr.test/ @Hilbrand
-/addons/binding/org.openhab.binding.elerotransmitterstick/ @vbier
 /addons/binding/org.openhab.binding.enocean/ @fruggy83
 /addons/binding/org.openhab.binding.exec/ @kgoderis
 /addons/binding/org.openhab.binding.feed/ @svilenvul
@@ -122,6 +121,7 @@
 /bundles/org.openhab.binding.dmx/ @J-N-K
 /bundles/org.openhab.binding.dscalarm/ @RSStephens
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
+/bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.evohome/ @Nebula83
 /bundles/org.openhab.binding.feican/ @Hilbrand
 /bundles/org.openhab.binding.folding/ @fa2k
