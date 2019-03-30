@@ -563,7 +563,7 @@
     <feature name="openhab-binding-nuki" description="Nuki Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-http</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.nuki/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.nuki/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-oceanic" description="Oceanic Binding" version="${project.version}">
