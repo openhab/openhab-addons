@@ -67,7 +67,6 @@
     <module>org.openhab.binding.orvibo</module>
     <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.samsungtv</module>
-    <module>org.openhab.binding.satel</module>
     <module>org.openhab.binding.sleepiq</module>
     <module>org.openhab.binding.smartmeter</module>
     <module>org.openhab.binding.smartmeter.test</module>
