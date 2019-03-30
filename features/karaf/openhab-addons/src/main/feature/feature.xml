@@ -629,7 +629,7 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
         <feature>openhab-transport-upnp</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.pioneeravr/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.pioneeravr/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-plclogo" description="PLCLogo Binding" version="${project.version}">
