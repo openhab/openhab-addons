@@ -17,7 +17,6 @@
   <name>openHAB Bindings</name>
 
   <modules>
-    <module>org.openhab.binding.amazonechocontrol</module>
     <module>org.openhab.binding.bluetooth</module>
     <module>org.openhab.binding.bluetooth.bluegiga</module>
     <module>org.openhab.binding.bluetooth.bluegiga.test</module>
