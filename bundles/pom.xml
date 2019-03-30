@@ -70,6 +70,7 @@
     <module>org.openhab.binding.meteostick</module>
     <module>org.openhab.binding.miele</module>
     <module>org.openhab.binding.mihome</module>
+    <module>org.openhab.binding.miio</module>
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.mqtt</module>
     <module>org.openhab.binding.mqtt.generic</module>
