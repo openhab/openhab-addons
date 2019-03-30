@@ -92,6 +92,7 @@
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.regoheatpump</module>
     <module>org.openhab.binding.rfxcom</module>
+    <module>org.openhab.binding.robonect</module>
     <module>org.openhab.binding.russound</module>
     <module>org.openhab.binding.seneye</module>
     <module>org.openhab.binding.sensebox</module>
