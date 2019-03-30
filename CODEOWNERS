@@ -41,7 +41,6 @@
 /addons/binding/org.openhab.binding.max/ @marcelrv
 /addons/binding/org.openhab.binding.max.test/ @marcelrv
 /addons/binding/org.openhab.binding.mcp23017/ @aogorek
-/addons/binding/org.openhab.binding.miio/ @marcelrv
 /addons/binding/org.openhab.binding.minecraft/ @ibaton
 /addons/binding/org.openhab.binding.modbus/ @ssalonen
 /addons/binding/org.openhab.binding.modbus.test/ @ssalonen
@@ -147,6 +146,7 @@
 /bundles/org.openhab.binding.meteostick/ @cdjackson
 /bundles/org.openhab.binding.miele/ @kgoderis
 /bundles/org.openhab.binding.mihome/ @pboos
+/bundles/org.openhab.binding.miio/ @marcelrv
 /bundles/org.openhab.binding.milight/ @davidgraeff
 /bundles/org.openhab.binding.mqtt/ @davidgraeff
 /bundles/org.openhab.binding.mqtt.generic/ @davidgraeff
