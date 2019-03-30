@@ -57,7 +57,6 @@
 /addons/binding/org.openhab.binding.onkyo/ @pail23 @paulianttila
 /addons/binding/org.openhab.binding.opensprinkler/ @CrackerStealth
 /addons/binding/org.openhab.binding.orvibo/ @tavalin
-/addons/binding/org.openhab.binding.pioneeravr/ @Stratehm
 /addons/binding/org.openhab.binding.rme/ @kgoderis
 /addons/binding/org.openhab.binding.rotelra1x/ @fa2k
 /addons/binding/org.openhab.binding.samsungtv/ @paulianttila
@@ -165,6 +164,7 @@
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /bundles/org.openhab.binding.pentair/ @jsjames
 /bundles/org.openhab.binding.phc/ @gnlpfjh
+/bundles/org.openhab.binding.pioneeravr/ @Stratehm
 /bundles/org.openhab.binding.plclogo/ @falkena
 /bundles/org.openhab.binding.plugwise/ @wborn
 /bundles/org.openhab.binding.powermax/ @lolodomo
