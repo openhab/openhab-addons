@@ -83,6 +83,7 @@
     <module>org.openhab.binding.nibeuplink</module>
     <module>org.openhab.binding.nuki</module>
     <module>org.openhab.binding.oceanic</module>
+    <module>org.openhab.binding.onebusaway</module>
     <module>org.openhab.binding.onewire</module>
     <module>org.openhab.binding.openuv</module>
     <module>org.openhab.binding.openweathermap</module>
