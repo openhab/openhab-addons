@@ -71,7 +71,6 @@
 /addons/binding/org.openhab.binding.robonect/ @reyem
 /addons/binding/org.openhab.binding.robonect.test/ @reyem
 /addons/binding/org.openhab.binding.rotelra1x/ @fa2k
-/addons/binding/org.openhab.binding.russound/ @tmrobert8
 /addons/binding/org.openhab.binding.samsungtv/ @paulianttila
 /addons/binding/org.openhab.binding.satel/ @druciak
 /addons/binding/org.openhab.binding.silvercrestwifisocket/ @jmvaz
@@ -176,6 +175,7 @@
 /bundles/org.openhab.binding.pulseaudio/ @peuter
 /bundles/org.openhab.binding.regoheatpump/ @crnjan
 /bundles/org.openhab.binding.rfxcom/ @martinvw @paulianttila
+/bundles/org.openhab.binding.russound/ @tmrobert8
 /bundles/org.openhab.binding.seneye/ @nikotanghe
 /bundles/org.openhab.binding.sensebox/ @hakan42
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
