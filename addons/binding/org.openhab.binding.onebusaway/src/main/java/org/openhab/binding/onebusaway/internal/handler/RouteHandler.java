@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -38,8 +39,6 @@ import org.openhab.binding.onebusaway.internal.handler.ObaStopArrivalResponse.Ar
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-
 /**
  * The {@link RouteHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -50,8 +49,9 @@ public class RouteHandler extends BaseThingHandler implements RouteDataListener 
 
     public static final ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_ROUTE;
 
+    private final Logger logger = LoggerFactory.getLogger(RouteHandler.class);
+
     private RouteConfiguration config;
-    private Logger logger = LoggerFactory.getLogger(RouteHandler.class);
     private List<ScheduledFuture<?>> scheduledFutures = new CopyOnWriteArrayList<>();
 
     public RouteHandler(Thing thing) {
