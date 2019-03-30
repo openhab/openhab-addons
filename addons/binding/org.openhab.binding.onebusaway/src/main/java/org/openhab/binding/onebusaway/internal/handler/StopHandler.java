@@ -16,8 +16,12 @@ import static org.openhab.binding.onebusaway.internal.OneBusAwayBindingConstants
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -40,9 +44,6 @@ import org.openhab.binding.onebusaway.internal.config.StopConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 
 /**
@@ -55,21 +56,20 @@ public class StopHandler extends BaseBridgeHandler {
 
     public static final ThingTypeUID SUPPORTED_THING_TYPE = THING_TYPE_STOP;
 
+    private final Logger logger = LoggerFactory.getLogger(StopHandler.class);
+
     private StopConfiguration config;
     private Gson gson;
     private HttpClient httpClient;
-    private Logger logger = LoggerFactory.getLogger(StopHandler.class);
     private ScheduledFuture<?> pollingJob;
-    private Runnable pollingRunnable = () -> {
-        fetchAndUpdateStopData();
-    };
     private AtomicBoolean fetchInProgress = new AtomicBoolean(false);
     private long routeDataLastUpdateMs = 0;
-    private Multimap<String, ObaStopArrivalResponse.ArrivalAndDeparture> routeData = ArrayListMultimap.create();
+    private final Map<String, List<ObaStopArrivalResponse.ArrivalAndDeparture>> routeData = new HashMap<>();
     private List<RouteDataListener> routeDataListeners = new CopyOnWriteArrayList<>();
 
-    public StopHandler(Bridge bridge) {
+    public StopHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -94,17 +94,10 @@ public class StopHandler extends BaseBridgeHandler {
 
         // Do the rest of the work asynchronously because it can take a while.
         scheduler.submit(() -> {
-            httpClient = new HttpClient();
-            try {
-                httpClient.start();
-            } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-                httpClient = null;
-                return;
-            }
             gson = new Gson();
 
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 0, config.getInterval(), TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::fetchAndUpdateStopData, 0, config.getInterval(),
+                    TimeUnit.SECONDS);
         });
     }
 
@@ -113,10 +106,6 @@ public class StopHandler extends BaseBridgeHandler {
         if (pollingJob != null && !pollingJob.isCancelled()) {
             pollingJob.cancel(true);
             pollingJob = null;
-        }
-        if (httpClient != null) {
-            httpClient.destroy();
-            httpClient = null;
         }
     }
 
@@ -135,7 +124,7 @@ public class StopHandler extends BaseBridgeHandler {
             String routeId = listener.getRouteId();
             List<ObaStopArrivalResponse.ArrivalAndDeparture> copiedRouteData;
             synchronized (routeData) {
-                copiedRouteData = Lists.newArrayList(routeData.get(routeId));
+                copiedRouteData = new ArrayList<>(routeData.get(routeId));
             }
             Collections.sort(copiedRouteData);
             listener.onNewRouteData(routeDataLastUpdateMs, copiedRouteData);
@@ -157,7 +146,7 @@ public class StopHandler extends BaseBridgeHandler {
      * Forced an update to be scheduled immediately.
      */
     protected void forceUpdate() {
-        scheduler.execute(pollingRunnable);
+        scheduler.execute(this::fetchAndUpdateStopData);
     }
 
     private ApiHandler getApiHandler() {
@@ -216,17 +205,16 @@ public class StopHandler extends BaseBridgeHandler {
             routeDataLastUpdateMs = data.currentTime;
             updateStatus(ThingStatus.ONLINE);
 
-            ArrayListMultimap<String, ObaStopArrivalResponse.ArrivalAndDeparture> copiedRouteData = ArrayListMultimap
-                    .create();
+            Map<String, List<ObaStopArrivalResponse.ArrivalAndDeparture>> copiedRouteData = new HashMap<>();
             synchronized (routeData) {
-                routeData = ArrayListMultimap.create();
+                routeData.clear();
                 for (ObaStopArrivalResponse.ArrivalAndDeparture d : data.data.entry.arrivalsAndDepartures) {
-                    routeData.put(d.routeId, d);
+                    routeData.put(d.routeId, Arrays.asList(d));
                 }
                 for (String key : routeData.keySet()) {
-                    List<ObaStopArrivalResponse.ArrivalAndDeparture> copy = Lists.newArrayList(routeData.get(key));
+                    List<ObaStopArrivalResponse.ArrivalAndDeparture> copy = new ArrayList<>(routeData.get(key));
                     Collections.sort(copy);
-                    copiedRouteData.putAll(key, copy);
+                    copiedRouteData.put(key, copy);
                 }
             }
             for (RouteDataListener listener : routeDataListeners) {
