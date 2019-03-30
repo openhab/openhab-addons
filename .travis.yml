@@ -50,9 +50,5 @@ after_success:
   - print_reactor_summary .build.log
 after_failure:
   - tail -n 2000 .build.log
-env: # required for allowing failures
-matrix:
-  allow_failures:
-    - jdk: openjdk11
 script:
   - mvnp clean install -B -DskipChecks=true -DskipTests=true $(extra_maven_opts)
