@@ -83,7 +83,6 @@
     <module>org.openhab.binding.robonect</module>
     <module>org.openhab.binding.robonect.test</module>
     <module>org.openhab.binding.rotelra1x</module>
-    <module>org.openhab.binding.russound</module>
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.satel</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>
