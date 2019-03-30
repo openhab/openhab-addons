@@ -39,6 +39,7 @@
     <module>org.openhab.binding.dmx</module>
     <module>org.openhab.binding.dscalarm</module>
     <module>org.openhab.binding.dwdunwetter</module>
+    <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.evohome</module>
     <module>org.openhab.binding.feican</module>
     <module>org.openhab.binding.folding</module>
