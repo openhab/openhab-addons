@@ -14,7 +14,10 @@ package org.openhab.binding.lutron.internal;
 
 import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,8 +53,6 @@ import org.openhab.binding.lutron.internal.radiora.handler.PhantomButtonHandler;
 import org.openhab.binding.lutron.internal.radiora.handler.RS232Handler;
 import org.osgi.service.component.annotations.Component;
 
-import com.google.common.collect.ImmutableSet;
-
 /**
  * The {@link LutronHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -63,20 +64,24 @@ import com.google.common.collect.ImmutableSet;
 public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     // Used by LutronDeviceDiscoveryService to discover these types
-    public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet.of(THING_TYPE_DIMMER,
-            THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD, THING_TYPE_TTKEYPAD, THING_TYPE_PICO,
-            THING_TYPE_VIRTUALKEYPAD, THING_TYPE_VCRX, THING_TYPE_CCO_PULSED, THING_TYPE_CCO_MAINTAINED,
-            THING_TYPE_SHADE, THING_TYPE_TIMECLOCK, THING_TYPE_GREENMODE);
+    public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = Collections
+            .unmodifiableSet(Arrays.asList(THING_TYPE_DIMMER, THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR,
+                    THING_TYPE_KEYPAD, THING_TYPE_TTKEYPAD, THING_TYPE_PICO, THING_TYPE_VIRTUALKEYPAD, THING_TYPE_VCRX,
+                    THING_TYPE_CCO_PULSED, THING_TYPE_CCO_MAINTAINED, THING_TYPE_SHADE, THING_TYPE_TIMECLOCK,
+                    THING_TYPE_GREENMODE).stream().collect(Collectors.toSet()));
 
     // Used by the HwDiscoveryService
-    public static final Set<ThingTypeUID> HW_DISCOVERABLE_DEVICE_TYPES_UIDS = ImmutableSet
-            .of(HwConstants.THING_TYPE_HWDIMMER);
+    public static final Set<ThingTypeUID> HW_DISCOVERABLE_DEVICE_TYPES_UIDS = Collections
+            .unmodifiableSet(Collections.singleton(HwConstants.THING_TYPE_HWDIMMER));
 
     // Other types that can be initiated but not discovered
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_IPBRIDGE,
-            PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE, RadioRAConstants.THING_TYPE_RS232,
-            RadioRAConstants.THING_TYPE_DIMMER, RadioRAConstants.THING_TYPE_SWITCH, RadioRAConstants.THING_TYPE_PHANTOM,
-            HwConstants.THING_TYPE_HWSERIALBRIDGE, THING_TYPE_CCO);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Arrays
+                    .asList(THING_TYPE_IPBRIDGE, PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE,
+                            RadioRAConstants.THING_TYPE_RS232, RadioRAConstants.THING_TYPE_DIMMER,
+                            RadioRAConstants.THING_TYPE_SWITCH, RadioRAConstants.THING_TYPE_PHANTOM,
+                            HwConstants.THING_TYPE_HWSERIALBRIDGE, THING_TYPE_CCO)
+                    .stream().collect(Collectors.toSet()));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
