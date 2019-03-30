@@ -461,7 +461,7 @@
     <feature name="openhab-binding-meteostick" description="Meteostick Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.meteostick/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.meteostick/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-miele" description="Miele@home Binding" version="${project.version}">

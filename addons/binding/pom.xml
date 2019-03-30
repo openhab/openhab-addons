@@ -60,7 +60,6 @@
     <module>org.openhab.binding.max</module>
     <module>org.openhab.binding.max.test</module>
     <module>org.openhab.binding.mcp23017</module>
-    <module>org.openhab.binding.meteostick</module>
     <module>org.openhab.binding.miio</module>
     <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.modbus</module>

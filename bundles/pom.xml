@@ -61,6 +61,7 @@
     <module>org.openhab.binding.lifx</module>
     <module>org.openhab.binding.lirc</module>
     <module>org.openhab.binding.meteoblue</module>
+    <module>org.openhab.binding.meteostick</module>
     <module>org.openhab.binding.miele</module>
     <module>org.openhab.binding.mihome</module>
     <module>org.openhab.binding.milight</module>
