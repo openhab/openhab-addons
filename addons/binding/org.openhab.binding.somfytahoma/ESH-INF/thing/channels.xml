@@ -150,7 +150,7 @@
 	<channel-type id="gate_command">
 		<item-type>String</item-type>
 		<label>Gate Command</label>
-		<description>A channel used for getting/setting the gate position (open, close, pedestrian)</description>
+		<description>A channel used for getting/setting the gate position (open, close, pedestrian, stop)</description>
 		<state>
 			<options>
 				<option value="open">OPEN</option>
