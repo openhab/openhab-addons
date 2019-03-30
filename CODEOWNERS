@@ -55,7 +55,6 @@
 /addons/binding/org.openhab.binding.opensprinkler/ @CrackerStealth
 /addons/binding/org.openhab.binding.orvibo/ @tavalin
 /addons/binding/org.openhab.binding.rme/ @kgoderis
-/addons/binding/org.openhab.binding.rotelra1x/ @fa2k
 /addons/binding/org.openhab.binding.samsungtv/ @paulianttila
 /addons/binding/org.openhab.binding.satel/ @druciak
 /addons/binding/org.openhab.binding.sleepiq/ @syphr42
@@ -171,6 +170,7 @@
 /bundles/org.openhab.binding.regoheatpump/ @crnjan
 /bundles/org.openhab.binding.rfxcom/ @martinvw @paulianttila
 /bundles/org.openhab.binding.robonect/ @reyem
+/bundles/org.openhab.binding.rotelra1x/ @fa2k
 /bundles/org.openhab.binding.russound/ @tmrobert8
 /bundles/org.openhab.binding.seneye/ @nikotanghe
 /bundles/org.openhab.binding.sensebox/ @hakan42
