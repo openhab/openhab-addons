@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.omnilink.discovery;
 
+import static com.digitaldan.jomnilinkII.MessageTypes.properties.UnitProperties.*;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Collections;
@@ -15,7 +17,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -349,24 +350,11 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                     .builder(bridgeHandler, ObjectPropertyRequests.UNIT).selectNamed().areaFilter(areaFilter)
                     .selectAnyLoad().build();
 
-            int currentRoom = 0;
             String currentRoomName = "";
 
             for (UnitProperties unitProperties : objectPropertyRequest) {
 
                 int objnum = unitProperties.getNumber();
-
-                // boolean isInRoom = false;
-                boolean isRoomController = false;
-                logger.debug("Unit type: {}", unitProperties.getUnitType());
-                if (unitProperties.getUnitType() == UnitProperties.UNIT_TYPE_HLC_ROOM
-                        || unitProperties.getObjectType() == UnitProperties.UNIT_TYPE_VIZIARF_ROOM) {
-                    currentRoom = objnum;
-                    currentRoomName = unitProperties.getName();
-                    isRoomController = true;
-                } else if (objnum < currentRoom + 8) {
-                    // isInRoom = true;
-                }
 
                 String thingLabel = unitProperties.getName();
                 String thingID = Integer.toString(objnum);
@@ -377,40 +365,62 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                 properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, unitProperties.getName());
                 properties.put(OmnilinkBindingConstants.THING_PROPERTIES_AREA, areaProperties.getNumber());
 
-                Optional<DiscoveryResult> discoveryResult = Optional.empty();
-                if (isRoomController) {
-                    discoveryResult = Optional.of(DiscoveryResultBuilder
-                            .create(new ThingUID(OmnilinkBindingConstants.THING_TYPE_ROOM,
-                                    bridgeHandler.getThing().getUID(), thingID))
-                            .withProperties(properties).withBridge(bridgeUID).withLabel(thingLabel).build());
-                } else {
-                    ThingUID thingUID = null;
-                    if (unitProperties.getUnitType() == UnitProperties.UNIT_TYPE_FLAG) {
+                ThingUID thingUID = null;
+
+                switch (unitProperties.getUnitType()) {
+                    case UNIT_TYPE_HLC_ROOM:
+                    case UNIT_TYPE_VIZIARF_ROOM:
+                        thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_ROOM,
+                                bridgeHandler.getThing().getUID(), thingID);
+                        currentRoomName = unitProperties.getName();
+                        break;
+                    case UNIT_TYPE_FLAG:
                         thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_FLAG,
                                 bridgeHandler.getThing().getUID(), thingID);
+                        break;
+                    case UNIT_TYPE_OUTPUT:
+                        thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_OUTPUT,
+                                bridgeHandler.getThing().getUID(), thingID);
+                        break;
+                    case UNIT_TYPE_UPB:
+                    case UNIT_TYPE_HLC_LOAD:
+                        thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_UNIT_UPB,
+                                bridgeHandler.getThing().getUID(), thingID);
+                        break;
+                    case UNIT_TYPE_CENTRALITE:
+                    case UNIT_TYPE_RADIORA:
+                    case UNIT_TYPE_VIZIARF_LOAD:
+                    case UNIT_TYPE_COMPOSE:
+                        thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_DIMMABLE,
+                                bridgeHandler.getThing().getUID(), thingID);
+                        break;
+                    default:
+                        thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_UNIT,
+                                bridgeHandler.getThing().getUID(), thingID);
+                        logger.debug("Generic unit type: {}", unitProperties.getUnitType());
+                        break;
 
-                    } else {
-                        if (unitProperties.getUnitType() == UnitProperties.UNIT_TYPE_UPB
-                                || unitProperties.getUnitType() == UnitProperties.UNIT_TYPE_HLC_LOAD) {
-                            thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_UNIT_UPB,
-                                    bridgeHandler.getThing().getUID(), thingID);
-                        } else {
-                            logger.debug("Unsupported unit type: {}", unitProperties.getUnitType());
-                        }
+                }
+
+                switch (unitProperties.getUnitType()) {
+                    case UNIT_TYPE_UPB:
+                    case UNIT_TYPE_HLC_LOAD:
+                    case UNIT_TYPE_CENTRALITE:
+                    case UNIT_TYPE_RADIORA:
+                    case UNIT_TYPE_VIZIARF_LOAD:
+                    case UNIT_TYPE_COMPOSE:
                         // let's prepend room name to unit name for label
                         // TODO could make this configurable
                         thingLabel = currentRoomName + ": " + unitProperties.getName();
-                    }
-                    if (thingUID != null) {
-                        discoveryResult = Optional.of(DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                                .withBridge(bridgeUID).withLabel(thingLabel).build());
-                    }
+                        break;
                 }
-                if (discoveryResult.isPresent()) {
-                    thingDiscovered(discoveryResult.get());
-                }
+
+                thingDiscovered(DiscoveryResultBuilder.create(thingUID).withProperties(properties).withBridge(bridgeUID)
+                        .withLabel(thingLabel).build());
+
             }
         }
+
     }
 
     /**

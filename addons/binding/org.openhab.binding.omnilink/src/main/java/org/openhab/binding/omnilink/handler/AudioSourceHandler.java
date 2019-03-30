@@ -143,7 +143,7 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
             try {
                 int position = 0;
                 Message message;
-                while ((message = getOmnilinkBridgeHander().requestAudioSourceStatus(sourceNumber, position))
+                while ((message = getOmnilinkBridgeHandler().requestAudioSourceStatus(sourceNumber, position))
                         .getMessageType() == Message.MESG_TYPE_AUDIO_SOURCE_STATUS) {
                     AudioSourceStatus audioSourceStatus = (AudioSourceStatus) message;
                     position = audioSourceStatus.getPosition();

@@ -55,7 +55,7 @@ public class AreaHandler extends AbstractOmnilinkStatusHandler<AreaStatus> {
                 return;
             }
             try {
-                getOmnilinkBridgeHander().activateKeypadEmergency(areaNumber, ((DecimalType) command).intValue());
+                getOmnilinkBridgeHandler().activateKeypadEmergency(areaNumber, ((DecimalType) command).intValue());
             } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
                 logger.debug("Could not send command to omnilink: {}", e);
             }
@@ -105,7 +105,7 @@ public class AreaHandler extends AbstractOmnilinkStatusHandler<AreaStatus> {
         } else {
             // mode, codeNum, areaNum
             try {
-                SecurityCodeValidation codeValidation = getOmnilinkBridgeHander().reqSecurityCodeValidation(areaNumber,
+                SecurityCodeValidation codeValidation = getOmnilinkBridgeHandler().reqSecurityCodeValidation(areaNumber,
                         Character.getNumericValue(code[0]), Character.getNumericValue(code[1]),
                         Character.getNumericValue(code[2]), Character.getNumericValue(code[3]));
                 /*
@@ -122,7 +122,7 @@ public class AreaHandler extends AbstractOmnilinkStatusHandler<AreaStatus> {
                  */
                 if ((codeValidation.getCodeNumber() > 0 && codeValidation.getCodeNumber() <= 99)
                         && codeValidation.getAuthorityLevel() > 0) {
-                    getOmnilinkBridgeHander().sendOmnilinkCommand(mode, codeValidation.getCodeNumber(), areaNumber);
+                    sendOmnilinkCommand(mode, codeValidation.getCodeNumber(), areaNumber);
                 } else {
                     logger.error("System reported an invalid code");
                 }
@@ -175,7 +175,7 @@ public class AreaHandler extends AbstractOmnilinkStatusHandler<AreaStatus> {
     protected Optional<AreaStatus> retrieveStatus() {
         try {
             int areaId = getThingNumber();
-            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_AREA, areaId,
+            ObjectStatus objStatus = getOmnilinkBridgeHandler().requestObjectStatus(Message.OBJ_TYPE_AREA, areaId,
                     areaId, false);
             return Optional.of((AreaStatus) objStatus.getStatuses()[0]);
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {

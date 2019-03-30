@@ -44,14 +44,11 @@ public class LockHandler extends AbstractOmnilinkStatusHandler<AccessControlRead
         int lockID = getThingNumber();
         if (command instanceof OnOffType) {
             logger.debug("updating omnilink lock change: {}, command: {}", channelUID, command);
-            try {
-                OmniLinkCmd omniLinkCmd = OnOffType.ON.equals(command) ? OmniLinkCmd.CMD_LOCK_DOOR
-                        : OmniLinkCmd.CMD_UNLOCK_DOOR;
-                getOmnilinkBridgeHander().sendOmnilinkCommand(omniLinkCmd.getNumber(), 0, lockID);
-            } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException
-                    | BridgeOfflineException e) {
-                logger.debug("Could not send command to omnilink: {}", e);
-            }
+
+            OmniLinkCmd omniLinkCmd = OnOffType.ON.equals(command) ? OmniLinkCmd.CMD_LOCK_DOOR
+                    : OmniLinkCmd.CMD_UNLOCK_DOOR;
+            sendOmnilinkCommand(omniLinkCmd.getNumber(), 0, lockID);
+
         } else {
             logger.warn("Must handle command: {}", command);
         }
@@ -67,7 +64,7 @@ public class LockHandler extends AbstractOmnilinkStatusHandler<AccessControlRead
     protected Optional<AccessControlReaderLockStatus> retrieveStatus() {
         try {
             int lockID = getThingNumber();
-            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_CONTROL_LOCK,
+            ObjectStatus objStatus = getOmnilinkBridgeHandler().requestObjectStatus(Message.OBJ_TYPE_CONTROL_LOCK,
                     lockID, lockID, false);
             return Optional.of((AccessControlReaderLockStatus) objStatus.getStatuses()[0]);
 

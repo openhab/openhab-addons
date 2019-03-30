@@ -6,6 +6,11 @@
 	</projects>
 	<buildSpec>
 		<buildCommand>
+			<name>org.jetbrains.kotlin.ui.kotlinBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
 			<name>org.eclipse.jdt.core.javabuilder</name>
 			<arguments>
 			</arguments>
@@ -29,5 +34,13 @@
 	<natures>
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.jetbrains.kotlin.core.kotlinNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>kotlin_bin</name>
+			<type>2</type>
+			<locationURI>org.jetbrains.kotlin.core.filesystem:/org.openhab.binding.omnilink/kotlin_bin</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

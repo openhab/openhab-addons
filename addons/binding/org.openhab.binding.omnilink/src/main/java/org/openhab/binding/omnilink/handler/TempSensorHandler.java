@@ -42,7 +42,7 @@ public class TempSensorHandler extends AbstractOmnilinkStatusHandler<AuxSensorSt
     public void updateChannels(AuxSensorStatus status) {
         logger.debug("Aux Sensor Status {}", status);
 
-        TemperatureFormat temperatureFormat = getOmnilinkBridgeHander().getTemperatureFormat();
+        TemperatureFormat temperatureFormat = getOmnilinkBridgeHandler().getTemperatureFormat();
 
         updateState(OmnilinkBindingConstants.CHANNEL_AUX_TEMP,
                 new DecimalType(temperatureFormat.omniToFormat(status.getTemp())));
@@ -56,7 +56,7 @@ public class TempSensorHandler extends AbstractOmnilinkStatusHandler<AuxSensorSt
     protected Optional<AuxSensorStatus> retrieveStatus() {
         try {
             int sensorID = getThingNumber();
-            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_AUX_SENSOR,
+            ObjectStatus objStatus = getOmnilinkBridgeHandler().requestObjectStatus(Message.OBJ_TYPE_AUX_SENSOR,
                     sensorID, sensorID, true);
             return Optional.of((AuxSensorStatus) objStatus.getStatuses()[0]);
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {

@@ -75,27 +75,26 @@ public class AudioZoneHandler extends AbstractOmnilinkStatusHandler<AudioZoneSta
 
     }
 
-    private void handleControlCommand(Command command, int audioZoneID)
-            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
-        Optional<AudioPlayer> audioPlayer = getOmnilinkBridgeHander().getAudioPlayer();
+    private void handleControlCommand(Command command, int audioZoneID) {
+        Optional<AudioPlayer> audioPlayer = getOmnilinkBridgeHandler().getAudioPlayer();
         if (audioPlayer.isPresent()) {
             AudioPlayer player = audioPlayer.get();
             if (command instanceof PlayPauseType) {
                 if (command.equals(PlayPauseType.PLAY)) {
-                    getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SELECT_KEY.getNumber(),
-                            player.getPlayCommand(), audioZoneID);
+                    sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SELECT_KEY.getNumber(), player.getPlayCommand(),
+                            audioZoneID);
                 } else if (command.equals(PlayPauseType.PAUSE)) {
-                    getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SELECT_KEY.getNumber(),
-                            player.getPauseCommand(), audioZoneID);
+                    sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SELECT_KEY.getNumber(), player.getPauseCommand(),
+                            audioZoneID);
                 }
             }
             if (command instanceof NextPreviousType) {
                 if (command.equals(NextPreviousType.NEXT)) {
-                    getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SELECT_KEY.getNumber(),
-                            player.getNextCommand(), audioZoneID);
+                    sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SELECT_KEY.getNumber(), player.getNextCommand(),
+                            audioZoneID);
                 } else if (command.equals(NextPreviousType.PREVIOUS)) {
-                    getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SELECT_KEY.getNumber(),
-                            player.getPreviousCommand(), audioZoneID);
+                    sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SELECT_KEY.getNumber(), player.getPreviousCommand(),
+                            audioZoneID);
                 }
             }
         } else {
@@ -104,22 +103,17 @@ public class AudioZoneHandler extends AbstractOmnilinkStatusHandler<AudioZoneSta
 
     }
 
-    private void handleSourceCommand(Command command, int audioZoneID)
-            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+    private void handleSourceCommand(Command command, int audioZoneID) {
         int source = ((DecimalType) command).intValue();
-        getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SET_SOURCE.getNumber(), source,
-                audioZoneID);
+        sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SET_SOURCE.getNumber(), source, audioZoneID);
     }
 
-    private void handleVolumeCommand(Command command, int audioZoneID)
-            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+    private void handleVolumeCommand(Command command, int audioZoneID) {
         int volume = ((DecimalType) command).intValue();
-        getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SET_VOLUME.getNumber(), volume,
-                audioZoneID);
+        sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SET_VOLUME.getNumber(), volume, audioZoneID);
     }
 
-    private void handleMuteCommand(Command command, int audioZoneID)
-            throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
+    private void handleMuteCommand(Command command, int audioZoneID) {
         /*
          * set audio zone P2 (0=all zones) to P1
          * 0 = off
@@ -129,8 +123,7 @@ public class AudioZoneHandler extends AbstractOmnilinkStatusHandler<AudioZoneSta
          */
 
         int mode = ((OnOffType) command) == OnOffType.ON ? 3 : 2;
-        getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SET_ON_MUTE.getNumber(), mode,
-                audioZoneID);
+        sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SET_ON_MUTE.getNumber(), mode, audioZoneID);
     }
 
     private void handlePowerCommand(Command command, int audioZoneID)
@@ -143,8 +136,7 @@ public class AudioZoneHandler extends AbstractOmnilinkStatusHandler<AudioZoneSta
          * 3 = mute on
          */
         int mode = ((OnOffType) command) == OnOffType.ON ? 1 : 0;
-        getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SET_ON_MUTE.getNumber(), mode,
-                audioZoneID);
+        sendOmnilinkCommand(OmniLinkCmd.CMD_AUDIO_ZONE_SET_ON_MUTE.getNumber(), mode, audioZoneID);
     }
 
     @Override
@@ -171,7 +163,7 @@ public class AudioZoneHandler extends AbstractOmnilinkStatusHandler<AudioZoneSta
     protected Optional<AudioZoneStatus> retrieveStatus() {
         try {
             int audioZoneID = getThingNumber();
-            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_AUDIO_ZONE,
+            ObjectStatus objStatus = getOmnilinkBridgeHandler().requestObjectStatus(Message.OBJ_TYPE_AUDIO_ZONE,
                     audioZoneID, audioZoneID, true);
             return Optional.of((AudioZoneStatus) objStatus.getStatuses()[0]);
 

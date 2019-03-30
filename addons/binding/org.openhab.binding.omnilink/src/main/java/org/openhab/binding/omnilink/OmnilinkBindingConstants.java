@@ -9,7 +9,6 @@
 package org.openhab.binding.omnilink;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link OmnilinkBinding} class defines common constants, which are
@@ -55,10 +54,19 @@ public class OmnilinkBindingConstants {
 
     // units
     public final static String CHANNEL_UNIT_LEVEL = "level";
-    public final static String CHANNEL_FLAG = "value";
+    public final static String CHANNEL_UNIT_SWITCH = "switch";
+    public final static String CHANNEL_UNIT_ON_FOR_SECONDS = "on_seconds";
+    public final static String CHANNEL_UNIT_ON_FOR_MINUTES = "on_minutes";
+    public final static String CHANNEL_UNIT_ON_FOR_HOURS = "on_hours";
+    public final static String CHANNEL_UNIT_OFF_FOR_SECONDS = "off_seconds";
+    public final static String CHANNEL_UNIT_OFF_FOR_MINUTES = "off_minutes";
+    public final static String CHANNEL_UNIT_OFF_FOR_HOURS = "off_hours";
+    public final static String CHANNEL_FLAG_VALUE = "value";
+    public final static String CHANNEL_FLAG_SWITCH = "switch";
     public final static String CHANNEL_ROOM_SWITCH = "switch";
     public final static String CHANNEL_ROOM_ON = "on";
     public final static String CHANNEL_ROOM_OFF = "off";
+    public final static String CHANNEL_UPB_STATUS = "upb_status";
 
     public final static String CHANNEL_ROOM_SCENE_A = "scene_a";
     public final static String CHANNEL_ROOM_SCENE_B = "scene_b";
@@ -66,7 +74,6 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_ROOM_SCENE_D = "scene_d";
     public final static String CHANNEL_ROOM_STATE = "state";
 
-    public final static String CHANNEL_FLAGSWITCH = "switch";
     public final static String CHANNEL_SYSTEMDATE = "sysdate";
     public final static String CHANNEL_EVENT_LOG = "last_log";
 
@@ -144,7 +151,9 @@ public class OmnilinkBindingConstants {
     public final static ThingTypeUID THING_TYPE_LOCK = new ThingTypeUID(BINDING_ID, "lock");
     public final static ThingTypeUID THING_TYPE_UNIT_UPB = new ThingTypeUID(BINDING_ID, "upb");
     public final static ThingTypeUID THING_TYPE_UNIT = new ThingTypeUID(BINDING_ID, "unit");
+    public final static ThingTypeUID THING_TYPE_DIMMABLE = new ThingTypeUID(BINDING_ID, "dimmable");
     public final static ThingTypeUID THING_TYPE_FLAG = new ThingTypeUID(BINDING_ID, "flag");
+    public final static ThingTypeUID THING_TYPE_OUTPUT = new ThingTypeUID(BINDING_ID, "output");
     public final static ThingTypeUID THING_TYPE_ROOM = new ThingTypeUID(BINDING_ID, "room");
     public final static ThingTypeUID THING_TYPE_BUTTON = new ThingTypeUID(BINDING_ID, "button");
     public final static ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
@@ -153,7 +162,5 @@ public class OmnilinkBindingConstants {
     public final static ThingTypeUID THING_TYPE_CONSOLE = new ThingTypeUID(BINDING_ID, "console");
     public static final ThingTypeUID THING_TYPE_TEMP_SENSOR = new ThingTypeUID(BINDING_ID, "temp_sensor");
     public static final ThingTypeUID THING_TYPE_HUMIDITY_SENSOR = new ThingTypeUID(BINDING_ID, "humidity_sensor");
-
-    public final static ChannelTypeUID CHANNEL_TYPE_FLAG = new ChannelTypeUID(BINDING_ID, CHANNEL_FLAG);
 
 }

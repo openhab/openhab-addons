@@ -62,65 +62,54 @@ public class ThermostatHandler extends AbstractOmnilinkStatusHandler<ExtendedThe
         int thermostatID = getThingNumber();
         String channelID = channelUID.getId();
 
-        try {
-            switch (channelID) {
-                case OmnilinkBindingConstants.CHANNEL_THERMO_SYSTEM_MODE: {
-                    int mode = ((DecimalType) command).intValue();
-                    getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_SYSTEM_MODE.getNumber(),
-                            mode, thermostatID);
-                }
-                    break;
-                case OmnilinkBindingConstants.CHANNEL_THERMO_FAN_MODE: {
-                    int mode = ((DecimalType) command).intValue();
-                    getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_FAN_MODE.getNumber(), mode,
-                            thermostatID);
-                }
-                    break;
-                case OmnilinkBindingConstants.CHANNEL_THERMO_HOLD_MODE: {
-                    int mode = ((DecimalType) command).intValue();
-                    getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_HOLD_MODE.getNumber(),
-                            mode, thermostatID);
-                }
-                    break;
-                case OmnilinkBindingConstants.CHANNEL_THERMO_HEAT_SETPOINT: {
-                    TemperatureFormat temperatureFormat = getOmnilinkBridgeHander().getTemperatureFormat();
-                    int setpoint = ((DecimalType) command).intValue();
-                    setpoint = temperatureFormat.formatToOmni(setpoint);
-                    getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_HEAT_POINT.getNumber(),
-                            setpoint, thermostatID);
-                }
-                    break;
-                case OmnilinkBindingConstants.CHANNEL_THERMO_COOL_SETPOINT: {
-                    TemperatureFormat temperatureFormat = getOmnilinkBridgeHander().getTemperatureFormat();
-                    int setpoint = ((DecimalType) command).intValue();
-                    setpoint = temperatureFormat.formatToOmni(setpoint);
-                    getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_COOL_POINT.getNumber(),
-                            setpoint, thermostatID);
-                }
-                    break;
-                case OmnilinkBindingConstants.CHANNEL_THERMO_HUMIDIFY_SETPOINT: {
-                    int setpoint = ((DecimalType) command).intValue();
-                    // Humdity is stored using fahrenheit
-                    setpoint = TemperatureFormat.FAHRENHEIT.formatToOmni(setpoint);
-                    getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_HUMDIFY_POINT.getNumber(),
-                            setpoint, thermostatID);
-                }
-                    break;
-                case OmnilinkBindingConstants.CHANNEL_THERMO_DEHUMIDIFY_SETPOINT: {
-                    int setpoint = ((DecimalType) command).intValue();
-                    // Humdity is stored using fahrenheit
-                    setpoint = TemperatureFormat.FAHRENHEIT.formatToOmni(setpoint);
-                    getOmnilinkBridgeHander().sendOmnilinkCommand(
-                            OmniLinkCmd.CMD_THERMO_SET_DEHUMIDIFY_POINT.getNumber(), setpoint, thermostatID);
-                }
-                    break;
-                default:
-                    logger.warn("Channel ID ({}) not processed", channelID);
-                    break;
-
+        switch (channelID) {
+            case OmnilinkBindingConstants.CHANNEL_THERMO_SYSTEM_MODE: {
+                int mode = ((DecimalType) command).intValue();
+                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_SYSTEM_MODE.getNumber(), mode, thermostatID);
             }
-        } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
-            logger.debug("received exception handling command", e);
+                break;
+            case OmnilinkBindingConstants.CHANNEL_THERMO_FAN_MODE: {
+                int mode = ((DecimalType) command).intValue();
+                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_FAN_MODE.getNumber(), mode, thermostatID);
+            }
+                break;
+            case OmnilinkBindingConstants.CHANNEL_THERMO_HOLD_MODE: {
+                int mode = ((DecimalType) command).intValue();
+                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_HOLD_MODE.getNumber(), mode, thermostatID);
+            }
+                break;
+            case OmnilinkBindingConstants.CHANNEL_THERMO_HEAT_SETPOINT: {
+                TemperatureFormat temperatureFormat = getOmnilinkBridgeHandler().getTemperatureFormat();
+                int setpoint = ((DecimalType) command).intValue();
+                setpoint = temperatureFormat.formatToOmni(setpoint);
+                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_HEAT_POINT.getNumber(), setpoint, thermostatID);
+            }
+                break;
+            case OmnilinkBindingConstants.CHANNEL_THERMO_COOL_SETPOINT: {
+                TemperatureFormat temperatureFormat = getOmnilinkBridgeHandler().getTemperatureFormat();
+                int setpoint = ((DecimalType) command).intValue();
+                setpoint = temperatureFormat.formatToOmni(setpoint);
+                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_COOL_POINT.getNumber(), setpoint, thermostatID);
+            }
+                break;
+            case OmnilinkBindingConstants.CHANNEL_THERMO_HUMIDIFY_SETPOINT: {
+                int setpoint = ((DecimalType) command).intValue();
+                // Humdity is stored using fahrenheit
+                setpoint = TemperatureFormat.FAHRENHEIT.formatToOmni(setpoint);
+                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_HUMDIFY_POINT.getNumber(), setpoint, thermostatID);
+            }
+                break;
+            case OmnilinkBindingConstants.CHANNEL_THERMO_DEHUMIDIFY_SETPOINT: {
+                int setpoint = ((DecimalType) command).intValue();
+                // Humdity is stored using fahrenheit
+                setpoint = TemperatureFormat.FAHRENHEIT.formatToOmni(setpoint);
+                sendOmnilinkCommand(OmniLinkCmd.CMD_THERMO_SET_DEHUMIDIFY_POINT.getNumber(), setpoint, thermostatID);
+            }
+                break;
+            default:
+                logger.warn("Channel ID ({}) not processed", channelID);
+                break;
+
         }
 
     }
@@ -171,7 +160,7 @@ public class ThermostatHandler extends AbstractOmnilinkStatusHandler<ExtendedThe
     }
 
     private void handleTemperatureStatus(ExtendedThermostatStatus status) {
-        TemperatureFormat temperatureFormat = getOmnilinkBridgeHander().getTemperatureFormat();
+        TemperatureFormat temperatureFormat = getOmnilinkBridgeHandler().getTemperatureFormat();
 
         updateState(OmnilinkBindingConstants.CHANNEL_THERMO_TEMP,
                 new DecimalType(temperatureFormat.omniToFormat(status.getTemperature())));
@@ -245,7 +234,7 @@ public class ThermostatHandler extends AbstractOmnilinkStatusHandler<ExtendedThe
         try {
             int thermostatID = getThingNumber();
             logger.debug("Requesting status for thermostat ID: {}", thermostatID);
-            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_THERMO,
+            ObjectStatus objStatus = getOmnilinkBridgeHandler().requestObjectStatus(Message.OBJ_TYPE_THERMO,
                     thermostatID, thermostatID, true);
             return Optional.of((ExtendedThermostatStatus) objStatus.getStatuses()[0]);
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {

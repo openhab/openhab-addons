@@ -19,8 +19,6 @@ import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
-import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 
@@ -55,12 +53,7 @@ public class ConsoleHandler extends AbstractOmnilinkStatusHandler {
         }
 
         int consoleNumber = getThingNumber();
-        try {
-            getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, p1, consoleNumber);
-        } catch (NumberFormatException | OmniInvalidResponseException | OmniUnknownMessageTypeException
-                | BridgeOfflineException e) {
-            logger.debug("Could not send console command to omnilink", e);
-        }
+        sendOmnilinkCommand(cmd, p1, consoleNumber);
 
     }
 
