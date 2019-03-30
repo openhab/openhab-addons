@@ -91,6 +91,7 @@
     <module>org.openhab.binding.seneye</module>
     <module>org.openhab.binding.sensebox</module>
     <module>org.openhab.binding.serialbutton</module>
+    <module>org.openhab.binding.silvercrestwifisocket</module>
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.solaredge</module>
     <module>org.openhab.binding.solarlog</module>

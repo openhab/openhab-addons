@@ -81,7 +81,6 @@
     <module>org.openhab.binding.rotelra1x</module>
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.satel</module>
-    <module>org.openhab.binding.silvercrestwifisocket</module>
     <module>org.openhab.binding.sleepiq</module>
     <module>org.openhab.binding.smartmeter</module>
     <module>org.openhab.binding.smartmeter.test</module>
