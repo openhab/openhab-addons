@@ -14,6 +14,7 @@ package org.openhab.binding.urtsi.internal;
 
 import static org.openhab.binding.urtsi.internal.UrtsiBindingConstants.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -26,8 +27,6 @@ import org.openhab.binding.urtsi.internal.handler.RtsDeviceHandler;
 import org.openhab.binding.urtsi.internal.handler.UrtsiDeviceHandler;
 import org.osgi.service.component.annotations.Component;
 
-import com.google.common.collect.Lists;
-
 /**
  * The {@link UrtsiHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -37,7 +36,7 @@ import com.google.common.collect.Lists;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.urtsi")
 public class UrtsiHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final List<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(URTSI_DEVICE_THING_TYPE,
+    private static final List<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(URTSI_DEVICE_THING_TYPE,
             RTS_DEVICE_THING_TYPE);
 
     @Override

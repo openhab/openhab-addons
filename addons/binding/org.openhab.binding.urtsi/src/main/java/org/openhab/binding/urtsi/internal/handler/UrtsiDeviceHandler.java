@@ -16,10 +16,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -34,10 +36,6 @@ import org.openhab.binding.urtsi.internal.config.UrtsiDeviceConfig;
 import org.openhab.binding.urtsi.internal.mapping.UrtsiChannelMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Sets;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
@@ -181,14 +179,15 @@ public class UrtsiDeviceHandler extends BaseBridgeHandler {
     private void initSerialPort(String port) {
         String serialPortsProperty = System.getProperty(GNU_IO_RXTX_SERIAL_PORTS);
         Set<String> serialPorts = null;
+
         if (serialPortsProperty != null) {
-            serialPorts = Sets.newHashSet(Splitter.on(":").split(serialPortsProperty));
+            serialPorts = Arrays.asList(serialPortsProperty.split(":")).stream().collect(Collectors.toSet());
         } else {
             serialPorts = new HashSet<>();
         }
         if (serialPorts.add(port)) {
             logger.debug("Added {} to the {} system property.", port, GNU_IO_RXTX_SERIAL_PORTS);
-            System.setProperty(GNU_IO_RXTX_SERIAL_PORTS, Joiner.on(":").join(serialPorts));
+            System.setProperty(GNU_IO_RXTX_SERIAL_PORTS, serialPorts.stream().collect(Collectors.joining(":")));
         }
     }
 
