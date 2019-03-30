@@ -50,7 +50,6 @@
     <module>org.openhab.binding.lgwebos</module>
     <module>org.openhab.binding.logreader</module>
     <module>org.openhab.binding.loxone</module>
-    <module>org.openhab.binding.lutron</module>
     <module>org.openhab.binding.max</module>
     <module>org.openhab.binding.max.test</module>
     <module>org.openhab.binding.mcp23017</module>

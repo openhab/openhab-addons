@@ -38,7 +38,6 @@
 /addons/binding/org.openhab.binding.lgwebos/ @sprehn
 /addons/binding/org.openhab.binding.logreader/ @paulianttila
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
-/addons/binding/org.openhab.binding.lutron/ @actong
 /addons/binding/org.openhab.binding.max/ @marcelrv
 /addons/binding/org.openhab.binding.max.test/ @marcelrv
 /addons/binding/org.openhab.binding.mcp23017/ @aogorek
@@ -147,6 +146,7 @@
 /bundles/org.openhab.binding.lgtvserial/ @fa2k
 /bundles/org.openhab.binding.lifx/ @wborn
 /bundles/org.openhab.binding.lirc/ @kabili207
+/bundles/org.openhab.binding.lutron/ @actong
 /bundles/org.openhab.binding.meteoblue/ @9037568
 /bundles/org.openhab.binding.meteostick/ @cdjackson
 /bundles/org.openhab.binding.miele/ @kgoderis
