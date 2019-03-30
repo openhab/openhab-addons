@@ -54,7 +54,6 @@
 /addons/binding/org.openhab.binding.onkyo/ @pail23 @paulianttila
 /addons/binding/org.openhab.binding.opensprinkler/ @CrackerStealth
 /addons/binding/org.openhab.binding.orvibo/ @tavalin
-/addons/binding/org.openhab.binding.rme/ @kgoderis
 /addons/binding/org.openhab.binding.samsungtv/ @paulianttila
 /addons/binding/org.openhab.binding.sleepiq/ @syphr42
 /addons/binding/org.openhab.binding.smartmeter/ @msteigenberger
@@ -168,6 +167,7 @@
 /bundles/org.openhab.binding.pulseaudio/ @peuter
 /bundles/org.openhab.binding.regoheatpump/ @crnjan
 /bundles/org.openhab.binding.rfxcom/ @martinvw @paulianttila
+/bundles/org.openhab.binding.rme/ @kgoderis
 /bundles/org.openhab.binding.robonect/ @reyem
 /bundles/org.openhab.binding.rotelra1x/ @fa2k
 /bundles/org.openhab.binding.russound/ @tmrobert8
