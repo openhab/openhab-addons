@@ -483,7 +483,7 @@
 
     <feature name="openhab-binding-milight" description="Milight Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.milight/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.milight/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-minecraft" description="Minecraft Binding" version="${project.version}">
