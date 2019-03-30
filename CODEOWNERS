@@ -17,7 +17,6 @@
 /addons/binding/org.openhab.binding.boschindego/ @jofleck
 /addons/binding/org.openhab.binding.chromecast/ @kaikreuzer
 /addons/binding/org.openhab.binding.chromecast.test/ @kaikreuzer
-/addons/binding/org.openhab.binding.cm11a/ @BobRak
 /addons/binding/org.openhab.binding.dsmr/ @Hilbrand
 /addons/binding/org.openhab.binding.dsmr.test/ @Hilbrand
 /addons/binding/org.openhab.binding.elerotransmitterstick/ @vbier
@@ -113,6 +112,7 @@
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
 /bundles/org.openhab.binding.bigassfan/ @mhilbush
 /bundles/org.openhab.binding.bosesoundtouch/ @marvkis @tratho
+/bundles/org.openhab.binding.cm11a/ @BobRak
 /bundles/org.openhab.binding.coolmasternet/ @projectgus
 /bundles/org.openhab.binding.daikin/ @caffineehacker
 /bundles/org.openhab.binding.deconz/ @davidgraeff
