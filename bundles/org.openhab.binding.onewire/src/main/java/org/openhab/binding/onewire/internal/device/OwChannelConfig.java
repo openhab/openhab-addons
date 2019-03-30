@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.onewire.internal.device;
 
+import static org.openhab.binding.onewire.internal.OwBindingConstants.BINDING_ID;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
@@ -23,6 +28,8 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
  */
 @NonNullByDefault
 public class OwChannelConfig {
+    private static final Pattern CONFIG_PATTERN = Pattern.compile("^(.+):(.+):(.*)$");
+
     public String channelId;
     public ChannelTypeUID channelTypeUID;
     public @Nullable String label;
@@ -35,5 +42,25 @@ public class OwChannelConfig {
 
     public OwChannelConfig(String channelId, ChannelTypeUID channelTypeUID) {
         this(channelId, channelTypeUID, null);
+    }
+
+    public static OwChannelConfig fromString(String configString) {
+        Matcher matcher = CONFIG_PATTERN.matcher(configString);
+        if (matcher.matches()) {
+            if (matcher.group(3).trim().isEmpty()) {
+                return new OwChannelConfig(matcher.group(1).trim(),
+                        new ChannelTypeUID(BINDING_ID, matcher.group(2).trim()));
+            } else {
+                return new OwChannelConfig(matcher.group(1).trim(),
+                        new ChannelTypeUID(BINDING_ID, matcher.group(2).trim()), matcher.group(3).trim());
+            }
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    @Override
+    public String toString() {
+        return channelId + "/" + channelTypeUID.getAsString() + "/" + label;
     }
 }

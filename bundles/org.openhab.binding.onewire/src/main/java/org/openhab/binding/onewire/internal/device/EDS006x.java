@@ -14,11 +14,6 @@ package org.openhab.binding.onewire.internal.device;
 
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Illuminance;
 import javax.measure.quantity.Pressure;
@@ -44,31 +39,6 @@ import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
  */
 @NonNullByDefault
 public class EDS006x extends AbstractOwDevice {
-    public static final Set<OwChannelConfig> CHANNELS_EDS0064 = Collections
-            .singleton(new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE));
-    public static final Set<OwChannelConfig> CHANNELS_EDS0065 = Stream
-            .of(new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE),
-                    new OwChannelConfig(CHANNEL_HUMIDITY, CHANNEL_TYPE_UID_HUMIDITY),
-                    new OwChannelConfig(CHANNEL_ABSOLUTE_HUMIDITY, CHANNEL_TYPE_UID_ABSHUMIDITY),
-                    new OwChannelConfig(CHANNEL_DEWPOINT, CHANNEL_TYPE_UID_TEMPERATURE))
-            .collect(Collectors.toSet());
-    public static final Set<OwChannelConfig> CHANNELS_EDS0066 = Stream
-            .of(new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE),
-                    new OwChannelConfig(CHANNEL_PRESSURE, CHANNEL_TYPE_UID_PRESSURE))
-            .collect(Collectors.toSet());
-    public static final Set<OwChannelConfig> CHANNELS_EDS0067 = Stream
-            .of(new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE),
-                    new OwChannelConfig(CHANNEL_LIGHT, CHANNEL_TYPE_UID_LIGHT))
-            .collect(Collectors.toSet());
-    public static final Set<OwChannelConfig> CHANNELS_EDS0068 = Stream
-            .of(new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE),
-                    new OwChannelConfig(CHANNEL_HUMIDITY, CHANNEL_TYPE_UID_HUMIDITY),
-                    new OwChannelConfig(CHANNEL_ABSOLUTE_HUMIDITY, CHANNEL_TYPE_UID_ABSHUMIDITY),
-                    new OwChannelConfig(CHANNEL_DEWPOINT, CHANNEL_TYPE_UID_TEMPERATURE),
-                    new OwChannelConfig(CHANNEL_PRESSURE, CHANNEL_TYPE_UID_PRESSURE),
-                    new OwChannelConfig(CHANNEL_LIGHT, CHANNEL_TYPE_UID_LIGHT))
-            .collect(Collectors.toSet());
-
     private OwserverDeviceParameter temperatureParameter = new OwserverDeviceParameter("/temperature");
     private OwserverDeviceParameter humidityParameter = new OwserverDeviceParameter("/humidity");
     private OwserverDeviceParameter pressureParameter = new OwserverDeviceParameter("/pressure");
