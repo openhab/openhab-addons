@@ -65,6 +65,7 @@
     <module>org.openhab.binding.lgtvserial</module>
     <module>org.openhab.binding.lifx</module>
     <module>org.openhab.binding.lirc</module>
+    <module>org.openhab.binding.lutron</module>
     <module>org.openhab.binding.meteoblue</module>
     <module>org.openhab.binding.meteostick</module>
     <module>org.openhab.binding.miele</module>
