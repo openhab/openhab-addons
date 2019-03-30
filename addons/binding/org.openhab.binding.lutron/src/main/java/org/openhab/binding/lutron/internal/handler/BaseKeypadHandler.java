@@ -15,7 +15,10 @@ package org.openhab.binding.lutron.internal.handler;
 import static org.openhab.binding.lutron.internal.LutronBindingConstants.BINDING_ID;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -34,9 +37,6 @@ import org.openhab.binding.lutron.internal.KeypadComponent;
 import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 
 /**
  * Abstract class providing common definitions and methods for derived keypad classes
@@ -66,7 +66,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
     protected Boolean autoRelease;
     protected Boolean advancedChannels = false;
 
-    protected BiMap<Integer, String> componentChannelMap = HashBiMap.create(50);
+    protected Map<Integer, String> componentChannelMap = new HashMap<>(50);
 
     protected abstract void configureComponents(String model);
 
@@ -146,7 +146,8 @@ public abstract class BaseKeypadHandler extends LutronHandler {
     }
 
     protected Integer componentFromChannel(ChannelUID channelUID) {
-        return componentChannelMap.inverse().get(channelUID.getId());
+        return componentChannelMap.entrySet().stream().filter(e -> e.getValue().equals(channelUID.getId()))
+                .map(Entry::getKey).findAny().orElse(null);
     }
 
     @Override

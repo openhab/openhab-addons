@@ -7,7 +7,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.lutron;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
-Import-Package: com.google.common.collect,
+Import-Package: 
  com.thoughtworks.xstream,
  gnu.io,
  org.apache.commons.lang,
