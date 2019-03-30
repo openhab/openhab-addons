@@ -16,13 +16,12 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.openhab.binding.xmppclient.internal.XMPPClient;
 
 /**
- * Subscribes to a chat and calls {@link AbstractBrokerHandler#triggerChannel(ChannelUID, String)} if a value got
+ * Subscribes to a chat and calls {@link AbstractBrokerHandler#triggerChannel(ChannelUID, String)} if a value has been 
  * received.
  *
  * @author Pavel Gololobov - Initial contribution
  */
 public class PublishTriggerChannel implements XMPPClientMessageSubscriber {
-
     private final XMPPClient connection;
     private final PublishTriggerChannelConfig config;
     private final ChannelUID uid;
@@ -35,7 +34,7 @@ public class PublishTriggerChannel implements XMPPClientMessageSubscriber {
         this.handler = handler;
     }
 
-    void start() {
+    public void start() {
         connection.subscribe(this);
     }
 
@@ -63,5 +62,4 @@ public class PublishTriggerChannel implements XMPPClientMessageSubscriber {
     public String getName() {
         return uid.toString();
     }
-
 }

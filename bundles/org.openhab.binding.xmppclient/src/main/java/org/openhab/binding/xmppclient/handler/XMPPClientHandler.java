@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.xmppclient.handler;
 
+import org.jivesoftware.smack.*;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.openhab.binding.xmppclient.action.XMPPActions;
 import org.openhab.binding.xmppclient.internal.XMPPClient;
@@ -24,11 +27,14 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * The {@link XMPPClientHandler} is responsible for handling commands, which are
@@ -36,15 +42,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Gololobov - Initial contribution
  */
+
 public class XMPPClientHandler extends BaseBridgeHandler {
-
     private final Logger logger = LoggerFactory.getLogger(XMPPClientHandler.class);
-
     private XMPPClient xmppClient;
-
     private XMPPClientConfiguration config;
-
-    final Map<ChannelUID, PublishTriggerChannel> channelStateByChannelUID = new HashMap<>();
+    private final Map<ChannelUID, PublishTriggerChannel> channelStateByChannelUID = new HashMap<>();
 
     public XMPPClientHandler(Bridge thing) {
         super(thing);
@@ -71,24 +74,8 @@ public class XMPPClientHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.info("XMPP Client Start initializing");
-        config = getConfigAs(XMPPClientConfiguration.class);
-
-        xmppClient = new XMPPClient();
-
         updateStatus(ThingStatus.UNKNOWN);
-
-        xmppClient.connect(config.host, config.port, config.username, config.password, "openHAB");
-        updateStatus(ThingStatus.ONLINE);
-
-        for(Channel channel : thing.getChannels()) {
-            final PublishTriggerChannelConfig channelConfig = channel.getConfiguration().as(PublishTriggerChannelConfig.class);
-            PublishTriggerChannel c = new PublishTriggerChannel(channelConfig, channel.getUID(), xmppClient, this);
-            channelStateByChannelUID.put(channel.getUID(), c);
-            logger.info("XMPP added channel {} payload {}", channel.getUID().toString(), channelConfig.payload);
-        }
-
-        channelStateByChannelUID.values().forEach(c -> c.start());
+        scheduler.schedule(this::doConnect, 0, TimeUnit.SECONDS);
     }
 
     @Override
@@ -99,4 +86,25 @@ public class XMPPClientHandler extends BaseBridgeHandler {
         super.dispose();
     }
 
+    private void doConnect() {
+        config = getConfigAs(XMPPClientConfiguration.class);
+        xmppClient = new XMPPClient();
+        try {
+            xmppClient.connect(config.host, config.port, config.username, config.domain, config.password);
+        } catch (SmackException | IOException | XMPPException e) {
+            logger.info("XMPP connection error", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return;
+        }
+
+        for(Channel channel : thing.getChannels()) {
+            final PublishTriggerChannelConfig channelConfig = channel.getConfiguration().as(PublishTriggerChannelConfig.class);
+            PublishTriggerChannel c = new PublishTriggerChannel(channelConfig, channel.getUID(), xmppClient, this);
+            channelStateByChannelUID.put(channel.getUID(), c);
+            logger.info("XMPP added channel {} payload {}", channel.getUID().toString(), channelConfig.payload);
+        }
+        channelStateByChannelUID.values().forEach(c -> c.start());
+
+        updateStatus(ThingStatus.ONLINE);
+    }
 }

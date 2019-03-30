@@ -4,7 +4,7 @@ XMPPClient binding provides support for sending and receiving XMPP (Jabber) mess
 
 ## Supported Things
 
-xmppBridge - Basic XMPP (Jabber) client thing, that can send and recieve messages.
+xmppBridge - Basic XMPP (Jabber) client thing, that can send and receive messages.
 
 ## Thing Configuration
 

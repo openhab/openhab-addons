@@ -12,14 +12,19 @@
  */
 package org.openhab.binding.xmppclient.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link XMPPClientConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Pavel Gololobov - Initial contribution
  */
+@NonNullByDefault
 public class XMPPClientConfiguration {
-    public String host;
-    public Integer port;
-    public String username;
-    public String password;
+    public @Nullable String host;
+    public Integer port = 5222;
+    public String username = "";
+    public String password = "";
+    public String domain = "";
 }

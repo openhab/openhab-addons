@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 @ThingActionsScope(name = "xmpp")
 @NonNullByDefault
 public class XMPPActions implements ThingActions {
-
     private static final Logger logger = LoggerFactory.getLogger(XMPPActions.class);
     private @Nullable XMPPClientHandler handler;
 
@@ -51,7 +50,6 @@ public class XMPPActions implements ThingActions {
     public void publishXMPP(
             @ActionInput(name = "to", label = "To", description = "Send to") @Nullable String to,
             @ActionInput(name = "text", label = "Text", description = "Message text") @Nullable String text) {
-
         XMPPClientHandler clientHandler = handler;
         if (clientHandler == null) {
             logger.warn("XMPP ThingHandler is null");
@@ -82,5 +80,4 @@ public class XMPPActions implements ThingActions {
             throw new IllegalArgumentException("actions is not an XMPPActions class");
         }
     }
-
 }

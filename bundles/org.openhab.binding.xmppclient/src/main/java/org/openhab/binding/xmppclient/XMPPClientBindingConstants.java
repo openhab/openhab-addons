@@ -21,12 +21,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Pavel Gololobov - Initial contribution
  */
 public class XMPPClientBindingConstants {
-
     private static final String BINDING_ID = "xmppclient";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_TYPE_XMPP = new ThingTypeUID(BINDING_ID, "xmppBridge");
-
     public static final String PUBLISH_TRIGGER_CHANNEL = "publishTrigger";
-
 }

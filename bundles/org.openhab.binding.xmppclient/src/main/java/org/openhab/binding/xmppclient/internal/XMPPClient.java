@@ -19,6 +19,8 @@ import org.jivesoftware.smack.chat2.IncomingChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.disco.packet.DiscoverInfo.Identity;
 
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
@@ -33,18 +35,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link XMPPClient} is lib foe handle XMPP connection and messagingю
+ * The {@link XMPPClient} is lib for handling XMPP connection and messaging
  *
  * @author Pavel Gololobov - Initial contribution
  */
 public class XMPPClient implements IncomingChatMessageListener, ConnectionListener {
-
     private final Logger logger = LoggerFactory.getLogger(XMPPClient.class);
-
     private AbstractXMPPConnection connection;
-
     private ChatManager chatManager;
-
     private Set<XMPPClientMessageSubscriber> subscribers = new HashSet<>();
 
     public void subscribe(XMPPClientMessageSubscriber channel) {
@@ -57,29 +55,38 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         subscribers.remove(channel);
     }
 
-    public void connect(String host, Integer port, String login, String password, String resource) {
+    public void connect(String host, Integer port, String login, String domain, String password) 
+            throws XMPPException, SmackException, IOException {
         disconnect();
-        try {
-            XMPPTCPConnectionConfiguration config = XMPPTCPConnectionConfiguration.builder()
-                    .setUsernameAndPassword(login, password)
-                    .setXmppDomain(host)
-                    .setResource(resource)
-                    .setPort(port)
-                    .build();
-
-            connection = new XMPPTCPConnection(config);
-            connection.addConnectionListener(this);
-
-            ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connection);
-            reconnectionManager.enableAutomaticReconnection();
-
-            connection.connect().login();
-
-            chatManager = ChatManager.getInstanceFor(connection);
-            chatManager.addIncomingListener(this);
-        } catch (SmackException | IOException | XMPPException | InterruptedException e) {
-            logger.warn("XMPP connection error", e);
+        String serverHost = domain;
+        if((host != null) && !host.isEmpty()) {
+            serverHost = host;
         }
+
+        XMPPTCPConnectionConfiguration config = XMPPTCPConnectionConfiguration.builder() //
+                .setHost(serverHost) //
+                .setPort(port) //
+                .setUsernameAndPassword(login, password) //
+                .setXmppDomain(domain) //
+                .build();
+
+        connection = new XMPPTCPConnection(config);
+        connection.addConnectionListener(this);
+
+        ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connection);
+        reconnectionManager.enableAutomaticReconnection();
+
+        Identity identity = new Identity("client", "openHAB", "bot");
+        ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(connection);
+        sdm.setIdentity(identity);
+
+        try {
+            connection.connect().login();
+        } catch (InterruptedException ex) {
+        }
+
+        chatManager = ChatManager.getInstanceFor(connection);
+        chatManager.addIncomingListener(this);
     }
 
     public void disconnect() {
@@ -102,7 +109,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
             Chat chat = chatManager.chatWith(jid);
             chat.send(message);
         } catch (XmppStringprepException | SmackException.NotConnectedException | InterruptedException e) {
-            logger.warn("XMPP message sending error", e);
+            logger.info("XMPP message sending error", e);
         }
     }
 
@@ -117,30 +124,29 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
 
     @Override
     public void connected(XMPPConnection connection) {
-        logger.info("Connected to XMPP server.");
+        logger.debug("Connected to XMPP server.");
     }
 
     @Override
     public void authenticated(XMPPConnection connection, boolean resumed) {
-        logger.info("Authenticated to XMPP server.");
+        logger.debug("Authenticated to XMPP server.");
     }
 
     @Override
     public void connectionClosed() {
-        logger.warn("XMPP connection was closed.");
+        logger.debug("XMPP connection was closed.");
     }
 
     @Override
     public void connectionClosedOnError(Exception e) {
-        logger.warn("Connection to XMPP server was lost.");
+        logger.debug("Connection to XMPP server was lost.");
         if(connection != null) {
             connection.disconnect();
             try {
                 connection.connect().login();
             } catch (SmackException | IOException | XMPPException | InterruptedException ex) {
-                logger.warn("XMPP connection error", ex);
+                logger.info("XMPP connection error", ex);
             }
         }
     }
-
 }
