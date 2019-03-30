@@ -109,7 +109,6 @@ public class SomfyTahomaBindingConstants {
     // Gate
     public static final ThingTypeUID THING_TYPE_GATE = new ThingTypeUID(BINDING_ID, "gate");
 
-
     // List of all Channel ids
     // Gateway
     public static final String STATUS = "status";
