@@ -67,7 +67,7 @@ import org.openhab.binding.darksky.internal.config.DarkSkyWeatherAndForecastConf
 import org.openhab.binding.darksky.internal.connection.DarkSkyCommunicationException;
 import org.openhab.binding.darksky.internal.connection.DarkSkyConfigurationException;
 import org.openhab.binding.darksky.internal.connection.DarkSkyConnection;
-import org.openhab.binding.darksky.internal.model.DarkSkyCurrently;
+import org.openhab.binding.darksky.internal.model.DarkSkyCurrentlyData;
 import org.openhab.binding.darksky.internal.model.DarkSkyDailyData.DailyData;
 import org.openhab.binding.darksky.internal.model.DarkSkyHourlyData.HourlyData;
 import org.openhab.binding.darksky.internal.model.DarkSkyJsonWeatherData;
@@ -376,7 +376,7 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
         if (weatherData != null && weatherData.getCurrently() != null) {
-            DarkSkyCurrently currentData = weatherData.getCurrently();
+            DarkSkyCurrentlyData currentData = weatherData.getCurrently();
             State state = UnDefType.UNDEF;
             switch (channelId) {
                 case CHANNEL_TIME_STAMP:

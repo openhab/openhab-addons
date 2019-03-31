@@ -21,7 +21,7 @@ public class DarkSkyJsonWeatherData {
     private double latitude;
     private double longitude;
     private String timezone;
-    private DarkSkyCurrently currently;
+    private DarkSkyCurrentlyData currently;
     private DarkSkyHourlyData hourly;
     private DarkSkyDailyData daily;
     private int offset;
@@ -50,11 +50,11 @@ public class DarkSkyJsonWeatherData {
         this.timezone = timezone;
     }
 
-    public DarkSkyCurrently getCurrently() {
+    public DarkSkyCurrentlyData getCurrently() {
         return currently;
     }
 
-    public void setCurrently(DarkSkyCurrently currently) {
+    public void setCurrently(DarkSkyCurrentlyData currently) {
         this.currently = currently;
     }
 
