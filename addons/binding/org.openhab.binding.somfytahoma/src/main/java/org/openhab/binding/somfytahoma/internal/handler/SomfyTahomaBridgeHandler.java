@@ -15,6 +15,7 @@ package org.openhab.binding.somfytahoma.internal.handler;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -46,6 +47,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@NonNullByDefault
 public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaBridgeHandler.class);
@@ -132,7 +134,6 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             String urlParameters = "userId=" + thingConfig.getEmail() + "&userPassword=" + thingConfig.getPassword();
 
             ContentResponse response = sendRequestBuilder(url, HttpMethod.POST)
-                    .agent(TAHOMA_AGENT)
                     .content(new StringContentProvider(urlParameters), "application/x-www-form-urlencoded; charset=UTF-8")
                     .send();
 
@@ -467,7 +468,6 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     private String sendDataToTahomaWithCookie(String url, String urlParameters) throws InterruptedException, ExecutionException, TimeoutException, SomfyTahomaException {
         logger.trace("Sending POST to Tahoma to url: {} with data: {}", url, urlParameters);
         ContentResponse response = sendRequestBuilder(url, HttpMethod.POST)
-                .agent(TAHOMA_AGENT)
                 .content(new StringContentProvider(urlParameters), "application/json;charset=UTF-8")
                 .send();
 
@@ -495,7 +495,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private String sendMethodToTahomaWithCookie(String url, HttpMethod method) throws InterruptedException, ExecutionException, TimeoutException, SomfyTahomaException {
         logger.trace("Sending {} to Tahoma to url: {}", method.asString(), url);
-        ContentResponse response = sendRequestBuilder(url, method).agent(TAHOMA_AGENT).send();
+        ContentResponse response = sendRequestBuilder(url, method).send();
 
         logger.trace("Response: {}", response.getContentAsString());
         if (response.getStatus() < 200 || response.getStatus() >= 300) {
@@ -513,6 +513,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 .header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en")
                 .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate")
                 .header("X-Requested-With", "XMLHttpRequest")
+                .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS)
                 .agent(TAHOMA_AGENT);
     }
 

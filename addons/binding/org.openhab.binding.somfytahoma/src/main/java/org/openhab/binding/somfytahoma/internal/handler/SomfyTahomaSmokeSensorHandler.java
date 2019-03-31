@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.CONTACT;
@@ -24,6 +25,7 @@ import java.util.HashMap;
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@NonNullByDefault
 public class SomfyTahomaSmokeSensorHandler extends SomfyTahomaContactSensorHandler {
 
     public SomfyTahomaSmokeSensorHandler(Thing thing) {

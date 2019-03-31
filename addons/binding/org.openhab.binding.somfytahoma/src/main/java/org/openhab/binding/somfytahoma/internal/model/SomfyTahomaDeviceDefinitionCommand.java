@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.somfytahoma.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SomfyTahomaDeviceDefinitionCommand} holds information about commands
  * accepted by a device.
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@NonNullByDefault
 public class SomfyTahomaDeviceDefinitionCommand {
 
     private String commandName;

@@ -147,6 +147,27 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="gate_command">
+		<item-type>String</item-type>
+		<label>Gate Command</label>
+		<description>A channel used for getting/setting the gate position (open, close, pedestrian, stop)</description>
+		<state>
+			<options>
+				<option value="open">OPEN</option>
+				<option value="close">CLOSE</option>
+				<option value="pedestrian">PEDESTRIAN</option>
+				<option value="stop">STOP</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="gate_state">
+		<item-type>String</item-type>
+		<label>Gate Status</label>
+		<description>A channel used for getting the gate state (open, closed, pedestrian)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="open">
 		<item-type>Switch</item-type>
 		<label>Open/Close</label>

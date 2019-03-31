@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.somfytahoma.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -20,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@NonNullByDefault
 public class SomfyTahomaBindingConstants {
 
     public static final String BINDING_ID = "somfytahoma";
@@ -104,6 +106,9 @@ public class SomfyTahomaBindingConstants {
     // Temperature sensor
     public static final ThingTypeUID THING_TYPE_TEMPERATURESENSOR = new ThingTypeUID(BINDING_ID, "temperaturesensor");
 
+    // Gate
+    public static final ThingTypeUID THING_TYPE_GATE = new ThingTypeUID(BINDING_ID, "gate");
+
     // List of all Channel ids
     // Gateway
     public static final String STATUS = "status";
@@ -153,6 +158,10 @@ public class SomfyTahomaBindingConstants {
     // Window handle
     public static final String HANDLE_STATE = "handle_state";
 
+    // Gate
+    public static final String GATE_STATE = "gate_state";
+    public static final String GATE_COMMAND = "gate_command";
+
     //Constants
     private static final String API_URL = "https://www.tahomalink.com/enduser-mobile-web/";
     public static final String TAHOMA_URL = API_URL + "externalAPI/json/";
@@ -162,6 +171,7 @@ public class SomfyTahomaBindingConstants {
     public static final String EXEC_URL = API_URL + "enduserAPI/exec/";
     public static final String DELETE_URL = EXEC_URL + "current/setup/";
     public static final String TAHOMA_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36";
+    public static final int TAHOMA_TIMEOUT = 5;
     public static final String UNAUTHORIZED = "Not logged in";
     public static final int TYPE_PERCENT = 1;
     public static final int TYPE_DECIMAL = 2;
@@ -172,6 +182,7 @@ public class SomfyTahomaBindingConstants {
     public static final String COMMAND_SET_ORIENTATION = "setOrientation";
     public static final String COMMAND_SET_CLOSURESPEED = "setClosureAndLinearSpeed";
     public static final String COMMAND_SET_HEATINGLEVEL = "setHeatingLevel";
+    public static final String COMMAND_SET_PEDESTRIANPOSITION = "setPedestrianPosition";
     public static final String COMMAND_REFRESH_HEATINGLEVEL = "refreshHeatingLevel";
     public static final String COMMAND_UP = "up";
     public static final String COMMAND_DOWN = "down";
@@ -205,9 +216,12 @@ public class SomfyTahomaBindingConstants {
     public static final String PERGOLA = "Pergola";
     public static final String WINDOWHANDLE = "WindowHandle";
     public static final String TEMPERATURESENSOR = "TemperatureSensor";
+    public static final String GATE = "Gate";
 
     // unsupported uiClasses
     public static final String PROTOCOLGATEWAY = "ProtocolGateway";
+    public static final String REMOTECONTROLLER = "RemoteController";
+    public static final String NETWORKCOMPONENT = "NetworkComponent";
 
     // cache timeout
     public static final int CACHE_EXPIRY = 10000;
