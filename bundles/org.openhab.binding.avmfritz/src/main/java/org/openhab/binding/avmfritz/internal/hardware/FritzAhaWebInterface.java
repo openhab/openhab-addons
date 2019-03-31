@@ -91,6 +91,7 @@ public class FritzAhaWebInterface {
      */
     @Nullable
     public String authenticate() {
+        sid = null;
         if (config.getPassword() == null) {
             handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Please configure password first");
@@ -227,7 +228,7 @@ public class FritzAhaWebInterface {
      * @return URL
      */
     public String getURL(String path, String args) {
-        return getURL(path + "?" + args);
+        return getURL("".equals(args) ? path : path + "?" + args);
     }
 
     public String addSID(@Nullable String args) {
