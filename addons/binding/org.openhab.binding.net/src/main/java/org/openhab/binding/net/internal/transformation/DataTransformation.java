@@ -22,14 +22,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A transformation for channels.
+ * A transformation utility class.
  *
  * @author David Graeff - Initial contribution
  * @author Pauli Anttila - Adapted to net binding
  */
 @NonNullByDefault
-public class ChannelStateTransformation {
-    private final Logger logger = LoggerFactory.getLogger(ChannelStateTransformation.class);
+public class DataTransformation {
+    private final Logger logger = LoggerFactory.getLogger(DataTransformation.class);
     private final TransformationServiceProvider provider;
     private WeakReference<@Nullable TransformationService> transformationService = new WeakReference<>(null);
     final String pattern;
@@ -41,7 +41,7 @@ public class ChannelStateTransformation {
      * @param pattern
      * @param provider
      */
-    public ChannelStateTransformation(String pattern, TransformationServiceProvider provider) {
+    public DataTransformation(String pattern, TransformationServiceProvider provider) {
         this.provider = provider;
         int index = pattern.indexOf(':');
         if (index == -1) {

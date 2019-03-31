@@ -14,6 +14,14 @@
 
 		<label>Data parser</label>
 		<description>Data parser to parse incoming data</description>
+		
+		<config-description>
+            <parameter name="transform" type="text" required="false">
+                <label>Transformations rules</label>
+                <description></description>
+                <default></default>
+            </parameter>
+        </config-description>
 	</thing-type>
 
 </thing:thing-descriptions>

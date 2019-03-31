@@ -86,31 +86,26 @@ Supported CRC algorithms:
 
 net:udp-server:myudpserver  [ port=5000 ]
 
-net:data-handler:dataHandlerX {
+net:data-handler:dataHandlerX  [ transform="BIN2JSON:byte a;byte b;byte c;" ]{
   Channels:
-    Type number  : valueB  "Value B" [ transform="BIN2JSON:byte a;byte b;byte c;∩JSONPATH:$.b" ]
+    Type number  : valueA  "Value A" [ transform="JSONPATH:$.a" ]
+    Type number  : valueB  "Value B" [ transform="JSONPATH:$.b" ]
+    Type number  : valueC  "Value C" [ transform="JSONPATH:$.c" ]
 }
 
 Bridge net:udp-server:myudpserver1   [ port=6001, convertTo="HEXASTRING" ] {
-  Thing data-handler dataHandler1 {
+  Thing data-handler dataHandler1 [ transform="BIN2JSON:
+            byte a;
+            byte b;
+            byte c;
+            bit:1 f1;
+            bit:2 f2;
+            bit:1 f3;
+            bit:4 f4;" ] {
+      
       Channels:
-        Type number  : test_number1  "test number 1" [ transform="BIN2JSON:
-            byte a;
-            byte b;
-            byte c;
-            bit:1 f1;
-            bit:2 f2;
-            bit:1 f3;
-            bit:4 f4;∩JSONPATH:$.b" ]
-        
-        Type number  : test_number2  "test number 1" [ transform="BIN2JSON:
-            byte a;
-            byte b;
-            byte c;
-            bit:1 f1;
-            bit:2 f2;
-            bit:1 f3;
-            bit:4 f4;∩JSONPATH:$.c" ]
+        Type number  : test_number1  "test number 1" [ transform="JSONPATH:$.b" ]
+        Type number  : test_number2  "test number 1" [ transform="JSONPATH:$.c" ]
   }
 }  
 ```
@@ -134,18 +129,26 @@ rule "UDP datagram receiver"
 ```
 
 ```
-[DEBUG] [o.b.n.i.h.AbstractServerBridge:53   ] - Received datagram: 68656C6C6F
-[DEBUG] [.m.r.r.i.engine.RuleEngineImpl:338  ] - Executing rule 'UDP datagram receiver'
+[DEBUG] [o.b.n.i.h.AbstractServerBridge:65   ] - Received datagram: 68656C6C6F
 [INFO ] [s.event.ChannelTriggeredEvent :53   ] - net:udp-server:myudpserver:dataReceived triggered 68656C6C6F
+[DEBUG] [.m.r.r.i.engine.RuleEngineImpl:338  ] - Executing rule 'UDP datagram receiver'
 [INFO ] [.e.smarthome.model.script.Test:53   ] - UDP server received data: 68656C6C6F
 [DEBUG] [n.i.a.m.NetThingActionsService:71   ] - calculateCrc called with algorithm: 'CRC-16/CCITT-FALSE' data: '68656C6C6F'
 [INFO ] [.e.smarthome.model.script.Test:53   ] - crc=53870
 [DEBUG] [n.i.a.m.NetThingActionsService:46   ] - injectData called, data: '68656C6C6F'
-[DEBUG] [n.internal.handler.DataHandler:145  ] - Channel 'net:data-handler:dataHandlerX:valueB' : params: Configuration[{key=transform; type=String; value=BIN2JSON:byte a;byte b;byte c;∩JSONPATH:$.b}]
 [DEBUG] [.Bin2JsonTransformationService:44   ] - About to transform '68656C6C6F' by the Bin2Json syntax 'byte a;byte b;byte c;'
+[DEBUG] [n.internal.handler.DataHandler:158  ] - Channel 'net:data-handler:dataHandlerX:valueA' : params: Configuration[{key=transform; type=String; value=JSONPATH:$.a}]
+[DEBUG] [.JSonPathTransformationService:59   ] - about to transform '{"a":104,"b":101,"c":108}' by the function '$.a'
+[DEBUG] [.JSonPathTransformationService:63   ] - transformation resulted in '104'
+[DEBUG] [n.internal.handler.DataHandler:158  ] - Channel 'net:data-handler:dataHandlerX:valueB' : params: Configuration[{key=transform; type=String; value=JSONPATH:$.b}]
 [DEBUG] [.JSonPathTransformationService:59   ] - about to transform '{"a":104,"b":101,"c":108}' by the function '$.b'
+[INFO ] [smarthome.event.ItemStateEvent:53   ] - valueA updated to 104
 [DEBUG] [.JSonPathTransformationService:63   ] - transformation resulted in '101'
-[INFO ] [smarthome.event.ItemStateEvent:53   ] - test3 updated to 101
+[DEBUG] [n.internal.handler.DataHandler:158  ] - Channel 'net:data-handler:dataHandlerX:valueC' : params: Configuration[{key=transform; type=String; value=JSONPATH:$.c}]
+[DEBUG] [.JSonPathTransformationService:59   ] - about to transform '{"a":104,"b":101,"c":108}' by the function '$.c'
+[DEBUG] [.JSonPathTransformationService:63   ] - transformation resulted in '108'
+[INFO ] [smarthome.event.ItemStateEvent:53   ] - valueB updated to 101
+[INFO ] [smarthome.event.ItemStateEvent:53   ] - valueC updated to 108
 ```
 
 ### Thing status

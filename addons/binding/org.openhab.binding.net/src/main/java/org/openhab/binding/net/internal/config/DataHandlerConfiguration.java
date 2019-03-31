@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.net.internal.config;
 
-public class DataConfiguration {
+public class DataHandlerConfiguration {
+    public String transform;
 
+    @Override
+    public String toString() {
+        return "[" + "transform=" + transform + "]";
+    }
 }
