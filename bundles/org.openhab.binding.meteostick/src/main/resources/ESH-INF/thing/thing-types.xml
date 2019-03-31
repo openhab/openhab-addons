@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="meteostick" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="meteostick_bridge">
+		<label>Meteostick USB Receiver</label>
+		<description>Meteostick USB Receiver</description>
+		<channels>
+			<channel id="pressure" typeId="pressure" />
+			<channel id="indoor-temperature" typeId="indoor-temperature" />
+		</channels>
+		<config-description>
+			<parameter name="port" type="text" required="true">
+				<label>Serial Port</label>
+				<context>serial-port</context>
+				<description>Serial port that the Meteostick is plugged into</description>
+			</parameter>
+			<parameter name="mode" type="integer" required="true">
+				<label>Frequency Band</label>
+				<description>Specifies the frequency mode including device, region and frequency that Meteostick will use</description>
+				<options>
+					<option value="0">Davis - North America (915MHz)</option>
+					<option value="1">Davis - Europe (868MHz)</option>
+					<option value="2">Davis - Australia (915Mhz)</option>
+					<option value="3">Fine Offset - North America (915MHz)</option>
+					<option value="4">Fine Offset - Europe (868MHz)</option>
+					<option value="5">Davis - New Zealand (931.5Mhz)</option>
+				</options>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="meteostick_davis_iss">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="meteostick_bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Davis Vantage Vue ISS</label>
+		<description>Davis Integrated Sensor Suite</description>
+		<channels>
+			<channel id="outdoor-temperature" typeId="outdoor-temperature" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="wind-direction" typeId="wind-direction" />
+			<channel id="wind-direction-last2min-average" typeId="wind-direction-last2min-average" />
+			<channel id="wind-speed" typeId="wind-speed" />
+			<channel id="wind-speed-last2min-average" typeId="wind-speed-last2min-average" />
+			<channel id="wind-speed-last2min-maximum" typeId="wind-speed-last2min-maximum" />
+			<channel id="rain-raw" typeId="rain-raw" />
+			<channel id="rain-currenthour" typeId="rain-currenthour" />
+			<channel id="rain-lasthour" typeId="rain-lasthour" />
+			<channel id="solar-power" typeId="solar-power" />
+			<channel id="signal-strength" typeId="system.signal-strength" />
+			<channel id="low-battery" typeId="system.low-battery" />
+		</channels>
+
+		<config-description>
+			<parameter name="channel" type="integer" required="true">
+				<label>Channel</label>
+				<description>Specifies the channel the sensor is using</description>
+				<options>
+					<option value="1">Channel 1</option>
+					<option value="2">Channel 2</option>
+					<option value="3">Channel 3</option>
+					<option value="4">Channel 4</option>
+					<option value="5">Channel 5</option>
+					<option value="6">Channel 6</option>
+					<option value="7">Channel 7</option>
+					<option value="8">Channel 8</option>
+				</options>
+			</parameter>
+
+			<parameter name="spoon" type="decimal" required="false">
+				<label>Spoon</label>
+				<description>Specifies the amount of rain needed to tip spoon</description>
+				<default>0.254</default>
+				<unitLabel>mm</unitLabel>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="indoor-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Indoor Temperature</label>
+		<description>Current indoor temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="outdoor-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Outdoor Temperature</label>
+		<description>Current outdoor temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Outdoor Humidity</label>
+		<description>Current humidity in percent</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%d %%">
+		</state>
+	</channel-type>
+
+	<channel-type id="pressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure</label>
+		<description>Current atmospheric pressure</description>
+		<category>Pressure</category>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-direction">
+		<item-type>Number:Angle</item-type>
+		<label>Wind Direction</label>
+		<description>Wind direction</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.0f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-direction-last2min-average" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Wind Direction (Average)</label>
+		<description>Wind direction average over last two minutes</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.0f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-speed">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Speed</label>
+		<description>Wind speed</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-speed-last2min-average" advanced="true">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Speed (Average)</label>
+		<description>Wind speed average over last two minutes</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="wind-speed-last2min-maximum" advanced="true">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Speed (Maximum)</label>
+		<description>Wind speed maximum over last two minutes</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="rain-raw" advanced="true">
+		<item-type>Number</item-type>
+		<label>Rainfall (Raw)</label>
+		<description>A counter between 0 and 255 in spoon-sized steps</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f">
+		</state>
+	</channel-type>
+
+	<channel-type id="rain-lasthour">
+		<item-type>Number:Length</item-type>
+		<label>Rainfall (previous hour)</label>
+		<description>Rainfall in the previous hour</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="rain-currenthour">
+		<item-type>Number:Length</item-type>
+		<label>Rainfall (60 minutes)</label>
+		<description>Rainfall in the last 60 minutes</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="solar-power">
+		<item-type>Number</item-type>
+		<label>Solar Power</label>
+		<description>Solar panel power percentage</description>
+		<category>Light</category>
+		<state readOnly="true" pattern="%.1f %%">
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>

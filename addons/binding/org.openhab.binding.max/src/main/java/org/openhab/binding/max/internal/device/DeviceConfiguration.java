@@ -1,43 +1,46 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.max.internal.device;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openhab.binding.max.internal.message.C_Message;
+import org.openhab.binding.max.internal.message.CMessage;
 import org.openhab.binding.max.internal.message.Message;
 
 /**
- * Base class for configuration provided by the MAX! Cube C_Message.
+ * Base class for configuration provided by the MAX! Cube C Message.
  *
- * @author Andreas Heil (info@aheil.de)
- * @since 1.4.0
+ * @author Andreas Heil (info@aheil.de) - Initial contribution
  */
 public final class DeviceConfiguration {
 
-    private DeviceType deviceType = null;
-    private String rfAddress = null;
-    private String serialNumber = null;
-    private String name = null;
+    private DeviceType deviceType;
+    private String rfAddress;
+    private String serialNumber;
+    private String name;
     private int roomId = -1;
-    private String roomName = null;
+    private String roomName;
 
     /** Extended configuration properties **/
-    private HashMap<String, Object> properties = new HashMap<>();
+    private Map<String, Object> properties = new HashMap<>();
 
     private DeviceConfiguration() {
     }
 
     public static DeviceConfiguration create(Message message) {
-        DeviceConfiguration configuration = new DeviceConfiguration();
-        configuration.setValues((C_Message) message);
+        final DeviceConfiguration configuration = new DeviceConfiguration();
+        configuration.setValues((CMessage) message);
 
         return configuration;
     }
@@ -49,7 +52,7 @@ public final class DeviceConfiguration {
         return configuration;
     }
 
-    public void setValues(C_Message message) {
+    public void setValues(CMessage message) {
         setValues(message.getRFAddress(), message.getDeviceType(), message.getSerialNumber(), message.getRoomID());
         properties = new HashMap<>(message.getProperties());
     }

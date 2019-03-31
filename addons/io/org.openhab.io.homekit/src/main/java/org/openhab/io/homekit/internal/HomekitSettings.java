@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.io.homekit.internal;
 
@@ -13,11 +17,13 @@ import java.net.UnknownHostException;
 import java.util.Dictionary;
 
 import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides the configured and static settings for the Homekit addon
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 public class HomekitSettings {
 
@@ -25,6 +31,8 @@ public class HomekitSettings {
     private static final String MANUFACTURER = "openHAB";
     private static final String SERIAL_NUMBER = "none";
 
+    /* Name under which openHAB announces itself as HomeKit bridge (#1946) */
+    private String name = NAME;
     private int port = 9123;
     private String pin = "031-45-154";
     private boolean useFahrenheitTemperature = false;
@@ -36,7 +44,13 @@ public class HomekitSettings {
     private String thermostatOffMode = "Off";
     private InetAddress networkInterface;
 
+    private final Logger logger = LoggerFactory.getLogger(HomekitSettings.class);
+
     public void fill(Dictionary<String, ?> properties) throws UnknownHostException {
+        Object name = properties.get("name");
+        if (name instanceof String && ((String) name).length() > 0) {
+            this.name = (String) name;
+        }
         Object port = properties.get("port");
         if (port instanceof Integer) {
             this.port = (Integer) port;
@@ -82,7 +96,8 @@ public class HomekitSettings {
     }
 
     public String getName() {
-        return NAME;
+        logger.debug("Using homekit name '{}'", name);
+        return name;
     }
 
     public String getManufacturer() {

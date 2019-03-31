@@ -1,0 +1,1459 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Unit_Description Unit_Name="RX-V3900" Version="1.0">
+	<Language Code="en">Title_1</Language>
+	<Menu YNC_Tag="System" Title_1="System" Func="Unit">
+		<Menu Title_1="Event" Func="Event">
+			<Put_1 Func="Event_On" ID="P1">On</Put_1>
+			<Put_1 Func="Event_Off" ID="P1">Off</Put_1>
+			<Get>
+				<Cmd ID="G1">Param_1</Cmd>
+				<Param_1>
+					<Direct Func="Event_On">On</Direct>
+					<Direct Func="Event_Off">Off</Direct>
+				</Param_1>
+			</Get>
+		</Menu>
+		<Menu Title_1="Power Control" Func="Power_Control">
+			<Menu Title_1="Power" Func="Power">
+				<Put_1 Func="Power_On" ID="P2">On</Put_1>
+				<Put_1 Func="Power_Standby" ID="P2">Standby</Put_1>
+			</Menu>
+		</Menu>
+		<Cmd_List>
+			<Define ID="P1">System,Event,Notice</Define>
+			<Define ID="P2">System,Power_Control,Power</Define>
+			<Define ID="G1">System,Event,Notice</Define>
+		</Cmd_List>
+	</Menu>
+	<Menu YNC_Tag="Main_Zone" Title_1="Main Zone" Func="Subunit">
+		<Menu Title_1="Name" Func="Rename" List_Type="Text_Input">
+			<Put_2>
+				<Cmd ID="P6">Param_1</Cmd>
+				<Param_1>
+					<Text>0,9,Latin-1</Text>
+				</Param_1>
+			</Put_2>
+			<Get>
+				<Cmd ID="G3">Param_1</Cmd>
+				<Param_1>
+					<Text>0,9,Latin-1</Text>
+				</Param_1>
+			</Get>
+		</Menu>
+		<Menu Title_1="Input" Func="Input" List_Type="Icon">
+			<Put_2>
+				<Cmd ID="P5">Param_1</Cmd>
+				<Param_1>
+					<Indirect ID="G2"/>
+				</Param_1>
+			</Put_2>
+			<Get>
+				<Cmd ID="G1">Input,Input_Sel=Param_1</Cmd>
+				<Param_1>
+					<Indirect ID="G2"/>
+				</Param_1>
+			</Get>
+		</Menu>
+		<Menu Title_1="Volume" Func="Vol">
+			<Menu Title_1="Level" Func="Vol_Lvl" List_Type="Slider">
+				<Put_2>
+					<Cmd ID="P3" Type="Number">Val=Param_1:Exp=Param_2:Unit=Param_3</Cmd>
+					<Param_1>
+						<Range>-805,165,5</Range>
+					</Param_1>
+					<Param_2>
+						<Direct>1</Direct>
+					</Param_2>
+					<Param_3>
+						<Direct>dB</Direct>
+					</Param_3>
+				</Put_2>
+				<Get>
+					<Cmd ID="G1" Type="Number">Vol,Lvl,Val=Param_1:Vol,Lvl,Exp=Param_2:Vol,Lvl,Unit=Param_3</Cmd>
+					<Param_1>
+						<Range>-805,165,5</Range>
+					</Param_1>
+					<Param_2>
+						<Direct>1</Direct>
+					</Param_2>
+					<Param_3>
+						<Direct>dB</Direct>
+					</Param_3>
+				</Get>
+			</Menu>
+			<Menu Title_1="Mute" Func="Vol_Mute">
+				<Put_1 Func="Vol_Mute_On" ID="P4">On</Put_1>
+				<Put_1 Func="Vol_Mute_Off" ID="P4">Off</Put_1>
+				<Get>
+					<Cmd ID="G1">Vol,Mute=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Vol_Mute_On">On</Direct>
+						<Direct Func="Vol_Mute_Off">Off</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+		</Menu>
+		<Menu Title_1="Power Control" Func="Power_Control">
+			<Menu Title_1="Power" Func="Power">
+				<Put_1 Func="Power_On" ID="P1">On</Put_1>
+				<Put_1 Func="Power_Standby" ID="P1">Standby</Put_1>
+				<Get>
+					<Cmd ID="G1">Power_Control,Power=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Power_On">On</Direct>
+						<Direct Func="Power_Standby">Standby</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Sleep" Func="Sleep">
+				<Put_2>
+					<Cmd ID="P2">Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Sleep_Last" RW="W">Last</Direct>
+						<Direct Func="Sleep_1">120</Direct>
+						<Direct Func="Sleep_2">90</Direct>
+						<Direct Func="Sleep_3">60</Direct>
+						<Direct Func="Sleep_4">30</Direct>
+						<Direct Func="Sleep_Off">Off</Direct>
+					</Param_1>
+				</Put_2>
+				<Get>
+					<Cmd ID="G1">Power_Control,Sleep=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Sleep_1">120</Direct>
+						<Direct Func="Sleep_2">90</Direct>
+						<Direct Func="Sleep_3">60</Direct>
+						<Direct Func="Sleep_4">30</Direct>
+						<Direct Func="Sleep_Off">Off</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+		</Menu>
+		<Info>
+			<Info_1 Title_1="Input">
+				<Get>
+					<Cmd ID="G1">Input,Input_Sel_Title=Param_1</Cmd>
+					<Param_1>
+						<Text>0,9,UTF-8</Text>
+					</Param_1>
+				</Get>
+			</Info_1>
+			<Info_2 Title_1="Vol Mute">
+				<Get>
+					<Cmd ID="G1">Vol,Mute=Param_1</Cmd>
+					<Param_1>
+						<Direct Title_1="Mute On">On</Direct>
+						<Direct Title_1=" ">Off</Direct>
+					</Param_1>
+				</Get>
+			</Info_2>
+		</Info>
+		<VKey Title="Title_1">
+			<Path/>
+			<Vol_Up>"Volume","Level"</Vol_Up>
+			<Vol_Down>"Volume","Level"</Vol_Down>
+			<Vol_Mute>
+				<Put_1 ID="P7">7A851CE3</Put_1>
+			</Vol_Mute>
+		</VKey>
+		<FKey Title="Title_1">
+			<Path/>
+			<F3 Title_1="Power Off">
+				<Put_1 ID="P1">Standby</Put_1>
+			</F3>
+		</FKey>
+		<Top Title="Title_1">"Input"</Top>
+		<Cmd_List>
+			<Define ID="P1">Main_Zone,Power_Control,Power</Define>
+			<Define ID="P2">Main_Zone,Power_Control,Sleep</Define>
+			<Define ID="P3">Main_Zone,Vol,Lvl</Define>
+			<Define ID="P4">Main_Zone,Vol,Mute</Define>
+			<Define ID="P5">Main_Zone,Input,Input_Sel</Define>
+			<Define ID="P6">Main_Zone,Rename,Rename_Latin_1</Define>
+			<Define ID="P7">System,Remote_Signal,Receive,Code</Define>
+			<Define ID="G1">Main_Zone,Basic_Status</Define>
+			<Define ID="G2">Main_Zone,Input,Input_Sel_Item</Define>
+			<Define ID="G3">Main_Zone,Rename,Rename_Latin_1</Define>
+		</Cmd_List>
+	</Menu>
+	<Menu YNC_Tag="Zone_2" Title_1="Zone 2" Func="Subunit">
+		<Menu Title_1="Name" Func="Rename" List_Type="Text_Input">
+			<Put_2>
+				<Cmd ID="P6">Param_1</Cmd>
+				<Param_1>
+					<Text>0,9,Latin-1</Text>
+				</Param_1>
+			</Put_2>
+			<Get>
+				<Cmd ID="G3">Param_1</Cmd>
+				<Param_1>
+					<Text>0,9,Latin-1</Text>
+				</Param_1>
+			</Get>
+		</Menu>
+		<Menu Title_1="Input" Func="Input" List_Type="Icon">
+			<Put_2>
+				<Cmd ID="P5">Param_1</Cmd>
+				<Param_1>
+					<Indirect ID="G2"/>
+				</Param_1>
+			</Put_2>
+			<Get>
+				<Cmd ID="G1">Input,Input_Sel=Param_1</Cmd>
+				<Param_1>
+					<Indirect ID="G2"/>
+				</Param_1>
+			</Get>
+		</Menu>
+		<Menu Title_1="Volume" Func="Vol">
+			<Menu Title_1="Level" Func="Vol_Lvl" List_Type="Slider">
+				<Put_2>
+					<Cmd ID="P3" Type="Number">Val=Param_1:Exp=Param_2:Unit=Param_3</Cmd>
+					<Param_1>
+						<Range>-805,165,5</Range>
+					</Param_1>
+					<Param_2>
+						<Direct>1</Direct>
+					</Param_2>
+					<Param_3>
+						<Direct>dB</Direct>
+					</Param_3>
+				</Put_2>
+				<Get>
+					<Cmd ID="G1" Type="Number">Vol,Lvl,Val=Param_1:Vol,Lvl,Exp=Param_2:Vol,Lvl,Unit=Param_3</Cmd>
+					<Param_1>
+						<Range>-805,165,5</Range>
+					</Param_1>
+					<Param_2>
+						<Direct>1</Direct>
+					</Param_2>
+					<Param_3>
+						<Direct>dB</Direct>
+					</Param_3>
+				</Get>
+			</Menu>
+			<Menu Title_1="Mute" Func="Vol_Mute">
+				<Put_1 Func="Vol_Mute_On" ID="P4">On</Put_1>
+				<Put_1 Func="Vol_Mute_Off" ID="P4">Off</Put_1>
+				<Get>
+					<Cmd ID="G1">Vol,Mute=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Vol_Mute_On">On</Direct>
+						<Direct Func="Vol_Mute_Off">Off</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+		</Menu>
+		<Menu Title_1="Power Control" Func="Power_Control">
+			<Menu Title_1="Power" Func="Power">
+				<Put_1 Func="Power_On" ID="P1">On</Put_1>
+				<Put_1 Func="Power_Standby" ID="P1">Standby</Put_1>
+				<Get>
+					<Cmd ID="G1">Power_Control,Power=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Power_On">On</Direct>
+						<Direct Func="Power_Standby">Standby</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Sleep" Func="Sleep">
+				<Put_2>
+					<Cmd ID="P2">Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Sleep_Last" RW="W">Last</Direct>
+						<Direct Func="Sleep_1">120</Direct>
+						<Direct Func="Sleep_2">90</Direct>
+						<Direct Func="Sleep_3">60</Direct>
+						<Direct Func="Sleep_4">30</Direct>
+						<Direct Func="Sleep_Off">Off</Direct>
+					</Param_1>
+				</Put_2>
+				<Get>
+					<Cmd ID="G1">Power_Control,Sleep=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Sleep_1">120</Direct>
+						<Direct Func="Sleep_2">90</Direct>
+						<Direct Func="Sleep_3">60</Direct>
+						<Direct Func="Sleep_4">30</Direct>
+						<Direct Func="Sleep_Off">Off</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+		</Menu>
+		<Info>
+			<Info_1 Title_1="Input">
+				<Get>
+					<Cmd ID="G1">Input,Input_Sel_Title=Param_1</Cmd>
+					<Param_1>
+						<Text>0,9,UTF-8</Text>
+					</Param_1>
+				</Get>
+			</Info_1>
+			<Info_2 Title_1="Vol Mute">
+				<Get>
+					<Cmd ID="G1">Vol,Mute=Param_1</Cmd>
+					<Param_1>
+						<Direct Title_1="Mute On">On</Direct>
+						<Direct Title_1=" ">Off</Direct>
+					</Param_1>
+				</Get>
+			</Info_2>
+		</Info>
+		<VKey Title="Title_1">
+			<Path/>
+			<Vol_Up>"Volume","Level"</Vol_Up>
+			<Vol_Down>"Volume","Level"</Vol_Down>
+			<Vol_Mute>
+				<Put_1 ID="P7">7A85DC23</Put_1>
+			</Vol_Mute>
+		</VKey>
+		<FKey Title="Title_1">
+			<Path/>
+			<F3 Title_1="Power Off">
+				<Put_1 ID="P1">Standby</Put_1>
+			</F3>
+		</FKey>
+		<Top Title="Title_1">"Input"</Top>
+		<Cmd_List>
+			<Define ID="P1">Zone_2,Power_Control,Power</Define>
+			<Define ID="P2">Zone_2,Power_Control,Sleep</Define>
+			<Define ID="P3">Zone_2,Vol,Lvl</Define>
+			<Define ID="P4">Zone_2,Vol,Mute</Define>
+			<Define ID="P5">Zone_2,Input,Input_Sel</Define>
+			<Define ID="P6">Zone_2,Rename,Rename_Latin_1</Define>
+			<Define ID="P7">System,Remote_Signal,Receive,Code</Define>
+			<Define ID="G1">Zone_2,Basic_Status</Define>
+			<Define ID="G2">Zone_2,Input,Input_Sel_Item</Define>
+			<Define ID="G3">Zone_2,Rename,Rename_Latin_1</Define>
+		</Cmd_List>
+	</Menu>
+	<Menu YNC_Tag="Zone_3" Title_1="Zone 3" Func="Subunit">
+		<Menu Title_1="Name" Func="Rename" List_Type="Text_Input">
+			<Put_2>
+				<Cmd ID="P6">Param_1</Cmd>
+				<Param_1>
+					<Text>0,9,Latin-1</Text>
+				</Param_1>
+			</Put_2>
+			<Get>
+				<Cmd ID="G3">Param_1</Cmd>
+				<Param_1>
+					<Text>0,9,Latin-1</Text>
+				</Param_1>
+			</Get>
+		</Menu>
+		<Menu Title_1="Input" Func="Input" List_Type="Icon">
+			<Put_2>
+				<Cmd ID="P5">Param_1</Cmd>
+				<Param_1>
+					<Indirect ID="G2"/>
+				</Param_1>
+			</Put_2>
+			<Get>
+				<Cmd ID="G1">Input,Input_Sel=Param_1</Cmd>
+				<Param_1>
+					<Indirect ID="G2"/>
+				</Param_1>
+			</Get>
+		</Menu>
+		<Menu Title_1="Volume" Func="Vol">
+			<Menu Title_1="Level" Func="Vol_Lvl" List_Type="Slider">
+				<Put_2>
+					<Cmd ID="P3" Type="Number">Val=Param_1:Exp=Param_2:Unit=Param_3</Cmd>
+					<Param_1>
+						<Range>-805,165,5</Range>
+					</Param_1>
+					<Param_2>
+						<Direct>1</Direct>
+					</Param_2>
+					<Param_3>
+						<Direct>dB</Direct>
+					</Param_3>
+				</Put_2>
+				<Get>
+					<Cmd ID="G1" Type="Number">Vol,Lvl,Val=Param_1:Vol,Lvl,Exp=Param_2:Vol,Lvl,Unit=Param_3</Cmd>
+					<Param_1>
+						<Range>-805,165,5</Range>
+					</Param_1>
+					<Param_2>
+						<Direct>1</Direct>
+					</Param_2>
+					<Param_3>
+						<Direct>dB</Direct>
+					</Param_3>
+				</Get>
+			</Menu>
+			<Menu Title_1="Mute" Func="Vol_Mute">
+				<Put_1 Func="Vol_Mute_On" ID="P4">On</Put_1>
+				<Put_1 Func="Vol_Mute_Off" ID="P4">Off</Put_1>
+				<Get>
+					<Cmd ID="G1">Vol,Mute=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Vol_Mute_On">On</Direct>
+						<Direct Func="Vol_Mute_Off">Off</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+		</Menu>
+		<Menu Title_1="Power Control" Func="Power_Control">
+			<Menu Title_1="Power" Func="Power">
+				<Put_1 Func="Power_On" ID="P1">On</Put_1>
+				<Put_1 Func="Power_Standby" ID="P1">Standby</Put_1>
+				<Get>
+					<Cmd ID="G1">Power_Control,Power=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Power_On">On</Direct>
+						<Direct Func="Power_Standby">Standby</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Sleep" Func="Sleep">
+				<Put_2>
+					<Cmd ID="P2">Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Sleep_Last" RW="W">Last</Direct>
+						<Direct Func="Sleep_1">120</Direct>
+						<Direct Func="Sleep_2">90</Direct>
+						<Direct Func="Sleep_3">60</Direct>
+						<Direct Func="Sleep_4">30</Direct>
+						<Direct Func="Sleep_Off">Off</Direct>
+					</Param_1>
+				</Put_2>
+				<Get>
+					<Cmd ID="G1">Power_Control,Sleep=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Sleep_1">120</Direct>
+						<Direct Func="Sleep_2">90</Direct>
+						<Direct Func="Sleep_3">60</Direct>
+						<Direct Func="Sleep_4">30</Direct>
+						<Direct Func="Sleep_Off">Off</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+		</Menu>
+		<Info>
+			<Info_1 Title_1="Input">
+				<Get>
+					<Cmd ID="G1">Input,Input_Sel_Title=Param_1</Cmd>
+					<Param_1>
+						<Text>0,9,UTF-8</Text>
+					</Param_1>
+				</Get>
+			</Info_1>
+			<Info_2 Title_1="Vol Mute">
+				<Get>
+					<Cmd ID="G1">Vol,Mute=Param_1</Cmd>
+					<Param_1>
+						<Direct Title_1="Mute On">On</Direct>
+						<Direct Title_1=" ">Off</Direct>
+					</Param_1>
+				</Get>
+			</Info_2>
+		</Info>
+		<VKey Title="Title_1">
+			<Path/>
+			<Vol_Up>"Volume","Level"</Vol_Up>
+			<Vol_Down>"Volume","Level"</Vol_Down>
+			<Vol_Mute>
+				<Put_1 ID="P7">7A85FF00</Put_1>
+			</Vol_Mute>
+		</VKey>
+		<FKey Title="Title_1">
+			<Path/>
+			<F3 Title_1="Power Off">
+				<Put_1 ID="P1">Standby</Put_1>
+			</F3>
+		</FKey>
+		<Top Title="Title_1">"Input"</Top>
+		<Cmd_List>
+			<Define ID="P1">Zone_3,Power_Control,Power</Define>
+			<Define ID="P2">Zone_3,Power_Control,Sleep</Define>
+			<Define ID="P3">Zone_3,Vol,Lvl</Define>
+			<Define ID="P4">Zone_3,Vol,Mute</Define>
+			<Define ID="P5">Zone_3,Input,Input_Sel</Define>
+			<Define ID="P6">Zone_3,Rename,Rename_Latin_1</Define>
+			<Define ID="P7">System,Remote_Signal,Receive,Code</Define>
+			<Define ID="G1">Zone_3,Basic_Status</Define>
+			<Define ID="G2">Zone_3,Input,Input_Sel_Item</Define>
+			<Define ID="G3">Zone_3,Rename,Rename_Latin_1</Define>
+		</Cmd_List>
+	</Menu>
+	<Menu YNC_Tag="Tuner" Func="Source_Device">
+		<Menu Title_1="Device" Func="Status">
+			<Get>
+				<Cmd ID="G2">Device=Param_1</Cmd>
+				<Param_1>
+					<Direct Func="Status_Ready">Ready</Direct>
+					<Direct Title_1="Not Ready" Func="Status_Not_Exist">Not Exist</Direct>
+				</Param_1>
+			</Get>
+		</Menu>
+		<Menu Title_1="Play Control" Func="Play_Control">
+			<Menu Title_1="Up / Down">
+				<Menu Title_1="Band" Func="Band">
+					<Put_1 Func="Band_AM" ID="P3">AM</Put_1>
+					<Put_1 Func="Band_FM" ID="P3">FM</Put_1>
+					<Get>
+						<Cmd ID="G1">Tuning,Band=Param_1</Cmd>
+						<Param_1>
+							<Direct Func="Band_AM">AM</Direct>
+							<Direct Func="Band_FM">FM</Direct>
+						</Param_1>
+					</Get>
+				</Menu>
+				<Menu Title_1="Frequency" Func="Plus_Minus">
+					<Put_3 Title_1="Up" Func="Plus_1">
+						<Put_1 ID="P1">Tuning</Put_1>
+						<Put_1 Func="Plus_1" ID="P7">Up</Put_1>
+					</Put_3>
+					<Put_3 Title_1="Down" Func="Minus_1">
+						<Put_1 ID="P1">Tuning</Put_1>
+						<Put_1 Func="Minus_1" ID="P7">Down</Put_1>
+					</Put_3>
+					<Get>
+						<Cmd ID="G1" Type="Number">Tuning,Freq,Val=Param_1:Tuning,Freq,Exp=Param_2:Tuning,Freq,Unit=Param_3</Cmd>
+						<Param_1>
+							<Range>531,1611,9</Range>
+							<Range>8750,10800,5</Range>
+						</Param_1>
+						<Param_2>
+							<Direct>0</Direct>
+							<Direct>2</Direct>
+						</Param_2>
+						<Param_3>
+							<Direct>kHz</Direct>
+							<Direct>MHz</Direct>
+						</Param_3>
+					</Get>
+				</Menu>
+				<Menu Title_1="Preset" Func="Plus_Minus">
+					<Put_3 Title_1="Up" Func="Plus_1">
+						<Put_1 ID="P1">Preset</Put_1>
+						<Put_1 ID="P6">Up</Put_1>
+					</Put_3>
+					<Put_3 Title_1="Down" Func="Minus_1">
+						<Put_1 ID="P1">Preset</Put_1>
+						<Put_1 ID="P6">Down</Put_1>
+					</Put_3>
+					<Get>
+						<Cmd ID="G1">Preset=Param_1</Cmd>
+						<Param_1>
+							<Indirect ID="G3"/>
+						</Param_1>
+					</Get>
+				</Menu>
+			</Menu>
+			<Menu Title_1="Frequency" Func="Freq" List_Type="Slider">
+				<Put_2>
+					<Cmd ID="P4" Type="Number">Val=Param_1:Exp=Param_2:Unit=Param_3</Cmd>
+					<Param_1>
+						<Range>531,1611,9</Range>
+						<Range>8750,10800,5</Range>
+					</Param_1>
+					<Param_2>
+						<Direct>0</Direct>
+						<Direct>2</Direct>
+					</Param_2>
+					<Param_3>
+						<Direct>kHz</Direct>
+						<Direct>MHz</Direct>
+					</Param_3>
+				</Put_2>
+				<Get>
+					<Cmd ID="G1" Type="Number">Tuning,Freq,Val=Param_1:Tuning,Freq,Exp=Param_2:Tuning,Freq,Unit=Param_3</Cmd>
+					<Param_1>
+						<Range>531,1611,9</Range>
+						<Range>8750,10800,5</Range>
+					</Param_1>
+					<Param_2>
+						<Direct>0</Direct>
+						<Direct>2</Direct>
+					</Param_2>
+					<Param_3>
+						<Direct>kHz</Direct>
+						<Direct>MHz</Direct>
+					</Param_3>
+				</Get>
+			</Menu>
+			<Menu Title_1="Preset" Func="Preset" List_Type="Slider">
+				<Put_2>
+					<Cmd ID="P2">Param_1</Cmd>
+					<Param_1>
+						<Indirect ID="G3"/>
+					</Param_1>
+				</Put_2>
+				<Get>
+					<Cmd ID="G1">Preset=Param_1</Cmd>
+					<Param_1>
+						<Indirect ID="G3"/>
+					</Param_1>
+				</Get>
+			</Menu>
+		</Menu>
+		<Menu Title_1="Play Info." Func="Play_Info" List_Type="No_Pic">
+			<Menu Title_1="Band" Func="Band" Disp="1/2">
+				<Get>
+					<Cmd ID="G1">Tuning,Band=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Band_AM">AM</Direct>
+						<Direct Func="Band_FM">FM</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Frequency" Func="Freq" Disp="2/2">
+				<Get>
+					<Cmd ID="G1" Type="Number">Tuning,Freq,Val=Param_1:Tuning,Freq,Exp=Param_2:Tuning,Freq,Unit=Param_3</Cmd>
+					<Param_1>
+						<Range>531,1611,9</Range>
+						<Range>8750,10800,5</Range>
+					</Param_1>
+					<Param_2>
+						<Direct>0</Direct>
+						<Direct>2</Direct>
+					</Param_2>
+					<Param_3>
+						<Direct>kHz</Direct>
+						<Direct>MHz</Direct>
+					</Param_3>
+				</Get>
+			</Menu>
+			<Menu Title_1="Program Type" Func="Genre">
+				<Get>
+					<Cmd ID="G1">RDS,Program_Type=Param_1</Cmd>
+					<Param_1>
+						<Text>0,8,Ascii</Text>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Program Service" Func="Info">
+				<Get>
+					<Cmd ID="G1">RDS,Program_Service=Param_1</Cmd>
+					<Param_1>
+						<Text>0,8,Ascii</Text>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Radio Text A" Func="Info">
+				<Get>
+					<Cmd ID="G1">RDS,Radio_Text_A=Param_1</Cmd>
+					<Param_1>
+						<Text>0,64,Ascii</Text>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Radio Text B" Func="Info">
+				<Get>
+					<Cmd ID="G1">RDS,Radio_Text_B=Param_1</Cmd>
+					<Param_1>
+						<Text>0,64,Ascii</Text>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Clock Time" Func="Info">
+				<Get>
+					<Cmd ID="G1">RDS,Clock_Time=Param_1</Cmd>
+					<Param_1>
+						<Text>0,5,Ascii</Text>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="EON" Func="Info">
+				<Get>
+					<Cmd ID="G1">RDS,EON=Param_1</Cmd>
+					<Param_1>
+						<Text>0,6,Ascii</Text>
+					</Param_1>
+				</Get>
+			</Menu>
+		</Menu>
+		<FKey Title="Title_1">
+			<Path/>
+			<F1 Title_1="Frequency">"Play Control","Frequency"</F1>
+			<F2 Title_1="Preset">"Play Control","Preset"</F2>
+			<F3 Title_1="Play Info.">"Play Info."</F3>
+		</FKey>
+		<FKey Title="Title_1">
+			<Path>"Play Info."</Path>
+			<F1 Title_1="Frequency">"Play Control","Frequency"</F1>
+			<F2 Title_1="Preset">"Play Control","Preset"</F2>
+		</FKey>
+		<SKey Title="Title_1">
+			<Path/>
+		</SKey>
+		<Top Title="Title_1">"Play Info."</Top>
+		<Cmd_List>
+			<Define ID="P1">Tuner,Play_Control,Search_Mode</Define>
+			<Define ID="P2">Tuner,Play_Control,Preset,Preset_Sel</Define>
+			<Define ID="P3">Tuner,Play_Control,Tuning,Band</Define>
+			<Define ID="P4">Tuner,Play_Control,Tuning,Freq</Define>
+			<Define ID="P5">Tuner,Play_Control,Preset_Page</Define>
+			<Define ID="P6">Tuner,Play_Control,Preset_or_Freq</Define>
+			<Define ID="P7">Tuner,Play_Control,Auto_Freq</Define>
+			<Define ID="G1">Tuner,Play_Info</Define>
+			<Define ID="G2">Tuner,Config</Define>
+			<Define ID="G3">Tuner,Play_Control,Preset,Preset_Sel_Item</Define>
+		</Cmd_List>
+	</Menu>
+	<Menu YNC_Tag="iPod" Func="Source_Device">
+		<Menu Title_1="Initialize" Func="Init">
+			<Put_1 Title_1="Browse Mode" ID="P10">Extended</Put_1>
+		</Menu>
+		<Menu Title_1="Device" Func="Status">
+			<Get>
+				<Cmd ID="G3">Device=Param_1</Cmd>
+				<Param_1>
+					<Direct Func="Status_Ready">Ready</Direct>
+					<Direct Title_1="Not Ready" Func="Status_Not_Ready">Not Ready</Direct>
+					<Direct Title_1="Not Ready" Func="Status_Not_Connected">Not Connected</Direct>
+				</Param_1>
+			</Get>
+		</Menu>
+		<Menu Title_1="Play Control" Func="Play_Control">
+			<Menu Title_1="Repeat" Func="Rep">
+				<Put_1 Func="Rep_Off" ID="P8">Off</Put_1>
+				<Put_1 Func="Rep_1" ID="P8">One</Put_1>
+				<Put_1 Func="Rep_2" ID="P8">All</Put_1>
+				<Get>
+					<Cmd ID="G1">Play_Mode,Repeat=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Rep_Off">Off</Direct>
+						<Direct Func="Rep_1">One</Direct>
+						<Direct Func="Rep_2">All</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Shuffle" Func="Rnd">
+				<Put_1 Func="Rnd_Off" ID="P9">Off</Put_1>
+				<Put_1 Func="Rnd_1" ID="P9">Songs</Put_1>
+				<Put_1 Func="Rnd_2" ID="P9">Albums</Put_1>
+				<Get>
+					<Cmd ID="G1">Play_Mode,Shuffle=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Rnd_Off">Off</Direct>
+						<Direct Func="Rnd_1">Songs</Direct>
+						<Direct Func="Rnd_2">Albums</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Play" Func="Playback">
+				<Put_1 Func="Play" ID="P1">Play</Put_1>
+				<Put_1 Func="Pause" ID="P1">Pause</Put_1>
+				<Get>
+					<Cmd ID="G1">Status=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Play">Play</Direct>
+						<Direct Func="Pause">Pause</Direct>
+						<Direct Func="Stop">Stop</Direct>
+						<Direct Title_1="Stop" Func="Stop">Not Connected</Direct>
+						<Direct Title_1="Stop" Func="Stop">Not Ready</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Skip" Func="Plus_Minus">
+				<Put_1 Func="Plus_1" ID="P2">Fwd</Put_1>
+				<Put_1 Func="Minus_1" ID="P2">Rev</Put_1>
+			</Menu>
+		</Menu>
+		<Menu Title_1="Play Info." Func="Play_Info" List_Type="With_Pic">
+			<Menu Title_1="Artist" Func="Artist">
+				<Get>
+					<Cmd ID="G1">Title,Artist=Param_1</Cmd>
+					<Param_1>
+						<Text>0,40,UTF-8</Text>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Album" Func="Album">
+				<Get>
+					<Cmd ID="G1">Title,Album=Param_1</Cmd>
+					<Param_1>
+						<Text>0,40,UTF-8</Text>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Song" Func="Song">
+				<Get>
+					<Cmd ID="G1">Title,Song=Param_1</Cmd>
+					<Param_1>
+						<Text>0,40,UTF-8</Text>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Device" Func="Status">
+				<Get>
+					<Cmd ID="G3">Device=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Status_Ready">Ready</Direct>
+						<Direct Title_1="Not Ready" Func="Status_Not_Ready">Not Ready</Direct>
+						<Direct Title_1="Not Ready" Func="Status_Not_Connected">Not Connected</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Status" Func="Playback">
+				<Get>
+					<Cmd ID="G1">Status=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Play">Play</Direct>
+						<Direct Func="Pause">Pause</Direct>
+						<Direct Func="Stop">Stop</Direct>
+						<Direct Title_1="Stop" Func="Stop">Not Connected</Direct>
+						<Direct Title_1="Stop" Func="Stop">Not Ready</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Repeat" Func="Rep">
+				<Get>
+					<Cmd ID="G1">Play_Mode,Repeat=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Rep_Off">Off</Direct>
+						<Direct Func="Rep_1">One</Direct>
+						<Direct Func="Rep_2">All</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Shuffle" Func="Rnd">
+				<Get>
+					<Cmd ID="G1">Play_Mode,Shuffle=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Rnd_Off">Off</Direct>
+						<Direct Func="Rnd_1">Songs</Direct>
+						<Direct Func="Rnd_2">Albums</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+		</Menu>
+		<Menu Title_1="List Browse" Func="List_Browse">
+			<Menu Title_1="List Control" Func="List_Control">
+				<Menu Title_1="Direct Cursor Select" Func="Direct_Sel">
+					<Put_2>
+						<Cmd ID="P3">Param_1</Cmd>
+						<Param_1>
+							<Range>1,8,1,Line_%</Range>
+						</Param_1>
+					</Put_2>
+				</Menu>
+				<Menu Title_1="Cursor" Func="Cursor" List_Type="Cursor">
+					<Put_1 Func="Cursor_Up" ID="P5">Up</Put_1>
+					<Put_1 Func="Cursor_Down" ID="P5">Down</Put_1>
+					<Put_1 Func="Cursor_Left" ID="P5">Left</Put_1>
+					<Put_1 Func="Cursor_Right" ID="P5">Right</Put_1>
+					<Put_1 Func="Cursor_Sel" ID="P5">Sel</Put_1>
+				</Menu>
+				<Menu Title_1="Page" Func="Page_Up_Down">
+					<Put_1 Func="Page_Up_1" ID="P6">Up</Put_1>
+					<Put_1 Func="Page_Down_1" ID="P6">Down</Put_1>
+				</Menu>
+			</Menu>
+			<Menu Title_1="List Info." Func="List_Info">
+				<Menu Title_1="Menu Layer" Func="Menu_Layer">
+					<Get>
+						<Cmd ID="G2">Menu_Layer=Param_1</Cmd>
+						<Param_1>
+							<Range>1,16,1</Range>
+						</Param_1>
+					</Get>
+				</Menu>
+				<Menu Title_1="Menu Name" Func="Menu_Name">
+					<Get>
+						<Cmd ID="G2">Menu_Name=Param_1</Cmd>
+						<Param_1>
+							<Text>0,40,UTF-8</Text>
+						</Param_1>
+					</Get>
+				</Menu>
+				<Menu Title_1="Menu List" Func="Menu_List">
+					<Menu Title_1="Line 1" Func="Menu_Line">
+						<Put_1 ID="P3">Line_1</Put_1>
+						<Get>
+							<Cmd ID="G2" Type="Container">Current_List,Line_1,Txt=Param_1:Current_List,Line_1,Container=Param_2</Cmd>
+							<Param_1 Func="Menu_Txt">
+								<Text>0,40,UTF-8</Text>
+							</Param_1>
+							<Param_2 Func="Menu_Type">
+								<Direct Func="Menu_Next">True</Direct>
+								<Direct Func="Menu_Stay">False</Direct>
+								<Direct Func="Menu_Play">Play</Direct>
+							</Param_2>
+						</Get>
+					</Menu>
+					<Menu Title_1="Line 2" Func="Menu_Line">
+						<Put_1 ID="P3">Line_2</Put_1>
+						<Get>
+							<Cmd ID="G2" Type="Container">Current_List,Line_2,Txt=Param_1:Current_List,Line_2,Container=Param_2</Cmd>
+							<Param_1 Func="Menu_Txt">
+								<Text>0,40,UTF-8</Text>
+							</Param_1>
+							<Param_2 Func="Menu_Type">
+								<Direct Func="Menu_Next">True</Direct>
+								<Direct Func="Menu_Stay">False</Direct>
+								<Direct Func="Menu_Play">Play</Direct>
+							</Param_2>
+						</Get>
+					</Menu>
+					<Menu Title_1="Line 3" Func="Menu_Line">
+						<Put_1 ID="P3">Line_3</Put_1>
+						<Get>
+							<Cmd ID="G2" Type="Container">Current_List,Line_3,Txt=Param_1:Current_List,Line_3,Container=Param_2</Cmd>
+							<Param_1 Func="Menu_Txt">
+								<Text>0,40,UTF-8</Text>
+							</Param_1>
+							<Param_2 Func="Menu_Type">
+								<Direct Func="Menu_Next">True</Direct>
+								<Direct Func="Menu_Stay">False</Direct>
+								<Direct Func="Menu_Play">Play</Direct>
+							</Param_2>
+						</Get>
+					</Menu>
+					<Menu Title_1="Line 4" Func="Menu_Line">
+						<Put_1 ID="P3">Line_4</Put_1>
+						<Get>
+							<Cmd ID="G2" Type="Container">Current_List,Line_4,Txt=Param_1:Current_List,Line_4,Container=Param_2</Cmd>
+							<Param_1 Func="Menu_Txt">
+								<Text>0,40,UTF-8</Text>
+							</Param_1>
+							<Param_2 Func="Menu_Type">
+								<Direct Func="Menu_Next">True</Direct>
+								<Direct Func="Menu_Stay">False</Direct>
+								<Direct Func="Menu_Play">Play</Direct>
+							</Param_2>
+						</Get>
+					</Menu>
+					<Menu Title_1="Line 5" Func="Menu_Line">
+						<Put_1 ID="P3">Line_5</Put_1>
+						<Get>
+							<Cmd ID="G2" Type="Container">Current_List,Line_5,Txt=Param_1:Current_List,Line_5,Container=Param_2</Cmd>
+							<Param_1 Func="Menu_Txt">
+								<Text>0,40,UTF-8</Text>
+							</Param_1>
+							<Param_2 Func="Menu_Type">
+								<Direct Func="Menu_Next">True</Direct>
+								<Direct Func="Menu_Stay">False</Direct>
+								<Direct Func="Menu_Play">Play</Direct>
+							</Param_2>
+						</Get>
+					</Menu>
+					<Menu Title_1="Line 6" Func="Menu_Line">
+						<Put_1 ID="P3">Line_6</Put_1>
+						<Get>
+							<Cmd ID="G2" Type="Container">Current_List,Line_6,Txt=Param_1:Current_List,Line_6,Container=Param_2</Cmd>
+							<Param_1 Func="Menu_Txt">
+								<Text>0,40,UTF-8</Text>
+							</Param_1>
+							<Param_2 Func="Menu_Type">
+								<Direct Func="Menu_Next">True</Direct>
+								<Direct Func="Menu_Stay">False</Direct>
+								<Direct Func="Menu_Play">Play</Direct>
+							</Param_2>
+						</Get>
+					</Menu>
+					<Menu Title_1="Line 7" Func="Menu_Line">
+						<Put_1 ID="P3">Line_7</Put_1>
+						<Get>
+							<Cmd ID="G2" Type="Container">Current_List,Line_7,Txt=Param_1:Current_List,Line_7,Container=Param_2</Cmd>
+							<Param_1 Func="Menu_Txt">
+								<Text>0,40,UTF-8</Text>
+							</Param_1>
+							<Param_2 Func="Menu_Type">
+								<Direct Func="Menu_Next">True</Direct>
+								<Direct Func="Menu_Stay">False</Direct>
+								<Direct Func="Menu_Play">Play</Direct>
+							</Param_2>
+						</Get>
+					</Menu>
+					<Menu Title_1="Line 8" Func="Menu_Line">
+						<Put_1 ID="P3">Line_8</Put_1>
+						<Get>
+							<Cmd ID="G2" Type="Container">Current_List,Line_8,Txt=Param_1:Current_List,Line_8,Container=Param_2</Cmd>
+							<Param_1 Func="Menu_Txt">
+								<Text>0,40,UTF-8</Text>
+							</Param_1>
+							<Param_2 Func="Menu_Type">
+								<Direct Func="Menu_Next">True</Direct>
+								<Direct Func="Menu_Stay">False</Direct>
+								<Direct Func="Menu_Play">Play</Direct>
+							</Param_2>
+						</Get>
+					</Menu>
+				</Menu>
+				<Menu Title_1="Cursor Line" Func="Current_Line">
+					<Get>
+						<Cmd ID="G2">Cursor_Position,Current_Line=Param_1</Cmd>
+						<Param_1>
+							<Range>1,65536,1</Range>
+						</Param_1>
+					</Get>
+				</Menu>
+				<Menu Title_1="Max. Line" Func="Max_Line">
+					<Get>
+						<Cmd ID="G2">Cursor_Position,Max_Line=Param_1</Cmd>
+						<Param_1>
+							<Range>0,65536,1</Range>
+						</Param_1>
+					</Get>
+				</Menu>
+			</Menu>
+		</Menu>
+		<FKey Title="Title_1">
+			<Path>"List Browse"</Path>
+			<F3 Title_1="Play Info.">"Play Info."</F3>
+		</FKey>
+		<FKey Title="Title_1">
+			<Path>"Play Info."</Path>
+			<F1 Title_1="Shuffle">"Play Control","Shuffle"</F1>
+			<F2 Title_1="Repeat">"Play Control","Repeat"</F2>
+		</FKey>
+		<FKey Title="Title_1">
+			<Path/>
+			<F1 Title_1="Shuffle">"Play Control","Shuffle"</F1>
+			<F2 Title_1="Repeat">"Play Control","Repeat"</F2>
+			<F3 Title_1="Play Info.">"Play Info."</F3>
+		</FKey>
+		<SKey Title="Title_1">
+			<Path/>
+			<Play>
+				<Put_1 ID="P1">Play</Put_1>
+			</Play>
+			<Pause>
+				<Put_1 ID="P1">Pause</Put_1>
+			</Pause>
+			<Fwd>
+				<Put_1 ID="P2">Fwd</Put_1>
+			</Fwd>
+			<Rev>
+				<Put_1 ID="P2">Rev</Put_1>
+			</Rev>
+		</SKey>
+		<Top Title="Title_1">"List Browse"</Top>
+		<Cmd_List>
+			<Define ID="P1">iPod,Play_Control,Play</Define>
+			<Define ID="P2">iPod,Play_Control,Skip</Define>
+			<Define ID="P3">iPod,List_Control,Direct_Sel</Define>
+			<Define ID="P4">iPod,List_Control,Jump_Line</Define>
+			<Define ID="P5">iPod,List_Control,Cursor</Define>
+			<Define ID="P6">iPod,List_Control,Page</Define>
+			<Define ID="P7">iPod,List_Control,Others</Define>
+			<Define ID="P8">iPod,Play_Control,Play_Mode,Repeat</Define>
+			<Define ID="P9">iPod,Play_Control,Play_Mode,Shuffle</Define>
+			<Define ID="P10">iPod,Play_Control,Play_Mode,Control</Define>
+			<Define ID="G1">iPod,Play_Info</Define>
+			<Define ID="G2">iPod,List_Info_2</Define>
+			<Define ID="G3">iPod,Config</Define>
+		</Cmd_List>
+	</Menu>
+	<Menu YNC_Tag="Bluetooth" Func="Source_Device">
+		<Menu Title_1="Device" Func="Status">
+			<Get>
+				<Cmd ID="G1">Device=Param_1</Cmd>
+				<Param_1>
+					<Direct Title_1="Connected" Func="Status_Ready">Ready</Direct>
+					<Direct Title_1="Disconnected" Func="Status_Not_Ready">Not Ready</Direct>
+					<Direct Title_1="Disconnected" Func="Status_Not_Connected">Not Connected</Direct>
+				</Param_1>
+			</Get>
+		</Menu>
+		<Menu Title_1="Play Control" Func="Play_Control">
+			<Menu Title_1="Play" Func="Playback">
+				<Put_1 Func="Play" ID="P1">Play</Put_1>
+				<Put_1 Func="Pause" ID="P1">Pause</Put_1>
+				<Put_1 Func="Stop" ID="P1">Stop</Put_1>
+			</Menu>
+			<Menu Title_1="Skip" Func="Plus_Minus">
+				<Put_1 Func="Plus_1" ID="P2">Fwd</Put_1>
+				<Put_1 Func="Minus_1" ID="P2">Rev</Put_1>
+			</Menu>
+		</Menu>
+		<Menu Title_1="Play Info." Func="Play_Info" List_Type="With_Pic">
+			<Menu Title_1="Device" Func="Status">
+				<Get>
+					<Cmd ID="G1">Device=Param_1</Cmd>
+					<Param_1>
+						<Direct Title_1="Connected" Func="Status_Ready">Ready</Direct>
+						<Direct Title_1="Disconnected" Func="Status_Not_Ready">Not Ready</Direct>
+						<Direct Title_1="Disconnected" Func="Status_Not_Connected">Not Connected</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+		</Menu>
+		<FKey Title="Title_1">
+			<Path/>
+			<F1 Title_1="Connect">
+				<Put_1 ID="P3">Connect</Put_1>
+			</F1>
+			<F2 Title_1="Disconnect">
+				<Put_1 ID="P3">Disconnect</Put_1>
+			</F2>
+			<F3 Title_1="Play Info.">"Play Info."</F3>
+		</FKey>
+		<FKey Title="Title_1">
+			<Path>"Play Info."</Path>
+			<F1 Title_1="Connect">
+				<Put_1 ID="P3">Connect</Put_1>
+			</F1>
+			<F2 Title_1="Disconnect">
+				<Put_1 ID="P3">Disconnect</Put_1>
+			</F2>
+		</FKey>
+		<SKey Title="Title_1">
+			<Path/>
+			<Play>
+				<Put_1 ID="P1">Play</Put_1>
+			</Play>
+			<Pause>
+				<Put_1 ID="P1">Pause</Put_1>
+			</Pause>
+			<Stop>
+				<Put_1 ID="P1">Stop</Put_1>
+			</Stop>
+			<Fwd>
+				<Put_1 ID="P2">Fwd</Put_1>
+			</Fwd>
+			<Rev>
+				<Put_1 ID="P2">Rev</Put_1>
+			</Rev>
+		</SKey>
+		<Top Title="Title_1">"Play Info."</Top>
+		<Cmd_List>
+			<Define ID="P1">Bluetooth,Play_Control,Play</Define>
+			<Define ID="P2">Bluetooth,Play_Control,Skip</Define>
+			<Define ID="P3">Bluetooth,Config,Control,Connect</Define>
+			<Define ID="G1">Bluetooth,Config</Define>
+		</Cmd_List>
+	</Menu>
+	<Menu YNC_Tag="NET_USB" Func="Source_Device">
+		<Menu Title_1="Device" Func="Status">
+			<Get>
+				<Cmd ID="G3">Device=Param_1</Cmd>
+				<Param_1>
+					<Direct Func="Status_Ready">Ready</Direct>
+				</Param_1>
+			</Get>
+		</Menu>
+		<Menu Title_1="Play Control" Func="Play_Control">
+			<Menu Title_1="Repeat" Func="Rep">
+				<Put_1 Func="Rep_Off" ID="P1">Off</Put_1>
+				<Put_1 Func="Rep_1" ID="P1">Single</Put_1>
+				<Put_1 Func="Rep_2" ID="P1">All</Put_1>
+				<Get>
+					<Cmd ID="G1">Play_Mode,Repeat=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Rep_Off">Off</Direct>
+						<Direct Func="Rep_1">Single</Direct>
+						<Direct Func="Rep_2">All</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Shuffle" Func="Rnd">
+				<Put_1 Func="Rnd_Off" ID="P2">Off</Put_1>
+				<Put_1 Func="Rnd_1" ID="P2">On</Put_1>
+				<Get>
+					<Cmd ID="G1">Play_Mode,Shuffle=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Rnd_Off">Off</Direct>
+						<Direct Func="Rnd_1">On</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Play" Func="Playback">
+				<Put_1 Func="Play" ID="P4">Play</Put_1>
+				<Put_1 Func="Pause" ID="P4">Pause</Put_1>
+				<Put_1 Func="Stop" ID="P4">Stop</Put_1>
+				<Get>
+					<Cmd ID="G1">Status=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Play">Play</Direct>
+						<Direct Func="Pause">Pause</Direct>
+						<Direct Func="Stop">Stop</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Skip" Func="Plus_Minus">
+				<Put_1 Func="Plus_1" ID="P5">Fwd</Put_1>
+				<Put_1 Func="Minus_1" ID="P5">Rev</Put_1>
+			</Menu>
+			<Menu Title_1="Preset" Func="Preset" List_Type="Slider">
+				<Put_2>
+					<Cmd ID="P3">Param_1</Cmd>
+					<Param_1>
+						<Indirect ID="G4"/>
+					</Param_1>
+				</Put_2>
+			</Menu>
+		</Menu>
+		<Menu Title_1="Play Info." Func="Play_Info" List_Type="With_Pic">
+			<Menu Title_1="Info 1" Func="Artist">
+				<Get>
+					<Cmd ID="G1">Title,Artist=Param_1</Cmd>
+					<Param_1>
+						<Text>0,64,UTF-8</Text>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Info 2" Func="Album">
+				<Get>
+					<Cmd ID="G1">Title,Album=Param_1</Cmd>
+					<Param_1>
+						<Text>0,64,UTF-8</Text>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Info 3" Func="Song">
+				<Get>
+					<Cmd ID="G1">Title,Song=Param_1</Cmd>
+					<Param_1>
+						<Text>0,64,UTF-8</Text>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Status" Func="Playback">
+				<Get>
+					<Cmd ID="G1">Status=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Play">Play</Direct>
+						<Direct Func="Pause">Pause</Direct>
+						<Direct Func="Stop">Stop</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Repeat" Func="Rep">
+				<Get>
+					<Cmd ID="G1">Play_Mode,Repeat=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Rep_Off">Off</Direct>
+						<Direct Func="Rep_1">Single</Direct>
+						<Direct Func="Rep_2">All</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+			<Menu Title_1="Shuffle" Func="Rnd">
+				<Get>
+					<Cmd ID="G1">Play_Mode,Shuffle=Param_1</Cmd>
+					<Param_1>
+						<Direct Func="Rnd_Off">Off</Direct>
+						<Direct Func="Rnd_1">On</Direct>
+					</Param_1>
+				</Get>
+			</Menu>
+		</Menu>
+		<Menu Title_1="List Browse" Func="List_Browse">
+			<Menu Title_1="List Control" Func="List_Control">
+				<Menu Title_1="Direct Cursor Select" Func="Direct_Sel">
+					<Put_2>
+						<Cmd ID="P6">Param_1</Cmd>
+						<Param_1>
+							<Range>1,8,1,Line_%</Range>
+						</Param_1>
+					</Put_2>
+				</Menu>
+				<Menu Title_1="Cursor" Func="Cursor" List_Type="Cursor">
+					<Put_1 Func="Cursor_Up" ID="P8">Up</Put_1>
+					<Put_1 Func="Cursor_Down" ID="P8">Down</Put_1>
+					<Put_1 Func="Cursor_Left" ID="P8">Left</Put_1>
+					<Put_1 Func="Cursor_Right" ID="P8">Right</Put_1>
+					<Put_1 Func="Cursor_Sel" ID="P8">Sel</Put_1>
+				</Menu>
+				<Menu Title_1="Page" Func="Page_Up_Down">
+					<Put_1 Func="Page_Up_1" ID="P9">Up</Put_1>
+					<Put_1 Func="Page_Down_1" ID="P9">Down</Put_1>
+				</Menu>
+			</Menu>
+			<Menu Title_1="List Info." Func="List_Info">
+				<Menu Title_1="Menu Layer" Func="Menu_Layer">
+					<Get>
+						<Cmd ID="G2">Menu_Layer=Param_1</Cmd>
+						<Param_1>
+							<Range>1,16,1</Range>
+						</Param_1>
+					</Get>
+				</Menu>
+				<Menu Title_1="Menu Name" Func="Menu_Name">
+					<Get>
+						<Cmd ID="G2">Menu_Name=Param_1</Cmd>
+						<Param_1>
+							<Text>0,64,UTF-8</Text>
+						</Param_1>
+					</Get>
+				</Menu>
+				<Menu Title_1="Menu List" Func="Menu_List">
+					<Menu Title_1="Line 1" Func="Menu_Line">
+						<Put_1 ID="P6">Line_1</Put_1>
+						<Get>
+							<Cmd ID="G2" Type="Container">Current_List,Line_1,Txt=Param_1:Current_List,Line_1,Container=Param_2</Cmd>
+							<Param_1 Func="Menu_Txt">
+								<Text>0,40,UTF-8</Text>
+							</Param_1>
+							<Param_2 Func="Menu_Type">
+								<Direct Func="Menu_Next">True</Direct>
+								<Direct Func="Menu_Stay">False</Direct>
+								<Direct Func="Menu_Play">Play</Direct>
+							</Param_2>
+						</Get>
+					</Menu>
+					<Menu Title_1="Line 2" Func="Menu_Line">
+						<Put_1 ID="P6">Line_2</Put_1>
+						<Get>
+							<Cmd ID="G2" Type="Container">Current_List,Line_2,Txt=Param_1:Current_List,Line_2,Container=Param_2</Cmd>
+							<Param_1 Func="Menu_Txt">
+								<Text>0,40,UTF-8</Text>
+							</Param_1>
+							<Param_2 Func="Menu_Type">
+								<Direct Func="Menu_Next">True</Direct>
+								<Direct Func="Menu_Stay">False</Direct>
+								<Direct Func="Menu_Play">Play</Direct>
+							</Param_2>
+						</Get>
+					</Menu>
+					<Menu Title_1="Line 3" Func="Menu_Line">
+						<Put_1 ID="P6">Line_3</Put_1>
+						<Get>
+							<Cmd ID="G2" Type="Container">Current_List,Line_3,Txt=Param_1:Current_List,Line_3,Container=Param_2</Cmd>
+							<Param_1 Func="Menu_Txt">
+								<Text>0,40,UTF-8</Text>
+							</Param_1>
+							<Param_2 Func="Menu_Type">
+								<Direct Func="Menu_Next">True</Direct>
+								<Direct Func="Menu_Stay">False</Direct>
+								<Direct Func="Menu_Play">Play</Direct>
+							</Param_2>
+						</Get>
+					</Menu>
+					<Menu Title_1="Line 4" Func="Menu_Line">
+						<Put_1 ID="P6">Line_4</Put_1>
+						<Get>
+							<Cmd ID="G2" Type="Container">Current_List,Line_4,Txt=Param_1:Current_List,Line_4,Container=Param_2</Cmd>
+							<Param_1 Func="Menu_Txt">
+								<Text>0,40,UTF-8</Text>
+							</Param_1>
+							<Param_2 Func="Menu_Type">
+								<Direct Func="Menu_Next">True</Direct>
+								<Direct Func="Menu_Stay">False</Direct>
+								<Direct Func="Menu_Play">Play</Direct>
+							</Param_2>
+						</Get>
+					</Menu>
+					<Menu Title_1="Line 5" Func="Menu_Line">
+						<Put_1 ID="P6">Line_5</Put_1>
+						<Get>
+							<Cmd ID="G2" Type="Container">Current_List,Line_5,Txt=Param_1:Current_List,Line_5,Container=Param_2</Cmd>
+							<Param_1 Func="Menu_Txt">
+								<Text>0,40,UTF-8</Text>
+							</Param_1>
+							<Param_2 Func="Menu_Type">
+								<Direct Func="Menu_Next">True</Direct>
+								<Direct Func="Menu_Stay">False</Direct>
+								<Direct Func="Menu_Play">Play</Direct>
+							</Param_2>
+						</Get>
+					</Menu>
+					<Menu Title_1="Line 6" Func="Menu_Line">
+						<Put_1 ID="P6">Line_6</Put_1>
+						<Get>
+							<Cmd ID="G2" Type="Container">Current_List,Line_6,Txt=Param_1:Current_List,Line_6,Container=Param_2</Cmd>
+							<Param_1 Func="Menu_Txt">
+								<Text>0,40,UTF-8</Text>
+							</Param_1>
+							<Param_2 Func="Menu_Type">
+								<Direct Func="Menu_Next">True</Direct>
+								<Direct Func="Menu_Stay">False</Direct>
+								<Direct Func="Menu_Play">Play</Direct>
+							</Param_2>
+						</Get>
+					</Menu>
+					<Menu Title_1="Line 7" Func="Menu_Line">
+						<Put_1 ID="P6">Line_7</Put_1>
+						<Get>
+							<Cmd ID="G2" Type="Container">Current_List,Line_7,Txt=Param_1:Current_List,Line_7,Container=Param_2</Cmd>
+							<Param_1 Func="Menu_Txt">
+								<Text>0,40,UTF-8</Text>
+							</Param_1>
+							<Param_2 Func="Menu_Type">
+								<Direct Func="Menu_Next">True</Direct>
+								<Direct Func="Menu_Stay">False</Direct>
+								<Direct Func="Menu_Play">Play</Direct>
+							</Param_2>
+						</Get>
+					</Menu>
+					<Menu Title_1="Line 8" Func="Menu_Line">
+						<Put_1 ID="P6">Line_8</Put_1>
+						<Get>
+							<Cmd ID="G2" Type="Container">Current_List,Line_8,Txt=Param_1:Current_List,Line_8,Container=Param_2</Cmd>
+							<Param_1 Func="Menu_Txt">
+								<Text>0,40,UTF-8</Text>
+							</Param_1>
+							<Param_2 Func="Menu_Type">
+								<Direct Func="Menu_Next">True</Direct>
+								<Direct Func="Menu_Stay">False</Direct>
+								<Direct Func="Menu_Play">Play</Direct>
+							</Param_2>
+						</Get>
+					</Menu>
+				</Menu>
+				<Menu Title_1="Cursor Line" Func="Current_Line">
+					<Get>
+						<Cmd ID="G2">Cursor_Position,Current_Line=Param_1</Cmd>
+						<Param_1>
+							<Range>1,65536,1</Range>
+						</Param_1>
+					</Get>
+				</Menu>
+				<Menu Title_1="Max. Line" Func="Max_Line">
+					<Get>
+						<Cmd ID="G2">Cursor_Position,Max_Line=Param_1</Cmd>
+						<Param_1>
+							<Range>0,65536,1</Range>
+						</Param_1>
+					</Get>
+				</Menu>
+			</Menu>
+		</Menu>
+		<FKey Title="Title_1">
+			<Path>"Play Info."</Path>
+			<F1 Title_1="Shuffle">"Play Control","Shuffle"</F1>
+			<F2 Title_1="Repeat">"Play Control","Repeat"</F2>
+		</FKey>
+		<FKey Title="Title_1">
+			<Path>"List Browse"</Path>
+			<F3 Title_1="Play Info.">"Play Info."</F3>
+		</FKey>
+		<FKey Title="Title_1">
+			<Path/>
+			<F1 Title_1="Shuffle">"Play Control","Shuffle"</F1>
+			<F2 Title_1="Repeat">"Play Control","Repeat"</F2>
+			<F3 Title_1="Play Info.">"Play Info."</F3>
+		</FKey>
+		<SKey Title="Title_1">
+			<Path/>
+			<Play>
+				<Put_1 ID="P4">Play</Put_1>
+			</Play>
+			<Pause>
+				<Put_1 ID="P4">Pause</Put_1>
+			</Pause>
+			<Stop>
+				<Put_1 ID="P4">Stop</Put_1>
+			</Stop>
+			<Fwd>
+				<Put_1 ID="P5">Fwd</Put_1>
+			</Fwd>
+			<Rev>
+				<Put_1 ID="P5">Rev</Put_1>
+			</Rev>
+		</SKey>
+		<Top Title="Title_1">"List Browse"</Top>
+		<Cmd_List>
+			<Define ID="P1">NET_USB,Play_Control,Play_Mode,Repeat</Define>
+			<Define ID="P2">NET_USB,Play_Control,Play_Mode,Shuffle</Define>
+			<Define ID="P3">NET_USB,Play_Control,Preset,Preset_Sel</Define>
+			<Define ID="P4">NET_USB,Play_Control,Play</Define>
+			<Define ID="P5">NET_USB,Play_Control,Skip</Define>
+			<Define ID="P6">NET_USB,List_Control,Direct_Sel</Define>
+			<Define ID="P7">NET_USB,List_Control,Jump_Line</Define>
+			<Define ID="P8">NET_USB,List_Control,Cursor</Define>
+			<Define ID="P9">NET_USB,List_Control,Page</Define>
+			<Define ID="P10">NET_USB,List_Control,Others</Define>
+			<Define ID="G1">NET_USB,Play_Info</Define>
+			<Define ID="G2">NET_USB,List_Info_2</Define>
+			<Define ID="G3">NET_USB,Config</Define>
+			<Define ID="G4">NET_USB,Play_Control,Preset,Preset_Sel_Item</Define>
+		</Cmd_List>
+	</Menu>
+</Unit_Description>

@@ -1,12 +1,18 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.loxone.internal.core;
+
+import java.util.Map;
 
 /**
  * Interface to get notifications about {@link LxServer} asynchronous events.
@@ -50,7 +56,13 @@ public interface LxServerListener {
      *
      * @param control
      *            control object, which state changed
+     * @param stateName
+     *            name of the state that was updated
      */
-    void onControlStateUpdate(LxControl control);
+    void onControlStateUpdate(LxControl control, String stateName);
+
+    Object getSetting(String name);
+
+    void setSettings(Map<String, String> properties);
 
 }

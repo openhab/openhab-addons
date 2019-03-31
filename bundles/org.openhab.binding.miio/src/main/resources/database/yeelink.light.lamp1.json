@@ -1,0 +1,102 @@
+{
+	"deviceMapping": {
+		"id": [
+			"yeelink.light.lamp1",
+			"yeelink.light.lamp2",
+			"yeelink.light.lamp3",
+			"yeelink.light.ct2",
+			"yeelink.light.mono1",
+			"yeelink.light.mono2",
+			"yeelink.light.virtual"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "bright",
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_bright",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "delayoff",
+				"friendlyName": "Shutdowm Timer",
+				"channel": "delayoff",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "cron_add",
+						"parameterType": "NUMBER",
+						"preCommandParameter1": "0"
+					}
+				]
+			},
+			{
+				"property": "ct",
+				"friendlyName": "Color Temperature",
+				"channel": "colorTemperature",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_ct_abx",
+						"parameterType": "NUMBER",
+						"parameter1": "\"smooth\"",
+						"parameter2": "500"
+					}
+				]
+			},
+			{
+				"property": "color_mode",
+				"friendlyName": "Color Mode",
+				"channel": "colorMode",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_scene",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "name",
+				"friendlyName": "Name",
+				"channel": "name",
+				"type": "String",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_name",
+						"parameterType": "STRING"
+					}
+				]
+			}
+		]
+	}
+}

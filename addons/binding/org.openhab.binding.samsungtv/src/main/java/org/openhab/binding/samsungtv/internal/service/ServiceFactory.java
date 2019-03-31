@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.samsungtv.internal.service;
 
@@ -24,8 +28,8 @@ import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
 public class ServiceFactory {
 
     @SuppressWarnings("serial")
-    private static final Map<String, Class<?>> serviceMap = Collections
-            .unmodifiableMap(new HashMap<String, Class<?>>() {
+    private static final Map<String, Class<? extends SamsungTvService>> serviceMap = Collections
+            .unmodifiableMap(new HashMap<String, Class<? extends SamsungTvService>>() {
                 {
                     put(MainTVServerService.SERVICE_NAME, MainTVServerService.class);
                     put(MediaRendererService.SERVICE_NAME, MediaRendererService.class);
@@ -57,7 +61,7 @@ public class ServiceFactory {
                 service = new MediaRendererService(upnpIOService, udn, pollingInterval);
                 break;
             case RemoteControllerService.SERVICE_NAME:
-                service = new RemoteControllerService(host, port);
+                service = RemoteControllerService.createUpnpService(host, port);
                 break;
         }
 
@@ -79,7 +83,7 @@ public class ServiceFactory {
      * @param serviceName Name of the service
      * @return Class of the service
      */
-    public static Class<?> getClassByServiceName(String serviceName) {
+    public static Class<? extends SamsungTvService> getClassByServiceName(String serviceName) {
         return serviceMap.get(serviceName);
     }
 }

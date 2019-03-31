@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.nikohomecontrol.internal.protocol;
 
@@ -26,7 +30,7 @@ import com.google.gson.JsonParseException;
  * Class {@link NikoHomeControlMessageDeserializer} deserializes all json messages from Niko Home Control. Various json
  * message formats are supported. The format is selected based on the content of the cmd and event json objects.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  *
  */
 class NikoHomeControlMessageDeserializer implements JsonDeserializer<NhcMessageBase> {
@@ -54,9 +58,7 @@ class NikoHomeControlMessageDeserializer implements JsonDeserializer<NhcMessageB
             NhcMessageBase message = null;
 
             if (jsonData != null) {
-
                 if (jsonData.isJsonObject()) {
-
                     message = new NhcMessageMap();
 
                     Map<String, String> data = new HashMap<>();
@@ -66,7 +68,6 @@ class NikoHomeControlMessageDeserializer implements JsonDeserializer<NhcMessageB
                     ((NhcMessageMap) message).setData(data);
 
                 } else if (jsonData.isJsonArray()) {
-
                     JsonArray jsonDataArray = jsonData.getAsJsonArray();
 
                     message = new NhcMessageListMap();
@@ -83,7 +84,6 @@ class NikoHomeControlMessageDeserializer implements JsonDeserializer<NhcMessageB
                     }
                     ((NhcMessageListMap) message).setData(dataList);
                 }
-
             }
 
             if (message != null) {

@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.max.internal.device;
 
@@ -13,15 +17,11 @@ import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.StringType;
-
 /**
  * MAX! Heating thermostat & Heating thermostat+ .
  *
- * @author Andreas Heil (info@aheil.de)
+ * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 update
- * @since 1.4.0
  */
 public class HeatingThermostat extends Device {
     private ThermostatModeType mode;
@@ -42,7 +42,7 @@ public class HeatingThermostat extends Device {
     private DeviceType deviceType = DeviceType.HeatingThermostat;
 
     /** Date/Time the actual temperature was last updated */
-    private Date actualTempLastUpdated = null;
+    private Date actualTempLastUpdated;
 
     public HeatingThermostat(DeviceConfiguration c) {
         super(c);
@@ -65,8 +65,8 @@ public class HeatingThermostat extends Device {
     /**
      * Returns the current mode of the thermostat.
      */
-    public StringType getModeString() {
-        return new StringType(this.mode.toString());
+    public String getModeString() {
+        return this.mode.toString();
     }
 
     /**
@@ -76,7 +76,7 @@ public class HeatingThermostat extends Device {
         return this.mode;
     }
 
-    void setMode(ThermostatModeType mode) {
+    public void setMode(ThermostatModeType mode) {
         if (this.mode != mode) {
             setUpdated(true);
         }
@@ -101,8 +101,8 @@ public class HeatingThermostat extends Device {
      * @return
      *         the valve position as <code>DecimalType</code>
      */
-    public DecimalType getValvePosition() {
-        return new DecimalType(this.valvePosition);
+    public int getValvePosition() {
+        return this.valvePosition;
     }
 
     public void setDateSetpoint(Date date) {
@@ -131,11 +131,10 @@ public class HeatingThermostat extends Device {
      * 0�C is displayed if no actual is measured. Temperature is only updated after valve position changes
      *
      * @return
-     *         the actual temperature as <code>DecimalType</code>
+     *         the actual temperature as <code>QuantityType</code>
      */
-    public DecimalType getTemperatureActual() {
-        BigDecimal temperatureActual = BigDecimal.valueOf(this.temperatureActual).setScale(1, RoundingMode.HALF_UP);
-        return new DecimalType(temperatureActual);
+    public double getTemperatureActual() {
+        return BigDecimal.valueOf(this.temperatureActual).setScale(1, RoundingMode.HALF_UP).doubleValue();
     }
 
     /**
@@ -155,10 +154,10 @@ public class HeatingThermostat extends Device {
      * 4.5�C is displayed as OFF, 30.5�C is displayed as On at the thermostat display.
      *
      * @return
-     *         the setpoint temperature as <code>DecimalType</code>
+     *         the setpoint temperature as <code>QuantityType</code>
      */
-    public DecimalType getTemperatureSetpoint() {
-        return new DecimalType(this.temperatureSetpoint);
+    public double getTemperatureSetpoint() {
+        return this.temperatureSetpoint;
     }
 
     /**

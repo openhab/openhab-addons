@@ -1,15 +1,17 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: SleepIQ Binding
-Bundle-SymbolicName: org.openhab.binding.sleepiq;singleton:=true
-Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .,
+Automatic-Module-Name: org.openhab.binding.sleepiq
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: 
+ .,
  lib/provider-gson.jar,
  lib/sleepiq-api.jar
+Bundle-ManifestVersion: 2
+Bundle-Name: SleepIQ Binding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-SymbolicName: org.openhab.binding.sleepiq;singleton:=true
+Bundle-Vendor: openHAB
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
- com.google.common.base,
  com.google.common.collect,
  com.google.gson,
  com.google.gson.annotations,
@@ -31,10 +33,6 @@ Import-Package:
  org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
  org.glassfish.jersey.filter,
- org.openhab.binding.sleepiq,
- org.openhab.binding.sleepiq.handler,
  org.osgi.framework,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
-Export-Package: org.openhab.binding.sleepiq,
- org.openhab.binding.sleepiq.handler

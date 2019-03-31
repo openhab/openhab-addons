@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.nikohomecontrol.internal.protocol;
 
@@ -25,18 +29,18 @@ import org.slf4j.LoggerFactory;
  * The IP-address from the Niko Home Control IP-interface is then extracted from the response packet.
  * The data content of the response packet is used as a unique identifier for the bridge.
  *
- * @author Mark Herwege
+ * @author Mark Herwege - Initial Contribution
  */
 public final class NikoHomeControlDiscover {
 
-    private Logger logger = LoggerFactory.getLogger(NikoHomeControlDiscover.class);
+    private final Logger logger = LoggerFactory.getLogger(NikoHomeControlDiscover.class);
 
     private InetAddress addr;
     private String nhcBridgeId;
 
-    public NikoHomeControlDiscover() throws IOException {
+    public NikoHomeControlDiscover(String broadcast) throws IOException {
         final byte[] discoverBuffer = { (byte) 0x44 };
-        final InetAddress broadcastAddr = InetAddress.getByName("255.255.255.255");
+        final InetAddress broadcastAddr = InetAddress.getByName(broadcast);
         final int broadcastPort = 10000;
 
         DatagramPacket discoveryPacket = new DatagramPacket(discoverBuffer, discoverBuffer.length, broadcastAddr,

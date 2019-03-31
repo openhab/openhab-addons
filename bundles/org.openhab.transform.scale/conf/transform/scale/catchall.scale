@@ -1,0 +1,5 @@
+[-8..10[=low
+[10..20[=middle
+[20..300[=high
+[300..]=extreme
+[..]=catchall

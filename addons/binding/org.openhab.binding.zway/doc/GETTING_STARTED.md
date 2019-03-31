@@ -3,21 +3,10 @@
 # Prepare Z-Way Server
 
 1. [Download](https://razberry.z-wave.me/z-way-server/) Z-Way v2.2.3 or newer (further information about installing Z-Way you can find [here](http://razberry.z-wave.me/index.php?id=24))
-2. Install openHAB Connector
-    - via "ZWave.Me App Store"
-    - via Git
-
-    ```shell
-    cd /opt/z-way-server/automation/userModules
-    git clone https://github.com/pathec/ZWay-OpenHABConnector.git OpenHABConnector
-    service z-way-server restart
-    ```
-
-3. Instantiate the app once (under Configuration - Apps - Local Apps). Important: Change the selection from "Featured Apps" to "All Apps" to make the app visible. It is not necessary to make the configuration manually.
 
 # Prepare openHAB
 
-1. [Download](http://www.openhab.org/getting-started/downloads.html) openHAB 2 (further information about installing openHAB you can find [here](http://docs.openhab.org/installation/index.html))
+1. [Download](https://www.openhab.org/download/) openHAB 2 (further information about installing openHAB you can find [here](https://www.openhab.org/docs/installation/))
 2. Install Z-Way Binding
     - via Extension Manager
     - via Download
@@ -52,11 +41,6 @@ Open the *Configuration* - *Things* and select Z-Way Server
 
 Change configuration: In order for the Observer mechanism works, the IP address, port and protocol of both systems are required.
 
-- **openHAB**
-    - **openHAB Alias** by default, the alias is generated
-    - **IP address** (default: localhost)
-    - **port** (default: 8080)
-    - **protocol** (default: http)
 - **Z-Way Server**
     - **IP address** (default: localhost)
     - **port** (default: 8083)
@@ -65,8 +49,8 @@ Change configuration: In order for the Observer mechanism works, the IP address,
     - **password** must be set (no default value)
 - **options**
     - **polling interval** (default: 3600) in seconds
-    - **Observer mechanism** (default: active)
 
+**The following picture is no longer up to date!**
 ![openHAB Thing settings](images/getting-started/06-Bridge-settings.png)
 
 ## Create and configure Z-Way Devices

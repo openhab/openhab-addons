@@ -1,0 +1,13 @@
+{
+    "smartlife.iot.smartbulb.lightingservice": {
+        "transition_light_state": {
+            "on_off": 1,
+            "mode": "normal",
+            "hue": 120,
+            "saturation": 65,
+            "color_temp": 0,
+            "brightness": 10,
+            "err_code": 0
+        }
+    }
+}

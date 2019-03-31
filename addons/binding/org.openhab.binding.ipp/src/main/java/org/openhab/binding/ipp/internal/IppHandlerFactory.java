@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.ipp.internal;
 
-import static org.openhab.binding.ipp.IppBindingConstants.PRINTER_THING_TYPE;
+import static org.openhab.binding.ipp.internal.IppBindingConstants.PRINTER_THING_TYPE;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
@@ -17,8 +21,10 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.ipp.IppBindingConstants;
-import org.openhab.binding.ipp.handler.IppPrinterHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.ipp.internal.handler.IppPrinterHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,11 +34,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tobias Braeutigam - Initial contribution
  */
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.ipp")
 public class IppHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(IppHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(IppHandlerFactory.class);
 
     private DiscoveryServiceRegistry discoveryServiceRegistry;
 
+    @Reference
     protected void setDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
         this.discoveryServiceRegistry = discoveryServiceRegistry;
     }

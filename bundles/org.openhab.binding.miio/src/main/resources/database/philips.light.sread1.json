@@ -1,0 +1,88 @@
+{
+	"deviceMapping": {
+		"id": [
+			"philips.light.sread1"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "bright",
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_bright",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "ambstatus",
+				"friendlyName": "Ambient Power",
+				"channel": "ambientPower",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "enable_amb",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "ambvalue",
+				"friendlyName": "Ambient Brightness",
+				"channel": "ambientBrightness",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_amb_bright",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "dvalue",
+				"friendlyName": "Ambient Illumination",
+				"channel": "illumination",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
+			},
+			{
+				"property": "eyecare",
+				"friendlyName": "Eyecare",
+				"channel": "eyecare",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_eyecare",
+						"parameterType": "ONOFF"
+					}
+				]
+			}
+		]
+	}
+}

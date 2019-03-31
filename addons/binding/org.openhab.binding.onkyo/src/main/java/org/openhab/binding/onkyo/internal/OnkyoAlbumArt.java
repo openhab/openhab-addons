@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.onkyo.internal;
 
@@ -15,9 +19,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OnkyoAlbumArt {
 
-    private Logger logger = LoggerFactory.getLogger(OnkyoAlbumArt.class);
+    private final Logger logger = LoggerFactory.getLogger(OnkyoAlbumArt.class);
 
     private enum State {
         INVALID,
@@ -49,7 +53,7 @@ public class OnkyoAlbumArt {
     private StringBuilder albumArtStringBuilder = new StringBuilder();
     private ImageType imageType = ImageType.UNKNOWN;
     private State state = State.NOTSTARTED;
-    String coverArtUrl = null;
+    private String coverArtUrl;
 
     public boolean isAlbumCoverTransferStarted() {
         return state == State.STARTED;
@@ -67,7 +71,6 @@ public class OnkyoAlbumArt {
     }
 
     public void addFrame(String data) {
-
         if (data.length() <= 2) {
             return;
         }
@@ -145,16 +148,16 @@ public class OnkyoAlbumArt {
             switch (imageType) {
                 case BMP:
                 case JPEG:
-                    data = DatatypeConverter.parseHexBinary(albumArtStringBuilder.toString());
+                    data = HexUtils.hexToBytes(albumArtStringBuilder.toString());
                     break;
                 case URL:
                     data = downloadAlbumArt(coverArtUrl);
-                    //Workaround firmware bug providing incorrect headers causing them to be seen as body instead.
+                    // Workaround firmware bug providing incorrect headers causing them to be seen as body instead.
                     if (data != null) {
                         int bodyLength = data.length;
                         int i = new String(data).indexOf("image/");
                         if (i > 0) {
-                            while (i < bodyLength && data[i] != '\r') {
+                            while (i < bodyLength && (data[i] != '\r' && data[i] != '\n')) {
                                 i++;
                             }
                             while (i < bodyLength && (data[i] == '\r' || data[i] == '\n')) {
@@ -213,5 +216,23 @@ public class OnkyoAlbumArt {
         }
 
         return it;
+    }
+
+    public @NonNull String getAlbumArtMimeType() {
+        String mimeType = "";
+        switch (imageType) {
+            case BMP:
+                mimeType = "image/bmp";
+                break;
+            case JPEG:
+                mimeType = "image/jpeg";
+                break;
+            case UNKNOWN:
+            case URL:
+            case NONE:
+            default:
+                break;
+        }
+        return mimeType;
     }
 }

@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.loxone.internal.core;
 
@@ -32,10 +36,11 @@ class LxWsStateUpdateEvent {
      *            true if this event updates double value, false if it updates text message
      * @param data
      *            buffer with binary message received from Miniserver
-     * @param offset
+     * @param offsetParam
      *            offset in buffer where event is expected
      */
-    LxWsStateUpdateEvent(boolean isValueEvent, byte data[], int offset) throws IndexOutOfBoundsException {
+    LxWsStateUpdateEvent(boolean isValueEvent, byte data[], int offsetParam) throws IndexOutOfBoundsException {
+        int offset = offsetParam;
         uuid = new LxUuid(data, offset);
         offset += 16;
 

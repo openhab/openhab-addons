@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.opensprinkler.internal.api;
 
@@ -60,13 +64,11 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         this.password = password;
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean isConnected() {
         return connectionOpen;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void openConnection() throws Exception {
         try {
@@ -82,7 +84,6 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         connectionOpen = true;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void closeConnection() throws Exception {
         connectionOpen = false;
@@ -95,7 +96,6 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public void openStation(int station) throws Exception {
         if (station < 0 || station >= numberOfStations) {
@@ -111,7 +111,6 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public void closeStation(int station) throws Exception {
         if (station < 0 || station >= numberOfStations) {
@@ -126,7 +125,6 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean isStationOpen(int station) throws Exception {
         String returnContent;
@@ -146,7 +144,6 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         return returnContent != null && returnContent.equals("1");
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean isRainDetected() throws Exception {
         String returnContent;
@@ -175,7 +172,6 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     }
 
-    /** {@inheritDoc} */
     @Override
     public int getNumberOfStations() throws Exception {
         String returnContent;
@@ -192,7 +188,6 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         return this.numberOfStations;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int getFirmwareVersion() throws Exception {
         String returnContent;

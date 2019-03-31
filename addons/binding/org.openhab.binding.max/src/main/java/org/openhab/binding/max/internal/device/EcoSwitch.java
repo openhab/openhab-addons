@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.max.internal.device;
 
@@ -13,19 +17,12 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 /**
  * MAX! EcoSwitch.
  *
- * @author Marcel Verpaalen
- * @since 1.6.0
+ * @author Marcel Verpaalen - Initial contribution
  */
-
 public class EcoSwitch extends ShutterContact {
 
-    private OnOffType ecoMode = null;
+    private OnOffType ecoMode;
 
-    /**
-     * Class constructor.
-     *
-     * @param c
-     */
     public EcoSwitch(DeviceConfiguration c) {
         super(c);
     }

@@ -1,19 +1,23 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.io.openhabcloud.internal;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.net.MalformedURLException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -583,10 +587,17 @@ public class CloudClient {
         public void onComplete(Result result) {
             // Remove this request from list of running requests
             runningRequests.remove(mRequestId);
-            if (result.isFailed() && result.getResponse().getStatus() != HttpStatus.OK_200) {
-                logger.warn("Jetty request {} failed: {}", mRequestId, result.getFailure().getMessage());
-                logger.warn("{}", result.getRequestFailure().getMessage());
-                logger.warn("{}", result.getResponseFailure().getMessage());
+            if ((result != null && result.isFailed())
+                    && (result.getResponse() != null && result.getResponse().getStatus() != HttpStatus.OK_200)) {
+                if (result.getFailure() != null) {
+                    logger.warn("Jetty request {} failed: {}", mRequestId, result.getFailure().getMessage());
+                }
+                if (result.getRequestFailure() != null) {
+                    logger.warn("Request Failure: {}", result.getRequestFailure().getMessage());
+                }
+                if (result.getResponseFailure() != null) {
+                    logger.warn("Response Failure: {}", result.getResponseFailure().getMessage());
+                }
             }
 
             /**
@@ -594,18 +605,14 @@ public class CloudClient {
              * can receive responseFinished before the headers or content are received and I
              * cannot find another workaround to prevent it.
              */
-            ThreadPoolManager.getScheduledPool(THREADPOOL_OPENHABCLOUD).schedule(new Runnable() {
-
-                @Override
-                public void run() {
-                    JSONObject responseJson = new JSONObject();
-                    try {
-                        responseJson.put("id", mRequestId);
-                        socket.emit("responseFinished", responseJson);
-                        logger.debug("Finished responding to request {}", mRequestId);
-                    } catch (JSONException e) {
-                        logger.error("{}", e.getMessage());
-                    }
+            ThreadPoolManager.getScheduledPool(THREADPOOL_OPENHABCLOUD).schedule(() -> {
+                JSONObject responseJson = new JSONObject();
+                try {
+                    responseJson.put("id", mRequestId);
+                    socket.emit("responseFinished", responseJson);
+                    logger.debug("Finished responding to request {}", mRequestId);
+                } catch (JSONException e) {
+                    logger.error("{}", e.getMessage());
                 }
             }, 1, TimeUnit.MILLISECONDS);
         }
