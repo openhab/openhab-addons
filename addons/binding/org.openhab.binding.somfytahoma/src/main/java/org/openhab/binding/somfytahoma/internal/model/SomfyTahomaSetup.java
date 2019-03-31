@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.somfytahoma.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import java.util.ArrayList;
 
 /**
@@ -20,6 +22,7 @@ import java.util.ArrayList;
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@NonNullByDefault
 public class SomfyTahomaSetup {
 
     private ArrayList<SomfyTahomaDevice> devices;

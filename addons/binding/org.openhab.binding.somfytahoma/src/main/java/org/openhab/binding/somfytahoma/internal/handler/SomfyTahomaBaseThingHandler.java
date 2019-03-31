@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.*;
 import org.eclipse.smarthome.core.thing.*;
@@ -34,6 +35,7 @@ import java.util.List;
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@NonNullByDefault
 public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaBaseThingHandler.class);

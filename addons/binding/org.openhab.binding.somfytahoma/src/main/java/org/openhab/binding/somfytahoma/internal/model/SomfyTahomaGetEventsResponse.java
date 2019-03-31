@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.somfytahoma.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import java.util.Collection;
 import java.util.Collections;
 
@@ -21,6 +23,7 @@ import java.util.Collections;
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@NonNullByDefault
 public class SomfyTahomaGetEventsResponse {
 
     Collection<SomfyTahomaEvent> events = Collections.emptyList();

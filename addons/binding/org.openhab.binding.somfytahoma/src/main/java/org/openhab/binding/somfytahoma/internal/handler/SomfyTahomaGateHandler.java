@@ -20,37 +20,43 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.HANDLE_STATE;
-
 import java.util.HashMap;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+
 /**
- * The {@link SomfyTahomaWindowHandleHandler} is responsible for handling commands,
- * which are sent to one of the channels of the window handle thing.
+ * The {@link SomfyTahomaGateHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the gate thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaWindowHandleHandler extends SomfyTahomaBaseThingHandler {
+public class SomfyTahomaGateHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaWindowHandleHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaGateHandler.class);
 
-    public SomfyTahomaWindowHandleHandler(Thing thing) {
+    public SomfyTahomaGateHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {{
-                put(HANDLE_STATE, "core:ThreeWayHandleDirectionState");
-            }};
+        stateNames = new HashMap<String, String>() {
+            {
+                put(GATE_STATE, "core:OpenClosedPedestrianState");
+            }
+        };
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
-        if (!HANDLE_STATE.equals(channelUID.getId())) {
-            return;
-        }
-
         if (RefreshType.REFRESH.equals(command)) {
             updateChannelState(channelUID);
+        } else {
+            if (GATE_COMMAND.equals(channelUID.getId())) {
+                sendCommand(getGateCommand(command.toString().toLowerCase()), "[]");
+            }
         }
+    }
+
+    private String getGateCommand(String command) {
+        return "pedestrian".equals(command) ? COMMAND_SET_PEDESTRIANPOSITION : command;
     }
 }

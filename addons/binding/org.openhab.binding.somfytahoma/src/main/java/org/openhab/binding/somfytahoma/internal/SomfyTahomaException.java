@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.somfytahoma.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SomfyTahomaException} represents an exception in the response of
  * the TahomaLink cloud service.
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@NonNullByDefault
 public class SomfyTahomaException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
