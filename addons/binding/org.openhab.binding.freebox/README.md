@@ -39,7 +39,7 @@ The _server_ bridge thing requires the following configuration parameters:
 | Refresh Interval         | refreshInterval | The refresh interval in seconds which is used to poll given Freebox Server.| false | 30 |
 | Use only HTTP API        | useOnlyHttp     | Use HTTP API even if HTTPS is available.                | false    | false   |
 
-If the parameter _ipAddress_ is not set, the binding will use the default address used by Free to access your Freebox Server (mafreebox.freebox.fr). The bridge thing will initialize only if a valid application token (parameter _appToken_) is filled.
+If the parameter _fqdn_ is not set, the binding will use the default address used by Free to access your Freebox Server (mafreebox.freebox.fr). The bridge thing will initialize only if a valid application token (parameter _appToken_) is filled.
 
 ### Phone
 
