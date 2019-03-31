@@ -99,7 +99,7 @@ public class AVMFritzConfiguration {
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("IP", getIpAddress()).append("port", getPort())
-                .append("proto", getProtocol()).append("user", getUser()).append("password", getPassword())
+                .append("proto", getProtocol()).append("user", getUser())
                 .append("pollingInterval", getPollingInterval()).append("asyncTimeout", getAsyncTimeout())
                 .append("syncTimeout", getSyncTimeout()).toString();
     }

@@ -54,7 +54,7 @@ public class FritzAhaContentExchange extends BufferingResponseListener
      */
     @Override
     public void onSuccess(Response response) {
-        logger.debug("HTTP response {}", response.getStatus());
+        logger.debug("HTTP response: {}", response.getStatus());
     }
 
     /**
@@ -62,7 +62,7 @@ public class FritzAhaContentExchange extends BufferingResponseListener
      */
     @Override
     public void onFailure(Response response, Throwable failure) {
-        logger.debug("{}", failure.getLocalizedMessage());
+        logger.debug("response failed: {}", failure.getLocalizedMessage());
     }
 
     /**
