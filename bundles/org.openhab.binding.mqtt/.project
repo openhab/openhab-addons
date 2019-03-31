@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.openhab.binding.airquality</name>
+	<name>org.openhab.binding.mqtt</name>
 	<comment></comment>
 	<projects>
 	</projects>
