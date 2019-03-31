@@ -62,7 +62,6 @@
 /addons/binding/org.openhab.binding.systeminfo/ @svilenvul
 /addons/binding/org.openhab.binding.systeminfo.test/ @svilenvul
 /addons/binding/org.openhab.binding.tado/ @dfrommi
-/addons/binding/org.openhab.binding.urtsi/ @OLibutzki
 /addons/binding/org.openhab.binding.wemo/ @hmerk
 /addons/binding/org.openhab.binding.wemo.test/ @hmerk
 /addons/binding/org.openhab.binding.yamahareceiver/ @davidgraeff @zarusz
@@ -191,6 +190,7 @@
 /bundles/org.openhab.binding.tplinksmarthome/ @Hilbrand
 /bundles/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /bundles/org.openhab.binding.unifi/ @mgbowman
+/bundles/org.openhab.binding.urtsi/ @OLibutzki
 /bundles/org.openhab.binding.valloxmv/ @bjoernbrings
 /bundles/org.openhab.binding.velbus/ @cedricboon
 /bundles/org.openhab.binding.vitotronic/ @steand
