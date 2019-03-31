@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.somfytahoma.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SomfyTahomaStatusResponse} holds information about
  * response to getting gateway's status command.
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@NonNullByDefault
 public class SomfyTahomaStatusResponse {
 
     private SomfyTahomaStatus connectivity;

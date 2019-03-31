@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.somfytahoma.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SomfyTahomaLoginResponse} holds information about login
  * response to your TahomaLink account.
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@NonNullByDefault
 public class SomfyTahomaLoginResponse {
 
     private boolean success;

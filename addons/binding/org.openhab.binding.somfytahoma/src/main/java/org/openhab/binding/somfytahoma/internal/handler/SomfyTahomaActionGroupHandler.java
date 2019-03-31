@@ -14,6 +14,7 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.EXECUTE_ACTION;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@NonNullByDefault
 public class SomfyTahomaActionGroupHandler extends SomfyTahomaBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaActionGroupHandler.class);
