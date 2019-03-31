@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -29,6 +30,7 @@ import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstan
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@NonNullByDefault
 public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaGatewayHandler.class);
