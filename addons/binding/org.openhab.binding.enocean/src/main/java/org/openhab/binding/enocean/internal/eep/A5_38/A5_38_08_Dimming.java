@@ -16,15 +16,22 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANN
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelDimmerConfig;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
 /**
+ * This class tries to combine the classic EEP A5-38-08 CMD 0x02 dimming with the Eltako interpretation of this EEP.
+ * It is doing it by channel config parameter "eltakoDimmer". The differences are:
+ * <li>Dimming value 0-100%: standard 0-255, Eltako 0-100</li>
+ * <li>Store value: standard DB0.1, Eltako DB0.2</li>
  *
  * @author Daniel Weber - Initial contribution
  */
@@ -46,7 +53,7 @@ public class A5_38_08_Dimming extends _4BSMessage {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command outputCommand,
             State currentState, Configuration config) {
-        switch (channelTypeId) {
+        switch (channelId) {
             case CHANNEL_DIMMER:
                 byte dimmValue;
 
@@ -54,6 +61,12 @@ public class A5_38_08_Dimming extends _4BSMessage {
                     dimmValue = ((DecimalType) outputCommand).byteValue();
                 } else if (outputCommand instanceof OnOffType) {
                     dimmValue = ((OnOffType) outputCommand == OnOffType.ON) ? Switch100Percent : Zero;
+                } else if (outputCommand instanceof IncreaseDecreaseType) {
+                    dimmValue = ((IncreaseDecreaseType) outputCommand == IncreaseDecreaseType.INCREASE)
+                            ? Switch100Percent
+                            : Zero;
+                } else if (outputCommand instanceof UpDownType) {
+                    dimmValue = ((UpDownType) outputCommand == UpDownType.UP) ? Switch100Percent : Zero;
                 } else {
                     throw new IllegalArgumentException(outputCommand.toFullString() + " is no valid dimming command.");
                 }
@@ -63,17 +76,17 @@ public class A5_38_08_Dimming extends _4BSMessage {
                 boolean eltakoDimmer = (c.eltakoDimmer == null) ? true : c.eltakoDimmer;
                 boolean storeValue = (c.storeValue == null) ? false : c.storeValue;
 
-                byte storeByte = 0x00;
+                byte storeByte = 0x00; // "Store final value" (standard) vs. "block value" (Eltako)
 
                 if (!eltakoDimmer) {
-                    dimmValue = (byte) (dimmValue * 2.55);
+                    dimmValue *= 2.55; // 0-100% = 0-255
 
                     if (storeValue) {
-                        storeByte = 0x02;
+                        storeByte = 0x02; // set DB0.1
                     }
                 } else {
                     if (storeValue) {
-                        storeByte = 0x04;
+                        storeByte = 0x04; // set DB0.2
                     }
                 }
 
@@ -88,11 +101,30 @@ public class A5_38_08_Dimming extends _4BSMessage {
 
     @Override
     public State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
+        switch (channelId) {
+            case CHANNEL_DIMMER:
+                if (!getBit(0, 0)) {
+                    return new PercentType(0);
+                } else {
+                    int dimmValue = getDB_2Value();
 
-        if (getDB_0() == (TeachInBit | SwitchOff)) {
-            return new PercentType(0);
-        } else {
-            return new PercentType(getDB_2Value());
+                    EnOceanChannelDimmerConfig c = config.as(EnOceanChannelDimmerConfig.class);
+
+                    boolean eltakoDimmer = (c.eltakoDimmer == null) ? true : c.eltakoDimmer;
+
+                    if (!eltakoDimmer) {
+                        if (getBit(0, 2)) {
+                            // relative value
+                        } else {
+                            // absolute value
+                            dimmValue /= 2.55;
+                        }
+                    }
+
+                    return new PercentType(dimmValue);
+                }
         }
+
+        return UnDefType.UNDEF;
     }
 }
