@@ -1009,7 +1009,7 @@
 
     <feature name="openhab-transformation-javascript" description="Javascript Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="75">mvn:org.openhab.transform/org.openhab.transform.javascript/${project.version}</bundle>
+        <bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.javascript/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-transformation-jinja" description="Jinja Transformation" version="${project.version}">
