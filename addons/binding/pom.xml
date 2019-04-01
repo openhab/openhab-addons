@@ -59,7 +59,6 @@
     <module>org.openhab.binding.ntp.test</module>
     <module>org.openhab.binding.onewiregpio</module>
     <module>org.openhab.binding.onkyo</module>
-    <module>org.openhab.binding.opensprinkler</module>
     <module>org.openhab.binding.orvibo</module>
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.sleepiq</module>
