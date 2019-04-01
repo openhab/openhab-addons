@@ -209,7 +209,7 @@ public class LGHomBotHandler extends BaseThingHandler {
      * Sets up a refresh timer (using the scheduler) with the given interval.
      *
      * @param initialWaitTime The delay before the first refresh. Maybe 0 to immediately
-     *                            initiate a refresh.
+     *            initiate a refresh.
      */
     private void setupRefreshTimer(int initialWaitTime) {
         if (refreshTimer != null) {
@@ -376,20 +376,28 @@ public class LGHomBotHandler extends BaseThingHandler {
                         }
                         break;
                     case "JSON_BATTPERC":
-                        DecimalType battery = DecimalType.valueOf(state);
-                        if (!battery.equals(currentBattery)) {
-                            currentBattery = battery;
-                            channel = new ChannelUID(getThing().getUID(), CHANNEL_BATTERY);
-                            updateState(channel, battery);
+                        try {
+                            DecimalType battery = DecimalType.valueOf(state);
+                            if (!battery.equals(currentBattery)) {
+                                currentBattery = battery;
+                                channel = new ChannelUID(getThing().getUID(), CHANNEL_BATTERY);
+                                updateState(channel, battery);
+                            }
+                        } catch (NumberFormatException e) {
+                            // Wrong format, ignore
                         }
                         break;
                     case "CPU_IDLE":
                         if (isLinked(CHANNEL_CPU_LOAD)) {
-                            DecimalType cpuLoad = new DecimalType(100 - Double.valueOf(state).longValue());
-                            if (!cpuLoad.equals(currentCPULoad)) {
-                                currentCPULoad = cpuLoad;
-                                channel = new ChannelUID(getThing().getUID(), CHANNEL_CPU_LOAD);
-                                updateState(channel, cpuLoad);
+                            try {
+                                DecimalType cpuLoad = new DecimalType(100 - Double.valueOf(state).longValue());
+                                if (!cpuLoad.equals(currentCPULoad)) {
+                                    currentCPULoad = cpuLoad;
+                                    channel = new ChannelUID(getThing().getUID(), CHANNEL_CPU_LOAD);
+                                    updateState(channel, cpuLoad);
+                                }
+                            } catch (NumberFormatException e) {
+                                // Wrong format, ignore
                             }
                         }
                         break;
