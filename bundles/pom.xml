@@ -139,6 +139,7 @@
     <module>org.openhab.binding.yeelight</module>
     <module>org.openhab.extensionservice.marketplace</module>
     <module>org.openhab.extensionservice.marketplace.automation</module>
+    <module>org.openhab.io.javasound</module>
     <module>org.openhab.io.mqttembeddedbroker</module>
     <module>org.openhab.io.webaudio</module>
     <module>org.openhab.persistence.mapdb</module>
