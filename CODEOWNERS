@@ -24,7 +24,6 @@
 /addons/binding/org.openhab.binding.feed.test/ @svilenvul
 /addons/binding/org.openhab.binding.ftpupload/ @paulianttila
 /addons/binding/org.openhab.binding.groheondus/ @FlorianSW
-/addons/binding/org.openhab.binding.hdpowerview/ @beowulfe
 /addons/binding/org.openhab.binding.hue/ @cweitkamp
 /addons/binding/org.openhab.binding.hue.test/ @cweitkamp
 /addons/binding/org.openhab.binding.ihc/ @paulianttila
@@ -118,6 +117,7 @@
 /bundles/org.openhab.binding.gpstracker/ @gbicskei
 /bundles/org.openhab.binding.harmonyhub/ @digitaldan
 /bundles/org.openhab.binding.hdanywhere/ @kgoderis
+/bundles/org.openhab.binding.hdpowerview/ @beowulfe
 /bundles/org.openhab.binding.helios/ @kgoderis
 /bundles/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
 /bundles/org.openhab.binding.hyperion/ @tavalin

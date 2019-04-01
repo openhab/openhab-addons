@@ -11,3 +11,11 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab2-addons
+
+== Third-party Content
+
+jcifs
+* License: LGPL v2.1 License
+* License: BSD License
+* Project: https://www.jcifs.org
+* Source:  https://www.jcifs.org/src/src/jcifs
