@@ -14,7 +14,8 @@ package org.openhab.binding.mcp23017.internal;
 
 import static org.openhab.binding.mcp23017.internal.Mcp23017BindingConstants.THING_TYPE_MCP23017;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -26,8 +27,6 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-
 /**
  * The {@link Mcp23017HandlerFactory} is responsible for creating thing
  * handlers.
@@ -37,7 +36,7 @@ import com.google.common.collect.Lists;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.mcp23017")
 public class Mcp23017HandlerFactory extends BaseThingHandlerFactory {
 
-    private static final List<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Lists.newArrayList(THING_TYPE_MCP23017);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MCP23017);
     private final Logger logger = LoggerFactory.getLogger(Mcp23017HandlerFactory.class);
 
     @Override
