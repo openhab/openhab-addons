@@ -45,7 +45,7 @@ The *server* bridge thing requires the following configuration parameters:
 | Enable Network Interface Discovery | discoverNetInterface    | Enable the discovery of network interface things.                           | false    | true                 |
 | Enable AirPlay Receiver Discovery  | discoverAirPlayReceiver | Enable the discovery of AirPlay receiver things.                            | false    | true                 |
 
-If the parameter *ipAddress* is not set, the binding will use the default address used by Free to access your Freebox Server (mafreebox.freebox.fr).
+If the parameter *fqdn* is not set, the binding will use the default address used by Free to access your Freebox Server (mafreebox.freebox.fr).
 The bridge thing will initialize only if a valid application token (parameter *appToken*) is filled.
 
 ### Phone
