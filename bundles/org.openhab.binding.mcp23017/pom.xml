@@ -12,4 +12,19 @@
 
   <name>openHAB Add-ons :: Bundles :: mcp23017 Binding</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.pi4j</groupId>
+      <artifactId>pi4j-core</artifactId>
+      <version>1.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.pi4j</groupId>
+      <artifactId>pi4j-gpio-extension</artifactId>
+      <version>1.2</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
 </project>
