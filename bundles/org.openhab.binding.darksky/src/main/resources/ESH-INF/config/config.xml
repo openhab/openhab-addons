@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<!-- Config for Dark Sky Binding -->
+	<config-description uri="bridge-type:darksky:weather-api">
+		<parameter name="apikey" type="text" required="true">
+			<context>password</context>
+			<label>API Key</label>
+			<description>API key to access the Dark Sky API.</description>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="10" unit="min">
+			<label>Refresh Interval</label>
+			<description>Specifies the refresh interval (in minutes).</description>
+			<default>60</default>
+		</parameter>
+		<parameter name="language" type="text">
+			<label>Language</label>
+			<description>Language to be used by the Dark Sky API.</description>
+			<options>
+				<option value="ar">Arabic</option>
+				<option value="az">Azerbaijani</option>
+				<option value="be">Belarusian</option>
+				<option value="bg">Bulgarian</option>
+				<option value="bs">Bosnian</option>
+				<option value="ca">Catalan</option>
+				<option value="cs">Czech</option>
+				<option value="da">Danish</option>
+				<option value="de">German</option>
+				<option value="el">Greek</option>
+				<option value="en">English</option>
+				<option value="es">Spanish</option>
+				<option value="et">Estonian</option>
+				<option value="fi">Finnish</option>
+				<option value="fr">French</option>
+				<option value="he">Hebrew</option>
+				<option value="hr">Croatian</option>
+				<option value="hu">Hungarian</option>
+				<option value="id">Indonesian</option>
+				<option value="is">Icelandic</option>
+				<option value="it">Italian</option>
+				<option value="ja">Japanese</option>
+				<option value="ka">Georgian</option>
+				<option value="ko">Korean</option>
+				<option value="kw">Cornish</option>
+				<option value="lv">Latvian</option>
+				<option value="nb">Norwegian Bokmål</option>
+				<option value="nl">Dutch</option>
+				<option value="no">Norwegian Bokmål (alias for 'nb')</option>
+				<option value="pl">Polish</option>
+				<option value="pt">Portuguese</option>
+				<option value="ro">Romanian</option>
+				<option value="ru">Russian</option>
+				<option value="sk">Slovak</option>
+				<option value="sl">Slovenian</option>
+				<option value="sr">Serbian</option>
+				<option value="sv">Swedish</option>
+				<option value="tet">Tetum</option>
+				<option value="tr">Turkish</option>
+				<option value="uk">Ukrainian</option>
+				<option value="x-pig-latin">Igpay Atinlay</option>
+				<option value="zh">Simplified Chinese</option>
+				<option value="zh-tw">Traditional Chinese</option>
+			</options>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:darksky:weather-and-forecast">
+		<parameter name="location" type="text" required="true">
+			<context>location</context>
+			<label>Location of Weather</label>
+			<description>Location of weather in geographical coordinates (latitude/longitude/altitude).</description>
+		</parameter>
+		<parameter name="forecastHours" type="integer" min="0" max="48" step="1">
+			<label>Number of Hours</label>
+			<description>Number of hours for hourly forecast.</description>
+			<default>24</default>
+		</parameter>
+		<parameter name="forecastDays" type="integer" min="0" max="8" step="1">
+			<label>Number of Days</label>
+			<description>Number of days for daily forecast.</description>
+			<default>8</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:darksky:sunrise-sunset-event">
+		<parameter name="offset" type="integer" min="-1440" max="1440" unit="min">
+			<label>Offset</label>
+			<description>Moves an event forward or backward (in minutes).</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="earliest" type="text" pattern="^([0-1][0-9]|2[0-3])(:[0-5][0-9])$">
+			<label>Earliest</label>
+			<description>The earliest time of the day for the event (in hh:mm).</description>
+		</parameter>
+		<parameter name="latest" type="text" pattern="^([0-1][0-9]|2[0-3])(:[0-5][0-9])$">
+			<label>Latest</label>
+			<description>The latest time of the day for the event (in hh:mm).</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
