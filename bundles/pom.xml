@@ -149,6 +149,7 @@
     <module>org.openhab.transform.xslt</module>
     <module>org.openhab.voice.googletts</module>
     <module>org.openhab.voice.mactts</module>
+    <module>org.openhab.voice.marytts</module>
     <module>org.openhab.voice.picotts</module>
     <module>org.openhab.voice.voicerss</module>
   </modules>

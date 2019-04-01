@@ -1,17 +1,21 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.openhab.voice</groupId>
-    <artifactId>pom</artifactId>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
     <version>2.5.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.voice.marytts</artifactId>
-  <packaging>eclipse-plugin</packaging>
 
-  <name>Mary Text-to-Speech</name>
+  <name>openHAB Add-ons :: Bundles :: Mary Text-to-Speech</name>
+
+  <properties>
+    <bnd.importpackage>com.ibm.uvm.tools;resolution:=optional,com.mysql.jdbc;resolution:=optional,com.sun.jdmk.comm;resolution:=optional,gnu.trove;resolution:=optional,javax.jms;resolution:=optional,javax.speech*;resolution:=optional,Lgov.noaa.pmel.util;resolution:=optional,net.didion.jwnl*;resolution:=optional,org.apache.http*;resolution:=optional,org.apache.xerces.impl*;resolution:=optional,org.hsqldb;resolution:=optional,org.jdesktop.layout*;resolution:=optional,org.postgresql;resolution:=optional</bnd.importpackage>
+  </properties>
 
   <build>
 
@@ -21,6 +25,31 @@
           <groupId>com.savage7.maven.plugins</groupId>
           <artifactId>maven-external-dependency-plugin</artifactId>
           <version>0.5</version>
+        </plugin>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>com.savage7.maven.plugins</groupId>
+                    <artifactId>maven-external-dependency-plugin</artifactId>
+                    <versionRange>[0.5,)</versionRange>
+                    <goals>
+                      <goal>resolve-external</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -173,4 +202,5 @@
     </plugins>
 
   </build>
+
 </project>
