@@ -1006,6 +1006,13 @@
 
     <!-- transformation -->
 
+    <feature name="openhab-transformation-bin2json" description="Binary To JSON Transformation" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature prerequisite="true">wrap</feature>
+        <bundle dependency="true">wrap:mvn:com.igormaznitsa/jbbp/1.4.1$Bundle-Name=Java%20Binary%20Block%20Parser&amp;Bundle-SymbolicName=com.igormaznitsa.jbbp&amp;Bundle-Version=1.4.1</bundle>
+        <bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.bin2json/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-transformation-exec" description="Exec Transformation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.exec/${project.version}</bundle>
