@@ -36,7 +36,6 @@
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
 /addons/binding/org.openhab.binding.max/ @marcelrv
 /addons/binding/org.openhab.binding.max.test/ @marcelrv
-/addons/binding/org.openhab.binding.mcp23017/ @aogorek
 /addons/binding/org.openhab.binding.minecraft/ @ibaton
 /addons/binding/org.openhab.binding.modbus/ @ssalonen
 /addons/binding/org.openhab.binding.modbus.test/ @ssalonen
@@ -134,6 +133,7 @@
 /bundles/org.openhab.binding.lifx/ @wborn
 /bundles/org.openhab.binding.lirc/ @kabili207
 /bundles/org.openhab.binding.lutron/ @actong
+/bundles/org.openhab.binding.mcp23017/ @aogorek
 /bundles/org.openhab.binding.meteoblue/ @9037568
 /bundles/org.openhab.binding.meteostick/ @cdjackson
 /bundles/org.openhab.binding.miele/ @kgoderis
