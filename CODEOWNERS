@@ -57,7 +57,6 @@
 /addons/binding/org.openhab.binding.sleepiq/ @syphr42
 /addons/binding/org.openhab.binding.smartmeter/ @msteigenberger
 /addons/binding/org.openhab.binding.smartmeter.test/ @msteigenberger
-/addons/binding/org.openhab.binding.somfytahoma/ @octa22
 /addons/binding/org.openhab.binding.systeminfo/ @svilenvul
 /addons/binding/org.openhab.binding.systeminfo.test/ @svilenvul
 /addons/binding/org.openhab.binding.tado/ @dfrommi
@@ -176,6 +175,7 @@
 /bundles/org.openhab.binding.smaenergymeter/ @monnimeter
 /bundles/org.openhab.binding.solaredge/ @alexf2015
 /bundles/org.openhab.binding.solarlog/ @johannrichard
+/bundles/org.openhab.binding.somfytahoma/ @octa22
 /bundles/org.openhab.binding.sonos/ @kgoderis @lolodomo
 /bundles/org.openhab.binding.sonyaudio/ @freke
 /bundles/org.openhab.binding.spotify/ @Hilbrand
