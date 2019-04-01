@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="darksky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Dark Sky Binding -->
+	<thing-type id="weather-and-forecast">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="weather-api" />
+		</supported-bridge-type-refs>
+
+		<label>Weather And Forecast</label>
+		<description>Provides current weather and forecast data from the Dark Sky API.</description>
+
+		<channel-groups>
+			<channel-group id="current" typeId="current" />
+			<channel-group id="forecastHours01" typeId="hourlyForecast">
+				<label>1 Hour Forecast</label>
+				<description>This is the weather forecast for the next hour.</description>
+			</channel-group>
+			<channel-group id="forecastHours02" typeId="hourlyForecast">
+				<label>2 Hours Forecast</label>
+				<description>This is the weather forecast in 2 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours03" typeId="hourlyForecast">
+				<label>3 Hours Forecast</label>
+				<description>This is the weather forecast in 3 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours04" typeId="hourlyForecast">
+				<label>4 Hours Forecast</label>
+				<description>This is the weather forecast in 4 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours05" typeId="hourlyForecast">
+				<label>5 Hours Forecast</label>
+				<description>This is the weather forecast in 5 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours06" typeId="hourlyForecast">
+				<label>6 Hours Forecast</label>
+				<description>This is the weather forecast in 6 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours07" typeId="hourlyForecast">
+				<label>7 Hours Forecast</label>
+				<description>This is the weather forecast in 7 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours08" typeId="hourlyForecast">
+				<label>8 Hours Forecast</label>
+				<description>This is the weather forecast in 8 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours09" typeId="hourlyForecast">
+				<label>9 Hours Forecast</label>
+				<description>This is the weather forecast in 9 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours10" typeId="hourlyForecast">
+				<label>10 Hours Forecast</label>
+				<description>This is the weather forecast in 10 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours11" typeId="hourlyForecast">
+				<label>11 Hours Forecast</label>
+				<description>This is the weather forecast in 11 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours12" typeId="hourlyForecast">
+				<label>12 Hours Forecast</label>
+				<description>This is the weather forecast in 12 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours13" typeId="hourlyForecast">
+				<label>13 Hours Forecast</label>
+				<description>This is the weather forecast in 13 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours14" typeId="hourlyForecast">
+				<label>14 Hours Forecast</label>
+				<description>This is the weather forecast in 14 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours15" typeId="hourlyForecast">
+				<label>15 Hours Forecast</label>
+				<description>This is the weather forecast in 15 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours16" typeId="hourlyForecast">
+				<label>16 Hours Forecast</label>
+				<description>This is the weather forecast in 16 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours17" typeId="hourlyForecast">
+				<label>17 Hours Forecast</label>
+				<description>This is the weather forecast in 17 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours18" typeId="hourlyForecast">
+				<label>18 Hours Forecast</label>
+				<description>This is the weather forecast in 18 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours19" typeId="hourlyForecast">
+				<label>19 Hours Forecast</label>
+				<description>This is the weather forecast in 19 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours20" typeId="hourlyForecast">
+				<label>20 Hours Forecast</label>
+				<description>This is the weather forecast in 20 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours21" typeId="hourlyForecast">
+				<label>21 Hours Forecast</label>
+				<description>This is the weather forecast in 21 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours22" typeId="hourlyForecast">
+				<label>22 Hours Forecast</label>
+				<description>This is the weather forecast in 22 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours23" typeId="hourlyForecast">
+				<label>23 Hours Forecast</label>
+				<description>This is the weather forecast in 23 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours24" typeId="hourlyForecast">
+				<label>24 Hours Forecast</label>
+				<description>This is the weather forecast in 24 hours.</description>
+			</channel-group>
+			<channel-group id="forecastToday" typeId="dailyForecast">
+				<label>Todays Forecast</label>
+				<description>This is the weather forecast for today.</description>
+			</channel-group>
+			<channel-group id="forecastTomorrow" typeId="dailyForecast">
+				<label>Tomorrows Forecast</label>
+				<description>This is the weather forecast for tomorrow.</description>
+			</channel-group>
+			<channel-group id="forecastDay2" typeId="dailyForecast">
+				<label>2 Day Forecast</label>
+				<description>This is the weather forecast in two days.</description>
+			</channel-group>
+			<channel-group id="forecastDay3" typeId="dailyForecast">
+				<label>3 Day Forecast</label>
+				<description>This is the weather forecast in three days.</description>
+			</channel-group>
+			<channel-group id="forecastDay4" typeId="dailyForecast">
+				<label>4 Day Forecast</label>
+				<description>This is the weather forecast in four days.</description>
+			</channel-group>
+			<channel-group id="forecastDay5" typeId="dailyForecast">
+				<label>5 Day Forecast</label>
+				<description>This is the weather forecast in five days.</description>
+			</channel-group>
+			<channel-group id="forecastDay6" typeId="dailyForecast">
+				<label>6 Day Forecast</label>
+				<description>This is the weather forecast in six days.</description>
+			</channel-group>
+			<channel-group id="forecastDay7" typeId="dailyForecast">
+				<label>7 Day Forecast</label>
+				<description>This is the weather forecast in seven days.</description>
+			</channel-group>
+		</channel-groups>
+
+		<representation-property>location</representation-property>
+
+		<config-description-ref uri="thing-type:darksky:weather-and-forecast" />
+	</thing-type>
+
+</thing:thing-descriptions>
