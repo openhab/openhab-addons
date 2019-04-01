@@ -73,6 +73,16 @@
 				<label>Ramping time</label>
 				<description>A5-38-08: Ramping Time (in seconds), 0 = no ramping, 1..255 = seconds to 100%; D2-01-01: 0 = switch, 1-3 = timer 1-3, 4 = stop</description>
 			</parameter>
+			<parameter name="eltakoDimmer" type="boolean">
+				<label>Eltako Dimmer</label>
+				<description>True for Eltako dimmer, false otherwise. Defaults to true for compatibility purpose.</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="storeValue" type="boolean">
+				<label>Store value</label>
+				<description>Store final value</description>
+				<default>false</default>
+			</parameter>
 		</config-description>
 	</channel-type>
 
@@ -195,14 +205,14 @@
 		<description>Received Signal Strength Indication</description>
 		<state readOnly="true" />
 	</channel-type>
-	
+
 	<channel-type id="repeatCount" advanced="true">
 		<item-type>Number</item-type>
 		<label>RepeatCount</label>
 		<description>Number of repeaters involved in the transmission of the telegram</description>
 		<state readOnly="true" />
 	</channel-type>
-	
+
 	<channel-type id="lastReceived" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>LastReceived</label>
