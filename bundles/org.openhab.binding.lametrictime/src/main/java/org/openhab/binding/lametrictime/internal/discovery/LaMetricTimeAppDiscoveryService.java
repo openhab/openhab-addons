@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.lametrictime.internal.discovery;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -33,8 +35,6 @@ import org.syphr.lametrictime.api.local.model.Application;
 import org.syphr.lametrictime.api.local.model.Widget;
 import org.syphr.lametrictime.api.model.CoreApps;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonPrimitive;
 
 /**
@@ -45,7 +45,7 @@ import com.google.gson.JsonPrimitive;
  */
 public class LaMetricTimeAppDiscoveryService extends AbstractDiscoveryService {
 
-    private static final Map<String, ThingTypeUID> CORE_APP_THING_TYPE_UIDS = Maps.newHashMap();
+    private static final Map<String, ThingTypeUID> CORE_APP_THING_TYPE_UIDS = new HashMap<>();
     static {
         CORE_APP_THING_TYPE_UIDS.put(CoreApps.clock().getPackageName(),
                 LaMetricTimeBindingConstants.THING_TYPE_CLOCK_APP);
@@ -71,7 +71,7 @@ public class LaMetricTimeAppDiscoveryService extends AbstractDiscoveryService {
      * @param deviceHandler the LaMetric Time device handler (bridge)
      */
     public LaMetricTimeAppDiscoveryService(final LaMetricTimeHandler deviceHandler) {
-        super(Sets.newHashSet(CORE_APP_THING_TYPE_UIDS.values()), TIMEOUT, false);
+        super(new HashSet<>(CORE_APP_THING_TYPE_UIDS.values()), TIMEOUT, false);
         this.deviceHandler = deviceHandler;
     }
 
@@ -102,7 +102,7 @@ public class LaMetricTimeAppDiscoveryService extends AbstractDiscoveryService {
 
                 logger.debug("New app {} instance found with widget ID {}", packageName, widgetId);
 
-                Map<String, Object> properties = Maps.newHashMap();
+                Map<String, Object> properties = new HashMap<>();
                 properties.put(LaMetricTimeAppConfiguration.PACKAGE_NAME, app.getPackageName());
                 properties.put(LaMetricTimeAppConfiguration.WIDGET_ID, widgetId);
                 properties.put(Thing.PROPERTY_VENDOR, app.getVendor());
