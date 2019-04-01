@@ -15,12 +15,15 @@ package org.openhab.binding.tado.internal.discovery;
 import static org.openhab.binding.tado.internal.TadoBindingConstants.*;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -35,8 +38,6 @@ import org.openhab.binding.tado.internal.handler.TadoHomeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableSet;
-
 /**
  * Discovery service for zones and mobile devices.
  *
@@ -50,8 +51,8 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
 
     private ScheduledFuture<?> discoveryFuture;
 
-    public final static Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_ZONE,
-            THING_TYPE_MOBILE_DEVICE);
+    public final static Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Arrays.asList(THING_TYPE_ZONE, THING_TYPE_MOBILE_DEVICE).stream().collect(Collectors.toSet()));
 
     private TadoHomeHandler homeHandler;
 
