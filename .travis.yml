@@ -20,9 +20,6 @@ before_install:
   - echo "MAVEN_OPTS='-Xms1g -Xmx2g -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'" > ~/.mavenrc
 install:
   - |
-    function extra_maven_opts() {
-        if [ "$TRAVIS_JDK_VERSION" != "openjdk8" ]; then echo "-Denforcer.skip=true"; fi;
-    }
     function prevent_timeout() {
         local i=0
         while [ -e /proc/$1 ]; do
@@ -51,4 +48,4 @@ after_success:
 after_failure:
   - tail -n 2000 .build.log
 script:
-  - mvnp clean install -B -DskipChecks=true -DskipTests=true $(extra_maven_opts)
+  - mvnp clean install -B -DskipChecks=true -DskipTests=true
