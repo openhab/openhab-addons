@@ -7,8 +7,8 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
- lib/tado-api-client-1.1.jar
-Import-Package: com.google.common.collect,
+ lib/tado-api-client-1.2.jar
+Import-Package: 
  com.google.gson,
  com.google.gson.reflect,
  com.google.gson.stream,
