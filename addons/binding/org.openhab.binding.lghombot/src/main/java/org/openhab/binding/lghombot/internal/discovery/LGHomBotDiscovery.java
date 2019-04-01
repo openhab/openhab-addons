@@ -110,7 +110,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
             InetAddress iAdr = InetAddress.getByAddress(octets);
             baseIp = new CidrAddress(iAdr, (short) adr.getPrefix());
         } catch (UnknownHostException e) {
-            logger.debug("Could not build net ip address, exception: {}", e);
+            logger.debug("Could not build net ip address.", e);
         }
         octet = 0;
     }
@@ -127,7 +127,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
             iAdr = InetAddress.getByAddress(octets);
             address = iAdr.getHostAddress();
         } catch (UnknownHostException e) {
-            logger.debug("Could not find next ip address, exception: {}", e);
+            logger.debug("Could not find next ip address.", e);
         }
         return address;
     }
@@ -224,7 +224,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
      * First parse the first string to see that it's a HomBot, then parse nickname, server version & firmware version.
      * We then create our thing from it.
      *
-     * @param message   possibly null, possibly empty message
+     * @param message possibly null, possibly empty message
      * @param ipAddress current probed ip address
      */
     private void messageReceive(String message, String ipAddress) {
@@ -287,7 +287,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
             try {
                 localExecutorService.awaitTermination(TIMEOUT * SCAN_THREADS, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
-                logger.debug("HomBot scan interrupted, exception: {}", e);
+                logger.debug("HomBot scan interrupted.", e);
             }
             localExecutorService.shutdown();
             executorService = null;

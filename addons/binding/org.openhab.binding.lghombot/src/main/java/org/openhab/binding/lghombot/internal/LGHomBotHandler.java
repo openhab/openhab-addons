@@ -445,7 +445,7 @@ public class LGHomBotHandler extends BaseThingHandler {
                             LocalDateTime localDateTime = LocalDateTime.parse(stringDate, formatterLG);
                             date = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
                         } catch (Exception e) {
-                            logger.info("Couldn't parse DateTime {}", e);
+                            logger.info("Couldn't parse DateTime.", e);
                         }
                         DateTimeType lastClean = new DateTimeType(date);
                         if (!lastClean.equals(currentLastClean)) {
@@ -473,7 +473,7 @@ public class LGHomBotHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return;
         } catch (IllegalArgumentException e) {
-            logger.info("Schedule file not found, probably nothing set. {}", e);
+            logger.info("Schedule file not found, probably nothing set.", e);
             return;
         }
         if (status != null && !status.isEmpty()) {
@@ -584,7 +584,7 @@ public class LGHomBotHandler extends BaseThingHandler {
         try {
             ImageIO.write(image, "jpg", baos);
         } catch (IOException e) {
-            logger.info("IOException creating JPEG image. {}", e);
+            logger.info("IOException creating JPEG image.", e);
         }
         byte[] byteArray = baos.toByteArray();
         if (byteArray != null && byteArray.length > 0) {
@@ -677,7 +677,7 @@ public class LGHomBotHandler extends BaseThingHandler {
         try {
             ImageIO.write(image, "png", baos);
         } catch (IOException e) {
-            logger.error("IOException creating PNG image. {}", e);
+            logger.error("IOException creating PNG image.", e);
         }
         byte[] byteArray = baos.toByteArray();
         if (byteArray != null && byteArray.length > 0) {
