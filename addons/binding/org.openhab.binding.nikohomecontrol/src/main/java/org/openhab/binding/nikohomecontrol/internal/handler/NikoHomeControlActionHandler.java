@@ -52,11 +52,6 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlActionHandler.class);
 
-    @FunctionalInterface
-    private interface Action {
-        void execute();
-    }
-
     @NonNullByDefault({})
     private volatile NhcAction nhcAction;
 

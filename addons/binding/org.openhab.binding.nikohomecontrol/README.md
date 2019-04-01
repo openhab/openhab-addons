@@ -187,11 +187,17 @@ This can be changed with the Niko Home Control programming software.
 
 For thing type `blind` the supported channel is `rollershutter`. UpDown, StopMove and Percent command types are supported.
 
-For thing type `thermostat` the supported channels are `measured`, `mode`, `setpoint` and `overruletime`.
-`measured` gives the current temperature in QuantityType<Temperature>, allowing for different temperature units. This channel is read only.
-`mode` can be set and shows the current thermostat mode. Allowed values are 0 (day), 1 (night), 2 (eco), 3 (off), 4 (coll), 5 (prog 1), 6 (prog 2), 7 (prog 3). If mode is set, the `setpoint` temperature will return to its standard value from the mode.
-`setpoint` can be set and shows the current thermostat setpoint value in QuantityType<Temperature>. When updating `setpoint`, it will overrule the temperature setpoint defined by the thermostat mode for `overruletime` duration.
+For thing type `thermostat` the supported channels are `measured`, `mode`, `setpoint`, `overruletime` and `demand`.
+`measured` gives the current temperature in QuantityType<Temperature>, allowing for different temperature units.
+This channel is read only.
+`mode` can be set and shows the current thermostat mode.
+Allowed values are 0 (day), 1 (night), 2 (eco), 3 (off), 4 (cool), 5 (prog 1), 6 (prog 2), 7 (prog 3). If mode is set, the `setpoint` temperature will return to its standard value from the mode.
+`setpoint` can be set and shows the current thermostat setpoint value in QuantityType<Temperature>.
+When updating `setpoint`, it will overrule the temperature setpoint defined by the thermostat mode for `overruletime` duration.
 `overruletime` is used to set the total duration to apply the setpoint temperature set in the setpoint channel before the thermostat returns to the setting in its mode.
+`demand` is a number indicating of the system is actively heating/cooling.
+The value will be 1 for heating, -1 for cooling and 0 if not heating or cooling.
+Note that cooling in NHC I is set by the binding, and will incorrectly show cooling demand when the system does not have cooling capabilities.
 
 The bridge has two trigger channels `alarm` and `notice`.
 It can be used as a trigger to rules.
@@ -219,13 +225,15 @@ Bridge nikohomecontrol:bridge:nhc1 [ addr="192.168.0.70", port=8000, refresh=300
     onOff 2 "LivingRoom" @ "Downstairs" [ actionId=2 ]
     dimmer 3 "TVRoom" [ actionId=3, step=5 ]
     blind 4 [ actionId=4 ]
-    thermostat 5 [ thermostatId=0 ]
+    thermostat 5 [ thermostatId=0, overruleTime=10 ]
 }
 
 Bridge nikohomecontrol:bridge2:nhc2 [ addr="192.168.0.70", port=8883, profile="openHAB", password="mypassword", refresh=300 ] {
     pushButton 1 "AllOff" [ actionId="12345678-abcd-1234-ef01-aa12bb34ee89" ]
     onOff 2 "Office" @ "Downstairs" [ actionId="12345678-abcd-1234-ef01-aa12bb34cc56" ]
     dimmer 3 "DiningRoom" [ actionId="abcdef01-abcd-1234-ab98-abcdef012345", step=5 ]
+    blind 4 [ actionId="abcdef01-abcd-1234-ab98-abcdefabcdef" ]
+    thermostat 5 [ thermostatId="abcdef01-abcd-1234-ab98-012345abcdef", overruleTime=10 ]
 }
 
 Bridge nikohomecontrol:bridge:nhc3 [ addr="192.168.0.110" ] {
@@ -247,6 +255,7 @@ Number:Temperature CurTemperature   "[%.1f °F]"  {channel="nikohomecontrol:ther
 Number ThermostatMode   {channel="nikohomecontrol:thermostat:nhc1:5:mode"}        # Get and set thermostat mode
 Number:Temperature SetTemperature   "[%.1f °C]"  {channel="nikohomecontrol:thermostat:nhc1:5:setpoint"}   # Get and set target temperature in °C
 Number OverruleDuration {channel="nikohomecontrol:thermostat:nhc1:5:overruletime} # Get and set the overrule time
+Number ThermostatDemand {channel="nikohomecontrol:thermostat:nhc1:5:demand}       # Get the current heating/cooling demand
 ```
 
 .sitemap:

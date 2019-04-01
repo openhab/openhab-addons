@@ -408,17 +408,20 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
         for (Map<String, String> thermostat : data) {
 
             String id = thermostat.get("id");
-            Integer measured = Integer.valueOf(thermostat.get("measured"));
-            Integer setpoint = Integer.valueOf(thermostat.get("setpoint"));
-            Integer mode = Integer.valueOf(thermostat.get("mode"));
-            Integer overrule = Integer.valueOf(thermostat.get("overrule"));
+            int measured = Integer.valueOf(thermostat.get("measured"));
+            int setpoint = Integer.valueOf(thermostat.get("setpoint"));
+            int mode = Integer.valueOf(thermostat.get("mode"));
+            int overrule = Integer.valueOf(thermostat.get("overrule"));
             // overruletime received in "HH:MM" format
             String[] overruletimeStrings = thermostat.get("overruletime").split(":");
-            Integer overruletime = 0;
+            int overruletime = 0;
             if (overruletimeStrings.length == 2) {
                 overruletime = Integer.valueOf(overruletimeStrings[0]) * 60 + Integer.valueOf(overruletimeStrings[1]);
             }
-            Integer ecosave = Integer.valueOf(thermostat.get("ecosave"));
+            int ecosave = Integer.valueOf(thermostat.get("ecosave"));
+
+            // For parity with NHC II, assume heating/cooling if thermostat is on and setpoint different from measured
+            int demand = (mode != 3) ? (setpoint > measured ? 1 : (setpoint < measured ? -1 : 0)) : 0;
 
             if (!this.thermostats.containsKey(id)) {
                 // Initial instantiation of NhcThermostat class for thermostat object
@@ -429,14 +432,14 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                     location = this.locations.get(locationId).getName();
                 }
                 NhcThermostat nhcThermostat = new NhcThermostat1(id, name, location);
-                nhcThermostat.updateState(measured, setpoint, mode, overrule, overruletime, ecosave);
+                nhcThermostat.updateState(measured, setpoint, mode, overrule, overruletime, ecosave, demand);
                 nhcThermostat.setNhcComm(this);
                 this.thermostats.put(id, nhcThermostat);
             } else {
                 // Thermostat object already exists, so only update state.
                 // If we would re-instantiate thermostat, we would lose pointer back from thermostat to thing handler
                 // that was set in thing handler initialize().
-                this.thermostats.get(id).updateState(measured, setpoint, mode, overrule, overruletime, ecosave);
+                this.thermostats.get(id).updateState(measured, setpoint, mode, overrule, overruletime, ecosave, demand);
             }
         }
     }
@@ -480,22 +483,24 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                 return;
             }
 
-            Integer measured = Integer.valueOf(thermostat.get("measured"));
-            Integer setpoint = Integer.valueOf(thermostat.get("setpoint"));
-            Integer mode = Integer.valueOf(thermostat.get("mode"));
-            Integer overrule = Integer.valueOf(thermostat.get("overrule"));
+            int measured = Integer.valueOf(thermostat.get("measured"));
+            int setpoint = Integer.valueOf(thermostat.get("setpoint"));
+            int mode = Integer.valueOf(thermostat.get("mode"));
+            int overrule = Integer.valueOf(thermostat.get("overrule"));
             // overruletime received in "HH:MM" format
             String[] overruletimeStrings = thermostat.get("overruletime").split(":");
-            Integer overruletime = 0;
+            int overruletime = 0;
             if (overruletimeStrings.length == 2) {
                 overruletime = Integer.valueOf(overruletimeStrings[0]) * 60 + Integer.valueOf(overruletimeStrings[1]);
             }
-            Integer ecosave = Integer.valueOf(thermostat.get("ecosave"));
+            int ecosave = Integer.valueOf(thermostat.get("ecosave"));
+
+            int demand = (mode != 3) ? (setpoint > measured ? 1 : (setpoint < measured ? -1 : 0)) : 0;
 
             logger.debug(
-                    "Niko Home Control: event execute thermostat {} with measured {}, setpoint {}, mode {}, overrule {}, overruletime {}, ecosave {}",
-                    id, measured, setpoint, mode, overrule, overruletime, ecosave);
-            this.thermostats.get(id).updateState(measured, setpoint, mode, overrule, overruletime, ecosave);
+                    "Niko Home Control: event execute thermostat {} with measured {}, setpoint {}, mode {}, overrule {}, overruletime {}, ecosave {}, demand {}",
+                    id, measured, setpoint, mode, overrule, overruletime, ecosave, demand);
+            this.thermostats.get(id).updateState(measured, setpoint, mode, overrule, overruletime, ecosave, demand);
         }
     }
 

@@ -40,12 +40,13 @@ public abstract class NhcThermostat {
     protected String id;
     protected String name;
     protected @Nullable String location;
-    protected volatile int measured = 0;
-    protected volatile int setpoint = 0;
-    protected volatile int mode = 0;
-    protected volatile int overrule = 0;
-    protected volatile int overruletime = 0;
-    protected volatile int ecosave = 0;
+    protected volatile int measured;
+    protected volatile int setpoint;
+    protected volatile int mode;
+    protected volatile int overrule;
+    protected volatile int overruletime;
+    protected volatile int ecosave;
+    protected volatile int demand;
 
     @Nullable
     private LocalDateTime overruleStart;
@@ -70,15 +71,17 @@ public abstract class NhcThermostat {
      * @param overrule     the overrule temperature in 0.1°C multiples
      * @param overruletime in minutes
      * @param ecosave
+     * @param demand       0 if no demand, > 0 if heating, < 0 if cooling
      */
-    public void updateState(Integer measured, Integer setpoint, Integer mode, Integer overrule, Integer overruletime,
-            Integer ecosave) {
+    public void updateState(int measured, int setpoint, int mode, int overrule, int overruletime, int ecosave,
+            int demand) {
         setMeasured(measured);
         setSetpoint(setpoint);
         setMode(mode);
         setOverrule(overrule);
         setOverruletime(overruletime);
         setEcosave(ecosave);
+        setDemand(demand);
 
         updateChannels();
     }
@@ -90,7 +93,7 @@ public abstract class NhcThermostat {
      * @param overrule     the overrule temperature in 0.1°C multiples
      * @param overruletime in minutes
      */
-    public void updateState(Integer overrule, Integer overruletime) {
+    public void updateState(int overrule, int overruletime) {
         setOverrule(overrule);
         setOverruletime(overruletime);
 
@@ -104,7 +107,7 @@ public abstract class NhcThermostat {
      * @param overrule     the overrule temperature in 0.1°C multiples
      * @param overruletime in minutes
      */
-    public void updateState(Integer mode) {
+    public void updateState(int mode) {
         setMode(mode);
 
         updateChannels();
@@ -114,7 +117,7 @@ public abstract class NhcThermostat {
         NhcThermostatEvent handler = eventHandler;
         if (handler != null) {
             logger.debug("Niko Home Control: update channels for {}", id);
-            handler.thermostatEvent(measured, setpoint, mode, overrule);
+            handler.thermostatEvent(measured, setpoint, mode, overrule, demand);
         }
     }
 
@@ -172,11 +175,11 @@ public abstract class NhcThermostat {
      *
      * @return measured temperature in 0.1°C multiples
      */
-    public Integer getMeasured() {
+    public int getMeasured() {
         return this.measured;
     }
 
-    private void setMeasured(Integer measured) {
+    private void setMeasured(int measured) {
         this.measured = measured;
     }
 
@@ -187,7 +190,7 @@ public abstract class NhcThermostat {
         return setpoint;
     }
 
-    private void setSetpoint(Integer setpoint) {
+    private void setSetpoint(int setpoint) {
         this.setpoint = setpoint;
     }
 
@@ -197,11 +200,11 @@ public abstract class NhcThermostat {
      * @return the mode:
      *         0 = day, 1 = night, 2 = eco, 3 = off, 4 = cool, 5 = prog 1, 6 = prog 2, 7 = prog 3
      */
-    public Integer getMode() {
+    public int getMode() {
         return mode;
     }
 
-    private void setMode(Integer mode) {
+    private void setMode(int mode) {
         this.mode = mode;
     }
 
@@ -210,7 +213,7 @@ public abstract class NhcThermostat {
      *
      * @return the overrule temperature in 0.1°C multiples
      */
-    public Integer getOverrule() {
+    public int getOverrule() {
         if (overrule > 0) {
             return overrule;
         } else {
@@ -218,7 +221,7 @@ public abstract class NhcThermostat {
         }
     }
 
-    private void setOverrule(Integer overrule) {
+    private void setOverrule(int overrule) {
         this.overrule = overrule;
     }
 
@@ -248,15 +251,29 @@ public abstract class NhcThermostat {
     /**
      * @return the ecosave mode
      */
-    public Integer getEcosave() {
+    public int getEcosave() {
         return ecosave;
     }
 
     /**
      * @param ecosave the ecosave mode to set
      */
-    private void setEcosave(Integer ecosave) {
+    private void setEcosave(int ecosave) {
         this.ecosave = ecosave;
+    }
+
+    /**
+     * @return the heating/cooling demand: 0 if no demand, >0 if heating, <0 if cooling
+     */
+    public int getDemand() {
+        return demand;
+    }
+
+    /**
+     * @param demand set the heating/cooling demand
+     */
+    private void setDemand(int demand) {
+        this.demand = demand;
     }
 
     /**

@@ -123,12 +123,13 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
         if (REFRESH.equals(command)) {
             thermostatEvent(nhcThermostat.getMeasured(), nhcThermostat.getSetpoint(), nhcThermostat.getMode(),
-                    nhcThermostat.getOverrule());
+                    nhcThermostat.getOverrule(), nhcThermostat.getDemand());
             return;
         }
 
         switch (channelUID.getId()) {
             case CHANNEL_MEASURED:
+            case CHANNEL_DEMAND:
                 updateStatus(ThingStatus.ONLINE);
                 break;
 
@@ -217,13 +218,13 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         }
 
         thermostatEvent(nhcThermostat.getMeasured(), nhcThermostat.getSetpoint(), nhcThermostat.getMode(),
-                nhcThermostat.getOverrule());
+                nhcThermostat.getOverrule(), nhcThermostat.getDemand());
 
         logger.debug("Niko Home Control: thermostat intialized {}", thermostatId);
     }
 
     @Override
-    public void thermostatEvent(Integer measured, Integer setpoint, Integer mode, Integer overrule) {
+    public void thermostatEvent(Integer measured, Integer setpoint, Integer mode, Integer overrule, Integer demand) {
         updateState(CHANNEL_MEASURED, new QuantityType<Temperature>(nhcThermostat.getMeasured() / 10.0, CELSIUS));
 
         long overruletime = nhcThermostat.getRemainingOverruletime();
@@ -240,6 +241,8 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         }
 
         updateState(CHANNEL_MODE, new DecimalType(mode));
+
+        updateState(CHANNEL_DEMAND, new DecimalType(demand));
 
         updateStatus(ThingStatus.ONLINE);
     }

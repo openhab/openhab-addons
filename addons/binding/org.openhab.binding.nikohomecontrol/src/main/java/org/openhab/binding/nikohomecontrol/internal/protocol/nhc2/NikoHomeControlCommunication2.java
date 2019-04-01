@@ -543,9 +543,11 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         Optional<NhcProperty> ambientTemperatureProperty = device.properties.stream()
                 .filter(p -> (p.ambientTemperature != null)).findFirst();
 
+        Optional<NhcProperty> demandProperty = device.properties.stream().filter(p -> (p.demand != null)).findFirst();
+
         String modeString = programProperty.isPresent() ? programProperty.get().program : "";
         int mode = IntStream.range(0, THERMOSTATMODES.length).filter(i -> THERMOSTATMODES[i].equals(modeString))
-                .findFirst().orElse(0);
+                .findFirst().orElse(thermostat.getMode());
 
         int measured = ambientTemperatureProperty.isPresent()
                 ? Math.round(Float.valueOf(ambientTemperatureProperty.get().ambientTemperature) * 10)
@@ -567,10 +569,25 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         int ecosave = ecoSaveProperty.isPresent() ? ("True".equals(ecoSaveProperty.get().ecoSave) ? 1 : 0)
                 : thermostat.getEcosave();
 
+        int demand = thermostat.getDemand();
+        if (demandProperty.isPresent()) {
+            switch (demandProperty.get().demand) {
+                case "None":
+                    demand = 0;
+                    break;
+                case "Heating":
+                    demand = 1;
+                    break;
+                case "Cooling":
+                    demand = -1;
+                    break;
+            }
+        }
+
         logger.debug(
-                "Niko Home Control: setting thermostat {} with measured {}, setpoint {}, mode {}, overrule {}, overruletime {}, ecosave {}",
-                thermostat.getId(), measured, setpoint, mode, overrule, overruletime, ecosave);
-        thermostat.updateState(measured, setpoint, mode, overrule, overruletime, ecosave);
+                "Niko Home Control: setting thermostat {} with measured {}, setpoint {}, mode {}, overrule {}, overruletime {}, ecosave {}, demand {}",
+                thermostat.getId(), measured, setpoint, mode, overrule, overruletime, ecosave, demand);
+        thermostat.updateState(measured, setpoint, mode, overrule, overruletime, ecosave, demand);
     }
 
     @Override
