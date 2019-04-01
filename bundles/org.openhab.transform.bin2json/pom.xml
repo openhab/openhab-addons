@@ -13,4 +13,13 @@
 	<artifactId>org.openhab.transform.bin2json</artifactId>
 
 	<name>openHAB Add-ons :: Bundles :: Binary To JSON Transformation Service</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.igormaznitsa</groupId>
+			<artifactId>jbbp</artifactId>
+			<version>1.4.1</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 </project>
