@@ -32,6 +32,7 @@
     <module>org.openhab.binding.cm11a</module>
     <module>org.openhab.binding.coolmasternet</module>
     <module>org.openhab.binding.daikin</module>
+    <module>org.openhab.binding.darksky</module>
     <module>org.openhab.binding.deconz</module>
     <module>org.openhab.binding.denonmarantz</module>
     <module>org.openhab.binding.digitalstrom</module>
