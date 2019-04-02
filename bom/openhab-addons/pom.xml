@@ -138,6 +138,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.digiplex</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.binding</groupId>
       <artifactId>org.openhab.binding.digitalstrom</artifactId>
       <version>${project.version}</version>
     </dependency>

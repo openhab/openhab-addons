@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="digiplex" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<bridge-type id="bridge">
+		<label>Digiplex PRT3 module</label>
+		<description>Digiplex PRT3 module with Serial Interface</description>
+        <channels>
+            <channel typeId="messages_sent" id="messages_sent"/>
+            <channel typeId="responses_received" id="responses_received"/>
+            <channel typeId="events_received" id="events_received"/>
+        </channels>
+
+		<config-description>
+		    
+		    <parameter-group name="port">
+                <context>communication</context>
+                <label>Port Configuration</label>
+                <description></description>
+            </parameter-group>
+		
+            <parameter name="port" type="text" required="true"
+                groupName="port">
+                <label>Serial Port</label>
+                <context>serial-port</context>
+                <description>Set the serial port used to access PRT3 device</description>
+                <default></default>
+            </parameter>
+            
+            <parameter name="baudrate" type="integer" required="true"
+                groupName="port">
+                <label>Baud Rate</label>
+                <context>serial-port</context>
+                <description>Set the serial port baud rate</description>
+	            <default>2400</default>
+	            <limitToOptions>true</limitToOptions>
+	            <options>
+	                <option value="2400">2400</option>
+	                <option value="9600">9600</option>
+	                <option value="19200">19200</option>
+	                <option value="57600">57600</option>
+	            </options>
+            </parameter>
+  		</config-description>
+	</bridge-type>
+	
+	<channel-type id="messages_sent">
+	   <item-type>Number</item-type>
+       <label>Messages sent</label>
+       <description>Counts messages sent to the alarm system</description>
+	</channel-type>
+	
+    <channel-type id="responses_received">
+       <item-type>Number</item-type>
+       <label>Responses received</label>
+       <description>Counts responses received from the alarm system</description>
+    </channel-type>
+
+    <channel-type id="events_received">
+       <item-type>Number</item-type>
+       <label>Events received</label>
+       <description>Counts events received from the alarm system</description>
+    </channel-type>
+
+</thing:thing-descriptions>
