@@ -35,6 +35,7 @@
     <module>org.openhab.binding.darksky</module>
     <module>org.openhab.binding.deconz</module>
     <module>org.openhab.binding.denonmarantz</module>
+    <module>org.openhab.binding.digiplex</module>
     <module>org.openhab.binding.digitalstrom</module>
     <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dmx</module>

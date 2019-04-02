@@ -156,6 +156,12 @@
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.digitalstrom/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-digiplex" description="Digiplex/EVO Alarm System Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.digiplex/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-dlinksmarthome" description="D-Link Smart Home Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
