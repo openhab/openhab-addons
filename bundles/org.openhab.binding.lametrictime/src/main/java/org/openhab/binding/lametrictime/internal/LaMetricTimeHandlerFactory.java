@@ -14,10 +14,13 @@ package org.openhab.binding.lametrictime.internal;
 
 import static org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -40,8 +43,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 /**
  * The {@link LaMetricTimeHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -51,9 +52,9 @@ import com.google.common.collect.Sets;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.lametrictime")
 public class LaMetricTimeHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Sets.newHashSet(THING_TYPE_DEVICE,
-            THING_TYPE_CLOCK_APP, THING_TYPE_COUNTDOWN_APP, THING_TYPE_RADIO_APP, THING_TYPE_STOPWATCH_APP,
-            THING_TYPE_WEATHER_APP);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_DEVICE, THING_TYPE_CLOCK_APP, THING_TYPE_COUNTDOWN_APP, THING_TYPE_RADIO_APP,
+                    THING_TYPE_STOPWATCH_APP, THING_TYPE_WEATHER_APP).collect(Collectors.toSet()));
 
     private final Logger logger = LoggerFactory.getLogger(LaMetricTimeHandlerFactory.class);
 

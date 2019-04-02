@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.lametrictime.internal;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.syphr.lametrictime.api.local.model.Application;
 import org.syphr.lametrictime.api.local.model.Widget;
 import org.syphr.lametrictime.api.model.CoreApps;
 
-import com.google.common.collect.Maps;
 import com.google.gson.JsonPrimitive;
 
 /**
@@ -27,7 +27,7 @@ import com.google.gson.JsonPrimitive;
  * @author Gregory Moyer - Initial contribution
  */
 public class LaMetricTimeUtil {
-    private static final Map<String, String> CORE_APP_LABELS = Maps.newHashMap();
+    private static final Map<String, String> CORE_APP_LABELS = new HashMap<>();
     static {
         CORE_APP_LABELS.put(CoreApps.clock().getPackageName(), "Clock");
         CORE_APP_LABELS.put(CoreApps.countdown().getPackageName(), "Timer");
