@@ -43,7 +43,7 @@ public class WebAudioEventFactory extends AbstractEventFactory {
             String url = deserializePayload(payload, String.class);
             return createPlayURLEvent(url);
         }
-        return null;
+        throw new IllegalArgumentException("The event type '" + eventType + "' is not supported by this factory.");
     }
 
     /**

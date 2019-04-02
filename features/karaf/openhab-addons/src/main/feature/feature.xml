@@ -940,7 +940,7 @@
 
     <feature name="openhab-io-webaudio" description="Web Audio Support" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle>mvn:org.openhab.io/org.openhab.io.webaudio/${project.version}</bundle>
+        <bundle>mvn:org.openhab.addons.bundles/org.openhab.io.webaudio/${project.version}</bundle>
     </feature>
 
     <!-- misc -->
