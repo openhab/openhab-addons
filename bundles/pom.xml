@@ -57,6 +57,7 @@
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.hyperion</module>
     <module>org.openhab.binding.icloud</module>
+    <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.irtrans</module>
     <module>org.openhab.binding.jeelink</module>
     <module>org.openhab.binding.keba</module>
