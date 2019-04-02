@@ -409,7 +409,9 @@
     <feature name="openhab-binding-lametrictime" description="LaMetric Time Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.lametrictime/${project.version}</bundle>
+        <bundle dependency="true">mvn:com.eclipsesource.jaxrs/provider-gson/2.3</bundle>
+        <bundle dependency="true">mvn:org.syphr/lametrictime-api/0.1.0</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.lametrictime/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-leapmotion" description="LeapMotion Binding" version="${project.version}">

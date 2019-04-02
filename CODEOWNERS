@@ -29,7 +29,6 @@
 /addons/binding/org.openhab.binding.ihc/ @paulianttila
 /addons/binding/org.openhab.binding.ihc.test/ @paulianttila
 /addons/binding/org.openhab.binding.innogysmarthome/ @ollie-dev
-/addons/binding/org.openhab.binding.lametrictime/ @syphr42
 /addons/binding/org.openhab.binding.lgwebos/ @sprehn
 /addons/binding/org.openhab.binding.logreader/ @paulianttila
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
@@ -123,6 +122,7 @@
 /bundles/org.openhab.binding.kodi/ @pail23 @cweitkamp
 /bundles/org.openhab.binding.konnected/ @volfan6415
 /bundles/org.openhab.binding.kostalinverter/ @cschneider
+/bundles/org.openhab.binding.lametrictime/ @syphr42
 /bundles/org.openhab.binding.leapmotion/ @kaikreuzer
 /bundles/org.openhab.binding.lgtvserial/ @fa2k
 /bundles/org.openhab.binding.lifx/ @wborn
