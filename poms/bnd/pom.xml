@@ -589,7 +589,7 @@ Import-Package: \\
             <configuration>
               <rules>
                 <requireJavaVersion>
-                  <version>[1.8.0-40,1.9)</version>
+                  <version>[1.8.0-40,1.9),[9.0,12.0)</version>
                 </requireJavaVersion>
               </rules>
             </configuration>
