@@ -13,14 +13,13 @@
 package org.openhab.io.imperihome.internal.model.device;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.io.imperihome.internal.model.param.DeviceParam;
 import org.openhab.io.imperihome.internal.model.param.ParamType;
-
-import com.google.common.base.Joiner;
 
 /**
  * MultiSwitch device, mimics behavior of a OH Switch with a mapping.
@@ -45,7 +44,8 @@ public class MultiSwitchDevice extends AbstractDevice {
             return;
         }
 
-        DeviceParam choicesParam = new DeviceParam(ParamType.CHOICES, Joiner.on(',').join(mapping.values()));
+        DeviceParam choicesParam = new DeviceParam(ParamType.CHOICES,
+                mapping.values().stream().collect(Collectors.joining(",")));
         addParam(choicesParam);
 
         // Find current value text

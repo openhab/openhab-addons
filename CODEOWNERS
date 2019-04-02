@@ -63,6 +63,7 @@
 /addons/io/org.openhab.io.hueemulation/ @davidgraeff @digitaldan
 /addons/io/org.openhab.io.hueemulation.test/ @davidgraeff @digitaldan
 /addons/io/org.openhab.io.imperihome/ @pdegeus
+/addons/io/org.openhab.io.javasound/ @kaikreuzer
 /addons/io/org.openhab.io.mqttembeddedbroker/ @davidgraeff
 /addons/io/org.openhab.io.mqttembeddedbroker.test/ @davidgraeff
 /addons/io/org.openhab.io.neeo/ @tmrobert8
@@ -196,7 +197,11 @@
 /bundles/org.openhab.binding.yeelight/ @claell
 /bundles/org.openhab.extensionservice.marketplace/ @kaikreuzer
 /bundles/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer
+<<<<<<< HEAD
 /bundles/org.openhab.io.javasound/ @kaikreuzer
+=======
+/bundles/org.openhab.io.imperihome/ @pdegeus
+>>>>>>> [imperihome] Migrate to bnd build
 /bundles/org.openhab.io.webaudio/ @kaikreuzer
 /bundles/org.openhab.persistence.mapdb/ @mkhl
 /bundles/org.openhab.transform.exec/ @openhab/2-x-add-ons-maintainers

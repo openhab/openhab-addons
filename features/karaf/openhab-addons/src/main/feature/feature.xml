@@ -981,7 +981,7 @@
     <feature name="openhab-misc-imperihome" description="ImperiHome Integration" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-core-model-item</feature>
-        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.imperihome/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.io.imperihome/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-misc-market" description="Eclipse IoT Market" version="${project.version}">
