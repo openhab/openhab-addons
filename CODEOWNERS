@@ -92,6 +92,7 @@
 /bundles/org.openhab.binding.darksky/ @cweitkamp
 /bundles/org.openhab.binding.deconz/ @davidgraeff
 /bundles/org.openhab.binding.denonmarantz/ @jwveldhuis
+/bundles/org.openhab.binding.digiplex/ @rmichalak
 /bundles/org.openhab.binding.digitalstrom/ @MichaelOchel @msiegele
 /bundles/org.openhab.binding.dlinksmarthome/ @MikeJMajor
 /bundles/org.openhab.binding.dmx/ @J-N-K
