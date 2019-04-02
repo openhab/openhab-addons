@@ -50,7 +50,6 @@
 /addons/binding/org.openhab.binding.onkyo/ @pail23 @paulianttila
 /addons/binding/org.openhab.binding.orvibo/ @tavalin
 /addons/binding/org.openhab.binding.samsungtv/ @paulianttila
-/addons/binding/org.openhab.binding.sleepiq/ @syphr42
 /addons/binding/org.openhab.binding.smartmeter/ @msteigenberger
 /addons/binding/org.openhab.binding.smartmeter.test/ @msteigenberger
 /addons/binding/org.openhab.binding.systeminfo/ @svilenvul
@@ -171,6 +170,7 @@
 /bundles/org.openhab.binding.sensebox/ @hakan42
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
 /bundles/org.openhab.binding.silvercrestwifisocket/ @jmvaz
+/bundles/org.openhab.binding.sleepiq/ @syphr42
 /bundles/org.openhab.binding.smaenergymeter/ @monnimeter
 /bundles/org.openhab.binding.solaredge/ @alexf2015
 /bundles/org.openhab.binding.solarlog/ @johannrichard
