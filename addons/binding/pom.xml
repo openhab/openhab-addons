@@ -40,7 +40,6 @@
     <module>org.openhab.binding.ihc</module>
     <module>org.openhab.binding.ihc.test</module>
     <module>org.openhab.binding.innogysmarthome</module>
-    <module>org.openhab.binding.lametrictime</module>
     <module>org.openhab.binding.lgwebos</module>
     <module>org.openhab.binding.logreader</module>
     <module>org.openhab.binding.loxone</module>
