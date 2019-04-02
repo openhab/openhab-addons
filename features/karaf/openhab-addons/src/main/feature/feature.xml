@@ -68,6 +68,7 @@
     <feature name="openhab-binding-avmfritz" description="AVM FRITZ!Box Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
+        <feature prerequisite="true">wrap</feature>
         <bundle dependency="true">wrap:mvn:javax.activation/activation/1.1.1$Bundle-Name=Javax%20Activation&amp;Bundle-SymbolicName=javax.activation.activation&amp;Bundle-Version=1.1.1</bundle>
         <bundle dependency="true">mvn:javax.xml.bind/jaxb-api/2.2.12</bundle>
         <bundle dependency="true">mvn:com.sun.xml.bind/jaxb-impl/2.2.11</bundle>
@@ -158,6 +159,7 @@
     <feature name="openhab-binding-dlinksmarthome" description="D-Link Smart Home Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
+        <feature prerequisite="true">wrap</feature>
         <!-- JAXB bundles -->
         <bundle dependency="true">mvn:javax.xml.bind/jaxb-api/2.3.1</bundle>
         <bundle dependency="true">mvn:com.sun.xml.bind/jaxb-impl/2.3.2</bundle>
@@ -462,6 +464,7 @@
 
     <feature name="openhab-binding-mcp23017" description="MCP23017 Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature prerequisite="true">wrap</feature>
         <bundle dependency="true">mvn:com.pi4j/pi4j-core/1.2</bundle>
         <bundle dependency="true">wrap:mvn:com.pi4j/pi4j-gpio-extension/1.2$Bundle-Name=Pi4J%20::%20Java%20Library%20(Extension)&amp;Bundle-SymbolicName=com.pi4j.pi4j-gpio-extension&amp;Bundle-Version=1.2</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.mcp23017/${project.version}</bundle>
@@ -982,9 +985,9 @@
     </feature>
 
     <feature name="openhab-misc-mqttbroker" description="MQTT Broker Moquette" version="${project.version}">
-        <feature prerequisite="true">wrap</feature>
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mqtt</feature>
+        <feature prerequisite="true">wrap</feature>
         <bundle dependency="true">wrap:mvn:io.netty/netty-common/4.1.34.Final$Bundle-Name=Netty%20Common&amp;Bundle-SymbolicName=io.netty.netty-common&amp;Bundle-Version=4.1.34</bundle>
         <bundle dependency="true">wrap:mvn:io.netty/netty-buffer/4.1.34.Final$Bundle-Name=Netty%20Buffer&amp;Bundle-SymbolicName=io.netty.netty-buffer&amp;Bundle-Version=4.1.34</bundle>
         <bundle dependency="true">wrap:mvn:io.netty/netty-transport/4.1.34.Final$Bundle-Name=Netty%20Transport&amp;Bundle-SymbolicName=io.netty.netty-transport&amp;Bundle-Version=4.1.34</bundle>
