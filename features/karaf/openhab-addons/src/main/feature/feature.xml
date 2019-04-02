@@ -942,7 +942,9 @@
 
     <feature name="openhab-io-javasound" description="JavaSound Audio Support" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle>mvn:org.openhab.io/org.openhab.io.javasound/${project.version}</bundle>
+        <feature prerequisite="true">wrap</feature>
+        <bundle dependency="true">wrap:mvn:javazoom/jlayer/1.0.1$Bundle-Name=JLayer&amp;Bundle-SymbolicName=javazoom.jlayer&amp;Bundle-Version=1.0.1</bundle>
+        <bundle>mvn:org.openhab.addons.bundles/org.openhab.io.javasound/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-io-webaudio" description="Web Audio Support" version="${project.version}">
