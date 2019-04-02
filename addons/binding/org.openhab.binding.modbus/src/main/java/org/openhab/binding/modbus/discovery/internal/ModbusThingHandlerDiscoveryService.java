@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.modbus.discovery.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 
 /**
@@ -22,6 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
  *
  * @author Nagy Attila Gabor - initial contribution
  */
+@NonNullByDefault
 public interface ModbusThingHandlerDiscoveryService extends ThingHandlerService {
 
     /**

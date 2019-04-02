@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Component(immediate = true, service = DiscoveryService.class, configurationPid = "discovery.modbus")
+@NonNullByDefault
 public class ModbusDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusDiscoveryService.class);
@@ -59,7 +61,7 @@ public class ModbusDiscoveryService extends AbstractDiscoveryService {
     // supported by the registered discovery services.
     private final Set<ThingTypeUID> supportedThingTypes = new CopyOnWriteArraySet<>();
 
-    private static final int SEARCH_TIME = 5;
+    private static final int SEARCH_TIME_SECS = 5;
 
     /**
      * Constructor for the discovery service.
@@ -69,7 +71,7 @@ public class ModbusDiscoveryService extends AbstractDiscoveryService {
         // No supported thing types by default
         // Search time is for the visual reference
         // Background discovery disabled by default
-        super(null, SEARCH_TIME, false);
+        super(null, SEARCH_TIME_SECS, false);
     }
 
     /**

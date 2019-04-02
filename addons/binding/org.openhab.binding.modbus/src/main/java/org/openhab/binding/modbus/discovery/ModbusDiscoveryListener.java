@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.modbus.discovery;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 
 /**
@@ -26,6 +27,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
  * @author Nagy Attila Gabor - initial contribution
  *
  */
+@NonNullByDefault
 public interface ModbusDiscoveryListener {
 
     /**

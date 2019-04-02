@@ -61,6 +61,7 @@ If you write a device specific handler then adding discovery for this device is 
 ```java
 
 @Component(immediate = true)
+@NonNullByDefault
 public class SunspecDiscoveryParticipant implements ModbusDiscoveryParticipant {
 ...
 }

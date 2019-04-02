@@ -15,7 +15,8 @@ package org.openhab.binding.modbus.discovery.internal;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.modbus.discovery.ModbusDiscoveryListener;
@@ -34,12 +35,13 @@ import org.slf4j.LoggerFactory;
  * @author Nagy Attila Gabor - initial contribution
  *
  */
+@NonNullByDefault
 public class ModbusEndpointDiscoveryService implements ModbusThingHandlerDiscoveryService {
 
-    private final @NonNull Logger logger = LoggerFactory.getLogger(ModbusEndpointDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(ModbusEndpointDiscoveryService.class);
 
     // This is the handler we will do the discovery on
-    private ModbusEndpointThingHandler handler;
+    private @Nullable ModbusEndpointThingHandler handler;
 
     // List of the registered participants
     // this only contains data when there is scan in progress
@@ -49,19 +51,20 @@ public class ModbusEndpointDiscoveryService implements ModbusThingHandlerDiscove
     private boolean waitingForParticipant = false;
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
+    public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof ModbusEndpointThingHandler) {
             this.handler = (ModbusEndpointThingHandler) handler;
         }
     }
 
     @Override
-    public ThingHandler getThingHandler() {
+    public @Nullable ThingHandler getThingHandler() {
         return (ThingHandler) handler;
     }
 
     @Override
     public boolean startScan(ModbusDiscoveryService service) {
+        ModbusEndpointThingHandler handler = this.handler;
         if (handler == null || !handler.isDiscoveryEnabled()) {
             return false;
         }
@@ -69,7 +72,7 @@ public class ModbusEndpointDiscoveryService implements ModbusThingHandlerDiscove
 
         participants.addAll(service.getDiscoveryParticipants());
 
-        startNextParticipant(service);
+        startNextParticipant(handler, service);
 
         return true;
     }
@@ -85,7 +88,7 @@ public class ModbusEndpointDiscoveryService implements ModbusThingHandlerDiscove
      * @param service reference to the ModbusDiscoveryService that will collect all the
      *            discovered items
      */
-    private void startNextParticipant(final ModbusDiscoveryService service) {
+    private void startNextParticipant(final ModbusEndpointThingHandler handler, final ModbusDiscoveryService service) {
         if (participants.size() == 0) {
             logger.trace("All participants has finished");
             service.scanFinished();
@@ -116,7 +119,7 @@ public class ModbusEndpointDiscoveryService implements ModbusThingHandlerDiscove
             @Override
             public void discoveryFinished() {
                 waitingForParticipant = false;
-                startNextParticipant(service);
+                startNextParticipant(handler, service);
             }
         });
     }
