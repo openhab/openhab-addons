@@ -1,9 +1,19 @@
 # XmlTV Binding
 
+XMLTV is an XML based file format for describing TV listings. This format is often used by Home Theater
+software to produce their Electronic Program Guide (http://wiki.xmltv.org/index.php/Main_Page)
+
+The norm allows to separate program display from its building. The building of the XMLTV file itself is
+taken in charge by so called "grabbers" (http://wiki.xmltv.org/index.php/HowtoUseGrabbers).
+
+Some websites provides updated XMLTV files than can be directly downloaded.
+
+Here is a sample for France : https://www.xmltv.fr/
+
 This binding takes an XMLTV file as input and creates a thing for each channel contained in it.
 XmlTV channels are called Media Channels in this binding in order to avoid messing with ESH Channels.
 
-For each thing, you'll be able to grab information regarding the current program and the next to come.
+For each thing, you'll be able to get information regarding the current program and the next to come.
 
 ## Supported Things
 

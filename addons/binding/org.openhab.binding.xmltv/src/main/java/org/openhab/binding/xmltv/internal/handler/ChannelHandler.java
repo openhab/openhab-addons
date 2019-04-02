@@ -46,6 +46,7 @@ import org.openhab.binding.xmltv.internal.jaxb.Icon;
 import org.openhab.binding.xmltv.internal.jaxb.MediaChannel;
 import org.openhab.binding.xmltv.internal.jaxb.Programme;
 import org.openhab.binding.xmltv.internal.jaxb.Tv;
+import org.openhab.binding.xmltv.internal.jaxb.WithLangType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,8 +171,9 @@ public class ChannelHandler extends BaseThingHandler {
                         break;
                     case CHANNEL_CHANNEL_URL:
                         updateState(channelUID,
-                                mediaChannel != null ? new StringType(mediaChannel.getIcons().get(0).getSrc())
-                                        : UnDefType.NULL);
+                                mediaChannel != null ? mediaChannel.getIcons().size() > 0
+                                        ? new StringType(mediaChannel.getIcons().get(0).getSrc())
+                                        : UnDefType.NULL : UnDefType.NULL);
                         break;
                     case CHANNEL_PROGRAMME_START:
                         Instant is = programme.getProgrammeStart();
@@ -184,10 +186,16 @@ public class ChannelHandler extends BaseThingHandler {
                         updateState(channelUID, new DateTimeType(zde));
                         break;
                     case CHANNEL_PROGRAMME_TITLE:
-                        updateState(channelUID, new StringType(programme.getTitles().get(0).getValue()));
+                        List<WithLangType> titles = programme.getTitles();
+                        updateState(channelUID,
+                                titles.size() > 0 ? new StringType(programme.getTitles().get(0).getValue())
+                                        : UnDefType.NULL);
                         break;
                     case CHANNEL_PROGRAMME_CATEGORY:
-                        updateState(channelUID, new StringType(programme.getCategories().get(0).getValue()));
+                        List<WithLangType> categories = programme.getCategories();
+                        updateState(channelUID,
+                                categories.size() > 0 ? new StringType(programme.getCategories().get(0).getValue())
+                                        : UnDefType.NULL);
                         break;
                     case CHANNEL_PROGRAMME_ICON:
                         List<Icon> icons = programme.getIcons();

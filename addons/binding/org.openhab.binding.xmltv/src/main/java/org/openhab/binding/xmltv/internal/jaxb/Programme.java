@@ -59,11 +59,11 @@ public class Programme {
     protected String channel = "";
 
     public List<WithLangType> getTitles() {
-        return this.titles;
+        return titles;
     }
 
     public List<WithLangType> getCategories() {
-        return this.categories;
+        return categories;
     }
 
     public Instant getProgrammeStart() {
@@ -82,7 +82,7 @@ public class Programme {
     }
 
     public List<Icon> getIcons() {
-        return this.icons;
+        return icons;
     }
 
     public String getChannel() {
