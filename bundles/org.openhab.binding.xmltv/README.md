@@ -70,8 +70,17 @@ Once the XmlTV bridge to a file is created, you can add all known channels by se
 
 ## Full Example
 
-### demo.things
+### xmltv.things
 
 ```
-Thing xmltv:XmlTVFile:france  [ filePath=home/sysadmin/tvguide.xml ]
+Bridge xmltv:xmltvfile:france "XmlTV" @ "TV" [filePath="/etc/openhab2/scripts/tvguide.xml"]
+{
+    Thing channel france2 "France 2" @ "TV" [channelId="C4.api.telerama.fr", offset=0, refresh=60]
+}
+```
+
+### xmltv.items
+
+```
+String france2_title "Titre" {channel="xmltv:channel:france:france2:currentprog#progTitle"}
 ```
