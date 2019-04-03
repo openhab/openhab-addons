@@ -28,7 +28,6 @@
 /addons/binding/org.openhab.binding.ihc.test/ @paulianttila
 /addons/binding/org.openhab.binding.innogysmarthome/ @ollie-dev
 /addons/binding/org.openhab.binding.lgwebos/ @sprehn
-/addons/binding/org.openhab.binding.logreader/ @paulianttila
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
 /addons/binding/org.openhab.binding.minecraft/ @ibaton
 /addons/binding/org.openhab.binding.modbus/ @ssalonen
@@ -120,6 +119,7 @@
 /bundles/org.openhab.binding.lgtvserial/ @fa2k
 /bundles/org.openhab.binding.lifx/ @wborn
 /bundles/org.openhab.binding.lirc/ @kabili207
+/bundles/org.openhab.binding.logreader/ @paulianttila
 /bundles/org.openhab.binding.lutron/ @actong
 /bundles/org.openhab.binding.max/ @marcelrv
 /bundles/org.openhab.binding.mcp23017/ @aogorek
