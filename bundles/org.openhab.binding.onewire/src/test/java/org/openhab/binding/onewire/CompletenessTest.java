@@ -72,7 +72,7 @@ public class CompletenessTest {
         for (OwSensorType sensorType : EnumSet.allOf(OwSensorType.class)) {
             if (!OwBindingConstants.SENSOR_TYPE_CHANNEL_MAP.containsKey(sensorType)
                     && !IGNORED_SENSOR_TYPES.contains(sensorType)) {
-                Assert.fail("missing thing type map for sensor type " + sensorType.name());
+                Assert.fail("missing channel configuration map for sensor type " + sensorType.name());
             }
         }
     }
@@ -114,5 +114,4 @@ public class CompletenessTest {
             }
         }
     }
-
 }
