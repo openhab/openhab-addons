@@ -32,8 +32,6 @@
 /addons/binding/org.openhab.binding.lgwebos/ @sprehn
 /addons/binding/org.openhab.binding.logreader/ @paulianttila
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
-/addons/binding/org.openhab.binding.max/ @marcelrv
-/addons/binding/org.openhab.binding.max.test/ @marcelrv
 /addons/binding/org.openhab.binding.minecraft/ @ibaton
 /addons/binding/org.openhab.binding.modbus/ @ssalonen
 /addons/binding/org.openhab.binding.modbus.test/ @ssalonen
@@ -128,6 +126,7 @@
 /bundles/org.openhab.binding.lifx/ @wborn
 /bundles/org.openhab.binding.lirc/ @kabili207
 /bundles/org.openhab.binding.lutron/ @actong
+/bundles/org.openhab.binding.max/ @marcelrv
 /bundles/org.openhab.binding.mcp23017/ @aogorek
 /bundles/org.openhab.binding.meteoblue/ @9037568
 /bundles/org.openhab.binding.meteostick/ @cdjackson
@@ -217,6 +216,7 @@
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
 /itests/org.openhab.binding.dmx.tests/ @J-N-K
+/itests/org.openhab.binding.max.tests/ @marcelrv
 /itests/org.openhab.binding.mqtt.homeassistant.tests/ @wborn
 /itests/org.openhab.binding.mqtt.homie.tests/ @wborn
 /itests/org.openhab.binding.nest.tests/ @wborn
