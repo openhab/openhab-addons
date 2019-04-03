@@ -46,8 +46,6 @@
 /addons/binding/org.openhab.binding.smartmeter.test/ @msteigenberger
 /addons/binding/org.openhab.binding.systeminfo/ @svilenvul
 /addons/binding/org.openhab.binding.systeminfo.test/ @svilenvul
-/addons/binding/org.openhab.binding.wemo/ @hmerk
-/addons/binding/org.openhab.binding.wemo.test/ @hmerk
 /addons/binding/org.openhab.binding.yamahareceiver/ @davidgraeff @zarusz
 /addons/binding/org.openhab.binding.yamahareceiver.test/ @davidgraeff @zarusz
 /addons/binding/org.openhab.binding.zoneminder/ @Mr-Eskildsen
@@ -191,6 +189,7 @@
 /bundles/org.openhab.binding.velbus/ @cedricboon
 /bundles/org.openhab.binding.vitotronic/ @steand
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo
+/bundles/org.openhab.binding.wemo/ @hmerk
 /bundles/org.openhab.binding.wifiled/ @rvt @xylo
 /bundles/org.openhab.binding.windcentrale/ @marcelrv
 /bundles/org.openhab.binding.yeelight/ @claell
@@ -223,6 +222,7 @@
 /itests/org.openhab.binding.ntp.tests/ @marcelrv
 /itests/org.openhab.binding.onewire.tests/ @J-N-K
 /itests/org.openhab.binding.tradfri.tests/ @cweitkamp @kaikreuzer
+/itests/org.openhab.binding.wemo.tests/ @hmerk
 /itests/org.openhab.persistence.mapdb.tests/ @mkhl
 
 # PLEASE HELP ADDING FURTHER LINES HERE!

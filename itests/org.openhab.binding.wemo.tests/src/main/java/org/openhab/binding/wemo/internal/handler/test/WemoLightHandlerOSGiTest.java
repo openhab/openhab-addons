@@ -41,7 +41,7 @@ import org.mockito.Mockito;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.handler.WemoLightHandler;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
-import org.openhab.binding.wemo.internal.test.GenericWemoLightOSGiTest;
+import org.openhab.binding.wemo.internal.test.GenericWemoLightOSGiTestParent;
 
 /**
  * Tests for {@link WemoLightHandler}.
@@ -49,7 +49,7 @@ import org.openhab.binding.wemo.internal.test.GenericWemoLightOSGiTest;
  * @author Svilen Valkanov - Initial contribution
  * @author Stefan Triller - Ported Tests from Groovy to Java
  */
-public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTest {
+public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
 
     private static final String GET_ACTION = "GetDeviceStatus";
     private static final String SET_ACTION = "SetDeviceStatus";
