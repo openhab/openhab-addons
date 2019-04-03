@@ -43,7 +43,6 @@
     <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.modbus</module>
     <module>org.openhab.binding.modbus.test</module>
-    <module>org.openhab.binding.neeo</module>
     <module>org.openhab.binding.netatmo</module>
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.onewiregpio</module>
