@@ -86,6 +86,7 @@
     <module>org.openhab.binding.mqtt.homeassistant</module>
     <module>org.openhab.binding.mqtt.homie</module>
     <module>org.openhab.binding.nanoleaf</module>
+    <module>org.openhab.binding.neato</module>
     <module>org.openhab.binding.nest</module>
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.nibeheatpump</module>
