@@ -39,7 +39,6 @@
     <module>org.openhab.binding.ihc.test</module>
     <module>org.openhab.binding.innogysmarthome</module>
     <module>org.openhab.binding.lgwebos</module>
-    <module>org.openhab.binding.logreader</module>
     <module>org.openhab.binding.loxone</module>
     <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.modbus</module>
