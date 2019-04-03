@@ -47,7 +47,6 @@
 /addons/binding/org.openhab.binding.smartmeter.test/ @msteigenberger
 /addons/binding/org.openhab.binding.systeminfo/ @svilenvul
 /addons/binding/org.openhab.binding.systeminfo.test/ @svilenvul
-/addons/binding/org.openhab.binding.tado/ @dfrommi
 /addons/binding/org.openhab.binding.wemo/ @hmerk
 /addons/binding/org.openhab.binding.wemo.test/ @hmerk
 /addons/binding/org.openhab.binding.yamahareceiver/ @davidgraeff @zarusz
@@ -179,6 +178,7 @@
 /bundles/org.openhab.binding.spotify/ @Hilbrand
 /bundles/org.openhab.binding.squeezebox/ @digitaldan @mhilbush
 /bundles/org.openhab.binding.synopanalyzer/ @clinique
+/bundles/org.openhab.binding.tado/ @dfrommi
 /bundles/org.openhab.binding.tankerkoenig/ @dolic @JueBag
 /bundles/org.openhab.binding.tellstick/ @jarlebh
 /bundles/org.openhab.binding.tesla/ @kgoderis
