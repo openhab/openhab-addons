@@ -39,7 +39,7 @@ import org.openhab.binding.wemo.internal.http.WemoHttpCall;
  * @author Svilen Valkanov - Initial contribution
  * @author Stefan Triller - Ported Tests from Groovy to Java
  */
-public class GenericWemoLightOSGiTest extends GenericWemoOSGiTest {
+public class GenericWemoLightOSGiTestParent extends GenericWemoOSGiTest {
 
     // Thing information
     protected ThingTypeUID THING_TYPE_UID = WemoBindingConstants.THING_TYPE_MZ100;

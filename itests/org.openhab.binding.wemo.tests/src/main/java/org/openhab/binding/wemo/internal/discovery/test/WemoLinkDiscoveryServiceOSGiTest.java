@@ -32,7 +32,7 @@ import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.discovery.WemoLinkDiscoveryService;
 import org.openhab.binding.wemo.internal.handler.WemoBridgeHandler;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
-import org.openhab.binding.wemo.internal.test.GenericWemoLightOSGiTest;
+import org.openhab.binding.wemo.internal.test.GenericWemoLightOSGiTestParent;
 import org.openhab.binding.wemo.internal.test.GenericWemoOSGiTest;
 
 /**
@@ -41,7 +41,7 @@ import org.openhab.binding.wemo.internal.test.GenericWemoOSGiTest;
  * @author Svilen Valkanov - Initial contribution
  * @author Stefan Triller - Ported Tests from Groovy to Java
  */
-public class WemoLinkDiscoveryServiceOSGiTest extends GenericWemoLightOSGiTest {
+public class WemoLinkDiscoveryServiceOSGiTest extends GenericWemoLightOSGiTestParent {
 
     @Before
     public void setUp() throws IOException {

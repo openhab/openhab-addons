@@ -900,7 +900,7 @@
     <feature name="openhab-binding-wemo" description="Wemo Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.wemo/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.wemo/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-wifiled" description="WiFi LED Binding" version="${project.version}">
