@@ -89,6 +89,7 @@
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.nibeheatpump</module>
     <module>org.openhab.binding.nibeuplink</module>
+    <module>org.openhab.binding.ntp</module>
     <module>org.openhab.binding.nuki</module>
     <module>org.openhab.binding.oceanic</module>
     <module>org.openhab.binding.onebusaway</module>
