@@ -29,7 +29,6 @@
 /addons/binding/org.openhab.binding.innogysmarthome/ @ollie-dev
 /addons/binding/org.openhab.binding.lgwebos/ @sprehn
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
-/addons/binding/org.openhab.binding.minecraft/ @ibaton
 /addons/binding/org.openhab.binding.modbus/ @ssalonen
 /addons/binding/org.openhab.binding.modbus.test/ @ssalonen
 /addons/binding/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
@@ -127,6 +126,7 @@
 /bundles/org.openhab.binding.mihome/ @pboos
 /bundles/org.openhab.binding.miio/ @marcelrv
 /bundles/org.openhab.binding.milight/ @davidgraeff
+/bundles/org.openhab.binding.minecraft/ @ibaton
 /bundles/org.openhab.binding.mqtt/ @davidgraeff
 /bundles/org.openhab.binding.mqtt.generic/ @davidgraeff
 /bundles/org.openhab.binding.mqtt.homeassistant/ @davidgraeff
