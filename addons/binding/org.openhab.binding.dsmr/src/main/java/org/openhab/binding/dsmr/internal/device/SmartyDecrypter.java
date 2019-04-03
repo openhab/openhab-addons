@@ -24,10 +24,10 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
@@ -61,7 +61,7 @@ public class SmartyDecrypter implements TelegramParser {
     private static final byte SEPARATOR_30 = 0x30;
     private static final int ADD_LENGTH = 17;
     private static final String ADD = "3000112233445566778899AABBCCDDEEFF";
-    private static final byte[] ADD_DECODED = DatatypeConverter.parseHexBinary(ADD);
+    private static final byte[] ADD_DECODED = HexUtils.hexToBytes(ADD);
     private static final int GCM_TAG_LENGTH = 12;
     private static final int GCM_BITS = GCM_TAG_LENGTH * Byte.SIZE;
     private static final int MESSAGES_BUFFER_SIZE = 4096;
@@ -89,8 +89,7 @@ public class SmartyDecrypter implements TelegramParser {
     public SmartyDecrypter(TelegramParser parser, P1TelegramListener telegramListener, String decryptionKey) {
         this.parser = parser;
         this.telegramListener = telegramListener;
-        secretKeySpec = decryptionKey.isEmpty() ? null
-                : new SecretKeySpec(DatatypeConverter.parseHexBinary(decryptionKey), "AES");
+        secretKeySpec = decryptionKey.isEmpty() ? null : new SecretKeySpec(HexUtils.hexToBytes(decryptionKey), "AES");
     }
 
     @Override
