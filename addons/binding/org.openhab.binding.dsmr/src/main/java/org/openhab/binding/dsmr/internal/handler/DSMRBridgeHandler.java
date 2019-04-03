@@ -20,7 +20,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -73,23 +72,23 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements DSMREventLis
     /**
      * The dsmrDevice managing the connection and handling telegrams.
      */
-    private @Nullable DSMRDevice dsmrDevice;
+    private @NonNullByDefault({}) DSMRDevice dsmrDevice;
 
     /**
      * Long running process that controls the DSMR device connection.
      */
-    private @Nullable DSMRDeviceRunnable dsmrDeviceRunnable;
+    private @NonNullByDefault({}) DSMRDeviceRunnable dsmrDeviceRunnable;
 
     /**
      * Thread for {@link DSMRDeviceRunnable}. A thread is used because the {@link DSMRDeviceRunnable} is a blocking
      * process that runs as long as the thing is not disposed.
      */
-    private @Nullable Thread dsmrDeviceThread;
+    private @NonNullByDefault({}) Thread dsmrDeviceThread;
 
     /**
      * Watchdog to check if messages received and restart if necessary.
      */
-    private @Nullable ScheduledFuture<?> watchdog;
+    private @NonNullByDefault({}) ScheduledFuture<?> watchdog;
 
     /**
      * Number of nanoseconds after which a timeout is triggered when no messages received.

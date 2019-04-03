@@ -14,6 +14,7 @@ package org.openhab.binding.dsmr.internal.device.cosem;
 
 import java.text.ParseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 
 /**
@@ -22,6 +23,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
  * @author M. Volaart - Initial contribution
  * @author Hilbrand Bouwkamp - Combined Integer and Double because {@link DecimalType} handles both
  */
+@NonNullByDefault
 class CosemDecimal extends CosemValueDescriptor<DecimalType> {
 
     public static final CosemDecimal INSTANCE = new CosemDecimal();

@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.dsmr.internal.device;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface for classes controlling DSMR devices.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@NonNullByDefault
 public interface DSMRDevice {
 
     /**

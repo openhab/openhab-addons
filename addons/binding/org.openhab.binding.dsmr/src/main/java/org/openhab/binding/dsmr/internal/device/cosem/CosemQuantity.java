@@ -24,6 +24,8 @@ import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 import javax.measure.quantity.Volume;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
@@ -39,7 +41,8 @@ import tec.uom.se.unit.BaseUnit;
  *
  * @param <Q> The {@link Quantity} type of the unit of this class
  */
-class CosemQuantity<Q extends Quantity<Q>> extends CosemValueDescriptor<QuantityType<Q>> {
+@NonNullByDefault
+class CosemQuantity<Q extends @Nullable Quantity<Q>> extends CosemValueDescriptor<QuantityType<Q>> {
 
     public static final Unit<Power> KILO_VAR_UNIT = MetricPrefix.KILO(new BaseUnit<Power>("var"));
     public static final Unit<Energy> KILO_VAR_HOUR_UNIT = MetricPrefix.KILO(new BaseUnit<Energy>("varh"));

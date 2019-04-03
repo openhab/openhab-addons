@@ -20,7 +20,6 @@ import java.util.Map.Entry;
 
 import javax.measure.quantity.Time;
 
-import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterConstants;
 
@@ -37,7 +36,7 @@ import org.openhab.binding.dsmr.internal.meter.DSMRMeterConstants;
  * </ul>
  *
  * @author M. Volaart - Initial contribution
- * @author Hilbrand Bouwkamp - Cosem subclasses made into factory classes and introduced {@link QuantityType}
+ * @author Hilbrand Bouwkamp - Cosem subclasses made into factory classes and introduced quantity type
  */
 public enum CosemObjectType {
     UNKNOWN(new OBISIdentifier(-1, DSMRMeterConstants.UNKNOWN_CHANNEL, -1, -1, -1, null), CosemString.INSTANCE),

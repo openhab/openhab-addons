@@ -17,12 +17,16 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Class representing an OBISIdentifier
  *
  * @author M. Volaart - Initial contribution
  * @author Hilbrand Bouwkamp - Fix bug in regex pattern.
  */
+@NonNullByDefault
 public class OBISIdentifier {
     /**
      * String representing a-b:c.d.e.f OBIS ID
@@ -36,11 +40,11 @@ public class OBISIdentifier {
 
     /* the six individual group values of the OBIS ID */
     private int groupA;
-    private Integer groupB;
+    private @Nullable Integer groupB;
     private int groupC;
     private int groupD;
-    private Integer groupE;
-    private Integer groupF;
+    private @Nullable Integer groupE;
+    private @Nullable Integer groupF;
 
     /**
      * Constructs a new OBIS Identifier (A-B:C.D.E.F)
@@ -52,7 +56,8 @@ public class OBISIdentifier {
      * @param groupE E value
      * @param groupF F value
      */
-    public OBISIdentifier(int groupA, Integer groupB, int groupC, int groupD, Integer groupE, Integer groupF) {
+    public OBISIdentifier(int groupA, @Nullable Integer groupB, int groupC, int groupD, @Nullable Integer groupE,
+            @Nullable Integer groupF) {
         this.groupA = groupA;
         this.groupB = groupB;
         this.groupC = groupC;
@@ -109,7 +114,7 @@ public class OBISIdentifier {
     /**
      * @return the groupB
      */
-    public Integer getGroupB() {
+    public @Nullable Integer getGroupB() {
         return groupB;
     }
 
@@ -130,14 +135,14 @@ public class OBISIdentifier {
     /**
      * @return the groupE
      */
-    public Integer getGroupE() {
+    public @Nullable Integer getGroupE() {
         return groupE;
     }
 
     /**
      * @return the groupF
      */
-    public Integer getGroupF() {
+    public @Nullable Integer getGroupF() {
         return groupF;
     }
 
@@ -156,7 +161,7 @@ public class OBISIdentifier {
      * @return true if both OBISIdentifiers match, false otherwise
      */
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(@Nullable Object other) {
         OBISIdentifier o;
         if (other != null && other instanceof OBISIdentifier) {
             o = (OBISIdentifier) other;

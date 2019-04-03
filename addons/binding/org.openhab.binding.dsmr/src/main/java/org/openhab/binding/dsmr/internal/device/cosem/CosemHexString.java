@@ -14,6 +14,7 @@ package org.openhab.binding.dsmr.internal.device.cosem;
 
 import java.text.ParseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.StringType;
 
 /**
@@ -22,6 +23,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
  * @author M. Volaart - Initial contribution
  * @author Hilbrand Bouwkamp - Class now a factory instead of data containing class
  */
+@NonNullByDefault
 class CosemHexString extends CosemValueDescriptor<StringType> {
 
     public static final CosemHexString INSTANCE = new CosemHexString();
