@@ -40,7 +40,6 @@
     <module>org.openhab.binding.innogysmarthome</module>
     <module>org.openhab.binding.lgwebos</module>
     <module>org.openhab.binding.loxone</module>
-    <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.modbus</module>
     <module>org.openhab.binding.modbus.test</module>
     <module>org.openhab.binding.netatmo</module>
