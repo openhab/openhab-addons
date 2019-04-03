@@ -36,11 +36,8 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.hue.internal.FullConfig;
 import org.openhab.binding.hue.internal.FullLight;
-import org.openhab.binding.hue.internal.StateUpdate;
 import org.openhab.binding.hue.internal.State.ColorMode;
-import org.openhab.binding.hue.internal.handler.HueClient;
-import org.openhab.binding.hue.internal.handler.HueLightHandler;
-import org.openhab.binding.hue.test.HueLightState;
+import org.openhab.binding.hue.internal.StateUpdate;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -99,25 +96,25 @@ public class HueLightHandlerTest {
 
     @Test
     public void assertCommandForColorChannelOn() {
-        String expectedReply = "{\"on\" : true, \"transitiontime\" : 4}";
+        String expectedReply = "{\"on\" : true}";
         assertSendCommandForColor(OnOffType.ON, new HueLightState(), expectedReply);
     }
 
     @Test
     public void assertCommandForColorTemperatureChannelOn() {
-        String expectedReply = "{\"on\" : true, \"transitiontime\" : 4}";
+        String expectedReply = "{\"on\" : true}";
         assertSendCommandForColorTemp(OnOffType.ON, new HueLightState(), expectedReply);
     }
 
     @Test
     public void assertCommandForColorChannelOff() {
-        String expectedReply = "{\"on\" : false, \"transitiontime\" : 4}";
+        String expectedReply = "{\"on\" : false}";
         assertSendCommandForColor(OnOffType.OFF, new HueLightState(), expectedReply);
     }
 
     @Test
     public void assertCommandForColorTemperatureChannelOff() {
-        String expectedReply = "{\"on\" : false, \"transitiontime\" : 4}";
+        String expectedReply = "{\"on\" : false}";
         assertSendCommandForColorTemp(OnOffType.OFF, new HueLightState(), expectedReply);
     }
 
@@ -177,7 +174,7 @@ public class HueLightHandlerTest {
 
     @Test
     public void assertCommandForColorChannelBlack() {
-        String expectedReply = "{\"on\" : false, \"transitiontime\" : 4}";
+        String expectedReply = "{\"on\" : false}";
         assertSendCommandForColor(HSBType.BLACK, new HueLightState(), expectedReply);
     }
 
@@ -207,7 +204,7 @@ public class HueLightHandlerTest {
 
     @Test
     public void assertXYCommandForColorChannelBlack() {
-        String expectedReply = "{\"on\" : false, \"transitiontime\" : 4}";
+        String expectedReply = "{\"on\" : false}";
         assertSendCommandForColor(HSBType.BLACK, new HueLightState().colormode(ColorMode.XY), expectedReply);
     }
 
@@ -285,14 +282,14 @@ public class HueLightHandlerTest {
     @Test
     public void assertCommandForBrightnessChannelOff() {
         HueLightState currentState = new HueLightState();
-        String expectedReply = "{\"on\" : false, \"transitiontime\" : 4}";
+        String expectedReply = "{\"on\" : false}";
         assertSendCommandForBrightness(OnOffType.OFF, currentState, expectedReply);
     }
 
     @Test
     public void assertCommandForBrightnessChannelOn() {
         HueLightState currentState = new HueLightState();
-        String expectedReply = "{\"on\" : true, \"transitiontime\" : 4}";
+        String expectedReply = "{\"on\" : true}";
         assertSendCommandForBrightness(OnOffType.ON, currentState, expectedReply);
     }
 

@@ -24,12 +24,16 @@ import com.google.gson.annotations.SerializedName;
  */
 public class BridgeJsonParameters {
 
-    private final String id;
+    private String id;
     @SerializedName("internalipaddress")
-    private final String internalIpAddress;
+    private String internalIpAddress;
     @SerializedName("macaddress")
-    private final String macAddress;
-    private final String name;
+    private String macAddress;
+    private String name;
+
+    private BridgeJsonParameters() {
+        // This no arguments constructor is required for Gson deserialization
+    }
 
     public BridgeJsonParameters(String id, String internalIpAddress, String macAdress, String name) {
         this.id = id;

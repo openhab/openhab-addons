@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hue.test;
+package org.openhab.binding.hue.internal;
 
 import static org.junit.Assert.*;
 
@@ -21,7 +21,7 @@ import org.eclipse.smarthome.test.java.JavaOSGiTest;
 /**
  * @author Markus Rathgeb - migrated to plain Java test
  */
-public class AbstractHueOSGiTest extends JavaOSGiTest {
+public class AbstractHueOSGiTestParent extends JavaOSGiTest {
 
     /**
      * Gets the handler of a thing if it fits to a specific type.
