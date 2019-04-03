@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.digiplex.internal;
 
-import static org.openhab.binding.digiplex.DigiplexBindingConstants.*;
+import static org.openhab.binding.digiplex.internal.DigiplexBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -22,9 +22,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.digiplex.handler.DigiplexAreaHandler;
-import org.openhab.binding.digiplex.handler.DigiplexBridgeHandler;
-import org.openhab.binding.digiplex.handler.DigiplexZoneHandler;
+import org.openhab.binding.digiplex.internal.handler.DigiplexAreaHandler;
+import org.openhab.binding.digiplex.internal.handler.DigiplexBridgeHandler;
+import org.openhab.binding.digiplex.internal.handler.DigiplexZoneHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
