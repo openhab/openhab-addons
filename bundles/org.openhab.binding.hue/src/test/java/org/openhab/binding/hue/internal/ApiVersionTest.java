@@ -14,17 +14,14 @@ package org.openhab.binding.hue.internal;
 
 import static org.junit.Assert.assertTrue;
 
-import org.eclipse.smarthome.test.java.JavaOSGiTest;
 import org.junit.Test;
-import org.openhab.binding.hue.internal.ApiVersion;
 
 /**
  *
  *
- * @author Samuel Leisering - Added ApiVersion tests
- *
+ * @author Samuel Leisering - Initial contribution
  */
-public class VersionTest extends JavaOSGiTest {
+public class ApiVersionTest {
 
     @Test
     public void testKnownVersions() {
