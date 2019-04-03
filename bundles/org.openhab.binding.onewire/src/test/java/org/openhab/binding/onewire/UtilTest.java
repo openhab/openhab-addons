@@ -34,6 +34,7 @@ public class UtilTest {
         QuantityType<Temperature> temperature = new QuantityType<>("20 °C");
         QuantityType<Dimensionless> relativeHumidity = new QuantityType<>("75%");
 
+        @SuppressWarnings("unchecked")
         QuantityType<Density> absoluteHumidity = (QuantityType<Density>) Util.calculateAbsoluteHumidity(temperature,
                 relativeHumidity);
         assertEquals(12.93, absoluteHumidity.doubleValue(), 0.01);
@@ -45,6 +46,7 @@ public class UtilTest {
         QuantityType<Temperature> temperature = new QuantityType<>("20 °C");
         QuantityType<Dimensionless> relativeHumidity = new QuantityType<>("75%");
 
+        @SuppressWarnings("unchecked")
         QuantityType<Temperature> dewPoint = (QuantityType<Temperature>) Util.calculateDewpoint(temperature,
                 relativeHumidity);
         assertEquals(15.43, dewPoint.doubleValue(), 0.01);

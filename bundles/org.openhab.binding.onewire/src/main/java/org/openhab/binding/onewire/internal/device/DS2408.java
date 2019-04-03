@@ -12,12 +12,6 @@
  */
 package org.openhab.binding.onewire.internal.device;
 
-import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
-
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.onewire.internal.DigitalIoConfig;
 import org.openhab.binding.onewire.internal.OwException;
@@ -32,17 +26,6 @@ import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
  */
 @NonNullByDefault
 public class DS2408 extends AbstractDigitalOwDevice {
-    public static final Set<OwChannelConfig> CHANNELS = Stream
-            .of(new OwChannelConfig(CHANNEL_DIGITAL0, CHANNEL_TYPE_UID_DIO, "Digital I/O 0"),
-                    new OwChannelConfig(CHANNEL_DIGITAL1, CHANNEL_TYPE_UID_DIO, "Digital I/O 1"),
-                    new OwChannelConfig(CHANNEL_DIGITAL2, CHANNEL_TYPE_UID_DIO, "Digital I/O 2"),
-                    new OwChannelConfig(CHANNEL_DIGITAL3, CHANNEL_TYPE_UID_DIO, "Digital I/O 3"),
-                    new OwChannelConfig(CHANNEL_DIGITAL4, CHANNEL_TYPE_UID_DIO, "Digital I/O 4"),
-                    new OwChannelConfig(CHANNEL_DIGITAL5, CHANNEL_TYPE_UID_DIO, "Digital I/O 5"),
-                    new OwChannelConfig(CHANNEL_DIGITAL6, CHANNEL_TYPE_UID_DIO, "Digital I/O 6"),
-                    new OwChannelConfig(CHANNEL_DIGITAL7, CHANNEL_TYPE_UID_DIO, "Digital I/O 7"))
-            .collect(Collectors.toSet());
-
     public DS2408(SensorId sensorId, OwBaseThingHandler callback) {
         super(sensorId, callback);
     }
