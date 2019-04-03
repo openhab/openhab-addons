@@ -32,7 +32,6 @@
 /addons/binding/org.openhab.binding.minecraft/ @ibaton
 /addons/binding/org.openhab.binding.modbus/ @ssalonen
 /addons/binding/org.openhab.binding.modbus.test/ @ssalonen
-/addons/binding/org.openhab.binding.neeo/ @tmrobert8
 /addons/binding/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
 /addons/binding/org.openhab.binding.nikohomecontrol/ @mherwege
 /addons/binding/org.openhab.binding.onewiregpio/ @aogorek
@@ -55,7 +54,6 @@
 /addons/io/org.openhab.io.javasound/ @kaikreuzer
 /addons/io/org.openhab.io.mqttembeddedbroker/ @davidgraeff
 /addons/io/org.openhab.io.mqttembeddedbroker.test/ @davidgraeff
-/addons/io/org.openhab.io.neeo/ @tmrobert8
 /addons/io/org.openhab.io.openhabcloud/ @kaikreuzer
 /addons/io/org.openhab.io.sound/ @kaikreuzer
 /addons/io/org.openhab.io.transport.feed/ @svilenvul
@@ -135,6 +133,7 @@
 /bundles/org.openhab.binding.mqtt.homie/ @davidgraeff
 /bundles/org.openhab.binding.nanoleaf/ @raepple
 /bundles/org.openhab.binding.neato/ @jjlauterbach
+/bundles/org.openhab.binding.neeo/ @tmrobert8
 /bundles/org.openhab.binding.nest/ @wborn
 /bundles/org.openhab.binding.network/ @davidgraeff @mettke
 /bundles/org.openhab.binding.nibeheatpump/ @paulianttila
@@ -196,6 +195,7 @@
 /bundles/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer
 /bundles/org.openhab.io.imperihome/ @pdegeus
 /bundles/org.openhab.io.javasound/ @kaikreuzer
+/bundles/org.openhab.io.neeo/ @tmrobert8
 /bundles/org.openhab.io.webaudio/ @kaikreuzer
 /bundles/org.openhab.persistence.mapdb/ @mkhl
 /bundles/org.openhab.transform.exec/ @openhab/2-x-add-ons-maintainers

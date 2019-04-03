@@ -82,34 +82,22 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
      * This is the context created in the activate method (and nulled in the deactivate method) that will provide the
      * context to all services for all servlets
      */
-    @Nullable
-    private ServiceContext context;
+    private @Nullable ServiceContext context;
 
     // The following services are set by openHAB via the getter/setters
-    @Nullable
-    private HttpService httpService;
-    @Nullable
-    private ItemRegistry itemRegistry;
-    @Nullable
-    private BindingInfoRegistry bindingInfoRegistry;
-    @Nullable
-    private ThingRegistry thingRegistry;
-    @Nullable
-    private ThingTypeRegistry thingTypeRegistry;
-    @Nullable
-    private ItemChannelLinkRegistry itemChannelLinkRegistry;
-    @Nullable
-    private ChannelTypeRegistry channelTypeRegistry;
-    @Nullable
-    private MDNSClient mdnsClient;
-    @Nullable
-    private EventPublisher eventPublisher;
-    @Nullable
-    private NetworkAddressService networkAddressService;
+    private @Nullable HttpService httpService;
+    private @Nullable ItemRegistry itemRegistry;
+    private @Nullable BindingInfoRegistry bindingInfoRegistry;
+    private @Nullable ThingRegistry thingRegistry;
+    private @Nullable ThingTypeRegistry thingTypeRegistry;
+    private @Nullable ItemChannelLinkRegistry itemChannelLinkRegistry;
+    private @Nullable ChannelTypeRegistry channelTypeRegistry;
+    private @Nullable MDNSClient mdnsClient;
+    private @Nullable EventPublisher eventPublisher;
+    private @Nullable NetworkAddressService networkAddressService;
 
     /** The main dashboard servlet. Only created in the activate method (and disposed of in the deactivate method) */
-    @Nullable
-    private NeeoDashboardServlet dashboardServlet;
+    private @Nullable NeeoDashboardServlet dashboardServlet;
 
     /**
      * The various servlets being used (should be one per brain + the status one)
@@ -117,8 +105,7 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
     private final List<NeeoBrainServlet> servlets = new CopyOnWriteArrayList<>();
 
     /** The brain discovery service */
-    @Nullable
-    private BrainDiscovery discovery;
+    private @Nullable BrainDiscovery discovery;
 
     /** The discovery listener to the brain discovery service */
     private final DiscoveryListener discoveryListener = new DiscoveryListener() {
@@ -152,26 +139,23 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
     /**
      * The event filter to apply to this service
      */
-    private final EventFilter eventFilter = new EventFilter() {
-        @Override
-        public boolean apply(@Nullable Event event) {
-            logger.trace("apply: {}", event);
+    private final EventFilter eventFilter = event -> {
+        logger.trace("apply: {}", event);
 
-            for (NeeoBrainServlet ns : servlets) {
-                final List<EventFilter> efs = ns.getEventFilters();
-                if (efs != null) {
-                    for (EventFilter ef : efs) {
-                        if (ef.apply(event)) {
-                            logger.trace("apply (true): {}", event);
-                            return true;
-                        }
+        for (NeeoBrainServlet ns : servlets) {
+            final List<EventFilter> efs = ns.getEventFilters();
+            if (efs != null) {
+                for (EventFilter ef : efs) {
+                    if (ef.apply(event)) {
+                        logger.trace("apply (true): {}", event);
+                        return true;
                     }
                 }
             }
-
-            logger.trace("apply (false): {}", event);
-            return false;
         }
+
+        logger.trace("apply (false): {}", event);
+        return false;
     };
 
     /**
@@ -394,7 +378,7 @@ public class NeeoService implements EventSubscriber, NetworkAddressChangeListene
                 validate(eventPublisher, "eventPublisher"), validate(networkAddressService, "networkAddressService"));
 
         context = localContext;
-        discovery = new MdnsBrainDiscovery(context);
+        discovery = new MdnsBrainDiscovery(localContext);
         discovery.addListener(discoveryListener);
 
         try {

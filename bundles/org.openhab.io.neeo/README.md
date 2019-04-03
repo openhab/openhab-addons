@@ -18,6 +18,7 @@ The openHAB NEEO Integration will provide the following:
 * A NEEO dashboard tile that will show the status of NEEO Brain connections and provide the ability to customize the mapping between openHAB things/item and NEEO device/capabilities.
 * Discovery of openHAB things on the NEEO app.
 * Full two-way communcation between openHAB and brain.
+
 Item changes in openHAB will appear in NEEO and vice-versa.
 
 ## Troubleshooting
@@ -73,6 +74,7 @@ You will be prompted for the Brain's IP address and once entered, the brain shou
 2. The 'file' icon will allow you to view the associated NEEO Brain's log.
 3. The 'dot' icon will blink the LED on the associate NEEO Brain (allowing you to identify the brain if you have multiple ones).
 4. The 'trash' icon will disconnect from the related Brain.
+
 This will allow you to remove a stale (no longer used) Brain or remove the Brain to be rediscovered again (which may fix a communication issue with the brain).
 
 Please note the integration will properly handle IP address changes.
@@ -128,6 +130,7 @@ You can then build the list by specifying:
 1.  The value to send to openHAB if the item is chosen.
 2.  The label shown on the remote for that value.
 3.  An optional URI to an image to show for the line.
+
 The image will be scaled down by the remote.
 Best practice: although you can specify any URI, to avoid issues where the internet is not available (or the source of the image is offline) - put the image in your conf/images directory and specify the URI to that.
 That way the image will always be available if openHAB is running.
@@ -171,6 +174,7 @@ The properties page (accessible via the gear icon) will present properties speci
 1. The driver version can be used to override the driver version sent to the brain.  Please note that this number is automatically incremented by one whenever you save the device definition.
 2. The 'Specific name' can be used to override the thing name presented to the NEEO Brain.
 3. The 'Custom Icon' can be used to assign a custom icon to the device (if left blank, the icon is assigned by the NEEO Brain according to the NEEO Type).
+
 The only 'officially' supported custom icon is "sonos" however you can assign any variety of icons available on the brain.
 A list of some of the icons that can be assigned: ![Configuration](doc/icons.png)
 
@@ -190,6 +194,7 @@ If the device does not have power state or doesn't support input switching, the 
 This following device capabilities are available:
 
 1.  "Always On" - check if there is no power management for the device.
+
 You do NOT need to specify any POWER buttons or POWER STATE sensor nor will the device be marked as 'stupid'.
 
 #### Example
@@ -241,6 +246,7 @@ The value sent will always be between 0 and 100.
 7.  Power - this will create a powerstate sensor on the brain that can be used to stop/start the device.
 NOTE: you MUST also assign a POWER OFF/POWER ON for this to work.
 8.  List - this will create a directory on the brain that can be used to show a list.
+
 The label assigned will show up on the remote to start the list processing.
 When a user selects a list item on the remote, the command that will be sent will be the value associated with the list item selected.
 
@@ -322,6 +328,7 @@ Pressing the "AM/FM" button the remote screen will send the value 1 to the "Sour
 3.  The "Status" item was bound to both the power state and a switch assigned to the POWER ON/OFF hard buttons.
 Pressing the POWER ON/OFF will send ON/OFF to the "Status" item.
 4.  The "Volume" item was duplicated once.
+
 The first instance is assigned to a text label that will then be formatted with the "VOLUME % of %%".
 The second instance binds the item to a switch that uses the hard volume buttons on the remote.
 When the volumes keys are pressed, a "INCREASE" or "DECREASE" will be sent to the item.
@@ -337,6 +344,7 @@ There are two files being stored by the integration:
 1.  discoveredbrains.json will contain the brains that are discovered or manually added from the 'brains' tab.
 As brains are discovered, manually added or removed, this file will be updated.
 2.  neeodefinitions.json will contain the device mappings defined on the 'things' tab.
+
 As definitions are saved, this file will be updated.
 
 ## Firmware
