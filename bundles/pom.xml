@@ -83,6 +83,7 @@
     <module>org.openhab.binding.mihome</module>
     <module>org.openhab.binding.miio</module>
     <module>org.openhab.binding.milight</module>
+    <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.mqtt</module>
     <module>org.openhab.binding.mqtt.generic</module>
     <module>org.openhab.binding.mqtt.homeassistant</module>
