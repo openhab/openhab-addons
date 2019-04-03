@@ -11,7 +11,9 @@ You can use test serial slaves without any hardware on linux using these steps:
 ./diagslave -m rtu -a 1 -b 38400 -d 8 -s 1 -p none -4 10 /dev/pts/7
 ```
 
-3. Modify `start.sh` or `start_debug.sh` to include the unconventional port name by adding the following argument to `java`:
+3. Configure openHAB's modbus slave to connect to `/dev/pts/8`.
+
+4. Modify `start.sh` or `start_debug.sh` to include the unconventional port name by adding the following argument to `java`:
 
 ```
 -Dgnu.io.rxtx.SerialPorts=/dev/pts/8
@@ -26,6 +28,8 @@ Naturally this is not the same thing as the real thing but helps to identify sim
 ```
 ./diagslave -m tcp -a 1 -p 55502
 ```
+
+2. Configure openHAB's modbus slave to connect to `127.0.0.1:55502`.
 
 
 ## Writing Data
