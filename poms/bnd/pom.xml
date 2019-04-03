@@ -672,6 +672,7 @@ Import-Package: \\
                   <includes>
                     <include>**/*.jar</include>
                   </includes>
+		  <scope>provided</scope>
                 </resource>
               </resources>
               </configuration>
