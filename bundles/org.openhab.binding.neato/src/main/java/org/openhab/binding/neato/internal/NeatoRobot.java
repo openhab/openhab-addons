@@ -29,7 +29,7 @@ import java.util.TimeZone;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.codec.binary.Hex;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.neato.internal.classes.ErrorMessage;
 import org.openhab.binding.neato.internal.classes.NeatoGeneralInfo;
@@ -95,7 +95,7 @@ public class NeatoRobot {
             sha256Hmac.init(secretKey);
 
             byte[] signature = sha256Hmac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));
-            String hexString = Hex.encodeHexString(signature);
+            String hexString = HexUtils.bytesToHex(signature);
 
             // Properties headers = new Properties
             Properties headers = new Properties();
