@@ -89,6 +89,7 @@
     <module>org.openhab.binding.mqtt.homie</module>
     <module>org.openhab.binding.nanoleaf</module>
     <module>org.openhab.binding.neato</module>
+    <module>org.openhab.binding.neeo</module>
     <module>org.openhab.binding.nest</module>
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.nibeheatpump</module>
@@ -150,6 +151,7 @@
     <module>org.openhab.extensionservice.marketplace.automation</module>
     <module>org.openhab.io.imperihome</module>
     <module>org.openhab.io.javasound</module>
+    <module>org.openhab.io.neeo</module>
     <module>org.openhab.io.mqttembeddedbroker</module>
     <module>org.openhab.io.webaudio</module>
     <module>org.openhab.persistence.mapdb</module>
