@@ -14,10 +14,6 @@ package org.openhab.binding.onewire.internal.device;
 
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
@@ -41,13 +37,6 @@ import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
  */
 @NonNullByDefault
 public class DS1923 extends AbstractOwDevice {
-    public static final Set<OwChannelConfig> CHANNELS = Stream
-            .of(new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE),
-                    new OwChannelConfig(CHANNEL_HUMIDITY, CHANNEL_TYPE_UID_HUMIDITY),
-                    new OwChannelConfig(CHANNEL_ABSOLUTE_HUMIDITY, CHANNEL_TYPE_UID_ABSHUMIDITY),
-                    new OwChannelConfig(CHANNEL_DEWPOINT, CHANNEL_TYPE_UID_TEMPERATURE))
-            .collect(Collectors.toSet());
-
     private final OwserverDeviceParameter temperatureParameter = new OwserverDeviceParameter("/temperature");
     private final OwserverDeviceParameter humidityParameter = new OwserverDeviceParameter("/humidity");
 

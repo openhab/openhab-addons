@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.onewire.internal;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -24,15 +22,6 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.openhab.binding.onewire.internal.device.DS18x20;
-import org.openhab.binding.onewire.internal.device.DS1923;
-import org.openhab.binding.onewire.internal.device.DS2401;
-import org.openhab.binding.onewire.internal.device.DS2405;
-import org.openhab.binding.onewire.internal.device.DS2406_DS2413;
-import org.openhab.binding.onewire.internal.device.DS2408;
-import org.openhab.binding.onewire.internal.device.DS2423;
-import org.openhab.binding.onewire.internal.device.DS2438;
-import org.openhab.binding.onewire.internal.device.EDS006x;
 import org.openhab.binding.onewire.internal.device.OwChannelConfig;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
 
@@ -54,7 +43,7 @@ public class OwBindingConstants {
     public static final ThingTypeUID THING_TYPE_BASIC = new ThingTypeUID(BINDING_ID, "basic");
     public static final ThingTypeUID THING_TYPE_EDS_ENV = new ThingTypeUID(BINDING_ID, "edsenv");
 
-    // TODO: remove after 0.11.0 release & cleanup
+    // TODO: remove after 2.5.0 release & cleanup
     public static final ThingTypeUID THING_TYPE_MS_TH = new ThingTypeUID(BINDING_ID, "ms-th");
     public static final ThingTypeUID THING_TYPE_MS_TV = new ThingTypeUID(BINDING_ID, "ms-tv");
     public static final ThingTypeUID THING_TYPE_COUNTER = new ThingTypeUID(BINDING_ID, "counter");
@@ -138,109 +127,23 @@ public class OwBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_UID_OWFS_STRING = new ChannelTypeUID(BINDING_ID, "owfs-string");
 
     // Maps for Discovery
-    public static final Map<OwSensorType, ThingTypeUID> THING_TYPE_MAP = Collections.unmodifiableMap(Stream
-            .of(new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.DS1420, THING_TYPE_BASIC),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.DS18B20, THING_TYPE_BASIC),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.DS18S20, THING_TYPE_BASIC),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.DS1822, THING_TYPE_BASIC),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.DS1923, THING_TYPE_MS_TX),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.DS2401, THING_TYPE_BASIC),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.DS2405, THING_TYPE_BASIC),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.DS2406, THING_TYPE_BASIC),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.DS2408, THING_TYPE_BASIC),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.DS2413, THING_TYPE_BASIC),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.DS2423, THING_TYPE_BASIC),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.DS2438, THING_TYPE_MS_TX),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.AMS, THING_TYPE_AMS),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.AMS_S, THING_TYPE_AMS),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.BMS, THING_TYPE_BMS),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.BMS_S, THING_TYPE_BMS),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.EDS0064, THING_TYPE_EDS_ENV),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.EDS0065, THING_TYPE_EDS_ENV),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.EDS0066, THING_TYPE_EDS_ENV),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.EDS0067, THING_TYPE_EDS_ENV),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.EDS0068, THING_TYPE_EDS_ENV),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.MS_TC, THING_TYPE_MS_TX),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.MS_TH, THING_TYPE_MS_TX),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.MS_TL, THING_TYPE_MS_TX),
-                    new SimpleEntry<OwSensorType, ThingTypeUID>(OwSensorType.MS_TV, THING_TYPE_MS_TX))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
-    public static final Map<OwSensorType, String> THING_LABEL_MAP = Collections.unmodifiableMap(Stream
-            .of(new SimpleEntry<OwSensorType, String>(OwSensorType.DS1420, "1kb EEPROM"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.DS18B20, "Temperature Sensor"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.DS18S20, "Temperature Sensor"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.DS1822, "Temperature Sensor"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.DS1923, "Multisensor"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.DS2401, "iButton"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.DS2405, "Single Digital I/O"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.DS2406, "Dual Digital I/O"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.DS2408, "Octal Digital I/O"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.DS2413, "Dual Digital I/O"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.DS2423, "Dual Counter"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.DS2438, "Multisensor (generic)"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.AMS, "Multisensor AMS"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.AMS_S, "Multisensor AMS"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.BMS, "Multisensor BMS"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.BMS_S, "Multisensor BMS"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.EDS0064, "Multisensor EDS"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.EDS0065, "Multisensor EDS"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.EDS0066, "Multisensor EDS"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.EDS0067, "Multisensor EDS"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.EDS0068, "Multisensor EDS"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.MS_TC, "Multisensor TC"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.MS_TH, "Multisensor TH"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.MS_TL, "Multisensor TL"),
-                    new SimpleEntry<OwSensorType, String>(OwSensorType.MS_TV, "Multisensor TV"))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
-    public static final Map<String, String> ACCEPTED_ITEM_TYPES_MAP = Collections.unmodifiableMap(Stream
-            .of(new SimpleEntry<String, String>(CHANNEL_HUMIDITY, "Number:Dimensionless"),
-                    new SimpleEntry<String, String>(CHANNEL_ABSOLUTE_HUMIDITY, "Number:Density"),
-                    new SimpleEntry<String, String>(CHANNEL_DEWPOINT, "Number:Temperature"),
-                    new SimpleEntry<String, String>(CHANNEL_TEMPERATURE, "Number:Temperature"),
-                    new SimpleEntry<String, String>(CHANNEL_LIGHT, "Number:Illuminance"),
-                    new SimpleEntry<String, String>(CHANNEL_PRESSURE, "Number:Pressure"),
-                    new SimpleEntry<String, String>(CHANNEL_VOLTAGE, "Number:ElectricPotential"),
-                    new SimpleEntry<String, String>(CHANNEL_SUPPLYVOLTAGE, "Number:ElectricPotential"),
-                    new SimpleEntry<String, String>(CHANNEL_CURRENT, "Number:ElectricCurrent"),
-                    new SimpleEntry<String, String>(CHANNEL_COUNTER, "Number"),
-                    new SimpleEntry<String, String>(CHANNEL_COUNTER0, "Number"),
-                    new SimpleEntry<String, String>(CHANNEL_COUNTER1, "Number"),
-                    new SimpleEntry<String, String>(CHANNEL_DIGITAL, "Switch"),
-                    new SimpleEntry<String, String>(CHANNEL_DIGITAL0, "Switch"),
-                    new SimpleEntry<String, String>(CHANNEL_DIGITAL1, "Switch"),
-                    new SimpleEntry<String, String>(CHANNEL_DIGITAL2, "Switch"),
-                    new SimpleEntry<String, String>(CHANNEL_DIGITAL3, "Switch"),
-                    new SimpleEntry<String, String>(CHANNEL_DIGITAL4, "Switch"),
-                    new SimpleEntry<String, String>(CHANNEL_DIGITAL5, "Switch"),
-                    new SimpleEntry<String, String>(CHANNEL_DIGITAL6, "Switch"),
-                    new SimpleEntry<String, String>(CHANNEL_DIGITAL7, "Switch"),
-                    new SimpleEntry<String, String>(CHANNEL_PRESENT, "Switch"))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
-    public static final Map<OwSensorType, Set<OwChannelConfig>> SENSOR_TYPE_CHANNEL_MAP = Collections.unmodifiableMap(
-            Stream.of(new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.AMS, DS2438.CHANNELS_AMS),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.AMS_S, DS2438.CHANNELS_AMS_S),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.BMS, DS2438.CHANNELS_BMS),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.BMS_S, DS2438.CHANNELS_BMS_S),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.DS1420, DS2401.CHANNELS),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.DS18B20, DS18x20.CHANNELS),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.DS18S20, DS18x20.CHANNELS_DS18S20),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.DS1822, DS18x20.CHANNELS),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.DS1923, DS1923.CHANNELS),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.DS2401, DS2401.CHANNELS),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.DS2405, DS2405.CHANNELS),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.DS2406, DS2406_DS2413.CHANNELS),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.DS2413, DS2406_DS2413.CHANNELS),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.DS2408, DS2408.CHANNELS),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.DS2423, DS2423.CHANNELS),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.DS2438, DS2438.CHANNELS),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.EDS0064, EDS006x.CHANNELS_EDS0064),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.EDS0065, EDS006x.CHANNELS_EDS0065),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.EDS0066, EDS006x.CHANNELS_EDS0066),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.EDS0067, EDS006x.CHANNELS_EDS0067),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.EDS0068, EDS006x.CHANNELS_EDS0068),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.MS_TC, DS2438.CHANNELS_MS_TC),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.MS_TH, DS2438.CHANNELS_MS_TH),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.MS_TL, DS2438.CHANNELS_MS_TL),
-                    new SimpleEntry<OwSensorType, Set<OwChannelConfig>>(OwSensorType.MS_TV, DS2438.CHANNELS_MS_TV))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+    public static final Map<OwSensorType, ThingTypeUID> THING_TYPE_MAP;
+    public static final Map<OwSensorType, String> THING_LABEL_MAP;
+    public static final Map<OwSensorType, Set<OwChannelConfig>> SENSOR_TYPE_CHANNEL_MAP;
+
+    public static final Map<String, String> ACCEPTED_ITEM_TYPES_MAP = Util
+            .readPropertiesFile("accepted_itemtypes.properties");
+
+    static {
+        Map<String, String> properties = Util.readPropertiesFile("sensor.properties");
+        THING_TYPE_MAP = properties.entrySet().stream().filter(e -> e.getKey().endsWith(".thingtype"))
+                .collect(Collectors.toConcurrentMap(e -> OwSensorType.valueOf(e.getKey().split("\\.")[0]),
+                        e -> new ThingTypeUID(BINDING_ID, e.getValue())));
+        SENSOR_TYPE_CHANNEL_MAP = properties.entrySet().stream().filter(e -> e.getKey().endsWith(".channels"))
+                .collect(Collectors.toConcurrentMap(e -> OwSensorType.valueOf(e.getKey().split("\\.")[0]),
+                        e -> Stream.of(e.getValue().split(",")).map(c -> OwChannelConfig.fromString(c))
+                                .collect(Collectors.toSet())));
+        THING_LABEL_MAP = properties.entrySet().stream().filter(e -> e.getKey().endsWith(".label")).collect(
+                Collectors.toConcurrentMap(e -> OwSensorType.valueOf(e.getKey().split("\\.")[0]), e -> e.getValue()));
+    }
 }

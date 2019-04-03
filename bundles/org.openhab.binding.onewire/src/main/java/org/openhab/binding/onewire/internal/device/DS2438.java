@@ -15,10 +15,6 @@ package org.openhab.binding.onewire.internal.device;
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MILLI;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.ElectricCurrent;
 import javax.measure.quantity.ElectricPotential;
@@ -51,63 +47,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DS2438 extends AbstractOwDevice {
-    public static final Set<OwChannelConfig> CHANNELS_MS_TC = Stream
-            .of(new OwChannelConfig(CHANNEL_SUPPLYVOLTAGE, CHANNEL_TYPE_UID_VOLTAGE, "Supplyvoltage"),
-                    new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE),
-                    new OwChannelConfig(CHANNEL_VOLTAGE, CHANNEL_TYPE_UID_VOLTAGE))
-            .collect(Collectors.toSet());
-    public static final Set<OwChannelConfig> CHANNELS_MS_TH = Stream
-            .of(new OwChannelConfig(CHANNEL_SUPPLYVOLTAGE, CHANNEL_TYPE_UID_VOLTAGE, "Supplyvoltage"),
-                    new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE),
-                    new OwChannelConfig(CHANNEL_HUMIDITY, CHANNEL_TYPE_UID_HUMIDITYCONF),
-                    new OwChannelConfig(CHANNEL_ABSOLUTE_HUMIDITY, CHANNEL_TYPE_UID_ABSHUMIDITY),
-                    new OwChannelConfig(CHANNEL_DEWPOINT, CHANNEL_TYPE_UID_TEMPERATURE, "Dewpoint"))
-            .collect(Collectors.toSet());
-    public static final Set<OwChannelConfig> CHANNELS_MS_TL = Stream
-            .of(new OwChannelConfig(CHANNEL_SUPPLYVOLTAGE, CHANNEL_TYPE_UID_VOLTAGE, "Supplyvoltage"),
-                    new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE),
-                    new OwChannelConfig(CHANNEL_LIGHT, CHANNEL_TYPE_UID_LIGHT))
-            .collect(Collectors.toSet());
-    public static final Set<OwChannelConfig> CHANNELS_MS_TV = Stream
-            .of(new OwChannelConfig(CHANNEL_SUPPLYVOLTAGE, CHANNEL_TYPE_UID_VOLTAGE, "Supplyvoltage"),
-                    new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE),
-                    new OwChannelConfig(CHANNEL_VOLTAGE, CHANNEL_TYPE_UID_VOLTAGE))
-            .collect(Collectors.toSet());
-    public static final Set<OwChannelConfig> CHANNELS = Stream
-            .of(new OwChannelConfig(CHANNEL_SUPPLYVOLTAGE, CHANNEL_TYPE_UID_VOLTAGE, "Supplyvoltage"),
-                    new OwChannelConfig(CHANNEL_TEMPERATURE, CHANNEL_TYPE_UID_TEMPERATURE),
-                    new OwChannelConfig(CHANNEL_VOLTAGE, CHANNEL_TYPE_UID_VOLTAGE),
-                    new OwChannelConfig(CHANNEL_CURRENT, CHANNEL_TYPE_UID_CURRENT))
-            .collect(Collectors.toSet());
-    public static final Set<OwChannelConfig> CHANNELS_AMS = Stream
-            .of(new OwChannelConfig(CHANNEL_SUPPLYVOLTAGE, CHANNEL_TYPE_UID_VOLTAGE, "Supplyvoltage"),
-                    new OwChannelConfig(CHANNEL_ABSOLUTE_HUMIDITY, CHANNEL_TYPE_UID_ABSHUMIDITY),
-                    new OwChannelConfig(CHANNEL_DEWPOINT, CHANNEL_TYPE_UID_TEMPERATURE, "Dewpoint"),
-                    new OwChannelConfig(CHANNEL_VOLTAGE, CHANNEL_TYPE_UID_VOLTAGE),
-                    new OwChannelConfig(CHANNEL_DIGITAL0, CHANNEL_TYPE_UID_DIO, "Digital I/O 0"),
-                    new OwChannelConfig(CHANNEL_DIGITAL1, CHANNEL_TYPE_UID_DIO, "Digital I/O 1"))
-            .collect(Collectors.toSet());
-    public static final Set<OwChannelConfig> CHANNELS_AMS_S = Stream
-            .of(new OwChannelConfig(CHANNEL_SUPPLYVOLTAGE, CHANNEL_TYPE_UID_VOLTAGE, "Supplyvoltage"),
-                    new OwChannelConfig(CHANNEL_ABSOLUTE_HUMIDITY, CHANNEL_TYPE_UID_ABSHUMIDITY),
-                    new OwChannelConfig(CHANNEL_DEWPOINT, CHANNEL_TYPE_UID_TEMPERATURE, "Dewpoint"),
-                    new OwChannelConfig(CHANNEL_LIGHT, CHANNEL_TYPE_UID_LIGHT),
-                    new OwChannelConfig(CHANNEL_VOLTAGE, CHANNEL_TYPE_UID_VOLTAGE),
-                    new OwChannelConfig(CHANNEL_DIGITAL0, CHANNEL_TYPE_UID_DIO, "Digital I/O 0"),
-                    new OwChannelConfig(CHANNEL_DIGITAL1, CHANNEL_TYPE_UID_DIO, "Digital I/O 1"))
-            .collect(Collectors.toSet());
-    public static final Set<OwChannelConfig> CHANNELS_BMS = Stream
-            .of(new OwChannelConfig(CHANNEL_SUPPLYVOLTAGE, CHANNEL_TYPE_UID_VOLTAGE, "Supplyvoltage"),
-                    new OwChannelConfig(CHANNEL_ABSOLUTE_HUMIDITY, CHANNEL_TYPE_UID_ABSHUMIDITY),
-                    new OwChannelConfig(CHANNEL_DEWPOINT, CHANNEL_TYPE_UID_TEMPERATURE, "Dewpoint"))
-            .collect(Collectors.toSet());
-    public static final Set<OwChannelConfig> CHANNELS_BMS_S = Stream
-            .of(new OwChannelConfig(CHANNEL_SUPPLYVOLTAGE, CHANNEL_TYPE_UID_VOLTAGE, "Supplyvoltage"),
-                    new OwChannelConfig(CHANNEL_ABSOLUTE_HUMIDITY, CHANNEL_TYPE_UID_ABSHUMIDITY),
-                    new OwChannelConfig(CHANNEL_DEWPOINT, CHANNEL_TYPE_UID_TEMPERATURE, "Dewpoint"),
-                    new OwChannelConfig(CHANNEL_LIGHT, CHANNEL_TYPE_UID_LIGHT))
-            .collect(Collectors.toSet());
-
     private final Logger logger = LoggerFactory.getLogger(DS2438.class);
 
     public enum LightSensorType {

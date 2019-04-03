@@ -12,12 +12,9 @@
  */
 package org.openhab.binding.onewire.internal.device;
 
-import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.CHANNEL_COUNTER;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.types.State;
@@ -34,11 +31,6 @@ import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
  */
 @NonNullByDefault
 public class DS2423 extends AbstractOwDevice {
-    public static final Set<OwChannelConfig> CHANNELS = Stream
-            .of(new OwChannelConfig(CHANNEL_COUNTER0, CHANNEL_TYPE_UID_COUNTER, "Counter 0"),
-                    new OwChannelConfig(CHANNEL_COUNTER1, CHANNEL_TYPE_UID_COUNTER, "Counter 1"))
-            .collect(Collectors.toSet());
-
     private final OwserverDeviceParameter counterParameter = new OwserverDeviceParameter("/counters.ALL");
 
     public DS2423(SensorId sensorId, OwBaseThingHandler callback) {
