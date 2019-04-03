@@ -40,12 +40,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.hue.internal.FullLight;
-import org.openhab.binding.hue.internal.HueBridge;
-import org.openhab.binding.hue.internal.HueThingHandlerFactory;
 import org.openhab.binding.hue.internal.discovery.HueLightDiscoveryService;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
-import org.openhab.binding.hue.test.AbstractHueOSGiTest;
 
 /**
  * Tests for {@link HueLightDiscoveryService}.

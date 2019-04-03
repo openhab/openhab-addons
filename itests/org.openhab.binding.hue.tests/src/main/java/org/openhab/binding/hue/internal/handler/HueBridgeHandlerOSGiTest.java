@@ -33,12 +33,12 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.junit.Before;
 import org.junit.Test;
+import org.openhab.binding.hue.internal.AbstractHueOSGiTest;
 import org.openhab.binding.hue.internal.HueBridge;
 import org.openhab.binding.hue.internal.HueConfigStatusMessage;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.LinkButtonException;
 import org.openhab.binding.hue.internal.exceptions.UnauthorizedException;
-import org.openhab.binding.hue.test.AbstractHueOSGiTest;
 
 /**
  * Tests for {@link HueBridgeHandler}.

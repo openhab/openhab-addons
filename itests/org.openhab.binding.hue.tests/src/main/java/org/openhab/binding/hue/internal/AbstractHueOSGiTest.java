@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hue.test;
+package org.openhab.binding.hue.internal;
 
 import static org.junit.Assert.*;
 
