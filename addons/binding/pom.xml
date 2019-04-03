@@ -43,8 +43,6 @@
     <module>org.openhab.binding.lgwebos</module>
     <module>org.openhab.binding.logreader</module>
     <module>org.openhab.binding.loxone</module>
-    <module>org.openhab.binding.max</module>
-    <module>org.openhab.binding.max.test</module>
     <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.modbus</module>
     <module>org.openhab.binding.modbus.test</module>
