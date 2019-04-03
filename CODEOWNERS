@@ -24,8 +24,6 @@
 /addons/binding/org.openhab.binding.feed.test/ @svilenvul
 /addons/binding/org.openhab.binding.ftpupload/ @paulianttila
 /addons/binding/org.openhab.binding.groheondus/ @FlorianSW
-/addons/binding/org.openhab.binding.hue/ @cweitkamp
-/addons/binding/org.openhab.binding.hue.test/ @cweitkamp
 /addons/binding/org.openhab.binding.ihc/ @paulianttila
 /addons/binding/org.openhab.binding.ihc.test/ @paulianttila
 /addons/binding/org.openhab.binding.innogysmarthome/ @ollie-dev
@@ -105,6 +103,7 @@
 /bundles/org.openhab.binding.hdpowerview/ @beowulfe
 /bundles/org.openhab.binding.helios/ @kgoderis
 /bundles/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
+/bundles/org.openhab.binding.hue/ @cweitkamp
 /bundles/org.openhab.binding.hyperion/ @tavalin
 /bundles/org.openhab.binding.icloud/ @pgfeller
 /bundles/org.openhab.binding.ipp/ @peuter
@@ -215,6 +214,7 @@
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
 /itests/org.openhab.binding.dmx.tests/ @J-N-K
+/itests/org.openhab.binding.hue.tests/ @cweitkamp
 /itests/org.openhab.binding.max.tests/ @marcelrv
 /itests/org.openhab.binding.mqtt.homeassistant.tests/ @wborn
 /itests/org.openhab.binding.mqtt.homie.tests/ @wborn
