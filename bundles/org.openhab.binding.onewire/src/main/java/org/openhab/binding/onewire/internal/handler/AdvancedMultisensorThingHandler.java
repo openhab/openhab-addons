@@ -185,8 +185,10 @@ public class AdvancedMultisensorThingHandler extends OwBaseThingHandler {
         }
 
         // humidity channel
+
         addChannelIfMissingAndEnable(thingBuilder, new OwChannelConfig(CHANNEL_HUMIDITY, CHANNEL_TYPE_UID_HUMIDITY),
                 new Configuration(new HashMap<String, Object>() {
+                    private static final long serialVersionUID = 1L;
                     {
                         put(CONFIG_HUMIDITY, "/HIH4000/humidity");
                     }

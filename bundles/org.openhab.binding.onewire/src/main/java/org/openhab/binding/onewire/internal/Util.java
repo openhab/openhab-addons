@@ -12,6 +12,13 @@
  */
 package org.openhab.binding.onewire.internal;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.stream.Collectors;
+
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
@@ -21,6 +28,8 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link Util} is a set of helper functions
@@ -29,6 +38,8 @@ import org.eclipse.smarthome.core.types.State;
  */
 @NonNullByDefault
 public class Util {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
+
     /**
      * calculate absolute humidity in g/m³ from measured values
      *
@@ -38,7 +49,11 @@ public class Util {
      */
     public static State calculateAbsoluteHumidity(QuantityType<Temperature> temperature,
             QuantityType<Dimensionless> relativeHumidity) {
-        Double theta = temperature.toUnit(SIUnits.CELSIUS).doubleValue();
+        QuantityType<Temperature> temperatureDegC = temperature.toUnit(SIUnits.CELSIUS);
+        if (temperatureDegC == null) {
+            throw new IllegalArgumentException("could not change unit");
+        }
+        Double theta = temperatureDegC.doubleValue();
         // saturation vapor pressure in kg/(m s^2)
         Double saturationVaporPressure = 611.2 * Math.exp(17.62 * theta / (243.12 + theta));
         // absolute humidity in kg/m^3
@@ -60,12 +75,29 @@ public class Util {
      */
     public static State calculateDewpoint(QuantityType<Temperature> temperature,
             QuantityType<Dimensionless> relativeHumidity) {
-        Double theta = temperature.toUnit(SIUnits.CELSIUS).doubleValue();
+        QuantityType<Temperature> temperatureDegC = temperature.toUnit(SIUnits.CELSIUS);
+        if (temperatureDegC == null) {
+            throw new IllegalArgumentException("could not change unit");
+        }
+        Double theta = temperatureDegC.doubleValue();
         Double rH = relativeHumidity.doubleValue() / 100;
         // dewpoint in °C
         Double dP = 243.12 * (((17.62 * theta) / (243.12 + theta) + Math.log(rH))
                 / (((17.62 * 243.12) / (243.12 + theta) - Math.log(rH))));
         State dewPoint = new QuantityType<Temperature>(dP, SIUnits.CELSIUS);
         return dewPoint;
+    }
+
+    public static Map<String, String> readPropertiesFile(String filename) {
+        URL resource = Thread.currentThread().getContextClassLoader().getResource(filename);
+        Properties properties = new Properties();
+        try {
+            properties.load(resource.openStream());
+            return properties.entrySet().stream()
+                    .collect(Collectors.toMap(e -> (String) e.getKey(), e -> (String) e.getValue()));
+        } catch (IOException e) {
+            LOGGER.error("could not read resource file {}, binding will probably fail: {}", filename, e.getMessage());
+            return new HashMap<String, String>();
+        }
     }
 }

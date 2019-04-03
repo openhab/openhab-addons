@@ -12,12 +12,6 @@
  */
 package org.openhab.binding.onewire.internal.device;
 
-import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
-
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.onewire.internal.DigitalIoConfig;
 import org.openhab.binding.onewire.internal.OwException;
@@ -32,10 +26,6 @@ import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
  */
 @NonNullByDefault
 public class DS2405 extends AbstractDigitalOwDevice {
-    public static final Set<OwChannelConfig> CHANNELS = Stream
-            .of(new OwChannelConfig(CHANNEL_DIGITAL0, CHANNEL_TYPE_UID_DIO, "Digital I/O 0"))
-            .collect(Collectors.toSet());
-
     public DS2405(SensorId sensorId, OwBaseThingHandler callback) {
         super(sensorId, callback);
     }
