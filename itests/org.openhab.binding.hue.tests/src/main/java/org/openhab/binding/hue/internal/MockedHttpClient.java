@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.hue.internal;
 
-import org.openhab.binding.hue.internal.HttpClient;
-
+/**
+ * @author Denis Dudnik - Initial contribution
+ */
 public class MockedHttpClient extends HttpClient {
 
 }

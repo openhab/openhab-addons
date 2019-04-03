@@ -52,7 +52,7 @@ import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
  * @author Denis Dudnik - switched to internally integrated source of Jue library
  * @author Markus Rathgeb - migrated to plain Java test
  */
-public class HueLightDiscoveryServiceOSGiTest extends AbstractHueOSGiTest {
+public class HueLightDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent {
 
     protected HueThingHandlerFactory hueThingHandlerFactory;
     protected DiscoveryListener discoveryListener;

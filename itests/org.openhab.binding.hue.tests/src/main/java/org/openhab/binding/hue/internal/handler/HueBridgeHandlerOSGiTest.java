@@ -33,7 +33,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.hue.internal.AbstractHueOSGiTest;
+import org.openhab.binding.hue.internal.AbstractHueOSGiTestParent;
 import org.openhab.binding.hue.internal.HueBridge;
 import org.openhab.binding.hue.internal.HueConfigStatusMessage;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
@@ -47,7 +47,7 @@ import org.openhab.binding.hue.internal.exceptions.UnauthorizedException;
  * @author Michael Grammling - Initial contribution
  * @author Denis Dudnik - switched to internally integrated source of Jue library
  */
-public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTest {
+public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
 
     private final ThingTypeUID BRIDGE_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "bridge");
     private static final String TEST_USER_NAME = "eshTestUser";
