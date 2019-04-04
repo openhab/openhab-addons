@@ -59,8 +59,7 @@ public class LGHomBotHandler extends BaseThingHandler {
 
     private LGHomBotConfiguration config = getConfigAs(LGHomBotConfiguration.class);
 
-    @Nullable
-    private ScheduledFuture<?> refreshTimer;
+    private @Nullable ScheduledFuture<?> refreshTimer;
 
     // State of HomBot
     private String currentState = "";

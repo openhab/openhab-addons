@@ -82,14 +82,12 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
     private int octet;
     private int ipMask;
     private int addressCount;
-    @Nullable
-    private CidrAddress baseIp;
+    private @Nullable CidrAddress baseIp;
 
     /**
      * The {@link ExecutorService} to run the listening threads on.
      */
-    @Nullable
-    private ExecutorService executorService;
+    private @Nullable ExecutorService executorService;
 
     /**
      * Constructs the discovery class using the thing IDs that we can discover.
@@ -185,8 +183,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
      *
      * @return An IP4 address or null if none is found.
      */
-    @Nullable
-    private CidrAddress getLocalIP4Address() {
+    private @Nullable CidrAddress getLocalIP4Address() {
         List<CidrAddress> l = NetUtil.getAllInterfaceAddresses().stream()
                 .filter(a -> a.getAddress() instanceof Inet4Address).map(a -> a).collect(Collectors.toList());
         for (int i = 0; i < l.size(); i++) {

@@ -380,6 +380,11 @@
       <artifactId>org.openhab.binding.leapmotion</artifactId>
       <version>${project.version}</version>
     </dependency>
+	<dependency>
+		<groupId>org.openhab.addons.bundles</groupId>
+		<artifactId>org.openhab.binding.lghombot</artifactId>
+		<version>${project.version}</version>
+	</dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.lgtvserial</artifactId>
