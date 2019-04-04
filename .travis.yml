@@ -18,12 +18,12 @@ before_cache:
 
 notifications:
     webhooks: https://www.travisbuddy.com/
-    on_success: never
-    on_change: never
 
 travisBuddy:
     insertMode: update
-    successBuildLog: false
+    successBuildLog: true
 
-script:
-  - buildci.sh
+before_install: true
+before_script: true
+install: true
+script: ./buildci.sh
