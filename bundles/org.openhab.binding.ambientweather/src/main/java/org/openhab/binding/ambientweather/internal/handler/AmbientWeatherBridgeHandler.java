@@ -31,7 +31,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.ambientweather.internal.config.BridgeConfig;
-import org.openhab.binding.ambientweather.internal.model.DevicesJson;
+import org.openhab.binding.ambientweather.internal.model.DeviceJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,8 +101,8 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
             }
             try {
                 // Got a response so the keys are good
-                DevicesJson stations = gson.fromJson(response, DevicesJson.class);
-                logger.debug("Bridge: Application and API keys are valid with {} stations", stations.size());
+                DeviceJson[] stations = gson.fromJson(response, DeviceJson[].class);
+                logger.debug("Bridge: Application and API keys are valid with {} stations", stations.length);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Connecting to service");
                 // Start up the real-time API listener
                 listener.start(applicationKey, apiKey, gson);

@@ -32,24 +32,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class AbstractProcessor {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
-
-    /*
-     * Used to extract remote sensor data from the data event Json
-     */
-    protected RemoteSensor remoteSensor = new RemoteSensor();
-
-    /*
-     * Updates the info channels (i.e. name and location) for a station
-     */
-    public abstract void processInfoUpdate(AmbientWeatherStationHandler handler, String station, String name,
-            String location);
-
-    /*
-     * Updates the weather data channels for a station
-     */
-    public abstract void processWeatherData(AmbientWeatherStationHandler handler, String station, String jsonData);
-
     // @formatter:off
     private static final String[] UV_INDEX = {
         "LOW",
@@ -70,6 +52,27 @@ public abstract class AbstractProcessor {
         "EXTREME"
     };
     // @formatter:on
+
+    public static final String[] WIND_DIRECTIONS = new String[] { "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S",
+            "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW" };
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+    /*
+     * Used to extract remote sensor data from the data event Json
+     */
+    protected RemoteSensor remoteSensor = new RemoteSensor();
+
+    /*
+     * Updates the info channels (i.e. name and location) for a station
+     */
+    public abstract void processInfoUpdate(AmbientWeatherStationHandler handler, String station, String name,
+            String location);
+
+    /*
+     * Updates the weather data channels for a station
+     */
+    public abstract void processWeatherData(AmbientWeatherStationHandler handler, String station, String jsonData);
 
     /*
      * Helper function called by processor to convert UTC time milliseconds to local time
@@ -114,43 +117,9 @@ public abstract class AbstractProcessor {
     /*
      * Convert the wind directions in degrees to a string representation
      */
-    public String convertWindDirectionToString(double windDirectionDegrees) {
-        String result = "UNKNOWN";
-        if (windDirectionDegrees >= 0 && windDirectionDegrees <= 11.25) {
-            result = "N";
-        } else if (windDirectionDegrees > 11.25 && windDirectionDegrees <= 33.75) {
-            result = "NNE";
-        } else if (windDirectionDegrees > 33.75 && windDirectionDegrees <= 56.25) {
-            result = "NE";
-        } else if (windDirectionDegrees > 56.25 && windDirectionDegrees <= 78.75) {
-            result = "ENE";
-        } else if (windDirectionDegrees > 78.75 && windDirectionDegrees <= 101.25) {
-            result = "E";
-        } else if (windDirectionDegrees > 101.25 && windDirectionDegrees <= 123.75) {
-            result = "ESE";
-        } else if (windDirectionDegrees > 123.75 && windDirectionDegrees <= 146.25) {
-            result = "SE";
-        } else if (windDirectionDegrees > 146.25 && windDirectionDegrees <= 168.75) {
-            result = "SSE";
-        } else if (windDirectionDegrees > 168.75 && windDirectionDegrees <= 191.25) {
-            result = "S";
-        } else if (windDirectionDegrees > 191.25 && windDirectionDegrees <= 213.75) {
-            result = "SSW";
-        } else if (windDirectionDegrees > 213.75 && windDirectionDegrees <= 236.25) {
-            result = "SW";
-        } else if (windDirectionDegrees > 236.25 && windDirectionDegrees <= 258.75) {
-            result = "WSW";
-        } else if (windDirectionDegrees > 258.75 && windDirectionDegrees <= 281.25) {
-            result = "W";
-        } else if (windDirectionDegrees > 281.25 && windDirectionDegrees <= 303.75) {
-            result = "WNW";
-        } else if (windDirectionDegrees > 303.75 && windDirectionDegrees <= 326.25) {
-            result = "NW";
-        } else if (windDirectionDegrees > 326.25 && windDirectionDegrees <= 348.75) {
-            result = "NNW";
-        } else if (windDirectionDegrees > 348.75 && windDirectionDegrees <= 360) {
-            result = "N";
-        }
-        return result;
+    protected String convertWindDirectionToString(double windDirectionDegrees) {
+        double step = 360.0 / WIND_DIRECTIONS.length;
+        double b = Math.floor((windDirectionDegrees + (step / 2.0)) / step);
+        return WIND_DIRECTIONS[(int) (b % WIND_DIRECTIONS.length)];
     }
 }

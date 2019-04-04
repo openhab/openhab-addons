@@ -16,6 +16,7 @@ import static org.openhab.binding.ambientweather.internal.AmbientWeatherBindingC
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,12 +38,18 @@ import com.google.gson.stream.JsonReader;
  */
 @NonNullByDefault
 public class RemoteSensor {
-    private final Logger logger = LoggerFactory.getLogger(RemoteSensor.class);
-
     // Maximum number of remote sensors that can be supported by a station
     private static final int MAX_SENSORS = 10;
 
+    private final Logger logger = LoggerFactory.getLogger(RemoteSensor.class);
+
+    private final TreeMap<Double, String> soilMoistureMap = new TreeMap<Double, String>();
+
     private int numberOfSensors;
+
+    public RemoteSensor() {
+        initializeSoilMoistureMap();
+    }
 
     public void setNumberOfSensors(int numberOfSensors) {
         if (numberOfSensors < 1 || numberOfSensors > MAX_SENSORS) {
@@ -109,22 +116,19 @@ public class RemoteSensor {
         }
     }
 
+    private void initializeSoilMoistureMap() {
+        soilMoistureMap.put(33.0, "VERY DRY");
+        soilMoistureMap.put(60.0, "DRY");
+        soilMoistureMap.put(80.0, "MOIST");
+        soilMoistureMap.put(93.0, "WET");
+        soilMoistureMap.put(100.0, "VERY WET");
+    }
+
     /*
      * Convert the soil moisture to a string representation
      */
     private String convertSoilMoistureToString(double soilMoisture) {
-        String result = "UNKNOWN";
-        if (soilMoisture >= 0 && soilMoisture < 33.0) {
-            result = "VERY DRY";
-        } else if (soilMoisture >= 33.0 && soilMoisture < 60.0) {
-            result = "DRY";
-        } else if (soilMoisture >= 60.0 && soilMoisture < 80.0) {
-            result = "MOIST";
-        } else if (soilMoisture >= 80.0 && soilMoisture < 93.0) {
-            result = "WET";
-        } else if (soilMoisture >= 93.0 && soilMoisture <= 100.0) {
-            result = "VERY WET";
-        }
-        return result;
+        Double key = soilMoistureMap.ceilingKey(soilMoisture);
+        return key == null ? "UNKNOWN" : soilMoistureMap.get(key);
     }
 }

@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
-import org.openhab.binding.ambientweather.internal.model.DevicesJson;
+import org.openhab.binding.ambientweather.internal.model.DeviceJson;
 import org.openhab.binding.ambientweather.internal.model.EventDataGenericJson;
 import org.openhab.binding.ambientweather.internal.model.EventSubscribedJson;
 import org.slf4j.Logger;
@@ -278,10 +278,10 @@ public class AmbientWeatherEventListener {
             if (subscribed.devices != null && subscribed.devices instanceof ArrayList) {
                 // Convert the ArrayList back to JSON, then parse it
                 String innerJson = gson.toJson(subscribed.devices);
-                DevicesJson stations = gson.fromJson(innerJson, DevicesJson.class);
+                DeviceJson[] stations = gson.fromJson(innerJson, DeviceJson[].class);
 
                 // Inform handlers of their name and location
-                for (DevicesJson.Container station : stations) {
+                for (DeviceJson station : stations) {
                     logger.debug("Listener: Subscribed event has station: name = {}, location = {}, MAC = {}",
                             station.info.name, station.info.location, station.macAddress);
                     sendStationInfoToHandler(station.macAddress, station.info.name, station.info.location);
