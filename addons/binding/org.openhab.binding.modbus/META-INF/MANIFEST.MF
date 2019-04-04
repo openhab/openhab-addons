@@ -10,15 +10,18 @@ Bundle-ClassPath: .
 Import-Package: org.apache.commons.lang,
  org.apache.commons.lang.builder,
  org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.config.discovery,
+ org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.library.items,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.transform,
  org.eclipse.smarthome.core.types,
- org.eclipse.smarthome.config.core,
  org.openhab.binding.modbus,
  org.openhab.binding.modbus.handler,
+ org.openhab.binding.modbus.discovery,
  org.openhab.io.transport.modbus,
  org.openhab.io.transport.modbus.endpoint,
  org.openhab.io.transport.modbus.json,
@@ -26,5 +29,6 @@ Import-Package: org.apache.commons.lang,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
 Export-Package: org.openhab.binding.modbus,
- org.openhab.binding.modbus.handler
+ org.openhab.binding.modbus.handler,
+ org.openhab.binding.modbus.discovery
 Bundle-ActivationPolicy: lazy

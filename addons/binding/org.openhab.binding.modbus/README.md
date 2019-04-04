@@ -109,6 +109,7 @@ Advanced parameters
 | `connectMaxTries`               |          | integer | `1`                | How many times we try to establish the connection. Should be at least 1.                                                                                           |
 | `reconnectAfterMillis`          |          | integer | `0`                | The connection is kept open at least the time specified here. Value of zero means that connection is disconnected after every MODBUS transaction. In milliseconds. |
 | `connectTimeoutMillis`          |          | integer | `10000`            | The maximum time that is waited when establishing the connection. Value of zero means that system/OS default is respected. In milliseconds.                        |
+| `enableDiscovery`                |          | boolean | false               | Enable auto-discovery feature. Effective only if a supporting extension has been installed. |
 
 **Note:** Advanced parameters must be equal for all `tcp` things sharing the same `host` and `port`.
 
@@ -142,6 +143,7 @@ Advanced parameters
 | `timeBetweenTransactionsMillis` |          | integer | `35`               | How long to delay we must have at minimum between two consecutive MODBUS transactions. In milliseconds.                                    |
 | `connectMaxTries`               |          | integer | `1`                | How many times we try to establish the connection. Should be at least 1.                                                                   |
 | `connectTimeoutMillis`          |          | integer | `10000`            | The maximum time that is waited when establishing the connection. Value of zero means thatsystem/OS default is respected. In milliseconds. |
+| `enableDiscovery`                |          | boolean | false               | Enable auto-discovery feature. Effective only if a supporting extension has been installed. |
 
 With the exception of `id` parameters should be equal for all `serial` things sharing the same `port`.
 
@@ -287,6 +289,11 @@ Number  Temperature_Modbus_Livingroom                       "Temperature Living 
 
 Main documentation on `autoupdate` in [Items section of openHAB docs](https://www.openhab.org/docs/configuration/items.html#item-definition-and-syntax).
 
+### Discovery
+
+Device specific modbus bindings can take part in the discovery of things, and detect devices automatically. The discovery is initiated by the `tcp` and `serial` bridges when they have `enableDiscovery` setting enabled.
+
+Note that the main binding does not recognize any device, so it is pointless to turn this on unless you have the correct binding installed.
 
 ## Details
 
@@ -1228,57 +1235,4 @@ Consult [openHAB2 logging documentation](http://docs.openhab.org/administration/
 
 ## For Developers
 
-### Testing Serial Implementation
-
-You can use test serial slaves without any hardware on linux using these steps:
-
-1. Set-up virtual null modem emulator using [tty0tty](https://github.com/freemed/tty0tty)
-2. Download [diagslave](http://www.modbusdriver.com/diagslave.html) and start modbus serial slave up using this command:
-
-```
-./diagslave -m rtu -a 1 -b 38400 -d 8 -s 1 -p none -4 10 /dev/pts/7
-```
-
-3. Configure openHAB's modbus slave to connect to `/dev/pts/8`:
-
-```
-xxx.connection=/dev/pts/8:38400:8:none:1:rtu
-```
-
-4. Modify `start.sh` or `start_debug.sh` to include the unconventional port name by adding the following argument to `java`:
-
-```
--Dgnu.io.rxtx.SerialPorts=/dev/pts/8
-```
-
-Naturally this is not the same thing as the real thing but helps to identify simple issues.
-
-### Testing TCP Implementation
-
-1. Download [diagslave](http://www.modbusdriver.com/diagslave.html) and start modbus tcp server (slave) using this command:
-
-```
-./diagslave -m tcp -a 1 -p 55502
-```
-
-2. Configure openHAB's modbus slave to connect to `127.0.0.1:55502`:
-
-```
-tcp.slave1.connection=127.0.0.1:55502
-```
-
-### Writing Data
-
-See this [community post](https://community.openhab.org/t/something-is-rounding-my-float-values-in-sitemap/13704/32?u=ssalonen) explaining how `pollmb` and `diagslave` can be used to debug modbus communication.
-
-You can also use `modpoll` to write data:
-
-
-```bash
-# write value=5 to holding register 40001 (index=0 in the binding)
-./modpoll -m tcp -a 1 -r 1 -t4 -p 502 127.0.0.1 5
-# set coil 00001 (index=0 in the binding) to TRUE
-./modpoll -m tcp -a 1 -r 1 -t0 -p 502 127.0.0.1 1
-# write float32
-./modpoll -m tcp -a 1 -r 1 -t4:float -p 502 127.0.0.1 3.14
-```
+This binding can be extended in many ways. If you have a Modbus enabled device that you want to support in openHAB please read the [developer section](DEVELOPERS.md) 

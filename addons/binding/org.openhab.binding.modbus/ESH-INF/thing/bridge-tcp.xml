@@ -23,6 +23,12 @@
 				<description>Slave id. Also known as station address or unit identifier.</description>
 				<default>1</default>
 			</parameter>
+			
+			<parameter name="enableDiscovery" type="boolean">
+				<label>Discovery enabled</label>
+				<description>When enabled we try to find a device specific handler. Turn this on if you're using one of the supported devices.</description>
+				<default>false</default>
+			</parameter>
 
 			<!-- connection handling -->
 			<parameter name="timeBetweenTransactionsMillis" type="integer" min="0">

@@ -12,12 +12,17 @@
  */
 package org.openhab.binding.modbus.internal.handler;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
+import org.openhab.binding.modbus.discovery.internal.ModbusEndpointDiscoveryService;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.binding.modbus.internal.config.ModbusSerialConfiguration;
 import org.openhab.io.transport.modbus.ModbusManager;
@@ -69,6 +74,18 @@ public class ModbusSerialThingHandler
                 stopBits, parity, encoding, config.isEcho(), config.getReceiveTimeoutMillis());
     }
 
+    /**
+     * Return true if auto discovery is enabled in the config
+     */
+    @Override
+    public boolean isDiscoveryEnabled() {
+        if (config != null) {
+            return config.isDiscoveryEnabled();
+        } else {
+            return false;
+        }
+    }
+
     @Override
     protected String formatConflictingParameterError(@Nullable EndpointPoolConfiguration otherPoolConfig) {
         return String.format(
@@ -84,6 +101,16 @@ public class ModbusSerialThingHandler
             throw new IllegalStateException("Poller not configured, but slave id is queried!");
         }
         return config.getId();
+    }
+
+    @Override
+    public ThingUID getUID() {
+        return getThing().getUID();
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(ModbusEndpointDiscoveryService.class);
     }
 
 }

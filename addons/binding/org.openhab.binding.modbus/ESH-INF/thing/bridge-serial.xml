@@ -79,6 +79,11 @@
 					<option value="bin">BIN</option>
 				</options>
 			</parameter>
+			<parameter name="enableDiscovery" type="boolean">
+				<label>Discovery enabled</label>
+				<description>When enabled we try to find a device specific handler. Turn this on if you're using one of the supported devices.</description>
+				<default>false</default>
+			</parameter>
 			<parameter name="echo" type="boolean">
 				<label>RS485 echo mode</label>
 				<description><![CDATA[Flag for setting the RS485 echo mode
