@@ -24,16 +24,13 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link NikoHomeControlCommunication} class is an abstract class representing the communication objects with the
  * Niko Home Control System. {@link NikoHomeControlCommunication1} or {@link NikoHomeControlCommunication2} should be
- * used for the respective
- * version of Niko Home Control.
+ * used for the respective version of Niko Home Control.
  * <ul>
  * <li>Start and stop communication with the Niko Home Control System.
  * <li>Read all setup and status information from the Niko Home Control Controller.
  * <li>Execute Niko Home Control commands.
  * <li>Listen to events from Niko Home Control.
  * </ul>
- *
- * Only switch, dimmer and rollershutter actions are currently implemented.
  *
  * @author Mark Herwege - Initial Contribution
  */
@@ -45,10 +42,11 @@ public abstract class NikoHomeControlCommunication {
     protected final Map<String, NhcAction> actions = new ConcurrentHashMap<>();
     protected final Map<String, NhcThermostat> thermostats = new ConcurrentHashMap<>();
 
-    // handler representing the callback interface {@link NhcControllerEvent} for configuration parameters and events
-    @NonNullByDefault({}) // this handler must be set in the derived classes constructors, therefore will not be null,
-                          // but IDE gives error
-    protected NhcControllerEvent handler;
+    protected final NhcControllerEvent handler;
+
+    protected NikoHomeControlCommunication(NhcControllerEvent handler) {
+        this.handler = handler;
+    }
 
     /**
      * Start Communication with Niko Home Control system.

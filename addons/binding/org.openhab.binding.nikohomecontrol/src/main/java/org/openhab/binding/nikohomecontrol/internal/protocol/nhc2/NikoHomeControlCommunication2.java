@@ -57,8 +57,6 @@ import com.google.gson.reflect.TypeToken;
  * <li>Listen for events from Niko Home Control.
  * </ul>
  *
- * Only switch and dimmer actions are currently implemented.
- *
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
@@ -94,7 +92,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
      */
     public NikoHomeControlCommunication2(NhcControllerEvent handler, String clientId, String persistencePath)
             throws CertificateException {
-        this.handler = handler;
+        super(handler);
         this.mqttConnection = new NhcMqttConnection2(clientId, persistencePath);
     }
 

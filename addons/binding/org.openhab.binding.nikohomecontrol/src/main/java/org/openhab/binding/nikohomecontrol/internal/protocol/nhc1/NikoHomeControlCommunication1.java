@@ -47,8 +47,6 @@ import com.google.gson.JsonParseException;
  * <li>Listen to events from Niko Home Control.
  * </ul>
  *
- * Only switch, dimmer, rollershutter and thermostat actions are currently implemented.
- *
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
@@ -81,7 +79,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
      *
      */
     public NikoHomeControlCommunication1(NhcControllerEvent handler, ScheduledExecutorService scheduler) {
-        this.handler = handler;
+        super(handler);
         this.scheduler = scheduler;
 
         // When we set up this object, we want to get the proper gson adapter set up once
