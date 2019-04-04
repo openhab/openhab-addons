@@ -152,15 +152,16 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
             stopScan();
             return;
         }
-        scanning = true;
         setupBaseIp(localAdr);
+        CidrAddress baseAdr = baseIp;
+        scanning = true;
         ExecutorService localExecutorService = Executors.newFixedThreadPool(SCAN_THREADS);
         executorService = localExecutorService;
         for (int i = 0; i < addressCount; i++) {
 
             localExecutorService.execute(() -> {
-                if (scanning && baseIp != null) {
-                    String ipAdd = getNextIPAddress(baseIp);
+                if (scanning && baseAdr != null) {
+                    String ipAdd = getNextIPAddress(baseAdr);
                     String url = "http://" + ipAdd + ":" + HOMBOT_PORT + "/status.txt";
                     String message = null;
 
