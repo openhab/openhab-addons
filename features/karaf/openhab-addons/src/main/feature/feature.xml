@@ -279,7 +279,12 @@
     <feature name="openhab-binding-groheondus" description="GROHE ONDUS Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature prerequisite="true">wrap</feature>
-        <bundle dependency="true">wrap:mvn:org.grohe/ondus-api/0.0.7$Bundle-Name=GROHE%20ONDUS%20Api&amp;Bundle-SymbolicName=org.grohe.ondus-api&amp;Bundle-Version=0.0.7</bundle>
+        <bundle dependency="true">wrap:mvn:com.fasterxml.jackson.core/jackson-core/2.9.6</bundle>
+        <bundle dependency="true">wrap:mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.6</bundle>
+        <bundle dependency="true">wrap:mvn:com.fasterxml.jackson.core/jackson-databind/2.9.6</bundle>
+		<bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.9</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.5</bundle>
+		<bundle dependency="true">wrap:mvn:org.grohe/ondus-api/0.0.9</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.groheondus/${project.version}</bundle>
     </feature>
 
