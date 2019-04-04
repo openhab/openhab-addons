@@ -58,8 +58,6 @@
 /addons/io/org.openhab.io.transport.feed/ @svilenvul
 /addons/io/org.openhab.io.transport.modbus/ @ssalonen
 /addons/io/org.openhab.io.transport.modbus.test/ @ssalonen
-/addons/transform/org.openhab.transform.jinja/ @jochen314 
-/addons/transform/org.openhab.transform.jinja.test/ @jochen314
 /addons/voice/org.openhab.voice.kaldi/ @kaikreuzer
 /addons/voice/org.openhab.voice.pollytts/ @hillmanr
 /bundles/org.openhab.binding.airquality/ @kubawolanin
@@ -200,6 +198,7 @@
 /bundles/org.openhab.persistence.mapdb/ @mkhl
 /bundles/org.openhab.transform.exec/ @openhab/2-x-add-ons-maintainers
 /bundles/org.openhab.transform.javascript/ @openhab/2-x-add-ons-maintainers
+/bundles/org.openhab.transform.jinja/ @jochen314 
 /bundles/org.openhab.transform.jsonpath/ @clinique
 /bundles/org.openhab.transform.map/ @openhab/2-x-add-ons-maintainers
 /bundles/org.openhab.transform.regex/ @openhab/2-x-add-ons-maintainers
