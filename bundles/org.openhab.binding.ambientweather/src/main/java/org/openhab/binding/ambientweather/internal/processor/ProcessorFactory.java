@@ -13,6 +13,7 @@
 package org.openhab.binding.ambientweather.internal.processor;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 
 import com.google.gson.Gson;
@@ -30,14 +31,18 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ProcessorFactory {
-    // Supported weather stations
-    private static final Ws1400ipProcessor WS1400IP_PROCESSOR = new Ws1400ipProcessor();
-    private static final Ws2902aProcessor WS2902A_PROCESSOR = new Ws2902aProcessor();
-    private static final Ws8482Processor WS8482_PROCESSOR = new Ws8482Processor();
-    private static final Ws0900ipProcessor WS0900IP_PROCESSOR = new Ws0900ipProcessor();
-
     // Single Gson instance shared by processors
     private static final Gson GSON = new Gson();
+
+    // Supported weather stations
+    @Nullable
+    private static Ws1400ipProcessor WS1400IP_PROCESSOR;
+    @Nullable
+    private static Ws2902aProcessor WS2902A_PROCESSOR;
+    @Nullable
+    private static Ws8482Processor WS8482_PROCESSOR;
+    @Nullable
+    private static Ws0900ipProcessor WS0900IP_PROCESSOR;
 
     /**
      * Individual weather station processors use this one Gson instance,
@@ -56,20 +61,34 @@ public class ProcessorFactory {
      * @return instance of a weather station processor
      * @throws ProcessorNotFoundException
      */
+    @Nullable
     public static AbstractProcessor getProcessor(Thing thing) throws ProcessorNotFoundException {
         // Return the processor for this thing type
         String thingType = thing.getThingTypeUID().getAsString().toLowerCase();
         switch (thingType) {
             case "ambientweather:ws1400ip": {
+                if (WS1400IP_PROCESSOR == null) {
+                    WS1400IP_PROCESSOR = new Ws1400ipProcessor();
+                }
                 return WS1400IP_PROCESSOR;
             }
             case "ambientweather:ws2902a": {
+                if (WS2902A_PROCESSOR == null) {
+                    WS2902A_PROCESSOR = new Ws2902aProcessor();
+                }
                 return WS2902A_PROCESSOR;
             }
             case "ambientweather:ws8482": {
+                if (WS8482_PROCESSOR == null) {
+                    WS8482_PROCESSOR = new Ws8482Processor();
+                }
                 return WS8482_PROCESSOR;
             }
             case "ambientweather:ws0900ip": {
+                if (WS0900IP_PROCESSOR == null) {
+                    WS0900IP_PROCESSOR = new Ws0900ipProcessor();
+                    ;
+                }
                 return WS0900IP_PROCESSOR;
             }
         }

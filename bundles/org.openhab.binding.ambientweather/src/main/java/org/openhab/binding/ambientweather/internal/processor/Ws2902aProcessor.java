@@ -36,83 +36,82 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class Ws2902aProcessor extends AbstractProcessor {
-
     // Used to calculate barometric pressure trend
     private PressureTrend pressureTrend = new PressureTrend();
 
     @Override
     public void processInfoUpdate(AmbientWeatherStationHandler handler, String station, String name, String location) {
         // Update name and location channels
-        logger.debug("Station {}: Updating station information channels", station);
         handler.updateChannel(CHGRP_STATION + "#" + CH_NAME, new StringType(name));
         handler.updateChannel(CHGRP_STATION + "#" + CH_LOCATION, new StringType(location));
     }
 
     @Override
     public void processWeatherData(AmbientWeatherStationHandler handler, String station, String jsonData) {
+        EventDataJson data;
         try {
-            logger.debug("Station {}: Updating weather data channels", station);
-            EventDataJson data = ProcessorFactory.getGson().fromJson(jsonData, EventDataJson.class);
-
-            // Update the weather data channels for the WS-2902A
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_OBSERVATION_TIME,
-                    getLocalDateTimeType(data.date, handler.getZoneId()));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_BATTERY_INDICATOR, new StringType("N/A"));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_TEMPERATURE,
-                    new QuantityType<>(data.tempf, ImperialUnits.FAHRENHEIT));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_FEELING_TEMPERATURE,
-                    new QuantityType<>(data.feelsLike, ImperialUnits.FAHRENHEIT));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_DEW_POINT,
-                    new QuantityType<>(data.dewPoint, ImperialUnits.FAHRENHEIT));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_HUMIDITY,
-                    new QuantityType<>(data.humidity, SmartHomeUnits.PERCENT));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_PRESSURE_ABSOLUTE,
-                    new QuantityType<>(data.baromabsin, ImperialUnits.INCH_OF_MERCURY));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_PRESSURE_RELATIVE,
-                    new QuantityType<>(data.baromrelin, ImperialUnits.INCH_OF_MERCURY));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_SOLAR_RADIATION,
-                    new QuantityType<>(data.solarradiation, SmartHomeUnits.IRRADIANCE));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_UV_INDEX, new DecimalType(data.uv));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_WIND_SPEED,
-                    new QuantityType<>(data.windspeedmph, ImperialUnits.MILES_PER_HOUR));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_WIND_DIRECTION_DEGREES,
-                    new QuantityType<>(data.winddir, SmartHomeUnits.DEGREE_ANGLE));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_WIND_GUST,
-                    new QuantityType<>(data.windgustmph, ImperialUnits.MILES_PER_HOUR));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_WIND_GUST_MAX_DAILY,
-                    new QuantityType<>(data.maxdailygust, ImperialUnits.MILES_PER_HOUR));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_RAIN_HOURLY_RATE, new DecimalType(data.hourlyrainin));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_RAIN_DAY,
-                    new QuantityType<>(data.dailyrainin, ImperialUnits.INCH));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_RAIN_WEEK,
-                    new QuantityType<>(data.weeklyrainin, ImperialUnits.INCH));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_RAIN_MONTH,
-                    new QuantityType<>(data.monthlyrainin, ImperialUnits.INCH));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_RAIN_YEAR,
-                    new QuantityType<>(data.yearlyrainin, ImperialUnits.INCH));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_RAIN_TOTAL,
-                    new QuantityType<>(data.totalrainin, ImperialUnits.INCH));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_RAIN_EVENT,
-                    new QuantityType<>(data.eventrainin, ImperialUnits.INCH));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_RAIN_LAST_TIME,
-                    getLocalDateTimeType(data.lastRain, handler.getZoneId()));
-
-            // Calculated channels
-            pressureTrend.put(new Double(data.baromrelin));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_PRESSURE_TREND, pressureTrend.getPressureTrend());
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_UV_DANGER, new StringType(convertUVIndexToString(data.uv)));
-            handler.updateChannel(CHGRP_WS2902A + "#" + CH_WIND_DIRECTION,
-                    new StringType(convertWindDirectionToString(data.winddir)));
-
-            // Update channels for the indoor sensor
-            handler.updateChannel(CHGRP_INDOOR_SENSOR + "#" + CH_TEMPERATURE,
-                    new QuantityType<>(data.tempinf, ImperialUnits.FAHRENHEIT));
-            handler.updateChannel(CHGRP_INDOOR_SENSOR + "#" + CH_HUMIDITY,
-                    new QuantityType<>(data.humidityin, SmartHomeUnits.PERCENT));
-            handler.updateChannel(CHGRP_INDOOR_SENSOR + "#" + CH_BATTERY_INDICATOR, new StringType("N/A"));
+            logger.debug("Station {}: Parsing weather data event json", station);
+            data = ProcessorFactory.getGson().fromJson(jsonData, EventDataJson.class);
         } catch (JsonSyntaxException e) {
             logger.info("Station {}: Data event cannot be parsed: {}", station, e.getMessage());
             return;
         }
+
+        // Update the weather data channels for the WS-2902A
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_OBSERVATION_TIME,
+                getLocalDateTimeType(data.date, handler.getZoneId()));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_BATTERY_INDICATOR, new StringType("N/A"));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_TEMPERATURE,
+                new QuantityType<>(data.tempf, ImperialUnits.FAHRENHEIT));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_FEELING_TEMPERATURE,
+                new QuantityType<>(data.feelsLike, ImperialUnits.FAHRENHEIT));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_DEW_POINT,
+                new QuantityType<>(data.dewPoint, ImperialUnits.FAHRENHEIT));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_HUMIDITY,
+                new QuantityType<>(data.humidity, SmartHomeUnits.PERCENT));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_PRESSURE_ABSOLUTE,
+                new QuantityType<>(data.baromabsin, ImperialUnits.INCH_OF_MERCURY));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_PRESSURE_RELATIVE,
+                new QuantityType<>(data.baromrelin, ImperialUnits.INCH_OF_MERCURY));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_SOLAR_RADIATION,
+                new QuantityType<>(data.solarradiation, SmartHomeUnits.IRRADIANCE));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_UV_INDEX, new DecimalType(data.uv));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_WIND_SPEED,
+                new QuantityType<>(data.windspeedmph, ImperialUnits.MILES_PER_HOUR));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_WIND_DIRECTION_DEGREES,
+                new QuantityType<>(data.winddir, SmartHomeUnits.DEGREE_ANGLE));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_WIND_GUST,
+                new QuantityType<>(data.windgustmph, ImperialUnits.MILES_PER_HOUR));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_WIND_GUST_MAX_DAILY,
+                new QuantityType<>(data.maxdailygust, ImperialUnits.MILES_PER_HOUR));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_RAIN_HOURLY_RATE, new DecimalType(data.hourlyrainin));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_RAIN_DAY,
+                new QuantityType<>(data.dailyrainin, ImperialUnits.INCH));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_RAIN_WEEK,
+                new QuantityType<>(data.weeklyrainin, ImperialUnits.INCH));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_RAIN_MONTH,
+                new QuantityType<>(data.monthlyrainin, ImperialUnits.INCH));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_RAIN_YEAR,
+                new QuantityType<>(data.yearlyrainin, ImperialUnits.INCH));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_RAIN_TOTAL,
+                new QuantityType<>(data.totalrainin, ImperialUnits.INCH));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_RAIN_EVENT,
+                new QuantityType<>(data.eventrainin, ImperialUnits.INCH));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_RAIN_LAST_TIME,
+                getLocalDateTimeType(data.lastRain, handler.getZoneId()));
+
+        // Calculated channels
+        pressureTrend.put(new Double(data.baromrelin));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_PRESSURE_TREND, pressureTrend.getPressureTrend());
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_UV_DANGER, new StringType(convertUVIndexToString(data.uv)));
+        handler.updateChannel(CHGRP_WS2902A + "#" + CH_WIND_DIRECTION,
+                new StringType(convertWindDirectionToString(data.winddir)));
+
+        // Update channels for the indoor sensor
+        handler.updateChannel(CHGRP_INDOOR_SENSOR + "#" + CH_TEMPERATURE,
+                new QuantityType<>(data.tempinf, ImperialUnits.FAHRENHEIT));
+        handler.updateChannel(CHGRP_INDOOR_SENSOR + "#" + CH_HUMIDITY,
+                new QuantityType<>(data.humidityin, SmartHomeUnits.PERCENT));
+        handler.updateChannel(CHGRP_INDOOR_SENSOR + "#" + CH_BATTERY_INDICATOR, new StringType("N/A"));
     }
 }

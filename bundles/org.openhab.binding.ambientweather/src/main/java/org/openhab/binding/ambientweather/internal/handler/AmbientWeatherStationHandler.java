@@ -63,7 +63,7 @@ public class AmbientWeatherStationHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        macAddress = getConfigAs(StationConfig.class).getMacAddress();
+        macAddress = getConfigAs(StationConfig.class).macAddress;
         logger.debug("Station {}: Initializing station handler for MAC {}", station, macAddress);
         Thing bridge = getBridge();
         if (bridge != null) {
@@ -74,7 +74,7 @@ public class AmbientWeatherStationHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        macAddress = getConfigAs(StationConfig.class).getMacAddress();
+        macAddress = getConfigAs(StationConfig.class).macAddress;
         logger.debug("Station {}: Disposing station handler for MAC {}", station, macAddress);
         updateStatus(ThingStatus.OFFLINE);
     }

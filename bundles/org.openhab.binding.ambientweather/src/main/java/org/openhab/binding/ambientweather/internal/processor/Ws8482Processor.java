@@ -43,31 +43,31 @@ public class Ws8482Processor extends AbstractProcessor {
     @Override
     public void processInfoUpdate(AmbientWeatherStationHandler handler, String station, String name, String location) {
         // Update name and location channels
-        logger.debug("Station {}: Updating station information channels", station);
         handler.updateChannel(CHGRP_STATION + "#" + CH_NAME, new StringType(name));
         handler.updateChannel(CHGRP_STATION + "#" + CH_LOCATION, new StringType(location));
     }
 
     @Override
     public void processWeatherData(AmbientWeatherStationHandler handler, String station, String jsonData) {
+        EventDataJson data;
         try {
-            logger.debug("Station {}: Updating weather data channels", station);
-            EventDataJson data = ProcessorFactory.getGson().fromJson(jsonData, EventDataJson.class);
-
-            // Update the weather data channels for the WS-8482
-            handler.updateChannel(CHGRP_WS8482 + "#" + CH_OBSERVATION_TIME,
-                    getLocalDateTimeType(data.date, handler.getZoneId()));
-            handler.updateChannel(CHGRP_WS8482 + "#" + CH_TEMPERATURE,
-                    new QuantityType<>(data.tempinf, ImperialUnits.FAHRENHEIT));
-            handler.updateChannel(CHGRP_WS8482 + "#" + CH_HUMIDITY,
-                    new QuantityType<>(data.humidityin, SmartHomeUnits.PERCENT));
-            handler.updateChannel(CHGRP_WS8482 + "#" + CH_BATTERY_INDICATOR, new StringType(data.battout));
-
-            // Update the remote sensor channels
-            remoteSensor.updateChannels(handler, jsonData);
+            logger.debug("Station {}: Parsing weather data event json", station);
+            data = ProcessorFactory.getGson().fromJson(jsonData, EventDataJson.class);
         } catch (JsonSyntaxException e) {
             logger.info("Station {}: Data event cannot be parsed: {}", station, e.getMessage());
             return;
         }
+
+        // Update the weather data channels for the WS-8482
+        handler.updateChannel(CHGRP_WS8482 + "#" + CH_OBSERVATION_TIME,
+                getLocalDateTimeType(data.date, handler.getZoneId()));
+        handler.updateChannel(CHGRP_WS8482 + "#" + CH_TEMPERATURE,
+                new QuantityType<>(data.tempinf, ImperialUnits.FAHRENHEIT));
+        handler.updateChannel(CHGRP_WS8482 + "#" + CH_HUMIDITY,
+                new QuantityType<>(data.humidityin, SmartHomeUnits.PERCENT));
+        handler.updateChannel(CHGRP_WS8482 + "#" + CH_BATTERY_INDICATOR, new StringType(data.battout));
+
+        // Update the remote sensor channels
+        remoteSensor.updateChannels(handler, jsonData);
     }
 }

@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.ambientweather.internal.config;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * The {@link StationConfig} is responsible for storing the
  * Ambient Weather weather station thing configuration.
@@ -24,25 +22,5 @@ public class StationConfig {
     /**
      * MAC address of the device
      */
-    private String macAddress;
-
-    public String getMacAddress() {
-        return macAddress;
-    }
-
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
-    }
-
-    public boolean isValid() {
-        if (StringUtils.isBlank(macAddress)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "AmbientWeatherStationConfig{ macAddress=" + macAddress + " }";
-    }
+    public String macAddress;
 }

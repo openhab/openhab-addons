@@ -41,15 +41,16 @@ import io.socket.emitter.Emitter;
  * @author Mark Hilbush - Initial contribution
  */
 public class AmbientWeatherEventListener {
+    // URL used to get the realtime event stream
+    private static final String REALTIME_URL = "https://api.ambientweather.net/?api=1&applicationKey=%APPKEY%";
+
+    // JSON used to subscribe or unsubscribe from weather data events
+    private static final String SUB_UNSUB_JSON = "{ apiKeys: [ '%APIKEY%' ] }";
+
     private final Logger logger = LoggerFactory.getLogger(AmbientWeatherEventListener.class);
 
-    private static String realtimeUrl = "https://api.ambientweather.net/?api=1&applicationKey=%APPKEY%";
-
     // Maintain mapping of handler and weather station MAC address
-    private final ConcurrentHashMap<AmbientWeatherStationHandler, String> handlers = new ConcurrentHashMap<>();
-
-    // URL used to subscribe or unsubscribe from weather data events
-    private final String subUnsubJson = "{ apiKeys: [ '%APIKEY%' ] }";
+    private final Map<AmbientWeatherStationHandler, String> handlers = new ConcurrentHashMap<>();
 
     private String apiKey;
 
@@ -146,7 +147,7 @@ public class AmbientWeatherEventListener {
      * Initiate the connection to the Ambient Weather real-time API
      */
     private synchronized void connectToService() {
-        final String url = realtimeUrl.replace("%APPKEY%", applicationKey);
+        final String url = REALTIME_URL.replace("%APPKEY%", applicationKey);
         try {
             IO.Options options = new IO.Options();
             options.forceNew = true;
@@ -320,7 +321,7 @@ public class AmbientWeatherEventListener {
         if (apiKey == null) {
             return;
         }
-        final String sub = subUnsubJson.replace("%APIKEY%", apiKey);
+        final String sub = SUB_UNSUB_JSON.replace("%APIKEY%", apiKey);
         if (isConnected && socket != null) {
             logger.debug("Listener: Sending subscribe request");
             socket.emit("subscribe", new JSONObject(sub));
@@ -334,7 +335,7 @@ public class AmbientWeatherEventListener {
         if (apiKey == null) {
             return;
         }
-        final String unsub = subUnsubJson.replace("%APIKEY%", apiKey);
+        final String unsub = SUB_UNSUB_JSON.replace("%APIKEY%", apiKey);
         if (isConnected && socket != null) {
             logger.debug("Listener: Sending unsubscribe request");
             socket.emit("unsubscribe", new JSONObject(unsub));

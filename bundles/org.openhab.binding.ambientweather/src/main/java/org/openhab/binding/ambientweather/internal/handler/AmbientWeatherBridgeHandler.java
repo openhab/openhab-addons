@@ -46,16 +46,16 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(AmbientWeatherBridgeHandler.class);
-
     // URL to retrieve device list from Ambient Weather
-    private static String devicesUrl = "https://api.ambientweather.net/v1/devices?applicationKey=%APPKEY%&apiKey=%APIKEY%";
+    private static final String DEVICES_URL = "https://api.ambientweather.net/v1/devices?applicationKey=%APPKEY%&apiKey=%APIKEY%";
 
     // Timeout of the call to the Ambient Weather devices API
     public static final int DEVICES_API_TIMEOUT = 20000;
 
     // Time to wait after failed key validation
     public static final long KEY_VALIDATION_DELAY = 60L;
+
+    private final Logger logger = LoggerFactory.getLogger(AmbientWeatherBridgeHandler.class);
 
     // Job to validate app and api keys
     @Nullable
@@ -83,7 +83,7 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
             String response = null;
             try {
                 // Query weather stations (devices) from Ambient Weather
-                String url = devicesUrl.replace("%APPKEY%", getApplicationKey()).replace("%APIKEY%", getApiKey());
+                String url = DEVICES_URL.replace("%APPKEY%", getApplicationKey()).replace("%APIKEY%", getApiKey());
                 logger.debug("Bridge: Querying list of devices from ambient weather service");
                 response = HttpUtil.executeUrl("GET", url, DEVICES_API_TIMEOUT);
                 logger.trace("Bridge: Response = {}", response);
@@ -122,7 +122,7 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Bridge: Initializing ambientweather bridge handler.");
+        updateStatus(ThingStatus.UNKNOWN);
         // If there are keys in the config, schedule the job to validate them
         if (haveApplicationKey() && haveApiKey()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Awaiting key validation");
@@ -134,9 +134,8 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
      * Check if an application key has been provided in the thing config
      */
     private boolean haveApplicationKey() {
-        String configApplicationKey = getConfigAs(BridgeConfig.class).getApplicationKey();
+        String configApplicationKey = getConfigAs(BridgeConfig.class).applicationKey;
         if (StringUtils.isEmpty(configApplicationKey)) {
-            logger.debug("Bridge: Application key is missing for thing {}", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing application key");
             return false;
         }
@@ -148,9 +147,8 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
      * Check if an API key has been provided in the thing config
      */
     private boolean haveApiKey() {
-        String configApiKey = getConfigAs(BridgeConfig.class).getApiKey();
+        String configApiKey = getConfigAs(BridgeConfig.class).apiKey;
         if (StringUtils.isEmpty(configApiKey)) {
-            logger.debug("Bridge: API key is missing for thing {}", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing API key");
             return false;
         }
@@ -159,13 +157,11 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
     }
 
     public void updateThingStatus(String errorDetail, String statusDescription) {
-        logger.debug("Bridge: Key validation FAILED. Setting bridge OFFLINE: {}", errorDetail);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, statusDescription);
     }
 
     @Override
     public void dispose() {
-        logger.debug("Bridge: Disposing ambientweather bridge handler.");
         cancelValidateKeysJob();
         listener.stop();
     }

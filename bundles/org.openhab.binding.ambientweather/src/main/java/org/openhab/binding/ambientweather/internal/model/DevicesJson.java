@@ -21,9 +21,10 @@ import java.util.ArrayList;
  * WS-1400-IP, WS-8482, etc.) of weather station.
  *
  * @author Mark Hilbush - Initial Contribution
+ * @param <Container>
  */
 public class DevicesJson extends ArrayList<DevicesJson.Container> {
-    public class Container {
+    public static class Container {
         /*
          * The weather station's MAC address
          */
