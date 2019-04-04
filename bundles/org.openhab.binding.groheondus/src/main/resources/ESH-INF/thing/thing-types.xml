@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="groheondus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>GROHE ONDUS Account</label>
+		<description>This is an interface to the GROHE ONDUS Account as it is used by the app.</description>
+
+		<config-description>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>Username as used in the GROHE ONDUS App, usually your e-mail address.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<required>true</required>
+				<context>password</context>
+				<description>Password as used in the GROHE ONDUS App.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="senseguard">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+
+		<label>GROHE SENSE GUARD Appliance</label>
+		<description>A SENSE GUARD device</description>
+
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="pressure" typeId="pressure" />
+			<channel id="temperature_guard" typeId="temperature_guard" />
+			<channel id="waterconsumption" typeId="waterconsumption" />
+			<channel id="valve_open" typeId="valve_open" />
+		</channels>
+
+		<representation-property>applianceId</representation-property>
+
+		<config-description>
+			<parameter name="applianceId" type="text" required="true">
+				<label>Appliance ID</label>
+				<description>The UUID of the appliance as retrieved from the GROHE ONDUS API.</description>
+			</parameter>
+			<parameter name="roomId" type="integer" required="true">
+				<label>Room ID</label>
+				<description>The ID of the room the appliance is in as retrieved from the GROHE ONDUS API.</description>
+			</parameter>
+			<parameter name="locationId" type="integer" required="true">
+				<label>Location ID</label>
+				<description>The ID of the location the room is in as retrieved from the GROHE ONDUS API.</description>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" required="false">
+				<label>Polling Interval</label>
+				<description>The interval in seconds used to poll the API for new data. Defaults to the configuration of the appliance itself as retrieved from the API, usually 15 minutes.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="sense">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+
+		<label>GROHE SENSE Appliance</label>
+		<description>A SENSE device</description>
+
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="temperature" typeId="temperature" />
+			<channel id="battery" typeId="system.battery-level" />
+		</channels>
+
+		<representation-property>applianceId</representation-property>
+
+		<config-description>
+			<parameter name="applianceId" type="text" required="true">
+				<label>Appliance ID</label>
+				<description>The UUID of the appliance as retrieved from the GROHE ONDUS API.</description>
+			</parameter>
+			<parameter name="roomId" type="integer" required="true">
+				<label>Room ID</label>
+				<description>The ID of the room the appliance is in as retrieved from the GROHE ONDUS API.</description>
+			</parameter>
+			<parameter name="locationId" type="integer" required="true">
+				<label>Location ID</label>
+				<description>The ID of the location the room is in as retrieved from the GROHE ONDUS API.</description>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" required="false">
+				<label>Polling Interval</label>
+				<description>The interval in seconds used to poll the API for new data.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="name">
+		<item-type>String</item-type>
+		<label>Appliance name</label>
+		<description>The name of the appliance</description>
+	</channel-type>
+	<channel-type id="pressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure</label>
+		<description>The pressure of your water supply</description>
+	</channel-type>
+	<channel-type id="temperature_guard">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>The ambient temperature of the appliance</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="valve_open">
+		<item-type>Switch</item-type>
+		<label>Valve open</label>
+		<description>Valve switch</description>
+	</channel-type>
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>The humidity reported by the device</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>The temperature reported by the device</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	<channel-type id="waterconsumption">
+		<item-type>Number</item-type>
+		<label>Water consumption</label>
+		<description>The amount of water consumed in the given time period.</description>
+		<state readOnly="true" />
+		<config-description>
+			<parameter name="timeframe" type="integer" min="1" max="90" step="1" required="true">
+				<label>Timeframe</label>
+				<description>The timeframe in days to get the water consumption of</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+</thing:thing-descriptions>

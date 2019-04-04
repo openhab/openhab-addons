@@ -23,7 +23,6 @@
 /addons/binding/org.openhab.binding.feed/ @svilenvul
 /addons/binding/org.openhab.binding.feed.test/ @svilenvul
 /addons/binding/org.openhab.binding.ftpupload/ @paulianttila
-/addons/binding/org.openhab.binding.groheondus/ @FlorianSW
 /addons/binding/org.openhab.binding.ihc/ @paulianttila
 /addons/binding/org.openhab.binding.ihc.test/ @paulianttila
 /addons/binding/org.openhab.binding.innogysmarthome/ @ollie-dev
@@ -92,6 +91,7 @@
 /bundles/org.openhab.binding.gardena/ @gerrieg
 /bundles/org.openhab.binding.globalcache/ @mhilbush
 /bundles/org.openhab.binding.gpstracker/ @gbicskei
+/bundles/org.openhab.binding.groheondus/ @FlorianSW
 /bundles/org.openhab.binding.harmonyhub/ @digitaldan
 /bundles/org.openhab.binding.hdanywhere/ @kgoderis
 /bundles/org.openhab.binding.hdpowerview/ @beowulfe
