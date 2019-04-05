@@ -12,8 +12,12 @@
  */
 package org.openhab.binding.ihc.internal.converters;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSIntegerValue;
 
@@ -33,7 +37,10 @@ public class OnOffTypeWSIntegerValueConverter implements Converter<WSIntegerValu
     @Override
     public WSIntegerValue convertFromOHType(@NonNull OnOffType from, @NonNull WSIntegerValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        int newVal = from == OnOffType.ON ? value.maximumValue : value.minimumValue;
+
+        int onLevel = Collections
+                .min(Arrays.asList(value.maximumValue, getCommandLevel(value, convertData, OnOffType.ON)));
+        int newVal = from == OnOffType.ON ? onLevel : value.minimumValue;
 
         if (convertData.getInverted()) {
             newVal = newVal == value.maximumValue ? value.minimumValue : value.maximumValue;
@@ -43,6 +50,18 @@ public class OnOffTypeWSIntegerValueConverter implements Converter<WSIntegerValu
         } else {
             throw new ConversionException("Value is not between acceptable limits (min=" + value.minimumValue + ", max="
                     + value.maximumValue + ")");
+        }
+    }
+
+    private int getCommandLevel(@NonNull WSIntegerValue value, @NonNull ConverterAdditionalInfo convertData,
+            Command command) throws ConversionException {
+        try {
+            if (convertData.getCommandLevels() != null) {
+                return (int) convertData.getCommandLevels().get(command);
+            }
+            return value.maximumValue;
+        } catch (Throwable e) {
+            throw new ConversionException(e);
         }
     }
 }

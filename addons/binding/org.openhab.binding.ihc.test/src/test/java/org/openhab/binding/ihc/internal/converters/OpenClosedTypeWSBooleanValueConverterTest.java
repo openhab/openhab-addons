@@ -33,11 +33,11 @@ public class OpenClosedTypeWSBooleanValueConverterTest {
         final boolean inverted = false;
         WSBooleanValue val = new WSBooleanValue(12345, false);
 
-        val = convertFromOHType(val, OpenClosedType.OPEN, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, OpenClosedType.OPEN, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(true, val.value);
 
-        OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(OpenClosedType.OPEN, type);
     }
 
@@ -46,11 +46,11 @@ public class OpenClosedTypeWSBooleanValueConverterTest {
         final boolean inverted = false;
 
         WSBooleanValue val = new WSBooleanValue(12345, true);
-        val = convertFromOHType(val, OpenClosedType.CLOSED, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, OpenClosedType.CLOSED, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(false, val.value);
 
-        OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(OpenClosedType.CLOSED, type);
     }
 
@@ -59,11 +59,11 @@ public class OpenClosedTypeWSBooleanValueConverterTest {
         final boolean inverted = true;
 
         WSBooleanValue val = new WSBooleanValue(12345, true);
-        val = convertFromOHType(val, OpenClosedType.OPEN, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, OpenClosedType.OPEN, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(false, val.value);
 
-        OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(OpenClosedType.OPEN, type);
     }
 
@@ -72,11 +72,11 @@ public class OpenClosedTypeWSBooleanValueConverterTest {
         final boolean inverted = true;
 
         WSBooleanValue val = new WSBooleanValue(12345, false);
-        val = convertFromOHType(val, OpenClosedType.CLOSED, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, OpenClosedType.CLOSED, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(true, val.value);
 
-        OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(OpenClosedType.CLOSED, type);
     }
 

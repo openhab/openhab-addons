@@ -21,6 +21,8 @@ import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSIntegerValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
 
+import com.google.common.collect.ImmutableMap;
+
 /**
  * Test for IHC / ELKO binding
  *
@@ -33,14 +35,39 @@ public class OnOffTypeWSIntegerValueConverterTest {
         final boolean inverted = false;
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
 
-        val = convertFromOHType(val, OnOffType.ON, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, OnOffType.ON, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(100, val.value);
         assertEquals(-100, val.minimumValue);
         assertEquals(100, val.maximumValue);
 
-        OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(OnOffType.ON, type);
+    }
+
+    @Test
+    public void testOnLevelled() throws ConversionException {
+        final boolean inverted = false;
+        final int onLevel = 70;
+        WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
+
+        val = convertFromOHType(val, OnOffType.ON,
+                new ConverterAdditionalInfo(null, inverted, ImmutableMap.of(OnOffType.ON, onLevel)));
+        assertEquals(12345, val.resourceID);
+        assertEquals(onLevel, val.value);
+        assertEquals(-100, val.minimumValue);
+        assertEquals(100, val.maximumValue);
+
+        OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
+        assertEquals(OnOffType.ON, type);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void testOnLevelledError() throws ConversionException {
+        WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
+
+        val = convertFromOHType(val, OnOffType.ON,
+                new ConverterAdditionalInfo(null, false, ImmutableMap.of(OnOffType.ON, "70")));
     }
 
     @Test
@@ -48,13 +75,13 @@ public class OnOffTypeWSIntegerValueConverterTest {
         final boolean inverted = false;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
-        val = convertFromOHType(val, OnOffType.OFF, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, OnOffType.OFF, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(-100, val.value);
         assertEquals(-100, val.minimumValue);
         assertEquals(100, val.maximumValue);
 
-        OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(OnOffType.OFF, type);
     }
 
@@ -63,13 +90,13 @@ public class OnOffTypeWSIntegerValueConverterTest {
         final boolean inverted = true;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
-        val = convertFromOHType(val, OnOffType.ON, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, OnOffType.ON, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(-100, val.value);
         assertEquals(-100, val.minimumValue);
         assertEquals(100, val.maximumValue);
 
-        OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(OnOffType.ON, type);
     }
 
@@ -78,13 +105,13 @@ public class OnOffTypeWSIntegerValueConverterTest {
         final boolean inverted = true;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
-        val = convertFromOHType(val, OnOffType.OFF, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, OnOffType.OFF, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(100, val.value);
         assertEquals(-100, val.minimumValue);
         assertEquals(100, val.maximumValue);
 
-        OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(OnOffType.OFF, type);
     }
 
