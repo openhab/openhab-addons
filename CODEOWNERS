@@ -5,7 +5,6 @@
 *       @openhab/2-x-add-ons-maintainers
 
 # Add-on maintainers:
-/addons/binding/org.openhab.binding.amazondashbutton/ @OLibutzki
 /addons/binding/org.openhab.binding.bluetooth/ @cdjackson @kaikreuzer
 /addons/binding/org.openhab.binding.bluetooth.bluegiga/ @cdjackson @kaikreuzer
 /addons/binding/org.openhab.binding.bluetooth.bluegiga.test/ @cdjackson @kaikreuzer
@@ -62,6 +61,7 @@
 /bundles/org.openhab.binding.airquality/ @kubawolanin
 /bundles/org.openhab.binding.airvisualnode/ @3cky
 /bundles/org.openhab.binding.allplay/ @dominicdesun
+/bundles/org.openhab.binding.amazondashbutton/ @OLibutzki
 /bundles/org.openhab.binding.amazonechocontrol/ @mgeramb
 /bundles/org.openhab.binding.astro/ @gerrieg
 /bundles/org.openhab.binding.atlona/ @tmrobert8
