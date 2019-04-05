@@ -14,10 +14,10 @@ package org.openhab.binding.onebusaway.internal;
 
 import static org.openhab.binding.onebusaway.internal.OneBusAwayBindingConstants.*;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,9 +45,9 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class OneBusAwayHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Arrays.asList(ApiHandler.SUPPORTED_THING_TYPE, RouteHandler.SUPPORTED_THING_TYPE,
-                    StopHandler.SUPPORTED_THING_TYPE).stream().collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
+            .of(ApiHandler.SUPPORTED_THING_TYPE, RouteHandler.SUPPORTED_THING_TYPE, StopHandler.SUPPORTED_THING_TYPE)
+            .collect(Collectors.toSet()));
 
     private @NonNullByDefault({}) HttpClient httpClient;
 
