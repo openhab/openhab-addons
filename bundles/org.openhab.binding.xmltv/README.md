@@ -51,7 +51,7 @@ Once the XmlTV bridge to a file is created, you can add all known channels by se
 | progEnd         | DateTime             | Program End Time                            |
 | progTitle       | String               | Program Title.                              |
 | progCategory    | String               | Program Category.                           |
-| progIcon        | String               | URL to an image of the program.             |
+| progIconUrl     | String               | URL to an image of the program.             |
 | icon            | Image                | Icon of the program                         |
 | elapsedTime     | Number:Time          | Current time of currently playing program   |
 | remainingTime   | Number:Time          | Time remaining until end of the program     |
@@ -66,7 +66,8 @@ Once the XmlTV bridge to a file is created, you can add all known channels by se
 | progEnd         | DateTime             | Program End Time                            |
 | progTitle       | String               | Program Title.                              |
 | progCategory    | String               | Program Category.                           |
-| progIcon        | String               | URL to an image of the program.             |
+| progIconUrl     | String               | URL to an image of the program.             |
+| icon            | Image                | Icon of the program                         |
 
 ## Full Example
 

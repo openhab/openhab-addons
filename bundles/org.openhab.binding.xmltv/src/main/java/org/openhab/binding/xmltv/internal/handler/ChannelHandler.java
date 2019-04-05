@@ -166,14 +166,14 @@ public class ChannelHandler extends BaseThingHandler {
                     case CHANNEL_ICON:
                         updateState(channelUID,
                                 GROUP_CHANNEL_PROPERTIES.equals(uidElements[0])
-                                        ? mediaIcon != null ? mediaIcon : UnDefType.NULL
-                                        : programmeIcon != null ? programmeIcon : UnDefType.NULL);
+                                        ? mediaIcon != null ? mediaIcon : UnDefType.UNDEF
+                                        : programmeIcon != null ? programmeIcon : UnDefType.UNDEF);
                         break;
                     case CHANNEL_CHANNEL_URL:
                         updateState(channelUID,
                                 mediaChannel != null ? mediaChannel.getIcons().size() > 0
                                         ? new StringType(mediaChannel.getIcons().get(0).getSrc())
-                                        : UnDefType.NULL : UnDefType.NULL);
+                                        : UnDefType.UNDEF : UnDefType.UNDEF);
                         break;
                     case CHANNEL_PROGRAMME_START:
                         Instant is = programme.getProgrammeStart();
@@ -189,18 +189,18 @@ public class ChannelHandler extends BaseThingHandler {
                         List<WithLangType> titles = programme.getTitles();
                         updateState(channelUID,
                                 titles.size() > 0 ? new StringType(programme.getTitles().get(0).getValue())
-                                        : UnDefType.NULL);
+                                        : UnDefType.UNDEF);
                         break;
                     case CHANNEL_PROGRAMME_CATEGORY:
                         List<WithLangType> categories = programme.getCategories();
                         updateState(channelUID,
                                 categories.size() > 0 ? new StringType(programme.getCategories().get(0).getValue())
-                                        : UnDefType.NULL);
+                                        : UnDefType.UNDEF);
                         break;
                     case CHANNEL_PROGRAMME_ICON:
                         List<Icon> icons = programme.getIcons();
                         updateState(channelUID,
-                                icons.size() > 0 ? new StringType(icons.get(0).getSrc()) : UnDefType.NULL);
+                                icons.size() > 0 ? new StringType(icons.get(0).getSrc()) : UnDefType.UNDEF);
                         break;
                     case CHANNEL_PROGRAMME_ELAPSED:
                         updateState(channelUID, getDurationInSeconds(programme.getProgrammeStart(), Instant.now()));
@@ -221,7 +221,7 @@ public class ChannelHandler extends BaseThingHandler {
 
                         double progress = 100.0 * secondsElapsed1 / secondsLength;
                         if (progress > 100 || progress < 0) {
-                            logger.warn("Outstanding process");
+                            logger.info("Outstanding process");
                         }
                         updateState(channelUID, new QuantityType<>(progress, SmartHomeUnits.PERCENT));
 

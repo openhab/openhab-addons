@@ -48,7 +48,7 @@ public class XmlTVBindingConstants {
     public static final String CHANNEL_PROGRAMME_END = "progEnd";
     public static final String CHANNEL_PROGRAMME_TITLE = "progTitle";
     public static final String CHANNEL_PROGRAMME_CATEGORY = "progCategory";
-    public static final String CHANNEL_PROGRAMME_ICON = "progIcon";
+    public static final String CHANNEL_PROGRAMME_ICON = "progIconUrl";
 
     public static final String CHANNEL_PROGRAMME_ELAPSED = "elapsedTime";
     public static final String CHANNEL_PROGRAMME_REMAINING = "remainingTime";
