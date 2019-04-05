@@ -257,7 +257,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 WSResourceValue value = ihc.resourceQuery(params.getResourceId());
                 resourceValueUpdateReceived(value);
             } catch (IhcExecption e) {
-                logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage(), e);
+                logger.warn("Can't update channel '{}' value, reason: {}", channelUID, e.getMessage(), e);
             } catch (ConversionException e) {
                 logger.warn("Channel param error, reason: {}.", e.getMessage(), e);
             }
@@ -282,7 +282,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_STATE), new StringType(value));
         } catch (IhcExecption e) {
-            logger.warn("Controller state information fetch failed, reason:  {}", e.getMessage(), e);
+            logger.warn("Controller state information fetch failed, reason: {}", e.getMessage(), e);
         }
     }
 
