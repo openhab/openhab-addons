@@ -87,14 +87,10 @@ public class SonyPS4PacketHandler {
 
     private final byte[] remoteSeed = new byte[16];
     private final byte[] randomSeed = new byte[16];
-    @Nullable
-    private IvParameterSpec ivSpec;
-    @Nullable
-    private Cipher aesEncryptCipher;
-    @Nullable
-    private Cipher aesDecryptCipher;
-    @Nullable
-    private Cipher ps4Cipher;
+    private @Nullable IvParameterSpec ivSpec;
+    private @Nullable Cipher aesEncryptCipher;
+    private @Nullable Cipher aesDecryptCipher;
+    private @Nullable Cipher ps4Cipher;
 
     SonyPS4PacketHandler() {
         new SecureRandom().nextBytes(randomSeed);
@@ -129,7 +125,7 @@ public class SonyPS4PacketHandler {
         try {
             return aesDecryptCipher.doFinal(input);
         } catch (IllegalBlockSizeException | BadPaddingException e) {
-            logger.warn("Can not decrypt PS4 response: {}", e);
+            logger.warn("Can not decrypt PS4 response.", e);
         }
         return new byte[0];
     }
@@ -204,7 +200,7 @@ public class SonyPS4PacketHandler {
             return aesEncryptCipher.update(packet.array());
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
                 | InvalidAlgorithmParameterException e) {
-            logger.error("Can not initialize cipher: {}", e);
+            logger.error("Can not initialize cipher.", e);
         }
         return new byte[0];
     }
@@ -243,8 +239,7 @@ public class SonyPS4PacketHandler {
         return aesEncryptCipher.update(packet.array());
     }
 
-    @Nullable
-    private Cipher getRsaCipher(String key) {
+    private @Nullable Cipher getRsaCipher(String key) {
         try {
             String keyString = key.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "");
             byte[] keyData = Base64.getDecoder().decode(keyString);
@@ -257,7 +252,7 @@ public class SonyPS4PacketHandler {
             logger.debug("Initialized RSA public key cipher");
             return cipher;
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeySpecException e) {
-            logger.error("Exception enabling RSA cipher: {}", e.getMessage());
+            logger.error("Exception enabling RSA cipher.", e);
             return null;
         }
     }

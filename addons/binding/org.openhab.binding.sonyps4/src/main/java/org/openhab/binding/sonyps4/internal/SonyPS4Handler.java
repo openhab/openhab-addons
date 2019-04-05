@@ -65,10 +65,8 @@ public class SonyPS4Handler extends BaseThingHandler {
 
     private SonyPS4Configuration config = getConfigAs(SonyPS4Configuration.class);
 
-    @Nullable
-    private LocaleProvider localeProvider;
-    @Nullable
-    private ScheduledFuture<?> refreshTimer;
+    private @Nullable LocaleProvider localeProvider;
+    private @Nullable ScheduledFuture<?> refreshTimer;
 
     // State of PS4
     private String currentApplication = "";
@@ -132,10 +130,7 @@ public class SonyPS4Handler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Start initializing!");
         config = getConfigAs(SonyPS4Configuration.class);
-        Integer port = config.getIpPort();
-        if (port != null) {
-            currentComPort = port;
-        }
+        currentComPort = config.getIpPort();
 
         updateStatus(ThingStatus.UNKNOWN);
         setupRefreshTimer(1);
@@ -155,7 +150,7 @@ public class SonyPS4Handler extends BaseThingHandler {
      * Sets up a refresh timer (using the scheduler) with the given interval.
      *
      * @param initialWaitTime The delay before the first refresh. Maybe 0 to immediately
-     *                            initiate a refresh.
+     *            initiate a refresh.
      */
     private void setupRefreshTimer(int initialWaitTime) {
         if (refreshTimer != null) {

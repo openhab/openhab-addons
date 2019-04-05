@@ -36,8 +36,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 @Component(configurationPid = "binding.sonyps4", service = ThingHandlerFactory.class)
 public class SonyPS4HandlerFactory extends BaseThingHandlerFactory {
 
-    @Nullable
-    private LocaleProvider localeProvider;
+    private @Nullable LocaleProvider localeProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

@@ -69,18 +69,18 @@ public class SonyPS4BindingConstants {
     public static final String PS4HW_CUH7000 = "CUH-7000";
     public static final String PS4HW_CUH7100 = "CUH-7100";
 
-    public static final int PS4_KEY_UP = 1 << 0;
-    public static final int PS4_KEY_DOWN = 1 << 1;
-    public static final int PS4_KEY_RIGHT = 1 << 2;
-    public static final int PS4_KEY_LEFT = 1 << 3;
-    public static final int PS4_KEY_ENTER = 1 << 4;
-    public static final int PS4_KEY_BACK = 1 << 5;
-    public static final int PS4_KEY_OPTION = 1 << 6;
-    public static final int PS4_KEY_PS = 1 << 7;
-    public static final int PS4_KEY_OFF = 1 << 8;
-    public static final int PS4_KEY_CANCEL = 1 << 9;
-    public static final int PS4_KEY_OPEN_RC = 1 << 10;
-    public static final int PS4_KEY_CLOSE_RC = 1 << 11;
+    static final int PS4_KEY_UP = 1 << 0;
+    static final int PS4_KEY_DOWN = 1 << 1;
+    static final int PS4_KEY_RIGHT = 1 << 2;
+    static final int PS4_KEY_LEFT = 1 << 3;
+    static final int PS4_KEY_ENTER = 1 << 4;
+    static final int PS4_KEY_BACK = 1 << 5;
+    static final int PS4_KEY_OPTION = 1 << 6;
+    static final int PS4_KEY_PS = 1 << 7;
+    static final int PS4_KEY_OFF = 1 << 8;
+    static final int PS4_KEY_CANCEL = 1 << 9;
+    static final int PS4_KEY_OPEN_RC = 1 << 10;
+    static final int PS4_KEY_CLOSE_RC = 1 << 11;
 
-    public static final String PS4COMS_SYNC = "Ps4Sync";
+    static final String PS4COMS_SYNC = "Ps4Sync";
 }

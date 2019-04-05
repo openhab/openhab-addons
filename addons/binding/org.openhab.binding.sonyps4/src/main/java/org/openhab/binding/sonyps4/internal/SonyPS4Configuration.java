@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.sonyps4.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sonyps4.internal.discovery.SonyPS4Discovery;
 
 /**
@@ -19,6 +20,7 @@ import org.openhab.binding.sonyps4.internal.discovery.SonyPS4Discovery;
  *
  * @author Fredrik Ahlström - Initial contribution
  */
+@NonNullByDefault
 public class SonyPS4Configuration {
 
     /**
@@ -42,32 +44,32 @@ public class SonyPS4Configuration {
     /**
      * IP-address of PS4.
      */
-    private String ipAddress;
+    private String ipAddress = "";
 
     /**
      * User-credential for the PS4.
      */
-    private String userCredential;
+    private String userCredential = "";
 
     /**
      * IP-port of PS4.
      */
-    private Integer ipPort;
+    private Integer ipPort = Integer.valueOf(997);
 
     /**
      * Size of artwork for applications.
      */
-    private Integer artworkSize;
+    private Integer artworkSize = Integer.valueOf(320);
 
     /**
      * host-id of PS4.
      */
-    private String hostId;
+    private String hostId = "";
 
     /**
      * pin code for user.
      */
-    private String pinCode;
+    private String pinCode = "";
 
     public String getIpAddress() {
         return ipAddress;
