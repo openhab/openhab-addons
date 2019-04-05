@@ -14,14 +14,17 @@ package org.openhab.binding.ihc.internal.converters;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.Type;
 import org.junit.Test;
 import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSIntegerValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
-
-import com.google.common.collect.ImmutableMap;
 
 /**
  * Test for IHC / ELKO binding
@@ -51,8 +54,12 @@ public class OnOffTypeWSIntegerValueConverterTest {
         final int onLevel = 70;
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
 
+        Map<Command, Object> commandLevels = new HashMap<>();
+        commandLevels.put(OnOffType.ON, onLevel);
+
         val = convertFromOHType(val, OnOffType.ON,
-                new ConverterAdditionalInfo(null, inverted, ImmutableMap.of(OnOffType.ON, onLevel)));
+                new ConverterAdditionalInfo(null, inverted, Collections.unmodifiableMap(commandLevels)));
+
         assertEquals(12345, val.resourceID);
         assertEquals(onLevel, val.value);
         assertEquals(-100, val.minimumValue);
@@ -66,8 +73,11 @@ public class OnOffTypeWSIntegerValueConverterTest {
     public void testOnLevelledError() throws ConversionException {
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
 
+        Map<Command, Object> commandLevels = new HashMap<>();
+        commandLevels.put(OnOffType.ON, "70");
+
         val = convertFromOHType(val, OnOffType.ON,
-                new ConverterAdditionalInfo(null, false, ImmutableMap.of(OnOffType.ON, "70")));
+                new ConverterAdditionalInfo(null, false, Collections.unmodifiableMap(commandLevels)));
     }
 
     @Test

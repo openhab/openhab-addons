@@ -73,8 +73,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import com.google.common.collect.ImmutableMap;
-
 /**
  * The {@link IhcHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -971,7 +969,9 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
     private Map<Command, Object> getCommandLevels(ChannelParams params) {
         if (params.getOnLevel() != null) {
-            return ImmutableMap.of(OnOffType.ON, params.getOnLevel());
+            Map<Command, Object> commandLevels = new HashMap<>();
+            commandLevels.put(OnOffType.ON, params.getOnLevel());
+            return Collections.unmodifiableMap(commandLevels);
         }
         return null;
     }
