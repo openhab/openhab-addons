@@ -13,13 +13,12 @@
 
   <name>openHAB Add-ons :: Bundles :: MQTT Things and Channels</name>
 
-
   <dependencies>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.mqtt</artifactId>
       <version>${project.version}</version>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>
