@@ -16,12 +16,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -181,7 +181,7 @@ public class UrtsiDeviceHandler extends BaseBridgeHandler {
         Set<String> serialPorts = null;
 
         if (serialPortsProperty != null) {
-            serialPorts = Arrays.asList(serialPortsProperty.split(":")).stream().collect(Collectors.toSet());
+            serialPorts = Stream.of(serialPortsProperty.split(":")).collect(Collectors.toSet());
         } else {
             serialPorts = new HashSet<>();
         }

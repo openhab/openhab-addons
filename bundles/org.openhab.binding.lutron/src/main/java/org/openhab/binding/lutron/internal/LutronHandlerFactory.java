@@ -14,10 +14,10 @@ package org.openhab.binding.lutron.internal;
 
 import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -65,23 +65,21 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     // Used by LutronDeviceDiscoveryService to discover these types
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = Collections
-            .unmodifiableSet(Arrays.asList(THING_TYPE_DIMMER, THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR,
+            .unmodifiableSet(Stream.of(THING_TYPE_DIMMER, THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR,
                     THING_TYPE_KEYPAD, THING_TYPE_TTKEYPAD, THING_TYPE_PICO, THING_TYPE_VIRTUALKEYPAD, THING_TYPE_VCRX,
                     THING_TYPE_CCO_PULSED, THING_TYPE_CCO_MAINTAINED, THING_TYPE_SHADE, THING_TYPE_TIMECLOCK,
-                    THING_TYPE_GREENMODE).stream().collect(Collectors.toSet()));
+                    THING_TYPE_GREENMODE).collect(Collectors.toSet()));
 
     // Used by the HwDiscoveryService
     public static final Set<ThingTypeUID> HW_DISCOVERABLE_DEVICE_TYPES_UIDS = Collections
             .unmodifiableSet(Collections.singleton(HwConstants.THING_TYPE_HWDIMMER));
 
     // Other types that can be initiated but not discovered
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Arrays
-                    .asList(THING_TYPE_IPBRIDGE, PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE,
-                            RadioRAConstants.THING_TYPE_RS232, RadioRAConstants.THING_TYPE_DIMMER,
-                            RadioRAConstants.THING_TYPE_SWITCH, RadioRAConstants.THING_TYPE_PHANTOM,
-                            HwConstants.THING_TYPE_HWSERIALBRIDGE, THING_TYPE_CCO)
-                    .stream().collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_IPBRIDGE, PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE,
+                    RadioRAConstants.THING_TYPE_RS232, RadioRAConstants.THING_TYPE_DIMMER,
+                    RadioRAConstants.THING_TYPE_SWITCH, RadioRAConstants.THING_TYPE_PHANTOM,
+                    HwConstants.THING_TYPE_HWSERIALBRIDGE, THING_TYPE_CCO).collect(Collectors.toSet()));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

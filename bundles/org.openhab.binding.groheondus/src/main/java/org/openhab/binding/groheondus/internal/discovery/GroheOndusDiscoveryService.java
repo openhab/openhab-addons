@@ -16,12 +16,12 @@ import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -54,8 +54,8 @@ public class GroheOndusDiscoveryService extends AbstractDiscoveryService {
     private final GroheOndusAccountHandler bridgeHandler;
 
     public GroheOndusDiscoveryService(GroheOndusAccountHandler bridgeHandler) {
-        super(Collections.unmodifiableSet(
-                Arrays.asList(THING_TYPE_SENSE, THING_TYPE_SENSEGUARD).stream().collect(Collectors.toSet())), 30);
+        super(Collections
+                .unmodifiableSet(Stream.of(THING_TYPE_SENSE, THING_TYPE_SENSEGUARD).collect(Collectors.toSet())), 30);
         logger.debug("initialize discovery service");
         this.bridgeHandler = bridgeHandler;
         this.activate(null);

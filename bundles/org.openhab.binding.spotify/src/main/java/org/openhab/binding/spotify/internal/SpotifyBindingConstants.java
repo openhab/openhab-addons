@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.spotify.internal;
 
-import java.util.Arrays;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -32,8 +32,8 @@ public class SpotifyBindingConstants {
     /**
      * Spotify scopes needed by this binding to work.
      */
-    public static final String SPOTIFY_SCOPES = Arrays.asList("user-read-playback-state", "user-modify-playback-state",
-            "playlist-read-private", "playlist-read-collaborative").stream().collect(Collectors.joining(" "));
+    public static final String SPOTIFY_SCOPES = Stream.of("user-read-playback-state", "user-modify-playback-state",
+            "playlist-read-private", "playlist-read-collaborative").collect(Collectors.joining(" "));
     public static final String SPOTIFY_API_URL = "https://api.spotify.com/v1/me";
     public static final String SPOTIFY_API_PLAYER_URL = SPOTIFY_API_URL + "/player";
 
