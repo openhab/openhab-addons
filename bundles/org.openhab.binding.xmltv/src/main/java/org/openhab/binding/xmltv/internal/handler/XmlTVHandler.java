@@ -58,8 +58,8 @@ public class XmlTVHandler extends BaseBridgeHandler {
     @NonNullByDefault({})
     private ScheduledFuture<?> reloadJob = null;
 
-    public XmlTVHandler(Bridge bridge) throws JAXBException {
-        super(bridge);
+    public XmlTVHandler(Bridge thing) throws JAXBException {
+        super(thing);
         xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
         jc = JAXBContext.newInstance(Tv.class.getPackage().getName());
     }
