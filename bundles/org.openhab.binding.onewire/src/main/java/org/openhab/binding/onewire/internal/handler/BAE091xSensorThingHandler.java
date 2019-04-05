@@ -50,7 +50,6 @@ public class BAE091xSensorThingHandler extends OwBaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BAE091X);
 
     private final Logger logger = LoggerFactory.getLogger(BAE091xSensorThingHandler.class);
-    private OwSensorType sensorType = OwSensorType.UNKNOWN;
 
     public static final Set<OwSensorType> SUPPORTED_SENSOR_TYPES = Collections.singleton(OwSensorType.BAE0910);
 
@@ -103,6 +102,7 @@ public class BAE091xSensorThingHandler extends OwBaseThingHandler {
         BAE091xHandlerConfiguration configuration = getConfig().as(BAE091xHandlerConfiguration.class);
 
         Set<OwChannelConfig> wantedChannel = new HashSet<>();
+        wantedChannel.addAll(SENSOR_TYPE_CHANNEL_MAP.get(sensorType));
 
         // Pin1:
         switch (configuration.pin1) {
@@ -175,7 +175,7 @@ public class BAE091xSensorThingHandler extends OwBaseThingHandler {
                 break;
             default:
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "unknown configuration option for pin 2");
+                        "unknown configuration option for pin 7");
                 return;
         }
 
@@ -214,7 +214,7 @@ public class BAE091xSensorThingHandler extends OwBaseThingHandler {
                 .forEach(channelId -> removeChannelIfExisting(thingBuilder, channelId));
 
         // add or update wanted channels
-        SENSOR_TYPE_CHANNEL_MAP.get(sensorType).stream().forEach(channelConfig -> {
+        wantedChannel.stream().forEach(channelConfig -> {
             addChannelIfMissingAndEnable(thingBuilder, channelConfig);
         });
 
@@ -232,12 +232,10 @@ public class BAE091xSensorThingHandler extends OwBaseThingHandler {
     }
 
     @Override
-    public void updateSensorProperties(OwserverBridgeHandler bridgeHandler) {
+    public void updateSensorProperties(OwserverBridgeHandler bridgeHandler) throws OwException {
         Map<String, String> properties = editProperties();
 
-        // TODO: re-enable
-        // sensorType = BAE0910.getDeviceSubType(bridgeHandler, sensorId);
-        sensorType = OwSensorType.BAE0910;
+        sensorType = BAE0910.getDeviceSubType(bridgeHandler, sensorId);
 
         properties.put(PROPERTY_MODELID, sensorType.toString());
         properties.put(PROPERTY_VENDOR, "Brain4home");

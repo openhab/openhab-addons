@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openhab.binding.onewire.internal.OwBindingConstants;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
 import org.openhab.binding.onewire.internal.handler.AdvancedMultisensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.BAE091xSensorThingHandler;

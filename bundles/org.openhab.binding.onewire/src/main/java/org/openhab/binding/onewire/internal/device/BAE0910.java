@@ -15,8 +15,6 @@ package org.openhab.binding.onewire.internal.device;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
 import java.util.BitSet;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Frequency;
@@ -48,8 +46,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class BAE0910 extends AbstractOwDevice {
-    public static final Set<OwChannelConfig> CHANNELS = new HashSet<>();
-
     private static final int OUTC_OUTEN = 4;
     private static final int OUTC_DS = 3;
 
@@ -61,8 +57,11 @@ public class BAE0910 extends AbstractOwDevice {
 
     private static final int ADCC_ADCEN = 4;
     private static final int ADCC_10BIT = 3;
+    @SuppressWarnings("unused") // for future use
     private static final int ADCC_OFS = 2;
+    @SuppressWarnings("unused")
     private static final int ADCC_GRP = 1;
+    @SuppressWarnings("unused")
     private static final int ADCC_STP = 0;
 
     private static final int TPMC_POL = 7;
