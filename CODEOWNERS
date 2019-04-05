@@ -16,7 +16,6 @@
 /addons/binding/org.openhab.binding.innogysmarthome/ @ollie-dev
 /addons/binding/org.openhab.binding.lgwebos/ @sprehn
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
-/bundles/org.openhab.binding.modbus.test/ @ssalonen
 /addons/binding/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
 /addons/binding/org.openhab.binding.nikohomecontrol/ @mherwege
 /addons/binding/org.openhab.binding.onewiregpio/ @aogorek
