@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.pioneeravr.internal.handler;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -35,12 +35,11 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.pioneeravr")
 public class AvrHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Arrays
-            .asList(PioneerAvrBindingConstants.IP_AVR_THING_TYPE, PioneerAvrBindingConstants.IP_AVR_THING_TYPE2014,
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(PioneerAvrBindingConstants.IP_AVR_THING_TYPE, PioneerAvrBindingConstants.IP_AVR_THING_TYPE2014,
                     PioneerAvrBindingConstants.IP_AVR_THING_TYPE2015, PioneerAvrBindingConstants.IP_AVR_THING_TYPE2016,
                     PioneerAvrBindingConstants.IP_AVR_UNSUPPORTED_THING_TYPE,
-                    PioneerAvrBindingConstants.SERIAL_AVR_THING_TYPE)
-            .stream().collect(Collectors.toSet()));
+                    PioneerAvrBindingConstants.SERIAL_AVR_THING_TYPE).collect(Collectors.toSet()));
 
     protected void activate(ComponentContext componentContext, Map<String, Object> configProps) {
         super.activate(componentContext);
