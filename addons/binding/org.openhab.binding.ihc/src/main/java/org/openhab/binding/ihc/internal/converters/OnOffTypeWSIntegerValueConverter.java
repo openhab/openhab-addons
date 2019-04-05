@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.ihc.internal.converters;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.Command;
@@ -38,8 +35,7 @@ public class OnOffTypeWSIntegerValueConverter implements Converter<WSIntegerValu
     public WSIntegerValue convertFromOHType(@NonNull OnOffType from, @NonNull WSIntegerValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
 
-        int onLevel = Collections
-                .min(Arrays.asList(value.maximumValue, getCommandLevel(value, convertData, OnOffType.ON)));
+        int onLevel = Math.min(value.maximumValue, getCommandLevel(value, convertData, OnOffType.ON));
         int newVal = from == OnOffType.ON ? onLevel : value.minimumValue;
 
         if (convertData.getInverted()) {
@@ -60,7 +56,7 @@ public class OnOffTypeWSIntegerValueConverter implements Converter<WSIntegerValu
                 return (int) convertData.getCommandLevels().get(command);
             }
             return value.maximumValue;
-        } catch (Throwable e) {
+        } catch (RuntimeException e) {
             throw new ConversionException(e);
         }
     }
