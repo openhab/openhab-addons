@@ -12,7 +12,6 @@ Bundle-SymbolicName: org.openhab.binding.zway;singleton:=true
 Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Import-Package: 
- com.google.common.collect,
  com.google.gson,
  com.google.gson.annotations,
  com.google.gson.internal,

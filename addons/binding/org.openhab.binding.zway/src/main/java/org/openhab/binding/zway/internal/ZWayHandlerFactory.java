@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.zway.internal;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -32,8 +35,6 @@ import org.openhab.binding.zway.internal.handler.ZWayZWaveDeviceHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
-import com.google.common.collect.ImmutableSet;
-
 /**
  * The {@link ZWayHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -43,9 +44,9 @@ import com.google.common.collect.ImmutableSet;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.zway")
 public class ZWayHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(
-            ZWayBridgeHandler.SUPPORTED_THING_TYPE, ZWayZAutomationDeviceHandler.SUPPORTED_THING_TYPE,
-            ZWayZWaveDeviceHandler.SUPPORTED_THING_TYPE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(ZWayBridgeHandler.SUPPORTED_THING_TYPE, ZWayZAutomationDeviceHandler.SUPPORTED_THING_TYPE,
+                    ZWayZWaveDeviceHandler.SUPPORTED_THING_TYPE).collect(Collectors.toSet()));
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
