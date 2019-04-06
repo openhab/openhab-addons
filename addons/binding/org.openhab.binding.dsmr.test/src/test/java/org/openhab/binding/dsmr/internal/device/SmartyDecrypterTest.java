@@ -8,14 +8,15 @@
  */
 package org.openhab.binding.dsmr.internal.device;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
-import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramParser;
 
@@ -72,23 +73,19 @@ public class SmartyDecrypterTest {
     @Test
     public void testSmartyDecrypter() {
         AtomicReference<String> telegramResult = new AtomicReference<String>("");
-        P1TelegramListener telegramListener = new P1TelegramListener() {
-            @Override
-            public void telegramReceived(P1Telegram telegram) {
-                telegramResult.set(telegram.getRawTelegram());
-            }
-        };
+        P1TelegramListener telegramListener = telegram -> telegramResult.set(telegram.getRawTelegram());
         SmartyDecrypter decoder = new SmartyDecrypter(new P1TelegramParser(telegramListener),
                 new DSMRTelegramListener(KEY), KEY);
         decoder.setLenientMode(true);
         byte[] data = new byte[TELEGRAM.length];
+
         for (int i = 0; i < TELEGRAM.length; i++) {
             data[i] = (byte) TELEGRAM[i];
         }
 
         decoder.parse(data, data.length);
-        String expected = new String(TelegramReaderUtil.readRawTelegram("smarty"));
+        String expected = new String(TelegramReaderUtil.readRawTelegram("smarty"), StandardCharsets.UTF_8);
 
-        assertEquals("", expected, telegramResult.get());
+        assertThat("Should have correctly decrypted the telegram", telegramResult.get(), is(equalTo(expected)));
     }
 }
