@@ -192,7 +192,7 @@ public class BAE0910 extends AbstractOwDevice {
             tpm1cRegister.set(TPMC_PWMDIS);
             Channel channel = callback.getThing().getChannel(CHANNEL_DIGITAL8);
             if (channel != null) {
-                if (!(new ChannelTypeUID(BINDING_ID, "bae-in")).equals(channel.getChannelTypeUID())) {
+                if ((new ChannelTypeUID(BINDING_ID, "bae-in")).equals(channel.getChannelTypeUID())) {
                     tpm1cRegister.set(TPMC_INENA);
                 }
             } else {
@@ -212,68 +212,71 @@ public class BAE0910 extends AbstractOwDevice {
 
     @Override
     public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
-        // Counter
-        if (enabledChannels.contains(CHANNEL_COUNTER)) {
-            State counterValue = bridgeHandler.readDecimalType(sensorId, pin1CounterParameter);
-            callback.postUpdate(CHANNEL_COUNTER, counterValue);
-        }
+        if (isConfigured) {
+            // Counter
+            if (enabledChannels.contains(CHANNEL_COUNTER)) {
+                State counterValue = bridgeHandler.readDecimalType(sensorId, pin1CounterParameter);
+                callback.postUpdate(CHANNEL_COUNTER, counterValue);
+            }
 
-        // Digital Pins
-        if (enabledChannels.contains(CHANNEL_DIGITAL2)) {
-            BitSet value = bridgeHandler.readBitSet(sensorId, pin2OutParameter);
-            callback.postUpdate(CHANNEL_DIGITAL2, OnOffType.from(value.get(0)));
-        }
-        if (enabledChannels.contains(CHANNEL_DIGITAL6)) {
-            BitSet value = bridgeHandler.readBitSet(sensorId, pin6PIOParameter);
-            callback.postUpdate(CHANNEL_DIGITAL6, OnOffType.from(value.get(0)));
-        }
-        if (enabledChannels.contains(CHANNEL_DIGITAL7)) {
-            BitSet value = bridgeHandler.readBitSet(sensorId, tpm2cParameter);
-            callback.postUpdate(CHANNEL_DIGITAL7, OnOffType.from(value.get(TPMC_POL)));
-        }
-        if (enabledChannels.contains(CHANNEL_DIGITAL8)) {
-            BitSet value = bridgeHandler.readBitSet(sensorId, tpm1cParameter);
-            callback.postUpdate(CHANNEL_DIGITAL8, OnOffType.from(value.get(TPMC_POL)));
-        }
+            // Digital Pins
+            if (enabledChannels.contains(CHANNEL_DIGITAL2)) {
+                BitSet value = bridgeHandler.readBitSet(sensorId, pin2OutParameter);
+                callback.postUpdate(CHANNEL_DIGITAL2, OnOffType.from(value.get(0)));
+            }
+            if (enabledChannels.contains(CHANNEL_DIGITAL6)) {
+                BitSet value = bridgeHandler.readBitSet(sensorId, pin6PIOParameter);
+                callback.postUpdate(CHANNEL_DIGITAL6, OnOffType.from(value.get(0)));
+            }
+            if (enabledChannels.contains(CHANNEL_DIGITAL7)) {
+                BitSet value = bridgeHandler.readBitSet(sensorId, tpm2cParameter);
+                callback.postUpdate(CHANNEL_DIGITAL7, OnOffType.from(value.get(TPMC_POL)));
+            }
+            if (enabledChannels.contains(CHANNEL_DIGITAL8)) {
+                BitSet value = bridgeHandler.readBitSet(sensorId, tpm1cParameter);
+                callback.postUpdate(CHANNEL_DIGITAL8, OnOffType.from(value.get(TPMC_POL)));
+            }
 
-        // Analog
-        if (enabledChannels.contains(CHANNEL_VOLTAGE)) {
-            State analogValue = bridgeHandler.readDecimalType(sensorId, pin7AnalogParameter);
-            callback.postUpdate(CHANNEL_VOLTAGE, new QuantityType<>((DecimalType) analogValue, SmartHomeUnits.VOLT));
-        }
+            // Analog
+            if (enabledChannels.contains(CHANNEL_VOLTAGE)) {
+                State analogValue = bridgeHandler.readDecimalType(sensorId, pin7AnalogParameter);
+                callback.postUpdate(CHANNEL_VOLTAGE,
+                        new QuantityType<>((DecimalType) analogValue, SmartHomeUnits.VOLT));
+            }
 
-        // PWM
-        int period1 = 0;
-        int period2 = 0;
-        if (enabledChannels.contains(CHANNEL_PWM_FREQ1)) {
-            period1 = ((DecimalType) bridgeHandler.readDecimalType(sensorId, period1Parameter)).intValue();
-            double frequency = (period1 > 0) ? 1 / (period1 * resolution1 * 1e-6) : 0;
-            callback.postUpdate(CHANNEL_PWM_FREQ1, new QuantityType<Frequency>(frequency, SmartHomeUnits.HERTZ));
-        }
-        if (enabledChannels.contains(CHANNEL_PWM_FREQ2)) {
-            period2 = ((DecimalType) bridgeHandler.readDecimalType(sensorId, period2Parameter)).intValue();
-            double frequency = (period2 > 0) ? 1 / (period2 * resolution2 * 1e-6) : 0;
-            callback.postUpdate(CHANNEL_PWM_FREQ2, new QuantityType<Frequency>(frequency, SmartHomeUnits.HERTZ));
-        }
-        if (enabledChannels.contains(CHANNEL_PWM_DUTY1)) {
-            int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty1Parameter)).intValue();
-            double duty = (period1 > 0 && dutyValue <= period1) ? 100 * dutyValue / period1 : 100;
-            callback.postUpdate(CHANNEL_PWM_DUTY1, new QuantityType<Dimensionless>(duty, SmartHomeUnits.PERCENT));
-        }
-        if (enabledChannels.contains(CHANNEL_PWM_DUTY2)) {
-            int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty2Parameter)).intValue();
-            double duty = (period2 > 0 && dutyValue <= period2) ? 100 * dutyValue / period2 : 100;
-            callback.postUpdate(CHANNEL_PWM_DUTY2, new QuantityType<Dimensionless>(duty, SmartHomeUnits.PERCENT));
-        }
-        if (enabledChannels.contains(CHANNEL_PWM_DUTY3)) {
-            int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty3Parameter)).intValue();
-            double duty = (period1 > 0 && dutyValue <= period1) ? 100 * dutyValue / period1 : 100;
-            callback.postUpdate(CHANNEL_PWM_DUTY3, new QuantityType<Dimensionless>(duty, SmartHomeUnits.PERCENT));
-        }
-        if (enabledChannels.contains(CHANNEL_PWM_DUTY4)) {
-            int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty4Parameter)).intValue();
-            double duty = (period2 > 0 && dutyValue <= period2) ? 100 * dutyValue / period2 : 100;
-            callback.postUpdate(CHANNEL_PWM_DUTY4, new QuantityType<Dimensionless>(duty, SmartHomeUnits.PERCENT));
+            // PWM
+            int period1 = 0;
+            int period2 = 0;
+            if (enabledChannels.contains(CHANNEL_PWM_FREQ1)) {
+                period1 = ((DecimalType) bridgeHandler.readDecimalType(sensorId, period1Parameter)).intValue();
+                double frequency = (period1 > 0) ? 1 / (period1 * resolution1 * 1e-6) : 0;
+                callback.postUpdate(CHANNEL_PWM_FREQ1, new QuantityType<Frequency>(frequency, SmartHomeUnits.HERTZ));
+            }
+            if (enabledChannels.contains(CHANNEL_PWM_FREQ2)) {
+                period2 = ((DecimalType) bridgeHandler.readDecimalType(sensorId, period2Parameter)).intValue();
+                double frequency = (period2 > 0) ? 1 / (period2 * resolution2 * 1e-6) : 0;
+                callback.postUpdate(CHANNEL_PWM_FREQ2, new QuantityType<Frequency>(frequency, SmartHomeUnits.HERTZ));
+            }
+            if (enabledChannels.contains(CHANNEL_PWM_DUTY1)) {
+                int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty1Parameter)).intValue();
+                double duty = (period1 > 0 && dutyValue <= period1) ? 100 * dutyValue / period1 : 100;
+                callback.postUpdate(CHANNEL_PWM_DUTY1, new QuantityType<Dimensionless>(duty, SmartHomeUnits.PERCENT));
+            }
+            if (enabledChannels.contains(CHANNEL_PWM_DUTY2)) {
+                int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty2Parameter)).intValue();
+                double duty = (period2 > 0 && dutyValue <= period2) ? 100 * dutyValue / period2 : 100;
+                callback.postUpdate(CHANNEL_PWM_DUTY2, new QuantityType<Dimensionless>(duty, SmartHomeUnits.PERCENT));
+            }
+            if (enabledChannels.contains(CHANNEL_PWM_DUTY3)) {
+                int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty3Parameter)).intValue();
+                double duty = (period1 > 0 && dutyValue <= period1) ? 100 * dutyValue / period1 : 100;
+                callback.postUpdate(CHANNEL_PWM_DUTY3, new QuantityType<Dimensionless>(duty, SmartHomeUnits.PERCENT));
+            }
+            if (enabledChannels.contains(CHANNEL_PWM_DUTY4)) {
+                int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty4Parameter)).intValue();
+                double duty = (period2 > 0 && dutyValue <= period2) ? 100 * dutyValue / period2 : 100;
+                callback.postUpdate(CHANNEL_PWM_DUTY4, new QuantityType<Dimensionless>(duty, SmartHomeUnits.PERCENT));
+            }
         }
     }
 
