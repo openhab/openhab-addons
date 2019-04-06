@@ -215,8 +215,8 @@
 /itests/org.openhab.binding.dmx.tests/ @J-N-K
 /itests/org.openhab.binding.hue.tests/ @cweitkamp
 /itests/org.openhab.binding.max.tests/ @marcelrv
-/itests/org.openhab.binding.mqtt.homeassistant.tests/ @wborn
-/itests/org.openhab.binding.mqtt.homie.tests/ @wborn
+/itests/org.openhab.binding.mqtt.homeassistant.tests/ @davidgraeff
+/itests/org.openhab.binding.mqtt.homie.tests/ @davidgraeff
 /itests/org.openhab.binding.nest.tests/ @wborn
 /itests/org.openhab.binding.ntp.tests/ @marcelrv
 /itests/org.openhab.binding.onewire.tests/ @J-N-K
