@@ -134,6 +134,8 @@ Pin 6 (`pin6`) can be configured as digital in-/output (`pio`, channel `digital6
 Pin 7 (`pin7`) can be configured as analog input (`analog`), digital output (`output`, channel `digital7`) or pulse width modulated output (`pwm`, hardware PWM 2, channels `freq2`, `duty2`).
 Pin 8 (`pin8`) can be configured as digital input (`input`, channel `digital8`), digital output (`output`, channel `digital8`) or pulse width modulated output (`pwm`, hardware PWM 1, channels `freq1`, `duty1`).
 
+Please note: support for this sensor is considered experimental.
+
 ## Channels
 
 | Type-ID             | Thing                      | Item                     | readonly   | Description                                        |
