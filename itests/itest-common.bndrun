@@ -21,3 +21,8 @@ Import-Package: org.osgi.framework.*;version="[1.8,2)",*
 # The integration test itself does not export anything.
 Export-Package: 
 -exportcontents: 
+
+-runrequires.ee: \
+    bnd.identity;id='org.apache.servicemix.specs.activation-api-1.1',\
+    bnd.identity;id='org.apache.servicemix.specs.annotation-api-1.3',\
+    bnd.identity;id='org.apache.servicemix.specs.jaxb-api-2.2'
