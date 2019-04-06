@@ -32,11 +32,11 @@ public class DecimalTypeWSTimerValueConverterTest {
     public void testConversion() throws ConversionException {
         WSTimerValue val = new WSTimerValue(12345, 0);
 
-        val = convertFromOHType(val, new DecimalType(123456), new ConverterAdditionalInfo(null, false));
+        val = convertFromOHType(val, new DecimalType(123456), new ConverterAdditionalInfo(null, false, null));
         assertEquals(12345, val.resourceID);
         assertEquals(123456, val.milliseconds);
 
-        DecimalType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, false));
+        DecimalType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, false, null));
         assertEquals(new DecimalType(123456), type);
     }
 

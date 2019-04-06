@@ -33,13 +33,13 @@ public class UpDownTypeWSIntegerValueConverterTest {
         final boolean inverted = false;
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
 
-        val = convertFromOHType(val, UpDownType.UP, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, UpDownType.UP, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(-100, val.minimumValue);
         assertEquals(100, val.maximumValue);
         assertEquals(100, val.value);
 
-        UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(UpDownType.UP, type);
     }
 
@@ -48,13 +48,13 @@ public class UpDownTypeWSIntegerValueConverterTest {
         final boolean inverted = false;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
-        val = convertFromOHType(val, UpDownType.DOWN, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, UpDownType.DOWN, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(-100, val.minimumValue);
         assertEquals(100, val.maximumValue);
         assertEquals(-100, val.value);
 
-        UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(UpDownType.DOWN, type);
     }
 
@@ -63,13 +63,13 @@ public class UpDownTypeWSIntegerValueConverterTest {
         final boolean inverted = true;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
-        val = convertFromOHType(val, UpDownType.UP, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, UpDownType.UP, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(-100, val.minimumValue);
         assertEquals(100, val.maximumValue);
         assertEquals(-100, val.value);
 
-        UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(UpDownType.UP, type);
     }
 
@@ -78,13 +78,13 @@ public class UpDownTypeWSIntegerValueConverterTest {
         final boolean inverted = true;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
-        val = convertFromOHType(val, UpDownType.DOWN, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, UpDownType.DOWN, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(-100, val.minimumValue);
         assertEquals(100, val.maximumValue);
         assertEquals(100, val.value);
 
-        UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        UpDownType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(UpDownType.DOWN, type);
     }
 

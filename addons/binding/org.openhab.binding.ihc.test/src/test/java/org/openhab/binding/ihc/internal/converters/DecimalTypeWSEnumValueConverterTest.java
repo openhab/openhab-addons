@@ -32,13 +32,13 @@ public class DecimalTypeWSEnumValueConverterTest {
     public void testConversion() throws ConversionException {
         WSEnumValue val = new WSEnumValue(12345, 100, 0, "testB");
 
-        val = convertFromOHType(val, new DecimalType(2), new ConverterAdditionalInfo(null, false));
+        val = convertFromOHType(val, new DecimalType(2), new ConverterAdditionalInfo(null, false, null));
         assertEquals(12345, val.resourceID);
         assertEquals(100, val.definitionTypeID);
         assertEquals(2, val.enumValueID);
         assertEquals("testB", val.enumName);
 
-        DecimalType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, false));
+        DecimalType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, false, null));
         assertEquals(new DecimalType(2), type);
     }
 

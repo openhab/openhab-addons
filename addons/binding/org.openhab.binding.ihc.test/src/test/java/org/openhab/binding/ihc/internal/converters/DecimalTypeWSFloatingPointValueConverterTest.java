@@ -32,26 +32,26 @@ public class DecimalTypeWSFloatingPointValueConverterTest {
     public void testConversion() throws ConversionException {
         WSFloatingPointValue val = new WSFloatingPointValue(12345, 0, -100, 100);
 
-        val = convertFromOHType(val, new DecimalType(2.54), new ConverterAdditionalInfo(null, false));
+        val = convertFromOHType(val, new DecimalType(2.54), new ConverterAdditionalInfo(null, false, null));
         assertEquals(12345, val.resourceID);
         assertEquals(-100, val.minimumValue, 0.001);
         assertEquals(100, val.maximumValue, 0.001);
         assertEquals(2.54, val.value, 0.001);
 
-        DecimalType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, false));
+        DecimalType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, false, null));
         assertEquals(new DecimalType(2.54), type);
     }
 
     @Test(expected = ConversionException.class)
     public void testMinExceed() throws ConversionException {
         WSFloatingPointValue val = new WSFloatingPointValue(12345, 0, -100, 100);
-        val = convertFromOHType(val, new DecimalType(-101.5), new ConverterAdditionalInfo(null, false));
+        val = convertFromOHType(val, new DecimalType(-101.5), new ConverterAdditionalInfo(null, false, null));
     }
 
     @Test(expected = ConversionException.class)
     public void testMaxExceed() throws ConversionException {
         WSFloatingPointValue val = new WSFloatingPointValue(12345, 0, -100, 100);
-        val = convertFromOHType(val, new DecimalType(101.5), new ConverterAdditionalInfo(null, false));
+        val = convertFromOHType(val, new DecimalType(101.5), new ConverterAdditionalInfo(null, false, null));
     }
 
     private WSFloatingPointValue convertFromOHType(WSFloatingPointValue IHCvalue, Type OHval,
