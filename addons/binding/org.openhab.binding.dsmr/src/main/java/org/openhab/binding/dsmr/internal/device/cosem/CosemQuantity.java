@@ -31,9 +31,6 @@ import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 
-import tec.uom.se.format.SimpleUnitFormat;
-import tec.uom.se.unit.BaseUnit;
-
 /**
  * {@link CosemQuantity} represents a value with a unit.
  *
@@ -44,9 +41,6 @@ import tec.uom.se.unit.BaseUnit;
 @NonNullByDefault
 class CosemQuantity<Q extends @Nullable Quantity<Q>> extends CosemValueDescriptor<QuantityType<Q>> {
 
-    public static final Unit<Power> KILO_VAR_UNIT = MetricPrefix.KILO(new BaseUnit<Power>("var"));
-    public static final Unit<Energy> KILO_VAR_HOUR_UNIT = MetricPrefix.KILO(new BaseUnit<Energy>("varh"));
-
     public static final CosemQuantity<ElectricCurrent> AMPERE = new CosemQuantity<>(SmartHomeUnits.AMPERE);
     public static final CosemQuantity<Volume> CUBIC_METRE = new CosemQuantity<>(SIUnits.CUBIC_METRE);
     public static final CosemQuantity<Energy> GIGA_JOULE = new CosemQuantity<>(MetricPrefix.GIGA(SmartHomeUnits.JOULE));
@@ -54,13 +48,8 @@ class CosemQuantity<Q extends @Nullable Quantity<Q>> extends CosemValueDescripto
     public static final CosemQuantity<Energy> KILO_WATT_HOUR = new CosemQuantity<>(SmartHomeUnits.KILOWATT_HOUR);
     public static final CosemQuantity<ElectricPotential> VOLT = new CosemQuantity<>(SmartHomeUnits.VOLT);
     public static final CosemQuantity<Power> WATT = new CosemQuantity<>(SmartHomeUnits.WATT);
-    public static final CosemQuantity<Power> KILO_VAR = new CosemQuantity<>(KILO_VAR_UNIT);
-    public static final CosemQuantity<Energy> KILO_VAR_HOUR = new CosemQuantity<>(KILO_VAR_HOUR_UNIT);
-
-    static {
-        SimpleUnitFormat.getInstance().label(KILO_VAR_UNIT, "kvar");
-        SimpleUnitFormat.getInstance().label(KILO_VAR_HOUR_UNIT, "kvarh");
-    }
+    public static final CosemQuantity<Power> KILO_VAR = new CosemQuantity<>(SmartHomeUnits.KILOVAR);
+    public static final CosemQuantity<Energy> KILO_VAR_HOUR = new CosemQuantity<>(SmartHomeUnits.KILOVAR_HOUR);
 
     /**
      * Pattern to convert a cosem value to a value that can be parsed by {@link QuantityType}.
