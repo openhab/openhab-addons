@@ -263,7 +263,7 @@ public class BAE0910 extends AbstractOwDevice {
         if (enabledChannels.contains(CHANNEL_PWM_DUTY2)) {
             int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty2Parameter)).intValue();
             double duty = (period2 > 0 && dutyValue <= period2) ? 100 * dutyValue / period2 : 100;
-            callback.postUpdate(CHANNEL_PWM_DUTY1, new QuantityType<Dimensionless>(duty, SmartHomeUnits.PERCENT));
+            callback.postUpdate(CHANNEL_PWM_DUTY2, new QuantityType<Dimensionless>(duty, SmartHomeUnits.PERCENT));
         }
         if (enabledChannels.contains(CHANNEL_PWM_DUTY3)) {
             int dutyValue = ((DecimalType) bridgeHandler.readDecimalType(sensorId, duty3Parameter)).intValue();
@@ -326,25 +326,25 @@ public class BAE0910 extends AbstractOwDevice {
                     }
                     break;
                 case CHANNEL_PWM_DUTY1:
-                    if (command instanceof DecimalType) {
+                    if (command instanceof QuantityType<?>) {
                         bridgeHandler.writeDecimalType(sensorId, duty1Parameter, calculateDutyCycle(command,
                                 (DecimalType) bridgeHandler.readDecimalType(sensorId, period1Parameter)));
                     }
                     break;
                 case CHANNEL_PWM_DUTY2:
-                    if (command instanceof DecimalType) {
+                    if (command instanceof QuantityType<?>) {
                         bridgeHandler.writeDecimalType(sensorId, duty2Parameter, calculateDutyCycle(command,
                                 (DecimalType) bridgeHandler.readDecimalType(sensorId, period2Parameter)));
                     }
                     break;
                 case CHANNEL_PWM_DUTY3:
-                    if (command instanceof DecimalType) {
+                    if (command instanceof QuantityType<?>) {
                         bridgeHandler.writeDecimalType(sensorId, duty3Parameter, calculateDutyCycle(command,
                                 (DecimalType) bridgeHandler.readDecimalType(sensorId, period1Parameter)));
                     }
                     break;
                 case CHANNEL_PWM_DUTY4:
-                    if (command instanceof DecimalType) {
+                    if (command instanceof QuantityType<?>) {
                         bridgeHandler.writeDecimalType(sensorId, duty4Parameter, calculateDutyCycle(command,
                                 (DecimalType) bridgeHandler.readDecimalType(sensorId, period2Parameter)));
                     }
@@ -391,7 +391,8 @@ public class BAE0910 extends AbstractOwDevice {
     }
 
     private DecimalType calculateDutyCycle(Command command, DecimalType period) throws OwException {
-        double dutyCycle = ((DecimalType) command).doubleValue();
+        @SuppressWarnings("unchecked")
+        double dutyCycle = ((QuantityType<Dimensionless>) command).doubleValue();
         int dutyValue = 0;
         if (dutyCycle > 0 && dutyCycle <= 100) {
             dutyValue = (int) Math.round(dutyCycle / 100.0 * period.intValue());
