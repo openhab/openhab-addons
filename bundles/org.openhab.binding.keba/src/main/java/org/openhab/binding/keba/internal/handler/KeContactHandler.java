@@ -281,7 +281,7 @@ public class KeContactHandler extends BaseThingHandler {
                         maxSystemCurrent = state;
                         State newState = new DecimalType(state);
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_SYSTEM_CURRENT), newState);
-                        if (maxSystemCurrent != 0){
+                        if (maxSystemCurrent != 0) {
                             if (maxSystemCurrent < maxPresetCurrent) {
                                 transceiver.send("curr " + String.valueOf(maxSystemCurrent), this);
                                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_PRESET_CURRENT),
@@ -291,7 +291,7 @@ public class KeContactHandler extends BaseThingHandler {
                             }
                         }
                         else {
-                            logger.warn("maxSystemCurrent is 0. Ignoring.");
+                            logger.debug("maxSystemCurrent is 0. Ignoring.");
                         }
                         break;
                     }
