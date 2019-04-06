@@ -130,6 +130,10 @@
 				<label>Pulse Width</label>
 				<description>If defined, binding send pulse rather than command value to IHC controller.</description>
 			</parameter>
+			<parameter name="onLevel" type="integer" required="false" min="0" max="100" step="1">
+				<label>ON Command Level</label>
+				<description>If defined, binding use this level when ON command is received rather than resource maximum value. Level is anyhow limited to resource maximum value.</description>
+			</parameter>
 		</config-description>
 	</channel-type>
 	<channel-type id="datetime">

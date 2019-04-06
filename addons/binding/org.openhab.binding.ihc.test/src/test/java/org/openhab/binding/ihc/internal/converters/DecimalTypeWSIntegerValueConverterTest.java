@@ -32,26 +32,26 @@ public class DecimalTypeWSIntegerValueConverterTest {
     public void testConversion() throws ConversionException {
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
 
-        val = convertFromOHType(val, new DecimalType(2), new ConverterAdditionalInfo(null, false));
+        val = convertFromOHType(val, new DecimalType(2), new ConverterAdditionalInfo(null, false, null));
         assertEquals(12345, val.resourceID);
         assertEquals(2, val.value);
         assertEquals(-100, val.minimumValue);
         assertEquals(100, val.maximumValue);
 
-        DecimalType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, false));
+        DecimalType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, false, null));
         assertEquals(new DecimalType(2), type);
     }
 
     @Test(expected = ConversionException.class)
     public void testMinExceed() throws ConversionException {
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
-        val = convertFromOHType(val, new DecimalType(-101.5), new ConverterAdditionalInfo(null, false));
+        val = convertFromOHType(val, new DecimalType(-101.5), new ConverterAdditionalInfo(null, false, null));
     }
 
     @Test(expected = ConversionException.class)
     public void testMaxExceed() throws ConversionException {
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
-        val = convertFromOHType(val, new DecimalType(101.5), new ConverterAdditionalInfo(null, false));
+        val = convertFromOHType(val, new DecimalType(101.5), new ConverterAdditionalInfo(null, false, null));
     }
 
     private WSIntegerValue convertFromOHType(WSIntegerValue IHCvalue, Type OHval,

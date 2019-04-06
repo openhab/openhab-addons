@@ -257,7 +257,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 WSResourceValue value = ihc.resourceQuery(params.getResourceId());
                 resourceValueUpdateReceived(value);
             } catch (IhcExecption e) {
-                logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage(), e);
+                logger.warn("Can't update channel '{}' value, reason: {}", channelUID, e.getMessage(), e);
             } catch (ConversionException e) {
                 logger.warn("Channel param error, reason: {}.", e.getMessage(), e);
             }
@@ -282,7 +282,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
 
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_STATE), new StringType(value));
         } catch (IhcExecption e) {
-            logger.warn("Controller state information fetch failed, reason:  {}", e.getMessage(), e);
+            logger.warn("Controller state information fetch failed, reason: {}", e.getMessage(), e);
         }
     }
 
@@ -390,13 +390,17 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             throws IhcExecption, ConversionException {
         logger.debug("Send command '{}' to resource '{}'", command, value.resourceID);
         ConverterAdditionalInfo converterAdditionalInfo = new ConverterAdditionalInfo(getEnumValues(value),
-                params.isInverted());
+                params.isInverted(), getCommandLevels(params));
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(value.getClass(),
                 command.getClass());
-        WSResourceValue val = converter.convertFromOHType(command, value, converterAdditionalInfo);
-        logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), val);
-        if (!updateResource(val)) {
-            logger.warn("Channel {} update to resource '{}' failed.", channelUID, val);
+        if (converter != null) {
+            WSResourceValue val = converter.convertFromOHType(command, value, converterAdditionalInfo);
+            logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), val);
+            if (!updateResource(val)) {
+                logger.warn("Channel {} update to resource '{}' failed.", channelUID, val);
+            }
+        } else {
+            logger.debug("No converter implemented for {} <-> {}", value.getClass(), command.getClass());
         }
     }
 
@@ -413,35 +417,41 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         logger.debug("Channel params: {}", params);
         Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance().getConverter(value.getClass(),
                 OnOffType.class);
-        ConverterAdditionalInfo converterAdditionalInfo = new ConverterAdditionalInfo(null, params.isInverted());
 
-        WSResourceValue valOn = converter.convertFromOHType(OnOffType.ON, value, converterAdditionalInfo);
-        WSResourceValue valOff = converter.convertFromOHType(OnOffType.OFF, value, converterAdditionalInfo);
+        if (converter != null) {
+            ConverterAdditionalInfo converterAdditionalInfo = new ConverterAdditionalInfo(null, params.isInverted(),
+                    getCommandLevels(params));
 
-        // set resource to ON
-        logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), valOn);
-        if (updateResource(valOn)) {
-            scheduler.submit(() -> {
-                // sleep a while
-                try {
-                    logger.debug("Sleeping: {}ms", pulseWidth);
-                    Thread.sleep(pulseWidth);
-                } catch (InterruptedException e) {
-                    // do nothing
-                }
-                // set resource back to OFF
+            WSResourceValue valOn = converter.convertFromOHType(OnOffType.ON, value, converterAdditionalInfo);
+            WSResourceValue valOff = converter.convertFromOHType(OnOffType.OFF, value, converterAdditionalInfo);
 
-                logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), valOff);
-                try {
-                    if (!updateResource(valOff)) {
-                        logger.warn("Channel {} update to resource '{}' failed.", channelUID, valOff);
+            // set resource to ON
+            logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), valOn);
+            if (updateResource(valOn)) {
+                scheduler.submit(() -> {
+                    // sleep a while
+                    try {
+                        logger.debug("Sleeping: {}ms", pulseWidth);
+                        Thread.sleep(pulseWidth);
+                    } catch (InterruptedException e) {
+                        // do nothing
                     }
-                } catch (IhcExecption e) {
-                    logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage(), e);
-                }
-            });
+                    // set resource back to OFF
+
+                    logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), valOff);
+                    try {
+                        if (!updateResource(valOff)) {
+                            logger.warn("Channel {} update to resource '{}' failed.", channelUID, valOff);
+                        }
+                    } catch (IhcExecption e) {
+                        logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage(), e);
+                    }
+                });
+            } else {
+                logger.warn("Channel {} update failed.", channelUID);
+            }
         } else {
-            logger.warn("Channel {} update failed.", channelUID);
+            logger.debug("No converter implemented for {} <-> {}", value.getClass(), OnOffType.class);
         }
     }
 
@@ -708,6 +718,8 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 }
             } catch (ConversionException e) {
                 logger.warn("Channel param error, reason: {}.", e.getMessage(), e);
+            } catch (RuntimeException e) {
+                logger.warn("Unknown error occured, reason: {}.", e.getMessage(), e);
             }
         });
 
@@ -728,9 +740,15 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                             logger.debug("Update channel '{}' state, channel params: {}", channel.getUID(), params);
                             Converter<WSResourceValue, Type> converter = ConverterFactory.getInstance()
                                     .getConverter(value.getClass(), channel.getAcceptedItemType());
-                            State state = (State) converter.convertFromResourceValue(value,
-                                    new ConverterAdditionalInfo(null, params.isInverted()));
-                            updateState(channel.getUID(), state);
+                            if (converter != null) {
+                                State state = (State) converter.convertFromResourceValue(value,
+                                        new ConverterAdditionalInfo(null, params.isInverted(),
+                                                getCommandLevels(params)));
+                                updateState(channel.getUID(), state);
+                            } else {
+                                logger.debug("No converter implemented for {} <-> {}", value.getClass(),
+                                        channel.getAcceptedItemType());
+                            }
                         } catch (ConversionException e) {
                             logger.debug("Can't convert resource value '{}' to item type {}, reason: {}.", value,
                                     channel.getAcceptedItemType(), e.getMessage(), e);
@@ -947,5 +965,14 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 setValueNotificationRequest(true);
             }
         }, NOTIFICATIONS_REORDER_WAIT_TIME, TimeUnit.MILLISECONDS);
+    }
+
+    private Map<Command, Object> getCommandLevels(ChannelParams params) {
+        if (params.getOnLevel() != null) {
+            Map<Command, Object> commandLevels = new HashMap<>();
+            commandLevels.put(OnOffType.ON, params.getOnLevel());
+            return Collections.unmodifiableMap(commandLevels);
+        }
+        return null;
     }
 }

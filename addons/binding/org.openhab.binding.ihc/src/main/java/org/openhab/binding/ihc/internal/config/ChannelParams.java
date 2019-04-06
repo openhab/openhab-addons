@@ -38,6 +38,7 @@ public class ChannelParams {
     private Boolean inverted;
     private Long serialNumber;
     private Integer longPressTime;
+    private Integer onLevel;
 
     public ChannelParams(@NonNull Channel channel) throws ConversionException {
         ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
@@ -68,6 +69,9 @@ public class ChannelParams {
                     break;
                 case PARAM_INVERTED:
                     inverted = getChannelParameterAsBoolean(entry.getValue());
+                    break;
+                case PARAM_ON_LEVEL:
+                    onLevel = getChannelParameterAsInteger(entry.getValue());
                     break;
             }
         }
@@ -124,6 +128,10 @@ public class ChannelParams {
         return longPressTime;
     }
 
+    public Integer getOnLevel() {
+        return onLevel;
+    }
+
     private static Boolean getChannelParameterAsBoolean(Object value) throws ConversionException {
         return convert(value, (v) -> (Boolean) v);
     }
@@ -155,8 +163,8 @@ public class ChannelParams {
     @Override
     public String toString() {
         return String.format(
-                "[ channelTypeId=%s, resourceId=%d, direction=%s, commandToReact=%s, pulseWidth=%d, inverted=%b, serialNumber=%d, longPressTime=%d ]",
-                channelTypeId, resourceId, direction, commandToReact, pulseWidth, inverted, serialNumber,
-                longPressTime);
+                "[ channelTypeId=%s, resourceId=%d, direction=%s, commandToReact=%s, pulseWidth=%d, inverted=%b, serialNumber=%d, longPressTime=%d, onLevel=%d ]",
+                channelTypeId, resourceId, direction, commandToReact, pulseWidth, inverted, serialNumber, longPressTime,
+                onLevel);
     }
 }
