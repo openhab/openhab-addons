@@ -257,8 +257,8 @@ public class LifxLightStateChanger implements LifxLightStateListener {
                 while (it.hasNext()) {
                     PendingPacket pendingPacket = it.next();
                     if (pendingPacket.sendCount > MAX_RETRIES && pendingPacket.hasAcknowledgeIntervalElapsed()) {
-                        logger.warn("{} failed (unacknowledged {} times)",
-                                pendingPacket.packet.getClass().getSimpleName(), pendingPacket.sendCount);
+                        logger.warn("{} failed (unacknowledged {} times to light {})",
+                                pendingPacket.packet.getClass().getSimpleName(), pendingPacket.sendCount, logId);
                         it.remove();
                     }
                 }
