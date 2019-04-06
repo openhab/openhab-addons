@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.onewire.device;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,30 +48,230 @@ public class BAE0910Test extends DeviceTestParent {
         deviceTestClazz = BAE0910.class;
     }
 
+    // pin 1: counter:
+
+    // pin 2: digital2 or pwm1
+
     @Test
-    public void pwmChannel1() {
-        pwmBaseChannel(CHANNEL_PWM_FREQ1, CHANNEL_PWM_DUTY1, "/period1", "/duty1", 3);
+    public void digitalOut2() {
+        addChannel(CHANNEL_DIGITAL2, "Switch");
+        instantiateDevice();
+
+        try {
+            Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
+            Mockito.when(mockBridgeHandler.readBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/out"))))
+                    .thenReturn(expectedBitSet(0));
+
+            testDevice.enableChannel(CHANNEL_DIGITAL2);
+            ((BAE0910) testDevice).configureChannels(mockBridgeHandler);
+
+            // test configuration
+            assertEquals(expectedBitSet(3, 4), checkConfiguration(0));
+
+            // refresh
+            ArgumentCaptor<State> stateArgumentCaptor = ArgumentCaptor.forClass(State.class);
+            testDevice.refresh(mockBridgeHandler, true);
+            inOrder.verify(mockBridgeHandler).readBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/out")));
+            inOrder.verify(mockThingHandler).postUpdate(eq(CHANNEL_DIGITAL2), stateArgumentCaptor.capture());
+            assertEquals(OnOffType.ON, stateArgumentCaptor.getValue());
+
+            // write
+            ArgumentCaptor<BitSet> bitSetArgumentCaptor = ArgumentCaptor.forClass(BitSet.class);
+            assertTrue(((BAE0910) testDevice).writeChannel(mockBridgeHandler, CHANNEL_DIGITAL2, OnOffType.ON));
+            inOrder.verify(mockBridgeHandler).writeBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/out")),
+                    bitSetArgumentCaptor.capture());
+            assertEquals(expectedBitSet(0), bitSetArgumentCaptor.getValue());
+
+            inOrder.verifyNoMoreInteractions();
+        } catch (OwException e) {
+            Assert.fail("caught unexpected OwException");
+        }
     }
 
     @Test
-    public void pwmChannel2() {
-        pwmBaseChannel(CHANNEL_PWM_FREQ2, CHANNEL_PWM_DUTY2, "/period2", "/duty2", 4);
+    public void pwm4() {
+        pwmBaseChannel(CHANNEL_PWM_FREQ2, CHANNEL_PWM_DUTY4, "/period2", "/duty4", 2);
+    }
+
+    // pin 6: pio or pwm 3
+
+    @Test
+    public void digital6PioIn() {
+        Map<String, Object> channelConfig = new HashMap<>();
+        channelConfig.put("pulldevice", "pulldown");
+        channelConfig.put("mode", "input");
+        addChannel(CHANNEL_DIGITAL6, "Switch", new Configuration(channelConfig));
+        instantiateDevice();
+
+        try {
+            Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
+            Mockito.when(mockBridgeHandler.readBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/pio"))))
+                    .thenReturn(expectedBitSet(0));
+
+            testDevice.enableChannel(CHANNEL_DIGITAL6);
+            ((BAE0910) testDevice).configureChannels(mockBridgeHandler);
+
+            // test configuration
+            assertEquals(expectedBitSet(1, 2, 3, 4), checkConfiguration(1));
+
+            // refresh
+            ArgumentCaptor<State> stateArgumentCaptor = ArgumentCaptor.forClass(State.class);
+            testDevice.refresh(mockBridgeHandler, true);
+            inOrder.verify(mockBridgeHandler).readBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/pio")));
+            inOrder.verify(mockThingHandler).postUpdate(eq(CHANNEL_DIGITAL6), stateArgumentCaptor.capture());
+            assertEquals(OnOffType.ON, stateArgumentCaptor.getValue());
+
+            // write (should fail)
+            assertFalse(((BAE0910) testDevice).writeChannel(mockBridgeHandler, CHANNEL_DIGITAL6, OnOffType.ON));
+
+            inOrder.verifyNoMoreInteractions();
+        } catch (OwException e) {
+            Assert.fail("caught unexpected OwException");
+        }
     }
 
     @Test
-    public void pwmChannel3() {
-        pwmBaseChannel(CHANNEL_PWM_FREQ1, CHANNEL_PWM_DUTY3, "/period1", "/duty3", 3);
+    public void digital6PioOut() {
+        Map<String, Object> channelConfig = new HashMap<>();
+        channelConfig.put("mode", "output");
+        addChannel(CHANNEL_DIGITAL6, "Switch", new Configuration(channelConfig));
+        instantiateDevice();
+
+        try {
+            Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
+            Mockito.when(mockBridgeHandler.readBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/pio"))))
+                    .thenReturn(expectedBitSet(0));
+
+            testDevice.enableChannel(CHANNEL_DIGITAL6);
+            ((BAE0910) testDevice).configureChannels(mockBridgeHandler);
+
+            // test configuration
+            assertEquals(expectedBitSet(0, 3, 4), checkConfiguration(1));
+
+            // refresh
+            ArgumentCaptor<State> stateArgumentCaptor = ArgumentCaptor.forClass(State.class);
+            testDevice.refresh(mockBridgeHandler, true);
+            inOrder.verify(mockBridgeHandler).readBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/pio")));
+            inOrder.verify(mockThingHandler).postUpdate(eq(CHANNEL_DIGITAL6), stateArgumentCaptor.capture());
+            assertEquals(OnOffType.ON, stateArgumentCaptor.getValue());
+
+            // write
+            ArgumentCaptor<BitSet> bitSetArgumentCaptor = ArgumentCaptor.forClass(BitSet.class);
+            ((BAE0910) testDevice).writeChannel(mockBridgeHandler, CHANNEL_DIGITAL6, OnOffType.ON);
+            inOrder.verify(mockBridgeHandler).writeBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/pio")),
+                    bitSetArgumentCaptor.capture());
+            assertEquals(expectedBitSet(0), bitSetArgumentCaptor.getValue());
+
+            inOrder.verifyNoMoreInteractions();
+        } catch (OwException e) {
+            Assert.fail("caught unexpected OwException");
+        }
     }
 
     @Test
-    public void pwmChannel4() {
-        pwmBaseChannel(CHANNEL_PWM_FREQ2, CHANNEL_PWM_DUTY4, "/period2", "/duty4", 4);
+    public void pwm3() {
+        pwmBaseChannel(CHANNEL_PWM_FREQ1, CHANNEL_PWM_DUTY3, "/period1", "/duty3", 1);
     }
 
-    private void pwmBaseChannel(String freqChannel, String dutyChannel, String freqParam, String dutyParam, int index) {
+    // pin 7: analog, output, pwm2
+
+    @Test
+    public void analog() {
+        Map<String, Object> channelConfig = new HashMap<>();
+        channelConfig.put("hires", "true");
+        addChannel(CHANNEL_VOLTAGE, "Number:ElectricPotential", new Configuration(channelConfig));
+        instantiateDevice();
+
+        try {
+            Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
+            Mockito.when(mockBridgeHandler.readDecimalType(eq(testSensorId), eq(new OwserverDeviceParameter("/adc"))))
+                    .thenReturn(new DecimalType(5.2));
+
+            testDevice.enableChannel(CHANNEL_VOLTAGE);
+            ((BAE0910) testDevice).configureChannels(mockBridgeHandler);
+
+            // test configuration
+            assertEquals(expectedBitSet(3, 4), checkConfiguration(2));
+
+            // refresh
+            ArgumentCaptor<State> stateArgumentCaptor = ArgumentCaptor.forClass(State.class);
+            testDevice.refresh(mockBridgeHandler, true);
+            inOrder.verify(mockBridgeHandler).readDecimalType(eq(testSensorId),
+                    eq(new OwserverDeviceParameter("/adc")));
+            inOrder.verify(mockThingHandler).postUpdate(eq(CHANNEL_VOLTAGE), stateArgumentCaptor.capture());
+            assertEquals(new QuantityType<>("5.2 V"), stateArgumentCaptor.getValue());
+
+            // write
+            assertFalse(
+                    ((BAE0910) testDevice).writeChannel(mockBridgeHandler, CHANNEL_VOLTAGE, new QuantityType<>("3 V")));
+
+            inOrder.verifyNoMoreInteractions();
+        } catch (OwException e) {
+            Assert.fail("caught unexpected OwException");
+        }
+    }
+
+    @Test
+    public void digitalOut7() {
+        addChannel(CHANNEL_DIGITAL7, "Switch");
+        instantiateDevice();
+
+        try {
+            Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
+            Mockito.when(mockBridgeHandler.readBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/tpm2c"))))
+                    .thenReturn(expectedBitSet(4, 7));
+
+            testDevice.enableChannel(CHANNEL_DIGITAL7);
+            ((BAE0910) testDevice).configureChannels(mockBridgeHandler);
+
+            // test configuration
+            assertEquals(expectedBitSet(4), checkConfiguration(4));
+
+            // refresh
+            ArgumentCaptor<State> stateArgumentCaptor = ArgumentCaptor.forClass(State.class);
+            testDevice.refresh(mockBridgeHandler, true);
+            inOrder.verify(mockBridgeHandler).readBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/tpm2c")));
+            inOrder.verify(mockThingHandler).postUpdate(eq(CHANNEL_DIGITAL7), stateArgumentCaptor.capture());
+            assertEquals(OnOffType.ON, stateArgumentCaptor.getValue());
+
+            // write
+            ArgumentCaptor<BitSet> bitSetArgumentCaptor = ArgumentCaptor.forClass(BitSet.class);
+            assertTrue(((BAE0910) testDevice).writeChannel(mockBridgeHandler, CHANNEL_DIGITAL7, OnOffType.ON));
+            inOrder.verify(mockBridgeHandler).writeBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/tpm2c")),
+                    bitSetArgumentCaptor.capture());
+            assertEquals(expectedBitSet(4, 7), bitSetArgumentCaptor.getValue());
+
+            inOrder.verifyNoMoreInteractions();
+        } catch (OwException e) {
+            Assert.fail("caught unexpected OwException");
+        }
+    }
+
+    @Test
+    public void pwm2() {
+        pwmBaseChannel(CHANNEL_PWM_FREQ2, CHANNEL_PWM_DUTY2, "/period2", "/duty2", 2);
+    }
+
+    // pin 8: digital in, digital out or pwm
+
+    @Test
+    public void pwm1() {
+        pwmBaseChannel(CHANNEL_PWM_FREQ1, CHANNEL_PWM_DUTY1, "/period1", "/duty1", 1);
+    }
+
+    /**
+     * base test case for PWM channels
+     *
+     * @param freqChannel channel name for frequency
+     * @param dutyChannel channel name for duty cycle
+     * @param freqParam owfs parameter for frequency
+     * @param dutyParam owfs parameter for duty cycle
+     * @param registerIndex index for TPM configuration register
+     */
+    private void pwmBaseChannel(String freqChannel, String dutyChannel, String freqParam, String dutyParam,
+            int registerIndex) {
         Map<String, Object> channelConfig = new HashMap<>();
         channelConfig.put("prescaler", 5);
-
         addChannel(freqChannel, "Number:Frequency", new Configuration(channelConfig));
         addChannel(dutyChannel, "Number:Dimensionless");
         instantiateDevice();
@@ -89,21 +290,7 @@ public class BAE0910Test extends DeviceTestParent {
             ((BAE0910) testDevice).configureChannels(mockBridgeHandler);
 
             // test configuration
-            ArgumentCaptor<BitSet> configArgumentCaptor = ArgumentCaptor.forClass(BitSet.class);
-            BitSet expected = new BitSet(8);
-            expected.set(0);
-            expected.set(2);
-            inOrder.verify(mockBridgeHandler).writeBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/outc")),
-                    configArgumentCaptor.capture());
-            inOrder.verify(mockBridgeHandler).writeBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/pioc")),
-                    configArgumentCaptor.capture());
-            inOrder.verify(mockBridgeHandler).writeBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/adcc")),
-                    configArgumentCaptor.capture());
-            inOrder.verify(mockBridgeHandler).writeBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/tpm1c")),
-                    configArgumentCaptor.capture());
-            inOrder.verify(mockBridgeHandler).writeBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/tpm2c")),
-                    configArgumentCaptor.capture());
-            assertEquals(expected, configArgumentCaptor.getAllValues().get(index));
+            assertEquals(expectedBitSet(0, 2), checkConfiguration(registerIndex + 2));
 
             // refresh
             ArgumentCaptor<State> stateArgumentCaptor = ArgumentCaptor.forClass(State.class);
@@ -119,7 +306,8 @@ public class BAE0910Test extends DeviceTestParent {
 
             // write
             ArgumentCaptor<DecimalType> decimalTypeArgumentCaptor = ArgumentCaptor.forClass(DecimalType.class);
-            ((BAE0910) testDevice).writeChannel(mockBridgeHandler, freqChannel, new QuantityType<>("50000 Hz"));
+            assertTrue(((BAE0910) testDevice).writeChannel(mockBridgeHandler, freqChannel,
+                    new QuantityType<>("50000 Hz")));
             inOrder.verify(mockBridgeHandler).writeDecimalType(eq(testSensorId),
                     eq(new OwserverDeviceParameter(freqParam)), decimalTypeArgumentCaptor.capture());
             assertEquals(new DecimalType(10), decimalTypeArgumentCaptor.getValue());
@@ -134,5 +322,39 @@ public class BAE0910Test extends DeviceTestParent {
         } catch (OwException e) {
             Assert.fail("caught unexpected OwException");
         }
+    }
+
+    /**
+     * check if all registers are written and return one
+     *
+     * @param registerIndex number of register to return
+     * @return this register's BitSet
+     * @throws OwException
+     */
+    private BitSet checkConfiguration(int registerIndex) throws OwException {
+        ArgumentCaptor<BitSet> configArgumentCaptor = ArgumentCaptor.forClass(BitSet.class);
+        inOrder.verify(mockBridgeHandler).writeBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/outc")),
+                configArgumentCaptor.capture());
+        inOrder.verify(mockBridgeHandler).writeBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/pioc")),
+                configArgumentCaptor.capture());
+        inOrder.verify(mockBridgeHandler).writeBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/adcc")),
+                configArgumentCaptor.capture());
+        inOrder.verify(mockBridgeHandler).writeBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/tpm1c")),
+                configArgumentCaptor.capture());
+        inOrder.verify(mockBridgeHandler).writeBitSet(eq(testSensorId), eq(new OwserverDeviceParameter("/tpm2c")),
+                configArgumentCaptor.capture());
+        return configArgumentCaptor.getAllValues().get(registerIndex);
+    }
+
+    /**
+     * BitSet with pre-set bits
+     *
+     * @param bits which bits to set
+     * @return the BitSet
+     */
+    private BitSet expectedBitSet(int... bits) {
+        BitSet bitSet = new BitSet(8);
+        Arrays.stream(bits).forEach(b -> bitSet.set(b));
+        return bitSet;
     }
 }

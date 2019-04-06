@@ -239,7 +239,7 @@ public class BAE0910 extends AbstractOwDevice {
         // Analog
         if (enabledChannels.contains(CHANNEL_VOLTAGE)) {
             State analogValue = bridgeHandler.readDecimalType(sensorId, pin7AnalogParameter);
-            callback.postUpdate(CHANNEL_VOLTAGE, analogValue);
+            callback.postUpdate(CHANNEL_VOLTAGE, new QuantityType<>((DecimalType) analogValue, SmartHomeUnits.VOLT));
         }
 
         // PWM
@@ -286,7 +286,7 @@ public class BAE0910 extends AbstractOwDevice {
                     if (!outcRegister.get(OUTC_OUTEN)) {
                         return false;
                     }
-                    value.set(1, ((OnOffType) command).equals(OnOffType.ON));
+                    value.set(0, ((OnOffType) command).equals(OnOffType.ON));
                     bridgeHandler.writeBitSet(sensorId, pin2OutParameter, value);
                     break;
                 case CHANNEL_DIGITAL6:
@@ -294,7 +294,7 @@ public class BAE0910 extends AbstractOwDevice {
                     if (!piocRegister.get(PIOC_DD) || !piocRegister.get(PIOC_PIOEN)) {
                         return false;
                     }
-                    value.set(1, ((OnOffType) command).equals(OnOffType.ON));
+                    value.set(0, ((OnOffType) command).equals(OnOffType.ON));
                     bridgeHandler.writeBitSet(sensorId, pin6PIOParameter, value);
                     break;
                 case CHANNEL_DIGITAL7:
