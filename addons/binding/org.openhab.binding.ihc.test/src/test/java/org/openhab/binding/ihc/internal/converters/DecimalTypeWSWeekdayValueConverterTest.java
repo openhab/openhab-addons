@@ -32,11 +32,11 @@ public class DecimalTypeWSWeekdayValueConverterTest {
     public void testConversion() throws ConversionException {
         WSWeekdayValue val = new WSWeekdayValue(12345, 0);
 
-        val = convertFromOHType(val, new DecimalType(6), new ConverterAdditionalInfo(null, false));
+        val = convertFromOHType(val, new DecimalType(6), new ConverterAdditionalInfo(null, false, null));
         assertEquals(12345, val.resourceID);
         assertEquals(6, val.weekdayNumber);
 
-        DecimalType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, false));
+        DecimalType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, false, null));
         assertEquals(new DecimalType(6), type);
     }
 

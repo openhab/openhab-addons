@@ -340,7 +340,7 @@ public class IhcClient {
     /**
      * Wait controller state change notification.
      *
-     * @param previousState Previous controller state.
+     * @param previousState        Previous controller state.
      * @param timeoutInSecondscHow many seconds to wait notifications.
      * @return current controller state.
      */
@@ -536,39 +536,38 @@ public class IhcClient {
     }
 
     private void sendErrorEvent(IhcExecption err) {
-        try {
-            Iterator<IhcEventListener> iterator = eventListeners.iterator();
+        Iterator<IhcEventListener> iterator = eventListeners.iterator();
 
-            while (iterator.hasNext()) {
+        while (iterator.hasNext()) {
+            try {
                 iterator.next().errorOccured(err);
+            } catch (RuntimeException e) {
+                logger.debug("Event listener invoking error. ", e);
             }
-        } catch (Exception e) {
-            logger.debug("Event listener invoking error", e);
         }
     }
 
     private void sendControllerStateUpdateEvent(WSControllerState state) {
-        try {
-            Iterator<IhcEventListener> iterator = eventListeners.iterator();
+        Iterator<IhcEventListener> iterator = eventListeners.iterator();
 
-            while (iterator.hasNext()) {
+        while (iterator.hasNext()) {
+            try {
                 iterator.next().statusUpdateReceived(state);
+            } catch (RuntimeException e) {
+                logger.debug("Event listener invoking error. ", e);
             }
-        } catch (Exception e) {
-            logger.debug("Event listener invoking error", e);
         }
     }
 
     private void sendResourceValueUpdateEvent(WSResourceValue value) {
-        try {
-            Iterator<IhcEventListener> iterator = eventListeners.iterator();
+        Iterator<IhcEventListener> iterator = eventListeners.iterator();
 
-            while (iterator.hasNext()) {
+        while (iterator.hasNext()) {
+            try {
                 iterator.next().resourceValueUpdateReceived(value);
+            } catch (RuntimeException e) {
+                logger.debug("Event listener invoking error. ", e);
             }
-
-        } catch (Exception e) {
-            logger.debug("Event listener invoking error", e);
         }
     }
 }

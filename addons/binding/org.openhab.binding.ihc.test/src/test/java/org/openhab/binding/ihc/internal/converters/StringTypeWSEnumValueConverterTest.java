@@ -41,13 +41,13 @@ public class StringTypeWSEnumValueConverterTest {
 
         WSEnumValue val = new WSEnumValue(12345, 5555, 0, "");
 
-        val = convertFromOHType(val, new StringType("testC"), new ConverterAdditionalInfo(enumValues, false));
+        val = convertFromOHType(val, new StringType("testC"), new ConverterAdditionalInfo(enumValues, false, null));
         assertEquals(12345, val.resourceID);
         assertEquals(5555, val.definitionTypeID);
         assertEquals(103, val.enumValueID);
         assertEquals("testC", val.enumName);
 
-        StringType type = convertFromResourceValue(val, new ConverterAdditionalInfo(enumValues, false));
+        StringType type = convertFromResourceValue(val, new ConverterAdditionalInfo(enumValues, false, null));
         assertEquals(new StringType("testC"), type);
     }
 

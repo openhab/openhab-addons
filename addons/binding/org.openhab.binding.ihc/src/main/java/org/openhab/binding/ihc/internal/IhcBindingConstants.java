@@ -73,6 +73,7 @@ public class IhcBindingConstants {
     public static final String PARAM_PULSE_WIDTH = "pulseWidth";
     public static final String PARAM_LONG_PRESS_TIME = "longPressTime";
     public static final String PARAM_INVERTED = "inverted";
+    public static final String PARAM_ON_LEVEL = "onLevel";
 
     public static final String DIRECTION_READ_WRITE = "ReadWrite";
     public static final String DIRECTION_WRITE_ONLY = "WriteOnly";

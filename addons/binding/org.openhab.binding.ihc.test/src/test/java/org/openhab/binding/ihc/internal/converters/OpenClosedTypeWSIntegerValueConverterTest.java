@@ -33,13 +33,13 @@ public class OpenClosedTypeWSIntegerValueConverterTest {
         final boolean inverted = false;
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
 
-        val = convertFromOHType(val, OpenClosedType.OPEN, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, OpenClosedType.OPEN, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(100, val.value);
         assertEquals(-100, val.minimumValue);
         assertEquals(100, val.maximumValue);
 
-        OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(OpenClosedType.OPEN, type);
     }
 
@@ -48,13 +48,13 @@ public class OpenClosedTypeWSIntegerValueConverterTest {
         final boolean inverted = false;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
-        val = convertFromOHType(val, OpenClosedType.CLOSED, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, OpenClosedType.CLOSED, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(-100, val.value);
         assertEquals(-100, val.minimumValue);
         assertEquals(100, val.maximumValue);
 
-        OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(OpenClosedType.CLOSED, type);
     }
 
@@ -63,13 +63,13 @@ public class OpenClosedTypeWSIntegerValueConverterTest {
         final boolean inverted = true;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
-        val = convertFromOHType(val, OpenClosedType.OPEN, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, OpenClosedType.OPEN, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(-100, val.value);
         assertEquals(-100, val.minimumValue);
         assertEquals(100, val.maximumValue);
 
-        OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(OpenClosedType.OPEN, type);
     }
 
@@ -78,13 +78,13 @@ public class OpenClosedTypeWSIntegerValueConverterTest {
         final boolean inverted = true;
 
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
-        val = convertFromOHType(val, OpenClosedType.CLOSED, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, OpenClosedType.CLOSED, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(100, val.value);
         assertEquals(-100, val.minimumValue);
         assertEquals(100, val.maximumValue);
 
-        OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        OpenClosedType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(OpenClosedType.CLOSED, type);
     }
 
