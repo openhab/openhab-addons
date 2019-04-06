@@ -32,13 +32,13 @@ public class PercentTypeWSIntegerValueConverterTest {
     public void test() throws ConversionException {
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
 
-        val = convertFromOHType(val, new PercentType(2), new ConverterAdditionalInfo(null, false));
+        val = convertFromOHType(val, new PercentType(2), new ConverterAdditionalInfo(null, false, null));
         assertEquals(12345, val.resourceID);
         assertEquals(-100, val.minimumValue);
         assertEquals(100, val.maximumValue);
         assertEquals(2, val.value);
 
-        PercentType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, false));
+        PercentType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, false, null));
         assertEquals(new PercentType(2), type);
     }
 

@@ -33,11 +33,11 @@ public class OnOffTypeWSBooleanValueConverterTest {
         final boolean inverted = false;
         WSBooleanValue val = new WSBooleanValue(12345, false);
 
-        val = convertFromOHType(val, OnOffType.ON, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, OnOffType.ON, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(true, val.value);
 
-        OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(OnOffType.ON, type);
     }
 
@@ -46,11 +46,11 @@ public class OnOffTypeWSBooleanValueConverterTest {
         final boolean inverted = false;
 
         WSBooleanValue val = new WSBooleanValue(12345, true);
-        val = convertFromOHType(val, OnOffType.OFF, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, OnOffType.OFF, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(false, val.value);
 
-        OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(OnOffType.OFF, type);
     }
 
@@ -59,11 +59,11 @@ public class OnOffTypeWSBooleanValueConverterTest {
         final boolean inverted = true;
 
         WSBooleanValue val = new WSBooleanValue(12345, true);
-        val = convertFromOHType(val, OnOffType.ON, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, OnOffType.ON, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(false, val.value);
 
-        OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(OnOffType.ON, type);
     }
 
@@ -72,11 +72,11 @@ public class OnOffTypeWSBooleanValueConverterTest {
         final boolean inverted = true;
 
         WSBooleanValue val = new WSBooleanValue(12345, false);
-        val = convertFromOHType(val, OnOffType.OFF, new ConverterAdditionalInfo(null, inverted));
+        val = convertFromOHType(val, OnOffType.OFF, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(12345, val.resourceID);
         assertEquals(true, val.value);
 
-        OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted));
+        OnOffType type = convertFromResourceValue(val, new ConverterAdditionalInfo(null, inverted, null));
         assertEquals(OnOffType.OFF, type);
     }
 

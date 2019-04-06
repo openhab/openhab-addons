@@ -13,7 +13,9 @@
 package org.openhab.binding.ihc.internal.converters;
 
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.ihc.internal.ws.projectfile.IhcEnumValue;
 
 /**
@@ -24,10 +26,13 @@ import org.openhab.binding.ihc.internal.ws.projectfile.IhcEnumValue;
 public class ConverterAdditionalInfo {
     private List<IhcEnumValue> enumValues;
     private Boolean inverted;
+    private Map<Command, Object> commandLevels;
 
-    public ConverterAdditionalInfo(List<IhcEnumValue> enumValues, Boolean inverted) {
+    public ConverterAdditionalInfo(List<IhcEnumValue> enumValues, Boolean inverted,
+            Map<Command, Object> commandLevels) {
         this.enumValues = enumValues;
         this.inverted = inverted;
+        this.commandLevels = commandLevels;
     }
 
     public List<IhcEnumValue> getEnumValues() {
@@ -36,5 +41,9 @@ public class ConverterAdditionalInfo {
 
     public Boolean getInverted() {
         return inverted;
+    }
+
+    public Map<Command, Object> getCommandLevels() {
+        return commandLevels;
     }
 }
