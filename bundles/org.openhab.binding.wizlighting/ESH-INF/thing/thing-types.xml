@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wizlighting"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Socket Thing Type -->
+	<thing-type id="bulb">
+		<label>Wiz Lighting Bulb</label>
+		<description>Supports Wiz Lighting Bulb.</description>
+
+		<channels>
+			<channel id="switch" typeId="switch" />
+			<channel id="color" typeId="color" />
+			<channel id="scene" typeId="scene" />
+			<channel id="speed" typeId="speed" />
+		</channels>
+
+		<config-description>
+			<parameter name="hostMacAddress" type="text" required="true">
+				<label>MAC address</label>
+				<description>Mac Address of the bulb</description>
+			</parameter>
+			<parameter name="hostAddress" type="text" required="true">
+				<label>Ip address</label>
+				<context>network-address</context>
+				<description>IP address of the bulb</description>
+			</parameter>
+			<parameter name="homeId" type="text" required="true">
+				<label>HomeId</label>
+				<description>HomeId of the bulb. This can be found in the ios or android app settings</description>
+			</parameter>
+			<parameter name="updateInterval" type="integer" min="5">
+				<label>Update interval</label>
+				<description>Update time interval in seconds to request the status of the bulb.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Socket type Channel Type -->
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<category>ColorLight</category>
+	</channel-type>
+	<channel-type id="scene">
+		<item-type>String</item-type>
+		<label>Scenes</label>
+		<state readOnly="false">
+			<options>
+				<option value="11">Warm White</option>
+				<option value="13">Cool White</option>
+				<option value="1">Ocean</option>
+				<option value="6">Cozy White</option>
+				<option value="7">Forest</option>
+				<option value="8">Pastel Colors</option>
+				<option value="9">Wakeup</option>
+				<option value="10">Bed Time</option>
+				<option value="12">Daylight</option>
+				<option value="14">Night Light</option>
+				<option value="15">Focus</option>
+				<option value="16">Relax</option>
+				<option value="17">True Colors</option>
+				<option value="18">TV Time</option>
+				<option value="19">Plant Growth</option>
+				<option value="20">Spring</option>
+				<option value="21">Summer</option>
+				<option value="22">Fall</option>
+				<option value="23">Deep Dive</option>
+				<option value="24">Jungle</option>
+				<option value="25">Mojito</option>
+				<option value="26">Club</option>
+				<option value="27">Christmas</option>
+				<option value="28">Halloween</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="speed" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Speed</label>
+	</channel-type>
+</thing:thing-descriptions>
