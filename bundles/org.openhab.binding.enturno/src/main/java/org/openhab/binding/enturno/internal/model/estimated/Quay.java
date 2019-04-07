@@ -19,33 +19,7 @@ package org.openhab.binding.enturno.internal.model.estimated;
  */
 public class Quay
 {
-    private String publicCode;
+    public String publicCode;
 
-    private String id;
-
-    public String getPublicCode ()
-    {
-        return publicCode;
-    }
-
-    public void setPublicCode (String publicCode)
-    {
-        this.publicCode = publicCode;
-    }
-
-    public String getId ()
-    {
-        return id;
-    }
-
-    public void setId (String id)
-    {
-        this.id = id;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [publicCode = "+publicCode+", id = "+id+"]";
-    }
+    public String id;
 }

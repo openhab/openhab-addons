@@ -18,9 +18,5 @@ package org.openhab.binding.enturno.internal.model;
  * @author Michal Kloc - Initial contribution
  */
 public class EnturJsonData {
-    Data data;
-
-    public Data getData() { return data; }
-
-    public void setData(Data data) { this.data = data; }
+    public Data data;
 }

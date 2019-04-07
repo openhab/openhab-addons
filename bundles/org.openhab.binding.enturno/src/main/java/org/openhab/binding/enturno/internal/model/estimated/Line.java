@@ -19,57 +19,11 @@ package org.openhab.binding.enturno.internal.model.estimated;
  */
 public class Line
 {
-    private String name;
+    public String name;
 
-    private String transportMode;
+    public String transportMode;
 
-    private String publicCode;
+    public String publicCode;
 
-    private String id;
-
-    public String getName ()
-    {
-        return name;
-    }
-
-    public void setName (String name)
-    {
-        this.name = name;
-    }
-
-    public String getTransportMode ()
-    {
-        return transportMode;
-    }
-
-    public void setTransportMode (String transportMode)
-    {
-        this.transportMode = transportMode;
-    }
-
-    public String getPublicCode ()
-    {
-        return publicCode;
-    }
-
-    public void setPublicCode (String publicCode)
-    {
-        this.publicCode = publicCode;
-    }
-
-    public String getId ()
-    {
-        return id;
-    }
-
-    public void setId (String id)
-    {
-        this.id = id;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [name = "+name+", transportMode = "+transportMode+", publicCode = "+publicCode+", id = "+id+"]";
-    }
+    public String id;
 }

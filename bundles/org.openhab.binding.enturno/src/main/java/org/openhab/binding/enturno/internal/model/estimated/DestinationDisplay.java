@@ -19,21 +19,5 @@ package org.openhab.binding.enturno.internal.model.estimated;
  */
 public class DestinationDisplay
 {
-    private String frontText;
-
-    public String getFrontText ()
-    {
-        return frontText;
-    }
-
-    public void setFrontText (String frontText)
-    {
-        this.frontText = frontText;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [frontText = "+frontText+"]";
-    }
+    public String frontText;
 }

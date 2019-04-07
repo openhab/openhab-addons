@@ -21,55 +21,11 @@ import org.openhab.binding.enturno.internal.model.estimated.EstimatedCalls;
  */
 public class StopPlace
 {
-    private java.util.List<EstimatedCalls> estimatedCalls;
+    public java.util.List<EstimatedCalls> estimatedCalls;
 
-    private String name;
+    public String name;
 
-    private String id;
+    public String id;
 
-    private String transportMode;
-
-    public java.util.List<EstimatedCalls> getEstimatedCalls()
-    {
-        return estimatedCalls;
-    }
-
-    public void setEstimatedCalls (java.util.List<EstimatedCalls> estimatedCalls)
-    {
-        this.estimatedCalls = estimatedCalls;
-    }
-
-    public String getName ()
-    {
-        return name;
-    }
-
-    public void setName (String name)
-    {
-        this.name = name;
-    }
-
-    public String getId ()
-    {
-        return id;
-    }
-
-    public void setId (String id)
-    {
-        this.id = id;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [estimatedCalls = "+estimatedCalls+", name = "+name+", id = "+id+"]";
-    }
-
-    public String getTransportMode() {
-        return transportMode;
-    }
-
-    public void setTransportMode(String transportMode) {
-        this.transportMode = transportMode;
-    }
+    public String transportMode;
 }

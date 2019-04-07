@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -37,15 +36,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
-import org.omg.CORBA.Request;
 import org.openhab.binding.enturno.internal.EnturNoConfiguration;
 import org.openhab.binding.enturno.internal.EnturNoHandler;
 import org.openhab.binding.enturno.internal.model.EnturJsonData;
 import org.openhab.binding.enturno.internal.model.estimated.EstimatedCalls;
 import org.openhab.binding.enturno.internal.model.simplified.DisplayData;
 import org.openhab.binding.enturno.internal.model.stopplace.StopPlace;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -111,7 +111,7 @@ public class EnturNoConnection {
                     new NullPointerException());
         }
 
-        return processData(enturJsonData.getData().getStopPlace(), lineCode);
+        return processData(enturJsonData.data.stopPlace, lineCode);
     }
 
     private Map<String, String> getRequestParams(EnturNoConfiguration config) {
@@ -185,11 +185,11 @@ public class EnturNoConnection {
     }
 
     private ArrayList<DisplayData> processData(StopPlace stopPlace, String lineCode) {
-        Map<String, List<EstimatedCalls>> departures = stopPlace.getEstimatedCalls().stream()
+        Map<String, List<EstimatedCalls>> departures = stopPlace.estimatedCalls.stream()
                 .filter(call -> StringUtils.equalsIgnoreCase(
-                        StringUtils.trimToEmpty(call.getServiceJourney().getJourneyPattern().getLine().getPublicCode()),
+                        StringUtils.trimToEmpty(call.serviceJourney.journeyPattern.line.publicCode),
                         StringUtils.trimToEmpty(lineCode)))
-                .collect(groupingBy(call -> call.getQuay().getId()));
+                .collect(groupingBy(call -> call.quay.id));
 
         ArrayList<DisplayData> processedData = new ArrayList<>();
         if (departures.keySet().size() > 0) {
@@ -210,23 +210,23 @@ public class EnturNoConnection {
         ArrayList<String> keys = new ArrayList<>(departures.keySet());
         DisplayData processedData = new DisplayData();
         List<EstimatedCalls> quayCalls = departures.get(keys.get(quayIndex));
-        List<String> departureTimes = quayCalls.stream().map(EstimatedCalls::getExpectedDepartureTime)
+        List<String> departureTimes = quayCalls.stream().map(eq -> eq.expectedDepartureTime)
                 .map(this::getIsoDateTime).collect(Collectors.toList());
 
-        List<String> estimatedFlags = quayCalls.stream().map(EstimatedCalls::getRealtime).collect(Collectors.toList());
+        List<String> estimatedFlags = quayCalls.stream().map(es -> es.realtime).collect(Collectors.toList());
 
         if (quayCalls.size() > quayIndex) {
-            String lineCode = quayCalls.get(0).getServiceJourney().getJourneyPattern().getLine().getPublicCode();
-            String frontText = quayCalls.get(0).getDestinationDisplay().getFrontText();
-            processedData.setLineCode(lineCode);
-            processedData.setFrontText(frontText);
-            processedData.setDepartures(departureTimes);
-            processedData.setEstimatedFlags(estimatedFlags);
+            String lineCode = quayCalls.get(0).serviceJourney.journeyPattern.line.publicCode;
+            String frontText = quayCalls.get(0).destinationDisplay.frontText;
+            processedData.lineCode = lineCode;
+            processedData.frontText = frontText;
+            processedData.departures = departureTimes;
+            processedData.estimatedFlags = estimatedFlags;
         }
 
-        processedData.setStopPlaceId(stopPlace.getId());
-        processedData.setStopName(stopPlace.getName());
-        processedData.setTransportMode(stopPlace.getTransportMode());
+        processedData.stopPlaceId = stopPlace.id;
+        processedData.stopName = stopPlace.name;
+        processedData.transportMode = stopPlace.transportMode;
         return processedData;
     }
 

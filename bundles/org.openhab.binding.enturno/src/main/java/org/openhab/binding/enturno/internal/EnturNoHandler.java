@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.enturno.internal;
 
-import java.nio.channels.Channel;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -20,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,11 +31,13 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.enturno.internal.connection.EnturCommunicationException;
 import org.openhab.binding.enturno.internal.connection.EnturConfigurationException;
 import org.openhab.binding.enturno.internal.connection.EnturNoConnection;
 import org.openhab.binding.enturno.internal.model.simplified.DisplayData;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
@@ -212,8 +212,8 @@ public class EnturNoHandler extends BaseThingHandler {
         logger.trace("Channel id: {}, Channel group id: {}", channelId, channelGroupId);
         if (processedData.size() > i) {
             State state = UnDefType.UNDEF;
-            List<String> departures = processedData.get(i).getDepartures();
-            List<String> estimatedFlags = processedData.get(i).getEstimatedFlags();
+            List<String> departures = processedData.get(i).departures;
+            List<String> estimatedFlags = processedData.get(i).estimatedFlags;
             switch (channelId) {
                 case EnturNoBindingConstants.CHANNEL_DEPARTURE_01:
                     state = departures.size() > 0 ? getDateTimeTypeState(departures.get(0)) : state;
@@ -246,10 +246,10 @@ public class EnturNoHandler extends BaseThingHandler {
                     state = estimatedFlags.size() > 4 ? getStringTypeState(estimatedFlags.get(4)) : state;
                     break;
                 case EnturNoBindingConstants.CHANNEL_LINE_CODE:
-                    state = getStringTypeState(processedData.get(i).getLineCode());
+                    state = getStringTypeState(processedData.get(i).lineCode);
                     break;
                 case EnturNoBindingConstants.CHANNEL_FRONT_DISPLAY:
-                    state = getStringTypeState(processedData.get(i).getFrontText());
+                    state = getStringTypeState(processedData.get(i).frontText);
                     break;
                 default:
                     break;
@@ -274,13 +274,13 @@ public class EnturNoHandler extends BaseThingHandler {
             State state = UnDefType.UNDEF;
             switch (channelId) {
                 case EnturNoBindingConstants.CHANNEL_STOP_ID:
-                    state = getStringTypeState(processedData.get(0).getStopPlaceId());
+                    state = getStringTypeState(processedData.get(0).stopPlaceId);
                     break;
                 case EnturNoBindingConstants.CHANNEL_STOP_NAME:
-                    state = getStringTypeState(processedData.get(0).getStopName());
+                    state = getStringTypeState(processedData.get(0).stopName);
                     break;
                 case EnturNoBindingConstants.CHANNEL_STOP_TRANSPORT_MODE:
-                    state = getStringTypeState(processedData.get(0).getTransportMode());
+                    state = getStringTypeState(processedData.get(0).transportMode);
                     break;
                 default:
                     break;

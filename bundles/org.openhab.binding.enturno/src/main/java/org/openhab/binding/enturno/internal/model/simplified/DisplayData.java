@@ -20,86 +20,17 @@ import java.util.List;
  * @author Michal Kloc - Initial contribution
  */
 public class DisplayData {
-    private String stopPlaceId;
+    public String stopPlaceId;
 
-    private String stopName;
+    public String stopName;
 
-    private String transportMode;
+    public String transportMode;
 
-    private String lineCode;
+    public String lineCode;
 
-    private String frontText;
+    public String frontText;
 
-    private List<String> departures;
+    public List<String> departures;
 
-    private List<String> estimatedFlags;
-
-    public String getLineCode() {
-        return lineCode;
-    }
-
-    public void setLineCode(String lineCode) {
-        this.lineCode = lineCode;
-    }
-
-    public String getFrontText() {
-        return frontText;
-    }
-
-    public void setFrontText(String frontText) {
-        this.frontText = frontText;
-    }
-
-    public List<String> getDepartures() {
-        return departures;
-    }
-
-    public void setDepartures(List<String> departures) {
-        this.departures = departures;
-    }
-
-    public String getStopPlaceId() {
-        return stopPlaceId;
-    }
-
-    public void setStopPlaceId(String stopPlaceId) {
-        this.stopPlaceId = stopPlaceId;
-    }
-
-    public String getStopName() {
-        return stopName;
-    }
-
-    public void setStopName(String stopName) {
-        this.stopName = stopName;
-    }
-
-    public String getTransportMode() {
-        return transportMode;
-    }
-
-    public void setTransportMode(String transportMode) {
-        this.transportMode = transportMode;
-    }
-
-    public List<String> getEstimatedFlags() {
-        return estimatedFlags;
-    }
-
-    public void setEstimatedFlags(List<String> estimatedFlags) {
-        this.estimatedFlags = estimatedFlags;
-    }
-
-    @Override
-    public String toString() {
-        return "DisplayData{" +
-                "stopPlaceId='" + stopPlaceId + '\'' +
-                ", stopName='" + stopName + '\'' +
-                ", transportMode='" + transportMode + '\'' +
-                ", lineCode='" + lineCode + '\'' +
-                ", frontText='" + frontText + '\'' +
-                ", departures=" + departures +
-                ", estimatedFlags=" + estimatedFlags +
-                '}';
-    }
+    public List<String> estimatedFlags;
 }

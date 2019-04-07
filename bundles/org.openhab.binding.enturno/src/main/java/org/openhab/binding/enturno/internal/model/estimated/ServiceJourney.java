@@ -19,21 +19,5 @@ package org.openhab.binding.enturno.internal.model.estimated;
  */
 public class ServiceJourney
 {
-    private JourneyPattern journeyPattern;
-
-    public JourneyPattern getJourneyPattern ()
-    {
-        return journeyPattern;
-    }
-
-    public void setJourneyPattern (JourneyPattern journeyPattern)
-    {
-        this.journeyPattern = journeyPattern;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [journeyPattern = "+journeyPattern+"]";
-    }
+    public JourneyPattern journeyPattern;
 }

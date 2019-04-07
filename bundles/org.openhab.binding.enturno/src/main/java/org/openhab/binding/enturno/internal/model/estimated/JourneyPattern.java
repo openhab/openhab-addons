@@ -19,21 +19,5 @@ package org.openhab.binding.enturno.internal.model.estimated;
  */
 public class JourneyPattern
 {
-    private Line line;
-
-    public Line getLine ()
-    {
-        return line;
-    }
-
-    public void setLine (Line line)
-    {
-        this.line = line;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [line = "+line+"]";
-    }
+    public Line line;
 }

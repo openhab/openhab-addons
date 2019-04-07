@@ -19,143 +19,27 @@ package org.openhab.binding.enturno.internal.model.estimated;
  */
 public class EstimatedCalls
 {
-    private String aimedArrivalTime;
+    public String aimedArrivalTime;
 
-    private String date;
+    public String date;
 
-    private String realtime;
+    public String realtime;
 
-    private String expectedDepartureTime;
+    public String expectedDepartureTime;
 
-    private String forAlighting;
+    public String forAlighting;
 
-    private DestinationDisplay destinationDisplay;
+    public DestinationDisplay destinationDisplay;
 
-    private String forBoarding;
+    public String forBoarding;
 
-    private ServiceJourney serviceJourney;
+    public ServiceJourney serviceJourney;
 
-    private Quay quay;
+    public Quay quay;
 
-    private String aimedDepartureTime;
+    public String aimedDepartureTime;
 
-    private String expectedArrivalTime;
-
-    public String getAimedArrivalTime ()
-    {
-        return aimedArrivalTime;
-    }
-
-    public void setAimedArrivalTime (String aimedArrivalTime)
-    {
-        this.aimedArrivalTime = aimedArrivalTime;
-    }
-
-    public String getDate ()
-    {
-        return date;
-    }
-
-    public void setDate (String date)
-    {
-        this.date = date;
-    }
-
-    public String getRealtime ()
-    {
-        return realtime;
-    }
-
-    public void setRealtime (String realtime)
-    {
-        this.realtime = realtime;
-    }
-
-    public String getExpectedDepartureTime ()
-    {
-        return expectedDepartureTime;
-    }
-
-    public void setExpectedDepartureTime (String expectedDepartureTime)
-    {
-        this.expectedDepartureTime = expectedDepartureTime;
-    }
-
-    public String getForAlighting ()
-    {
-        return forAlighting;
-    }
-
-    public void setForAlighting (String forAlighting)
-    {
-        this.forAlighting = forAlighting;
-    }
-
-    public DestinationDisplay getDestinationDisplay ()
-    {
-        return destinationDisplay;
-    }
-
-    public void setDestinationDisplay (DestinationDisplay destinationDisplay)
-    {
-        this.destinationDisplay = destinationDisplay;
-    }
-
-    public String getForBoarding ()
-    {
-        return forBoarding;
-    }
-
-    public void setForBoarding (String forBoarding)
-    {
-        this.forBoarding = forBoarding;
-    }
-
-    public ServiceJourney getServiceJourney ()
-    {
-        return serviceJourney;
-    }
-
-    public void setServiceJourney (ServiceJourney serviceJourney)
-    {
-        this.serviceJourney = serviceJourney;
-    }
-
-    public Quay getQuay ()
-    {
-        return quay;
-    }
-
-    public void setQuay (Quay quay)
-    {
-        this.quay = quay;
-    }
-
-    public String getAimedDepartureTime ()
-    {
-        return aimedDepartureTime;
-    }
-
-    public void setAimedDepartureTime (String aimedDepartureTime)
-    {
-        this.aimedDepartureTime = aimedDepartureTime;
-    }
-
-    public String getExpectedArrivalTime ()
-    {
-        return expectedArrivalTime;
-    }
-
-    public void setExpectedArrivalTime (String expectedArrivalTime)
-    {
-        this.expectedArrivalTime = expectedArrivalTime;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [aimedArrivalTime = "+aimedArrivalTime+", date = "+date+", realtime = "+realtime+", expectedDepartureTime = "+expectedDepartureTime+", forAlighting = "+forAlighting+", destinationDisplay = "+destinationDisplay+", forBoarding = "+forBoarding+", serviceJourney = "+serviceJourney+", quay = "+quay+", aimedDepartureTime = "+aimedDepartureTime+", expectedArrivalTime = "+expectedArrivalTime+"]";
-    }
+    public String expectedArrivalTime;
 }
 
 

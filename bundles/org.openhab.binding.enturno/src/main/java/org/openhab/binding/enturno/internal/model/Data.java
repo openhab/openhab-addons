@@ -21,21 +21,5 @@ import org.openhab.binding.enturno.internal.model.stopplace.StopPlace;
  */
 public class Data
 {
-    private StopPlace stopPlace;
-
-    public StopPlace getStopPlace ()
-    {
-        return stopPlace;
-    }
-
-    public void setStopPlace (StopPlace stopPlace)
-    {
-        this.stopPlace = stopPlace;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [stopPlace = "+stopPlace+"]";
-    }
+    public StopPlace stopPlace;
 }
