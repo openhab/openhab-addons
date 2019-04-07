@@ -24,37 +24,18 @@ public class EnturCommunicationException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Constructs a new exception with null as its detail message.
-     */
     public EnturCommunicationException() {
         super();
     }
 
-    /**
-     * Constructs a new exception with the specified detail message.
-     *
-     * @param message Detail message
-     */
     public EnturCommunicationException(String message) {
         super(message);
     }
 
-    /**
-     * Constructs a new exception with the specified cause.
-     *
-     * @param cause The cause
-     */
     public EnturCommunicationException(Throwable cause) {
         super(cause);
     }
 
-    /**
-     * Constructs a new exception with the specified detail message and cause.
-     *
-     * @param message Detail message
-     * @param cause The cause
-     */
     public EnturCommunicationException(String message, Throwable cause) {
         super(message, cause);
     }
