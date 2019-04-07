@@ -133,8 +133,8 @@ public class LxControlAlarm extends LxControl {
                 "Alarm armed", tags, this::handleArmAlarm, () -> getStateOnOffValue(STATE_ARMED));
 
         addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH),
-                defaultChannelLabel + " / Arm Delayed", "Delay of the alarm being armed", tags,
-                this::handleArmDelayedAlarm, () -> OnOffType.OFF);
+                defaultChannelLabel + " / Arm Delayed", "Arm with delay", tags, this::handleArmDelayedAlarm,
+                () -> OnOffType.OFF);
 
         addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_NUMBER),
                 defaultChannelLabel + " / Next Level", "ID of the next alarm level", tags, null,
