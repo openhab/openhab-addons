@@ -54,6 +54,5 @@
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.yamahareceiver.test</module>
     <module>org.openhab.binding.zoneminder</module>
-    <module>org.openhab.binding.zway</module>
   </modules>
 </project>
