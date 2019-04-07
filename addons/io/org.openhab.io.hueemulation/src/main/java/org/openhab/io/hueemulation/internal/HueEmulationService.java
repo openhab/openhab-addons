@@ -286,9 +286,12 @@ public class HueEmulationService implements ReadyTracker {
 
     @Override
     public synchronized void onReadyMarkerAdded(ReadyMarker readyMarker) {
-        if (started || !"org.eclipse.smarthome.model.core".equals(readyMarker.getIdentifier())) {
+        if (started || !("org.openhab.core.model.core".equals(readyMarker.getIdentifier()) || 
+			"org.eclipse.smarthome.model.core".equals(readyMarker.getIdentifier()))) {
+	    // logger.debug("onReadyMarkerAdded readyMarker: {}", readyMarker.getIdentifier());
             return;
         }
+	logger.debug("onReadyMarkerAdded started=true readyMarker: {}", readyMarker.getIdentifier());
 
         started = true;
         HttpContext httpContext = httpService.createDefaultHttpContext();
