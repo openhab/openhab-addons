@@ -53,5 +53,4 @@ public class EnturNoBindingConstants {
     public static final String ESTIMATED_FLAG_05 = "estimatedFlag05";
     public static final String CHANNEL_FRONT_DISPLAY = "frontDisplayText";
 
-
 }

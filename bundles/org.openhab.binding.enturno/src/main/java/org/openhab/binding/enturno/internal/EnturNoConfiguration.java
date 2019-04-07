@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class EnturNoConfiguration {
 
-    public @Nullable  String stopPlaceId;
+    public @Nullable String stopPlaceId;
 
     public @Nullable String getStopPlaceId() {
         return stopPlaceId;
@@ -35,7 +35,11 @@ public class EnturNoConfiguration {
 
     public @Nullable String lineCode;
 
-    public @Nullable String getLineCode() { return lineCode; }
+    public @Nullable String getLineCode() {
+        return lineCode;
+    }
 
-    public void setLineCode(String lineCode) { this.lineCode = lineCode; }
+    public void setLineCode(String lineCode) {
+        this.lineCode = lineCode;
+    }
 }

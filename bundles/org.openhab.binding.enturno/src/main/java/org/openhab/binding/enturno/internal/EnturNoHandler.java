@@ -12,7 +12,16 @@
  */
 package org.openhab.binding.enturno.internal;
 
-import com.google.gson.JsonSyntaxException;
+import java.nio.channels.Channel;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,22 +33,14 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.enturno.internal.connection.EnturCommunicationException;
 import org.openhab.binding.enturno.internal.connection.EnturConfigurationException;
 import org.openhab.binding.enturno.internal.connection.EnturNoConnection;
 import org.openhab.binding.enturno.internal.model.simplified.DisplayData;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link EnturNoHandler} is responsible for handling commands, which are
@@ -54,11 +55,9 @@ public class EnturNoHandler extends BaseThingHandler {
 
     private final HttpClient httpClient;
 
-    private @NonNullByDefault({})
-    EnturNoConfiguration config;
+    private @NonNullByDefault({}) EnturNoConfiguration config;
 
-    private @NonNullByDefault({})
-    EnturNoConnection connection;
+    private @NonNullByDefault({}) EnturNoConnection connection;
 
     private static final long INITIAL_DELAY_IN_SECONDS = 15;
 
@@ -258,7 +257,8 @@ public class EnturNoHandler extends BaseThingHandler {
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
             updateState(channelUID, state);
         } else {
-            logger.debug("No real-time data available to update channel '{}' of group '{}'.", channelId, channelGroupId);
+            logger.debug("No real-time data available to update channel '{}' of group '{}'.", channelId,
+                    channelGroupId);
         }
     }
 
@@ -288,16 +288,15 @@ public class EnturNoHandler extends BaseThingHandler {
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
             updateState(channelUID, state);
         } else {
-            logger.debug("No real-time data available to update channel '{}' of group '{}'.", channelId, channelGroupId);
+            logger.debug("No real-time data available to update channel '{}' of group '{}'.", channelId,
+                    channelGroupId);
         }
     }
 
     private State getDateTimeTypeState(@Nullable String value) {
         return (value == null) ? UnDefType.UNDEF
-                : new DateTimeType(
-                        ZonedDateTime.parse(
-                                value,
-                                DateTimeFormatter.ISO_DATE_TIME).withZoneSameInstant(ZoneId.of(EnturNoBindingConstants.TIME_ZONE)));
+                : new DateTimeType(ZonedDateTime.parse(value, DateTimeFormatter.ISO_DATE_TIME)
+                        .withZoneSameInstant(ZoneId.of(EnturNoBindingConstants.TIME_ZONE)));
     }
 
     private State getStringTypeState(@Nullable String value) {

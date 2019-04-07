@@ -12,26 +12,10 @@
  */
 package org.openhab.binding.enturno.internal.connection;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
-import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.enturno.internal.model.simplified.DisplayData;
-import org.openhab.binding.enturno.internal.model.stopplace.StopPlace;
-import org.openhab.binding.enturno.internal.EnturNoConfiguration;
-import org.openhab.binding.enturno.internal.EnturNoHandler;
-import org.openhab.binding.enturno.internal.model.EnturJsonData;
-import org.openhab.binding.enturno.internal.model.estimated.EstimatedCalls;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.stream.Collectors.groupingBy;
+import static org.eclipse.jetty.http.HttpMethod.POST;
+import static org.eclipse.jetty.http.HttpStatus.*;
+import static org.openhab.binding.enturno.internal.EnturNoBindingConstants.TIME_ZONE;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -45,12 +29,29 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
-import static org.eclipse.jetty.http.HttpMethod.POST;
-import static org.eclipse.jetty.http.HttpStatus.*;
-import static org.openhab.binding.enturno.internal.EnturNoBindingConstants.TIME_ZONE;
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.omg.CORBA.Request;
+import org.openhab.binding.enturno.internal.EnturNoConfiguration;
+import org.openhab.binding.enturno.internal.EnturNoHandler;
+import org.openhab.binding.enturno.internal.model.EnturJsonData;
+import org.openhab.binding.enturno.internal.model.estimated.EstimatedCalls;
+import org.openhab.binding.enturno.internal.model.simplified.DisplayData;
+import org.openhab.binding.enturno.internal.model.stopplace.StopPlace;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link EnturNoConnection} is responsible for handling connection to Entur.no API
@@ -92,7 +93,8 @@ public class EnturNoConnection {
      * @throws EnturCommunicationException
      * @throws EnturConfigurationException
      */
-    public synchronized ArrayList<DisplayData> getEnturTimeTable(@Nullable String stopPlaceId, @Nullable String lineCode)
+    public synchronized ArrayList<DisplayData> getEnturTimeTable(@Nullable String stopPlaceId,
+            @Nullable String lineCode)
             throws JsonSyntaxException, EnturConfigurationException, EnturCommunicationException {
         if (stopPlaceId == null || stopPlaceId.isEmpty()) {
             throw new EnturConfigurationException("Stop place id cannot be empty or null");
@@ -104,8 +106,10 @@ public class EnturNoConnection {
 
         EnturJsonData enturJsonData = gson.fromJson(getResponse(REALTIME_URL, params), EnturJsonData.class);
 
-        if (enturJsonData == null)
-            throw new EnturCommunicationException("Error when deserializing response to EnturJsonData.class", new NullPointerException());
+        if (enturJsonData == null) {
+            throw new EnturCommunicationException("Error when deserializing response to EnturJsonData.class",
+                    new NullPointerException());
+        }
 
         return processData(enturJsonData.getData().getStopPlace(), lineCode);
     }
@@ -121,7 +125,8 @@ public class EnturNoConnection {
     private String getResponse(String url, Map<String, String> params) {
         try {
             if (logger.isTraceEnabled()) {
-                logger.trace("Entur request: URL = '{}', graphQL parameters -> startTime = '{}', stopId = '{}'", REALTIME_URL, params.get(PARAM_START_DATE_TIME), params.get(PARAM_STOPID));
+                logger.trace("Entur request: URL = '{}', graphQL parameters -> startTime = '{}', stopId = '{}'",
+                        REALTIME_URL, params.get(PARAM_START_DATE_TIME), params.get(PARAM_STOPID));
             }
 
             Request request = httpClient.newRequest(url);
@@ -173,11 +178,10 @@ public class EnturNoConnection {
     private String getRequestBody(Map<String, String> params) {
         InputStream inputStream = EnturNoConnection.class.getClassLoader().getResourceAsStream(REQUEST_BODY);
 
-        String json = new BufferedReader(new InputStreamReader(inputStream))
-                .lines().collect(Collectors.joining("\n"));
+        String json = new BufferedReader(new InputStreamReader(inputStream)).lines().collect(Collectors.joining("\n"));
 
-        return json.replaceAll("\\{stopPlaceId}", "" + params.get(PARAM_STOPID)).
-                replaceAll("\\{startDateTime}", "" + params.get(PARAM_START_DATE_TIME));
+        return json.replaceAll("\\{stopPlaceId}", "" + params.get(PARAM_STOPID)).replaceAll("\\{startDateTime}",
+                "" + params.get(PARAM_START_DATE_TIME));
     }
 
     private ArrayList<DisplayData> processData(StopPlace stopPlace, String lineCode) {
@@ -201,20 +205,15 @@ public class EnturNoConnection {
         return processedData;
     }
 
-    private DisplayData getDisplayData(StopPlace stopPlace,
-                                       Map<String, List<EstimatedCalls>> departures,
-                                       int quayIndex) {
+    private DisplayData getDisplayData(StopPlace stopPlace, Map<String, List<EstimatedCalls>> departures,
+            int quayIndex) {
         ArrayList<String> keys = new ArrayList<>(departures.keySet());
         DisplayData processedData = new DisplayData();
         List<EstimatedCalls> quayCalls = departures.get(keys.get(quayIndex));
-        List<String> departureTimes = quayCalls.stream()
-                .map(EstimatedCalls::getExpectedDepartureTime)
-                .map(this::getIsoDateTime)
-                .collect(Collectors.toList());
+        List<String> departureTimes = quayCalls.stream().map(EstimatedCalls::getExpectedDepartureTime)
+                .map(this::getIsoDateTime).collect(Collectors.toList());
 
-        List<String> estimatedFlags = quayCalls.stream()
-                .map(EstimatedCalls::getRealtime)
-                .collect(Collectors.toList());
+        List<String> estimatedFlags = quayCalls.stream().map(EstimatedCalls::getRealtime).collect(Collectors.toList());
 
         if (quayCalls.size() > quayIndex) {
             String lineCode = quayCalls.get(0).getServiceJourney().getJourneyPattern().getLine().getPublicCode();
@@ -236,10 +235,7 @@ public class EnturNoConnection {
         String offset = StringUtils.substringAfterLast(dateTimeWithoutColonInZone, "+");
 
         StringBuilder builder = new StringBuilder();
-        return builder.append(dateTime)
-                .append("+")
-                .append(StringUtils.substring(offset, 0, 2))
-                .append(":00")
+        return builder.append(dateTime).append("+").append(StringUtils.substring(offset, 0, 2)).append(":00")
                 .toString();
     }
 }
