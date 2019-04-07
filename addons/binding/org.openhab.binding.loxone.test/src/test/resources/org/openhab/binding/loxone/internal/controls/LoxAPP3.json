@@ -701,6 +701,27 @@
 				"step": "132a7b7e-0022-3aa8-ffffd4d79adca7ff",
 				"value": "132a7b7e-0022-3aab-ffffd4d79adca7ff"
 			}
+		},
+		"131fb314-0370-c93c-ffff403fb0c34b9e": {
+			"name": "Slider Virtual Input",
+			"type": "Slider",
+			"uuidAction": "131fb314-0370-c93c-ffff403fb0c34b9e",
+			"room": "0b734138-037d-034e-ffff403fb0c34b9e",
+			"cat": "0fe650c2-0004-d446-ffff504f9410790f",
+			"defaultRating": 0,
+			"isFavorite": false,
+			"isSecured": false,
+			"defaultIcon": null,
+			"details": {
+				"format": "%.1f",
+				"min": 120.000,
+				"max": 450.000,
+				"step": 3.333
+			},
+			"states": {
+				"value": "131fb314-0370-c93c-ffff403fb0c34b9e",
+				"error": "131fb314-0370-c93b-ffff6a7be057af65"
+			}
 		}
 	},
 	"weatherServer": {
