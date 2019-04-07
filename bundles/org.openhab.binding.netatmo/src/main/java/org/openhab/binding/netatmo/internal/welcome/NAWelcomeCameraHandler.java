@@ -48,6 +48,7 @@ public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
         updateProperties(null, moduleData.getType());
     }
 
+    @SuppressWarnings("null")
     @Override
     protected State getNAThingProperty(String chanelId) {
         switch (chanelId) {
@@ -75,6 +76,7 @@ public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
      *
      * @return Url of the live snapshot
      */
+    @SuppressWarnings("null")
     private String getLivePictureURL() {
         if (livePictureURL == null && module != null && module.getVpnUrl() != null) {
             livePictureURL = module.getVpnUrl() + LIVE_PICTURE;
@@ -99,6 +101,7 @@ public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
         return liveStreamURL;
     }
 
+    @SuppressWarnings("null")
     private String getVpnUrl() {
         if (vpnUrl == null && module != null) {
             vpnUrl = module.getVpnUrl();

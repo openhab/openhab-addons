@@ -98,6 +98,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_PLANNING), options);
     }
 
+    @SuppressWarnings("null")
     @Override
     protected State getNAThingProperty(String channelId) {
         switch (channelId) {
@@ -144,12 +145,14 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
         return super.getNAThingProperty(channelId);
     }
 
+    @SuppressWarnings("null")
     private State getSetpoint() {
         return module != null
                 ? module.getSetpoint() != null ? toStringType(module.getSetpoint().getSetpointMode()) : UnDefType.NULL
                 : UnDefType.UNDEF;
     }
 
+    @SuppressWarnings("null")
     private State getCurrentSetpoint() {
         if (module != null && module.getSetpoint() != null) {
             NASetpoint setPoint = module.getSetpoint();
@@ -255,6 +258,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                     case CHANNEL_SETPOINT_TEMP: {
                         BigDecimal spTemp = null;
                         if (command instanceof QuantityType) {
+                            @SuppressWarnings("unchecked")
                             QuantityType<Temperature> quantity = ((QuantityType<Temperature>) command)
                                     .toUnit(API_TEMPERATURE_UNIT);
                             if (quantity != null) {
