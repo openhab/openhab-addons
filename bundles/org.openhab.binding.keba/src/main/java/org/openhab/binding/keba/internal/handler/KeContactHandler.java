@@ -289,8 +289,7 @@ public class KeContactHandler extends BaseThingHandler {
                                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_PRESET_CURRENT_RANGE),
                                         new PercentType((maxSystemCurrent - 6000) * 100 / (maxSystemCurrent - 6000)));
                             }
-                        }
-                        else {
+                        } else {
                             logger.debug("maxSystemCurrent is 0. Ignoring.");
                         }
                         break;
