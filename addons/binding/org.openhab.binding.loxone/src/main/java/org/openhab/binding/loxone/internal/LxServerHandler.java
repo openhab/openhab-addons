@@ -48,10 +48,10 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.binding.loxone.internal.controls.LxControl;
 import org.openhab.binding.loxone.internal.types.LxConfig;
-import org.openhab.binding.loxone.internal.types.LxState;
 import org.openhab.binding.loxone.internal.types.LxConfig.LxServerInfo;
 import org.openhab.binding.loxone.internal.types.LxErrorCode;
 import org.openhab.binding.loxone.internal.types.LxResponse;
+import org.openhab.binding.loxone.internal.types.LxState;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -450,11 +450,6 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
      * @param reason reason for going offline
      */
     void setOffline(LxErrorCode code, String reason) {
-        ThingStatus status = getThing().getStatus();
-        if (status == ThingStatus.OFFLINE) {
-            logger.debug("[{}] received offline request with code {}, but thing already offline.", debugId, code);
-            return;
-        }
         switch (code) {
             case TOO_MANY_FAILED_LOGIN_ATTEMPTS:
                 // assume credentials are wrong, do not re-attempt connections any time soon
