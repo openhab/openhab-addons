@@ -26,7 +26,6 @@ import org.openhab.binding.loxone.internal.controls.LxControl;
  *
  */
 public class LxContainer {
-
     private LxUuid uuid; // set by JSON deserialization
     private String name; // set by JSON deserialization
     private final Set<LxControl> controls;

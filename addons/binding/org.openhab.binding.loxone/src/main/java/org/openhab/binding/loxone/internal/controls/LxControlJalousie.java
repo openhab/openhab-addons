@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.loxone.internal.types.LxState;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,7 +185,7 @@ class LxControlJalousie extends LxControl {
      * Monitor jalousie position against desired target position and stop it if target position is reached.
      */
     @Override
-    public void onStateChange(LxControlState state) {
+    public void onStateChange(LxState state) {
         // check position changes
         if (STATE_POSITION.equals(state.getName()) && targetPosition != null && targetPosition >= 0
                 && targetPosition <= 1) {

@@ -47,8 +47,8 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.binding.loxone.internal.controls.LxControl;
-import org.openhab.binding.loxone.internal.controls.LxControlState;
 import org.openhab.binding.loxone.internal.types.LxConfig;
+import org.openhab.binding.loxone.internal.types.LxState;
 import org.openhab.binding.loxone.internal.types.LxConfig.LxServerInfo;
 import org.openhab.binding.loxone.internal.types.LxErrorCode;
 import org.openhab.binding.loxone.internal.types.LxResponse;
@@ -88,7 +88,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
     // State with a unique UUID can be configured in many controls and each control can even have a different name of
     // the state. It must be ensured that updates received for this state UUID are passed to all controls that have this
     // state UUID configured.
-    private Map<LxUuid, Map<LxUuid, LxControlState>> states = new HashMap<>();
+    private Map<LxUuid, Map<LxUuid, LxState>> states = new HashMap<>();
 
     private LxWebSocket socket;
     private WebSocketClient wsClient;
@@ -284,7 +284,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         LxUuid controlUuid = control.getUuid();
         control.getStates().values().forEach(state -> {
             LxUuid stateUuid = state.getUuid();
-            Map<LxUuid, LxControlState> perUuid = states.get(stateUuid);
+            Map<LxUuid, LxState> perUuid = states.get(stateUuid);
             if (perUuid != null) {
                 perUuid.remove(controlUuid);
                 if (perUuid.isEmpty()) {
@@ -434,7 +434,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
      * @param value a new value for this state
      */
     void updateStateValue(LxUuid uuid, Object value) {
-        Map<LxUuid, LxControlState> perStateUuid = states.get(uuid);
+        Map<LxUuid, LxState> perStateUuid = states.get(uuid);
         if (perStateUuid != null) {
             perStateUuid.forEach((controlUuid, state) -> {
                 state.setStateValue(value);
@@ -518,7 +518,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         LxUuid uuid = control.getUuid();
         logger.debug("[{}] Adding control to handler: {}, {}", debugId, uuid, control.getName());
         control.getStates().values().forEach(state -> {
-            Map<LxUuid, LxControlState> perUuid = states.get(state.getUuid());
+            Map<LxUuid, LxState> perUuid = states.get(state.getUuid());
             if (perUuid == null) {
                 perUuid = new HashMap<>();
                 states.put(state.getUuid(), perUuid);

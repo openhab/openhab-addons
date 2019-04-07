@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.loxone.internal.types.LxCategory;
 import org.openhab.binding.loxone.internal.types.LxContainer;
+import org.openhab.binding.loxone.internal.types.LxState;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -164,7 +165,7 @@ class LxControlTest {
     void changeLoxoneState(String stateName, Object value) {
         LxControl ctrl = getControl(controlUuid);
         assertNotNull(ctrl);
-        LxControlState state = ctrl.getStates().get(stateName);
+        LxState state = ctrl.getStates().get(stateName);
         assertNotNull(state);
         state.setStateValue(value);
     }

@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.loxone.internal.types.LxState;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,7 +155,7 @@ class LxControlLightControllerV2 extends LxControl {
      * @param state state update from the Miniserver
      */
     @Override
-    public void onStateChange(LxControlState state) {
+    public void onStateChange(LxState state) {
         String stateName = state.getName();
         Object value = state.getStateValue();
         try {

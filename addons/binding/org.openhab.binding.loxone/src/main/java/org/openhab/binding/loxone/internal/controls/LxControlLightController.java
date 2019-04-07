@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
+import org.openhab.binding.loxone.internal.types.LxState;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -136,7 +137,7 @@ class LxControlLightController extends LxControl {
      * Get scene names from new state value received from the Miniserver
      */
     @Override
-    public void onStateChange(LxControlState state) {
+    public void onStateChange(LxState state) {
         if (STATE_SCENE_LIST.equals(state.getName()) && channelId != null) {
             Object value = state.getStateValue();
             if (value instanceof String) {

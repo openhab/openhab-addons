@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.loxone.internal.types.LxState;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -181,7 +182,7 @@ public class LxControlAlarm extends LxControl {
     }
 
     @Override
-    void onStateChange(LxControlState state) {
+    public void onStateChange(LxState state) {
         String stateName = state.getName();
         if (STATE_START_TIME.equals(stateName)) {
             startTime = UnDefType.UNDEF;

@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.loxone.internal.controls;
+package org.openhab.binding.loxone.internal.types;
 
-import org.openhab.binding.loxone.internal.types.LxUuid;
+import org.openhab.binding.loxone.internal.controls.LxControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,11 +29,11 @@ import org.slf4j.LoggerFactory;
  * @author Pawel Pieczul - initial contribution
  *
  */
-public class LxControlState {
+public class LxState {
     private final LxUuid uuid;
     private final String name;
     private final LxControl control;
-    private final Logger logger = LoggerFactory.getLogger(LxControlState.class);
+    private final Logger logger = LoggerFactory.getLogger(LxState.class);
     private Object stateValue;
 
     /**
@@ -43,7 +43,7 @@ public class LxControlState {
      * @param name    name of the state
      * @param control control to which this state belongs
      */
-    LxControlState(LxUuid uuid, String name, LxControl control) {
+    public LxState(LxUuid uuid, String name, LxControl control) {
         this.uuid = uuid;
         this.name = name;
         this.control = control;
@@ -77,7 +77,7 @@ public class LxControlState {
      *
      * @return current state's value
      */
-    Object getStateValue() {
+    public Object getStateValue() {
         return stateValue;
     }
 
@@ -88,7 +88,7 @@ public class LxControlState {
      *
      * @return state's name
      */
-    String getName() {
+    public String getName() {
         return name;
     }
 }

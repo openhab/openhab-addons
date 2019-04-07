@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.StateDescription;
+import org.openhab.binding.loxone.internal.types.LxState;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,7 +168,7 @@ class LxControlValueSelector extends LxControl {
      * @param state state update from the Miniserver
      */
     @Override
-    public void onStateChange(LxControlState state) {
+    public void onStateChange(LxState state) {
         String stateName = state.getName();
         Object value = state.getStateValue();
         try {

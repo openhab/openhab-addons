@@ -37,6 +37,7 @@ import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.types.LxCategory;
 import org.openhab.binding.loxone.internal.types.LxConfig;
 import org.openhab.binding.loxone.internal.types.LxContainer;
+import org.openhab.binding.loxone.internal.types.LxState;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -178,7 +179,7 @@ public class LxControl {
     private Boolean isSecured;
     private LxUuid categoryUuid;
     private Map<LxUuid, LxControl> subControls;
-    private final Map<String, LxControlState> states;
+    private final Map<String, LxState> states;
 
     /*
      * Parameters set when finalizing {@link LxConfig} object setup. They will be null right after constructing object.
@@ -234,7 +235,7 @@ public class LxControl {
                         String value = element.getAsString();
                         if (value != null) {
                             String name = entry.getKey().toLowerCase();
-                            control.states.put(name, new LxControlState(new LxUuid(value), name, control));
+                            control.states.put(name, new LxState(new LxUuid(value), name, control));
                         }
                     }
                 });
@@ -333,7 +334,7 @@ public class LxControl {
      *
      * @return control's Miniserver states
      */
-    public Map<String, LxControlState> getStates() {
+    public Map<String, LxState> getStates() {
         return states;
     }
 
@@ -421,6 +422,28 @@ public class LxControl {
     }
 
     /**
+     * This method will be called from {@link LxState}, when Miniserver state value is updated.
+     * By default it will query all channels of the control and update their state accordingly.
+     * This method will not handle channel state descriptions, as they must be prepared individually.
+     * It can be overridden in child class to handle particular states differently.
+     *
+     * @param state changed Miniserver state or null if not specified (any/all)
+     */
+    public void onStateChange(LxState state) {
+        if (config == null) {
+            logger.error("Attempt to change state with not finalized configuration!: {}", state.getUuid());
+        } else {
+            channels.forEach(channel -> {
+                ChannelUID channelId = channel.getUID();
+                State channelState = getChannelState(channelId);
+                if (channelState != null) {
+                    config.thingHandler.setChannelState(channelId, channelState);
+                }
+            });
+        }
+    }
+
+    /**
      * Gets room UUID after it was deserialized by GSON
      *
      * @return room UUID
@@ -500,28 +523,6 @@ public class LxControl {
     }
 
     /**
-     * This method will be called from {@link LxControlState}, when Miniserver state value is updated.
-     * By default it will query all channels of the control and update their state accordingly.
-     * This method will not handle channel state descriptions, as they must be prepared individually.
-     * It can be overridden in child class to handle particular states differently.
-     *
-     * @param state changed Miniserver state or null if not specified (any/all)
-     */
-    void onStateChange(LxControlState state) {
-        if (config == null) {
-            logger.error("Attempt to change state with not finalized configuration!: {}", state.getUuid());
-        } else {
-            channels.forEach(channel -> {
-                ChannelUID channelId = channel.getUID();
-                State channelState = getChannelState(channelId);
-                if (channelState != null) {
-                    config.thingHandler.setChannelState(channelId, channelState);
-                }
-            });
-        }
-    }
-
-    /**
      * Changes the channel state in the framework.
      *
      * @param id    channel ID
@@ -554,7 +555,7 @@ public class LxControl {
      * @return state object's value
      */
     Double getStateDoubleValue(String name) {
-        LxControlState state = states.get(name);
+        LxState state = states.get(name);
         if (state != null) {
             Object value = state.getStateValue();
             if (value instanceof Double) {
@@ -585,7 +586,7 @@ public class LxControl {
      * @return state object's text value
      */
     String getStateTextValue(String name) {
-        LxControlState state = states.get(name);
+        LxState state = states.get(name);
         if (state != null) {
             Object value = state.getStateValue();
             if (value instanceof String) {
