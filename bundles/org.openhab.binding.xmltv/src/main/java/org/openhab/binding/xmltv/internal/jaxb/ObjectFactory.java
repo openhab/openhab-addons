@@ -17,23 +17,15 @@ import javax.xml.bind.annotation.XmlRegistry;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * This object contains factory methods for each
- * Java content interface and Java element interface
- * generated in the org.openhab.binding.xmltv.internal.jaxb package.
+ * This object contains factory methods for each Java content
+ * interface and Java element interface generated in the
+ * org.openhab.binding.xmltv.internal.jaxb package.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @XmlRegistry
 @NonNullByDefault
 public class ObjectFactory {
-
-    /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package:
-     * org.openhab.binding.xmltv.internal.jaxb
-     *
-     */
-    public ObjectFactory() {
-    }
 
     /**
      * Create an instance of {@link Tv }

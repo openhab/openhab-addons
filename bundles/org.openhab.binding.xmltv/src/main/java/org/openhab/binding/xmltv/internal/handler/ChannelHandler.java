@@ -221,7 +221,7 @@ public class ChannelHandler extends BaseThingHandler {
 
                         double progress = 100.0 * secondsElapsed1 / secondsLength;
                         if (progress > 100 || progress < 0) {
-                            logger.info("Outstanding process");
+                            logger.debug("Outstanding process");
                         }
                         updateState(channelUID, new QuantityType<>(progress, SmartHomeUnits.PERCENT));
 

@@ -52,11 +52,8 @@ public class XmlTVHandler extends BaseBridgeHandler {
     private final XMLInputFactory xif = XMLInputFactory.newFactory();
     private final JAXBContext jc;
 
-    @Nullable
-    private Tv currentXmlFile;
-
-    @NonNullByDefault({})
-    private ScheduledFuture<?> reloadJob = null;
+    private @Nullable Tv currentXmlFile;
+    private @NonNullByDefault({}) ScheduledFuture<?> reloadJob;
 
     public XmlTVHandler(Bridge thing) throws JAXBException {
         super(thing);
@@ -70,26 +67,21 @@ public class XmlTVHandler extends BaseBridgeHandler {
         logger.debug("Initializing {} for input file '{}'", getClass(), config.filePath);
 
         reloadJob = scheduler.scheduleWithFixedDelay(() -> {
-            StreamSource source = new StreamSource(config.filePath);
+            final StreamSource source = new StreamSource(config.filePath);
             currentXmlFile = null;
+            XMLStreamReader xsr;
             try {
                 // This can take some seconds depending upon weight of the XmlTV source file
-                XMLStreamReader xsr = xif.createXMLStreamReader(source);
+                xsr = xif.createXMLStreamReader(source);
                 Unmarshaller unmarshaller = jc.createUnmarshaller();
                 Tv xmlFile = (Tv) unmarshaller.unmarshal(xsr);
 
                 // Remove all finished programmes
                 xmlFile.getProgrammes().removeIf(programme -> Instant.now().isAfter(programme.getProgrammeStop()));
 
-                // Sort programmes by starting instant
-                Collections.sort(xmlFile.getProgrammes(), new Comparator<Programme>() {
-                    @Override
-                    public int compare(Programme programme2, Programme programme1) {
-                        return programme2.getProgrammeStart().compareTo(programme1.getProgrammeStart());
-                    }
-                });
-
                 if (xmlFile.getProgrammes().size() > 0) {
+                    // Sort programmes by starting instant
+                    Collections.sort(xmlFile.getProgrammes(), Comparator.comparing(Programme::getProgrammeStart));
                     // Ready to deliver data to ChannelHandlers
                     currentXmlFile = xmlFile;
                     updateStatus(ThingStatus.ONLINE);
@@ -106,7 +98,7 @@ public class XmlTVHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Running dispose()");
+        logger.debug("Running dispose");
         if (reloadJob != null && !reloadJob.isCancelled()) {
             reloadJob.cancel(true);
             reloadJob = null;
