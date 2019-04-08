@@ -75,6 +75,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private static final String PROPERTY_CANREBOOT = "canreboot";
     private static final String PROPERTY_CANSHUTDOWN = "canshutdown";
     private static final String PROPERTY_CANSUSPEND = "cansuspend";
+    private static final String PROPERTY_UNIQUEID = "uniqueid";
 
     private final Logger logger = LoggerFactory.getLogger(KodiConnection.class);
 
@@ -474,7 +475,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private void requestPlayerItemUpdate(int activePlayer) {
         final String[] properties = { "title", "album", "artist", "director", PROPERTY_THUMBNAIL, "file",
-                PROPERTY_FANART, "showtitle", "streamdetails", "channel", "channeltype", "genre" };
+                PROPERTY_FANART, "showtitle", "streamdetails", "channel", "channeltype", "genre",PROPERTY_UNIQUEID };
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
