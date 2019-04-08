@@ -21,8 +21,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
-import org.eclipse.jdt.annotation.NonNull;
-
 /**
  * Java class for an icon XML element
  *
@@ -44,7 +42,7 @@ public class Icon {
     @XmlSchemaType(name = "positiveInteger")
     protected BigInteger height;
 
-    public @NonNull String getSrc() {
+    public String getSrc() {
         return src;
     }
 

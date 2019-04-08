@@ -58,7 +58,7 @@ public class XmlTVHandler extends BaseBridgeHandler {
     public XmlTVHandler(Bridge thing) throws JAXBException {
         super(thing);
         xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-        jc = JAXBContext.newInstance(Tv.class.getPackage().getName());
+        jc = JAXBContext.newInstance(Tv.class);
     }
 
     @Override
@@ -69,29 +69,41 @@ public class XmlTVHandler extends BaseBridgeHandler {
         reloadJob = scheduler.scheduleWithFixedDelay(() -> {
             final StreamSource source = new StreamSource(config.filePath);
             currentXmlFile = null;
-            XMLStreamReader xsr;
+            XMLStreamReader xsr = null;
             try {
                 // This can take some seconds depending upon weight of the XmlTV source file
                 xsr = xif.createXMLStreamReader(source);
-                Unmarshaller unmarshaller = jc.createUnmarshaller();
-                Tv xmlFile = (Tv) unmarshaller.unmarshal(xsr);
 
-                // Remove all finished programmes
-                xmlFile.getProgrammes().removeIf(programme -> Instant.now().isAfter(programme.getProgrammeStop()));
+                try {
+                    Unmarshaller unmarshaller = jc.createUnmarshaller();
+                    Tv xmlFile = (Tv) unmarshaller.unmarshal(xsr);
+                    // Remove all finished programmes
+                    xmlFile.getProgrammes().removeIf(programme -> Instant.now().isAfter(programme.getProgrammeStop()));
 
-                if (xmlFile.getProgrammes().size() > 0) {
-                    // Sort programmes by starting instant
-                    Collections.sort(xmlFile.getProgrammes(), Comparator.comparing(Programme::getProgrammeStart));
-                    // Ready to deliver data to ChannelHandlers
-                    currentXmlFile = xmlFile;
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, "XMLTV file seems outdated");
+                    if (xmlFile.getProgrammes().size() > 0) {
+                        // Sort programmes by starting instant
+                        Collections.sort(xmlFile.getProgrammes(), Comparator.comparing(Programme::getProgrammeStart));
+                        // Ready to deliver data to ChannelHandlers
+                        currentXmlFile = xmlFile;
+                        updateStatus(ThingStatus.ONLINE);
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, "XMLTV file seems outdated");
+                    }
+                    xsr.close();
+                } catch (JAXBException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
                 }
-            } catch (JAXBException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
+
             } catch (XMLStreamException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            } finally {
+                try {
+                    if (xsr != null) {
+                        xsr.close();
+                    }
+                } catch (XMLStreamException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                }
             }
         }, 0, config.refresh, TimeUnit.HOURS);
     }
