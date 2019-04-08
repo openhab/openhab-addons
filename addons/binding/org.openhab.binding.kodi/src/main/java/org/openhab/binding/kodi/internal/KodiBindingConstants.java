@@ -67,6 +67,7 @@ public class KodiBindingConstants {
     public static final String CHANNEL_SHOWTITLE = "showtitle";
     public static final String CHANNEL_ALBUM = "album";
     public static final String CHANNEL_MEDIATYPE = "mediatype";
+    public static final String CHANNEL_MEDIAID = "mediaid";
     public static final String CHANNEL_GENRELIST = "genreList";
     public static final String CHANNEL_PVR_CHANNEL = "pvr-channel";
     public static final String CHANNEL_THUMBNAIL = "thumbnail";
@@ -76,6 +77,9 @@ public class KodiBindingConstants {
     public static final String CHANNEL_CURRENTTIME = "currenttime";
     public static final String CHANNEL_CURRENTTIMEPERCENTAGE = "currenttimepercentage";
     public static final String CHANNEL_DURATION = "duration";
+    public static final String CHANNEL_UNIQUEID = "uniqueid";
+    public static final String CHANNEL_UNIQUEID_TYPE = "uniqueid_type";  
+    public static final String CHANNEL_UNIQUEID_VALUE = "uniqueid_value";  
 
     // Module Properties
     public static final String PROPERTY_VERSION = "version";
