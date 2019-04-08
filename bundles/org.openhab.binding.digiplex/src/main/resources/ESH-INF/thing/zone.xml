@@ -1,104 +1,105 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="digiplex" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-	
+<thing:thing-descriptions bindingId="digiplex"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
 	<thing-type id="zone" listed="false">
-	   <supported-bridge-type-refs>
-	       <bridge-type-ref id="bridge"/>
-	   </supported-bridge-type-refs>
-	   <label>Zone</label>
-        <description>Zone</description>
-        <channels>
-            <channel typeId="status" id="status"/>
-            <channel typeId="extended_status" id="extended_status"/>
-            <channel typeId="alarm" id="alarm"/>
-            <channel typeId="fire_alarm" id="fire_alarm"/>
-            <channel typeId="supervision_lost" id="supervision_lost"/>
-            <channel typeId="low_battery" id="low_battery"/>
-            <channel typeId="last_triggered" id="last_triggered"/>
-        </channels>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Zone</label>
+		<description>Zone</description>
+		<channels>
+			<channel typeId="status" id="status" />
+			<channel typeId="extended_status" id="extended_status" />
+			<channel typeId="alarm" id="alarm" />
+			<channel typeId="fire_alarm" id="fire_alarm" />
+			<channel typeId="supervision_lost" id="supervision_lost" />
+			<channel typeId="low_battery" id="low_battery" />
+			<channel typeId="last_triggered" id="last_triggered" />
+		</channels>
 	</thing-type>
 
 	<channel-type id="status">
-        <item-type>Contact</item-type>
-        <label>Zone Status</label>
-        <description>Zone Status (Open/Closed)</description>
-        <state readOnly="true">
-            <options>
-                <option value="CLOSED">Closed</option>
-                <option value="OPEN">Open</option>
-            </options>
-        </state>
-    </channel-type>
+		<item-type>Contact</item-type>
+		<label>Zone Status</label>
+		<description>Zone Status (Open/Closed)</description>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">Closed</option>
+				<option value="OPEN">Open</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="extended_status">
-        <item-type>String</item-type>
-        <label>Extended zone status</label>
-        <description>Indicates actual zone state as a string</description>
-        <state readOnly="true">
-            <options>
-                <option value="CLOSED">Closed</option>
-                <option value="OPEN">Open</option>
-                <option value="TAMPERED">Tampered</option>
-                <option value="FIRE_LOOP_TROUBLE">Fire Loop Trouble</option>
-            </options>
-        </state>    
-    </channel-type>
+	<channel-type id="extended_status">
+		<item-type>String</item-type>
+		<label>Extended zone status</label>
+		<description>Indicates actual zone state as a string</description>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">Closed</option>
+				<option value="OPEN">Open</option>
+				<option value="TAMPERED">Tampered</option>
+				<option value="FIRE_LOOP_TROUBLE">Fire Loop Trouble</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="alarm">
-        <item-type>Contact</item-type>
-        <label>Alarm triggered</label>
-        <description>Indicates if zone is in alarm</description>
-        <state readOnly="true">
-            <options>
-                <option value="CLOSED">No</option>
-                <option value="OPEN">Yes</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="alarm">
+		<item-type>Contact</item-type>
+		<label>Alarm triggered</label>
+		<description>Indicates if zone is in alarm</description>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">No</option>
+				<option value="OPEN">Yes</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="fire_alarm">
-        <item-type>Contact</item-type>
-        <label>Fire alarm triggered</label>
-        <description>Indicates if zone is in fire alarm</description>
-        <state readOnly="true">
-            <options>
-                <option value="CLOSED">No</option>
-                <option value="OPEN">Yes</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="fire_alarm">
+		<item-type>Contact</item-type>
+		<label>Fire alarm triggered</label>
+		<description>Indicates if zone is in fire alarm</description>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">No</option>
+				<option value="OPEN">Yes</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="supervision_lost">
-        <item-type>Contact</item-type>
-        <label>Supervision lost</label>
-        <description>Indicates if zone has lost a supervision</description>
-        <state readOnly="true">
-            <options>
-                <option value="CLOSED">No</option>
-                <option value="OPEN">Yes</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="supervision_lost">
+		<item-type>Contact</item-type>
+		<label>Supervision lost</label>
+		<description>Indicates if zone has lost a supervision</description>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">No</option>
+				<option value="OPEN">Yes</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="low_battery">
-        <item-type>Contact</item-type>
-        <label>Low battery warning</label>
-        <description>Indicates if zone is low on battery</description>
-        <state readOnly="true">
-            <options>
-                <option value="CLOSED">No</option>
-                <option value="OPEN">Yes</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="low_battery">
+		<item-type>Contact</item-type>
+		<label>Low battery warning</label>
+		<description>Indicates if zone is low on battery</description>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">No</option>
+				<option value="OPEN">Yes</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="last_triggered">
-        <item-type>DateTime</item-type>
-        <label>Last triggered time</label>
-        <description>Indicates when the zone has been triggered for the last time</description>
-        <state readOnly="true"/>
-    </channel-type>
+	<channel-type id="last_triggered">
+		<item-type>DateTime</item-type>
+		<label>Last triggered time</label>
+		<description>Indicates when the zone has been triggered for the last time</description>
+		<state readOnly="true" />
+	</channel-type>
 
 </thing:thing-descriptions>
