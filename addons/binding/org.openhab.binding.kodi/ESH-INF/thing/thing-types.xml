@@ -413,18 +413,11 @@
 	</channel-type>
 	
 	<!-- Kodi uniqueid variables -- m17 added -->
-	<channel-type id="uniqueid_media_id">
+	<channel-type id="mediaid">
 		<item-type>Number</item-type>
 		<label>media id</label>
 		<description>media id in table uniqueid</description>
 		<state readOnly="true" pattern="%d" />
-	</channel-type>	
-	
-	<channel-type id="uniqueid_media_type">
-		<item-type>String</item-type>
-		<label>Media Type</label>
-		<description>Media type in table uniqueid</description>
-		<state readOnly="true" pattern="%s"></state>
 	</channel-type>	
 
 	<channel-type id="uniqueid_type">
@@ -434,7 +427,7 @@
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>		
 	
-	<channel-type id="uniqueid_id">
+	<channel-type id="uniqueid">
 		<item-type>Number</item-type>
 		<label>unique id</label>
 		<description>unique id in table uniqueid</description>
