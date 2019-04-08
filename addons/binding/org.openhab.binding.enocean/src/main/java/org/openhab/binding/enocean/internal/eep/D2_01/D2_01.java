@@ -116,7 +116,7 @@ public abstract class D2_01 extends _VLDMessage {
         }
 
         EnOceanChannelDimmerConfig c = config.as(EnOceanChannelDimmerConfig.class);
-        byte rampingTime = (c.rampingTime == null) ? Zero : c.rampingTime.byteValue();
+        byte rampingTime = Integer.valueOf(c.rampingTime).byteValue();
 
         setData(CMD_ACTUATOR_SET_STATUS, (byte) ((rampingTime << 5) | outputChannel), outputValue);
     }
