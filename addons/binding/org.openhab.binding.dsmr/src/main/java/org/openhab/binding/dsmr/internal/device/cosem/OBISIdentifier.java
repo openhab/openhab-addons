@@ -189,7 +189,7 @@ public class OBISIdentifier {
     }
 
     /**
-     * Checks whether this OBIS Identifer and the other identifer equals taking the wildcards into account
+     * Checks whether this OBIS Identifier and the other identifier equals taking the wildcards into account
      *
      * @param o OBISIdentifier to compare to
      *
@@ -216,15 +216,15 @@ public class OBISIdentifier {
 
     @Override
     public int hashCode() {
-        return Objects.hash(groupA, ((groupB == null) ? 0 : groupB), groupC, groupD, ((groupE == null) ? 0 : groupE),
-                ((groupF == null) ? 0 : groupF));
+        return Objects.hash(groupA, (groupB != null ? groupB : 0), groupC, groupD, (groupE != null ? groupE : 0),
+                (groupF != null ? groupF : 0));
     }
 
     /**
      * Returns an reduced OBIS Identifier. This means group F is set to null
      * (.i.e. not applicable)
      *
-     * @return reduced OBIS Identifer
+     * @return reduced OBIS Identifier
      */
     public OBISIdentifier getReducedOBISIdentifier() {
         return new OBISIdentifier(groupA, groupB, groupC, groupD, groupE, null);
