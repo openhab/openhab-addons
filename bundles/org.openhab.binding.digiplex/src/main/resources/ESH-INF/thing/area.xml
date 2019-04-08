@@ -1,141 +1,142 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="digiplex" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-	
-    <thing-type id="area" listed="false">
-       <supported-bridge-type-refs>
-           <bridge-type-ref id="bridge"/>
-       </supported-bridge-type-refs>
-       <label>Area</label>
-        <description>Area</description>
-        <channels>
-            <channel typeId="area_status" id="status"/>
-            <channel typeId="area_armed" id="armed"/>
-            <channel typeId="zone_in_memory" id="zone_in_memory"/>
-            <channel typeId="trouble" id="trouble"/>
-            <channel typeId="ready" id="ready"/>
-            <channel typeId="in_programming" id="in_programming"/>
-            <channel typeId="alarm" id="alarm"/>
-            <channel typeId="strobe" id="strobe"/>
-            <channel typeId="control" id="control"/>
-        </channels>
-        <config-description>
-            <parameter name="refreshPeriod" type="integer">
-                <label>Refresh time of area status (in seconds)</label>
-                <description>Controls how often area status will be refreshed from the PRT3 module</description>
-                <default>60</default>
-            </parameter>
-        </config-description>
-    </thing-type>
+<thing:thing-descriptions bindingId="digiplex"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="area" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+		<label>Area</label>
+		<description>Area</description>
+		<channels>
+			<channel typeId="area_status" id="status" />
+			<channel typeId="area_armed" id="armed" />
+			<channel typeId="zone_in_memory" id="zone_in_memory" />
+			<channel typeId="trouble" id="trouble" />
+			<channel typeId="ready" id="ready" />
+			<channel typeId="in_programming" id="in_programming" />
+			<channel typeId="alarm" id="alarm" />
+			<channel typeId="strobe" id="strobe" />
+			<channel typeId="control" id="control" />
+		</channels>
+		<config-description>
+			<parameter name="refreshPeriod" type="integer">
+				<label>Refresh time of area status (in seconds)</label>
+				<description>Controls how often area status will be refreshed from the PRT3 module</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 
 	<channel-type id="area_status">
-        <item-type>String</item-type>
-        <label>Area Status</label>
-        <description>Area Status as received from 'Area Status Request'</description>
-        <state readOnly="true">
-            <options>
-                <option value="DISARMED">Disarmed</option>
-                <option value="ARMED">Armed</option>
-                <option value="ARMED_FORCE">Force armed</option>
-                <option value="ARMED_STAY">Stay armed</option>
-                <option value="ARMED_INSTANT">Instant armed</option>
-            </options>
-        </state>
-    </channel-type>
+		<item-type>String</item-type>
+		<label>Area Status</label>
+		<description>Area Status as received from 'Area Status Request'</description>
+		<state readOnly="true">
+			<options>
+				<option value="DISARMED">Disarmed</option>
+				<option value="ARMED">Armed</option>
+				<option value="ARMED_FORCE">Force armed</option>
+				<option value="ARMED_STAY">Stay armed</option>
+				<option value="ARMED_INSTANT">Instant armed</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="area_armed">
-        <item-type>Contact</item-type>
-        <label>Area armed</label>
-        <description>Indicates if area is armed</description>
-        <state readOnly="true">
-            <options>
-                <option value="CLOSED">Ok</option>
-                <option value="OPEN">Armed</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="area_armed">
+		<item-type>Contact</item-type>
+		<label>Area armed</label>
+		<description>Indicates if area is armed</description>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">Ok</option>
+				<option value="OPEN">Armed</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="zone_in_memory">
-        <item-type>Contact</item-type>
-        <label>Zone in memory</label>
-        <state readOnly="true">
-            <options>
-                <option value="CLOSED">Ok</option>
-                <option value="OPEN">Zone in memory</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="zone_in_memory">
+		<item-type>Contact</item-type>
+		<label>Zone in memory</label>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">Ok</option>
+				<option value="OPEN">Zone in memory</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="trouble">
-        <item-type>Contact</item-type>
-        <label>Trouble</label>
-        <state readOnly="true">
-            <options>
-                <option value="CLOSED">Ok</option>
-                <option value="OPEN">Trouble</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="trouble">
+		<item-type>Contact</item-type>
+		<label>Trouble</label>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">Ok</option>
+				<option value="OPEN">Trouble</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="ready">
-        <item-type>Contact</item-type>
-        <label>Area Ready</label>
-        <description>Indicates if area is ready (no open zones)</description>
-        <state readOnly="true">
-            <options>
-                <option value="CLOSED">Ready</option>
-                <option value="OPEN">Not ready</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="ready">
+		<item-type>Contact</item-type>
+		<label>Area Ready</label>
+		<description>Indicates if area is ready (no open zones)</description>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">Ready</option>
+				<option value="OPEN">Not ready</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="in_programming">
-        <item-type>Contact</item-type>
-        <label>Area in programming mode</label>
-        <description>Indicates if area is in the programming mode</description>
-        <state readOnly="true">
-            <options>
-                <option value="CLOSED">Ok</option>
-                <option value="OPEN">In programming mode</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="in_programming">
+		<item-type>Contact</item-type>
+		<label>Area in programming mode</label>
+		<description>Indicates if area is in the programming mode</description>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">Ok</option>
+				<option value="OPEN">In programming mode</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="alarm">
-        <item-type>Contact</item-type>
-        <label>Area in alarm</label>
-        <description>Indicates if area is in alarm</description>
-        <state readOnly="true">
-            <options>
-                <option value="CLOSED">Ok</option>
-                <option value="OPEN">Alarm</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="alarm">
+		<item-type>Contact</item-type>
+		<label>Area in alarm</label>
+		<description>Indicates if area is in alarm</description>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">Ok</option>
+				<option value="OPEN">Alarm</option>
+			</options>
+		</state>
+	</channel-type>
 
-    <channel-type id="strobe">
-        <item-type>Contact</item-type>
-        <label>Strobe</label>
-        <state readOnly="true">
-            <options>
-                <option value="CLOSED">Ok</option>
-                <option value="OPEN">Strobe</option>
-            </options>
-        </state>
-    </channel-type>
-    
-    <channel-type id="control">
-        <item-type>String</item-type>
-        <label>Control Alarm System</label>
-        <description>Used to control area status. By reading its state one can check result of the last command sent to the alarm system.</description>
-        <state>
-            <options>
-                <option value="OK">Ok</option>
-                <option value="FAIL">Fail</option>
-            </options>
-        </state>
-    </channel-type>
+	<channel-type id="strobe">
+		<item-type>Contact</item-type>
+		<label>Strobe</label>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">Ok</option>
+				<option value="OPEN">Strobe</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="control">
+		<item-type>String</item-type>
+		<label>Control Alarm System</label>
+		<description>Used to control area status. By reading its state one can check result of the last command sent to the alarm system.</description>
+		<state>
+			<options>
+				<option value="OK">Ok</option>
+				<option value="FAIL">Fail</option>
+			</options>
+		</state>
+	</channel-type>
 
 </thing:thing-descriptions>
