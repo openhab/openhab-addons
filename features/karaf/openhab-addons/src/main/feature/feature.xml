@@ -658,7 +658,9 @@
 
     <feature name="openhab-binding-orvibo" description="Orvibo Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.orvibo/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.slf4j/slf4j-api/${slf4j.version}</bundle>
+        <bundle dependency="true">mvn:org.slf4j/slf4j-simple/${slf4j.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.orvibo/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-pentair" description="Pentair Binding" version="${project.version}">

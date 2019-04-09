@@ -42,7 +42,6 @@
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.onewiregpio</module>
     <module>org.openhab.binding.onkyo</module>
-    <module>org.openhab.binding.orvibo</module>
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.smartmeter</module>
     <module>org.openhab.binding.smartmeter.test</module>
