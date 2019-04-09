@@ -64,7 +64,7 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
      * This factor is multiplied with the {@link #baudrateSwitchTimeoutSeconds} and used as the duration the discovery
      * of the baudrate may take.
      */
-    private static final int DISCOVER_TIMEOUT_FACTOR = 4;
+    private static final long DISCOVER_TIMEOUT_FACTOR = 4L;
 
     /*
      * Februari 2017
@@ -127,16 +127,19 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
      * @param serialPortManager the manager to get a new serial port connecting from
      * @param serialPortName the port name (e.g. /dev/ttyUSB0 or COM1)
      * @param listener the parent {@link DSMREventListener}
+     * @param telegramListener listener to report found telegrams or errors
      * @param scheduler the scheduler to use with the baudrate switching timers
      * @param baudrateSwitchTimeoutSeconds timeout period for when to try other baudrate settings and end the discovery
      *            of the baudrate
      */
     public DSMRSerialAutoDevice(SerialPortManager serialPortManager, String serialPortName, DSMREventListener listener,
-            ScheduledExecutorService scheduler, int baudrateSwitchTimeoutSeconds) {
+            DSMRTelegramListener telegramListener, ScheduledExecutorService scheduler,
+            int baudrateSwitchTimeoutSeconds) {
         this.parentListener = listener;
         this.scheduler = scheduler;
         this.baudrateSwitchTimeoutSeconds = baudrateSwitchTimeoutSeconds;
-        telegramListener = new DSMRTelegramListener(listener);
+        this.telegramListener = telegramListener;
+        telegramListener.setDsmrEventListener(listener);
         dsmrConnector = new DSMRSerialConnector(serialPortManager, serialPortName, telegramListener);
         logger.debug("Initialized port '{}'", serialPortName);
     }

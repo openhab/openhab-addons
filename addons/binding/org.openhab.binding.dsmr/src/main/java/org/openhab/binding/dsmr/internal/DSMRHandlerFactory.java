@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dsmr.internal;
 
+import static org.openhab.binding.dsmr.internal.DSMRBindingConstants.*;
+
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -68,7 +70,7 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
      */
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        if (thingTypeUID.equals(DSMRBindingConstants.THING_TYPE_DSMR_BRIDGE)) {
+        if (THING_TYPE_DSMR_BRIDGE.equals(thingTypeUID) || THING_TYPE_SMARTY_BRIDGE.equals(thingTypeUID)) {
             logger.debug("DSMR Bridge Thing {} supported", thingTypeUID);
             return true;
         } else {
@@ -97,7 +99,7 @@ public class DSMRHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         logger.debug("Searching for thingTypeUID {}", thingTypeUID);
 
-        if (DSMRBindingConstants.THING_TYPE_DSMR_BRIDGE.equals(thingTypeUID)) {
+        if (THING_TYPE_DSMR_BRIDGE.equals(thingTypeUID) || THING_TYPE_SMARTY_BRIDGE.equals(thingTypeUID)) {
             DSMRBridgeHandler handler = new DSMRBridgeHandler((Bridge) thing, serialPortManager);
             registerDiscoveryService(handler);
             return handler;
