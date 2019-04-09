@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author M. Volaart - Initial contribution
  * @author Hilbrand Bouwkamp - Class now a factory instead of data containing class
  */
+@NonNullByDefault
 class CosemDate extends CosemValueDescriptor<DateTimeType> {
 
     public static final CosemDate INSTANCE = new CosemDate("timestamp");

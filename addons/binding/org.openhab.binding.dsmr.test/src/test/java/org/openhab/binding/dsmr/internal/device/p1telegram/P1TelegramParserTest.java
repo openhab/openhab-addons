@@ -45,7 +45,7 @@ public class P1TelegramParserTest {
             { "Landis_Gyr_E350", 10, },
             { "Landis_Gyr_ZCF110", 25, },
             { "Sagemcom_XS210", 41, },
-
+            { "smarty", 24, },
         });
     }
     // @formatter:on
@@ -59,7 +59,8 @@ public class P1TelegramParserTest {
     @Test
     public void testParsing() {
         P1Telegram telegram = TelegramReaderUtil.readTelegram(telegramName, TelegramState.OK);
+        assertEquals("Should not have any unknown cosem objects", 0, telegram.getUnknownCosemObjects().size());
         assertEquals("Expected number of objects", numberOfCosemObjects,
-            telegram.getCosemObjects().stream().mapToInt(o -> o.getCosemValues().size()).sum());
+                telegram.getCosemObjects().stream().mapToInt(co -> co.getCosemValues().size()).sum());
     }
 }

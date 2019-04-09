@@ -268,11 +268,34 @@ public enum DSMRMeterType {
     /** DSMR V5.0 Slave Electricity meter */
     SLAVE_ELECTRICITY_V5_0(DSMRMeterKind.SLAVE_ELECTRICITY1, CosemObjectType.METER_EQUIPMENT_IDENTIFIER,
             CosemObjectType.METER_DEVICE_TYPE, CosemObjectType.METER_EQUIPMENT_IDENTIFIER,
-            CosemObjectType.EMETER_VALUE);
+            CosemObjectType.EMETER_VALUE),
+
+    /** Luxembourg "Smarty" V1.0 Electricity meter */
+    ELECTRICITY_SMARTY_V1_0(DSMRMeterKind.MAIN_ELECTRICITY, CosemObjectType.EMETER_EQUIPMENT_IDENTIFIER_V2_X,
+            new CosemObjectType[] {
+                    CosemObjectType.EMETER_EQUIPMENT_IDENTIFIER_V2_X, CosemObjectType.EMETER_DELIVERY_TARIFF0,
+                    CosemObjectType.EMETER_PRODUCTION_TARIFF0, CosemObjectType.EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_Q,
+                    CosemObjectType.EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_Q, CosemObjectType.EMETER_ACTUAL_DELIVERY,
+                    CosemObjectType.EMETER_ACTUAL_PRODUCTION, CosemObjectType.EMETER_ACTUAL_REACTIVE_DELIVERY,
+                    CosemObjectType.EMETER_ACTUAL_REACTIVE_PRODUCTION, CosemObjectType.EMETER_ACTIVE_THRESHOLD_SMAX,
+                    CosemObjectType.EMETER_SWITCH_POSITION },
+            new CosemObjectType[] {
+                    CosemObjectType.EMETER_POWER_FAILURES, CosemObjectType.EMETER_VOLTAGE_SAGS_L1,
+                    CosemObjectType.EMETER_VOLTAGE_SAGS_L2, CosemObjectType.EMETER_VOLTAGE_SAGS_L3,
+                    CosemObjectType.EMETER_VOLTAGE_SWELLS_L1, CosemObjectType.EMETER_VOLTAGE_SWELLS_L2,
+                    CosemObjectType.EMETER_VOLTAGE_SWELLS_L3, CosemObjectType.EMETER_INSTANT_CURRENT_L1,
+                    CosemObjectType.EMETER_INSTANT_CURRENT_L2, CosemObjectType.EMETER_INSTANT_CURRENT_L3,
+                    CosemObjectType.EMETER_INSTANT_POWER_DELIVERY_L1, CosemObjectType.EMETER_INSTANT_POWER_DELIVERY_L2,
+                    CosemObjectType.EMETER_INSTANT_POWER_DELIVERY_L3, CosemObjectType.EMETER_INSTANT_POWER_PRODUCTION_L1,
+                    CosemObjectType.EMETER_INSTANT_POWER_PRODUCTION_L2, CosemObjectType.EMETER_INSTANT_POWER_PRODUCTION_L3,
+                    CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L1, CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L2,
+                    CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L3, CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L1,
+                    CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L2, CosemObjectType.EMETER_INSTANT_REACTIVE_POWER_PRODUCTION_L3,
+                    });
     // @formatter:on
 
     public static final Set<ThingTypeUID> METER_THING_TYPES = Arrays.asList(DSMRMeterType.values()).stream()
-        .map(DSMRMeterType::getThingTypeUID).collect(Collectors.toSet());
+            .map(DSMRMeterType::getThingTypeUID).collect(Collectors.toSet());
 
     private final Logger logger = LoggerFactory.getLogger(DSMRMeterType.class);
 
@@ -304,22 +327,25 @@ public enum DSMRMeterType {
     /**
      * Creates a new enum
      *
-     * @param channelKey
-     *            String containing the channel configuration for this meter
+     * @param meterKind kind of meter
+     * @param cosemObjectTypeMeterId identifier cosem object
+     * @param requiredCosemObjects list of objects that are present in this meter type
      */
     DSMRMeterType(DSMRMeterKind meterKind, CosemObjectType cosemObjectTypeMeterId,
-        CosemObjectType... requiredCosemObjects) {
+            CosemObjectType... requiredCosemObjects) {
         this(meterKind, cosemObjectTypeMeterId, requiredCosemObjects, new CosemObjectType[0]);
     }
 
     /**
      * Creates a new enum
      *
-     * @param channelKey
-     *            String containing the channel configuration for this meter
+     * @param meterKind kind of meter
+     * @param cosemObjectTypeMeterId identifier cosem object
+     * @param requiredCosemObjects list of objects that are present in this meter type
+     * @param optionalCosemObjects list of objects that are optional present in this meter type
      */
     DSMRMeterType(DSMRMeterKind meterKind, CosemObjectType cosemObjectTypeMeterId,
-        CosemObjectType[] requiredCosemObjects, CosemObjectType[] optionalCosemObjects) {
+            CosemObjectType[] requiredCosemObjects, CosemObjectType[] optionalCosemObjects) {
         this.meterKind = meterKind;
         this.cosemObjectTypeMeterId = cosemObjectTypeMeterId;
         this.requiredCosemObjects = requiredCosemObjects;
@@ -328,7 +354,7 @@ public enum DSMRMeterType {
         supportedCosemObjects = new CosemObjectType[requiredCosemObjects.length + optionalCosemObjects.length];
         System.arraycopy(requiredCosemObjects, 0, supportedCosemObjects, 0, requiredCosemObjects.length);
         System.arraycopy(optionalCosemObjects, 0, supportedCosemObjects, requiredCosemObjects.length,
-            optionalCosemObjects.length);
+                optionalCosemObjects.length);
     }
 
     /**

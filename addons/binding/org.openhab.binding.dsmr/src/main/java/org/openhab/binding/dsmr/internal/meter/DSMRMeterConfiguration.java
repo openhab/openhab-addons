@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.dsmr.internal.meter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This class describes the configuration for a meter.
  *
  * @author M. Volaart - Initial contribution
  * @author Hilbrand Bouwkamp - Added refresh field
  */
+@NonNullByDefault
 public class DSMRMeterConfiguration {
     /**
      * M-Bus channel

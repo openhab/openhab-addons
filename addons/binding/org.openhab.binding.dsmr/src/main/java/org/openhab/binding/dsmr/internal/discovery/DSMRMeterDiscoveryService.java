@@ -100,10 +100,18 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
                 reportUnregisteredMeters();
             } else {
                 reportUnrecognizedCosemObjects(undetectedCosemObjects);
-                logger.info("There are some unrecognized cosem values in the data received from the meter,"
+                logger.info("There are unrecognized cosem values in the data received from the meter,"
                     + " which means some meters might not be detected. Please report your raw data as reference: {}",
                     telegram.getRawTelegram());
             }
+        }
+        if (!telegram.getUnknownCosemObjects().isEmpty()) {
+            logger.info("There are unrecognized cosem values in the data received from the meter,"
+                + " which means you have values that can't be read by a channel: {}. Please report them and your raw data as reference: {}",
+                telegram.getUnknownCosemObjects().stream()
+                    .map(e -> String.format("obis id:{}, value:{}", e.getKey(), e.getValue()))
+                    .collect(Collectors.joining(", ")),
+                telegram.getRawTelegram());
         }
     }
 

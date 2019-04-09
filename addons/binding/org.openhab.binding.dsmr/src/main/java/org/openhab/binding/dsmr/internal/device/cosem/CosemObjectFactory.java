@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author M. Volaart - Initial contribution
  */
+@NonNullByDefault
 public class CosemObjectFactory {
     private final Logger logger = LoggerFactory.getLogger(CosemObjectFactory.class);
 
@@ -84,7 +87,7 @@ public class CosemObjectFactory {
      * @param cosemStringValues String containing Cosem values
      * @return CosemObject or null if parsing failed
      */
-    public CosemObject getCosemObject(String obisIdString, String cosemStringValues) {
+    public @Nullable CosemObject getCosemObject(String obisIdString, String cosemStringValues) {
         OBISIdentifier obisId;
         OBISIdentifier reducedObisId;
 
@@ -112,7 +115,7 @@ public class CosemObjectFactory {
                     cosemObject = getCosemObjectInternal(obisMsgType, obisId, cosemStringValues);
                     if (cosemObject != null) {
                         logger.trace("Searched reducedObisId {} in the wild card type list, result: {}", reducedObisId,
-                            cosemObject);
+                                cosemObject);
                         obisLookupTableDynamic.put(reducedObisId, obisMsgType);
                         break;
                     }
@@ -136,8 +139,8 @@ public class CosemObjectFactory {
      *
      * @return a CosemObject or null if parsing failed
      */
-    private CosemObject getCosemObjectInternal(CosemObjectType cosemObjectType, OBISIdentifier obisIdentifier,
-        String cosemStringValues) {
+    private @Nullable CosemObject getCosemObjectInternal(CosemObjectType cosemObjectType, OBISIdentifier obisIdentifier,
+            String cosemStringValues) {
         CosemObject obj = new CosemObject(cosemObjectType, obisIdentifier);
 
         try {
@@ -147,7 +150,7 @@ public class CosemObjectFactory {
             return obj;
         } catch (ParseException pe) {
             logger.trace("Failed to construct Cosem Object for type {}, values: {}", cosemObjectType, cosemStringValues,
-                pe);
+                    pe);
         }
         return null;
     }

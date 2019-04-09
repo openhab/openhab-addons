@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.dsmr.internal.device.p1telegram;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
@@ -41,7 +43,12 @@ public class P1Telegram {
     /**
      * DATA_CORRUPTION. The P1 telegram has syntax errors.
      */
-    DATA_CORRUPTION("Received P1 telegram is corrupted");
+    DATA_CORRUPTION("Received P1 telegram is corrupted"),
+    /**
+     * P1TelegramListener. The smarty telegram was successful received but could not be decoded because of an invalid
+     * encryption key.
+     */
+    INVALID_ENCRYPTION_KEY("Failed to decrypt P1 telegram due to invalid encryption key");
 
         /**
          * public accessible state details
@@ -61,11 +68,18 @@ public class P1Telegram {
     private final List<CosemObject> cosemObjects;
     private final TelegramState telegramState;
     private final String rawTelegram;
+    private final List<Entry<String, String>> unknownCosemObjects;
 
-    public P1Telegram(List<CosemObject> cosemObjects, TelegramState telegramState, String rawTelegram) {
+    public P1Telegram(List<CosemObject> cosemObjects, TelegramState telegramState) {
+        this(cosemObjects, telegramState, "", Collections.emptyList());
+    }
+
+    public P1Telegram(List<CosemObject> cosemObjects, TelegramState telegramState, String rawTelegram,
+            List<Entry<String, String>> unknownCosemObjects) {
         this.cosemObjects = cosemObjects;
         this.telegramState = telegramState;
         this.rawTelegram = rawTelegram;
+        this.unknownCosemObjects = unknownCosemObjects;
     }
 
     /**
@@ -76,7 +90,7 @@ public class P1Telegram {
     }
 
     /**
-     * @return The raw telegram data
+     * @return The raw telegram data.
      */
     public String getRawTelegram() {
         return rawTelegram;
@@ -87,5 +101,12 @@ public class P1Telegram {
      */
     public TelegramState getTelegramState() {
         return telegramState;
+    }
+
+    /**
+     * @return The list of CosemObject found in the telegram but not known to the binding
+     */
+    public List<Entry<String, String>> getUnknownCosemObjects() {
+        return unknownCosemObjects;
     }
 }

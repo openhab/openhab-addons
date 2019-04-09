@@ -3,11 +3,11 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="dsmrBridge">
-		<label>Smart Meter</label>
-		<description>The Dutch Smart Meter (DSMR)</description>
+	<bridge-type id="smartyBridge">
+		<label>Smarty Meter</label>
+		<description>The Luxembourgian Smart Meter 'Smarty'</description>
 
-		<config-description-ref uri="thing-type:dsmr:bridgesettings" />
+		<config-description-ref uri="thing-type:dsmr:smartybridgesettings" />
 	</bridge-type>
 
 </thing:thing-descriptions>

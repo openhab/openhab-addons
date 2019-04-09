@@ -7,6 +7,7 @@
 	<thing-type id="device_v5" listed="false">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="dsmrBridge" />
+			<bridge-type-ref id="smartyBridge" />
 		</supported-bridge-type-refs>
 
 		<label>Device Meter (DSMR V5)</label>
