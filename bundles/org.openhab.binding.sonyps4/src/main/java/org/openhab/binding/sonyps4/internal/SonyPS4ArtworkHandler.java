@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SonyPS4ArtworkHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SonyPS4Handler.class);
+    private final Logger logger = LoggerFactory.getLogger(SonyPS4ArtworkHandler.class);
     private final File artworkCacheFolder;
 
     /**
