@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.weathercompany.internal;
 
-import static org.openhab.binding.weathercompany.internal.WeatherCompanyBindingConstants.THING_TYPE_WEATHER;
-
-import java.util.Collections;
-import java.util.Set;
+import static org.openhab.binding.weathercompany.internal.WeatherCompanyBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,8 +37,6 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.weathercompany", service = ThingHandlerFactory.class)
 public class WeatherCompanyHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_WEATHER);
-
     private @NonNullByDefault({}) TimeZoneProvider timeZoneProvider;
     private @NonNullByDefault({}) HttpClient httpClient;
     private @NonNullByDefault({}) UnitProvider unitProvider;

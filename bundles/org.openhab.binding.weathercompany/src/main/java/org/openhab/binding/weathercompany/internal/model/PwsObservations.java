@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.weathercompany.internal.json;
+package org.openhab.binding.weathercompany.internal.model;
 
 /**
  * The {@link PwsObservations} contains the most recent weather condition

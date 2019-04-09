@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.weathercompany.internal.json;
+package org.openhab.binding.weathercompany.internal.model;
 
 /**
  * The {@link DayPart} is the JSON object that contains the n-day forecast.

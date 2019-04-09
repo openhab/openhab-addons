@@ -15,7 +15,6 @@ package org.openhab.binding.weathercompany.internal.discovery;
 import static org.openhab.binding.weathercompany.internal.WeatherCompanyBindingConstants.*;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -57,7 +56,7 @@ public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
      * Creates a WeatherCompanyDiscoveryService with discovery enabled
      */
     public WeatherCompanyDiscoveryService() {
-        super(SUPPORTED_THING_TYPES, DISCOVER_TIMEOUT_SECONDS, true);
+        super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS, true);
     }
 
     @Override
@@ -68,10 +67,9 @@ public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.debug("Starting Weather Company device background discovery");
-
-        if (discoveryJob == null || discoveryJob.isCancelled()) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(() -> {
+        ScheduledFuture<?> job = discoveryJob;
+        if (job == null || job.isCancelled()) {
+            job = scheduler.scheduleWithFixedDelay(() -> {
                 createDiscoveryResult();
             }, 15, DISCOVERY_INTERVAL, TimeUnit.SECONDS);
             logger.debug("Discovery: Scheduled Weather Company discovery job every {} seconds", DISCOVERY_INTERVAL);
@@ -80,9 +78,9 @@ public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        logger.debug("Discovery: Stopping Weather Company device background discovery");
-        if (discoveryJob != null && !discoveryJob.isCancelled()) {
-            discoveryJob.cancel(true);
+        ScheduledFuture<?> job = discoveryJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
             discoveryJob = null;
             logger.debug("Discovery: Stopped Weather Company device background discovery");
         }
@@ -98,23 +96,15 @@ public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
             logger.debug("Discovery: Can't create discovery result because location is not set in openHAB");
             return;
         }
-
         if (localeProvider == null) {
             logger.debug("Discovery: Can't create discovery result because locale is not set in openHAB");
             return;
         }
-        Locale locale = localeProvider.getLocale();
-
-        logger.trace("Discovery: Creating discovery result with location {},{}, language={}, country={}",
-                location.getLatitude(), location.getLongitude(), locale.getLanguage(), locale.getCountry());
-
-        ThingUID localWeatherThing = new ThingUID(THING_TYPE_WEATHER, LOCAL);
-
         Map<String, Object> properties = new HashMap<>(3);
         properties.put(CONFIG_LOCATION_TYPE, CONFIG_LOCATION_TYPE_GEOCODE);
         properties.put(CONFIG_GEOCODE, String.format("%s,%s", location.getLatitude(), location.getLongitude()));
-        properties.put(CONFIG_LANGUAGE, WeatherCompanyHandler.getWeatherCompanyLanguage(locale));
-
+        properties.put(CONFIG_LANGUAGE, WeatherCompanyHandler.getWeatherCompanyLanguage(localeProvider.getLocale()));
+        ThingUID localWeatherThing = new ThingUID(THING_TYPE_WEATHER, LOCAL);
         thingDiscovered(DiscoveryResultBuilder.create(localWeatherThing).withLabel(LOCAL_WEATHER)
                 .withProperties(properties).build());
     }

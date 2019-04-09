@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>WeatherCompany Binding</name>
-	<description>This is the binding for WeatherCompany.</description>
+	<description>This is the binding for the WeatherCompany weather forecast API.</description>
 	<author>Mark Hilbush</author>
 
 </binding:binding>
