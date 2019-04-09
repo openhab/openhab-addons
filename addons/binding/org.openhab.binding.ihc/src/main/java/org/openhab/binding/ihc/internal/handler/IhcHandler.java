@@ -428,25 +428,21 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             // set resource to ON
             logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), valOn);
             if (updateResource(valOn)) {
-                scheduler.submit(() -> {
-                    // sleep a while
-                    try {
-                        logger.debug("Sleeping: {}ms", pulseWidth);
-                        Thread.sleep(pulseWidth);
-                    } catch (InterruptedException e) {
-                        // do nothing
-                    }
-                    // set resource back to OFF
-
-                    logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), valOff);
-                    try {
-                        if (!updateResource(valOff)) {
-                            logger.warn("Channel {} update to resource '{}' failed.", channelUID, valOff);
+                logger.debug("Sleeping: {}ms", pulseWidth);
+                scheduler.schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        // set resource back to OFF
+                        logger.debug("Update resource value (inverted output={}): {}", params.isInverted(), valOff);
+                        try {
+                            if (!updateResource(valOff)) {
+                                logger.warn("Channel {} update to resource '{}' failed.", channelUID, valOff);
+                            }
+                        } catch (IhcExecption e) {
+                            logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage(), e);
                         }
-                    } catch (IhcExecption e) {
-                        logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage(), e);
                     }
-                });
+                }, pulseWidth, TimeUnit.MILLISECONDS);
             } else {
                 logger.warn("Channel {} update failed.", channelUID);
             }
