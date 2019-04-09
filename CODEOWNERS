@@ -187,6 +187,7 @@
 /bundles/org.openhab.binding.wemo/ @hmerk
 /bundles/org.openhab.binding.wifiled/ @rvt @xylo
 /bundles/org.openhab.binding.windcentrale/ @marcelrv
+/bundles/org.openhab.binding.xmppclient/ @pavel-gololobov
 /bundles/org.openhab.binding.yeelight/ @claell
 /bundles/org.openhab.binding.zway/ @pathec
 /bundles/org.openhab.extensionservice.marketplace/ @kaikreuzer
