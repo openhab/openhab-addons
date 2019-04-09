@@ -93,7 +93,6 @@ public class XmlTVHandler extends BaseBridgeHandler {
                 } catch (JAXBException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
                 }
-
             } catch (XMLStreamException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } finally {

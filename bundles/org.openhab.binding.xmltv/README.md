@@ -1,10 +1,10 @@
 # XmlTV Binding
 
-XMLTV is an XML based file format for describing TV listings. This format is often used by Home Theater
-software to produce their Electronic Program Guide (http://wiki.xmltv.org/index.php/Main_Page)
+XMLTV is an XML based file format for describing TV listings. 
+This format is often used by Home Theater software to produce their Electronic Program Guide (http://wiki.xmltv.org/index.php/Main_Page)
 
-The norm allows to separate program display from its building. The building of the XMLTV file itself is
-taken in charge by so called "grabbers" (http://wiki.xmltv.org/index.php/HowtoUseGrabbers).
+The norm allows to separate program display from its building. 
+The building of the XMLTV file itself is taken in charge by so called "grabbers" (http://wiki.xmltv.org/index.php/HowtoUseGrabbers).
 
 Some websites provides updated XMLTV files than can be directly downloaded.
 
@@ -30,11 +30,11 @@ Once the XmlTV bridge to a file is created, you can add all known channels by se
 
 ## Thing Configuration
 
-| Configuration Parameter | Required | Description                                                     | Default |
-|-------------------------|----------|-----------------------------------------------------------------|---------|
-| channelId               | X        | Id of the channel as presented in the XmlTV file.               |         |
-| offset                  | X        | Offset applied to program times (forward or backward (minutes)  | 0       |
-| refresh                 | X        | refresh interval in seconds                                     | 60      |
+| Configuration Parameter | Required | Description                                                    | Default |
+|-------------------------|----------|----------------------------------------------------------------|---------|
+| channelId               | X        | Id of the channel as presented in the XmlTV file               |         |
+| offset                  | X        | Offset applied to program times (forward or backward (minutes) | 0       |
+| refresh                 | X        | Refresh interval in seconds                                    | 60      |
 
 ## Channels
 
@@ -49,9 +49,9 @@ Once the XmlTV bridge to a file is created, you can add all known channels by se
 |-----------------|----------------------|---------------------------------------------|
 | progStart       | DateTime             | Program Start Time                          |
 | progEnd         | DateTime             | Program End Time                            |
-| progTitle       | String               | Program Title.                              |
-| progCategory    | String               | Program Category.                           |
-| progIconUrl     | String               | URL to an image of the program.             |
+| progTitle       | String               | Program Title                               |
+| progCategory    | String               | Program Category                            |
+| progIconUrl     | String               | URL to an image of the program              |
 | icon            | Image                | Icon of the program                         |
 | elapsedTime     | Number:Time          | Current time of currently playing program   |
 | remainingTime   | Number:Time          | Time remaining until end of the program     |
@@ -62,11 +62,11 @@ Once the XmlTV bridge to a file is created, you can add all known channels by se
 | Channel Type ID | Item Type            | Description                                 |
 |-----------------|----------------------|---------------------------------------------|
 | progStart       | DateTime             | Program Start Time                          |
-| timeLeft        | Number:Time          | Time left before program start.             |
+| timeLeft        | Number:Time          | Time left before program start              |
 | progEnd         | DateTime             | Program End Time                            |
-| progTitle       | String               | Program Title.                              |
-| progCategory    | String               | Program Category.                           |
-| progIconUrl     | String               | URL to an image of the program.             |
+| progTitle       | String               | Program Title                               |
+| progCategory    | String               | Program Category                            |
+| progIconUrl     | String               | URL to an image of the program              |
 | icon            | Image                | Icon of the program                         |
 
 ## Full Example

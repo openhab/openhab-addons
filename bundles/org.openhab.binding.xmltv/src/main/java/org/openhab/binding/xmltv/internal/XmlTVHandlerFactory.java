@@ -104,8 +104,8 @@ public class XmlTVHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void registerDeviceDiscoveryService(XmlTVHandler bridgeHandler) {
         XmlTVDiscoveryService discoveryService = new XmlTVDiscoveryService(bridgeHandler);
-        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     private synchronized void unregisterDeviceDiscoveryService(Thing thing) {
