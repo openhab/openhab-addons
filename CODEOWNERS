@@ -13,8 +13,6 @@
 /addons/binding/org.openhab.binding.bluetooth.ruuvitag @ssalonen
 /addons/binding/org.openhab.binding.bluetooth.test/ @cdjackson @kaikreuzer
 /addons/binding/org.openhab.binding.boschindego/ @jofleck
-/addons/binding/org.openhab.binding.dsmr/ @Hilbrand
-/addons/binding/org.openhab.binding.dsmr.test/ @Hilbrand
 /addons/binding/org.openhab.binding.enocean/ @fruggy83
 /addons/binding/org.openhab.binding.exec/ @kgoderis
 /addons/binding/org.openhab.binding.feed/ @svilenvul
@@ -77,6 +75,7 @@
 /bundles/org.openhab.binding.dlinksmarthome/ @MikeJMajor
 /bundles/org.openhab.binding.dmx/ @J-N-K
 /bundles/org.openhab.binding.dscalarm/ @RSStephens
+/bundles/org.openhab.binding.dsmr/ @Hilbrand
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.evohome/ @Nebula83
