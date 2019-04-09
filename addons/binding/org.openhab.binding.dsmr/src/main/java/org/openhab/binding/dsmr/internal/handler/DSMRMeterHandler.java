@@ -99,17 +99,17 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
             meterType = DSMRMeterType.valueOf(getThing().getThingTypeUID().getId().toUpperCase());
         } catch (IllegalArgumentException iae) {
             logger.warn(
-                "{} could not be initialized due to an invalid meterType {}. Delete this Thing if the problem persists.",
-                getThing(), getThing().getThingTypeUID().getId().toUpperCase());
+                    "{} could not be initialized due to an invalid meterType {}. Delete this Thing if the problem persists.",
+                    getThing(), getThing().getThingTypeUID().getId().toUpperCase());
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                "@text/error.configuration.invalidmetertype");
+                    "@text/error.configuration.invalidmetertype");
             return;
         }
         DSMRMeterConfiguration meterConfig = getConfigAs(DSMRMeterConfiguration.class);
         DSMRMeterDescriptor meterDescriptor = new DSMRMeterDescriptor(meterType, meterConfig.channel);
         meter = new DSMRMeter(meterDescriptor);
         meterWatchdog = scheduler.scheduleWithFixedDelay(this::updateState, meterConfig.refresh, meterConfig.refresh,
-            TimeUnit.SECONDS);
+                TimeUnit.SECONDS);
         updateStatus(ThingStatus.UNKNOWN);
     }
 
@@ -158,7 +158,7 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     @Override
     public void telegramReceived(P1Telegram telegram) {
         lastReceivedValues = Collections.emptyList();
-        DSMRMeter localMeter = meter;
+        final DSMRMeter localMeter = meter;
 
         if (localMeter == null) {
             return;
@@ -183,7 +183,7 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     @Override
     public synchronized void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE
-            && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
+                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
             // Set status to offline --> Thing will become online after receiving meter values
             setDeviceOffline(ThingStatusDetail.NONE, null);
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {

@@ -14,6 +14,7 @@ package org.openhab.binding.dsmr.internal.device.cosem;
 
 import java.text.ParseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.types.State;
 
 /**
@@ -21,6 +22,7 @@ import org.eclipse.smarthome.core.types.State;
  *
  * @author M. Volaart - Initial contribution
  */
+@NonNullByDefault
 abstract class CosemValueDescriptor<S extends State> {
 
     /**
@@ -30,8 +32,6 @@ abstract class CosemValueDescriptor<S extends State> {
 
     /**
      * Creates a new {@link CosemValueDescriptor} with no unit and a default channel.
-     *
-     * @param cosemValueClass the {@link CosemValue} class that the {@link CosemValueDescriptor} represent
      */
     public CosemValueDescriptor() {
         this("");

@@ -10,35 +10,33 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dsmr.internal.device;
+package org.openhab.binding.dsmr.internal.device.p1telegram;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Interface for classes controlling DSMR devices.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public interface DSMRDevice {
+public interface TelegramParser {
 
     /**
-     * Restart the DSMR device.
+     *
+     * @param data byte data to parse
+     * @param length number of bytes to parse
      */
-    void restart();
+    void parse(byte[] data, int length);
 
     /**
-     * Start the DSMR device.
+     * Reset the current telegram state.
      */
-    void start();
-
-    /**
-     * Stop the DSMR device.
-     */
-    void stop();
+    default void reset() {
+    };
 
     /**
      * @param lenientMode the lenientMode to set
      */
-    void setLenientMode(boolean lenientMode);
+    default void setLenientMode(boolean lenientMode) {
+    };
 }

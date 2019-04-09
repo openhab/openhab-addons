@@ -17,12 +17,16 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Class representing an OBISIdentifier
  *
  * @author M. Volaart - Initial contribution
  * @author Hilbrand Bouwkamp - Fix bug in regex pattern.
  */
+@NonNullByDefault
 public class OBISIdentifier {
     /**
      * String representing a-b:c.d.e.f OBIS ID
@@ -36,11 +40,11 @@ public class OBISIdentifier {
 
     /* the six individual group values of the OBIS ID */
     private int groupA;
-    private Integer groupB;
+    private @Nullable Integer groupB;
     private int groupC;
     private int groupD;
-    private int groupE;
-    private Integer groupF;
+    private @Nullable Integer groupE;
+    private @Nullable Integer groupF;
 
     /**
      * Constructs a new OBIS Identifier (A-B:C.D.E.F)
@@ -52,7 +56,8 @@ public class OBISIdentifier {
      * @param groupE E value
      * @param groupF F value
      */
-    public OBISIdentifier(int groupA, Integer groupB, int groupC, int groupD, int groupE, Integer groupF) {
+    public OBISIdentifier(int groupA, @Nullable Integer groupB, int groupC, int groupD, @Nullable Integer groupE,
+            @Nullable Integer groupF) {
         this.groupA = groupA;
         this.groupB = groupB;
         this.groupC = groupC;
@@ -78,7 +83,7 @@ public class OBISIdentifier {
 
             // Optional value B
             if (m.group(4) != null) {
-                this.groupB = Integer.parseInt(m.group(4));
+                this.groupB = Integer.valueOf(m.group(4));
             }
 
             // Required value C & D
@@ -87,12 +92,12 @@ public class OBISIdentifier {
 
             // Optional value E
             if (m.group(9) != null) {
-                this.groupE = Integer.parseInt(m.group(9));
+                this.groupE = Integer.valueOf(m.group(9));
             }
 
             // Optional value F
             if (m.group(11) != null) {
-                this.groupF = Integer.parseInt(m.group(11));
+                this.groupF = Integer.valueOf(m.group(11));
             }
         } else {
             throw new ParseException("Invalid OBIS identifier:" + obisIDString, 0);
@@ -109,7 +114,7 @@ public class OBISIdentifier {
     /**
      * @return the groupB
      */
-    public Integer getGroupB() {
+    public @Nullable Integer getGroupB() {
         return groupB;
     }
 
@@ -130,21 +135,21 @@ public class OBISIdentifier {
     /**
      * @return the groupE
      */
-    public int getGroupE() {
+    public @Nullable Integer getGroupE() {
         return groupE;
     }
 
     /**
      * @return the groupF
      */
-    public Integer getGroupF() {
+    public @Nullable Integer getGroupF() {
         return groupF;
     }
 
     @Override
     public String toString() {
-        return groupA + "-" + (groupB != null ? (groupB + ":") : "") + groupC + "." + groupD + "." + groupE
-                + (groupF != null ? ("*" + groupF) : "");
+        return groupA + "-" + (groupB == null ? "" : (groupB + ":")) + groupC + "." + groupD
+                + (groupE == null ? "" : ("." + groupE)) + (groupF == null ? "" : ("*" + groupF));
     }
 
     /**
@@ -156,7 +161,7 @@ public class OBISIdentifier {
      * @return true if both OBISIdentifiers match, false otherwise
      */
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(@Nullable Object other) {
         OBISIdentifier o;
         if (other != null && other instanceof OBISIdentifier) {
             o = (OBISIdentifier) other;
@@ -184,7 +189,7 @@ public class OBISIdentifier {
     }
 
     /**
-     * Checks whether this OBIS Identifer and the other identifer equals taking the wildcards into account
+     * Checks whether this OBIS Identifier and the other identifier equals taking the wildcards into account
      *
      * @param o OBISIdentifier to compare to
      *
@@ -199,7 +204,9 @@ public class OBISIdentifier {
         }
         result &= groupC == o.groupC;
         result &= groupD == o.groupD;
-        result &= groupE == o.groupE;
+        if (groupE != null && o.groupE != null) {
+            result &= (groupE.equals(o.groupE));
+        }
         if (groupF != null && o.groupF != null) {
             result &= (groupF.equals(o.groupF));
         }
@@ -209,15 +216,15 @@ public class OBISIdentifier {
 
     @Override
     public int hashCode() {
-        return Objects.hash(groupA, ((groupB == null) ? 0 : groupB), groupC, groupD, groupE,
-                ((groupF == null) ? 0 : groupF));
+        return Objects.hash(groupA, (groupB != null ? groupB : 0), groupC, groupD, (groupE != null ? groupE : 0),
+                (groupF != null ? groupF : 0));
     }
 
     /**
      * Returns an reduced OBIS Identifier. This means group F is set to null
      * (.i.e. not applicable)
      *
-     * @return reduced OBIS Identifer
+     * @return reduced OBIS Identifier
      */
     public OBISIdentifier getReducedOBISIdentifier() {
         return new OBISIdentifier(groupA, groupB, groupC, groupD, groupE, null);

@@ -4,25 +4,26 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="electricity_v4_2" listed="false">
+	<thing-type id="electricity_smarty_v1_0" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="dsmrBridge" />
+			<bridge-type-ref id="smartyBridge" />
 		</supported-bridge-type-refs>
 
-		<label>Electricity Meter (DSMR V4.2)</label>
-		<description>This is an electricity meter that complies to the DSMR V4.2 specification.</description>
+		<label>Electricity Meter (Smarty V1.0)</label>
+		<description>This is an electricity meter that complies to the Luxembourg's Smarty V1.0 specification.</description>
 
 		<channels>
-			<channel id="emeter_equipment_identifier" typeId="equipmentIdType" />
-			<channel id="emeter_delivery_tariff1" typeId="deliveryTariff1Type" />
-			<channel id="emeter_delivery_tariff2" typeId="deliveryTariff2Type" />
-			<channel id="emeter_production_tariff1" typeId="productionTariff1Type" />
-			<channel id="emeter_production_tariff2" typeId="productionTariff2Type" />
-			<channel id="emeter_tariff_indicator" typeId="tariffIndicatorType" />
+			<channel id="emeter_equipment_identifier_v2_x" typeId="equipmentIdType" />
+			<channel id="emeter_delivery_tariff0" typeId="totalImportedEnergyRegisterPType" />
+			<channel id="emeter_production_tariff0" typeId="totalExportedEnergyRegisterPType" />
+			<channel id="emeter_total_imported_energy_register_q" typeId="totalImportedEnergyRegisterQType" />
+			<channel id="emeter_total_exported_energy_register_q" typeId="totalExportedEnergyRegisterQType" />
 			<channel id="emeter_actual_delivery" typeId="actualDeliveryType" />
 			<channel id="emeter_actual_production" typeId="actualProductionType" />
-			<channel id="emeter_power_failures" typeId="powerFailuresType" />
-			<channel id="emeter_long_power_failures" typeId="longPowerFailuresType" />
+			<channel id="emeter_actual_reactive_delivery" typeId="actualReactiveDeliveryType" />
+			<channel id="emeter_actual_reactive_production" typeId="actualReactiveProductionType" />
+			<channel id="emeter_active_threshold_smax" typeId="activeThresholdSmax" />
+			<channel id="emeter_switch_position" typeId="switchPositionType" />
 			<channel id="emeter_power_failure_log_entries" typeId="powerFailureLogEntriesType" />
 			<channel id="emeter_power_failure_log_timestamp0" typeId="powerFailureLogEndType" />
 			<channel id="emeter_power_failure_log_duration0" typeId="powerFailureLogDurationType" />
@@ -59,7 +60,12 @@
 			<channel id="emeter_instant_power_production_l1" typeId="instantPowerProductionL1Type" />
 			<channel id="emeter_instant_power_production_l2" typeId="instantPowerProductionL2Type" />
 			<channel id="emeter_instant_power_production_l3" typeId="instantPowerProductionL3Type" />
-
+			<channel id="emeter_instant_reactive_power_delivery_l1" typeId="instantReactivePowerDeliveryL1Type" />
+			<channel id="emeter_instant_reactive_power_delivery_l2" typeId="instantReactivePowerDeliveryL2Type" />
+			<channel id="emeter_instant_reactive_power_delivery_l3" typeId="instantReactivePowerDeliveryL3Type" />
+			<channel id="emeter_instant_reactive_power_production_l1" typeId="instantReactivePowerProductionL1Type" />
+			<channel id="emeter_instant_reactive_power_production_l2" typeId="instantReactivePowerProductionL2Type" />
+			<channel id="emeter_instant_reactive_power_production_l3" typeId="instantReactivePowerProductionL3Type" />
 		</channels>
 		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
 	</thing-type>

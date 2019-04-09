@@ -5,12 +5,12 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:dsmr:bridgesettings">
-		<parameter name="serialPort" type="text">
+		<parameter name="serialPort" type="text" required="true">
 			<context>serial-port</context>
 			<label>Serial Port</label>
 			<description>The serial port where the P1 port of the Smart Meter is connected (e.g. Linux: /dev/ttyUSB0, Windows: COM1)</description>
 		</parameter>
-		<parameter name="receivedTimeout" type="integer" required="true" min="1">
+		<parameter name="receivedTimeout" type="integer" min="1">
 			<default>30</default>
 			<label>Received Timeout</label>
 			<description>The time period within results are expected in seconds</description>
@@ -58,6 +58,23 @@
 				<option value="1.5">1.5</option>
 				<option value="2">2</option>
 			</options>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:dsmr:smartybridgesettings">
+		<parameter name="serialPort" type="text" required="true">
+			<context>serial-port</context>
+			<label>Serial Port</label>
+			<description>The serial port where the P1 port of the Smart Meter is connected (e.g. Linux: /dev/ttyUSB0, Windows: COM1)</description>
+		</parameter>
+		<parameter name="decryptionKey" type="text" required="true">
+			<label>Decryption Key</label>
+			<description>The Luxembourgian Smart meter decryption key. Ask for your energy grid operator for your Smart meter P1 key.</description>
+		</parameter>
+		<parameter name="receivedTimeout" type="integer" min="1">
+			<default>30</default>
+			<label>Received Timeout</label>
+			<description>The time period within results are expected in seconds</description>
 		</parameter>
 	</config-description>
 

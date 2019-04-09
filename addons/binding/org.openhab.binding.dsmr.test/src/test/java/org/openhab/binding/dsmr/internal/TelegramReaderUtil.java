@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dsmr.internal;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,7 +61,9 @@ public final class TelegramReaderUtil {
         byte[] telegram = readRawTelegram(telegramName);
         P1TelegramParser parser = new P1TelegramParser(p1Telegram::set);
 
-        parser.parseData(telegram, 0, telegram.length);
+        parser.setLenientMode(true);
+        parser.parse(telegram, telegram.length);
+        assertNotNull("Telegram state should have been set. (Missing newline at end of message?)", p1Telegram.get());
         assertEquals("Expected TelegramState should be as expected", expectedTelegramState,
                 p1Telegram.get().getTelegramState());
         return p1Telegram.get();

@@ -31,17 +31,20 @@ public class DSMRFixedConfigDevice implements DSMRDevice {
     private final DSMRTelegramListener telegramListener;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param serialPortManager the manager to get a new serial port connecting from
      * @param serialPortName the port name (e.g. /dev/ttyUSB0 or COM1)
      * @param fixedPortSettings The serial port connection settings
      * @param listener the parent {@link DSMREventListener}
+     * @param telegramListener listener to report found telegrams or errors
      */
     public DSMRFixedConfigDevice(SerialPortManager serialPortManager, String serialPortName,
-            DSMRSerialSettings fixedPortSettings, DSMREventListener listener) {
+            DSMRSerialSettings fixedPortSettings, DSMREventListener listener, DSMRTelegramListener telegramListener) {
         this.fixedPortSettings = fixedPortSettings;
-        telegramListener = new DSMRTelegramListener(listener);
+        this.telegramListener = telegramListener;
+        telegramListener.setDsmrEventListener(listener);
+
         dsmrPort = new DSMRSerialConnector(serialPortManager, serialPortName, telegramListener);
     }
 

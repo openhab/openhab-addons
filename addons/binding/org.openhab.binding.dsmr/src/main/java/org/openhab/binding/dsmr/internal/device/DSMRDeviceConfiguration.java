@@ -47,6 +47,11 @@ public class DSMRDeviceConfiguration {
     public String stopbits;
 
     /**
+     * The Luxembourgish smart meter decryption key
+     */
+    public String decryptionKey;
+
+    /**
      * When no message was received after the configured number of seconds action will be taken.
      */
     public int receivedTimeout;
@@ -61,6 +66,7 @@ public class DSMRDeviceConfiguration {
     @Override
     public String toString() {
         return "DSMRDeviceConfiguration [serialPort=" + serialPort + ", Baudrate=" + baudrate + ", Databits=" + databits
-                + ", Parity=" + parity + ", Stopbits=" + stopbits + ", receivedTimeout=" + receivedTimeout + "]";
+                + ", Parity=" + parity + ", Stopbits=" + stopbits + ", decryptionKey=" + decryptionKey
+                + ", receivedTimeout=" + receivedTimeout + "]";
     }
 }

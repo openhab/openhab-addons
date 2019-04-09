@@ -24,6 +24,8 @@ import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 import javax.measure.quantity.Volume;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
@@ -36,7 +38,8 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
  *
  * @param <Q> The {@link Quantity} type of the unit of this class
  */
-class CosemQuantity<Q extends Quantity<Q>> extends CosemValueDescriptor<QuantityType<Q>> {
+@NonNullByDefault
+class CosemQuantity<Q extends @Nullable Quantity<Q>> extends CosemValueDescriptor<QuantityType<Q>> {
 
     public static final CosemQuantity<ElectricCurrent> AMPERE = new CosemQuantity<>(SmartHomeUnits.AMPERE);
     public static final CosemQuantity<Volume> CUBIC_METRE = new CosemQuantity<>(SIUnits.CUBIC_METRE);
@@ -45,6 +48,8 @@ class CosemQuantity<Q extends Quantity<Q>> extends CosemValueDescriptor<Quantity
     public static final CosemQuantity<Energy> KILO_WATT_HOUR = new CosemQuantity<>(SmartHomeUnits.KILOWATT_HOUR);
     public static final CosemQuantity<ElectricPotential> VOLT = new CosemQuantity<>(SmartHomeUnits.VOLT);
     public static final CosemQuantity<Power> WATT = new CosemQuantity<>(SmartHomeUnits.WATT);
+    public static final CosemQuantity<Power> KILO_VAR = new CosemQuantity<>(SmartHomeUnits.KILOVAR);
+    public static final CosemQuantity<Energy> KILO_VAR_HOUR = new CosemQuantity<>(SmartHomeUnits.KILOVAR_HOUR);
 
     /**
      * Pattern to convert a cosem value to a value that can be parsed by {@link QuantityType}.

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dsmr.internal.device.p1telegram;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * CRC16 implementation.
  *
@@ -22,7 +24,9 @@ package org.openhab.binding.dsmr.internal.device.p1telegram;
  *
  * @author M. Volaart - Initial contribution
  */
+@NonNullByDefault
 public class CRC16 {
+
     public enum Polynom {
         CRC16_IBM(0xA001), // standard CRC-16 x16+x15+x2+1 (CRC-16-IBM)
         CRC16_IBM_REVERSE(0xC002), // standard reverse x16+x14+x+1 (CRC-16-IBM)

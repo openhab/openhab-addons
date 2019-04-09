@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class DSMRDiscoveryService extends AbstractDiscoveryService {
     /**
-     * Timeout for Discovery timeout
+     * Timeout for discovery time.
      */
     private static final int DSMR_DISCOVERY_TIMEOUT_SECONDS = 60;
 

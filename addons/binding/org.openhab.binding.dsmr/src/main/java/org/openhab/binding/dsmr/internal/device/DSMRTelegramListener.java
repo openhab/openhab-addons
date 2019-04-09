@@ -23,6 +23,7 @@ import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramParser;
+import org.openhab.binding.dsmr.internal.device.p1telegram.TelegramParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,21 +35,29 @@ import org.slf4j.LoggerFactory;
  * @author Hilbrand Bouwkamp - Moved this code out of the DSMRPort class, fixed some issues and reduced code
  */
 @NonNullByDefault
-class DSMRTelegramListener implements P1TelegramListener, DSMRConnectorListener {
+public class DSMRTelegramListener implements P1TelegramListener, DSMRConnectorListener {
 
     private final Logger logger = LoggerFactory.getLogger(DSMRTelegramListener.class);
-    private final P1TelegramParser parser;
+    private final TelegramParser parser;
 
-    private DSMREventListener dsmrEventListener;
+    private @NonNullByDefault({}) DSMREventListener dsmrEventListener;
 
     /**
      * Constructor.
      *
      * @param eventListener listener to send received errors or messages to
      */
-    public DSMRTelegramListener(DSMREventListener eventListener) {
-        dsmrEventListener = eventListener;
+    public DSMRTelegramListener() {
         parser = new P1TelegramParser(this);
+    }
+
+    /**
+     * Constructs {@link DSMRTelegramListener} with a Smarty decryptor to first decrypt incoming messages.
+     *
+     * @param decryptionKey Smarty decryption key
+     */
+    public DSMRTelegramListener(String decryptionKey) {
+        parser = new SmartyDecrypter(new P1TelegramParser(this), this, decryptionKey);
     }
 
     /**
@@ -62,7 +71,7 @@ class DSMRTelegramListener implements P1TelegramListener, DSMRConnectorListener 
 
     @Override
     public void handleData(byte[] data, int length) {
-        parser.parseData(data, 0, length);
+        parser.parse(data, length);
     }
 
     @Override
@@ -74,18 +83,17 @@ class DSMRTelegramListener implements P1TelegramListener, DSMRConnectorListener 
     /**
      * Handler for cosemObjects received in a P1 telegram
      *
-     * @param cosemObjects. List of received {@link CosemObject} objects
-     * @param telegramState. {@link TelegramState} describing the state of the received telegram.
+     * @param telegram the received telegram.
      */
     @Override
     public void telegramReceived(P1Telegram telegram) {
-        TelegramState telegramState = telegram.getTelegramState();
-        List<CosemObject> cosemObjects = telegram.getCosemObjects();
+        final TelegramState telegramState = telegram.getTelegramState();
+        final List<CosemObject> cosemObjects = telegram.getCosemObjects();
+
         if (logger.isTraceEnabled()) {
             logger.trace("Received {} Cosem Objects with state: '{}'", cosemObjects.size(), telegramState);
         }
-
-        if (telegramState == TelegramState.OK) {
+        if (telegramState == TelegramState.OK || telegramState == TelegramState.INVALID_ENCRYPTION_KEY) {
             dsmrEventListener.handleTelegramReceived(telegram);
         } else {
             if (logger.isDebugEnabled()) {

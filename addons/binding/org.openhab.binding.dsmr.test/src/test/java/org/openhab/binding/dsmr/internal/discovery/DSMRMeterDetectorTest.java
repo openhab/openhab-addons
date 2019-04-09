@@ -56,6 +56,7 @@ public class DSMRMeterDetectorTest {
             { "Landis_Gyr_E350", EnumSet.of( DEVICE_V2_V3, ELECTRICITY_V3_0)},
             { "Landis_Gyr_ZCF110", EnumSet.of( DEVICE_V4, ELECTRICITY_V4_2, M3_V5_0)},
             { "Sagemcom_XS210", EnumSet.of( DEVICE_V4, ELECTRICITY_V4_2)},
+            { "smarty", EnumSet.of( DEVICE_V5, ELECTRICITY_SMARTY_V1_0)},
         });
     }
     // @formatter:on
@@ -71,15 +72,17 @@ public class DSMRMeterDetectorTest {
         P1Telegram telegram = TelegramReaderUtil.readTelegram(telegramName, TelegramState.OK);
         DSMRMeterDetector detector = new DSMRMeterDetector();
         Entry<Collection<DSMRMeterDescriptor>, Map<CosemObjectType, CosemObject>> entry = detector
-            .detectMeters(telegram);
+                .detectMeters(telegram);
         Collection<DSMRMeterDescriptor> detectMeters = entry.getKey();
-        assertEquals("Should detect correct number of meters", expectedMeters.size(), detectMeters.size());
+        assertEquals("Should detect correct number of meters: " + Arrays.toString(detectMeters.toArray()),
+                expectedMeters.size(), detectMeters.size());
         assertEquals("Should not have any undetected cosem objects", 0, entry.getValue().size());
+        assertEquals("Should not have any unknown cosem objects", 0, telegram.getUnknownCosemObjects().size());
         for (DSMRMeterType meter : expectedMeters) {
             assertEquals(
-                String.format("Meter '%s' not found: %s", meter,
-                    Arrays.toString(detectMeters.toArray(new DSMRMeterDescriptor[0]))),
-                1, detectMeters.stream().filter(e -> e.getMeterType() == meter).count());
+                    String.format("Meter '%s' not found: %s", meter,
+                            Arrays.toString(detectMeters.toArray(new DSMRMeterDescriptor[0]))),
+                    1, detectMeters.stream().filter(e -> e.getMeterType() == meter).count());
         }
     }
 

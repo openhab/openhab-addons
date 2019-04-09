@@ -34,9 +34,18 @@ public final class DSMRBindingConstants {
     public static final String DSMR_PORT_NAME = "org.openhab.binding.dsmr";
 
     /**
-     * Bridge device thing
+     * Bridge device things
      */
     public static final ThingTypeUID THING_TYPE_DSMR_BRIDGE = new ThingTypeUID(BINDING_ID, "dsmrBridge");
+    public static final ThingTypeUID THING_TYPE_SMARTY_BRIDGE = new ThingTypeUID(BINDING_ID, "smartyBridge");
+
+    /**
+     * Configuration parameter for the serial port.
+     */
+    public static final String CONFIGURATION_SERIAL_PORT = "serialPort";
+
+    public static final String CONFIGURATION_DECRYPTION_KEY = "decryptionKey";
+    public static final String CONFIGURATION_DECRYPTION_KEY_EMPTY = "";
 
     private DSMRBindingConstants() {
         // Constants class

@@ -15,16 +15,16 @@ Import-Package:
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
- org.eclipse.smarthome.core.common,
  org.eclipse.smarthome.core.i18n,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.library.unit,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
- org.eclipse.smarthome.core.thing.binding.builder,
- org.eclipse.smarthome.core.thing.type,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.core.util,
  org.eclipse.smarthome.io.transport.serial,
  org.osgi.framework,
- org.slf4j
+ org.slf4j,
+ tec.uom.se.format,
+ tec.uom.se.unit
 Service-Component: OSGI-INF/*.xml

@@ -64,6 +64,30 @@
 		<description>The total amount of electricity produced for tariff 2.</description>
 		<state pattern="%.1f %unit%" readOnly="true" />
 	</channel-type>
+	<channel-type id="totalImportedEnergyRegisterPType">
+		<item-type>Number:Energy</item-type>
+		<label>Total Imported Energy (P+)</label>
+		<description>The Total imported energy register (P+).</description>
+		<state pattern="%.1f %unit%" readOnly="true" />
+	</channel-type>
+	<channel-type id="totalExportedEnergyRegisterPType">
+		<item-type>Number:Energy</item-type>
+		<label>Total Exported Energy (P+)</label>
+		<description>The Total exported energy register (P-).</description>
+		<state pattern="%.1f %unit%" readOnly="true" />
+	</channel-type>
+	<channel-type id="totalImportedEnergyRegisterQType">
+		<item-type>Number:Energy</item-type>
+		<label>Total Imported Energy (Q+)</label>
+		<description>The Total imported energy register (Q+).</description>
+		<state pattern="%.1f %unit%" readOnly="true" />
+	</channel-type>
+	<channel-type id="totalExportedEnergyRegisterQType">
+		<item-type>Number:Energy</item-type>
+		<label>Total Exported Energy (Q-)</label>
+		<description>The Total exported energy register (Q-).</description>
+		<state pattern="%.1f %unit%" readOnly="true" />
+	</channel-type>
 	<channel-type id="tariffIndicatorType" advanced="true">
 		<item-type>String</item-type>
 		<label>Tariff Indicator</label>
@@ -88,6 +112,18 @@
 		<description>The current power production.</description>
 		<state pattern="%.3f %unit%" readOnly="true" />
 	</channel-type>
+	<channel-type id="actualReactiveDeliveryType">
+		<item-type>Number</item-type>
+		<label>Actual Reactive Power Delivery</label>
+		<description>The current reactive power delivery.</description>
+		<state pattern="%.3f kvar" readOnly="true" />
+	</channel-type>
+	<channel-type id="actualReactiveProductionType" advanced="true">
+		<item-type>Number</item-type>
+		<label>Actual Reactive Power Production</label>
+		<description>The current reactive power production.</description>
+		<state pattern="%.3f kvar" readOnly="true" />
+	</channel-type>
 	<channel-type id="actualTresholdAType" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Actual Threshold</label>
@@ -99,6 +135,12 @@
 		<label>Actual threshold</label>
 		<description>The actual threshold.</description>
 		<state pattern="%.3f %unit%" readOnly="true" />
+	</channel-type>
+	<channel-type id="activeThresholdSmax" advanced="true">
+		<item-type>Number</item-type>
+		<label>Active Threshold</label>
+		<description>Active threshold (SMAX).</description>
+		<state pattern="%.3f kVA" readOnly="true" />
 	</channel-type>
 	<channel-type id="switchPositionType" advanced="true">
 		<item-type>Number</item-type>
@@ -226,6 +268,42 @@ Each entry has its own channel (emeter_power_failure_log_duration*x*, *x* = 0 - 
 		<item-type>Number:Power</item-type>
 		<label>Instant Power Production L3</label>
 		<description>The instant power production L3.</description>
+		<state pattern="%.3f %unit%" readOnly="true" />
+	</channel-type>
+	<channel-type id="instantReactivePowerDeliveryL1Type" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Instant Reactive Power Delivery L1</label>
+		<description>The instant reactive power delivery L1.</description>
+		<state pattern="%.3f %unit%" readOnly="true" />
+	</channel-type>
+	<channel-type id="instantReactivePowerDeliveryL2Type" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Instant Reactive Power Delivery L2</label>
+		<description>The instant reactive power delivery L2.</description>
+		<state pattern="%.3f %unit%" readOnly="true" />
+	</channel-type>
+	<channel-type id="instantReactivePowerDeliveryL3Type" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Instant Reactive Power Delivery L3</label>
+		<description>The instant reactive power delivery L3.</description>
+		<state pattern="%.3f %unit%" readOnly="true" />
+	</channel-type>
+	<channel-type id="instantReactivePowerProductionL1Type" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Instant Reactive Power Production L1</label>
+		<description>The instant reactive power production L1.</description>
+		<state pattern="%.3f %unit%" readOnly="true" />
+	</channel-type>
+	<channel-type id="instantReactivePowerProductionL2Type" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Instant Reactive Power Production L2</label>
+		<description>The instant reactive power production L2.</description>
+		<state pattern="%.3f %unit%" readOnly="true" />
+	</channel-type>
+	<channel-type id="instantReactivePowerProductionL3Type" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Instant Reactive Power Production L3</label>
+		<description>The instant reactive power production L3.</description>
 		<state pattern="%.3f %unit%" readOnly="true" />
 	</channel-type>
 	<channel-type id="instantVoltageL1Type" advanced="true">
