@@ -64,8 +64,7 @@ public class ChannelHandler extends BaseThingHandler {
     private ScheduledFuture<?> globalJob;
 
     private @Nullable MediaChannel mediaChannel;
-    private @Nullable RawType mediaIcon = new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
-    private @Nullable RawType programmeIcon = new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
+    private RawType mediaIcon = new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
 
     public final List<Programme> programmes = new ArrayList<>();
 
@@ -89,7 +88,6 @@ public class ChannelHandler extends BaseThingHandler {
                             "No programmes to come in the current XML file for this channel");
                 } else if (Instant.now().isAfter(programmes.get(0).getProgrammeStop())) {
                     programmes.remove(0);
-                    programmeIcon = downloadIcon(programmes.get(0).getIcons());
                 }
 
                 getThing().getChannels().forEach(channel -> updateChannel(channel.getUID()));
@@ -164,10 +162,11 @@ public class ChannelHandler extends BaseThingHandler {
 
                 switch (uidElements[1]) {
                     case CHANNEL_ICON:
-                        updateState(channelUID,
-                                GROUP_CHANNEL_PROPERTIES.equals(uidElements[0])
-                                        ? mediaIcon != null ? mediaIcon : UnDefType.UNDEF
-                                        : programmeIcon != null ? programmeIcon : UnDefType.UNDEF);
+                        if (GROUP_CHANNEL_PROPERTIES.equals(uidElements[0])) {
+                            updateState(channelUID, mediaIcon != null ? mediaIcon : UnDefType.UNDEF);
+                        } else {
+                            updateState(channelUID, downloadIcon(programme.getIcons()));
+                        }
                         break;
                     case CHANNEL_CHANNEL_URL:
                         updateState(channelUID,
