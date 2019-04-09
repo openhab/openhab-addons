@@ -13,7 +13,6 @@
 /addons/binding/org.openhab.binding.bluetooth.ruuvitag @ssalonen
 /addons/binding/org.openhab.binding.bluetooth.test/ @cdjackson @kaikreuzer
 /addons/binding/org.openhab.binding.boschindego/ @jofleck
-/bundles/org.openhab.binding.dsmr.test/ @Hilbrand
 /addons/binding/org.openhab.binding.enocean/ @fruggy83
 /addons/binding/org.openhab.binding.exec/ @kgoderis
 /addons/binding/org.openhab.binding.feed/ @svilenvul
