@@ -20,7 +20,6 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -536,38 +535,32 @@ public class IhcClient {
     }
 
     private void sendErrorEvent(IhcExecption err) {
-        Iterator<IhcEventListener> iterator = eventListeners.iterator();
-
-        while (iterator.hasNext()) {
+        eventListeners.forEach(listener -> {
             try {
-                iterator.next().errorOccured(err);
+                listener.errorOccured(err);
             } catch (RuntimeException e) {
-                logger.debug("Event listener invoking error. ", e);
+                logger.debug("Event listener invoking error.", e);
             }
-        }
+        });
     }
 
     private void sendControllerStateUpdateEvent(WSControllerState state) {
-        Iterator<IhcEventListener> iterator = eventListeners.iterator();
-
-        while (iterator.hasNext()) {
+        eventListeners.forEach(listener -> {
             try {
-                iterator.next().statusUpdateReceived(state);
+                listener.statusUpdateReceived(state);
             } catch (RuntimeException e) {
-                logger.debug("Event listener invoking error. ", e);
+                logger.debug("Event listener invoking error.", e);
             }
-        }
+        });
     }
 
     private void sendResourceValueUpdateEvent(WSResourceValue value) {
-        Iterator<IhcEventListener> iterator = eventListeners.iterator();
-
-        while (iterator.hasNext()) {
+        eventListeners.forEach(listener -> {
             try {
-                iterator.next().resourceValueUpdateReceived(value);
+                listener.resourceValueUpdateReceived(value);
             } catch (RuntimeException e) {
-                logger.debug("Event listener invoking error. ", e);
+                logger.debug("Event listener invoking error.", e);
             }
-        }
+        });
     }
 }
