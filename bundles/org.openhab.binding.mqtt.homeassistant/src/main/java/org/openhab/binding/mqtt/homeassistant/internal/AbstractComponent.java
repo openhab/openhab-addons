@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal.homeassistant;
+package org.openhab.binding.mqtt.homeassistant.internal;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,7 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
-import org.openhab.binding.mqtt.homeassistant.internal.homeassistant.CFactory.ComponentConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.CFactory.ComponentConfiguration;
 
 /**
  * A HomeAssistant component is comparable to an ESH channel group.

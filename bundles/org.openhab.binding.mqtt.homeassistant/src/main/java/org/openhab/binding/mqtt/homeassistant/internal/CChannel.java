@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal.homeassistant;
+package org.openhab.binding.mqtt.homeassistant.internal;
 
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
@@ -37,7 +37,7 @@ import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
-import org.openhab.binding.mqtt.homeassistant.internal.homeassistant.CFactory.ComponentConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.CFactory.ComponentConfiguration;
 
 /**
  * An {@link AbstractComponent}s derived class consists of one or multiple channels.

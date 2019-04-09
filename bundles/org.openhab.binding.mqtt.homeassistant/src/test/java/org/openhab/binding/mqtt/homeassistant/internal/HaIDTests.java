@@ -10,15 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal.homeassistant;
+package org.openhab.binding.mqtt.homeassistant.internal;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.junit.Test;
-import org.openhab.binding.mqtt.homeassistant.internal.homeassistant.HaID;
-import org.openhab.binding.mqtt.homeassistant.internal.homeassistant.HandlerConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.HaID;
+import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
 
 public class HaIDTests {
 

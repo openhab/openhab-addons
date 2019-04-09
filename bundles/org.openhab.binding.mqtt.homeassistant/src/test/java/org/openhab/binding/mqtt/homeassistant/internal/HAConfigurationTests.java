@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.homeassistant.internal.homeassistant;
+package org.openhab.binding.mqtt.homeassistant.internal;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-import org.openhab.binding.mqtt.homeassistant.internal.homeassistant.BaseChannelConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.homeassistant.ChannelConfigurationTypeAdapterFactory;
-import org.openhab.binding.mqtt.homeassistant.internal.homeassistant.ComponentFan;
-import org.openhab.binding.mqtt.homeassistant.internal.homeassistant.ComponentSwitch;
+import org.openhab.binding.mqtt.homeassistant.internal.BaseChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.ChannelConfigurationTypeAdapterFactory;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentFan;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentSwitch;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
