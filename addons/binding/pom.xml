@@ -17,13 +17,6 @@
   <name>openHAB Bindings</name>
 
   <modules>
-    <module>org.openhab.binding.bluetooth</module>
-    <module>org.openhab.binding.bluetooth.bluegiga</module>
-    <module>org.openhab.binding.bluetooth.bluegiga.test</module>
-    <module>org.openhab.binding.bluetooth.bluez</module>
-    <module>org.openhab.binding.bluetooth.blukii</module>
-    <module>org.openhab.binding.bluetooth.ruuvitag</module>
-    <module>org.openhab.binding.bluetooth.test</module>
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.enocean</module>
     <module>org.openhab.binding.exec</module>
