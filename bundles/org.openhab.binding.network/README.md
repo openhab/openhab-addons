@@ -3,6 +3,8 @@
 This binding allows checking whether a device is currently available on the network.
 This is either done using [ping](https://en.wikipedia.org/wiki/Ping_%28networking_utility%29) or by a successful TCP connection on a specified port.
 
+It is also capable to perform bandwidth speed tests.
+
 ## Binding configuration
 
 The binding has the following configuration options:
@@ -25,6 +27,7 @@ binding.network:cacheDeviceStateTimeInMS=2000
 
 -   **pingdevice:** Detects device presence by using ICMP pings, arp pings and dhcp packet sniffing.
 -   **servicedevice:** Detects device presence by scanning for a specific open tcp port.
+-   **speedtest:** Monitors available bandwidth for upload and download.
 
 ## Discovery
 
@@ -39,6 +42,7 @@ Please note: things discovered by the network binding will be provided with a ti
 network:pingdevice:one_device [ hostname="192.168.0.64" ]
 network:pingdevice:second_device [ hostname="192.168.0.65", retry=1, timeout=5000, refreshInterval=60000 ]
 network:servicedevice:important_server [ hostname="192.168.0.62", port=1234 ]
+network:speedtest:local "SpeedTest 50Mo" @ "Internet" [refreshInterval=20, uploadSize=1000000, url="http://1.testdebit.info:8080/", fileName="50M.iso"]
 ```
 
 Use the following options for a **network:pingdevice**:
@@ -51,6 +55,13 @@ Use the following options for a **network:pingdevice**:
 Use the following additional options for a **network:servicedevice**:
 
 -   **port:** Must not be 0. The destination port needs to be a TCP service.
+
+Use the following options for a **network:speedtest**:
+
+-   **refreshInterval:** How often the test will be operated, in minutes. Default: `60000` (one minute)
+-   **uploadSize:** Size of the file to be uploaded in bytes. Default is 1000000.
+-   **url:** Url of the speed test server.
+-   **fileName:** Name of the file to download from test server
 
 ## Presence detection - Configure target device
 
@@ -160,6 +171,7 @@ demo.things:
 
 ```xtend
 Thing network:pingdevice:devicename [ hostname="192.168.0.42" ]
+Thing network:speedtest:local "SpeedTest 50Mo" @ "Internet" [url="http://1.testdebit.info:8080/", fileName="50M.iso"]
 ```
 
 demo.items:
@@ -167,6 +179,14 @@ demo.items:
 ```xtend
 Switch MyDevice { channel="network:pingdevice:devicename:online" }
 Number:Time MyDeviceResponseTime { channel="network:pingdevice:devicename:latency" }
+
+String Speedtest_Running "Test running ... [%s]" {channel="network:speedtest:local:isRunning"}
+Number:Dimensionless Speedtest_Progress "Test progress"  {channel="network:speedtest:local:progress"}
+Number Speedtest_ResultDown "Downlink [%.2f Mbit/s]"  {channel="network:speedtest:local:rateDown"}
+Number Speedtest_ResultUp "Uplink [%.2f Mbit/s]" {channel="network:speedtest:local:rateUp"}
+DateTime Speedtest_Start "Test Start [%1$tH:%1$tM]" <time> {channel="network:speedtest:local:testStart"}
+DateTime Speedtest_LUD "Timestamp [%1$tH:%1$tM]" <time> {channel="network:speedtest:local:testEnd"}
+
 ```
 
 demo.sitemap:
@@ -178,5 +198,27 @@ sitemap demo label="Main Menu"
 		Text item=MyDevice label="Device [%s]"
 		Text item=MyDeviceResponseTime label="Device Response Time [%s]"
 	}
+    Frame label="SpeedTest" {
+        Text item=Speedtest_Start
+        Switch item=Speedtest_Running
+        Default item=Speedtest_Progress
+        Text item=Speedtest_Running label="Speedtest [%s]" visibility=[Speedtest_Running != "-"]
+    }    
+
+    Frame label="Down" {
+        Text item=Speedtest_ResultDown
+        Chart item=Speedtest_ResultDown period=D refresh=30000 service="influxdb" visibility=[sys_chart_period==0, sys_chart_period=="Non initialisé"]
+        Chart item=Speedtest_ResultDown period=W refresh=30000 service="influxdb" visibility=[sys_chart_period==1]
+        Chart item=Speedtest_ResultDown period=M refresh=30000 service="influxdb" visibility=[sys_chart_period==2]
+        Chart item=Speedtest_ResultDown period=Y refresh=30000 service="influxdb" visibility=[sys_chart_period==3]
+    }
+
+    Frame label="Up" {
+        Text item=Speedtest_ResultUp
+        Chart item=Speedtest_ResultUp period=D refresh=30000 service="influxdb" visibility=[sys_chart_period==0, sys_chart_period=="Non initialisé"]
+        Chart item=Speedtest_ResultUp period=W refresh=30000 service="influxdb" visibility=[sys_chart_period==1]
+        Chart item=Speedtest_ResultUp period=M refresh=30000 service="influxdb" visibility=[sys_chart_period==2]
+        Chart item=Speedtest_ResultUp period=Y refresh=30000 service="influxdb" visibility=[sys_chart_period==3]  
+    }
 }
 ```

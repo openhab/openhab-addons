@@ -34,12 +34,19 @@ public class NetworkBindingConstants {
     public static final ThingTypeUID BACKWARDS_COMPATIBLE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
     public static final ThingTypeUID PING_DEVICE = new ThingTypeUID(BINDING_ID, "pingdevice");
     public static final ThingTypeUID SERVICE_DEVICE = new ThingTypeUID(BINDING_ID, "servicedevice");
+    public static final ThingTypeUID SPEEDTEST_DEVICE = new ThingTypeUID(BINDING_ID, "speedtest");
 
     // List of all Channel ids
     public static final String CHANNEL_ONLINE = "online";
     public static final String CHANNEL_LATENCY = "latency";
     public static final String CHANNEL_DEPRECATED_TIME = "time";
     public static final String CHANNEL_LASTSEEN = "lastseen";
+    public static final String CHANNEL_TEST_ISRUNNING = "isRunning";
+    public static final String CHANNEL_TEST_PROGRESS = "progress";
+    public static final String CHANNEL_RATE_UP = "rateUp";
+    public static final String CHANNEL_RATE_DOWN = "rateDown";
+    public static final String CHANNEL_TEST_START = "testStart";
+    public static final String CHANNEL_TEST_END = "testEnd";
 
     // List of all Parameters
     public static final String PARAMETER_HOSTNAME = "hostname";
@@ -60,6 +67,7 @@ public class NetworkBindingConstants {
         SUPPORTED_THING_TYPES_UIDS.add(PING_DEVICE);
         SUPPORTED_THING_TYPES_UIDS.add(SERVICE_DEVICE);
         SUPPORTED_THING_TYPES_UIDS.add(BACKWARDS_COMPATIBLE_DEVICE);
+        SUPPORTED_THING_TYPES_UIDS.add(SPEEDTEST_DEVICE);
     }
 
 }
