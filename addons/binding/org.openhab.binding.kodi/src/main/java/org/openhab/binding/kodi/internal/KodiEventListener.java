@@ -59,7 +59,13 @@ public interface KodiEventListener extends EventListener {
 
     void updateMuted(boolean muted);
 
+    void updateMediaID(String mediaid);
+    
+    void updateUniqueID(String uniqueid);
+    
     void updateTitle(String title);
+    
+    void updateOriginalTitle(String originaltitle);
 
     void updateShowTitle(String title);
 
