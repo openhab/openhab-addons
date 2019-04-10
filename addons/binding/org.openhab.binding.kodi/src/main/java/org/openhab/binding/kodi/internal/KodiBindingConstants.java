@@ -74,7 +74,19 @@ public class KodiBindingConstants {
     public static final String CHANNEL_THUMBNAIL = "thumbnail";
     public static final String CHANNEL_FANART = "fanart";
     public static final String CHANNEL_AUDIO_CODEC = "audio-codec";
+    public static final String CHANNEL_AUDIO_CHANNELS = "audio-channels";
+    public static final String CHANNEL_AUDIO_INDEX = "audio-index";
+    public static final String CHANNEL_AUDIO_LANGUAGE = "audio-language";
+    public static final String CHANNEL_AUDIO_NAME = "audio-name";
     public static final String CHANNEL_VIDEO_CODEC = "video-codec";
+    public static final String CHANNEL_VIDEO_INDEX = "video-index";
+    public static final String CHANNEL_VIDEO_HEIGHT = "video-height";
+    public static final String CHANNEL_VIDEO_WIDTH = "video-width";
+    public static final String CHANNEL_SUBTITLE_ENABLED = "subtitle-enabled";
+    public static final String CHANNEL_SUBTITLE_INDEX = "subtitle-index";
+    public static final String CHANNEL_SUBTITLE_LANGUAGE = "subtitle-language";
+    public static final String CHANNEL_SUBTITLE_NAME = "subtitle-name";
+    
     public static final String CHANNEL_CURRENTTIME = "currenttime";
     public static final String CHANNEL_CURRENTTIMEPERCENTAGE = "currenttimepercentage";
     public static final String CHANNEL_DURATION = "duration";
