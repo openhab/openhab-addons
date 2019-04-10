@@ -96,6 +96,7 @@ public class POP3IMAPHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
+    @SuppressWarnings("null")
     @Override
     public void dispose() {
         if (refreshTask != null) {
@@ -107,8 +108,8 @@ public class POP3IMAPHandler extends BaseThingHandler {
 
     private void refresh() {
         Session session = Session.getDefaultInstance(new Properties(), null);
-        try {
-            Store store = session.getStore(provider);
+
+        try (Store store = session.getStore(provider)) {
             store.connect(config.hostname, config.port, config.username, config.password);
 
             for (Channel channel : thing.getChannels()) {
@@ -119,21 +120,23 @@ public class POP3IMAPHandler extends BaseThingHandler {
                     if (folderName == null || folderName.isEmpty()) {
                         logger.info("missing or empty folder name in channel {}", channel.getUID());
                     } else {
-                        Folder mailbox = store.getFolder(folderName);
-                        mailbox.open(Folder.READ_ONLY);
-                        int mailNum;
-                        if (channelConfig.type == MailCountChannelType.TOTAL) {
-                            mailNum = mailbox.getMessageCount();
-                        } else {
-                            mailNum = mailbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false)).length;
-                        }
-                        mailbox.close();
+                        try (Folder mailbox = store.getFolder(folderName)) {
+                            mailbox.open(Folder.READ_ONLY);
+                            int mailNum;
+                            if (channelConfig.type == MailCountChannelType.TOTAL) {
+                                mailNum = mailbox.getMessageCount();
+                            } else {
+                                mailNum = mailbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false)).length;
+                            }
+                            mailbox.close();
 
-                        updateState(channel.getUID(), new DecimalType(mailNum));
+                            updateState(channel.getUID(), new DecimalType(mailNum));
+                        } catch (MessagingException e) {
+                            throw e;
+                        }
                     }
                 }
             }
-
             store.close();
         } catch (MessagingException e) {
             logger.info("error when trying to refresh IMAP: {}", e.getMessage());

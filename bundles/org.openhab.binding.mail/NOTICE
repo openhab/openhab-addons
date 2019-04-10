@@ -13,9 +13,12 @@ https://www.eclipse.org/legal/epl-2.0/.
 https://github.com/openhab/openhab2-addons
 
 
-Apache Commons Mail
-Copyright 2001-2017 The Apache Software Foundation
+commons-email:
+* License: Apache 2.0 License
+* Project: https://commons.apache.org/proper/commons-email
+* Source:  https://commons.apache.org/proper/commons-email
 
-This product includes software developed at
-The Apache Software Foundation (http://www.apache.org/).
-
+javax.mail:
+* License: Common Development and Distribution License (CDDL) v1.1 and GNU General Public License (GPL) v2 with Classpath Exception
+* Project: https://javaee.github.io/javamail/
+* Source:  https://github.com/javaee/javamail

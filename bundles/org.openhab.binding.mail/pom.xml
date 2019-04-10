@@ -18,11 +18,13 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-email</artifactId>
       <version>1.5</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.sun.mail</groupId>
       <artifactId>javax.mail</artifactId>
       <version>1.6.2</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>

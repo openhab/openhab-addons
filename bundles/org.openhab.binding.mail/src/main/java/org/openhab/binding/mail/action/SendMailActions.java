@@ -37,7 +37,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jan N. Klug - Initial contribution
  */
-
 @ThingActionsScope(name = "mail")
 @NonNullByDefault
 public class SendMailActions implements ThingActions {
