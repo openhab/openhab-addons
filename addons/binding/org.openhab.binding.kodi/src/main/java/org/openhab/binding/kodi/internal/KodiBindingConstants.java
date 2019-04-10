@@ -64,6 +64,7 @@ public class KodiBindingConstants {
 
     public static final String CHANNEL_ARTIST = "artist";
     public static final String CHANNEL_TITLE = "title";
+    public static final String CHANNEL_ORIGINALTITLE = "originaltitle";
     public static final String CHANNEL_SHOWTITLE = "showtitle";
     public static final String CHANNEL_ALBUM = "album";
     public static final String CHANNEL_MEDIATYPE = "mediatype";
