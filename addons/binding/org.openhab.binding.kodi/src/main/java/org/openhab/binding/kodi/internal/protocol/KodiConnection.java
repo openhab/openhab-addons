@@ -69,6 +69,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private static final String PROPERTY_TOTALTIME = "totaltime";
     private static final String PROPERTY_TIME = "time";
     private static final String PROPERTY_PERCENTAGE = "percentage";
+    private static final String PROPERTY_SUBTITLEENABLED = "subtitleenabled";
+    private static final String PROPERTY_CURRENTSUBTITLE = "currentsubtitle";    
     private static final String PROPERTY_CURRENTVIDEOSTREAM = "currentvideostream";
     private static final String PROPERTY_CURRENTAUDIOSTREAM = "currentaudiostream";
     private static final String PROPERTY_CANHIBERNATE = "canhibernate";
@@ -589,7 +591,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     private void requestPlayerPropertiesUpdate(int activePlayer) {
-        final String[] properties = { PROPERTY_CURRENTAUDIOSTREAM, PROPERTY_CURRENTVIDEOSTREAM, PROPERTY_PERCENTAGE,
+        final String[] properties = {PROPERTY_SUBTITLEENABLED, PROPERTY_CURRENTSUBTITLE, PROPERTY_CURRENTAUDIOSTREAM, PROPERTY_CURRENTVIDEOSTREAM, PROPERTY_PERCENTAGE,
                 PROPERTY_TIME, PROPERTY_TOTALTIME };
 
         JsonObject params = new JsonObject();
