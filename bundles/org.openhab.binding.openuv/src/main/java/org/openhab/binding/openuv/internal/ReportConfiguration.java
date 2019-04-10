@@ -13,15 +13,14 @@
 package org.openhab.binding.openuv.internal;
 
 /**
- * The {@link OpenUVConfiguration} is the class used to match the
+ * The {@link ReportConfiguration} is the class used to match the
  * thing configuration.
  *
  * @author Gaël L"hopital - Initial contribution
  */
-public class OpenUVConfiguration {
+public class ReportConfiguration {
     String[] elements = null;
 
-    public String apikey;
     private String location;
     public Integer refresh;
 
