@@ -474,8 +474,14 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     private void requestPlayerItemUpdate(int activePlayer) {
-        final String[] properties = { "title", "album", "artist", "director", PROPERTY_THUMBNAIL, "file",
-                PROPERTY_FANART, "showtitle", "streamdetails", "channel", "channeltype", "genre",PROPERTY_UNIQUEID };
+        final String[] properties = {PROPERTY_UNIQUEID, "title", "originaltitle",
+        "album", "artist", "track",
+        "director",
+        PROPERTY_THUMBNAIL, PROPERTY_FANART,
+        "file", "streamdetails",
+        "showtitle","season", "episode",
+        "channel", "channeltype",
+        "genre","mpaa","rating", "votes", "userrating" };
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
@@ -487,10 +493,31 @@ public class KodiConnection implements KodiClientSocketEventListener {
             if (result.has("item")) {
                 JsonObject item = result.get("item").getAsJsonObject();
 
+                String mediaid = "";
+                if (item.has("id")) {
+                    media = item.get("id").getAsString();
+                }
+
+                String uniqueid = "";
+                if (item.has("uniqueid")) {
+                    uniqueid = item.get("uniqueid").getAsString();
+                }                
+                
+                String originaltitle" = "";
+                if (item.has("originaltitle"")) {
+                    title = item.get("originaltitle").getAsString();
+                }                
+                
                 String title = "";
                 if (item.has("title")) {
                     title = item.get("title").getAsString();
                 }
+                
+                String originaltitle" = "";
+                if (item.has("originaltitle"")) {
+                    title = item.get("originaltitle").getAsString();
+                }
+                
                 if (title.isEmpty()) {
                     title = item.get("label").getAsString();
                 }
@@ -545,8 +572,11 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     fanart = getImageForElement(item.get(PROPERTY_FANART));
                 }
 
+                listener.updateMediaID(mediaid);
+                listener.updateUniqueID(uniqueid);
                 listener.updateAlbum(album);
                 listener.updateTitle(title);
+                listener.updateOriginalTitle(originaltitle);
                 listener.updateShowTitle(showTitle);
                 listener.updateArtistList(artistList);
                 listener.updateMediaType(mediaType);
