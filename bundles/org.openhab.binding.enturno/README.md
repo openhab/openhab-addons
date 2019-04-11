@@ -1,12 +1,6 @@
 # EnturNo binding
 
-{% include base.html %}
-
 This binding is meant to get Norwegian public transport real-time (estimated) data from [Entur.no API](https://developer.entur.org/content/journey-planner-0).
-
-It runs GraphQL-API query against the service.
-
-Entur provides an [IDE for the API](https://api.entur.org/doc/shamash-journeyplanner/) (use query from example at the end of this documentation as a start point. Ctrl+Space gives hints of valid values)
                                                         
 ## Supported Things
 
@@ -99,43 +93,4 @@ String      RealTime_Departure02_IsReal2    "Departure02 is real-time"          
 String      RealTime_Departure03_IsReal3    "Departure03 is real-time"          {channel="enturno:linestop:7e693e96:Direction02#estimatedFlag03"}
 String      RealTime_Departure04_IsReal4    "Departure04 is real-time"          {channel="enturno:linestop:7e693e96:Direction02#estimatedFlag04"}
 String      RealTime_Departure05_IsReal5    "Departure05 is real-time"          {channel="enturno:linestop:7e693e96:Direction02#estimatedFlag05"}
-```
-
-## GraphQL request example
-
-```
-{
-  stopPlace(id: "NSR:StopPlace:30848") {
-    id
-    name
-    transportMode
-    estimatedCalls(startTime:"2019-04-06T10:00:00+01:00" timeRange: 86400, numberOfDepartures: 400) {
-      realtime
-      aimedArrivalTime
-      aimedDepartureTime
-      expectedArrivalTime
-      expectedDepartureTime
-      date
-      forBoarding
-      forAlighting
-      destinationDisplay {
-        frontText
-      }
-      quay {
-        id
-        publicCode
-      }
-      serviceJourney {
-        journeyPattern {
-          line {
-            id
-            name
-            transportMode
-            publicCode
-          }
-        }
-      }
-    }
-  }
-}
 ```
