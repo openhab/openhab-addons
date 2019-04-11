@@ -495,9 +495,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
             if (result.has("item")) {
                 JsonObject item = result.get("item").getAsJsonObject();
 
-                String mediaid = "";
+                int mediaid = "";
                 if (item.has("id")) {
-                    media = item.get("id").getAsString();
+                    media = item.get("id").getAsInt();
                 }
 
                 String uniqueid = "";
