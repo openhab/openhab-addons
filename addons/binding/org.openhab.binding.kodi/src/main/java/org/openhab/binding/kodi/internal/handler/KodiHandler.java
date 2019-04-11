@@ -667,6 +667,11 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     @Override
+    public void updateOriginalTitle(String title) {
+        updateState(CHANNEL_ORIGINALTITLE, createStringState(title));
+    }    
+    
+    @Override
     public void updateShowTitle(String title) {
         updateState(CHANNEL_SHOWTITLE, createStringState(title));
     }
@@ -686,6 +691,16 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         updateState(CHANNEL_MEDIATYPE, createStringState(mediaType));
     }
 
+    @Override
+    public void updateMediaID(int mediaID) {
+        updateState(CHANNEL_MEDIAID, createStringState(mediaID));
+    }    
+    
+    @Override
+    public void updateUniqueID(String uniqueID) {
+        updateState(CHANNEL_UNIQUEID, createStringState(uniqueid));
+    }    
+    
     @Override
     public void updateGenreList(List<String> genreList) {
         updateState(CHANNEL_GENRELIST, createStringListState(genreList));
