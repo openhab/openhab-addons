@@ -495,7 +495,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
             if (result.has("item")) {
                 JsonObject item = result.get("item").getAsJsonObject();
 
-                int mediaid = "";
+                int mediaid = -1;
                 if (item.has("id")) {
                     media = item.get("id").getAsInt();
                 }
@@ -515,20 +515,21 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     title = item.get("title").getAsString();
                 }
                 
-                String originaltitle" = "";
-                if (item.has("originaltitle"")) {
-                    title = item.get("originaltitle").getAsString();
-                }
-                
-                if (title.isEmpty()) {
-                    title = item.get("label").getAsString();
-                }
-
                 String showTitle = "";
                 if (item.has("showtitle")) {
                     showTitle = item.get("showtitle").getAsString();
                 }
 
+                int season = -1;
+                if (item.has("season")) {
+                    media = item.get("season").getAsInt();
+                }
+
+                int episode = -1;
+                if (item.has("episode")) {
+                    media = item.get("episode").getAsInt();
+                }
+                             
                 String album = "";
                 if (item.has("album")) {
                     album = item.get("album").getAsString();
