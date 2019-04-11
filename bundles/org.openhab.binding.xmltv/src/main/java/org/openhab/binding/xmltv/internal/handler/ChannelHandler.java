@@ -39,6 +39,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.xmltv.internal.configuration.XmlChannelConfiguration;
@@ -60,11 +61,9 @@ import org.slf4j.LoggerFactory;
 public class ChannelHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(XmlTVHandler.class);
 
-    @NonNullByDefault({})
-    private ScheduledFuture<?> globalJob;
-
+    private @NonNullByDefault({}) ScheduledFuture<?> globalJob;
     private @Nullable MediaChannel mediaChannel;
-    private RawType mediaIcon = new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
+    private @Nullable RawType mediaIcon = new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
 
     public final List<Programme> programmes = new ArrayList<>();
 
@@ -162,11 +161,13 @@ public class ChannelHandler extends BaseThingHandler {
 
                 switch (uidElements[1]) {
                     case CHANNEL_ICON:
+                        State icon = null;
                         if (GROUP_CHANNEL_PROPERTIES.equals(uidElements[0])) {
-                            updateState(channelUID, mediaIcon != null ? mediaIcon : UnDefType.UNDEF);
+                            icon = mediaIcon;
                         } else {
-                            updateState(channelUID, downloadIcon(programme.getIcons()));
+                            icon = downloadIcon(programme.getIcons());
                         }
+                        updateState(channelUID, icon != null ? icon : UnDefType.UNDEF);
                         break;
                     case CHANNEL_CHANNEL_URL:
                         updateState(channelUID,
@@ -238,12 +239,12 @@ public class ChannelHandler extends BaseThingHandler {
         return new QuantityType<>(secondsElapsed, SmartHomeUnits.SECOND);
     }
 
-    private RawType downloadIcon(List<Icon> icons) {
+    private @Nullable RawType downloadIcon(List<Icon> icons) {
         if (icons.size() > 0) {
             String url = icons.get(0).getSrc();
             return HttpUtil.downloadImage(url);
         }
-        return new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
+        return null;
     }
 
 }
