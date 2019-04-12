@@ -39,26 +39,39 @@
     <dependency>
       <groupId>io.reactivex.rxjava2</groupId>
       <artifactId>rxjava</artifactId>
-      <version>2.2.8</version>
+      <version>2.2.3</version>
       <scope>provided</scope>
     </dependency>
-    <dependency> 
-      <groupId>io.reactivex</groupId>
-      <artifactId>rxjava-reactive-streams</artifactId>
-      <version>1.0.1</version>
+    <dependency>
+      <groupId>org.reactivestreams</groupId>
+        <artifactId>reactive-streams</artifactId>
+        <version>1.0.2</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.openmuc</groupId>
       <artifactId>jsml</artifactId>
       <version>1.1.2</version>
+      <scope>provided</scope>   
+      <exclusions>
+        <exclusion>
+          <groupId>org.openmuc</groupId>
+          <artifactId>jrxtx</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.openmuc</groupId>
       <artifactId>j62056</artifactId>
       <version>2.1.0</version>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.openmuc</groupId>
+          <artifactId>jrxtx</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
-  </project>
+</project>
