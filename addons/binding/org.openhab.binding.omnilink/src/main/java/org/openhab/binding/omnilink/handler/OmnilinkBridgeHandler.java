@@ -88,7 +88,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     public void sendOmnilinkCommand(final int message, final int param1, final int param2)
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         try {
-            omniConnection.controllerCommand(message, param1, param2);
+            getOmniConnection().controllerCommand(message, param1, param2);
         } catch (IOException | OmniNotConnectedException e) {
             setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
@@ -99,7 +99,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     public SecurityCodeValidation reqSecurityCodeValidation(int area, int digit1, int digit2, int digit3, int digit4)
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         try {
-            return omniConnection.reqSecurityCodeValidation(area, digit1, digit2, digit3, digit4);
+            return getOmniConnection().reqSecurityCodeValidation(area, digit1, digit2, digit3, digit4);
         } catch (IOException | OmniNotConnectedException e) {
             setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
@@ -109,7 +109,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     public void activateKeypadEmergency(int area, int emergencyType)
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         try {
-            omniConnection.activateKeypadEmergency(area, emergencyType);
+            getOmniConnection().activateKeypadEmergency(area, emergencyType);
         } catch (IOException | OmniNotConnectedException e) {
             setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
@@ -119,7 +119,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     public SystemInformation reqSystemInformation()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         try {
-            return omniConnection.reqSystemInformation();
+            return getOmniConnection().reqSystemInformation();
         } catch (IOException | OmniNotConnectedException e) {
             setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
@@ -129,7 +129,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     public SystemFormats reqSystemFormats()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         try {
-            return omniConnection.reqSystemFormats();
+            return getOmniConnection().reqSystemFormats();
         } catch (IOException | OmniNotConnectedException e) {
             setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
@@ -139,7 +139,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     private SystemFeatures reqSystemFeatures()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         try {
-            return omniConnection.reqSystemFeatures();
+            return getOmniConnection().reqSystemFeatures();
         } catch (IOException | OmniNotConnectedException e) {
             setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
@@ -156,8 +156,9 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                             ZoneId.systemDefault());
                     boolean inDaylightSavings = zdt.getZone().getRules().isDaylightSavings(zdt.toInstant());
                     try {
-                        omniConnection.setTimeCommand(zdt.getYear() - 2000, zdt.getMonthValue(), zdt.getDayOfMonth(),
-                                zdt.getDayOfWeek().getValue(), zdt.getHour(), zdt.getMinute(), inDaylightSavings);
+                        getOmniConnection().setTimeCommand(zdt.getYear() - 2000, zdt.getMonthValue(),
+                                zdt.getDayOfMonth(), zdt.getDayOfWeek().getValue(), zdt.getHour(), zdt.getMinute(),
+                                inDaylightSavings);
                     } catch (IOException | OmniNotConnectedException | OmniInvalidResponseException
                             | OmniUnknownMessageTypeException e) {
                         logger.debug("Unable to set system date", e);
@@ -197,7 +198,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     private void makeOmnilinkConnection() {
-        if (this.omniConnection != null && this.omniConnection.connected()) {
+        if (omniConnection != null && omniConnection.connected()) {
             return;
         }
 
@@ -385,26 +386,24 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
 
     private void getSystemStatus() throws IOException, OmniNotConnectedException, OmniInvalidResponseException,
             OmniUnknownMessageTypeException {
-        if (omniConnection != null) {
-            SystemStatus status = omniConnection.reqSystemStatus();
-            logger.debug("received system status: {}", status);
-            // let's update system time
-            String dateString = new StringBuilder().append(2000 + status.getYear()).append("-")
-                    .append(String.format("%02d", status.getMonth())).append("-")
-                    .append(String.format("%02d", status.getDay())).append("T")
-                    .append(String.format("%02d", status.getHour())).append(":")
-                    .append(String.format("%02d", status.getMinute())).append(":")
-                    .append(String.format("%02d", status.getSecond())).toString();
-            DateTimeType sysDateTime = new DateTimeType(dateString);
-            updateState(OmnilinkBindingConstants.CHANNEL_SYSTEMDATE, new DateTimeType(dateString));
-            logger.debug("System date is: {}", sysDateTime);
-        }
+        SystemStatus status = getOmniConnection().reqSystemStatus();
+        logger.debug("received system status: {}", status);
+        // let's update system time
+        String dateString = new StringBuilder().append(2000 + status.getYear()).append("-")
+                .append(String.format("%02d", status.getMonth())).append("-")
+                .append(String.format("%02d", status.getDay())).append("T")
+                .append(String.format("%02d", status.getHour())).append(":")
+                .append(String.format("%02d", status.getMinute())).append(":")
+                .append(String.format("%02d", status.getSecond())).toString();
+        DateTimeType sysDateTime = new DateTimeType(dateString);
+        updateState(OmnilinkBindingConstants.CHANNEL_SYSTEMDATE, new DateTimeType(dateString));
+        logger.debug("System date is: {}", sysDateTime);
     }
 
     public Message reqObjectProperties(int objectType, int objectNum, int direction, int filter1, int filter2,
             int filter3) throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         try {
-            return omniConnection.reqObjectProperties(objectType, objectNum, direction, filter1, filter2, filter3);
+            return getOmniConnection().reqObjectProperties(objectType, objectNum, direction, filter1, filter2, filter3);
         } catch (OmniNotConnectedException | IOException e) {
             setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
@@ -414,7 +413,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     public Message requestAudioSourceStatus(final int source, final int position)
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         try {
-            return omniConnection.reqAudioSourceStatus(source, position);
+            return getOmniConnection().reqAudioSourceStatus(source, position);
         } catch (OmniNotConnectedException | IOException e) {
             setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
@@ -425,7 +424,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             boolean extended)
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         try {
-            return omniConnection.reqObjectStatus(objType, startObject, endObject, extended);
+            return getOmniConnection().reqObjectStatus(objType, startObject, endObject, extended);
         } catch (OmniNotConnectedException | IOException e) {
             setOfflineAndReconnect(e.getMessage());
             throw new BridgeOfflineException(e);
@@ -483,7 +482,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     public Message reqEventLogData(int eventNumber, int direction)
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
         try {
-            return omniConnection.uploadEventLogData(eventNumber, direction);
+            return getOmniConnection().uploadEventLogData(eventNumber, direction);
         } catch (OmniNotConnectedException | IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             throw new BridgeOfflineException(e);
@@ -556,6 +555,14 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             logger.warn("Exception Polling Event Log", e);
         } catch (NullPointerException e) {
             logger.debug("NPE.  Omni connection probably not set up.", e);
+        }
+    }
+
+    private Connection getOmniConnection() throws OmniNotConnectedException {
+        if (omniConnection != null) {
+            return omniConnection;
+        } else {
+            throw new OmniNotConnectedException("Connection not yet established.");
         }
     }
 }
