@@ -12,11 +12,12 @@
  */
 package org.openhab.binding.digiplex.internal.discovery;
 
+import static org.openhab.binding.digiplex.internal.DigiplexBindingConstants.*;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -26,7 +27,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
-import org.openhab.binding.digiplex.internal.DigiplexBindingConstants;
 import org.openhab.binding.digiplex.internal.communication.AreaLabelRequest;
 import org.openhab.binding.digiplex.internal.communication.AreaLabelResponse;
 import org.openhab.binding.digiplex.internal.communication.DigiplexMessageHandler;
@@ -34,7 +34,6 @@ import org.openhab.binding.digiplex.internal.communication.DigiplexRequest;
 import org.openhab.binding.digiplex.internal.communication.ZoneLabelRequest;
 import org.openhab.binding.digiplex.internal.communication.ZoneLabelResponse;
 import org.openhab.binding.digiplex.internal.handler.DigiplexBridgeHandler;
-import org.osgi.service.component.annotations.Component;
 
 /**
  * Service for discovering things on Digiplex alarm systems
@@ -43,20 +42,18 @@ import org.osgi.service.component.annotations.Component;
  *
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = false, configurationPid = "discovery.digiplex")
 public class DigiplexDiscoveryService extends AbstractDiscoveryService
-        implements ThingHandlerService, DigiplexMessageHandler {
+        implements DiscoveryService, ThingHandlerService, DigiplexMessageHandler {
 
     private static final int MAX_ZONE = 96;
     private static final int MAX_AREA = 8;
 
     private static final int DISCOVERY_TIMEOUT = 30;
 
-    @Nullable
-    DigiplexBridgeHandler bridgeHandler;
+    private @Nullable DigiplexBridgeHandler bridgeHandler;
 
     public DigiplexDiscoveryService() {
-        super(Collections.singleton(DigiplexBindingConstants.THING_TYPE_ZONE), DISCOVERY_TIMEOUT, false);
+        super(Collections.singleton(THING_TYPE_ZONE), DISCOVERY_TIMEOUT, false);
     }
 
     @Override
@@ -91,11 +88,10 @@ public class DigiplexDiscoveryService extends AbstractDiscoveryService
         }
 
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        ThingUID thingUID = new ThingUID(DigiplexBindingConstants.THING_TYPE_ZONE, bridgeUID,
-                String.format("zone%d", response.zoneNo));
+        ThingUID thingUID = new ThingUID(THING_TYPE_ZONE, bridgeUID, String.format("zone%d", response.zoneNo));
 
         Map<String, Object> properties = new HashMap<>(1);
-        properties.put(DigiplexBindingConstants.PROPERTY_ZONE_NO, Integer.toString(response.zoneNo));
+        properties.put(PROPERTY_ZONE_NO, Integer.toString(response.zoneNo));
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                 .withProperties(properties).withLabel(response.zoneName).build();
@@ -104,7 +100,7 @@ public class DigiplexDiscoveryService extends AbstractDiscoveryService
     }
 
     private boolean isDefaultName(ZoneLabelResponse response) {
-        return DigiplexBindingConstants.ZONE_DEFAULT_NAMES.stream().anyMatch(format -> {
+        return ZONE_DEFAULT_NAMES.stream().anyMatch(format -> {
             if (String.format(format, response.zoneNo).equals(response.zoneName)) {
                 return true;
             } else {
@@ -115,19 +111,17 @@ public class DigiplexDiscoveryService extends AbstractDiscoveryService
 
     @Override
     @SuppressWarnings("null")
-    public void handleAreaLabelResponse(@NonNull AreaLabelResponse response) {
+    public void handleAreaLabelResponse(AreaLabelResponse response) {
         // we have no other option to check whether area is actually enabled than to compare its name with the default
-        if (response.success && response.areaName
-                .equals(String.format(DigiplexBindingConstants.AREA_DEFAULT_NAME, response.areaNo))) {
+        if (response.success && response.areaName.equals(String.format(AREA_DEFAULT_NAME, response.areaNo))) {
             return;
         }
 
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        ThingUID thingUID = new ThingUID(DigiplexBindingConstants.THING_TYPE_AREA, bridgeUID,
-                String.format("area%d", response.areaNo));
+        ThingUID thingUID = new ThingUID(THING_TYPE_AREA, bridgeUID, String.format("area%d", response.areaNo));
 
         Map<String, Object> properties = new HashMap<>(1);
-        properties.put(DigiplexBindingConstants.PROPERTY_AREA_NO, Integer.toString(response.areaNo));
+        properties.put(PROPERTY_AREA_NO, Integer.toString(response.areaNo));
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                 .withProperties(properties).withLabel(response.areaName).build();
@@ -137,21 +131,24 @@ public class DigiplexDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        bridgeHandler = (DigiplexBridgeHandler) handler;
-        if (bridgeHandler != null) {
+        if (handler instanceof DigiplexBridgeHandler) {
+            bridgeHandler = (DigiplexBridgeHandler) handler;
             bridgeHandler.registerMessageHandler(this);
         }
     }
 
     @Override
-    @Nullable
-    public ThingHandler getThingHandler() {
+    public @Nullable ThingHandler getThingHandler() {
         return bridgeHandler;
+    }
+
+    @Override
+    public void activate() {
+        super.activate(null);
     }
 
     @Override
     public void deactivate() {
         super.deactivate();
     }
-
 }

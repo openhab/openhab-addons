@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.yamahareceiver.internal.discovery;
 
-import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.ZONE_THING_TYPE;
+import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Configs.CONFIG_ZONE;
 
 import java.util.ArrayList;
@@ -21,17 +21,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
-import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.handler.YamahaBridgeHandler;
 import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
-import org.osgi.service.component.annotations.Deactivate;
 
 /**
  * After the AVR bridge thing has been added and a connection could be established,
@@ -41,8 +41,9 @@ import org.osgi.service.component.annotations.Deactivate;
  * @author Tomasz Maruszak - Introduced config object
  */
 @NonNullByDefault
-public class ZoneDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
-    private @NonNullByDefault({}) ThingHandler handler;
+public class ZoneDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
+
+    private @Nullable YamahaBridgeHandler handler;
 
     /**
      * Constructs a zone discovery service.
@@ -50,10 +51,14 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService implements Th
      * Call {@link ZoneDiscoveryService#destroy()} to unregister the service after use.
      */
     public ZoneDiscoveryService() {
-        super(YamahaReceiverBindingConstants.ZONE_THING_TYPES_UIDS, 0, false);
+        super(ZONE_THING_TYPES_UIDS, 0, false);
     }
 
-    @Deactivate
+    @Override
+    public void activate() {
+        super.activate(null);
+    }
+
     @Override
     public void deactivate() {
         super.deactivate();
@@ -94,15 +99,16 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService implements Th
         }
     }
 
-    @NonNullByDefault({})
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        this.handler = handler;
-        ((YamahaBridgeHandler) handler).setZoneDiscoveryService(this);
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof YamahaBridgeHandler) {
+            this.handler = (YamahaBridgeHandler) handler;
+            this.handler.setZoneDiscoveryService(this);
+        }
     }
 
     @Override
-    public ThingHandler getThingHandler() {
-        return this.handler;
+    public @Nullable ThingHandler getThingHandler() {
+        return handler;
     }
 }
