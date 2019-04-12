@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -41,7 +42,7 @@ import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class ThingDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class ThingDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_PRESENCE_SENSOR, THING_TYPE_DAYLIGHT_SENSOR, THING_TYPE_POWER_SENSOR,
                     THING_TYPE_CONSUMPTION_SENSOR, THING_TYPE_LIGHT_SENSOR, THING_TYPE_TEMPERATURE_SENSOR,
@@ -143,7 +144,6 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
 
     @Override
     public void deactivate() {
-        removeOlderResults(getTimestampOfLastScan());
         super.deactivate();
     }
 

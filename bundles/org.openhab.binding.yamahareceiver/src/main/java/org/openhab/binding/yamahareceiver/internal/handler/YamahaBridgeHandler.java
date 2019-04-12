@@ -24,7 +24,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -328,7 +327,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public Collection<@NonNull Class<? extends @NonNull ThingHandlerService>> getServices() {
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(ZoneDiscoveryService.class);
     }
 

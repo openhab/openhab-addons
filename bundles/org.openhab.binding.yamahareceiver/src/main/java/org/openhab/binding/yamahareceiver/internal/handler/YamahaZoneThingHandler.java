@@ -16,11 +16,13 @@ import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingC
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -122,10 +124,9 @@ public class YamahaZoneThingHandler extends BaseThingHandler
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        Collection<Class<? extends ThingHandlerService>> l = new ArrayList<>();
-        l.add(ChannelsTypeProviderPreset.class);
-        l.add(ChannelsTypeProviderAvailableInputs.class);
-        return l;
+        return Collections
+                .unmodifiableList(Stream.of(ChannelsTypeProviderAvailableInputs.class, ChannelsTypeProviderPreset.class)
+                        .collect(Collectors.toList()));
     }
 
     /**

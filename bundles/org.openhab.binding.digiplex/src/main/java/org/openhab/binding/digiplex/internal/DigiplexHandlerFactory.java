@@ -51,10 +51,8 @@ public class DigiplexHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(THING_TYPE_AREA)) {
             return new DigiplexAreaHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
-            DigiplexBridgeHandler bridge = new DigiplexBridgeHandler((Bridge) thing);
-            return bridge;
+            return new DigiplexBridgeHandler((Bridge) thing);
         }
-
         return null;
     }
 
