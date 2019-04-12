@@ -14,6 +14,7 @@ package org.openhab.binding.speedtest.internal.handler;
 
 import static org.openhab.binding.speedtest.internal.SpeedTestBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -52,6 +53,7 @@ import fr.bmartel.speedtest.model.SpeedTestMode;
 @NonNullByDefault
 public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestListener {
     private final Logger logger = LoggerFactory.getLogger(SpeedTestHandler.class);
+    private static final BigDecimal TO_MBIT = new BigDecimal(1048576);
     private @NonNullByDefault({}) SpeedTestSocket speedTestSocket;
     private @NonNullByDefault({}) ScheduledFuture<?> refreshTask;
     private @NonNullByDefault({}) SpeedTestConfiguration configuration;
@@ -63,7 +65,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
 
     @Override
     public void initialize() {
-        speedTestSocket = new SpeedTestSocket();
+        speedTestSocket = new SpeedTestSocket(1500);
         speedTestSocket.addSpeedTestListener(this);
         configuration = this.getConfigAs(SpeedTestConfiguration.class);
         startAutomaticRefresh();
@@ -71,9 +73,11 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
     }
 
     private void startAutomaticRefresh() {
-        refreshTask = scheduler.scheduleWithFixedDelay(this::launchSpeedTest, 0, configuration.refreshInterval,
-                TimeUnit.MINUTES);
-        logger.debug("Start automatic refresh at {} minutes", configuration.refreshInterval);
+        final int initialDelay = 2;
+        refreshTask = scheduler.scheduleWithFixedDelay(this::launchSpeedTest, initialDelay,
+                configuration.refreshInterval, TimeUnit.MINUTES);
+        logger.info("Start automatic in {} minutes, refreshed every {} minutes", initialDelay,
+                configuration.refreshInterval);
     }
 
     private void launchSpeedTest() {
@@ -89,9 +93,9 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
         fullURL += fullURL.endsWith("/") ? "" : "/";
         if (mode == SpeedTestMode.DOWNLOAD) {
             fullURL += configuration.fileName;
-            speedTestSocket.startDownload(fullURL, 1500);
+            speedTestSocket.startDownload(fullURL);
         } else {
-            speedTestSocket.startUpload(fullURL, configuration.uploadSize, 1500);
+            speedTestSocket.startUpload(fullURL, configuration.uploadSize);
         }
     }
 
@@ -100,11 +104,12 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
         if (testReport != null) {
             switch (testReport.getSpeedTestMode()) {
                 case DOWNLOAD:
-                    updateState(CHANNEL_RATE_DOWN, new DecimalType(testReport.getTransferRateBit()));
+                    updateState(CHANNEL_RATE_DOWN, new DecimalType(testReport.getTransferRateBit().divide(TO_MBIT)));
                     startTest(SpeedTestMode.UPLOAD);
                     break;
                 case UPLOAD:
-                    updateState(CHANNEL_RATE_UP, new DecimalType(testReport.getTransferRateBit()));
+                    updateStatus(ThingStatus.ONLINE);
+                    updateState(CHANNEL_RATE_UP, new DecimalType(testReport.getTransferRateBit().divide(TO_MBIT)));
                     updateState(CHANNEL_TEST_ISRUNNING, OnOffType.OFF);
                     updateProgress(UnDefType.NULL);
                     updateState(CHANNEL_TEST_END, new DateTimeType());
@@ -126,7 +131,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
                     refreshTask.cancel(true);
                     break;
                 case CONNECTION_ERROR:
-                    refreshTask.cancel(true);
+                    logger.warn(errorMessage);
                     return;
                 case SOCKET_TIMEOUT:
                 case SOCKET_ERROR:
