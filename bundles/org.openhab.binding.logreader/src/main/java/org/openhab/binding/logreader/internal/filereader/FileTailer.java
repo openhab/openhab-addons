@@ -15,10 +15,10 @@ package org.openhab.binding.logreader.internal.filereader;
 import java.io.File;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.apache.commons.io.input.Tailer;
+import org.apache.commons.io.input.TailerListener;
+import org.apache.commons.io.input.TailerListenerAdapter;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.logreader.internal.commonsio.Tailer;
-import org.openhab.binding.logreader.internal.commonsio.TailerListener;
-import org.openhab.binding.logreader.internal.commonsio.TailerListenerAdapter;
 import org.openhab.binding.logreader.internal.filereader.api.FileReaderException;
 import org.openhab.binding.logreader.internal.filereader.api.LogFileReader;
 import org.slf4j.Logger;

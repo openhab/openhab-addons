@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openhab.binding.logreader.internal.commonsio;
+package org.apache.commons.io.input;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
