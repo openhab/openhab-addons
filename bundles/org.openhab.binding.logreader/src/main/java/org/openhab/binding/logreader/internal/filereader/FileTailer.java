@@ -18,9 +18,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.logreader.internal.filereader.api.FileReaderException;
 import org.openhab.binding.logreader.internal.filereader.api.LogFileReader;
-import org.openhab.binding.logreader.internal.filereader.commonsio.Tailer;
-import org.openhab.binding.logreader.internal.filereader.commonsio.TailerListener;
-import org.openhab.binding.logreader.internal.filereader.commonsio.TailerListenerAdapter;
+import org.openhab.binding.logreader.internal.thirdparty.commonsio.Tailer;
+import org.openhab.binding.logreader.internal.thirdparty.commonsio.TailerListener;
+import org.openhab.binding.logreader.internal.thirdparty.commonsio.TailerListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
