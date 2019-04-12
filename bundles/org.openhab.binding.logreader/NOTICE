@@ -14,7 +14,7 @@ https://github.com/openhab/openhab2-addons
 
 == Third-party Content
 
-commons-io
+commons-io (files under src/3rdparty)
 * License: Apache 2.0 License
 * Project: https://commons.apache.org/proper/commons-io/
 * Source:  https://github.com/paulianttila/commons-io/tree/IO-279-fix
