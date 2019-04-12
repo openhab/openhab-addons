@@ -149,7 +149,6 @@ public class DigiplexDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void deactivate() {
-        removeOlderResults(getTimestampOfLastScan());
         super.deactivate();
     }
 }

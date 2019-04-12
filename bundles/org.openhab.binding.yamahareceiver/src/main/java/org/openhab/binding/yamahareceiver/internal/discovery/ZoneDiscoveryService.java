@@ -61,7 +61,6 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService implements Di
 
     @Override
     public void deactivate() {
-        removeOlderResults(getTimestampOfLastScan());
         super.deactivate();
     }
 

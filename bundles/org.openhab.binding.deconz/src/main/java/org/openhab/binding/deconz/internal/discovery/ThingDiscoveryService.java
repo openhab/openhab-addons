@@ -144,7 +144,6 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
 
     @Override
     public void deactivate() {
-        removeOlderResults(getTimestampOfLastScan());
         super.deactivate();
     }
 
