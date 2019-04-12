@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openhab.binding.logreader.internal.thirdparty.commonsio;
+package org.openhab.binding.logreader.internal.commonsio;
 
 /**
- * {@link TailerListener} Adapter.
+ * Listener for events from a {@link Tailer}.
  *
  * @since 2.0
  */
-public class TailerListenerAdapter implements TailerListener {
+public interface TailerListener {
 
     /**
      * The tailer will call this method during construction,
@@ -29,55 +29,41 @@ public class TailerListenerAdapter implements TailerListener {
      *
      * @param tailer the tailer.
      */
-    @Override
-    public void init(final Tailer tailer) {
-    }
+    void init(Tailer tailer);
 
     /**
      * This method is called if the tailed file is not found.
+     * <p>
+     * <b>Note:</b> this is called from the tailer thread.
      */
-    @Override
-    public void fileNotFound() {
-    }
+    void fileNotFound();
 
     /**
      * Called if a file rotation is detected.
      *
      * This method is called before the file is reopened, and fileNotFound may
      * be called if the new file has not yet been created.
+     * <p>
+     * <b>Note:</b> this is called from the tailer thread.
      */
-    @Override
-    public void fileRotated() {
-    }
+    void fileRotated();
 
     /**
      * Handles a line from a Tailer.
+     * <p>
+     * <b>Note:</b> this is called from the tailer thread.
      *
      * @param line the line.
      */
-    @Override
-    public void handle(final String line) {
-    }
+    void handle(String line);
 
     /**
      * Handles an Exception .
+     * <p>
+     * <b>Note:</b> this is called from the tailer thread.
      *
      * @param ex the exception.
      */
-    @Override
-    public void handle(final Exception ex) {
-    }
+    void handle(Exception ex);
 
-    /**
-     * Called each time the Tailer reaches the end of the file.
-     *
-     * <b>Note:</b> this is called from the tailer thread.
-     *
-     * Note: a future version of commons-io will pull this method up to the TailerListener interface,
-     * for now clients must subclass this class to use this feature.
-     *
-     * @since 2.5
-     */
-    public void endOfFileReached() {
-    }
 }
