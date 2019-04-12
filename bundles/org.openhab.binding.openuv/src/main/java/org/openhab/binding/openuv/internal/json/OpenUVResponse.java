@@ -13,25 +13,20 @@
 package org.openhab.binding.openuv.internal.json;
 
 /**
- * The {@link OpenUVJsonResponse} is the Java class used to map the JSON
+ * The {@link OpenUVResponse} is the Java class used to map the JSON
  * response to the OpenUV request.
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public class OpenUVJsonResponse {
-
-    private OpenUVJsonResult result;
+public class OpenUVResponse {
     private String error;
+    private OpenUVResult result;
 
-    public OpenUVJsonResponse() {
-    }
-
-    public OpenUVJsonResult getResult() {
+    public OpenUVResult getResult() {
         return result;
     }
 
     public String getError() {
         return error;
     }
-
 }
