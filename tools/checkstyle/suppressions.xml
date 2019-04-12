@@ -19,4 +19,6 @@
     <suppress files=".+org.openhab.binding.wifiled.handler.FadingWiFiLEDDriver.java" checks="AvoidScheduleAtFixedRateCheck"/>
     <suppress files=".+[\\/]pom\.xml" checks="OnlyTabIndentationCheck|OnlyTabIndentationInXmlFilesCheck"/>
     <suppress files=".+org.openhab.binding.yeelight.+" checks="OutsideOfLibExternalLibrariesCheck" />
+    <!-- suppress header checks for imported and patched apache commons-io files in logreader binding -->
+    <suppress files=".+org.openhab.binding.logreader.internal.thirdparty.commonsio.+" checks="ParameterizedRegexpHeaderCheck|AuthorTagCheck" />
 </suppressions>
