@@ -12,39 +12,49 @@
  */
 package org.openhab.binding.openuv.internal.json;
 
+import java.math.BigInteger;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 
 /**
  * Wrapper type around values reported by OpenUV safe exposure time.
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public class OpenUVSafeExposureTime {
+@NonNullByDefault
+public class SafeExposureTime {
+    private BigInteger st1 = BigInteger.ZERO;
+    private BigInteger st2 = BigInteger.ZERO;
+    private BigInteger st3 = BigInteger.ZERO;
+    private BigInteger st4 = BigInteger.ZERO;
+    private BigInteger st5 = BigInteger.ZERO;
+    private BigInteger st6 = BigInteger.ZERO;
 
-    private int st1;
-    private int st2;
-    private int st3;
-    private int st4;
-    private int st5;
-    private int st6;
-
-    public QuantityType<?> getSafeExposure(int index) {
-        int result;
+    public State getSafeExposure(int index) {
+        BigInteger result;
         switch (index) {
             case 1:
                 result = st1;
+                break;
             case 2:
                 result = st2;
+                break;
             case 3:
                 result = st3;
+                break;
             case 4:
                 result = st4;
+                break;
             case 5:
                 result = st5;
+                break;
             default:
                 result = st6;
         }
-        return new QuantityType<>(result, SmartHomeUnits.MINUTE);
+        return result != BigInteger.ZERO ? new QuantityType<>(result, SmartHomeUnits.MINUTE) : UnDefType.NULL;
     }
 }

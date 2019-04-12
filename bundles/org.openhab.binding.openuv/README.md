@@ -26,6 +26,8 @@ The bridge has only one configuration parameter :
 |-----------|--------------------------------------------------------------|
 | apikey    | Data-platform token to access the OpenUV service. Mandatory. |
 
+Will accept a Refresh command in order to reinitiate connexion (eg in case of Quota exceeded).
+
 ## Thing Configuration
 
 The thing has a few configuration parameters :
@@ -64,7 +66,15 @@ demo.things:
 
 ```xtend
 Bridge openuv:openuvapi:local "OpenUV Api" [ apikey="xxxxYYYxxxx" ] {
-    Thing uvreport city1 "UV In My City" [ location="52.5200066,13.4049540", refresh=10 ]
+    Thing uvreport city1 "UV In My City" [ location="52.5200066,13.4049540", refresh=10 ]{
+        Channels:
+            Type SafeExposure : Parents [       
+                index=3
+            ]
+            Type SafeExposure : Childs [
+                index=2
+            ]
+    }
 }
 
 ```
