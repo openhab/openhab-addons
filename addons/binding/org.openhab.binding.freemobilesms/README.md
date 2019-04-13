@@ -34,9 +34,11 @@ The *account* thing requires the following configuration parameters:
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+Things support the following channels:
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+| Channel Type ID | Item Type | Description                               |
+|-----------------|-----------|-------------------------------------------|
+| message         | Text      | This channel lets send message to account |
 
 ## Full Example
 
@@ -46,10 +48,10 @@ demo.things:
 Thing freemobilesms:account:dad "Dad" [ user="12345", password="abcde" ]
 ```
 
-String DAD_SMS "Dad's SMS" { channel="freemobilesms:account:dad" }
 demo.items:
 
 ```xtend
+String DAD_SMS "Dad's SMS" { channel="freemobilesms:account:dad:message" }
 ```
 
 ## Any custom content here!

@@ -30,5 +30,5 @@ public class FreeMobileSmsBindingConstants {
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
 
     // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    public static final String CHANNEL_MESSAGE = "message";
 }

@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,12 +47,14 @@ public class FreeMobileSmsHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
+        if (CHANNEL_MESSAGE.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 // TODO: handle data refresh
             }
-            
-            // TODO: handle command
+
+            if (command instanceof StringType) {
+                // TODO: handle data set
+            }
 
             // Note: if communication with thing fails for some reason,
             // indicate that by setting the status with detail information:
@@ -66,8 +69,8 @@ public class FreeMobileSmsHandler extends BaseThingHandler {
         config = getConfigAs(FreeMobileSmsConfiguration.class);
 
         // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly. Also, before leaving this method a thing 
-        // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in 
+        // The framework requires you to return from this method quickly. Also, before leaving this method a thing
+        // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in
         // case you can decide it directly.
         // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
         // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
@@ -77,9 +80,10 @@ public class FreeMobileSmsHandler extends BaseThingHandler {
         // the framework is then able to reuse the resources from the thing handler initialization.
         // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
-        
+
         // Example for background initialization:
         scheduler.execute(() -> {
+          // TODO check network
             boolean thingReachable = true; // <background task with long running initialization here>
             // when done do:
             if (thingReachable) {

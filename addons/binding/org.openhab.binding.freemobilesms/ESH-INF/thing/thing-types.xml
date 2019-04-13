@@ -10,7 +10,7 @@
 		<description>SMS thing for FreeMobileSms Binding</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel" />
+			<channel id="message" typeId="message" />
 		</channels>
 
 		<config-description>
@@ -27,10 +27,11 @@
 	</thing-type>
 
 	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>freemobilesmsItem</item-type>
+	<channel-type id="message">
+		<item-type>String</item-type>
 		<label>FreeMobileSms Binding Channel</label>
 		<description>Sample channel for FreeMobileSms Binding</description>
+		<state readOnly="false" />
 	</channel-type>
 
 </thing:thing-descriptions>
