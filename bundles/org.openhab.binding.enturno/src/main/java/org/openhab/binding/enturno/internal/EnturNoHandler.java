@@ -67,7 +67,7 @@ public class EnturNoHandler extends BaseThingHandler {
 
     private @Nullable String stopId;
 
-    private ArrayList<DisplayData> processedData = new ArrayList<>();
+    private List<DisplayData> processedData = new ArrayList<>();
 
     public EnturNoHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -169,9 +169,6 @@ public class EnturNoHandler extends BaseThingHandler {
             return true;
         } catch (JsonSyntaxException e) {
             logger.debug("JsonSyntaxException occurred during execution: {}", e.getLocalizedMessage(), e);
-            return false;
-        } catch (Exception e) {
-            logger.warn("Exception when requesting data {} {} {}", e, e.getLocalizedMessage(), e.getCause());
             return false;
         }
     }

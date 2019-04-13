@@ -24,10 +24,6 @@ public class EnturConfigurationException extends IllegalArgumentException {
 
     private static final long serialVersionUID = 1L;
 
-    public EnturConfigurationException() {
-        super();
-    }
-
     public EnturConfigurationException(String message) {
         super(message);
     }

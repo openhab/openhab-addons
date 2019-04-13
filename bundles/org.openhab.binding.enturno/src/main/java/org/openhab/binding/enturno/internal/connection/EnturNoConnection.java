@@ -18,6 +18,7 @@ import static org.eclipse.jetty.http.HttpStatus.*;
 import static org.openhab.binding.enturno.internal.EnturNoBindingConstants.TIME_ZONE;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
@@ -96,9 +97,9 @@ public class EnturNoConnection {
     public synchronized ArrayList<DisplayData> getEnturTimeTable(@Nullable String stopPlaceId,
             @Nullable String lineCode)
             throws JsonSyntaxException, EnturConfigurationException, EnturCommunicationException {
-        if (stopPlaceId == null || stopPlaceId.isEmpty()) {
+        if (stopPlaceId == null || StringUtils.isBlank(stopPlaceId)) {
             throw new EnturConfigurationException("Stop place id cannot be empty or null");
-        } else if (lineCode == null || lineCode.isEmpty()) {
+        } else if (lineCode == null || StringUtils.isBlank(lineCode)) {
             throw new EnturConfigurationException("Line code cannot be empty or null");
         }
 
@@ -160,10 +161,10 @@ public class EnturNoConnection {
         } catch (ExecutionException e) {
             String errorMessage = e.getLocalizedMessage();
             logger.debug("Exception occurred during execution: {}", errorMessage, e);
-            throw new EnturCommunicationException(errorMessage, e.getCause());
-        } catch (InterruptedException | TimeoutException e) {
+            throw new EnturCommunicationException(errorMessage, e);
+        } catch (InterruptedException | TimeoutException | IOException e) {
             logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
-            throw new EnturCommunicationException(e.getLocalizedMessage(), e.getCause());
+            throw new EnturCommunicationException(e.getLocalizedMessage(), e);
         }
     }
 
@@ -175,13 +176,16 @@ public class EnturNoConnection {
         return response;
     }
 
-    private String getRequestBody(Map<String, String> params) {
-        InputStream inputStream = EnturNoConnection.class.getClassLoader().getResourceAsStream(REQUEST_BODY);
+    private String getRequestBody(Map<String, String> params) throws IOException {
+        try (InputStream inputStream = EnturNoConnection.class.getClassLoader().getResourceAsStream(REQUEST_BODY);
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+            String json = bufferedReader.lines().collect(Collectors.joining("\n"));
 
-        String json = new BufferedReader(new InputStreamReader(inputStream)).lines().collect(Collectors.joining("\n"));
-
-        return json.replaceAll("\\{stopPlaceId}", "" + params.get(PARAM_STOPID)).replaceAll("\\{startDateTime}",
-                "" + params.get(PARAM_START_DATE_TIME));
+            return json.replaceAll("\\{stopPlaceId}", "" + params.get(PARAM_STOPID)).replaceAll("\\{startDateTime}",
+                    "" + params.get(PARAM_START_DATE_TIME));
+        } catch (IOException e) {
+            throw e;
+        }
     }
 
     private ArrayList<DisplayData> processData(StopPlace stopPlace, String lineCode) {
@@ -207,11 +211,11 @@ public class EnturNoConnection {
 
     private DisplayData getDisplayData(StopPlace stopPlace, Map<String, List<EstimatedCalls>> departures,
             int quayIndex) {
-        ArrayList<String> keys = new ArrayList<>(departures.keySet());
+        List<String> keys = new ArrayList<>(departures.keySet());
         DisplayData processedData = new DisplayData();
         List<EstimatedCalls> quayCalls = departures.get(keys.get(quayIndex));
-        List<String> departureTimes = quayCalls.stream().map(eq -> eq.expectedDepartureTime)
-                .map(this::getIsoDateTime).collect(Collectors.toList());
+        List<String> departureTimes = quayCalls.stream().map(eq -> eq.expectedDepartureTime).map(this::getIsoDateTime)
+                .collect(Collectors.toList());
 
         List<String> estimatedFlags = quayCalls.stream().map(es -> es.realtime).collect(Collectors.toList());
 
