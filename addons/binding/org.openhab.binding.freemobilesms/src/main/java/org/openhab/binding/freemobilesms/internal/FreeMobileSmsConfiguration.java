@@ -20,7 +20,12 @@ package org.openhab.binding.freemobilesms.internal;
 public class FreeMobileSmsConfiguration {
 
     /**
-     * Sample configuration parameter. Replace with your own.
+     * User configuration parameter.
      */
-    public String config1;
+    public String user;
+
+    /**
+     * Password configuration parameter.
+     */
+    public String password;
 }

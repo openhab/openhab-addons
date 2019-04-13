@@ -5,18 +5,22 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Sample Thing Type -->
-	<thing-type id="sample">
+	<thing-type id="account">
 		<label>FreeMobileSms Binding Thing</label>
-		<description>Sample thing for FreeMobileSms Binding</description>
+		<description>SMS thing for FreeMobileSms Binding</description>
 
 		<channels>
 			<channel id="channel1" typeId="sample-channel" />
 		</channels>
 
 		<config-description>
-			<parameter name="config1" type="text" required="true">
-				<label>Sample parameter</label>
-				<description>This is a sample text configuration parameter.</description>
+			<parameter name="user" type="text" required="true">
+				<label>User</label>
+				<description>The account identifier.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>The secret token to use this account.</description>
 			</parameter>
 		</config-description>
 
