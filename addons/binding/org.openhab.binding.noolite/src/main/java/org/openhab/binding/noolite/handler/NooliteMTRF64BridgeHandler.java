@@ -36,8 +36,6 @@ public class NooliteMTRF64BridgeHandler extends BaseBridgeHandler {
     public NooliteMTRF64BridgeHandler(Bridge bridge) {
 
         super(bridge);
-        // comport = bridge.getConfiguration().get("comport").toString();
-        // logger.debug("comport is {}", comport);
     }
 
     @Override
@@ -62,7 +60,6 @@ public class NooliteMTRF64BridgeHandler extends BaseBridgeHandler {
 
                 @Override
                 public void run() {
-                    // logger.debug("Checking Noolite adapter connection. {}", thing.getStatus());
                     if (thing.getStatus() != ThingStatus.ONLINE) {
                         connect();
                     }
@@ -84,7 +81,6 @@ public class NooliteMTRF64BridgeHandler extends BaseBridgeHandler {
             if (adapter != null) {
                 adapter.disconnect();
                 adapter.connect(bridgeConfig);
-                // adapter.connect("fake");
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
@@ -193,6 +189,7 @@ public class NooliteMTRF64BridgeHandler extends BaseBridgeHandler {
             try {
                 adapter.sendData(data);
             } catch (IOException e) {
+                logger.error("Send failure, {}", e.getLocalizedMessage());
             }
         }
 

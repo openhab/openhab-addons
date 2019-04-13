@@ -5,9 +5,7 @@ package org.openhab.binding.noolite.internal.config;
  *
  * @author Petr Shatsillo - Initial contribution
  */
-
 public class NooliteBridgeConfiguration {
-
     public String serial;
 
 }

@@ -14,8 +14,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Petr Shatsillo - Initial contribution
  */
-
-
 public class NooliteFakeAdapterWatcherThread extends Thread {
 
     private static final Logger logger = LoggerFactory.getLogger(NooliteFakeAdapterWatcherThread.class);
@@ -42,9 +40,8 @@ public class NooliteFakeAdapterWatcherThread extends Thread {
                 in.close();
             }
         } catch (IOException e) {
-            logger.error(e.getLocalizedMessage());
+            logger.warn("{}", e.getLocalizedMessage());
         }
-
     }
 
     @Override
@@ -99,6 +96,5 @@ public class NooliteFakeAdapterWatcherThread extends Thread {
             } catch (InterruptedException e1) {
             }
         }
-
     }
 }

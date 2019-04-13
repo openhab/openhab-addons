@@ -1,11 +1,12 @@
 package org.openhab.binding.noolite.internal.watcher;
 
+import org.openhab.binding.noolite.internal.NooliteHandlerFactory;
+
 /**
  * The {@link NooliteHandlerFactory} is NooliteAdapterType is enum for adapter types
  *
  * @author Petr Shatsillo - Initial contribution
  */
-
 public enum NooliteAdapterType {
     NOOLIE_TX(0),
     NOOLITE_RX(1),

@@ -16,12 +16,10 @@ import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 
 /**
- * The {@link NooliteMTRF64Adapter} is for init usb stick 
+ * The {@link NooliteMTRF64Adapter} is for init usb stick
  *
  * @author Petr Shatsillo - Initial contribution
  */
-
-
 public class NooliteMTRF64Adapter implements SerialPortEventListener {
 
     private static final Logger logger = LoggerFactory.getLogger(NooliteMTRF64Adapter.class);
