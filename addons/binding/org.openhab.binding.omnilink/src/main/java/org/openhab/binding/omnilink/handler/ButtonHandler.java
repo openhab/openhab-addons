@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.omnilink.handler;
 
-import java.util.Optional;
-
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -22,14 +20,13 @@ import org.slf4j.LoggerFactory;
 import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
-import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 
 /**
  *
  * @author Craig Hamilton
  *
  */
-public class ButtonHandler extends AbstractOmnilinkStatusHandler {
+public class ButtonHandler extends AbstractOmnilinkHandler {
     private Logger logger = LoggerFactory.getLogger(ButtonHandler.class);
 
     public ButtonHandler(Thing thing) {
@@ -54,15 +51,5 @@ public class ButtonHandler extends AbstractOmnilinkStatusHandler {
         ChannelUID activateChannel = new ChannelUID(getThing().getUID(),
                 OmnilinkBindingConstants.TRIGGER_CHANNEL_BUTTON_ACTIVATED_EVENT);
         triggerChannel(activateChannel);
-    }
-
-    @Override
-    protected Optional retrieveStatus() {
-        return Optional.empty();
-    }
-
-    @Override
-    protected void updateChannels(Status t) {
-        // No links for buttons
     }
 }

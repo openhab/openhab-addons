@@ -10,9 +10,11 @@ package org.openhab.binding.omnilink.handler;
 
 import java.util.Optional;
 
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,9 +37,7 @@ public abstract class AbstractOmnilinkStatusHandler<T extends Status> extends Ab
 
     @Override
     public void initialize() {
-        Optional<T> status = retrieveStatus();
-        handleStatus(status.orElse(null)); // handle status will process null.
-        updateStatus(ThingStatus.ONLINE);
+        updateHandlerStatus();
     }
 
     /**
@@ -73,6 +73,21 @@ public abstract class AbstractOmnilinkStatusHandler<T extends Status> extends Ab
         logger.debug("channel linked: {} for zone {}", channelUID, getThingNumber());
         if (status.isPresent()) {
             updateChannels(status.get());
+        }
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+        updateHandlerStatus();
+    }
+
+    private void updateHandlerStatus() {
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+            Optional<T> status = retrieveStatus();
+            handleStatus(status.orElse(null)); // handle status will process null.
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 }

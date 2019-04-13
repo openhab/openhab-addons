@@ -79,7 +79,5 @@ public enum TemperatureFormat {
         } else {
             throw new IllegalArgumentException();
         }
-
     }
-
 }

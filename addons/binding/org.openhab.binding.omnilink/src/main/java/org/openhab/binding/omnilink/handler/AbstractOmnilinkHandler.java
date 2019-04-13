@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.omnilink.handler;
 
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
@@ -21,7 +22,12 @@ public abstract class AbstractOmnilinkHandler extends BaseThingHandler {
     }
 
     public OmnilinkBridgeHandler getOmnilinkBridgeHander() {
-        return (OmnilinkBridgeHandler) getBridge().getHandler();
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            return (OmnilinkBridgeHandler) bridge.getHandler();
+        } else {
+            return null;
+        }
     }
 
     /**
