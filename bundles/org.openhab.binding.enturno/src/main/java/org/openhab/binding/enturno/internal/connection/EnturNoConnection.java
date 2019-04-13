@@ -94,10 +94,10 @@ public class EnturNoConnection {
      * @throws EnturCommunicationException
      * @throws EnturConfigurationException
      */
-    public synchronized ArrayList<DisplayData> getEnturTimeTable(@Nullable String stopPlaceId,
+    public synchronized List<DisplayData> getEnturTimeTable(@Nullable String stopPlaceId,
             @Nullable String lineCode)
             throws JsonSyntaxException, EnturConfigurationException, EnturCommunicationException {
-        if (stopPlaceId == null || StringUtils.isBlank(stopPlaceId)) {
+        if (StringUtils.isBlank(stopPlaceId)) {
             throw new EnturConfigurationException("Stop place id cannot be empty or null");
         } else if (lineCode == null || StringUtils.isBlank(lineCode)) {
             throw new EnturConfigurationException("Line code cannot be empty or null");
@@ -188,14 +188,14 @@ public class EnturNoConnection {
         }
     }
 
-    private ArrayList<DisplayData> processData(StopPlace stopPlace, String lineCode) {
+    private List<DisplayData> processData(StopPlace stopPlace, String lineCode) {
         Map<String, List<EstimatedCalls>> departures = stopPlace.estimatedCalls.stream()
                 .filter(call -> StringUtils.equalsIgnoreCase(
                         StringUtils.trimToEmpty(call.serviceJourney.journeyPattern.line.publicCode),
                         StringUtils.trimToEmpty(lineCode)))
                 .collect(groupingBy(call -> call.quay.id));
 
-        ArrayList<DisplayData> processedData = new ArrayList<>();
+        List<DisplayData> processedData = new ArrayList<>();
         if (departures.keySet().size() > 0) {
             DisplayData processedData01 = getDisplayData(stopPlace, departures, 0);
             processedData.add(processedData01);
