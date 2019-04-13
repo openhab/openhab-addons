@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.io.homekit.internal;
 
@@ -27,7 +31,7 @@ import com.beowulfe.hap.HomekitRoot;
  * Stores the created HomekitAccessories. GroupedAccessories are also held here
  * in a pre-created pending state until all required characteristics are found.
  *
- * @author Andy Lintner
+ * @author Andy Lintner - Initial contribution
  */
 class HomekitAccessoryRegistry {
 
@@ -81,12 +85,12 @@ class HomekitAccessoryRegistry {
         for (String group : item.getItem().getGroupNames()) {
             if (pendingGroupedAccessories.containsKey(group)) {
                 addCharacteristicToGroup(group, item);
-                logger.debug("Added {} to {}", item.getItem().getName(), group);
+                logger.debug("Added item {} to group {}", item.getItem().getName(), group);
                 return;
             }
         }
         pendingCharacteristics.add(item);
-        logger.debug("Stored {} until group is ready", item.getItem().getName());
+        logger.debug("Stored item{} until group is ready", item.getItem().getName());
     }
 
     private void addCharacteristicToGroup(String group, HomekitTaggedItem item) {
@@ -106,5 +110,4 @@ class HomekitAccessoryRegistry {
         }
         logger.debug("Added accessory {}", accessory.getId());
     }
-
 }

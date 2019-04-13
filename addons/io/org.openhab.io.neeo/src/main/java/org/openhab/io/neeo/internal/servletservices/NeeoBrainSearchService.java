@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.io.neeo.internal.servletservices;
 
@@ -89,6 +93,8 @@ public class NeeoBrainSearchService extends DefaultServletService {
      * {@link #doSearch(String, HttpServletResponse)}. Otherwise we assume it's a request for device details (via
      * {@link #doQuery(String, HttpServletResponse)}
      *
+     * As of 52.15 - "/db/adapterdefinition/{id}" get's the latest device details
+     *
      * @see DefaultServletService#handleGet(HttpServletRequest, String[], HttpServletResponse)
      */
     @Override
@@ -104,6 +110,8 @@ public class NeeoBrainSearchService extends DefaultServletService {
 
         if (StringUtils.equalsIgnoreCase(path, "search")) {
             doSearch(req.getQueryString(), resp);
+        } else if (StringUtils.equalsIgnoreCase(path, "adapterdefinition") && paths.length >= 3) {
+            doAdapterDefinition(paths[2], resp);
         } else {
             doQuery(path, resp);
         }
@@ -113,7 +121,7 @@ public class NeeoBrainSearchService extends DefaultServletService {
      * Does the search of all things and returns the results
      *
      * @param queryString the non-null, possibly empty query string
-     * @param resp the non-null response to write to
+     * @param resp        the non-null response to write to
      * @throws IOException Signals that an I/O exception has occurred.
      */
     private void doSearch(String queryString, HttpServletResponse resp) throws IOException {
@@ -146,7 +154,37 @@ public class NeeoBrainSearchService extends DefaultServletService {
     /**
      * Does a query for the NEEO device definition
      *
-     * @param id the non-empty (last) search identifier
+     * @param id   the non-empty (last) search identifier
+     * @param resp the non-null response to write to
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    private void doAdapterDefinition(String id, HttpServletResponse resp) throws IOException {
+        NeeoThingUID thingUID;
+        try {
+            thingUID = new NeeoThingUID(id);
+        } catch (IllegalArgumentException e) {
+            logger.debug("Not a valid thingUID: {}", id);
+            NeeoUtil.write(resp, "{}");
+            return;
+        }
+
+        final NeeoDevice device = context.getDefinitions().getDevice(thingUID);
+
+        if (device == null) {
+            logger.debug("Called with index position {} but nothing was found", id);
+            NeeoUtil.write(resp, "{}");
+        } else {
+            final String jos = gson.toJson(device);
+            NeeoUtil.write(resp, jos);
+
+            logger.debug("Query '{}', response: {}", id, jos);
+        }
+    }
+
+    /**
+     * Does a query for the NEEO device definition
+     *
+     * @param id   the non-empty (last) search identifier
      * @param resp the non-null response to write to
      * @throws IOException Signals that an I/O exception has occurred.
      */

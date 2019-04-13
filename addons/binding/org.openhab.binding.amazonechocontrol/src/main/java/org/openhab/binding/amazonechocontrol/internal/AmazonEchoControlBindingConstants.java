@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.amazonechocontrol.internal;
 
@@ -45,6 +49,9 @@ public class AmazonEchoControlBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_PLAYER = "player";
     public static final String CHANNEL_VOLUME = "volume";
+    public static final String CHANNEL_EQUALIZER_TREBLE = "equalizerTreble";
+    public static final String CHANNEL_EQUALIZER_MIDRANGE = "equalizerMidrange";
+    public static final String CHANNEL_EQUALIZER_BASS = "equalizerBass";
     public static final String CHANNEL_ERROR = "error";
     public static final String CHANNEL_SHUFFLE = "shuffle";
     public static final String CHANNEL_LOOP = "loop";
@@ -62,12 +69,23 @@ public class AmazonEchoControlBindingConstants {
     public static final String CHANNEL_AMAZON_MUSIC = "amazonMusic";
     public static final String CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID = "amazonMusicPlayListId";
     public static final String CHANNEL_TEXT_TO_SPEECH = "textToSpeech";
+    public static final String CHANNEL_TEXT_TO_SPEECH_VOLUME = "textToSpeechVolume";
     public static final String CHANNEL_REMIND = "remind";
     public static final String CHANNEL_PLAY_ALARM_SOUND = "playAlarmSound";
     public static final String CHANNEL_START_ROUTINE = "startRoutine";
     public static final String CHANNEL_MUSIC_PROVIDER_ID = "musicProviderId";
     public static final String CHANNEL_PLAY_MUSIC_VOICE_COMMAND = "playMusicVoiceCommand";
     public static final String CHANNEL_START_COMMAND = "startCommand";
+    public static final String CHANNEL_LAST_VOICE_COMMAND = "lastVoiceCommand";
+    public static final String CHANNEL_MEDIA_PROGRESS = "mediaProgress";
+    public static final String CHANNEL_MEDIA_LENGTH = "mediaLength";
+    public static final String CHANNEL_MEDIA_PROGRESS_TIME = "mediaProgressTime";
+    public static final String CHANNEL_ASCENDING_ALARM = "ascendingAlarm";
+    public static final String CHANNEL_NOTIFICATION_VOLUME = "notificationVolume";
+    public static final String CHANNEL_NEXT_REMINDER = "nextReminder";
+    public static final String CHANNEL_NEXT_ALARM = "nextAlarm";
+    public static final String CHANNEL_NEXT_MUSIC_ALARM = "nextMusicAlarm";
+    public static final String CHANNEL_NEXT_TIMER = "nextTimer";
 
     public static final String CHANNEL_SAVE = "save";
     public static final String CHANNEL_ACTIVE = "active";

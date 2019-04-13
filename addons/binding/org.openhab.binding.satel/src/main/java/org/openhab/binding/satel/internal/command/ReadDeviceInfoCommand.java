@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.satel.internal.command;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
 import org.slf4j.Logger;
@@ -37,7 +41,7 @@ public class ReadDeviceInfoCommand extends SatelCommandBase {
         ZONE(1),
         USER(2),
         EXPANDER(3),
-        LCD(3),
+        KEYPAD(3),
         OUTPUT(4),
         ZONE_WITH_PARTITION(5, true),
         TIMER(6),
@@ -71,9 +75,9 @@ public class ReadDeviceInfoCommand extends SatelCommandBase {
      * parameters.
      *
      * @param deviceType
-     *            type of the device
+     *                         type of the device
      * @param deviceNumber
-     *            device number
+     *                         device number
      */
     public ReadDeviceInfoCommand(DeviceType deviceType, int deviceNumber) {
         super(COMMAND_CODE, new byte[] { (byte) deviceType.getCode(), getDeviceNumber(deviceType, deviceNumber) });
@@ -86,7 +90,7 @@ public class ReadDeviceInfoCommand extends SatelCommandBase {
                     return (byte) (deviceNumber + 128);
                 }
                 break;
-            case LCD:
+            case KEYPAD:
                 if (deviceNumber < 128) {
                     return (byte) (deviceNumber + 192);
                 }
@@ -124,12 +128,10 @@ public class ReadDeviceInfoCommand extends SatelCommandBase {
      * configuration.
      *
      * @param encoding
-     *            encoding for the text
+     *                     encoding for the text
      * @return device name
-     * @throws UnsupportedEncodingException
-     *             if provided encoding is not supported
      */
-    public String getName(String encoding) throws UnsupportedEncodingException {
+    public String getName(Charset encoding) {
         return new String(response.getPayload(), 3, 16, encoding).trim();
     }
 

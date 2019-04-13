@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.modbus.internal.handler;
 
@@ -61,6 +65,11 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     public void initialize() {
         synchronized (this) {
             logger.trace("Initializing {} from status {}", this.getThing().getUID(), this.getThing().getStatus());
+            if (this.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                // If the bridge was online then first change it to offline.
+                // this ensures that children will be notified about the change
+                updateStatus(ThingStatus.OFFLINE);
+            }
             try {
                 configure();
                 @Nullable

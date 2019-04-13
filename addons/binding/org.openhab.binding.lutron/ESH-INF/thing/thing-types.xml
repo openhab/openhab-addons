@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="lutron"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="ipbridge">
 		<label>Lutron IP Access Point</label>
@@ -232,6 +232,13 @@
 					<option value="H4S">H4S</option>
 					<option value="H5BRL">H5BRL</option>
 					<option value="H6BRL">H6BRL</option>
+					<option value="HN1RLD">HN1RLD</option>
+					<option value="HN2RLD">HN2RLD</option>
+					<option value="HN3BSRL">HN3BSRL</option>
+					<option value="HN3S">HN3S</option>
+					<option value="HN4S">HN4S</option>
+					<option value="HN5BRL">HN5BRL</option>
+					<option value="HN6BRL">HN6BRL</option>
 					<option value="W1RLD">W1RLD</option>
 					<option value="W2RLD">W2RLD</option>
 					<option value="W3BD">W3BD</option>
@@ -362,6 +369,69 @@
 				<label>Auto-release</label>
 				<description>Automatically release pressed buttons</description>
 				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="timeclock">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Timeclock</label>
+		<description>RA2/HWQS timeclock and scheduler module</description>
+
+		<channels>
+			<channel id="clockmode" typeId="clockmode"/>
+			<channel id="sunrise" typeId="timeROAdvanced">
+				<label>Sunrise</label>
+				<description>Today's sunrise time</description>
+			</channel>
+			<channel id="sunset" typeId="timeROAdvanced">
+				<label>Sunset</label>
+				<description>Today's sunset time</description>
+			</channel>
+			<channel id="execevent" typeId="eventindex">
+				<label>Execute Event</label>
+			</channel>
+			<channel id="enableevent" typeId="eventindex">
+				<label>Enable Event</label>
+			</channel>
+			<channel id="disableevent" typeId="eventindex">
+				<label>Disable Event</label>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of timeclock in the Lutron control system</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="greenmode">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Green Mode</label>
+		<description>Green mode step control</description>
+
+		<channels>
+			<channel id="step" typeId="greenstep"/>
+		</channels>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of green mode controller in the Lutron control system</description>
+			</parameter>
+			<parameter name="pollInterval" type="integer" min="0" max="240" unit="min">
+				<label>Poll Interval</label>
+				<description>Poll interval in minutes (0 = polling disabled)</description>
+				<unitLabel>minutes</unitLabel>
+				<default>15</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -861,10 +931,42 @@
 
 	<channel-type id="sunrisesunset">
 		<item-type>DateTime</item-type>
-		<label>Sunrise</label>
-		<description>Today's sunrise</description>
+		<label>Sunrise/Sunset</label>
+		<description>Today's sunrise/sunset time</description>
 		<category>Schedule</category>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timeROAdvanced" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>DateTime</label>
+		<description>Advanced read-only DateTime</description>
+		<category>Schedule</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="clockmode">
+		<item-type>Number</item-type>
+		<label>Timeclock Mode</label>
+		<description>Mode number for timeclock</description>
+		<category>Number</category>
+		<state min="0"/>
+	</channel-type>
+
+	<channel-type id="eventindex" advanced="true">
+		<item-type>Number</item-type>
+		<label>Timeclock Event Index</label>
+		<description>Timeclock event index number</description>
+		<category>Number</category>
+		<state min="1"/>
+	</channel-type>
+
+	<channel-type id="greenstep">
+		<item-type>Number</item-type>
+		<label>Step</label>
+		<description>Green mode step number</description>
+		<category>Number</category>
+		<state min="1"/>
 	</channel-type>
 
 	<channel-type id="superschedulebutton">

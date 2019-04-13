@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.tellstick.internal.live.xml;
 
@@ -18,14 +22,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tellstick.device.iface.Device;
-import org.tellstick.enums.DataType;
 import org.tellstick.enums.DeviceType;
 
 /**
  * Class used to deserialize XML from Telldus Live.
  *
- * @author Jarle Hjortland
- *
+ * @author Jarle Hjortland - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "sensor")
@@ -44,6 +46,8 @@ public class TellstickNetSensor implements Device {
     @XmlAttribute()
     private Long lastUpdated;
     private boolean updated;
+    @XmlAttribute()
+    private Long battery;
 
     public TellstickNetSensor() {
     }
@@ -89,15 +93,6 @@ public class TellstickNetSensor implements Device {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("TellstickNetSensor [deviceId=").append(deviceId).append(", protocol=").append(protocol)
-                .append(", name=").append(name).append(", online=").append(online).append(", data=").append(data)
-                .append(", lastUpdated=").append(lastUpdated).append(", updated=").append(updated).append("]");
-        return builder.toString();
-    }
-
     public boolean getOnline() {
         return online;
     }
@@ -130,7 +125,7 @@ public class TellstickNetSensor implements Device {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
+        int prime = 31;
         int result = 1;
         result = prime * result + deviceId;
         return result;
@@ -162,25 +157,33 @@ public class TellstickNetSensor implements Device {
         return updated;
     }
 
-    public boolean isWindSensor() {
+    public boolean isSensorOfType(LiveDataType type) {
         boolean res = false;
-        for (DataTypeValue val : data) {
-            if (val.getName() == DataType.WINDAVERAGE) {
-                res = true;
-
+        if (data != null) {
+            for (DataTypeValue val : data) {
+                if (val.getName() == type) {
+                    res = true;
+                    break;
+                }
             }
         }
         return res;
     }
 
-    public boolean isRainSensor() {
-        boolean res = false;
-        for (DataTypeValue val : data) {
-            if (val.getName() == DataType.RAINTOTAL) {
-                res = true;
+    public Long getBattery() {
+        return battery;
+    }
 
-            }
-        }
-        return res;
+    public void setBattery(Long battery) {
+        this.battery = battery;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("TellstickNetSensor [deviceId=").append(deviceId).append(", protocol=").append(protocol)
+                .append(", name=").append(name).append(", online=").append(online).append(", data=").append(data)
+                .append(", lastUpdated=").append(lastUpdated).append(", updated=").append(updated).append("]");
+        return builder.toString();
     }
 }

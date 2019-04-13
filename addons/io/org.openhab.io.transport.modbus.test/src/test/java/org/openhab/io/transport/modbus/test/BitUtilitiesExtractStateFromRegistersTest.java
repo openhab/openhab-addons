@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.io.transport.modbus.test;
 
@@ -23,12 +27,12 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.openhab.io.transport.modbus.BasicModbusRegister;
+import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
 import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
-import org.openhab.io.transport.modbus.BasicModbusRegister;
 
 import com.google.common.collect.ImmutableList;
 
@@ -288,7 +292,85 @@ public class BitUtilitiesExtractStateFromRegistersTest {
                 new Object[] { IllegalArgumentException.class, ValueType.FLOAT32_SWAP,
                         shortArrayToRegisterArray(4, -1004), 2 },
                 new Object[] { IllegalArgumentException.class, ValueType.FLOAT32_SWAP,
-                        shortArrayToRegisterArray(0, 0, 0), 2 });
+                        shortArrayToRegisterArray(0, 0, 0), 2 },
+
+                //
+                // INT64
+                //
+                new Object[] { new DecimalType("1.0"), ValueType.INT64, shortArrayToRegisterArray(0, 0, 0, 1), 0 },
+                new Object[] { new DecimalType("2.0"), ValueType.INT64, shortArrayToRegisterArray(0, 0, 0, 2), 0 },
+                new Object[] { new DecimalType("-1004"), ValueType.INT64,
+                        shortArrayToRegisterArray(0xFFFF, 0xFFFF, 0xFFFF, 0xFC14), 0 },
+                new Object[] { new DecimalType("64000"), ValueType.INT64, shortArrayToRegisterArray(0, 0, 0, 64000),
+                        0 },
+                new Object[] {
+                        // out of bounds of unsigned 32bit
+                        new DecimalType("34359738368"), ValueType.INT64, shortArrayToRegisterArray(0x0, 0x8, 0x0, 0x0),
+                        0 },
+                new Object[] { new DecimalType("-2322243636186679031"), ValueType.INT64,
+                        shortArrayToRegisterArray(0xDFC5, 0xBBB7, 0x772E, 0x7909), 0 },
+                // would read over the registers
+                new Object[] { IllegalArgumentException.class, ValueType.INT64,
+                        shortArrayToRegisterArray(0xDFC5, 0xBBB7, 0x772E, 0x7909), 1 },
+                // would read over the registers
+                new Object[] { IllegalArgumentException.class, ValueType.INT64,
+                        shortArrayToRegisterArray(0xDFC5, 0xBBB7, 0x772E, 0x7909), 2 },
+                // 4 registers expected, only 3 available
+                new Object[] { IllegalArgumentException.class, ValueType.INT64,
+                        shortArrayToRegisterArray(0xDFC5, 0xBBB7, 0x772E), 0 },
+
+                //
+                // UINT64
+                //
+                new Object[] { new DecimalType("1.0"), ValueType.UINT64, shortArrayToRegisterArray(0, 0, 0, 1), 0 },
+                new Object[] { new DecimalType("2.0"), ValueType.UINT64, shortArrayToRegisterArray(0, 0, 0, 2), 0 },
+                new Object[] { new DecimalType("18446744073709550612"), ValueType.UINT64,
+                        shortArrayToRegisterArray(0xFFFF, 0xFFFF, 0xFFFF, 0xFC14), 0 },
+                new Object[] { new DecimalType("64000"), ValueType.UINT64, shortArrayToRegisterArray(0, 0, 0, 64000),
+                        0 },
+                new Object[] {
+                        // out of bounds of unsigned 32bit
+                        new DecimalType("34359738368"), ValueType.UINT64, shortArrayToRegisterArray(0x0, 0x8, 0x0, 0x0),
+                        0 },
+                new Object[] { new DecimalType("16124500437522872585"), ValueType.UINT64,
+                        shortArrayToRegisterArray(0xDFC5, 0xBBB7, 0x772E, 0x7909), 0 },
+
+                //
+                // INT64_SWAP
+                //
+                new Object[] { new DecimalType("1.0"), ValueType.INT64_SWAP, shortArrayToRegisterArray(1, 0, 0, 0), 0 },
+                new Object[] { new DecimalType("2.0"), ValueType.INT64_SWAP, shortArrayToRegisterArray(2, 0, 0, 0), 0 },
+                new Object[] { new DecimalType("-1004"), ValueType.INT64_SWAP,
+                        shortArrayToRegisterArray(0xFC14, 0xFFFF, 0xFFFF, 0xFFFF), 0 },
+                new Object[] { new DecimalType("64000"), ValueType.INT64_SWAP,
+                        shortArrayToRegisterArray(64000, 0, 0, 0), 0 },
+                new Object[] {
+                        // out of bounds of unsigned 32bit
+                        new DecimalType("34359738368"),
+                        // 70004 -> 0x00011174 (32bit) -> 0x1174 (16bit)
+                        ValueType.INT64_SWAP, shortArrayToRegisterArray(0x0, 0x0, 0x8, 0x0), 0 },
+                new Object[] { new DecimalType("-2322243636186679031"), ValueType.INT64_SWAP,
+                        shortArrayToRegisterArray(0x7909, 0x772E, 0xBBB7, 0xDFC5), 0 },
+
+                //
+                // UINT64_SWAP
+                //
+                new Object[] { new DecimalType("1.0"), ValueType.UINT64_SWAP, shortArrayToRegisterArray(1, 0, 0, 0),
+                        0 },
+                new Object[] { new DecimalType("2.0"), ValueType.UINT64_SWAP, shortArrayToRegisterArray(2, 0, 0, 0),
+                        0 },
+                new Object[] { new DecimalType("18446744073709550612"), ValueType.UINT64_SWAP,
+                        shortArrayToRegisterArray(0xFC14, 0xFFFF, 0xFFFF, 0xFFFF), 0 },
+                new Object[] { new DecimalType("64000"), ValueType.UINT64_SWAP,
+                        shortArrayToRegisterArray(64000, 0, 0, 0), 0 },
+                new Object[] {
+                        // out of bounds of unsigned 32bit
+                        new DecimalType("34359738368"), ValueType.UINT64_SWAP,
+                        shortArrayToRegisterArray(0x0, 0x0, 0x8, 0x0), 0 },
+                new Object[] {
+                        // out of bounds of unsigned 64bit
+                        new DecimalType("16124500437522872585"), ValueType.UINT64_SWAP,
+                        shortArrayToRegisterArray(0x7909, 0x772E, 0xBBB7, 0xDFC5), 0 });
 
     }
 

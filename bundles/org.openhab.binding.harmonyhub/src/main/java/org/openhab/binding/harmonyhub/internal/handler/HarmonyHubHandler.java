@@ -1,0 +1,449 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.harmonyhub.internal.handler;
+
+import static org.openhab.binding.harmonyhub.internal.HarmonyHubBindingConstants.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.NextPreviousType;
+import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.builder.BridgeBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateOption;
+import org.openhab.binding.harmonyhub.internal.HarmonyHubHandlerFactory;
+import org.openhab.binding.harmonyhub.internal.config.HarmonyHubConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.digitaldan.harmony.HarmonyClient;
+import com.digitaldan.harmony.HarmonyClientListener;
+import com.digitaldan.harmony.config.Activity;
+import com.digitaldan.harmony.config.Activity.Status;
+import com.digitaldan.harmony.config.HarmonyConfig;
+
+/**
+ * The {@link HarmonyHubHandler} is responsible for handling commands for Harmony Hubs, which are
+ * sent to one of the channels.
+ *
+ * @author Dan Cunningham - Initial contribution
+ * @author Pawel Pieczul - added support for hub status changes
+ * @author Wouter Born - Add null annotations
+ */
+@NonNullByDefault
+public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClientListener {
+
+    private final Logger logger = LoggerFactory.getLogger(HarmonyHubHandler.class);
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_HUB_THING_TYPE);
+
+    private static final Comparator<Activity> ACTIVITY_COMPERATOR = Comparator.comparing(Activity::getActivityOrder,
+            Comparator.nullsFirst(Integer::compareTo));
+
+    private static final int RETRY_TIME = 60;
+    private static final int HEARTBEAT_INTERVAL = 30;
+    // Websocket will timeout after 60 seconds, pick a sensible max under this,
+    private static final int HEARTBEAT_INTERVAL_MAX = 50;
+    private List<HubStatusListener> listeners = new CopyOnWriteArrayList<>();
+    private final HarmonyHubHandlerFactory factory;
+    private @NonNullByDefault({}) HarmonyHubConfig config;
+    private final HarmonyClient client;
+    private @Nullable ScheduledFuture<?> retryJob;
+    private @Nullable ScheduledFuture<?> heartBeatJob;
+
+    private int heartBeatInterval;
+
+    public HarmonyHubHandler(Bridge bridge, HarmonyHubHandlerFactory factory) {
+        super(bridge);
+        this.factory = factory;
+        client = new HarmonyClient();
+        client.addListener(this);
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.trace("Handling command '{}' for {}", command, channelUID);
+
+        if (!client.isConnected()) {
+            logger.warn("Cannot send command '{}' on {} because HarmonyClient is not connected", command, channelUID);
+            return;
+        }
+
+        if (command instanceof RefreshType) {
+            client.getCurrentActivity().thenAccept(activity -> {
+                updateState(activity);
+            });
+            return;
+        }
+
+        Channel channel = getThing().getChannel(channelUID.getId());
+        if (channel == null) {
+            logger.warn("No such channel for UID {}", channelUID);
+            return;
+        }
+
+        switch (channel.getUID().getId()) {
+            case CHANNEL_CURRENT_ACTIVITY:
+                if (command instanceof DecimalType) {
+                    try {
+                        client.startActivity(((DecimalType) command).intValue());
+                    } catch (Exception e) {
+                        logger.warn("Could not start activity", e);
+                    }
+                } else {
+                    try {
+                        try {
+                            int actId = Integer.parseInt(command.toString());
+                            client.startActivity(actId);
+                        } catch (NumberFormatException ignored) {
+                            client.startActivityByName(command.toString());
+                        }
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("Activity '{}' is not known by the hub, ignoring it.", command);
+                    } catch (Exception e) {
+                        logger.warn("Could not start activity", e);
+                    }
+                }
+                break;
+            case CHANNEL_BUTTON_PRESS:
+                client.pressButtonCurrentActivity(command.toString());
+                break;
+            case CHANNEL_PLAYER:
+                String cmd = null;
+                if (command instanceof PlayPauseType) {
+                    if (command == PlayPauseType.PLAY) {
+                        cmd = "Play";
+                    } else if (command == PlayPauseType.PAUSE) {
+                        cmd = "Pause";
+                    }
+                } else if (command instanceof NextPreviousType) {
+                    if (command == NextPreviousType.NEXT) {
+                        cmd = "SkipForward";
+                    } else if (command == NextPreviousType.PREVIOUS) {
+                        cmd = "SkipBackward";
+                    }
+                } else if (command instanceof RewindFastforwardType) {
+                    if (command == RewindFastforwardType.FASTFORWARD) {
+                        cmd = "FastForward";
+                    } else if (command == RewindFastforwardType.REWIND) {
+                        cmd = "Rewind";
+                    }
+                }
+                if (cmd != null) {
+                    client.pressButtonCurrentActivity(cmd);
+                } else {
+                    logger.warn("Unknown player type {}", command);
+                }
+                break;
+            default:
+                logger.warn("Unknown channel id {}", channel.getUID().getId());
+        }
+    }
+
+    @Override
+    public void initialize() {
+        config = getConfigAs(HarmonyHubConfig.class);
+        cancelRetry();
+        updateStatus(ThingStatus.UNKNOWN);
+        retryJob = scheduler.schedule(this::connect, 0, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void dispose() {
+        listeners.clear();
+        cancelRetry();
+        disconnectFromHub();
+        factory.removeChannelTypesForThing(getThing().getUID());
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String comment) {
+        super.updateStatus(status, detail, comment);
+        logger.debug("Updating listeners with status {}", status);
+        for (HubStatusListener listener : listeners) {
+            listener.hubStatusChanged(status);
+        }
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        client.getCurrentActivity().thenAccept((activity) -> {
+            updateState(channelUID, new StringType(activity.getLabel()));
+        });
+    }
+
+    @Override
+    public void hubDisconnected(@Nullable String reason) {
+        if (getThing().getStatus() == ThingStatus.ONLINE) {
+            setOfflineAndReconnect(String.format("Could not connect: %s", reason));
+        }
+    }
+
+    @Override
+    public void hubConnected() {
+        heartBeatJob = scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                client.sendPing();
+            } catch (Exception e) {
+                logger.debug("heartbeat failed", e);
+                setOfflineAndReconnect("Hearbeat failed");
+            }
+        }, heartBeatInterval, heartBeatInterval, TimeUnit.SECONDS);
+        updateStatus(ThingStatus.ONLINE);
+        getConfigFuture().thenAcceptAsync(harmonyConfig -> updateCurrentActivityChannel(harmonyConfig), scheduler)
+                .exceptionally(e -> {
+                    setOfflineAndReconnect("Getting config failed: " + e.getMessage());
+                    return null;
+                });
+        client.getCurrentActivity().thenAccept(activity -> {
+            updateState(activity);
+        });
+    }
+
+    @Override
+    public void activityStatusChanged(@Nullable Activity activity, @Nullable Status status) {
+        updateActivityStatus(activity, status);
+    }
+
+    @Override
+    public void activityStarted(@Nullable Activity activity) {
+        updateState(activity);
+    }
+
+    /**
+     * Starts the connection process
+     */
+    private synchronized void connect() {
+        disconnectFromHub();
+
+        heartBeatInterval = Math.min(config.heartBeatInterval > 0 ? config.heartBeatInterval : HEARTBEAT_INTERVAL,
+                HEARTBEAT_INTERVAL_MAX);
+
+        String host = config.host;
+
+        // earlier versions required a name and used network discovery to find the hub and retrieve the host,
+        // this section is to not break that and also update older configurations to use the host configuration
+        // option instead of name
+        if (StringUtils.isBlank(host)) {
+            host = getThing().getProperties().get(HUB_PROPERTY_HOST);
+            if (StringUtils.isNotBlank(host)) {
+                Configuration genericConfig = getConfig();
+                genericConfig.put(HUB_PROPERTY_HOST, host);
+                updateConfiguration(genericConfig);
+            } else {
+                logger.debug("host not configured");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "host not configured");
+                return;
+            }
+        }
+
+        try {
+            logger.debug("Connecting: host {}", host);
+            client.connect(host);
+        } catch (Exception e) {
+            logger.debug("Could not connect to HarmonyHub at {}", host, e);
+            setOfflineAndReconnect("Could not connect: " + e.getMessage());
+        }
+    }
+
+    private void disconnectFromHub() {
+        ScheduledFuture<?> localHeartBeatJob = heartBeatJob;
+        if (localHeartBeatJob != null && !localHeartBeatJob.isDone()) {
+            localHeartBeatJob.cancel(false);
+        }
+        client.disconnect();
+    }
+
+    private void setOfflineAndReconnect(String error) {
+        disconnectFromHub();
+        retryJob = scheduler.schedule(this::connect, RETRY_TIME, TimeUnit.SECONDS);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+    }
+
+    private void cancelRetry() {
+        ScheduledFuture<?> localRetryJob = retryJob;
+        if (localRetryJob != null && !localRetryJob.isDone()) {
+            localRetryJob.cancel(false);
+        }
+    }
+
+    private void updateState(@Nullable Activity activity) {
+        if (activity != null) {
+            logger.debug("Updating current activity to {}", activity.getLabel());
+            updateState(new ChannelUID(getThing().getUID(), CHANNEL_CURRENT_ACTIVITY),
+                    new StringType(activity.getLabel()));
+        }
+    }
+
+    private void updateActivityStatus(@Nullable Activity activity, Activity.@Nullable Status status) {
+        if (activity == null) {
+            logger.debug("Cannot update activity status of {} with activity that is null", getThing().getUID());
+            return;
+        } else if (status == null) {
+            logger.debug("Cannot update activity status of {} with status that is null", getThing().getUID());
+            return;
+        }
+
+        logger.debug("Received {} activity status for {}", status, activity.getLabel());
+        switch (status) {
+            case ACTIVITY_IS_STARTING:
+                triggerChannel(CHANNEL_ACTIVITY_STARTING_TRIGGER, getEventName(activity));
+                break;
+            case ACTIVITY_IS_STARTED:
+            case HUB_IS_OFF:
+                // hub is off is received with power-off activity
+                triggerChannel(CHANNEL_ACTIVITY_STARTED_TRIGGER, getEventName(activity));
+                break;
+            case HUB_IS_TURNING_OFF:
+                // hub is turning off is received for current activity, we will translate it into activity starting
+                // trigger of power-off activity (with ID=-1)
+                getConfigFuture().thenAccept(config -> {
+                    if (config != null) {
+                        Activity powerOff = config.getActivityById(-1);
+                        if (powerOff != null) {
+                            triggerChannel(CHANNEL_ACTIVITY_STARTING_TRIGGER, getEventName(powerOff));
+                        }
+                    }
+                }).exceptionally(e -> {
+                    setOfflineAndReconnect("Getting config failed: " + e.getMessage());
+                    return null;
+                });
+                break;
+            default:
+                break;
+        }
+    }
+
+    private String getEventName(Activity activity) {
+        return activity.getLabel().replaceAll("[^A-Za-z0-9]", "_");
+    }
+
+    /**
+     * Updates the current activity channel with the available activities as option states.
+     */
+    private void updateCurrentActivityChannel(@Nullable HarmonyConfig config) {
+        ChannelTypeUID channelTypeUID = new ChannelTypeUID(getThing().getUID() + ":" + CHANNEL_CURRENT_ACTIVITY);
+
+        if (config == null) {
+            logger.debug("Cannot update {} when HarmonyConfig is null", channelTypeUID);
+            return;
+        }
+
+        logger.debug("Updating {}", channelTypeUID);
+
+        List<Activity> activities = config.getActivities();
+        // sort our activities in order
+        Collections.sort(activities, ACTIVITY_COMPERATOR);
+
+        // add our activities as channel state options
+        List<StateOption> states = new LinkedList<>();
+        for (Activity activity : activities) {
+            states.add(new StateOption(activity.getLabel(), activity.getLabel()));
+        }
+
+        ChannelType channelType = ChannelTypeBuilder.state(channelTypeUID, "Current Activity", "String")
+                .withDescription("Current activity for " + getThing().getLabel())
+                .withStateDescription(new StateDescription(null, null, null, "%s", false, states)).build();
+
+        factory.addChannelType(channelType);
+
+        Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), CHANNEL_CURRENT_ACTIVITY), "String")
+                .withType(channelTypeUID).build();
+
+        // replace existing currentActivity with updated one
+        List<Channel> newChannels = new ArrayList<>();
+        for (Channel c : getThing().getChannels()) {
+            if (!c.getUID().equals(channel.getUID())) {
+                newChannels.add(c);
+            }
+        }
+        newChannels.add(channel);
+
+        BridgeBuilder thingBuilder = editThing();
+        thingBuilder.withChannels(newChannels);
+        updateThing(thingBuilder.build());
+    }
+
+    /**
+     * Sends a button press to a device
+     *
+     * @param device
+     * @param button
+     */
+    public void pressButton(int device, String button) {
+        client.pressButton(device, button);
+    }
+
+    /**
+     * Sends a button press to a device
+     *
+     * @param device
+     * @param button
+     */
+    public void pressButton(String device, String button) {
+        client.pressButton(device, button);
+    }
+
+    public CompletableFuture<@Nullable HarmonyConfig> getConfigFuture() {
+        return client.getConfig();
+    }
+
+    /**
+     * Adds a HubConnectedListener
+     *
+     * @param listener
+     */
+    public void addHubStatusListener(HubStatusListener listener) {
+        listeners.add(listener);
+        listener.hubStatusChanged(getThing().getStatus());
+    }
+
+    /**
+     * Removes a HubConnectedListener
+     *
+     * @param listener
+     */
+    public void removeHubStatusListener(HubStatusListener listener) {
+        listeners.remove(listener);
+    }
+
+}

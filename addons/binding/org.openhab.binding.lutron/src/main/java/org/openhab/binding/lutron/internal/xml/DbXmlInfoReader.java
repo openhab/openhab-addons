@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.lutron.internal.xml;
 
@@ -13,8 +17,10 @@ import org.openhab.binding.lutron.internal.discovery.project.Area;
 import org.openhab.binding.lutron.internal.discovery.project.Component;
 import org.openhab.binding.lutron.internal.discovery.project.Device;
 import org.openhab.binding.lutron.internal.discovery.project.DeviceGroup;
+import org.openhab.binding.lutron.internal.discovery.project.GreenMode;
 import org.openhab.binding.lutron.internal.discovery.project.Output;
 import org.openhab.binding.lutron.internal.discovery.project.Project;
+import org.openhab.binding.lutron.internal.discovery.project.Timeclock;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -40,6 +46,8 @@ public class DbXmlInfoReader extends XmlDocumentReader<Project> {
         xstream.aliasField("AppVer", Project.class, "appVersion");
         xstream.aliasField("XMLVer", Project.class, "xmlVersion");
         xstream.aliasField("Areas", Project.class, "areas");
+        xstream.aliasField("Timeclocks", Project.class, "timeclocks");
+        xstream.aliasField("GreenModes", Project.class, "greenmodes");
 
         xstream.alias("Area", Area.class);
         xstream.aliasField("Name", Area.class, "name");
@@ -75,6 +83,18 @@ public class DbXmlInfoReader extends XmlDocumentReader<Project> {
         xstream.useAttributeFor(Output.class, "integrationId");
         xstream.aliasField("OutputType", Output.class, "type");
         xstream.useAttributeFor(Output.class, "type");
+
+        xstream.alias("Timeclock", Timeclock.class);
+        xstream.aliasField("Name", Timeclock.class, "name");
+        xstream.useAttributeFor(Timeclock.class, "name");
+        xstream.aliasField("IntegrationID", Timeclock.class, "integrationId");
+        xstream.useAttributeFor(Timeclock.class, "integrationId");
+
+        xstream.alias("GreenMode", GreenMode.class);
+        xstream.aliasField("Name", GreenMode.class, "name");
+        xstream.useAttributeFor(GreenMode.class, "name");
+        xstream.aliasField("IntegrationID", GreenMode.class, "integrationId");
+        xstream.useAttributeFor(GreenMode.class, "integrationId");
 
         // This reader is only interested in device thing information and does not read
         // everything contained in DbXmlInfo. Ignoring unknown elements also makes the

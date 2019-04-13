@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="jeelink"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- JeeLink USB Receiver Bridge Type -->
 	<bridge-type id="jeelinkUsb">
@@ -29,6 +29,12 @@
 				<label>@text/parameter.initdelay.label</label>
 				<description>@text/parameter.initdelay.description</description>
 				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="reconnectInterval" type="integer" required="false">
+				<label>@text/parameter.reconnectinterval.label</label>
+				<description>@text/parameter.reconnectinterval.description</description>
+				<default>300</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -61,6 +67,12 @@
 				<default>20</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="reconnectInterval" type="integer" required="false">
+				<label>@text/parameter.reconnectinterval.label</label>
+				<description>@text/parameter.reconnectinterval.description</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 
@@ -87,6 +99,12 @@
 				<label>@text/parameter.initdelay.label</label>
 				<description>@text/parameter.initdelay.description</description>
 				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="reconnectInterval" type="integer" required="false">
+				<label>@text/parameter.reconnectinterval.label</label>
+				<description>@text/parameter.reconnectinterval.description</description>
+				<default>300</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -119,6 +137,12 @@
 				<label>@text/parameter.initdelay.label</label>
 				<description>@text/parameter.initdelay.description</description>
 				<default>20</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="reconnectInterval" type="integer" required="false">
+				<label>@text/parameter.reconnectinterval.label</label>
+				<description>@text/parameter.reconnectinterval.description</description>
+				<default>300</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

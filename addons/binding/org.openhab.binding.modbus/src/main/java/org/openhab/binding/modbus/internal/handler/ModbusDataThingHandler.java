@@ -1,16 +1,22 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.modbus.internal.handler;
 
 import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal.*;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +49,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -52,6 +59,9 @@ import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.binding.modbus.internal.Transformation;
 import org.openhab.binding.modbus.internal.config.ModbusDataConfiguration;
+import org.openhab.io.transport.modbus.BasicModbusWriteCoilRequestBlueprint;
+import org.openhab.io.transport.modbus.BasicModbusWriteRegisterRequestBlueprint;
+import org.openhab.io.transport.modbus.BasicWriteTask;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusConnectionException;
@@ -65,11 +75,8 @@ import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusResponse;
 import org.openhab.io.transport.modbus.ModbusTransportException;
 import org.openhab.io.transport.modbus.ModbusWriteCallback;
-import org.openhab.io.transport.modbus.BasicModbusWriteCoilRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.io.transport.modbus.PollTask;
-import org.openhab.io.transport.modbus.BasicWriteTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.io.transport.modbus.json.WriteRequestJsonUtilities;
 import org.slf4j.Logger;
@@ -91,6 +98,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
     private final Logger logger = LoggerFactory.getLogger(ModbusDataThingHandler.class);
 
+    private static final Duration MIN_STATUS_INFO_UPDATE_INTERVAL = Duration.ofSeconds(1);
     private static final Map<String, List<Class<? extends State>>> CHANNEL_ID_TO_ACCEPTED_TYPES = new HashMap<>();
 
     static {
@@ -109,6 +117,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         CHANNEL_ID_TO_ACCEPTED_TYPES.put(ModbusBindingConstantsInternal.CHANNEL_ROLLERSHUTTER,
                 new RollershutterItem("").getAcceptedDataTypes());
     }
+    // data channels + 4 for read/write last error/success
+    private static final int NUMER_OF_CHANNELS_HINT = CHANNEL_ID_TO_ACCEPTED_TYPES.size() + 4;
 
     //
     // If you change the below default/initial values, please update the corresponding values in dispose()
@@ -123,6 +133,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     private volatile @Nullable Integer writeStart;
     private volatile int pollStart;
     private volatile int slaveId;
+    private volatile long updateUnchangedValuesEveryMillis;
     private volatile @Nullable ModbusSlaveEndpoint slaveEndpoint;
     private volatile @Nullable ModbusManager manager;
     private volatile @Nullable PollTask pollTask;
@@ -131,6 +142,13 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     private volatile boolean transformationOnlyInWrite;
     private volatile boolean childOfEndpoint;
     private volatile @Nullable ModbusPollerThingHandler pollerHandler;
+    private volatile Map<String, ChannelUID> channelCache = new HashMap<>();
+    private volatile Map<ChannelUID, Long> channelLastUpdated = new HashMap<>(NUMER_OF_CHANNELS_HINT);
+    private volatile Map<ChannelUID, State> channelLastState = new HashMap<>(NUMER_OF_CHANNELS_HINT);
+
+    private volatile LocalDateTime lastStatusInfoUpdate = LocalDateTime.MIN;
+    private volatile ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+            null);
 
     public ModbusDataThingHandler(Thing thing) {
         super(thing);
@@ -212,7 +230,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
      * In case of JSON as transformation output, the output processed using {@link processJsonTransform}.
      *
      * @param channelUID channel UID corresponding to received command
-     * @param command command to be transformed
+     * @param command    command to be transformed
      * @return transformed command. Null is returned with JSON transformation outputs and configuration errors
      *
      * @see processJsonTransform
@@ -232,7 +250,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 logger.error(
                         "Thing {} seems to have writeTransformation but no other write parameters. Since the transformation did not return a JSON for command '{}' (channel {}), this is a configuration error.",
                         getThing().getUID(), command, channelUID);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+                updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                         "Seems to have writeTransformation but no other write parameters. Since the transformation did not return a JSON for command '%s' (channel %s), this is a configuration error",
                         command, channelUID));
                 return null;
@@ -317,10 +335,11 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         try {
             logger.trace("initialize() of thing {} '{}' starting", thing.getUID(), thing.getLabel());
             config = getConfigAs(ModbusDataConfiguration.class);
+            updateUnchangedValuesEveryMillis = config.getUpdateUnchangedValuesEveryMillis();
             Bridge bridge = getBridge();
             if (bridge == null) {
                 logger.debug("Thing {} '{}' has no bridge", getThing().getUID(), getThing().getLabel());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No poller bridge");
+                updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No poller bridge");
                 return;
             }
             BridgeHandler bridgeHandler = bridge.getHandler();
@@ -345,7 +364,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 if (pollTask == null) {
                     logger.debug("Poller {} '{}' has no poll task -- configuration is changing?", bridge.getUID(),
                             bridge.getLabel());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                             String.format("Poller %s '%s' has no poll task", bridge.getUID(), bridge.getLabel()));
                     return;
                 }
@@ -359,11 +378,11 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             validateAndParseWriteParameters();
             validateMustReadOrWrite();
 
-            updateStatus(ThingStatus.ONLINE);
+            updateStatusIfChanged(ThingStatus.ONLINE);
         } catch (ModbusConfigurationException | EndpointNotInitializedException e) {
             logger.debug("Thing {} '{}' initialization error: {}", getThing().getUID(), getThing().getLabel(),
                     e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } finally {
             logger.trace("initialize() of thing {} '{}' finished", thing.getUID(), thing.getLabel());
         }
@@ -389,6 +408,11 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         transformationOnlyInWrite = false;
         childOfEndpoint = false;
         pollerHandler = null;
+        channelCache = new HashMap<>();
+        lastStatusInfoUpdate = LocalDateTime.MIN;
+        statusInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
+        channelLastUpdated = new HashMap<>(NUMER_OF_CHANNELS_HINT);
+        channelLastState = new HashMap<>(NUMER_OF_CHANNELS_HINT);
     }
 
     @Override
@@ -694,8 +718,10 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                     error.getMessage(), error);
         }
         Map<@NonNull ChannelUID, @NonNull State> states = new HashMap<>();
-        states.put(new ChannelUID(getThing().getUID(), ModbusBindingConstantsInternal.CHANNEL_LAST_READ_ERROR),
-                new DateTimeType());
+        ChannelUID lastReadErrorUID = getChannelUID(ModbusBindingConstantsInternal.CHANNEL_LAST_READ_ERROR);
+        if (isLinked(lastReadErrorUID)) {
+            states.put(lastReadErrorUID, new DateTimeType());
+        }
 
         synchronized (this) {
             // Update channels
@@ -703,7 +729,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 tryUpdateState(uid, state);
             });
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Error (%s) with read. Request: %s. Description: %s. Message: %s",
                             error.getClass().getSimpleName(), request, error.toString(), error.getMessage()));
         }
@@ -729,8 +755,10 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                     error.getMessage(), error);
         }
         Map<@NonNull ChannelUID, @NonNull State> states = new HashMap<>();
-        states.put(new ChannelUID(getThing().getUID(), ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_ERROR),
-                new DateTimeType());
+        ChannelUID lastWriteErrorUID = getChannelUID(ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_ERROR);
+        if (isLinked(lastWriteErrorUID)) {
+            states.put(lastWriteErrorUID, new DateTimeType());
+        }
 
         synchronized (this) {
             // Update channels
@@ -738,7 +766,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 tryUpdateState(uid, state);
             });
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Error (%s) with write. Request: %s. Description: %s. Message: %s",
                             error.getClass().getSimpleName(), request, error.toString(), error.getMessage()));
         }
@@ -752,22 +780,27 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             return;
         }
         logger.debug("Successful write, matching request {}", request);
-        DateTimeType now = new DateTimeType();
-        updateStatus(ThingStatus.ONLINE);
-        updateState(ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_SUCCESS, now);
+        updateStatusIfChanged(ThingStatus.ONLINE);
+        ChannelUID lastWriteSuccessUID = getChannelUID(ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_SUCCESS);
+        if (isLinked(lastWriteSuccessUID)) {
+            updateState(lastWriteSuccessUID, new DateTimeType());
+        }
     }
 
     /**
      * Update linked channels
      *
      * @param numericState numeric state corresponding to polled data
-     * @param boolValue boolean value corresponding to polled data
+     * @param boolValue    boolean value corresponding to polled data
      * @return updated channel data
      */
     private Map<ChannelUID, State> processUpdatedValue(DecimalType numericState, boolean boolValue) {
         Map<@NonNull ChannelUID, @NonNull State> states = new HashMap<>();
-        CHANNEL_ID_TO_ACCEPTED_TYPES.keySet().stream().filter(channelId -> isLinked(channelId)).forEach(channelId -> {
-            ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
+        CHANNEL_ID_TO_ACCEPTED_TYPES.keySet().stream().forEach(channelId -> {
+            ChannelUID channelUID = getChannelUID(channelId);
+            if (!isLinked(channelUID)) {
+                return;
+            }
             List<Class<? extends State>> acceptedDataTypes = CHANNEL_ID_TO_ACCEPTED_TYPES.get(channelId);
             if (acceptedDataTypes.isEmpty()) {
                 return;
@@ -801,7 +834,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             if (transformedState != null) {
                 logger.trace(
                         "Channel {} will be updated to '{}' (type {}). Input data: number value {} (value type '{}' taken into account) and bool value {}. Transformation: {}",
-                        channelUID, transformedState, transformedState.getClass().getSimpleName(), numericState,
+                        channelId, transformedState, transformedState.getClass().getSimpleName(), numericState,
                         readValueType, boolValue,
                         readTransformation.isIdentityTransform() ? "<identity>" : readTransformation);
                 states.put(channelUID, transformedState);
@@ -810,31 +843,87 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                         ", ");
                 logger.warn(
                         "Channel {} will not be updated since transformation was unsuccessful. Channel is expecting the following data types [{}]. Input data: number value {} (value type '{}' taken into account) and bool value {}. Transformation: {}",
-                        channelUID, types, numericState, readValueType, boolValue,
+                        channelId, types, numericState, readValueType, boolValue,
                         readTransformation.isIdentityTransform() ? "<identity>" : readTransformation);
             }
         });
 
-        states.put(new ChannelUID(getThing().getUID(), ModbusBindingConstantsInternal.CHANNEL_LAST_READ_SUCCESS),
-                new DateTimeType());
-
-        synchronized (this) {
-            updateStatus(ThingStatus.ONLINE);
-            // Update channels
-            states.forEach((uid, state) -> {
-                tryUpdateState(uid, state);
-            });
+        ChannelUID lastReadSuccessUID = getChannelUID(ModbusBindingConstantsInternal.CHANNEL_LAST_READ_SUCCESS);
+        if (isLinked(lastReadSuccessUID)) {
+            states.put(lastReadSuccessUID, new DateTimeType());
         }
+        updateExpiredChannels(states);
         return states;
     }
 
-    private void tryUpdateState(@NonNull ChannelUID uid, @NonNull State state) {
+    private void updateExpiredChannels(Map<ChannelUID, State> states) {
+        synchronized (this) {
+            updateStatusIfChanged(ThingStatus.ONLINE);
+            long now = System.currentTimeMillis();
+            // Update channels that have not been updated in a while, or when their values has changed
+            states.forEach((uid, state) -> updateExpiredChannel(now, uid, state));
+            channelLastState = states;
+        }
+    }
+
+    private void updateExpiredChannel(long now, ChannelUID uid, State state) {
+        @Nullable
+        State lastState = channelLastState.get(uid);
+        long lastUpdatedMillis = channelLastUpdated.getOrDefault(uid, 0L);
+        long millisSinceLastUpdate = now - lastUpdatedMillis;
+        if (lastUpdatedMillis <= 0L || lastState == null || updateUnchangedValuesEveryMillis <= 0L
+                || millisSinceLastUpdate > updateUnchangedValuesEveryMillis || !lastState.equals(state)) {
+            tryUpdateState(uid, state);
+            channelLastUpdated.put(uid, now);
+        }
+    }
+
+    private void tryUpdateState(ChannelUID uid, State state) {
         try {
             updateState(uid, state);
         } catch (IllegalArgumentException e) {
             logger.warn("Error updating state '{}' (type {}) to channel {}: {} {}", state,
                     Optional.ofNullable(state).map(s -> s.getClass().getName()).orElse("null"), uid,
                     e.getClass().getName(), e.getMessage());
+        }
+    }
+
+    private ChannelUID getChannelUID(String channelID) {
+        return channelCache.computeIfAbsent(channelID, id -> new ChannelUID(getThing().getUID(), id));
+    }
+
+    private void updateStatusIfChanged(ThingStatus status) {
+        updateStatusIfChanged(status, ThingStatusDetail.NONE, null);
+    }
+
+    private void updateStatusIfChanged(ThingStatus status, ThingStatusDetail statusDetail,
+            @Nullable String description) {
+        ThingStatusInfo newStatusInfo = new ThingStatusInfo(status, statusDetail, description);
+        Duration durationSinceLastUpdate = Duration.between(lastStatusInfoUpdate, LocalDateTime.now());
+        boolean intervalElapsed = MIN_STATUS_INFO_UPDATE_INTERVAL.minus(durationSinceLastUpdate).isNegative();
+        if (statusInfo.getStatus() == ThingStatus.UNKNOWN || !statusInfo.equals(newStatusInfo) || intervalElapsed) {
+            statusInfo = newStatusInfo;
+            lastStatusInfoUpdate = LocalDateTime.now();
+            updateStatus(newStatusInfo);
+        }
+    }
+
+    /**
+     * Update status using pre-constructed ThingStatusInfo
+     *
+     * Implementation adapted from BaseThingHandler updateStatus implementations
+     *
+     * @param statusInfo new status info
+     */
+    protected void updateStatus(ThingStatusInfo statusInfo) {
+        synchronized (this) {
+            ThingHandlerCallback callback = getCallback();
+            if (callback != null) {
+                callback.statusUpdated(this.thing, statusInfo);
+            } else {
+                logger.warn("Handler {} tried updating the thing status although the handler was already disposed.",
+                        this.getClass().getSimpleName());
+            }
         }
     }
 
