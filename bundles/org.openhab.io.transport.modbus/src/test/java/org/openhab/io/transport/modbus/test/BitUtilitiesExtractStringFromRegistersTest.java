@@ -18,8 +18,10 @@ import static org.junit.Assert.assertThat;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.junit.Rule;
@@ -28,13 +30,11 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.openhab.io.transport.modbus.BasicModbusRegister;
+import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
-import org.openhab.io.transport.modbus.BasicModbusRegister;
-
-import com.google.common.collect.ImmutableList;
 
 @RunWith(Parameterized.class)
 public class BitUtilitiesExtractStringFromRegistersTest {
@@ -68,7 +68,7 @@ public class BitUtilitiesExtractStringFromRegistersTest {
 
     @Parameters
     public static Collection<Object[]> data() {
-        return ImmutableList.of(
+        return Collections.unmodifiableList(Stream.of(
                 new Object[] { new StringType(""), shortArrayToRegisterArray(0), 0, 0, Charset.forName("UTF-8") },
                 new Object[] { new StringType("hello"), shortArrayToRegisterArray(0x6865, 0x6c6c, 0x6f00), 0, 5,
                         Charset.forName("UTF-8") },
@@ -92,7 +92,8 @@ public class BitUtilitiesExtractStringFromRegistersTest {
                 new Object[] { IllegalArgumentException.class, shortArrayToRegisterArray(0, 0), 0, -1,
                         Charset.forName("UTF-8") },
                 new Object[] { IllegalArgumentException.class, shortArrayToRegisterArray(0, 0), 0, 5,
-                        Charset.forName("UTF-8") });
+                        Charset.forName("UTF-8") })
+                .collect(Collectors.toList()));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

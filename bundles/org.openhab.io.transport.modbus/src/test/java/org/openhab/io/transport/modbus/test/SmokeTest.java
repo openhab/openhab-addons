@@ -20,6 +20,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
@@ -45,8 +47,6 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 import org.openhab.io.transport.modbus.internal.BitArrayWrappingBitVector;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableSet;
 
 import net.wimpi.modbus.msg.ModbusRequest;
 import net.wimpi.modbus.msg.WriteCoilRequest;
@@ -900,9 +900,11 @@ public class SmokeTest extends IntegrationTestSupport {
 
         modbusManager.registerRegularPoll(task, 50, 0);
         modbusManager.registerRegularPoll(task2, 50, 0);
-        assertThat(modbusManager.getRegisteredRegularPolls(), is(equalTo(ImmutableSet.of(task, task2))));
+        assertThat(modbusManager.getRegisteredRegularPolls(),
+                is(equalTo(Stream.of(task, task2).collect(Collectors.toSet()))));
         modbusManager.unregisterRegularPoll(task);
-        assertThat(modbusManager.getRegisteredRegularPolls(), is(equalTo(ImmutableSet.of(task2))));
+        assertThat(modbusManager.getRegisteredRegularPolls(),
+                is(equalTo(Stream.of(task2).collect(Collectors.toSet()))));
 
     }
 }

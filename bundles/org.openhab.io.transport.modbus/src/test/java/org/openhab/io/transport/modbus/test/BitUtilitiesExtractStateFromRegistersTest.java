@@ -17,8 +17,10 @@ import static org.junit.Assert.assertThat;
 
 import java.nio.ByteBuffer;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.junit.Rule;
@@ -33,8 +35,6 @@ import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
 import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
-
-import com.google.common.collect.ImmutableList;
 
 @RunWith(Parameterized.class)
 public class BitUtilitiesExtractStateFromRegistersTest {
@@ -66,7 +66,7 @@ public class BitUtilitiesExtractStateFromRegistersTest {
 
     @Parameters
     public static Collection<Object[]> data() {
-        return ImmutableList.of(
+        return Collections.unmodifiableList(Stream.of(
                 //
                 // BIT
                 //
@@ -370,7 +370,8 @@ public class BitUtilitiesExtractStateFromRegistersTest {
                 new Object[] {
                         // out of bounds of unsigned 64bit
                         new DecimalType("16124500437522872585"), ValueType.UINT64_SWAP,
-                        shortArrayToRegisterArray(0x7909, 0x772E, 0xBBB7, 0xDFC5), 0 });
+                        shortArrayToRegisterArray(0x7909, 0x772E, 0xBBB7, 0xDFC5), 0 })
+                .collect(Collectors.toList()));
 
     }
 

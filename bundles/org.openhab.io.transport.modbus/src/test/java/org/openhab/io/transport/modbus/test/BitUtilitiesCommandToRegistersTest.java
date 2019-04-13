@@ -16,6 +16,9 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -32,8 +35,6 @@ import org.junit.runners.Parameterized.Parameters;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
-
-import com.google.common.collect.ImmutableList;
 
 @RunWith(Parameterized.class)
 public class BitUtilitiesCommandToRegistersTest {
@@ -62,7 +63,7 @@ public class BitUtilitiesCommandToRegistersTest {
 
     @Parameters
     public static Collection<Object[]> data() {
-        return ImmutableList
+        return Collections.unmodifiableList(Stream
                 .of(new Object[] { new DecimalType("1.0"), ValueType.BIT, IllegalArgumentException.class },
                         new Object[] { new DecimalType("1.0"), ValueType.INT8, IllegalArgumentException.class },
                         //
@@ -286,7 +287,8 @@ public class BitUtilitiesCommandToRegistersTest {
                                 // out of bounds of unsigned 64bit
                                 new DecimalType("3498348904359085439088905"),
                                 // should pick the low 64 bits
-                                ValueType.UINT64_SWAP, shorts(0x7909, 0x772E, 0xBBB7, 0xDFC5), });
+                                ValueType.UINT64_SWAP, shorts(0x7909, 0x772E, 0xBBB7, 0xDFC5), })
+                .collect(Collectors.toList()));
 
     }
 
