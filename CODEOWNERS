@@ -14,7 +14,6 @@
 /addons/binding/org.openhab.binding.ihc/ @paulianttila
 /addons/binding/org.openhab.binding.ihc.test/ @paulianttila
 /addons/binding/org.openhab.binding.innogysmarthome/ @ollie-dev
-/addons/binding/org.openhab.binding.lgwebos/ @sprehn
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
 /addons/binding/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
 /addons/binding/org.openhab.binding.nikohomecontrol/ @mherwege
@@ -102,6 +101,7 @@
 /bundles/org.openhab.binding.lametrictime/ @syphr42
 /bundles/org.openhab.binding.leapmotion/ @kaikreuzer
 /bundles/org.openhab.binding.lgtvserial/ @fa2k
+/bundles/org.openhab.binding.lgwebos/ @sprehn
 /bundles/org.openhab.binding.lifx/ @wborn
 /bundles/org.openhab.binding.lirc/ @kabili207
 /bundles/org.openhab.binding.logreader/ @paulianttila
