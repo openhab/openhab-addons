@@ -112,9 +112,10 @@ class WebSocketRemote extends WebSocketBase {
             App app = remoteControllerWebSocket.new App(jsonApp.appId, jsonApp.name, jsonApp.app_type);
             remoteControllerWebSocket.apps.put(app.name, app);
         }
-
-        logger.debug("Installed Apps: " + remoteControllerWebSocket.apps.entrySet().stream()
-                .map(entry -> entry.getValue().appId + " = " + entry.getKey()).collect(Collectors.joining(", ")));
+        if (logger.isDebugEnabled()) {
+            logger.debug("Installed Apps: " + remoteControllerWebSocket.apps.entrySet().stream()
+                    .map(entry -> entry.getValue().appId + " = " + entry.getKey()).collect(Collectors.joining(", ")));
+        }
 
         remoteControllerWebSocket.updateCurrentApp();
     }

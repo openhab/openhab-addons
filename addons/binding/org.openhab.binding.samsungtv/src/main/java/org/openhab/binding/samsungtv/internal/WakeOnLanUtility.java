@@ -53,7 +53,7 @@ public class WakeOnLanUtility {
             } else {
                 BufferedReader stdErr = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
                 String error = stdErr.readLine();
-                logger.warn("Cannot get MAC addres of host {}: ", hostName, error);
+                logger.warn("Cannot get MAC addres of host {}: {}", hostName, error);
             }
         } catch (Exception e) {
             logger.info("Problem getting MAC address: {}", e.getMessage());

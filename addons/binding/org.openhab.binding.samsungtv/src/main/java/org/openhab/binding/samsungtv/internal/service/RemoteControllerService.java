@@ -335,7 +335,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
                         sendKeyCode(KeyCode.KEY_POWEROFF);
                     }
                 } else {
-                    logger.warn("Remote control: unsupported command type {} for channel", command, channel);
+                    logger.warn("Remote control: unsupported command type {} for channel {}", command, channel);
                 }
                 return;
 
@@ -351,7 +351,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
                         sendKeyCode(KeyCode.KEY_VOLDOWN);
                     }
                 } else {
-                    logger.warn("Remote control: unsupported command type {} for channel", command, channel);
+                    logger.warn("Remote control: unsupported command type {} for channel {}", command, channel);
                 }
                 return;
 
@@ -378,7 +378,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
                     commands.add(KeyCode.KEY_ENTER);
                     sendKeyCodes(commands);
                 } else {
-                    logger.warn("Remote control: unsupported command type {} for channel", command, channel);
+                    logger.warn("Remote control: unsupported command type {} for channel {}", command, channel);
                 }
                 return;
             default:
