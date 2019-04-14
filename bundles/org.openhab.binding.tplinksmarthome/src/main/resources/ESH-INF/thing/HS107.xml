@@ -4,15 +4,20 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="re370">
-		<label>RE370K</label>
-		<description>TP-Link AC1200 Wi-Fi Range Extender with Smart Plug</description>
+	<thing-type id="hs107">
+		<label>HS107</label>
+		<description>TP-Link HS107 Smart Wi-Fi Plug, 2-Outlets</description>
 		<category>PowerOutlet</category>
 
-		<channels>
-			<channel id="switch" typeId="switch-readonly" />
-			<channel id="rssi" typeId="rssi" />
-		</channels>
+		<channel-groups>
+			<channel-group id="groupSwitch" typeId="switch-group" />
+			<channel-group id="outlet1" typeId="switch-outlet">
+				<label>Outlet 1</label>
+			</channel-group>
+			<channel-group id="outlet2" typeId="switch-outlet">
+				<label>Outlet 2</label>
+			</channel-group>
+		</channel-groups>
 
 		<representation-property>deviceId</representation-property>
 

@@ -22,13 +22,13 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.tplinksmarthome.internal.Commands;
 import org.openhab.binding.tplinksmarthome.internal.Connection;
-import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeConfiguration;
 import org.openhab.binding.tplinksmarthome.internal.model.HasErrorResponse;
 import org.openhab.binding.tplinksmarthome.internal.model.LightState;
 import org.openhab.binding.tplinksmarthome.internal.model.TransitionLightStateResponse;
@@ -63,17 +63,17 @@ public class BulbDevice extends SmartHomeDevice {
     }
 
     @Override
-    public boolean handleCommand(String channelID, Connection connection, Command command,
-            TPLinkSmartHomeConfiguration configuration) throws IOException {
-        int transitionPeriod = configuration.transitionPeriod;
-        HasErrorResponse response;
+    public boolean handleCommand(ChannelUID channelUid, Command command) throws IOException {
+        final String channelId = channelUid.getId();
+        final int transitionPeriod = configuration.transitionPeriod;
+        final HasErrorResponse response;
 
         if (command instanceof OnOffType) {
-            response = handleOnOffType(channelID, connection, (OnOffType) command, transitionPeriod);
+            response = handleOnOffType(channelId, connection, (OnOffType) command, transitionPeriod);
         } else if (command instanceof HSBType) {
-            response = handleHSBType(channelID, connection, (HSBType) command, transitionPeriod);
+            response = handleHSBType(channelId, connection, (HSBType) command, transitionPeriod);
         } else if (command instanceof DecimalType) {
-            response = handleDecimalType(channelID, connection, (DecimalType) command, transitionPeriod);
+            response = handleDecimalType(channelId, connection, (DecimalType) command, transitionPeriod);
         } else {
             return false;
         }
@@ -103,7 +103,7 @@ public class BulbDevice extends SmartHomeDevice {
         return null;
     }
 
-    private TransitionLightStateResponse handleColorTemperature(Connection connection, int colorTemperature,
+    private @Nullable TransitionLightStateResponse handleColorTemperature(Connection connection, int colorTemperature,
             int transitionPeriod) throws IOException {
         return commands.setTransitionLightStateResponse(
                 connection.sendCommand(commands.setColorTemperature(colorTemperature, transitionPeriod)));
@@ -120,11 +120,11 @@ public class BulbDevice extends SmartHomeDevice {
     }
 
     @Override
-    public State updateChannel(String channelId, DeviceState deviceState) {
-        LightState lightState = deviceState.getSysinfo().getLightState();
+    public State updateChannel(ChannelUID channelUid, DeviceState deviceState) {
+        final LightState lightState = deviceState.getSysinfo().getLightState();
         final State state;
 
-        switch (channelId) {
+        switch (channelUid.getId()) {
             case CHANNEL_BRIGHTNESS:
                 state = lightState.getBrightness();
                 break;
