@@ -21,6 +21,7 @@
 /addons/binding/org.openhab.binding.exec/ @kgoderis
 /addons/binding/org.openhab.binding.feed/ @svilenvul
 /addons/binding/org.openhab.binding.feed.test/ @svilenvul
+/addons/binding/org.openhab.binding.freemobilesms/ @guyou
 /addons/binding/org.openhab.binding.ftpupload/ @paulianttila
 /addons/binding/org.openhab.binding.ihc/ @paulianttila
 /addons/binding/org.openhab.binding.ihc.test/ @paulianttila
