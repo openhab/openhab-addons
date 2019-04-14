@@ -183,8 +183,6 @@ public class EnturNoConnection {
 
             return json.replaceAll("\\{stopPlaceId}", "" + params.get(PARAM_STOPID)).replaceAll("\\{startDateTime}",
                     "" + params.get(PARAM_START_DATE_TIME));
-        } catch (IOException e) {
-            throw e;
         }
     }
 
