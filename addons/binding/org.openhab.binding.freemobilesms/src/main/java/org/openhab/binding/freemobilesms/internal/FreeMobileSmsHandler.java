@@ -27,6 +27,9 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.free.smsapi.Account;
+import fr.free.smsapi.RawAccount;
+
 /**
  * The {@link FreeMobileSmsHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -38,8 +41,9 @@ public class FreeMobileSmsHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FreeMobileSmsHandler.class);
 
-    @Nullable
     private FreeMobileSmsConfiguration config;
+
+    private Account account;
 
     public FreeMobileSmsHandler(Thing thing) {
         super(thing);
@@ -68,29 +72,18 @@ public class FreeMobileSmsHandler extends BaseThingHandler {
         // logger.debug("Start initializing!");
         config = getConfigAs(FreeMobileSmsConfiguration.class);
 
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly. Also, before leaving this method a thing
-        // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in
-        // case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
-
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Example for background initialization:
         scheduler.execute(() -> {
-          // TODO check network
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
+            // Check configuration
+            if (config != null && config.user != null && config.password != null) {
+              account = new RawAccount(config.user, config.password);
+              updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE);
+              updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                      "Failed to retrieve configuration");
             }
+            // TODO check network
         });
 
         // logger.debug("Finished initializing!");
