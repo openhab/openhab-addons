@@ -61,6 +61,7 @@
     <slf4j.version>1.7.21</slf4j.version>
 
     <bnd.importpackage></bnd.importpackage>
+    <bnd.exportpackage></bnd.exportpackage>
     <bnd.includeresource></bnd.includeresource>
     
   </properties>
@@ -184,7 +185,8 @@ Import-Package: \\
 -exportcontents: \\
   !*.internal.*,\\
   !*.impl.*, \\
-  org.openhab.*
+  org.openhab.*, \\
+  ${bnd.exportpackage}
 -sources: false
 -contract: *
 -includeresource: ${bnd.includeresource}
