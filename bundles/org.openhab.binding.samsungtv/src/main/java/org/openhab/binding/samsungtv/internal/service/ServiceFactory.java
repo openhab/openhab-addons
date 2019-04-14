@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
 
@@ -25,10 +27,11 @@ import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class ServiceFactory {
 
     @SuppressWarnings("serial")
-    private static final Map<String, Class<? extends SamsungTvService>> serviceMap = Collections
+    private static final Map<String, Class<? extends SamsungTvService>> SERVICEMAP = Collections
             .unmodifiableMap(new HashMap<String, Class<? extends SamsungTvService>>() {
                 {
                     put(MainTVServerService.SERVICE_NAME, MainTVServerService.class);
@@ -48,9 +51,8 @@ public class ServiceFactory {
      * @param port
      * @return
      */
-    public static SamsungTvService createService(String type, UpnpIOService upnpIOService, String udn,
+    public static @Nullable SamsungTvService createService(String type, UpnpIOService upnpIOService, String udn,
             int pollingInterval, String host, int port) {
-
         SamsungTvService service = null;
 
         switch (type) {
@@ -76,7 +78,7 @@ public class ServiceFactory {
      * @return Amount of supported services
      */
     public static int getServiceCount() {
-        return serviceMap.size();
+        return SERVICEMAP.size();
     }
 
     /**
@@ -86,6 +88,6 @@ public class ServiceFactory {
      * @return Class of the service
      */
     public static Class<? extends SamsungTvService> getClassByServiceName(String serviceName) {
-        return serviceMap.get(serviceName);
+        return SERVICEMAP.get(serviceName);
     }
 }

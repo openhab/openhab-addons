@@ -14,19 +14,22 @@ package org.openhab.binding.samsungtv.internal.protocol;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link RemoteController} is the base class for handling remote control keys for teh Samsung TV.
  *
  * @author Arjan Mels - Initial contribution
  */
-
+@NonNullByDefault
 public abstract class RemoteController implements AutoCloseable {
     protected String host;
     protected int port;
     protected String appName;
     protected String uniqueId;
 
-    public RemoteController(String host, int port, String appName, String uniqueId) {
+    public RemoteController(String host, int port, @Nullable String appName, @Nullable String uniqueId) {
         this.host = host;
         this.port = port;
         this.appName = appName != null ? appName : "";

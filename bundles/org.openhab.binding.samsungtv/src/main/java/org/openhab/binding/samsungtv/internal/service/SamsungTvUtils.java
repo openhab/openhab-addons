@@ -20,6 +20,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -29,15 +31,16 @@ import org.xml.sax.SAXException;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class SamsungTvUtils {
 
     /**
      * Build {@link String} type {@link HashMap} from variable number of
      * {@link String}s.
-     * 
+     *
      * @param data
-     *            Variable number of {@link String} parameters which will be
-     *            added to hash map.
+     *                 Variable number of {@link String} parameters which will be
+     *                 added to hash map.
      */
     public static HashMap<String, String> buildHashMap(String... data) {
         HashMap<String, String> result = new HashMap<String, String>();
@@ -68,12 +71,12 @@ public class SamsungTvUtils {
 
     /**
      * Build {@link Document} from {@link String} which contains XML content.
-     * 
+     *
      * @param xml
-     *            {@link String} which contains XML content.
+     *                {@link String} which contains XML content.
      * @return {@link Document} or null if convert has failed.
      */
-    public static Document loadXMLFromString(String xml) {
+    public static @Nullable Document loadXMLFromString(String xml) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();

@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.net.util.Base64;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Initial contribution
  * @author Arjan Mels - Renamed and reworked to use RemoteController base class, to allow different protocols
  */
+@NonNullByDefault
 public class RemoteControllerLegacy extends RemoteController {
 
     private static final int CONNECTION_TIMEOUT = 500;
@@ -48,22 +51,22 @@ public class RemoteControllerLegacy extends RemoteController {
     private final Logger logger = LoggerFactory.getLogger(RemoteControllerLegacy.class);
 
     // Access granted response
-    private final char[] ACCESS_GRANTED_RESP = new char[] { 0x64, 0x00, 0x01, 0x00 };
+    private static final char[] ACCESS_GRANTED_RESP = new char[] { 0x64, 0x00, 0x01, 0x00 };
 
     // User rejected your network remote controller response
-    private final char[] ACCESS_DENIED_RESP = new char[] { 0x64, 0x00, 0x00, 0x00 };
+    private static final char[] ACCESS_DENIED_RESP = new char[] { 0x64, 0x00, 0x00, 0x00 };
 
     // waiting for user to grant or deny access response
-    private final char[] WAITING_USER_GRANT_RESP = new char[] { 0x0A, 0x00, 0x02, 0x00, 0x00, 0x00 };
+    private static final char[] WAITING_USER_GRANT_RESP = new char[] { 0x0A, 0x00, 0x02, 0x00, 0x00, 0x00 };
 
     // timeout or cancelled by user response
-    private final char[] ACCESS_TIMEOUT_RESP = new char[] { 0x65, 0x00 };
+    private static final char[] ACCESS_TIMEOUT_RESP = new char[] { 0x65, 0x00 };
 
-    private final String APP_STRING = "iphone.iapp.samsung";
+    private static final String APP_STRING = "iphone.iapp.samsung";
 
-    private Socket socket;
-    private InputStreamReader reader;
-    private BufferedWriter writer;
+    private @Nullable Socket socket;
+    private @Nullable InputStreamReader reader;
+    private @Nullable BufferedWriter writer;
 
     /**
      * Create and initialize remote controller instance.
@@ -73,7 +76,7 @@ public class RemoteControllerLegacy extends RemoteController {
      * @param appName  Application name used to send key codes.
      * @param uniqueId Unique Id used to send key codes.
      */
-    public RemoteControllerLegacy(String host, int port, String appName, String uniqueId) {
+    public RemoteControllerLegacy(String host, int port, @Nullable String appName, @Nullable String uniqueId) {
         super(host, port, appName, uniqueId);
     }
 
@@ -127,7 +130,6 @@ public class RemoteControllerLegacy extends RemoteController {
             writer.flush();
 
             try {
-
                 /* @formatter:off
                 *
                 * offset value and description
@@ -150,16 +152,12 @@ public class RemoteControllerLegacy extends RemoteController {
 
                 if (Arrays.equals(result, ACCESS_GRANTED_RESP)) {
                     logger.debug("Access granted");
-
                 } else if (Arrays.equals(result, ACCESS_DENIED_RESP)) {
                     throw new RemoteControllerException("Access denied");
-
                 } else if (Arrays.equals(result, ACCESS_TIMEOUT_RESP)) {
                     throw new RemoteControllerException("Registration timed out");
-
                 } else if (Arrays.equals(result, WAITING_USER_GRANT_RESP)) {
                     throw new RemoteControllerException("Waiting for user to grant access");
-
                 } else {
                     throw new RemoteControllerException("Unknown response received for access query");
                 }
@@ -168,7 +166,6 @@ public class RemoteControllerLegacy extends RemoteController {
                 while ((i = in.available()) > 0) {
                     in.skip(i);
                 }
-
             } catch (IOException e) {
                 throw new RemoteControllerException(e);
             }
@@ -298,7 +295,10 @@ public class RemoteControllerLegacy extends RemoteController {
         return w.toString();
     }
 
-    private void writeString(Writer writer, String str) throws IOException {
+    private void writeString(@Nullable Writer writer, String str) throws IOException {
+        if (writer == null) {
+            return;
+        }
         int len = str.length();
         byte low = (byte) (len & 0xFF);
         byte high = (byte) ((len >> 8) & 0xFF);
@@ -335,6 +335,9 @@ public class RemoteControllerLegacy extends RemoteController {
     private void sendKeyData(KeyCode key) throws RemoteControllerException {
         logger.debug("Sending key code {}", key.getValue());
 
+        if (writer == null || reader == null) {
+            return;
+        }
         /* @formatter:off
          *
          * offset value and description

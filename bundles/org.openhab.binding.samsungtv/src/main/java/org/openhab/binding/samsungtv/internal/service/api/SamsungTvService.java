@@ -14,6 +14,7 @@ package org.openhab.binding.samsungtv.internal.service.api;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.types.Command;
 
 /**
@@ -21,6 +22,7 @@ import org.eclipse.smarthome.core.types.Command;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public interface SamsungTvService {
 
     /**
@@ -42,7 +44,7 @@ public interface SamsungTvService {
      * Procedure for register event listener.
      *
      * @param listener
-     *            Event listener instance to handle events.
+     *                     Event listener instance to handle events.
      */
     void addEventListener(EventListener listener);
 
@@ -50,7 +52,7 @@ public interface SamsungTvService {
      * Procedure for remove event listener.
      *
      * @param listener
-     *            Event listener instance to remove.
+     *                     Event listener instance to remove.
      */
     void removeEventListener(EventListener listener);
 

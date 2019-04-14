@@ -15,6 +15,8 @@ package org.openhab.binding.samsungtv.internal.protocol;
 import java.io.IOException;
 import java.net.URI;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
@@ -26,6 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Arjan Mels - Initial contribution
  */
+@NonNullByDefault
 class WebSocketBase extends WebSocketAdapter {
     private final Logger logger = LoggerFactory.getLogger(WebSocketBase.class);
     /**
@@ -43,14 +46,14 @@ class WebSocketBase extends WebSocketAdapter {
     boolean isConnecting = false;
 
     @Override
-    public void onWebSocketClose(int statusCode, String reason) {
+    public void onWebSocketClose(int statusCode, @Nullable String reason) {
         logger.debug("{} connection closed: {} - {}", this.getClass().getSimpleName(), statusCode, reason);
         super.onWebSocketClose(statusCode, reason);
         isConnecting = false;
     }
 
     @Override
-    public void onWebSocketError(Throwable error) {
+    public void onWebSocketError(@Nullable Throwable error) {
         logger.warn("{} connection error: {}", this.getClass().getSimpleName(), error.getMessage());
         super.onWebSocketError(error);
         isConnecting = false;
@@ -73,7 +76,7 @@ class WebSocketBase extends WebSocketAdapter {
     }
 
     @Override
-    public void onWebSocketConnect(Session session) {
+    public void onWebSocketConnect(@Nullable Session session) {
         logger.debug("{} connection established: {}", this.getClass().getSimpleName(),
                 session.getRemoteAddress().getHostString());
         super.onWebSocketConnect(session);
@@ -88,9 +91,12 @@ class WebSocketBase extends WebSocketAdapter {
 
     void sendCommand(String cmd) {
         try {
+<<<<<<< HEAD
             // retry opening connection just in case
             remoteControllerWebSocket.openConnection();
 
+=======
+>>>>>>> Fixed static code check errors
             if (isConnected()) {
                 getRemote().sendString(cmd);
                 logger.trace("{}: sendCommand: {}", this.getClass().getSimpleName(), cmd);
@@ -103,7 +109,7 @@ class WebSocketBase extends WebSocketAdapter {
     }
 
     @Override
-    public void onWebSocketText(String str) {
+    public void onWebSocketText(@Nullable String str) {
         logger.trace("{}: onWebSocketText: {}", this.getClass().getSimpleName(), str);
     }
 

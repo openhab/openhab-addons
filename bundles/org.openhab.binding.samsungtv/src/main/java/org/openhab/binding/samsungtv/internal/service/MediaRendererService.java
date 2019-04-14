@@ -26,6 +26,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -46,6 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class MediaRendererService implements UpnpIOParticipant, SamsungTvService {
 
     public static final String SERVICE_NAME = "MediaRenderer";
@@ -54,10 +57,10 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
 
     private Logger logger = LoggerFactory.getLogger(MediaRendererService.class);
 
-    private UpnpIOService service;
+    private @Nullable UpnpIOService service;
 
     private ScheduledExecutorService scheduler;
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     private String udn;
     private int pollingInterval;
@@ -66,7 +69,7 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
 
     private Set<EventListener> listeners = new CopyOnWriteArraySet<>();
 
-    public MediaRendererService(UpnpIOService upnpIOService, String udn, int pollingInterval) {
+    public MediaRendererService(@Nullable UpnpIOService upnpIOService, String udn, int pollingInterval) {
         logger.debug("Creating a Samsung TV MediaRenderer service");
 
         if (upnpIOService != null) {
@@ -179,11 +182,14 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
     }
 
     @Override
-    public void onServiceSubscribed(String service, boolean succeeded) {
+    public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
     }
 
     @Override
-    public void onValueReceived(String variable, String value, String service) {
+    public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
+        if (variable == null) {
+            return;
+        }
 
         String oldValue = stateMap.get(variable);
         if ((value == null && oldValue == null) || (value != null && value.equals(oldValue))) {
@@ -191,7 +197,7 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
             return;
         }
 
-        stateMap.put(variable, value);
+        stateMap.put(variable, (value != null) ? value : "");
 
         for (EventListener listener : listeners) {
             switch (variable) {
@@ -228,7 +234,6 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
     }
 
     protected Map<String, String> updateResourceState(String serviceId, String actionId, Map<String, String> inputs) {
-
         Map<String, String> result = service.invokeAction(this, serviceId, actionId, inputs);
 
         for (String variable : result.keySet()) {

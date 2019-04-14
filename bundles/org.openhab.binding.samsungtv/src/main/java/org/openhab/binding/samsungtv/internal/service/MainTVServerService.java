@@ -26,6 +26,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -47,17 +49,18 @@ import org.w3c.dom.NodeList;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class MainTVServerService implements UpnpIOParticipant, SamsungTvService {
 
     public static final String SERVICE_NAME = "MainTVServer2";
-    private static final List<String> supportedCommands = Arrays.asList(SOURCE_NAME, BROWSER_URL, STOP_BROWSER);
+    private static final List<String> SUPPORTEDCOMMANDS = Arrays.asList(SOURCE_NAME, BROWSER_URL, STOP_BROWSER);
 
     private Logger logger = LoggerFactory.getLogger(MainTVServerService.class);
 
-    private UpnpIOService service;
+    private @Nullable UpnpIOService service;
 
     private ScheduledExecutorService scheduler;
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     private String udn;
     private int pollingInterval;
@@ -66,7 +69,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
 
     private Set<EventListener> listeners = new CopyOnWriteArraySet<>();
 
-    public MainTVServerService(UpnpIOService upnpIOService, String udn, int pollingInterval) {
+    public MainTVServerService(@Nullable UpnpIOService upnpIOService, String udn, int pollingInterval) {
         logger.debug("Creating a Samsung TV MainTVServer service");
 
         if (upnpIOService != null) {
@@ -83,7 +86,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
 
     @Override
     public List<String> getSupportedChannelNames() {
-        return supportedCommands;
+        return SUPPORTEDCOMMANDS;
     }
 
     @Override
@@ -171,11 +174,14 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     }
 
     @Override
-    public void onServiceSubscribed(String service, boolean succeeded) {
+    public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
     }
 
     @Override
-    public void onValueReceived(String variable, String value, String service) {
+    public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
+        if (variable == null) {
+            return;
+        }
 
         String oldValue = stateMap.get(variable);
         if ((value == null && oldValue == null) || (value != null && value.equals(oldValue))) {
@@ -183,7 +189,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
             return;
         }
 
-        stateMap.put(variable, value);
+        stateMap.put(variable, (value != null) ? value : "");
 
         for (EventListener listener : listeners) {
 
@@ -191,25 +197,19 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
                 case "ProgramTitle":
                     listener.valueReceived(PROGRAM_TITLE, (value != null) ? new StringType(value) : UnDefType.UNDEF);
                     break;
-
                 case "ChannelName":
                     listener.valueReceived(CHANNEL_NAME, (value != null) ? new StringType(value) : UnDefType.UNDEF);
                     break;
-
                 case "CurrentExternalSource":
                     listener.valueReceived(SOURCE_NAME, (value != null) ? new StringType(value) : UnDefType.UNDEF);
                     break;
-
                 case "CurrentChannel":
-                    String currentChannel = parseCurrentChannel(value);
                     listener.valueReceived(CHANNEL,
-                            (value != null) ? new DecimalType(currentChannel) : UnDefType.UNDEF);
+                            (value != null) ? new DecimalType(parseCurrentChannel(value)) : UnDefType.UNDEF);
                     break;
-
                 case "ID":
                     listener.valueReceived(SOURCE_ID, (value != null) ? new DecimalType(value) : UnDefType.UNDEF);
                     break;
-
                 case "BrowserURL":
                     listener.valueReceived(BROWSER_URL, (value != null) ? new StringType(value) : UnDefType.UNDEF);
                     break;
@@ -217,8 +217,8 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         }
     }
 
-    protected Map<String, String> updateResourceState(String serviceId, String actionId, Map<String, String> inputs) {
-
+    protected Map<String, String> updateResourceState(String serviceId, String actionId,
+            @Nullable Map<String, String> inputs) {
         Map<String, String> result = service.invokeAction(this, serviceId, actionId, inputs);
 
         for (String variable : result.keySet()) {
@@ -229,7 +229,6 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     }
 
     private void setSourceName(Command command) {
-
         Map<String, String> result = updateResourceState("MainTVAgent2", "GetSourceList", null);
 
         String source = command.toString();
@@ -261,7 +260,6 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     }
 
     private void setBrowserUrl(Command command) {
-
         Map<String, String> result = updateResourceState("MainTVAgent2", "RunBrowser",
                 SamsungTvUtils.buildHashMap("BrowserURL", command.toString()));
 
@@ -273,7 +271,6 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     }
 
     private void stopBrowser(Command command) {
-
         Map<String, String> result = updateResourceState("MainTVAgent2", "StopBrowser", null);
 
         if (result.get("Result").equals("OK")) {
@@ -283,14 +280,13 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         }
     }
 
-    private String parseCurrentChannel(String xml) {
+    private @Nullable String parseCurrentChannel(String xml) {
         String majorCh = null;
 
         if (xml != null) {
             Document dom = SamsungTvUtils.loadXMLFromString(xml);
 
             if (dom != null) {
-
                 NodeList nodeList = dom.getDocumentElement().getElementsByTagName("MajorCh");
 
                 if (nodeList != null) {
@@ -309,7 +305,6 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
             Document dom = SamsungTvUtils.loadXMLFromString(xml);
 
             if (dom != null) {
-
                 NodeList nodeList = dom.getDocumentElement().getElementsByTagName("Source");
 
                 if (nodeList != null) {

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.samsungtv.internal.service.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.State;
 
@@ -20,6 +21,7 @@ import org.eclipse.smarthome.core.types.State;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public interface EventListener {
     /**
      * Invoked when value is received from the TV.

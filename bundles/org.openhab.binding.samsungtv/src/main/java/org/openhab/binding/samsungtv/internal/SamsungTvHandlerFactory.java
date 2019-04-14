@@ -55,7 +55,6 @@ public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(SAMSUNG_TV_THING_TYPE)) {

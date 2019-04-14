@@ -21,6 +21,8 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Arjan Mels - Initial contribution
  *
  */
+@NonNullByDefault
 public class WakeOnLanUtility {
 
     private static Logger logger = LoggerFactory.getLogger(WakeOnLanUtility.class);
@@ -41,7 +44,7 @@ public class WakeOnLanUtility {
      * @param hostName Host Name (or IP address) of host to retrieve MAC address for
      * @return MAC address
      */
-    public static String getMACAddress(String hostName) {
+    public static @Nullable String getMACAddress(String hostName) {
         try {
             Process proc = Runtime.getRuntime().exec("arping -r -c 1 -C 1 " + hostName);
             proc.waitFor();
@@ -56,7 +59,7 @@ public class WakeOnLanUtility {
                 logger.warn("Cannot get MAC addres of host {}: {}", hostName, error);
             }
         } catch (Exception e) {
-            logger.info("Problem getting MAC address: {}", e.getMessage());
+            logger.debug("Problem getting MAC address: {}", e.getMessage());
         }
         return null;
     }

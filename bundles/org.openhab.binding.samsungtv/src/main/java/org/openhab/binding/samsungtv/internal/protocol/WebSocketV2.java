@@ -15,6 +15,8 @@ package org.openhab.binding.samsungtv.internal.protocol;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Arjan Mels - Initial contribution
  */
+@NonNullByDefault
 class WebSocketV2 extends WebSocketBase {
     private final Logger logger = LoggerFactory.getLogger(WebSocketV2.class);
 
@@ -33,20 +36,41 @@ class WebSocketV2 extends WebSocketBase {
         super(remoteControllerWebSocket);
     }
 
+    @NonNullByDefault
     private static class JSONMessage {
+        @Nullable
         String event;
 
+        @NonNullByDefault
         static class Result {
+            @Nullable
             String id;
+            @Nullable
             String name;
+            @Nullable
             String visible;
         };
 
+<<<<<<< HEAD
         Result result;
+=======
+        @NonNullByDefault
+        static class Data {
+            @Nullable
+            String id;
+            @Nullable
+            String token;
+        }
+
+        @Nullable
+        Result result;
+        @Nullable
+        Data data;
+>>>>>>> Fixed static code check errors
     }
 
     @Override
-    public void onWebSocketText(String msgarg) {
+    public void onWebSocketText(@Nullable String msgarg) {
         String msg = msgarg.replace('\n', ' ');
         super.onWebSocketText(msg);
         try {
@@ -95,14 +119,16 @@ class WebSocketV2 extends WebSocketBase {
         }
     }
 
+    @NonNullByDefault
     static class JSONAppStatus {
-
         public JSONAppStatus(UUID uuid, String id) {
             params.id = uuid.toString();
             this.id = id;
         }
 
+        @NonNullByDefault
         static class Params {
+            @Nullable
             String id;
 
         }

@@ -14,12 +14,14 @@ package org.openhab.binding.samsungtv.internal.protocol;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Callback from the websocket remote controller
  *
  * @author Arjan Mels - Initial contribution
  */
-
+@NonNullByDefault
 public interface RemoteControllerWebsocketCallback {
 
     void appsUpdated(List<String> apps);

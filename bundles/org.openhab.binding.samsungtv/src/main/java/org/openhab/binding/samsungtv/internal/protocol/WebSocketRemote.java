@@ -14,6 +14,12 @@ package org.openhab.binding.samsungtv.internal.protocol;
 
 import java.util.stream.Collectors;
 
+<<<<<<< HEAD
+=======
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration;
+>>>>>>> Fixed static code check errors
 import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerWebSocket.App;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,37 +29,60 @@ import org.slf4j.LoggerFactory;
  *
  * @author Arjan Mels - Initial contribution
  */
+@NonNullByDefault
 class WebSocketRemote extends WebSocketBase {
     private final Logger logger = LoggerFactory.getLogger(WebSocketBase.class);
 
+    @NonNullByDefault
     private static class JSONMessage {
+        @Nullable
         String event;
 
+        @NonNullByDefault
         static class App {
+            @Nullable
             String appId;
+            @Nullable
             String name;
             int app_type;
         };
 
+        @NonNullByDefault
         static class Data {
+            @Nullable
             String update_type;
+            @Nullable
             App[] data;
+<<<<<<< HEAD
+=======
+
+            @Nullable
+            String id;
+            @Nullable
+            String token;
+>>>>>>> Fixed static code check errors
         };
 
+        @Nullable
         Data data;
 
+        @NonNullByDefault
         static class Params {
+            @Nullable
             String params;
 
+            @NonNullByDefault
             static class Data {
+                @Nullable
                 String appId;
             };
 
+            @Nullable
             Data data;
         };
 
+        @Nullable
         Params params;
-
     }
 
     /**
@@ -120,8 +149,9 @@ class WebSocketRemote extends WebSocketBase {
         remoteControllerWebSocket.updateCurrentApp();
     }
 
+    @NonNullByDefault
     static class JSONAppInfo {
-
+        @NonNullByDefault
         static class Params {
             String event = "ed.installedApp.get";
             String to = "host";
@@ -136,8 +166,8 @@ class WebSocketRemote extends WebSocketBase {
         sendCommand(remoteControllerWebSocket.gson.toJson(new JSONAppInfo()));
     }
 
+    @NonNullByDefault
     static class JSONSourceApp {
-
         public JSONSourceApp(String appName, boolean deepLink) {
             params.data.appId = appName;
             params.data.action_type = deepLink ? "DEEP_LINK" : "NATIVE_LAUNCH";
@@ -149,7 +179,9 @@ class WebSocketRemote extends WebSocketBase {
             params.data.metaTag = metaTag;
         }
 
+        @NonNullByDefault
         static class Params {
+            @NonNullByDefault
             static class Data {
                 String appId;
                 String action_type;
@@ -175,15 +207,18 @@ class WebSocketRemote extends WebSocketBase {
         sendCommand(remoteControllerWebSocket.gson.toJson(new JSONSourceApp(appName, deepLink, metaTag)));
     }
 
+    @NonNullByDefault
     static class JSONRemoteControl {
-
         public JSONRemoteControl(boolean press, String key) {
             params.Cmd = press ? "Press" : "Click";
             params.DataOfCmd = key;
         }
 
+        @NonNullByDefault
         static class Params {
+            @Nullable
             String Cmd;
+            @Nullable
             String DataOfCmd;
             String Option = "false";
             String TypeOfRemote = "SendRemoteKey";
