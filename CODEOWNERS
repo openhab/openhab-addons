@@ -17,7 +17,6 @@
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
 /addons/binding/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
 /addons/binding/org.openhab.binding.nikohomecontrol/ @mherwege
-/addons/binding/org.openhab.binding.onewiregpio/ @aogorek
 /addons/binding/org.openhab.binding.onkyo/ @pail23 @paulianttila
 /addons/binding/org.openhab.binding.samsungtv/ @paulianttila
 /addons/binding/org.openhab.binding.smartmeter/ @msteigenberger
@@ -132,6 +131,7 @@
 /bundles/org.openhab.binding.nuki/ @mkatter
 /bundles/org.openhab.binding.oceanic/ @kgoderis
 /bundles/org.openhab.binding.onebusaway/ @sdwilsh
+/bundles/org.openhab.binding.onewiregpio/ @aogorek
 /bundles/org.openhab.binding.onewire/ @J-N-K
 /bundles/org.openhab.binding.opensprinkler/ @CrackerStealth
 /bundles/org.openhab.binding.openuv/ @clinique
