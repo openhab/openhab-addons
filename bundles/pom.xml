@@ -67,6 +67,7 @@
     <module>org.openhab.binding.hue</module>
     <module>org.openhab.binding.hyperion</module>
     <module>org.openhab.binding.icloud</module>
+    <module>org.openhab.binding.ihc</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.irtrans</module>
     <module>org.openhab.binding.jeelink</module>
