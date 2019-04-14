@@ -660,7 +660,7 @@
 
     <feature name="openhab-binding-paradoxalarm" description="Paradox Alarm Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.paradoxalarm/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.paradoxalarm/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-pentair" description="Pentair Binding" version="${project.version}">
