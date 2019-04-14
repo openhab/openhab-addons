@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.onewire.internal.discovery.OwDiscoveryService;
 import org.openhab.binding.onewire.internal.handler.AdvancedMultisensorThingHandler;
+import org.openhab.binding.onewire.internal.handler.BAE091xSensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.BasicMultisensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.BasicThingHandler;
 import org.openhab.binding.onewire.internal.handler.EDSSensorThingHandler;
@@ -49,7 +50,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.onewire", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class OwHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @NonNullByDefault({})
     private OwDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
@@ -75,6 +76,8 @@ public class OwHandlerFactory extends BaseThingHandlerFactory {
             return new BasicThingHandler(thing, dynamicStateDescriptionProvider);
         } else if (EDSSensorThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new EDSSensorThingHandler(thing, dynamicStateDescriptionProvider);
+        } else if (BAE091xSensorThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            return new BAE091xSensorThingHandler(thing, dynamicStateDescriptionProvider);
         }
 
         return null;

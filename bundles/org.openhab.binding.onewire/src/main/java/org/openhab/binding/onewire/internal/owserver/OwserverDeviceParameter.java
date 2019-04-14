@@ -13,6 +13,7 @@
 package org.openhab.binding.onewire.internal.owserver;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.onewire.internal.SensorId;
 
 /**
@@ -66,5 +67,23 @@ public class OwserverDeviceParameter {
     @Override
     public String toString() {
         return prefix + "/sensorId" + path;
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object o) {
+        if (o == this) {
+            return true;
+        }
+
+        if (!(o instanceof OwserverDeviceParameter)) {
+            return false;
+        }
+
+        return ((OwserverDeviceParameter) o).toString().equals(toString());
     }
 }
