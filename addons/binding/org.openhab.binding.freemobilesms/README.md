@@ -1,8 +1,6 @@
 # FreeMobile SMS Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+The FreeMobile SMS binding povides support for sending SMS via [FreeMobile API](https://www.freenews.fr/freenews-edition-nationale-299/free-mobile-170/nouvelle-option-notifications-par-sms-chez-free-mobile-14817).
 
 ## Supported Things
 
@@ -53,7 +51,3 @@ demo.items:
 ```xtend
 String DAD_SMS "Dad's SMS" { channel="freemobilesms:account:dad:message" }
 ```
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
