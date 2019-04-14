@@ -244,6 +244,11 @@
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.freebox/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-freemobilesms" description="FreeMobile SMS API Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.freemobilesms/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-fronius" description="Fronius Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.fronius/${project.version}</bundle>
@@ -259,7 +264,7 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.ftpupload/${project.version}</bundle>
     </feature>
-    
+
     <feature name="openhab-binding-gardena" description="Gardena Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.gardena/${project.version}</bundle>
@@ -293,7 +298,7 @@
         <bundle dependency="true">mvn:com.github.digitaldan/harmony-client/1.1.4</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.harmonyhub/${project.version}</bundle>
     </feature>
-    
+
     <feature name="openhab-binding-helios" description="Helios Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle dependency="true">mvn:org.apache.ws.xmlschema/xmlschema-core/2.2.4</bundle>
@@ -539,7 +544,7 @@
 
     <feature name="openhab-binding-nanoleaf" description="Nanoleaf Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>openhab-transport-mdns</feature>        
+        <feature>openhab-transport-mdns</feature>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.nanoleaf/${project.version}</bundle>
     </feature>
 
@@ -703,7 +708,7 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.robonect/${project.version}</bundle>
     </feature>
-    
+
     <feature name="openhab-binding-rotelra1x" description="RotelRa1x Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
