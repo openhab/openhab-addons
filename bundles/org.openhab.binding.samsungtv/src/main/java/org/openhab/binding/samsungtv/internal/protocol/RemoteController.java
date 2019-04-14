@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link RemoteController} is the base class for handling remote control keys for teh Samsung TV.
+ * The {@link RemoteController} is the base class for handling remote control keys for the Samsung TV.
  *
  * @author Arjan Mels - Initial contribution
  */

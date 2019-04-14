@@ -161,7 +161,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
     }
 
     private RemoteControllerService(String host, int port, boolean upnp) {
-        logger.debug("Creating a Samsung TV RemoteController service: " + upnp);
+        logger.debug("Creating a Samsung TV RemoteController service: {}", upnp);
         this.upnp = upnp;
         this.host = host;
         this.port = port;
@@ -210,7 +210,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
             try {
                 remoteController.openConnection();
             } catch (RemoteControllerException e) {
-                logger.warn("Cannot open remote interface ({})" + e.getMessage());
+                logger.warn("Cannot open remote interface ({})", e.getMessage());
             }
             return;
         }
@@ -270,14 +270,14 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
                     if (command instanceof StringType) {
                         remoteControllerWebSocket.sendUrl(command.toString());
                     } else {
-                        logger.warn("Remote control: unsupported command type {} for channel", command, channel);
+                        logger.warn("Remote control: unsupported command type {} for channel {}", command, channel);
                     }
                     return;
                 case SOURCE_APP:
                     if (command instanceof StringType) {
                         remoteControllerWebSocket.sendSourceApp(command.toString());
                     } else {
-                        logger.warn("Remote control: unsupported command type {} for channel", command, channel);
+                        logger.warn("Remote control: unsupported command type {} for channel {}", command, channel);
                     }
                     return;
                 case POWER:
@@ -288,7 +288,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
                             sendKeyCode(KeyCode.KEY_POWER);
                         }
                     } else {
-                        logger.warn("Remote control: unsupported command type {} for channel", command, channel);
+                        logger.warn("Remote control: unsupported command type {} for channel {}", command, channel);
                     }
                     return;
                 case ART_MODE:
@@ -311,7 +311,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
                             sendKeyCode(KeyCode.KEY_POWER);
                         }
                     } else {
-                        logger.warn("Remote control: unsupported command type {} for channel", command, channel);
+                        logger.warn("Remote control: unsupported command type {} for channel {}", command, channel);
                     }
                     return;
             }
@@ -336,7 +336,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
                         logger.warn("Remote control: Command '{}' not supported for channel '{}'", command, channel);
                     }
                 } else {
-                    logger.warn("Remote control: unsupported command type {} for channel", command, channel);
+                    logger.warn("Remote control: unsupported command type {} for channel {}", command, channel);
                 }
                 return;
 

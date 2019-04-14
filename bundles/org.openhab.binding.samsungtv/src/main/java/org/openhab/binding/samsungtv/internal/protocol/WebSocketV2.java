@@ -29,9 +29,6 @@ import org.slf4j.LoggerFactory;
 class WebSocketV2 extends WebSocketBase {
     private final Logger logger = LoggerFactory.getLogger(WebSocketV2.class);
 
-    /**
-     * @param remoteControllerWebSocket
-     */
     WebSocketV2(RemoteControllerWebSocket remoteControllerWebSocket) {
         super(remoteControllerWebSocket);
     }
