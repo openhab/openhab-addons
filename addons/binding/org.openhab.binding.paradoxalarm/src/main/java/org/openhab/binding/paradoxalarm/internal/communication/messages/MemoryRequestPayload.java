@@ -28,13 +28,11 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class MemoryRequestPayload implements IPPacketPayload {
 
-    private static Logger logger = LoggerFactory.getLogger(MemoryRequestPayload.class);
+    private final Logger logger = LoggerFactory.getLogger(MemoryRequestPayload.class);
 
-    private short messageStart = (short) ((0x50 << 8) | 0x08);
-    private byte controlByte;
+    private final static short MESSAGE_START = (short) ((0x50 << 8) | 0x08);
 
     private int address;
-
     private byte bytesToRead;
 
     public MemoryRequestPayload(int address, byte bytesToRead) throws ParadoxBindingException {
@@ -44,8 +42,8 @@ public abstract class MemoryRequestPayload implements IPPacketPayload {
 
         this.address = address;
         this.bytesToRead = bytesToRead;
-        this.controlByte = calculateControlByte();
-        logger.trace("MessageStart: {}", String.format("0x%02X,\t", messageStart));
+
+        logger.trace("MessageStart: {}", String.format("0x%02X,\t", MESSAGE_START));
     }
 
     protected abstract byte calculateControlByte();
@@ -54,8 +52,8 @@ public abstract class MemoryRequestPayload implements IPPacketPayload {
     public byte[] getBytes() throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        outputStream.write(ParadoxUtil.shortToByteArray(messageStart));
-        outputStream.write(controlByte);
+        outputStream.write(ParadoxUtil.shortToByteArray(MESSAGE_START));
+        outputStream.write(calculateControlByte());
         outputStream.write((byte) 0x00);
 
         outputStream.write(ParadoxUtil.shortToByteArray((short) address));
@@ -67,14 +65,6 @@ public abstract class MemoryRequestPayload implements IPPacketPayload {
         byte[] byteArray = outputStream.toByteArray();
 
         return byteArray;
-    }
-
-    protected byte getControlByte() {
-        return controlByte;
-    }
-
-    protected void setControlByte(byte controlByte) {
-        this.controlByte = controlByte;
     }
 
     protected int getAddress() {

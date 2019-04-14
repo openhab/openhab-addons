@@ -22,14 +22,15 @@ import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
  */
 public class RamRequestPayload extends MemoryRequestPayload implements IPPacketPayload {
 
+    private static final byte CONTROL_BYTE = ParadoxUtil.setBit((byte) 0, 7, 1);
+
     public RamRequestPayload(int address, byte bytesToRead) throws ParadoxBindingException {
         super(address, bytesToRead);
     }
 
     @Override
     protected byte calculateControlByte() {
-        byte byteValue = (byte) 0;
-        return ParadoxUtil.setBit(byteValue, 7, 1);
+        return CONTROL_BYTE;
     }
 
 }

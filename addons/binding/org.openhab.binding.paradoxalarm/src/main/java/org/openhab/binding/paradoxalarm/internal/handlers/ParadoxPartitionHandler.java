@@ -51,7 +51,7 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
                         new StringType(partition.getState().getAdditionalState()));
             }
         } catch (ParadoxBindingException e) {
-            logger.error("Unable to update partition with Id {} due to missing ParadoxPanel. Exception: {}",
+            logger.warn("Unable to update partition with Id {} due to missing ParadoxPanel. Exception: {}",
                     String.valueOf(index + 1), e);
         }
     }

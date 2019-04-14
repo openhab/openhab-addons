@@ -23,13 +23,13 @@ import org.openhab.binding.paradoxalarm.internal.model.ZoneStateFlags;
  * @author Konstantin_Polihronov - Initial contribution
  */
 public interface IParadoxParser {
-    public PartitionState calculatePartitionState(byte[] partitionFlags);
+    PartitionState calculatePartitionState(byte[] partitionFlags);
 
-    public ZoneState calculateZoneState(int id, ZoneStateFlags zoneStateFlags);
+    ZoneState calculateZoneState(int id, ZoneStateFlags zoneStateFlags);
 
-    public Version parseApplicationVersion(byte[] panelInfoBytes);
+    Version parseApplicationVersion(byte[] panelInfoBytes);
 
-    public Version parseHardwareVersion(byte[] panelInfoBytes);
+    Version parseHardwareVersion(byte[] panelInfoBytes);
 
-    public Version parseBootloaderVersion(byte[] panelInfoBytes);
+    Version parseBootloaderVersion(byte[] panelInfoBytes);
 }

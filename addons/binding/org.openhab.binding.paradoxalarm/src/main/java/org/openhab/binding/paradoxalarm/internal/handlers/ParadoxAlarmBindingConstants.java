@@ -46,20 +46,20 @@ public class ParadoxAlarmBindingConstants {
     public static final String IP150_COMMUNICATION_COMMAND_CHANNEL_UID = "communicationCommand";
 
     public static final String PANEL_STATE_CHANNEL_UID = "state";
-    public static final String PANEL_SERIAL_NUMBER_CHANNEL_UID = "serialNumber";
-    public static final String PANEL_TYPE_CHANNEL_UID = "panelType";
-    public static final String PANEL_HARDWARE_VERSION_CHANNEL_UID = "hardwareVersion";
-    public static final String PANEL_APPLICATION_VERSION_CHANNEL_UID = "applicationVersion";
-    public static final String PANEL_BOOTLOADER_VERSION_CHANNEL_UID = "bootloaderVersion";
+    public static final String PANEL_SERIAL_NUMBER_PROPERTY_NAME = "serialNumber";
+    public static final String PANEL_TYPE_PROPERTY_NAME = "panelType";
+    public static final String PANEL_HARDWARE_VERSION_PROPERTY_NAME = "hardwareVersion";
+    public static final String PANEL_APPLICATION_VERSION_PROPERTY_NAME = "applicationVersion";
+    public static final String PANEL_BOOTLOADER_VERSION_PROPERTY_NAME = "bootloaderVersion";
 
     public static final String PARTITION_ADDITIONAL_STATES_CHANNEL_UID = "additionalStates";
     public static final String PARTITION_STATE_CHANNEL_UID = "state";
     public static final String PARTITION_LABEL_CHANNEL_UID = "partitionLabel";
 
     public static final String ZONE_LABEL_CHANNEL_UID = "zoneLabel";
-    public static final String ZONE_IS_OPENED_CHANNEL_UID = "isOpened";
-    public static final String ZONE_IS_TAMPERED_CHANNEL_UID = "isTampered";
-    public static final String ZONE_HAS_LOW_BATTERY_CHANNEL_UID = "hasLowBattery";
+    public static final String ZONE_OPENED_CHANNEL_UID = "opened";
+    public static final String ZONE_TAMPERED_CHANNEL_UID = "tampered";
+    public static final String ZONE_LOW_BATTERY_CHANNEL_UID = "lowBattery";
 
     // Misc constants
     public static final StringType STATE_OFFLINE = new StringType("Offline");

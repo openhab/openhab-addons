@@ -14,7 +14,7 @@ package org.openhab.binding.paradoxalarm.internal.model;
 
 import java.util.Arrays;
 
-import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
+import org.eclipse.smarthome.core.util.HexUtils;
 
 /**
  * The {@link PanelType} Enum of all panel types
@@ -44,15 +44,19 @@ public enum PanelType {
             return PanelType.UNKNOWN;
         }
         byte[] panelTypeBytes = Arrays.copyOfRange(infoPacket, 6, 8);
-        String key = "0x" + ParadoxUtil.byteArrayAsString(panelTypeBytes);
+        String key = "0x" + HexUtils.bytesToHex(panelTypeBytes);
 
         return ParadoxInformationConstants.panelTypes.getOrDefault(key, PanelType.UNKNOWN);
     }
 
     public static PanelType from(String panelTypeStr) {
+        if (panelTypeStr == null) {
+            return PanelType.UNKNOWN;
+        }
+
         try {
             return PanelType.valueOf(panelTypeStr);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             return PanelType.UNKNOWN;
         }
     }

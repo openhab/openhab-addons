@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * @author Konstantin_Polihronov - Initial contribution
  */
 public class Version {
-    private static Logger logger = LoggerFactory.getLogger(Version.class);
+    private final Logger logger = LoggerFactory.getLogger(Version.class);
 
     private Byte version;
     private Byte revision;

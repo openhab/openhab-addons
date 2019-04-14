@@ -13,11 +13,12 @@
 package org.openhab.binding.paradoxalarm.internal.handlers;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -46,85 +47,95 @@ import org.slf4j.LoggerFactory;
  *
  * @author Konstantin_Polihronov - Initial contribution
  */
+@SuppressWarnings("null")
+@NonNullByDefault({})
 public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
 
-    private static final String RESET = "RESET";
+    private static final String RESET_COMMAND = "RESET";
 
-    private static final int INITIAL_SCHEDULE_DELAY = 15;
+    private static final int INITIAL_SCHEDULE_DELAY = 5;
     private static final int FAILED_READ_ATTEMPTS_TRESHOLD = 10;
 
-    private final static Logger logger = LoggerFactory.getLogger(ParadoxIP150BridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ParadoxIP150BridgeHandler.class);
 
     private static IParadoxCommunicator communicator;
     private static ParadoxIP150BridgeConfiguration config;
     private @Nullable ScheduledFuture<?> refreshCacheUpdateSchedule;
     private int failedReadAttempts;
 
-    public ParadoxIP150BridgeHandler(Bridge bridge) throws Exception {
+    public ParadoxIP150BridgeHandler(Bridge bridge) {
         super(bridge);
-        logger.info("Starting creation of communicator handler");
-        config = getConfigAs(ParadoxIP150BridgeConfiguration.class);
-        communicator = initializeCommunicator();
-        updateDataCache(true);
-        logger.info("Communicator handler created successfully");
     }
 
-    private IParadoxCommunicator initializeCommunicator() throws Exception {
-        synchronized (ParadoxIP150BridgeHandler.class) {
-            String ipAddress = config.getIpAddress();
-            int tcpPort = config.getPort();
-            String ip150Password = config.getIp150Password();
-            String pcPassword = config.getPcPassword();
+    private synchronized IParadoxCommunicator initializeCommunicator()
+            throws UnknownHostException, IOException, InterruptedException, ParadoxBindingException {
+        String ipAddress = config.getIpAddress();
+        int tcpPort = config.getPort();
+        String ip150Password = config.getIp150Password();
+        String pcPassword = config.getPcPassword();
 
-            logger.info("Phase1 - Identify communicator");
-            IParadoxGenericCommunicator initialCommunicator = new GenericCommunicator(ipAddress, tcpPort, ip150Password,
-                    pcPassword);
-            byte[] panelInfoBytes = initialCommunicator.getPanelInfoBytes();
+        logger.info("Phase1 - Identify communicator");
+        IParadoxGenericCommunicator initialCommunicator = new GenericCommunicator(ipAddress, tcpPort, ip150Password,
+                pcPassword);
+        byte[] panelInfoBytes = initialCommunicator.getPanelInfoBytes();
 
-            PanelType panelType = PanelType.parsePanelType(panelInfoBytes);
-            logger.info("Found {} panel type.", panelType);
-            initialCommunicator.close();
+        PanelType panelType = PanelType.parsePanelType(panelInfoBytes);
+        logger.info("Found {} panel type.", panelType);
+        initialCommunicator.close();
 
-            // If not detected properly, use the value from config
-            String panelTypeStr;
-            if (panelType != PanelType.UNKNOWN) {
-                panelTypeStr = panelType.name();
-            } else {
-                panelTypeStr = config.getPanelType();
-            }
-
-            logger.info("Phase2 - Creating communicator for panel {}", panelType);
-            ParadoxCommunicatorFactory factory = new ParadoxCommunicatorFactory(ipAddress, tcpPort, ip150Password,
-                    pcPassword);
-            return factory.createCommunicator(panelTypeStr);
+        // If not detected properly, use the value from config
+        String panelTypeStr;
+        if (panelType != PanelType.UNKNOWN) {
+            panelTypeStr = panelType.name();
+        } else {
+            panelTypeStr = config.getPanelType();
         }
+
+        logger.info("Phase2 - Creating communicator for panel {}", panelType);
+        ParadoxCommunicatorFactory factory = new ParadoxCommunicatorFactory(ipAddress, tcpPort, ip150Password,
+                pcPassword);
+        return factory.createCommunicator(panelTypeStr);
     }
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
+        logger.debug("Start initialize()...");
         updateStatus(ThingStatus.UNKNOWN);
+        logger.info("Starting creation of communicator.");
+        config = getConfigAs(ParadoxIP150BridgeConfiguration.class);
+        updateStatus(ThingStatus.OFFLINE);
+
+        scheduler.execute(this::initializeCommunication);
+        logger.debug("Finished initialize().");
+    }
+
+    private void initializeCommunication() {
         try {
-            updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
+            communicator = initializeCommunicator();
+            if (communicator.isOnline()) {
+                logger.info("Communicator created successfully. Update Data cache...");
+                updateDataCache(true);
+
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } catch (IOException | InterruptedException | ParadoxBindingException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error initializing panel handler. Exception: " + e);
         }
-        logger.debug("Finished initializing!");
     }
 
     @Override
     public void dispose() {
-        HandlersUtil.cancelSchedule(refreshCacheUpdateSchedule);
+        cancelSchedule(refreshCacheUpdateSchedule);
         communicator.close();
         super.dispose();
     }
 
     private void scheduleRefresh() {
-        logger.debug("Scheduling cache update. Refresh interval: " + config.getRefresh() + "s.");
-        refreshCacheUpdateSchedule = scheduler.scheduleWithFixedDelay(() -> {
-            updateDataCache();
-        }, INITIAL_SCHEDULE_DELAY, config.getRefresh(), TimeUnit.SECONDS);
+        logger.debug("Scheduling cache update. Refresh interval: {}s. Starts after: {}s.", config.getRefresh(),
+                INITIAL_SCHEDULE_DELAY);
+        refreshCacheUpdateSchedule = scheduler.scheduleWithFixedDelay(this::updateDataCache, INITIAL_SCHEDULE_DELAY,
+                config.getRefresh(), TimeUnit.SECONDS);
     }
 
     private void updateDataCache() {
@@ -162,22 +173,21 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
         } catch (IOException e) {
             handleSocketReadError(e);
         } catch (InterruptedException | ParadoxBindingException e) {
-            logger.error("Exception while refreshing memory map in communicator. {}", e);
+            logger.warn("Exception while refreshing memory map in communicator.", e);
         }
     }
 
     private void handleSocketReadError(IOException e) {
         failedReadAttempts++;
-        logger.error("Communicator cannot refresh cached memory map. Attempt: {}, IOException msg: {}",
+        logger.warn("Communicator cannot refresh cached memory map. Attempt: {}, IOException msg: {}",
                 failedReadAttempts, e.getMessage());
-        logger.debug("Stack trace: {}", e);
+        logger.debug("Stack trace:", e);
 
         if (failedReadAttempts == FAILED_READ_ATTEMPTS_TRESHOLD) {
             logger.info("Will attempt to reinitialize communicator.");
-            @SuppressWarnings("null")
             ChannelUID uid = getThing().getChannel(ParadoxAlarmBindingConstants.IP150_COMMUNICATION_COMMAND_CHANNEL_UID)
                     .getUID();
-            handleCommand(uid, new StringType(RESET));
+            handleCommand(uid, new StringType(RESET_COMMAND));
         }
     }
 
@@ -194,8 +204,9 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public IParadoxCommunicator reinitializeCommunicator() throws Exception {
-        synchronized (ParadoxIP150BridgeHandler.class) {
+    public IParadoxCommunicator resetCommunicator()
+            throws UnknownHostException, IOException, InterruptedException, ParadoxBindingException {
+        synchronized (communicator) {
             if (communicator != null) {
                 communicator.close();
             }
@@ -208,16 +219,21 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {}", command.toFullString());
+        if (ThingStatus.OFFLINE.equals(getThing().getStatus()) && command instanceof RefreshType) {
+            logger.debug("Received REFRESH command but {} is OFFLINE", getThing().getUID());
+            return;
+        }
+
         if (ParadoxAlarmBindingConstants.IP150_COMMUNICATION_COMMAND_CHANNEL_UID.equals(channelUID.getId())) {
             logger.debug("Command is instance of {}", command.getClass());
             if (command instanceof StringType) {
                 String commandAsString = command.toFullString();
-                if (commandAsString.equals(RESET)) {
+                if (commandAsString.equals(RESET_COMMAND)) {
                     try {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                                 "Bringing bridge offline due to reinitialization of communicator.");
-                        reinitializeCommunicator();
-                    } catch (Exception e) {
+                        resetCommunicator();
+                    } catch (IOException | InterruptedException | ParadoxBindingException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Error reinitializing communicator. Exception: " + e);
                     }
@@ -226,28 +242,34 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
                 }
             }
         }
-        updateDataCache(true);
 
         if (communicator == null || !communicator.isOnline()) {
             logger.debug("Communicator is null or not online");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Device is offline");
         } else {
             logger.debug("Communicator is online");
+            updateDataCache(true);
             updateStatus(ThingStatus.ONLINE);
         }
     }
 
-    @SuppressWarnings("null")
     @Override
-    protected void updateStatus(@NonNull ThingStatus status, ThingStatusDetail statusDetail,
-            @Nullable String description) {
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         super.updateStatus(status, statusDetail, description);
         if (status.equals(ThingStatus.ONLINE)) {
             if (refreshCacheUpdateSchedule == null || refreshCacheUpdateSchedule.isDone()) {
                 scheduleRefresh();
             }
         } else {
-            HandlersUtil.cancelSchedule(refreshCacheUpdateSchedule);
+            cancelSchedule(refreshCacheUpdateSchedule);
+        }
+    }
+
+    private void cancelSchedule(@Nullable ScheduledFuture<?> schedule) {
+        if (schedule != null) {
+            boolean cancelingResult = schedule.cancel(true);
+            String cancelingSuccessful = cancelingResult ? "successful" : "failed";
+            logger.debug("Canceling schedule of {} is {}", schedule, cancelingSuccessful);
         }
     }
 

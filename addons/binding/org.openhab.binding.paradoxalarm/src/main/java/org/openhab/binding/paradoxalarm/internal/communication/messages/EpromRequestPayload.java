@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 public class EpromRequestPayload extends MemoryRequestPayload implements IPPacketPayload {
 
-    private static Logger logger = LoggerFactory.getLogger(EpromRequestPayload.class);
+    private final Logger logger = LoggerFactory.getLogger(EpromRequestPayload.class);
 
     public EpromRequestPayload(int address, byte bytesToRead) throws ParadoxBindingException {
         super(address, bytesToRead);
@@ -42,7 +42,7 @@ public class EpromRequestPayload extends MemoryRequestPayload implements IPPacke
             byte bit17 = ParadoxUtil.getBit(address, 17);
             controlByte |= bit17 << 1;
         }
-        logger.trace("ControlByte value: " + controlByte);
+        logger.trace("ControlByte value: {}", controlByte);
         return controlByte;
     }
 }

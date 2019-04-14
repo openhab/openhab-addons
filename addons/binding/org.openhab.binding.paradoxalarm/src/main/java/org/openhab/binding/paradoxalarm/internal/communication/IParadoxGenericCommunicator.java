@@ -27,8 +27,8 @@ public interface IParadoxGenericCommunicator {
 
     void loginSequence() throws IOException, InterruptedException;
 
-    public byte[] getPanelInfoBytes();
+    byte[] getPanelInfoBytes();
 
-    public boolean isOnline();
+    boolean isOnline();
 
 }

@@ -16,13 +16,9 @@ import static org.openhab.binding.paradoxalarm.internal.handlers.ParadoxAlarmBin
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxInformation;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
@@ -35,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Konstantin_Polihronov - Initial contribution
  */
 @NonNullByDefault
-public class ParadoxPanelHandler extends BaseThingHandler {
+public class ParadoxPanelHandler extends EntityBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ParadoxPanelHandler.class);
 
@@ -43,41 +39,16 @@ public class ParadoxPanelHandler extends BaseThingHandler {
         super(thing);
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            updateThing();
-        }
-    }
-
-    @Override
-    public void initialize() {
-        logger.debug("Start initializing!");
-        updateStatus(ThingStatus.UNKNOWN);
-        try {
-            initializeModel();
-            updateThing();
-            updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error initializing panel handler. Exception: " + e);
-        }
-        logger.debug("Finished initializing!");
-    }
-
-    private void initializeModel() throws Exception, ParadoxBindingException {
-        ParadoxPanel.getInstance();
-    }
-
     private void refreshModelData() {
         try {
             ParadoxPanel.getInstance().updateEntitiesStates();
-        } catch (Exception e) {
-            logger.error("Unable to retrieve memory map. {}", e);
+        } catch (ParadoxBindingException e) {
+            logger.warn("Unable to retrieve memory map.", e);
         }
     }
 
-    private void updateThing() {
+    @Override
+    protected void updateEntity() {
         try {
             refreshModelData();
 
@@ -87,18 +58,16 @@ public class ParadoxPanelHandler extends BaseThingHandler {
 
             ParadoxInformation panelInformation = panel.getPanelInformation();
             if (panelInformation != null) {
-                updateState(PANEL_SERIAL_NUMBER_CHANNEL_UID, new StringType(panelInformation.getSerialNumber()));
-                updateState(PANEL_TYPE_CHANNEL_UID, new StringType(panelInformation.getPanelType().name()));
-                updateState(PANEL_HARDWARE_VERSION_CHANNEL_UID,
-                        new StringType(panelInformation.getHardwareVersion().toString()));
-                updateState(PANEL_APPLICATION_VERSION_CHANNEL_UID,
-                        new StringType(panelInformation.getApplicationVersion().toString()));
-                updateState(PANEL_BOOTLOADER_VERSION_CHANNEL_UID,
-                        new StringType(panelInformation.getBootLoaderVersion().toString()));
+                updateProperty(PANEL_SERIAL_NUMBER_PROPERTY_NAME, panelInformation.getSerialNumber());
+                updateProperty(PANEL_TYPE_PROPERTY_NAME, panelInformation.getPanelType().name());
+                updateProperty(PANEL_HARDWARE_VERSION_PROPERTY_NAME, panelInformation.getHardwareVersion().toString());
+                updateProperty(PANEL_APPLICATION_VERSION_PROPERTY_NAME,
+                        panelInformation.getApplicationVersion().toString());
+                updateProperty(PANEL_BOOTLOADER_VERSION_PROPERTY_NAME,
+                        panelInformation.getBootLoaderVersion().toString());
             }
         } catch (ParadoxBindingException e) {
-            logger.error("Unable to retrieve ParadoxPanel instance. {}", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Unable to retrieve ParadoxPanel instance. " + e);
         }
-
     }
 }

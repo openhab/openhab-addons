@@ -6,7 +6,7 @@
 
 	<!-- Sample Thing Type -->
 	<bridge-type id="ip150">
-		<label>Paradox IP150 module connector</label>
+		<label>Paradox IP150 Module Connector</label>
 		<description>Paradox IP150 module connector</description>
 
 		<channels>
@@ -15,22 +15,24 @@
 
 		<config-description>
 			<parameter name="refresh" type="integer" min="1" max="600">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>5</default>
 			</parameter>
 			<parameter name="panelType" type="text" required="false">
-				<label>PanelType</label>
+				<label>Panel Type</label>
 				<description>PanelType</description>
 			</parameter>
 			<parameter name="ip150Password" type="text" required="true">
 				<label>IP150 Password</label>
 				<description>Password for accessing IP150</description>
+				<context>password</context>
 			</parameter>
 			<parameter name="pcPassword" type="text" required="true">
 				<label>PC Password</label>
 				<description>PC Password (section 3012 of configuration)</description>
 				<default>0000</default>
+				<context>password</context>
 			</parameter>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>IP Address</label>

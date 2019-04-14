@@ -14,10 +14,8 @@ package org.openhab.binding.paradoxalarm.internal.model;
 
 import java.util.Arrays;
 
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.paradoxalarm.internal.parsers.IParadoxParser;
-import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ParadoxInformation} Class that provides the basic panel
@@ -27,8 +25,6 @@ import org.slf4j.LoggerFactory;
  * @author Konstantin_Polihronov - Initial contribution
  */
 public class ParadoxInformation {
-
-    private static Logger logger = LoggerFactory.getLogger(ParadoxInformation.class);
 
     private PanelType panelType;
     private String serialNumber;
@@ -44,7 +40,7 @@ public class ParadoxInformation {
         bootloaderVersion = parser.parseBootloaderVersion(panelInfoBytes);
 
         byte[] serialNumberBytes = Arrays.copyOfRange(panelInfoBytes, 12, 16);
-        serialNumber = ParadoxUtil.byteArrayAsString(serialNumberBytes);
+        serialNumber = HexUtils.bytesToHex(serialNumberBytes);
     }
 
     public PanelType getPanelType() {

@@ -18,8 +18,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ParadoxIPPacket} This class is object representing a full IP request packet. Header and payload together.
@@ -27,9 +25,6 @@ import org.slf4j.LoggerFactory;
  * @author Konstantin_Polihronov - Initial contribution
  */
 public class ParadoxIPPacket {
-
-    @SuppressWarnings("unused")
-    private static Logger logger = LoggerFactory.getLogger(ParadoxIPPacket.class);
 
     public static final byte[] EMPTY_PAYLOAD = new byte[0];
 

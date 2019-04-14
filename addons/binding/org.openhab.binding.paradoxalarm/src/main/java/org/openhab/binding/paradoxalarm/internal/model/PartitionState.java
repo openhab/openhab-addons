@@ -106,10 +106,6 @@ public class PartitionState {
             append(sb, "All zones closed");
         }
 
-        // if (sb.substring(sb.length() - 2, sb.length() - 1).equals(";")) {
-        // sb.deleteCharAt(sb.length() - 1);
-        // }
-
         return sb.toString();
     }
 

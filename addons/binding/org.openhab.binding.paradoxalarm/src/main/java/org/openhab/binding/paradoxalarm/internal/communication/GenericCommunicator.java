@@ -37,18 +37,21 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
 
     private static final int SOCKET_TIMEOUT = 4000;
 
-    protected static Logger logger = LoggerFactory.getLogger(GenericCommunicator.class);
+    private static final byte[] LOGOUT_MESAGE_BYTES = new byte[] { 0x00, 0x07, 0x05, 0x00, 0x00, 0x00, 0x00 };
 
-    protected Socket socket;
-    protected DataOutputStream tx;
-    protected DataInputStream rx;
-    protected final byte[] pcPasswordBytes;
-    protected byte[] panelInfoBytes;
-    protected boolean isOnline;
+    private final Logger logger = LoggerFactory.getLogger(GenericCommunicator.class);
 
-    private String ipAddress;
-    private int tcpPort;
-    private String password;
+    private final byte[] pcPasswordBytes;
+    private final String ipAddress;
+    private final int tcpPort;
+    private final String password;
+
+    private Socket socket;
+    private DataOutputStream tx;
+    private DataInputStream rx;
+
+    private byte[] panelInfoBytes;
+    private boolean isOnline;
 
     public GenericCommunicator(String ipAddress, int tcpPort, String ip150Password, String pcPassword)
             throws UnknownHostException, IOException, InterruptedException {
@@ -56,17 +59,19 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
         this.tcpPort = tcpPort;
         this.password = ip150Password;
 
-        reinitializeSocket();
+        initializeSocket();
 
         this.pcPasswordBytes = ParadoxUtil.stringToBCD(pcPassword);
         loginSequence();
     }
 
-    private void reinitializeSocket() throws UnknownHostException, IOException {
-        socket = new Socket(ipAddress, tcpPort);
-        socket.setSoTimeout(SOCKET_TIMEOUT);
-        tx = new DataOutputStream(socket.getOutputStream());
-        rx = new DataInputStream(socket.getInputStream());
+    private void initializeSocket() throws UnknownHostException, IOException {
+        if (socket == null || socket.isClosed()) {
+            socket = new Socket(ipAddress, tcpPort);
+            socket.setSoTimeout(SOCKET_TIMEOUT);
+            tx = new DataOutputStream(socket.getOutputStream());
+            rx = new DataInputStream(socket.getInputStream());
+        }
     }
 
     @Override
@@ -76,19 +81,18 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
             tx.close();
             rx.close();
             socket.close();
-            // This is very ugly but Paradox supports only one connection at a time and if not closed properly if
-            // handler gots destroyed/recreated before the full socket closure. The new handler cannot establish proper
+            // This is very ugly but Paradox supports only one connection at a time and if not closed properly when
+            // handler gets destroyed/recreated before the full socket closure, the new handler cannot establish proper
             // communication.
-
             logger.info("Waiting the socket to close...");
             Thread.sleep(1000);
 
         } catch (InterruptedException e) {
-            logger.error(
+            logger.warn(
                     "Unable to sleep thread during socket close phase. Could lead to issues if reconnect occurs. {}",
                     e);
         } catch (IOException e) {
-            logger.error("IO exception during socket/stream close operation. {}", e);
+            logger.warn("IO exception during socket/stream close operation.", e);
         }
         logger.info("Communicator closed successfully.");
     }
@@ -103,7 +107,7 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
         }
 
         if (socket.isClosed()) {
-            reinitializeSocket();
+            initializeSocket();
         }
 
         logger.debug("Step1");
@@ -173,7 +177,7 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
             logger.info("Successful logon to the panel.");
             isOnline = true;
         } else {
-            logger.error("Logon to panel failure.");
+            logger.warn("Logon to panel failure.");
             logoutSequence();
         }
         Thread.sleep(300);
@@ -194,22 +198,22 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
                     return true;
                 }
             case 0x30:
-                logger.error("Login - Login to IP150 failed - Incorrect password");
+                logger.warn("Login - Login to IP150 failed - Incorrect password");
                 break;
             case 0x78:
             case 0x79:
-                logger.error("Login - IP module is busy");
+                logger.warn("Login - IP module is busy");
                 break;
         }
 
         switch (payloadResponseByte) {
             case 0x01:
-                logger.error("Login - Invalid password");
+                logger.warn("Login - Invalid password");
             case 0x02:
             case 0x04:
-                logger.error("Login - User already connected");
+                logger.warn("Login - User already connected");
             default:
-                logger.error("Login - Connection refused");
+                logger.warn("Login - Connection refused");
 
         }
         return false;
@@ -218,8 +222,7 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
     @Override
     public synchronized void logoutSequence() throws IOException {
         logger.info("Logout packet sent to IP150.");
-        byte[] logoutMessage = new byte[] { 0x00, 0x07, 0x05, 0x00, 0x00, 0x00, 0x00 };
-        ParadoxIPPacket logoutPacket = new ParadoxIPPacket(logoutMessage, true)
+        ParadoxIPPacket logoutPacket = new ParadoxIPPacket(LOGOUT_MESAGE_BYTES, true)
                 .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
         sendPacket(logoutPacket);
         close();

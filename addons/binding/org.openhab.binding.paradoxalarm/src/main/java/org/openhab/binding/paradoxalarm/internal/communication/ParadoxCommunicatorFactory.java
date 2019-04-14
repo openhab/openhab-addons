@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.model.PanelType;
 import org.slf4j.Logger;
@@ -25,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ParadoxCommunicatorFactory {
 
-    protected static Logger logger = LoggerFactory.getLogger(ParadoxCommunicatorFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(ParadoxCommunicatorFactory.class);
 
     private String ipAddress;
     private int tcpPort;
@@ -39,12 +42,14 @@ public class ParadoxCommunicatorFactory {
         this.pcPassword = pcPassword;
     }
 
-    public IParadoxCommunicator createCommunicator(String panelTypeStr) throws Exception {
+    public IParadoxCommunicator createCommunicator(String panelTypeStr)
+            throws UnknownHostException, IOException, InterruptedException, ParadoxBindingException {
         PanelType panelType = PanelType.from(panelTypeStr);
         return createCommunicator(panelType);
     }
 
-    public IParadoxCommunicator createCommunicator(PanelType panelType) throws Exception {
+    public IParadoxCommunicator createCommunicator(PanelType panelType)
+            throws UnknownHostException, IOException, InterruptedException, ParadoxBindingException {
         switch (panelType) {
             case EVO48:
             case EVO192:

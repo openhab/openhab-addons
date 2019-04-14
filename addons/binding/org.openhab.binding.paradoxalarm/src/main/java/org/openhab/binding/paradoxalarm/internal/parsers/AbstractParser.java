@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractParser implements IParadoxParser {
 
-    private static Logger logger = LoggerFactory.getLogger(AbstractParser.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractParser.class);
 
     @Override
     public Version parseApplicationVersion(byte[] panelInfoBytes) {

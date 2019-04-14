@@ -28,11 +28,10 @@ import org.slf4j.LoggerFactory;
  */
 public class ParadoxPanel {
 
-    private static Logger logger = LoggerFactory.getLogger(ParadoxPanel.class);
+    private final Logger logger = LoggerFactory.getLogger(ParadoxPanel.class);
 
     private static ParadoxPanel paradoxPanel;
 
-    private boolean isOnline;
     private ParadoxInformation panelInformation;
     private List<Partition> partitions;
     private List<Zone> zones;
@@ -40,7 +39,19 @@ public class ParadoxPanel {
 
     private ParadoxPanel() throws ParadoxBindingException {
         this.parser = new EvoParser();
-        init();
+
+        byte[] panelInfoBytes = RawStructuredDataCache.getInstance().getPanelInfoBytes();
+        panelInformation = new ParadoxInformation(panelInfoBytes, parser);
+
+        if (isPanelSupported()) {
+            logger.info("Found supported panel {} ", panelInformation);
+            createPartitions();
+            createZones();
+            updateEntitiesStates();
+        } else {
+            throw new ParadoxBindingException(
+                    "Unsupported panel type. Type: " + panelInformation.getPanelType().name());
+        }
     }
 
     public static synchronized ParadoxPanel getInstance() throws ParadoxBindingException {
@@ -50,30 +61,16 @@ public class ParadoxPanel {
         return paradoxPanel;
     }
 
-    // Mandatory to call this method after getting the instance for the first time :(
-    public void init() throws ParadoxBindingException {
-        // TODO Maybe factory for creating parsers if more than EVO will be implemented?
-        byte[] panelInfoBytes = RawStructuredDataCache.getInstance().getPanelInfoBytes();
-        panelInformation = new ParadoxInformation(panelInfoBytes, parser);
-
-        if (isPanelSupported()) {
-            logger.info("Found supported panel {} ", panelInformation);
-            initializePartitions();
-            initializeZones();
-        } else {
-            throw new ParadoxBindingException(
-                    "Unsupported panel type. Type: " + panelInformation.getPanelType().name());
-        }
-        updateEntitiesStates();
-    }
-
     public boolean isPanelSupported() {
         PanelType panelType = panelInformation.getPanelType();
         return panelType == PanelType.EVO48 || panelType == PanelType.EVO192 || panelType == PanelType.EVOHD;
     }
 
     public void updateEntitiesStates() {
-        isOnline = RawStructuredDataCache.getInstance().isOnline();
+        if (!isOnline()) {
+            return;
+        }
+
         List<byte[]> currentPartitionFlags = RawStructuredDataCache.getInstance().getPartitionStateFlags();
         for (int i = 0; i < partitions.size(); i++) {
             Partition partition = partitions.get(i);
@@ -87,7 +84,7 @@ public class ParadoxPanel {
         }
     }
 
-    private List<Zone> initializeZones() {
+    private List<Zone> createZones() {
         zones = new ArrayList<Zone>();
         List<String> zoneLabels = RawStructuredDataCache.getInstance().getZoneLabels();
         for (int i = 0; i < zoneLabels.size(); i++) {
@@ -97,7 +94,7 @@ public class ParadoxPanel {
         return zones;
     }
 
-    private List<Partition> initializePartitions() {
+    private List<Partition> createPartitions() {
         partitions = new ArrayList<Partition>();
         List<String> partitionLabels = RawStructuredDataCache.getInstance().getPartitionLabels();
         for (int i = 0; i < partitionLabels.size(); i++) {
@@ -129,11 +126,7 @@ public class ParadoxPanel {
     }
 
     public boolean isOnline() {
-        return isOnline;
-    }
-
-    public void setOnline(boolean isOnline) {
-        this.isOnline = isOnline;
+        return RawStructuredDataCache.getInstance().isOnline();
     }
 
 }

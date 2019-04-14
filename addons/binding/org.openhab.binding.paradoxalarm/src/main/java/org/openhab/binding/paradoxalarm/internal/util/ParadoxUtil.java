@@ -17,8 +17,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ParadoxUtil {
 
-    private static Logger logger = LoggerFactory.getLogger(ParadoxUtil.class);
+    private final static Logger logger = LoggerFactory.getLogger(ParadoxUtil.class);
 
     public static byte calculateChecksum(byte[] payload) {
         int result = 0;
@@ -59,7 +57,7 @@ public class ParadoxUtil {
             logger.trace(description);
         }
         int countBytes = 0;
-        String result = new String();
+        String result = "";
         for (int index = 0; index < length; index++) {
             countBytes++;
             String st = String.format("0x%02X,\t", array[index]);
@@ -67,7 +65,7 @@ public class ParadoxUtil {
             if (countBytes > 7) {
                 logger.trace(result);
                 countBytes = 0;
-                result = new String();
+                result = "";
                 continue;
             }
         }
@@ -102,7 +100,7 @@ public class ParadoxUtil {
             byte[] byteArray = outputStream.toByteArray();
             return byteArray;
         } catch (IOException e) {
-            logger.error("Exception merging arrays: {}", e);
+            logger.warn("Exception merging arrays:", e);
             return new byte[0];
         }
     }
@@ -130,14 +128,6 @@ public class ParadoxUtil {
             parseInt = Integer.parseInt(substring);
             result[i] |= (byte) (parseInt & 0x0F);
         }
-        return result;
-    }
-
-    public static String byteArrayAsString(byte[] array) {
-        if (array == null) {
-            return new String();
-        }
-        String result = DatatypeConverter.printHexBinary(array);
         return result;
     }
 }

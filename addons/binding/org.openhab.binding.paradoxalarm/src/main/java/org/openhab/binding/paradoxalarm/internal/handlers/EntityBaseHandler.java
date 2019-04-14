@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.paradoxalarm.internal.handlers;
 
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -34,11 +33,11 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class EntityBaseHandler extends BaseThingHandler {
 
+    private static final long INITIAL_DELAY_SECONDS = 10;
+
     private final Logger logger = LoggerFactory.getLogger(EntityBaseHandler.class);
-    private static final long INITIAL_DELAY = 15;
 
     protected EntityConfiguration config;
-    private ScheduledFuture<?> refreshEntitySchedule;
 
     public EntityBaseHandler(Thing thing) {
         super(thing);
@@ -46,50 +45,42 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
+        logger.debug("Start initializing.");
         updateStatus(ThingStatus.UNKNOWN);
 
-        initializeConfig(getThing().getThingTypeUID());
+        config = getConfigAs(EntityConfiguration.class);
 
+        scheduler.schedule(this::initializeDelayed, INITIAL_DELAY_SECONDS, TimeUnit.SECONDS);
+    }
+
+    private void initializeDelayed() {
+        logger.trace("Start initializeDelayed() in {}", getThing().getUID());
         try {
             ParadoxPanel panel = ParadoxPanel.getInstance();
-            if (panel == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Unable to find panel instance.");
-            } else if (!panel.isPanelSupported()) {
+            if (!panel.isPanelSupported()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Panel " + panel.getPanelInformation().getPanelType().name() + " is not supported.");
-            } else {
-                updateEntity();
-                updateStatus(ThingStatus.ONLINE);
             }
-            logger.debug("Finished initializing!");
         } catch (ParadoxBindingException e) {
-            logger.error("Unable to retrieve/create Paradox panel instance. Exception: {}", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                    "Unable to retrieve/create Paradox panel instance.");
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            updateEntity();
+            if (ThingStatus.ONLINE == getThing().getStatus()) {
+                updateEntity();
+            } else {
+                logger.debug("Received REFRESH command but {} is OFFLINE", getThing().getUID());
+            }
         }
-    }
-
-    @Override
-    public void dispose() {
-    }
-
-    protected void initializeConfig(ThingTypeUID thingTypeUID) {
-        config = getConfigAs(EntityConfiguration.class);
     }
 
     protected abstract void updateEntity();
 
     protected int calculateEntityIndex() {
-        int index = config.getId() - 1;
-        if (index < 0) {
-            index = 0;
-        }
-        return index;
+        return Math.max(0, config.getId() - 1);
     }
 }

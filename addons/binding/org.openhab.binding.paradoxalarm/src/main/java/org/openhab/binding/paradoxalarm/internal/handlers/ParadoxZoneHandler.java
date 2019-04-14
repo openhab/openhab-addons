@@ -17,6 +17,8 @@ import static org.openhab.binding.paradoxalarm.internal.handlers.ParadoxAlarmBin
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
@@ -47,18 +49,27 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
                 Zone zone = zones.get(index);
                 if (zone != null) {
                     updateState(ZONE_LABEL_CHANNEL_UID, new StringType(zone.getLabel()));
-                    updateState(ZONE_IS_OPENED_CHANNEL_UID, OpenClosedType.from(zone.getZoneState().isOpened()));
-                    updateState(ZONE_IS_TAMPERED_CHANNEL_UID, OpenClosedType.from(zone.getZoneState().isTampered()));
-                    updateState(ZONE_HAS_LOW_BATTERY_CHANNEL_UID,
-                            OpenClosedType.from(zone.getZoneState().hasLowBattery()));
+                    updateState(ZONE_OPENED_CHANNEL_UID, booleanToContactState(zone.getZoneState().isOpened()));
+                    updateState(ZONE_TAMPERED_CHANNEL_UID, booleanToSwitchState(zone.getZoneState().isTampered()));
+                    updateState(ZONE_LOW_BATTERY_CHANNEL_UID,
+                            booleanToSwitchState(zone.getZoneState().hasLowBattery()));
                 }
             } else {
-                logger.error("Attempted to access zone out of bounds of current zone list. Index: {}, List: {}", index,
+                logger.warn("Attempted to access zone out of bounds of current zone list. Index: {}, List: {}", index,
                         zones);
             }
         } catch (ParadoxBindingException e) {
-            logger.error("Unable to update zone {} due to missing ParadoxPanel. Exception: {}",
+            logger.warn("Unable to update zone {} due to missing ParadoxPanel. Exception: {}",
                     String.valueOf(index + 1), e);
         }
     }
+
+    private OpenClosedType booleanToContactState(boolean value) {
+        return value ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+    }
+
+    private OnOffType booleanToSwitchState(boolean value) {
+        return value ? OnOffType.ON : OnOffType.OFF;
+    }
+
 }

@@ -14,7 +14,7 @@ package org.openhab.binding.paradoxalarm.internal.communication.messages;
 
 /**
  * {@link HeaderCommand}
- * From Jean's excel sheet:
+ * From Jean's(Jean_Henning from community) excel sheet:
  * 0x00: Serial/pass through command any other: IP module command
  * 0xF0: Connect to IP module
  * 0xF2: (unknown, part of login sequence)

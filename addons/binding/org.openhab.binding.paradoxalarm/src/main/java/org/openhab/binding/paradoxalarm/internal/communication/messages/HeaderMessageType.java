@@ -21,7 +21,6 @@ package org.openhab.binding.paradoxalarm.internal.communication.messages;
  *
  * @author Konstantin_Polihronov - Initial contribution
  */
-
 public enum HeaderMessageType {
     IP_REQUEST((byte) 0x03),
     IP_RESPONSE((byte) 0x01),

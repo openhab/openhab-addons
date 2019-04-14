@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 import org.openhab.binding.paradoxalarm.internal.model.Partition;
 import org.openhab.binding.paradoxalarm.internal.model.RawStructuredDataCache;
@@ -23,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link Main} - used for testing purposes only.
+ * The {@link Main} - used for testing purposes of low-level stuff.
  *
  * @author Konstantin_Polihronov - Initial contribution
  */
@@ -31,8 +33,8 @@ public class Main {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
 
-    private static final String IP_ADDRESS = "192.168.254.231";
-    private static final int PORT = 10000;
+    private static String ipAddress;
+    private static int port;
 
     // PASSWORD is your IP150 password
     private static String ip150Password;
@@ -43,10 +45,10 @@ public class Main {
     private static final String PANEL_TYPE = "EVO192";
 
     public static void main(String[] args) {
-        handleArguments(args);
+        readArguments(args);
 
         try {
-            ParadoxCommunicatorFactory factory = new ParadoxCommunicatorFactory(IP_ADDRESS, PORT, ip150Password,
+            ParadoxCommunicatorFactory factory = new ParadoxCommunicatorFactory(ipAddress, port, ip150Password,
                     pcPassword);
             IParadoxCommunicator communicator = factory.createCommunicator(PANEL_TYPE);
             updateDataCache(communicator, true);
@@ -55,10 +57,8 @@ public class Main {
             while (true) {
                 infiniteLoop(paradoxSystem, communicator);
             }
-            // paradoxSystem.logoutSequence();
-            // paradoxSystem.close();
         } catch (Exception e) {
-            logger.error("Exception: {}", e.getMessage(), e);
+            logger.error("Exception: {}, {}", e.getMessage(), e);
             System.exit(0);
         }
     }
@@ -75,27 +75,25 @@ public class Main {
         }
     }
 
-    private static void updateDataCache(IParadoxCommunicator communicator, boolean withEpromValues) {
-        try {
-            logger.debug("Refreshing memory map");
-            communicator.refreshMemoryMap();
+    private static void updateDataCache(IParadoxCommunicator communicator, boolean withEpromValues)
+            throws IOException, InterruptedException, ParadoxBindingException {
+        logger.debug("Refreshing memory map");
+        communicator.refreshMemoryMap();
 
-            RawStructuredDataCache cache = RawStructuredDataCache.getInstance();
+        RawStructuredDataCache cache = RawStructuredDataCache.getInstance();
 
-            cache.setPanelInfoBytes(communicator.getPanelInfoBytes());
-            cache.setPartitionStateFlags(communicator.readPartitionFlags());
-            cache.setZoneStateFlags(communicator.readZoneStateFlags());
+        cache.setPanelInfoBytes(communicator.getPanelInfoBytes());
+        cache.setPartitionStateFlags(communicator.readPartitionFlags());
+        cache.setZoneStateFlags(communicator.readZoneStateFlags());
 
-            if (withEpromValues) {
-                cache.setPartitionLabels(communicator.readPartitionLabels());
-                cache.setZoneLabels(communicator.readZoneLabels());
-            }
-        } catch (Exception e) {
-            logger.error("Communicator cannot refresh cached memory map. Exception: ", e);
+        if (withEpromValues) {
+            cache.setPartitionLabels(communicator.readPartitionLabels());
+            cache.setZoneLabels(communicator.readZoneLabels());
         }
     }
 
-    private static List<Zone> initializeZones(IParadoxCommunicator paradoxSystem) {
+    private static List<Zone> initializeZones(IParadoxCommunicator paradoxSystem)
+            throws IOException, InterruptedException, ParadoxBindingException {
         List<String> zoneLabels = paradoxSystem.readZoneLabels();
         List<Zone> zones = new ArrayList<Zone>();
         for (int i = 0; i < 40; i++) {
@@ -105,7 +103,8 @@ public class Main {
         return zones;
     }
 
-    private static List<Partition> initializePartitions(IParadoxCommunicator paradoxSystem) {
+    private static List<Partition> initializePartitions(IParadoxCommunicator paradoxSystem)
+            throws IOException, InterruptedException, ParadoxBindingException {
         List<String> partitionLabels = paradoxSystem.readPartitionLabels();
         List<Partition> partitions = new ArrayList<Partition>();
         for (int i = 0; i < partitionLabels.size(); i++) {
@@ -116,20 +115,28 @@ public class Main {
         return partitions;
     }
 
-    private static void handleArguments(String[] args) {
-        if (args == null || args.length < 4 || !"--password".equals(args[0]) || args[1] == null || args[1].isEmpty()
-                || args[2] == null || !"--pc_password".equals(args[2]) || args[3] == null || args[3].isEmpty()) {
+    private static void readArguments(String[] args) {
+        if (args == null || args.length < 8 || !"--password".equals(args[0]) || args[1] == null || args[1].isEmpty()
+                || args[2] == null || !"--pc_password".equals(args[2]) || args[3] == null || args[3].isEmpty()
+                || !"--ip_address".equals(args[4]) || args[5] == null || args[5].isEmpty() || !"--port".equals(args[6])
+                || args[7] == null || args[7].isEmpty()) {
             logger.error(
-                    "Usage: application --password <YOUR_PASSWORD_FOR_IP150> --pc_password <your PC_password> (pc password default is 0000, can be obtained by checking section 3012)");
+                    "Usage: application --password <YOUR_PASSWORD_FOR_IP150> --pc_password <your PC_password> --ip_address <address of IP150> --port <port of Paradox>\n (pc password default is 0000, can be obtained by checking section 3012), default port is 10000");
             System.exit(0);
         } else {
-            logger.info("Password retrieved successfully from CLI.");
+            logger.info("Arguments retrieved successfully from CLI.");
 
             ip150Password = args[1];
             logger.info("IP150 Password: {}", ip150Password);
 
             pcPassword = args[3];
             logger.info("PC Password: {}", pcPassword);
+
+            ipAddress = args[5];
+            logger.info("IP150 IP Address: {}", ipAddress);
+
+            port = new Integer(args[7]);
+            logger.info("IP150 port: {}", port);
         }
     }
 }

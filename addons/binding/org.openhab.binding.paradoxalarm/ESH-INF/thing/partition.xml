@@ -9,7 +9,7 @@
 			<bridge-type-ref id="ip150" />
 		</supported-bridge-type-refs>
 
-		<label>Paradox partition</label>
+		<label>Paradox Partition</label>
 		<description>Paradox Partition</description>
 
 		<channels>
@@ -28,19 +28,19 @@
 
 	<channel-type id="partitionLabel">
 		<item-type>String</item-type>
-		<label>Partition label</label>
+		<label>Partition Label</label>
 		<description>Label of partition</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 	<channel-type id="state">
 		<item-type>String</item-type>
-		<label>Partition state</label>
+		<label>Partition State</label>
 		<description>State of partition</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 	<channel-type id="additionalState">
 		<item-type>String</item-type>
-		<label>Partition additional states</label>
+		<label>Partition Additional States</label>
 		<description>Additional states provided by panel</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>

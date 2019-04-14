@@ -26,16 +26,16 @@ import org.openhab.binding.paradoxalarm.internal.model.ZoneStateFlags;
  */
 public interface IParadoxCommunicator extends IParadoxGenericCommunicator {
 
-    public void refreshMemoryMap() throws ParadoxBindingException, IOException, InterruptedException;
+    void refreshMemoryMap() throws ParadoxBindingException, IOException, InterruptedException;
 
-    public List<byte[]> readPartitionFlags();
+    List<byte[]> readPartitionFlags();
 
-    public ZoneStateFlags readZoneStateFlags();
+    ZoneStateFlags readZoneStateFlags();
 
-    public List<String> readPartitionLabels();
+    List<String> readPartitionLabels() throws IOException, InterruptedException, ParadoxBindingException;
 
-    public List<String> readZoneLabels();
+    List<String> readZoneLabels() throws IOException, InterruptedException, ParadoxBindingException;
 
-    public void executeCommand(String commandAsString);
+    void executeCommand(String commandAsString);
 
 }

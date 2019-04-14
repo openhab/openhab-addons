@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.paradoxalarm", service = ThingHandlerFactory.class)
 public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
 
-    private static Logger logger = LoggerFactory.getLogger(ParadoxAlarmHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(ParadoxAlarmHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(Arrays
             .asList(COMMUNICATOR_THING_TYPE_UID, PANEL_THING_TYPE_UID, PARTITION_THING_TYPE_UID, ZONE_THING_TYPE_UID));
@@ -53,14 +53,9 @@ public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
         if (COMMUNICATOR_THING_TYPE_UID.equals(thingTypeUID)) {
-            try {
-                logger.debug("createHandler(): ThingHandler created for {}", thingTypeUID);
-                return new ParadoxIP150BridgeHandler((Bridge) thing);
-            } catch (Exception e) {
-                logger.error("Unable to create IP150 Bridge handler. Exception: {}", e);
-            }
+            logger.debug("createHandler(): ThingHandler created for {}", thingTypeUID);
+            return new ParadoxIP150BridgeHandler((Bridge) thing);
         } else if (PANEL_THING_TYPE_UID.equals(thingTypeUID)) {
             logger.debug("createHandler(): ThingHandler created for {}", thingTypeUID);
             return new ParadoxPanelHandler(thing);
@@ -71,7 +66,7 @@ public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("createHandler(): ThingHandler created for {}", thingTypeUID);
             return new ParadoxZoneHandler(thing);
         } else {
-            logger.error("Handler implementation not found for Thing: " + thing.getLabel());
+            logger.warn("Handler implementation not found for Thing: {}", thing.getLabel());
         }
         return null;
     }

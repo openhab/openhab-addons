@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @author Konstantin_Polihronov - Initial contribution
  */
 public abstract class Entity {
-    private static Logger logger = LoggerFactory.getLogger(Entity.class);
+    private final Logger logger = LoggerFactory.getLogger(Entity.class);
 
     private int id;
     private String label;

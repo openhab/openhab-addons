@@ -14,6 +14,7 @@ package org.openhab.binding.paradoxalarm.internal.communication;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,38 +37,31 @@ import org.slf4j.LoggerFactory;
  */
 public class EvoCommunicator extends GenericCommunicator implements IParadoxCommunicator {
 
-    protected static Logger logger = LoggerFactory.getLogger(EvoCommunicator.class);
+    private final Logger logger = LoggerFactory.getLogger(EvoCommunicator.class);
 
     private MemoryMap memoryMap;
 
-    public EvoCommunicator(String ipAddress, int tcpPort, String ip150Password, String pcPassword) throws Exception {
+    public EvoCommunicator(String ipAddress, int tcpPort, String ip150Password, String pcPassword)
+            throws UnknownHostException, IOException, InterruptedException, ParadoxBindingException {
         super(ipAddress, tcpPort, ip150Password, pcPassword);
         initializeMemoryMap();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see mainApp.ParadoxAdapter#readPartitions()
-     */
     @Override
-    public List<String> readPartitionLabels() {
+    public List<String> readPartitionLabels() throws IOException, InterruptedException, ParadoxBindingException {
         List<String> result = new ArrayList<>();
 
-        try {
-            for (int i = 1; i <= 8; i++) {
-                result.add(readPartitionLabel(i));
-            }
-        } catch (Exception e) {
-            logger.debug("Unable to retrieve partition labels.\nException: " + e.getMessage());
+        for (int i = 1; i <= 8; i++) {
+            result.add(readPartitionLabel(i));
         }
         return result;
     }
 
-    public String readPartitionLabel(int partitionNo) throws Exception {
-        logger.debug("Reading partition label: " + partitionNo);
+    private String readPartitionLabel(int partitionNo)
+            throws IOException, InterruptedException, ParadoxBindingException {
+        logger.debug("Reading partition label: {}", partitionNo);
         if (partitionNo < 1 || partitionNo > 8) {
-            throw new Exception("Invalid partition number. Valid values are 1-8.");
+            throw new ParadoxBindingException("Invalid partition number. Valid values are 1-8.");
         }
 
         int address = 0x3A6B + (partitionNo - 1) * 107;
@@ -80,11 +74,6 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see mainApp.ParadoxAdapter#readZones()
-     */
     @Override
     public List<String> readZoneLabels() {
         List<String> result = new ArrayList<>();
@@ -93,16 +82,16 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
             for (int i = 1; i <= 60; i++) {
                 result.add(readZoneLabel(i));
             }
-        } catch (Exception e) {
-            logger.debug("Unable to retrieve zone labels.\nException: " + e.getMessage());
+        } catch (IOException | ParadoxBindingException | InterruptedException e) {
+            logger.debug("Unable to retrieve zone labels.", e);
         }
         return result;
     }
 
-    public String readZoneLabel(int zoneNumber) throws Exception {
-        logger.debug("Reading zone label: " + zoneNumber);
+    private String readZoneLabel(int zoneNumber) throws ParadoxBindingException, IOException, InterruptedException {
+        logger.debug("Reading zone label: {}", zoneNumber);
         if (zoneNumber < 1 || zoneNumber > 192) {
-            throw new Exception("Invalid zone number. Valid values are 1-192.");
+            throw new ParadoxBindingException("Invalid zone number. Valid values are 1-192.");
         }
 
         byte labelLength = 16;
@@ -117,7 +106,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         byte[] payloadResult = readEepromMemory(address, labelLength);
 
         String result = createString(payloadResult);
-        logger.debug("Zone label: " + result);
+        logger.debug("Zone label: {}", result);
         return result;
     }
 
@@ -163,7 +152,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         return result;
     }
 
-    public void initializeMemoryMap() throws Exception {
+    public void initializeMemoryMap() throws ParadoxBindingException, IOException, InterruptedException {
         List<byte[]> ramCache = new ArrayList<>();
         for (int i = 1; i <= 16; i++) {
             logger.debug("Reading memory page number: {}", i);
@@ -175,18 +164,18 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
 
     @Override
     public void refreshMemoryMap() throws ParadoxBindingException, IOException, InterruptedException {
-        if (isOnline) {
+        if (isOnline()) {
             for (int i = 1, j = 0; i <= 16; i++, j++) {
                 logger.trace("Reading memory page number: {}", i);
                 memoryMap.updateElement(j, readRAMBlock(i));
             }
         } else {
-            logger.error("Unable to refresh memory map. Communicator is offline");
+            logger.warn("Unable to refresh memory map. Communicator is offline");
         }
     }
 
     private byte[] readRAMBlock(int blockNo) throws ParadoxBindingException, IOException, InterruptedException {
-        if (isOnline) {
+        if (isOnline()) {
             return readRAM(blockNo, (byte) 64);
         } else {
             return new byte[0];
@@ -199,16 +188,18 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         return readMemory(payload);
     }
 
-    private byte[] readEepromMemory(int address, byte bytesToRead) throws Exception {
+    private byte[] readEepromMemory(int address, byte bytesToRead)
+            throws IOException, InterruptedException, ParadoxBindingException {
         if (bytesToRead < 1 || bytesToRead > 64) {
-            throw new Exception("Invalid bytes to read. Valid values are 1 to 64.");
+            throw new ParadoxBindingException("Invalid bytes to read. Valid values are 1 to 64.");
         }
 
         IPPacketPayload payload = new EpromRequestPayload(address, bytesToRead);
         return readMemory(payload);
     }
 
-    private byte[] readMemory(IPPacketPayload payload) throws IOException, InterruptedException {
+    private byte[] readMemory(IPPacketPayload payload)
+            throws IOException, InterruptedException, ParadoxBindingException {
         ParadoxIPPacket readEpromIPPacket = new ParadoxIPPacket(payload)
                 .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
 
@@ -218,14 +209,19 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
 
     /**
      * This method reads data from the IP150 module. It can return multiple
-     * responses
-     * e.g. a live event is combined with another response.
+     * responses e.g. a live event is combined with another response.
      * The open active TCP/IP stream.
      * A panel command, e.g. 0x5 (read memory
      * An array of an array of the raw bytes received from the TCP/IP
      * stream.
+     *
+     * @param command (currently it's only 0x5 but other commands can be used for different other areas)
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws ParadoxBindingException
      */
-    private byte[] receivePacket(byte command) throws IOException, InterruptedException {
+    private byte[] receivePacket(byte command) throws IOException, InterruptedException, ParadoxBindingException {
         if (command > 0xF) {
             command = ParadoxUtil.getHighNibble(command);
         }
@@ -258,50 +254,45 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
             retryCounter++;
         }
 
-        logger.error("Failed to receive data for command 0x{0:X}", command);
+        logger.warn("Failed to receive data for command 0x{0:X}", command);
         return null;
     }
 
-    private List<byte[]> splitResponsePackets(byte[] response) {
+    private List<byte[]> splitResponsePackets(byte[] response) throws ParadoxBindingException {
         List<byte[]> packets = new ArrayList<byte[]>();
         byte[] responseCopy = Arrays.copyOf(response, response.length);
-        try {
-            int totalLength = responseCopy.length;
-            while (responseCopy.length > 0) {
-                if (responseCopy.length < 16 || responseCopy[0] != (byte) 0xAA) {
-                    // throw new Exception("No 16 byte header found");
-                    logger.debug("No 16 byte header found");
-                }
+        int totalLength = responseCopy.length;
+        while (responseCopy.length > 0) {
+            if (responseCopy.length < 16 || responseCopy[0] != (byte) 0xAA) {
+                logger.debug("No 16 byte header found");
+            }
 
-                byte[] header = Arrays.copyOfRange(responseCopy, 0, 16);
-                byte messageLength = header[1];
+            byte[] header = Arrays.copyOfRange(responseCopy, 0, 16);
+            byte messageLength = header[1];
 
-                // Remove the header
-                responseCopy = Arrays.copyOfRange(responseCopy, 16, totalLength);
+            // Remove the header
+            responseCopy = Arrays.copyOfRange(responseCopy, 16, totalLength);
 
-                if (responseCopy.length < messageLength) {
-                    throw new Exception("Unexpected end of data");
-                }
+            if (responseCopy.length < messageLength) {
+                throw new ParadoxBindingException("Unexpected end of data");
+            }
 
-                // Check if there's padding bytes (0xEE)
-                if (responseCopy.length > messageLength) {
-                    for (int i = messageLength; i < responseCopy.length; i++) {
-                        if (responseCopy[i] == 0xEE) {
-                            messageLength++;
-                        } else {
-                            break;
-                        }
+            // Check if there's padding bytes (0xEE)
+            if (responseCopy.length > messageLength) {
+                for (int i = messageLength; i < responseCopy.length; i++) {
+                    if (responseCopy[i] == 0xEE) {
+                        messageLength++;
+                    } else {
+                        break;
                     }
                 }
-
-                byte[] message = Arrays.copyOfRange(responseCopy, 0, messageLength);
-
-                responseCopy = Arrays.copyOfRange(responseCopy, messageLength, responseCopy.length);
-
-                packets.add(ParadoxUtil.mergeByteArrays(header, message));
             }
-        } catch (Exception ex) {
-            logger.error("Exception occurred: {}", ex.getMessage());
+
+            byte[] message = Arrays.copyOfRange(responseCopy, 0, messageLength);
+
+            responseCopy = Arrays.copyOfRange(responseCopy, messageLength, responseCopy.length);
+
+            packets.add(ParadoxUtil.mergeByteArrays(header, message));
         }
 
         return packets;
@@ -327,10 +318,10 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
                     loginSequence();
                     return;
                 default:
-                    logger.error("Command {} not implemented.", command);
+                    logger.warn("Command {} not implemented.", command);
             }
         } catch (IOException | InterruptedException e) {
-            logger.error("Error while executing command {}. Exception:{}", command, e);
+            logger.warn("Error while executing command {}. Exception:{}", command, e);
         }
     }
 }
