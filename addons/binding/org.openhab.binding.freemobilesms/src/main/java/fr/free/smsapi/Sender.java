@@ -20,10 +20,15 @@ import java.net.URLEncoder;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Sender {
 
     static public String DEFAULT_URL = "https://smsapi.free-mobile.fr/sendmsg";
     static String charset = "UTF-8";
+
+    private final Logger logger = LoggerFactory.getLogger(Sender.class);
 
     protected final String url;
 
@@ -45,6 +50,7 @@ public class Sender {
 
     public void send(Account account, String message) throws IOException {
         String urlString = getQuerry(account, message);
+        logger.debug("Computed request: {}", urlString);
         URL url = new URL(urlString);
         send(url);
     }
