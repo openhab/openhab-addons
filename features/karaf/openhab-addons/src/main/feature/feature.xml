@@ -964,6 +964,16 @@
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.xmppclient/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-xmltv" description="XMLTV  Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature prerequisite="true">wrap</feature>
+        <bundle dependency="true">wrap:mvn:javax.activation/activation/1.1.1$Bundle-Name=Javax%20Activation&amp;Bundle-SymbolicName=javax.activation.activation&amp;Bundle-Version=1.1.1</bundle>
+        <bundle dependency="true">mvn:javax.xml.bind/jaxb-api/2.2.12</bundle>
+        <bundle dependency="true">mvn:com.sun.xml.bind/jaxb-impl/2.2.11</bundle>
+        <bundle dependency="true">mvn:com.sun.xml.bind/jaxb-core/2.2.11</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.xmltv/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-yamahareceiver" description="Yamaha Receiver Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
