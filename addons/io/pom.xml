@@ -22,8 +22,6 @@
     <module>org.openhab.io.hueemulation.test</module>
     <module>org.openhab.io.openhabcloud</module>
     <module>org.openhab.io.transport.feed</module>
-    <module>org.openhab.io.transport.modbus</module>
-    <module>org.openhab.io.transport.modbus.test</module>
   </modules>
 
 </project>
