@@ -48,7 +48,7 @@ class SpotifyConnector {
     private static final String RETRY_AFTER_HEADER = "Retry-After";
     private static final String AUTHORIZATION_HEADER = "Authorization";
 
-    private static final int HTTP_CLIENT_TIMEOUT_SECONDS = 30;
+    private static final int HTTP_CLIENT_TIMEOUT_SECONDS = 3;
     private static final int HTTP_CLIENT_RETRY_COUNT = 5;
     private static final int DEFAULT_RETRY_DELAY_SECONDS = 5;
 
@@ -61,7 +61,7 @@ class SpotifyConnector {
     /**
      * Constructor.
      *
-     * @param scheduler Scheduler to reschedule calls when rate limit exceeded or call not ready
+     * @param scheduler  Scheduler to reschedule calls when rate limit exceeded or call not ready
      * @param httpClient http client to use to make http calls
      */
     public SpotifyConnector(ScheduledExecutorService scheduler, HttpClient httpClient) {
@@ -73,8 +73,8 @@ class SpotifyConnector {
      * Performs a call to the Spotify Web Api and returns the raw response. In there are problems this method can throw
      * a Spotify exception.
      *
-     * @param requester The function to construct the request with http client that is passed as argument to the
-     *            function
+     * @param requester     The function to construct the request with http client that is passed as argument to the
+     *                          function
      * @param authorization The authorization string to use in the Authorization header
      * @return the raw reponse given
      */
@@ -114,8 +114,8 @@ class SpotifyConnector {
         /**
          * Constructor.
          *
-         * @param requester The function to construct the request with http client that is passed as argument to the
-         *            function
+         * @param requester     The function to construct the request with http client that is passed as argument to the
+         *                          function
          * @param authorization The authorization string to use in the Authorization header
          */
         public Caller(Function<HttpClient, Request> requester, String authorization) {

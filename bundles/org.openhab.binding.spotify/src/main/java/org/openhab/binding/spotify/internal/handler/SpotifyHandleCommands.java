@@ -14,6 +14,9 @@ package org.openhab.binding.spotify.internal.handler;
 
 import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
@@ -24,6 +27,8 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.spotify.internal.api.SpotifyApi;
+import org.openhab.binding.spotify.internal.api.model.Device;
+import org.openhab.binding.spotify.internal.api.model.Playlist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +45,9 @@ class SpotifyHandleCommands {
 
     private SpotifyApi spotifyApi;
 
+    private List<Device> devices = Collections.emptyList();
+    private List<Playlist> playlists = Collections.emptyList();
+
     /**
      * Constructor. For the bridge the deviceId is empty.
      *
@@ -47,6 +55,11 @@ class SpotifyHandleCommands {
      */
     public SpotifyHandleCommands(SpotifyApi spotifyApi) {
         this.spotifyApi = spotifyApi;
+    }
+
+    public void setLists(List<Device> devices, List<Playlist> playlists) {
+        this.devices = devices;
+        this.playlists = playlists;
     }
 
     /**
@@ -66,13 +79,17 @@ class SpotifyHandleCommands {
         switch (channel) {
             case CHANNEL_DEVICENAME:
                 if (command instanceof StringType) {
-                    final String newDeviceId = command.toString();
+                    final String newName = command.toString();
 
-                    if (deviceId.equals(newDeviceId) && active) {
-                        spotifyApi.play(newDeviceId);
-                    } else {
-                        spotifyApi.transferPlay(newDeviceId, true);
-                    }
+                    devices.stream().filter(d -> d.getName().equals(newName)).findFirst()
+                            .ifPresent(d -> playDeviceId(d.getId(), active, deviceId));
+                    commandRun = true;
+                }
+                break;
+            case CHANNEL_DEVICEID:
+            case CHANNEL_DEVICES:
+                if (command instanceof StringType) {
+                    playDeviceId(command.toString(), active, deviceId);
                     commandRun = true;
                 }
                 break;
@@ -105,14 +122,31 @@ class SpotifyHandleCommands {
                 }
                 break;
             case CHANNEL_TRACKPLAY:
-            case CHANNEL_PLAYLIST:
+            case CHANNEL_PLAYLISTS:
                 if (command instanceof StringType) {
                     spotifyApi.playTrack(deviceId, command.toString());
                     commandRun = true;
                 }
                 break;
+            case CHANNEL_PLAYLISTNAME:
+                if (command instanceof StringType) {
+                    final String newName = command.toString();
+
+                    playlists.stream().filter(pl -> pl.getName().equals(newName)).findFirst()
+                            .ifPresent(pl -> spotifyApi.playTrack(deviceId, pl.getUri()));
+                    commandRun = true;
+                }
+                break;
         }
         return commandRun;
+    }
+
+    private void playDeviceId(String newDeviceId, boolean active, String currentDeviceId) {
+        if (currentDeviceId.equals(newDeviceId) && active) {
+            spotifyApi.play(newDeviceId);
+        } else {
+            spotifyApi.transferPlay(newDeviceId, true);
+        }
     }
 
     /**
