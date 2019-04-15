@@ -24,7 +24,7 @@ Request a free Tankerkönig API key from: <https://creativecommons.tankerkoenig.
 
 - LocationIDs of the selected gas stations
 
-Search for the gas station IDs vi the [finder tool](https://creativecommons.tankerkoenig.de/TankstellenFinder/index.html) (Select tab "Tools" -> "Tankstellenfinder").
+Search for the gas station IDs via the [finder tool](https://creativecommons.tankerkoenig.de/TankstellenFinder/index.html) (Select tab "Tools" -> "Tankstellenfinder").
 Drag the red marker on the map to the rough location of desired gas stations.
 Select the gas stations and click "Tankstellen übernehmen" on the right.
 This will download a file holding the location IDs.
