@@ -56,7 +56,7 @@
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
     <bnd.version>4.2.0</bnd.version>
-    <karaf.version>4.2.2</karaf.version>
+    <karaf.version>4.2.4</karaf.version>
     <sat.version>0.6.1</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
 
