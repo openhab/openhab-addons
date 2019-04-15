@@ -17,7 +17,6 @@
   <name>openHAB Bindings</name>
 
   <modules>
-    <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.enocean</module>
     <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>

@@ -5,7 +5,6 @@
 *       @openhab/2-x-add-ons-maintainers
 
 # Add-on maintainers:
-/addons/binding/org.openhab.binding.boschindego/ @jofleck
 /addons/binding/org.openhab.binding.enocean/ @fruggy83
 /addons/binding/org.openhab.binding.exec/ @kgoderis
 /addons/binding/org.openhab.binding.feed/ @svilenvul
@@ -52,6 +51,7 @@
 /bundles/org.openhab.binding.bluetooth.bluez/ @cdjackson @kaikreuzer
 /bundles/org.openhab.binding.bluetooth.blukii/ @kaikreuzer
 /bundles/org.openhab.binding.bluetooth.ruuvitag @ssalonen
+/bundles/org.openhab.binding.boschindego/ @jofleck
 /bundles/org.openhab.binding.bosesoundtouch/ @marvkis @tratho
 /bundles/org.openhab.binding.chromecast/ @kaikreuzer
 /bundles/org.openhab.binding.cm11a/ @BobRak
