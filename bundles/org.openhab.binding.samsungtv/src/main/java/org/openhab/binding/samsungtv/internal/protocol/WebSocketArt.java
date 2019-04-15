@@ -12,13 +12,8 @@
  */
 package org.openhab.binding.samsungtv.internal.protocol;
 
-<<<<<<< HEAD
-import java.util.UUID;
-
-=======
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
->>>>>>> Fixed static code check errors
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,28 +33,20 @@ class WebSocketArt extends WebSocketBase {
         super(remoteControllerWebSocket);
     }
 
-    @NonNullByDefault
+    @NonNullByDefault({})
     private static class JSONMessage {
-        @Nullable
         String event;
 
-        @NonNullByDefault
+        @NonNullByDefault({})
         static class Data {
-            @Nullable
             String event;
-            @Nullable
             String status;
-            @Nullable
             String value;
         };
 
-<<<<<<< HEAD
-        Data data;
-=======
         // data is sometimes a json object, sometimes a string representation of a json object for d2d_service_message
         @Nullable
         JsonElement data;
->>>>>>> Fixed static code check errors
     }
 
     @Override
@@ -100,48 +87,6 @@ class WebSocketArt extends WebSocketBase {
         }
     }
 
-<<<<<<< HEAD
-    private void handleD2DServiceMessage(String msg, JSONMessage jsonMsg) {
-        switch (jsonMsg.data.event) {
-            case "art_mode_changed":
-                logger.debug("art_mode_changed: {}", jsonMsg.data.status);
-                if ("on".equals(jsonMsg.data.status)) {
-                    remoteControllerWebSocket.callback.powerUpdated(false, true);
-                } else {
-                    remoteControllerWebSocket.callback.powerUpdated(true, false);
-                }
-                break;
-            case "artmode_status":
-                logger.debug("artmode_status: {}", jsonMsg.data.value);
-                if ("on".equals(jsonMsg.data.value)) {
-                    remoteControllerWebSocket.callback.powerUpdated(false, true);
-                } else {
-                    remoteControllerWebSocket.callback.powerUpdated(true, false);
-                }
-                break;
-            case "go_to_standby":
-                logger.debug("go_to_standby");
-                remoteControllerWebSocket.callback.powerUpdated(false, false);
-                break;
-            case "wakeup":
-                logger.debug("wakeup");
-                // check artmode status to know complete status before updating
-                getArtmodeStatus();
-                break;
-            default:
-                logger.debug("Unknown d2d_service_message event: {}", msg);
-        }
-    }
-
-    static class JSONArtModeStatus {
-
-        public JSONArtModeStatus(UUID uuid) {
-            params.data.id = uuid.toString();
-        }
-
-        static class Params {
-            static class Data {
-=======
     private void handleD2DServiceMessage(String msg) {
         JSONMessage.Data data = remoteControllerWebSocket.gson.fromJson(msg, JSONMessage.Data.class);
         if (data.event == null) {
@@ -180,7 +125,7 @@ class WebSocketArt extends WebSocketBase {
         }
     }
 
-    @NonNullByDefault
+    @NonNullByDefault({})
     class JSONArtModeStatus {
         public JSONArtModeStatus() {
             Params.Data data = params.new Data();
@@ -188,24 +133,17 @@ class WebSocketArt extends WebSocketBase {
             params.data = remoteControllerWebSocket.gson.toJson(data);
         }
 
-        @NonNullByDefault
+        @NonNullByDefault({})
         class Params {
-            @NonNullByDefault
+            @NonNullByDefault({})
             class Data {
->>>>>>> Fixed static code check errors
                 String request = "get_artmode_status";
-                @Nullable
                 String id;
             }
 
             String event = "art_app_request";
             String to = "host";
-<<<<<<< HEAD
-            Data data = new Data();
-=======
-            @Nullable
             String data;
->>>>>>> Fixed static code check errors
         }
 
         String method = "ms.channel.emit";

@@ -33,37 +33,25 @@ class WebSocketV2 extends WebSocketBase {
         super(remoteControllerWebSocket);
     }
 
-    @NonNullByDefault
+    @NonNullByDefault({})
     private static class JSONMessage {
-        @Nullable
         String event;
 
-        @NonNullByDefault
+        @NonNullByDefault({})
         static class Result {
-            @Nullable
             String id;
-            @Nullable
             String name;
-            @Nullable
             String visible;
         };
 
-<<<<<<< HEAD
-        Result result;
-=======
-        @NonNullByDefault
+        @NonNullByDefault({})
         static class Data {
-            @Nullable
             String id;
-            @Nullable
             String token;
         }
 
-        @Nullable
         Result result;
-        @Nullable
         Data data;
->>>>>>> Fixed static code check errors
     }
 
     @Override
@@ -116,16 +104,15 @@ class WebSocketV2 extends WebSocketBase {
         }
     }
 
-    @NonNullByDefault
+    @NonNullByDefault({})
     static class JSONAppStatus {
         public JSONAppStatus(UUID uuid, String id) {
             params.id = uuid.toString();
             this.id = id;
         }
 
-        @NonNullByDefault
+        @NonNullByDefault({})
         static class Params {
-            @Nullable
             String id;
 
         }
@@ -133,7 +120,6 @@ class WebSocketV2 extends WebSocketBase {
         String method = "ms.application.get";
         String id;
         Params params = new Params();
-
     }
 
     void getAppStatus(String id) {

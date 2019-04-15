@@ -89,7 +89,8 @@ public class RemoteControllerLegacy extends RemoteController {
     public void openConnection() throws RemoteControllerException {
         logger.debug("Open connection to host '{}:{}'", host, port);
 
-        socket = new Socket();
+        Socket localsocket = new Socket();
+        socket = localsocket;
         try {
             socket.connect(new InetSocketAddress(host, port), CONNECTION_TIMEOUT);
         } catch (Exception e) {
@@ -97,8 +98,29 @@ public class RemoteControllerLegacy extends RemoteController {
             throw new RemoteControllerException("Connection failed", e);
         }
 
-        logger.debug("Connection successfully opened...querying access");
+        InputStream inputStream;
+        try {
+            BufferedWriter localwriter = new BufferedWriter(new OutputStreamWriter(localsocket.getOutputStream()));
+            writer = localwriter;
+            inputStream = localsocket.getInputStream();
+            InputStreamReader localreader = new InputStreamReader(inputStream);
+            reader = localreader;
 
+            logger.debug("Connection successfully opened...querying access");
+
+            writeInitialInfo(localwriter);
+            readInitialInfo(localreader);
+
+            int i;
+            while ((i = inputStream.available()) > 0) {
+                inputStream.skip(i);
+            }
+        } catch (IOException e) {
+            throw new RemoteControllerException(e);
+        }
+    }
+
+    private void writeInitialInfo(Writer writer) throws RemoteControllerException {
         try {
             /* @formatter:off
             *
@@ -122,52 +144,44 @@ public class RemoteControllerLegacy extends RemoteController {
             * @formatter:on
             */
 
-            writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-
             writer.append((char) 0x00);
             writeString(writer, APP_STRING);
             writeString(writer, createRegistrationPayload(socket.getLocalAddress().getHostAddress()));
             writer.flush();
+        } catch (IOException e) {
+            throw new RemoteControllerException(e);
+        }
+    }
 
-            try {
-                /* @formatter:off
-                *
-                * offset value and description
-                * ------ ---------------------
-                * 0x00   don't know, it it always 0x00 or 0x02
-                * 0x01   0x000c - string length (little endian)
-                * 0x03   "iapp.samsung" - string content
-                * 0x0f   0x0006 - payload size (little endian)
-                * 0x11   payload
-                *
-                * @formatter:on
-                */
+    private void readInitialInfo(Reader reader) throws RemoteControllerException {
+        try {
+            /* @formatter:off
+            *
+            * offset value and description
+            * ------ ---------------------
+            * 0x00   don't know, it it always 0x00 or 0x02
+            * 0x01   0x000c - string length (little endian)
+            * 0x03   "iapp.samsung" - string content
+            * 0x0f   0x0006 - payload size (little endian)
+            * 0x11   payload
+            *
+            * @formatter:on
+            */
 
-                InputStream in = socket.getInputStream();
-                reader = new InputStreamReader(in);
+            reader.skip(1);
+            readString(reader);
+            char[] result = readCharArray(reader);
 
-                reader.skip(1);
-                readString(reader);
-                char[] result = readCharArray(reader);
-
-                if (Arrays.equals(result, ACCESS_GRANTED_RESP)) {
-                    logger.debug("Access granted");
-                } else if (Arrays.equals(result, ACCESS_DENIED_RESP)) {
-                    throw new RemoteControllerException("Access denied");
-                } else if (Arrays.equals(result, ACCESS_TIMEOUT_RESP)) {
-                    throw new RemoteControllerException("Registration timed out");
-                } else if (Arrays.equals(result, WAITING_USER_GRANT_RESP)) {
-                    throw new RemoteControllerException("Waiting for user to grant access");
-                } else {
-                    throw new RemoteControllerException("Unknown response received for access query");
-                }
-
-                int i;
-                while ((i = in.available()) > 0) {
-                    in.skip(i);
-                }
-            } catch (IOException e) {
-                throw new RemoteControllerException(e);
+            if (Arrays.equals(result, ACCESS_GRANTED_RESP)) {
+                logger.debug("Access granted");
+            } else if (Arrays.equals(result, ACCESS_DENIED_RESP)) {
+                throw new RemoteControllerException("Access denied");
+            } else if (Arrays.equals(result, ACCESS_TIMEOUT_RESP)) {
+                throw new RemoteControllerException("Registration timed out");
+            } else if (Arrays.equals(result, WAITING_USER_GRANT_RESP)) {
+                throw new RemoteControllerException("Waiting for user to grant access");
+            } else {
+                throw new RemoteControllerException("Unknown response received for access query");
             }
         } catch (IOException e) {
             throw new RemoteControllerException(e);
@@ -181,7 +195,9 @@ public class RemoteControllerLegacy extends RemoteController {
      */
     public void closeConnection() throws RemoteControllerException {
         try {
-            socket.close();
+            if (socket != null) {
+                socket.close();
+            }
         } catch (IOException e) {
             throw new RemoteControllerException(e);
         }
@@ -295,10 +311,7 @@ public class RemoteControllerLegacy extends RemoteController {
         return w.toString();
     }
 
-    private void writeString(@Nullable Writer writer, String str) throws IOException {
-        if (writer == null) {
-            return;
-        }
+    private void writeString(Writer writer, String str) throws IOException {
         int len = str.length();
         byte low = (byte) (len & 0xFF);
         byte high = (byte) ((len >> 8) & 0xFF);
@@ -335,7 +348,9 @@ public class RemoteControllerLegacy extends RemoteController {
     private void sendKeyData(KeyCode key) throws RemoteControllerException {
         logger.debug("Sending key code {}", key.getValue());
 
-        if (writer == null || reader == null) {
+        Writer localwriter = writer;
+        Reader localreader = reader;
+        if (localwriter == null || localreader == null) {
             return;
         }
         /* @formatter:off
@@ -351,18 +366,18 @@ public class RemoteControllerLegacy extends RemoteController {
          * @formatter:on
          */
         try {
-            writer.append((char) 0x00);
-            writeString(writer, APP_STRING);
-            writeString(writer, createKeyDataPayload(key));
-            writer.flush();
+            localwriter.append((char) 0x00);
+            writeString(localwriter, APP_STRING);
+            writeString(localwriter, createKeyDataPayload(key));
+            localwriter.flush();
 
             /*
              * Read response. Response is pretty useless, because TV seems to
              * send same response in both ok and error situation.
              */
-            reader.skip(1);
-            readString(reader);
-            readCharArray(reader);
+            localreader.skip(1);
+            readString(localreader);
+            readCharArray(localreader);
         } catch (IOException e) {
             throw new RemoteControllerException(e);
         }

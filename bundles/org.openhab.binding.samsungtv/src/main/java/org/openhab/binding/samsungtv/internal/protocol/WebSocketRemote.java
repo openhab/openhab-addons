@@ -33,55 +33,43 @@ import org.slf4j.LoggerFactory;
 class WebSocketRemote extends WebSocketBase {
     private final Logger logger = LoggerFactory.getLogger(WebSocketBase.class);
 
-    @NonNullByDefault
+    @NonNullByDefault({})
     private static class JSONMessage {
-        @Nullable
         String event;
 
-        @NonNullByDefault
+        @NonNullByDefault({})
         static class App {
-            @Nullable
             String appId;
-            @Nullable
             String name;
             int app_type;
         };
 
-        @NonNullByDefault
+        @NonNullByDefault({})
         static class Data {
-            @Nullable
             String update_type;
-            @Nullable
             App[] data;
 <<<<<<< HEAD
 =======
 
-            @Nullable
             String id;
-            @Nullable
             String token;
 >>>>>>> Fixed static code check errors
         };
 
-        @Nullable
         Data data;
 
-        @NonNullByDefault
+        @NonNullByDefault({})
         static class Params {
-            @Nullable
             String params;
 
-            @NonNullByDefault
+            @NonNullByDefault({})
             static class Data {
-                @Nullable
                 String appId;
             };
 
-            @Nullable
             Data data;
         };
 
-        @Nullable
         Params params;
     }
 
@@ -93,13 +81,13 @@ class WebSocketRemote extends WebSocketBase {
     }
 
     @Override
-    public void onWebSocketError(Throwable error) {
+    public void onWebSocketError(@Nullable Throwable error) {
         super.onWebSocketError(error);
         remoteControllerWebSocket.callback.connectionError(error);
     }
 
     @Override
-    public void onWebSocketText(String msgarg) {
+    public void onWebSocketText(@Nullable String msgarg) {
         String msg = msgarg.replace('\n', ' ');
         super.onWebSocketText(msg);
         try {
@@ -149,9 +137,9 @@ class WebSocketRemote extends WebSocketBase {
         remoteControllerWebSocket.updateCurrentApp();
     }
 
-    @NonNullByDefault
+    @NonNullByDefault({})
     static class JSONAppInfo {
-        @NonNullByDefault
+        @NonNullByDefault({})
         static class Params {
             String event = "ed.installedApp.get";
             String to = "host";
@@ -166,7 +154,7 @@ class WebSocketRemote extends WebSocketBase {
         sendCommand(remoteControllerWebSocket.gson.toJson(new JSONAppInfo()));
     }
 
-    @NonNullByDefault
+    @NonNullByDefault({})
     static class JSONSourceApp {
         public JSONSourceApp(String appName, boolean deepLink) {
             params.data.appId = appName;
@@ -179,9 +167,9 @@ class WebSocketRemote extends WebSocketBase {
             params.data.metaTag = metaTag;
         }
 
-        @NonNullByDefault
+        @NonNullByDefault({})
         static class Params {
-            @NonNullByDefault
+            @NonNullByDefault({})
             static class Data {
                 String appId;
                 String action_type;
@@ -196,7 +184,6 @@ class WebSocketRemote extends WebSocketBase {
 
         String method = "ms.channel.emit";
         Params params = new Params();
-
     }
 
     public void sendSourceApp(String appName, boolean deepLink) {
@@ -207,27 +194,23 @@ class WebSocketRemote extends WebSocketBase {
         sendCommand(remoteControllerWebSocket.gson.toJson(new JSONSourceApp(appName, deepLink, metaTag)));
     }
 
-    @NonNullByDefault
+    @NonNullByDefault({})
     static class JSONRemoteControl {
         public JSONRemoteControl(boolean press, String key) {
             params.Cmd = press ? "Press" : "Click";
             params.DataOfCmd = key;
         }
 
-        @NonNullByDefault
+        @NonNullByDefault({})
         static class Params {
-            @Nullable
             String Cmd;
-            @Nullable
             String DataOfCmd;
             String Option = "false";
             String TypeOfRemote = "SendRemoteKey";
-
         }
 
         String method = "ms.remote.control";
         Params params = new Params();
-
     }
 
     void sendKeyData(boolean press, String key) {

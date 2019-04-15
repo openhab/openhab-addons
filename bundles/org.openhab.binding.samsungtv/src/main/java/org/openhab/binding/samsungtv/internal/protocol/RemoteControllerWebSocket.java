@@ -77,7 +77,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     final UUID uuid = UUID.randomUUID();
 
     // Description of Apps
-    @NonNullByDefault
+    @NonNullByDefault()
     class App {
         String appId;
         String name;

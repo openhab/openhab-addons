@@ -61,7 +61,9 @@ public class SamsungTvUtils {
                     key = value;
                     continue;
                 case 1:
-                    result.put(key, value);
+                    if (key != null) {
+                        result.put(key, value);
+                    }
                     break;
             }
         }

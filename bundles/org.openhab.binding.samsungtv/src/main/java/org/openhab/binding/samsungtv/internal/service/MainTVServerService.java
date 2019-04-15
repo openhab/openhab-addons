@@ -204,8 +204,9 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
                     listener.valueReceived(SOURCE_NAME, (value != null) ? new StringType(value) : UnDefType.UNDEF);
                     break;
                 case "CurrentChannel":
+                    String currentChannel = (value != null) ? parseCurrentChannel(value) : null;
                     listener.valueReceived(CHANNEL,
-                            (value != null) ? new DecimalType(parseCurrentChannel(value)) : UnDefType.UNDEF);
+                            currentChannel != null ? new DecimalType(currentChannel) : UnDefType.UNDEF);
                     break;
                 case "ID":
                     listener.valueReceived(SOURCE_ID, (value != null) ? new DecimalType(value) : UnDefType.UNDEF);
@@ -280,7 +281,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         }
     }
 
-    private @Nullable String parseCurrentChannel(String xml) {
+    private @Nullable String parseCurrentChannel(@Nullable String xml) {
         String majorCh = null;
 
         if (xml != null) {

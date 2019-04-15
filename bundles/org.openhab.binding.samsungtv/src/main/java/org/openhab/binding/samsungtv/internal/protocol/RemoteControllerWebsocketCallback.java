@@ -15,6 +15,7 @@ package org.openhab.binding.samsungtv.internal.protocol;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Callback from the websocket remote controller
@@ -26,9 +27,14 @@ public interface RemoteControllerWebsocketCallback {
 
     void appsUpdated(List<String> apps);
 
-    void currentAppUpdated(String app);
+    void currentAppUpdated(@Nullable String app);
 
     void powerUpdated(boolean on, boolean artmode);
 
-    void connectionError(Throwable error);
+    void connectionError(@Nullable Throwable error);
+
+    void putConfig(String token, Object object);
+
+    @Nullable
+    Object getConfig(String token);
 }

@@ -84,36 +84,26 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
     private static final String WS_ENDPOINT_V2 = "/api/v2/";
 
     /** Description of the json returned for the information endpoint */
-    @NonNullByDefault
+    @NonNullByDefault({})
     static class TVProperties {
-        @NonNullByDefault
+        @NonNullByDefault({})
         static class Device {
             boolean FrameTVSupport;
             boolean GamePadSupport;
             boolean ImeSyncedSupport;
-            @Nullable
             String OS;
             boolean TokenAuthSupport;
             boolean VoiceSupport;
-            @Nullable
             String countryCode;
-            @Nullable
             String description;
-            @Nullable
             String firmwareVersion;
-            @Nullable
             String modelName;
-            @Nullable
             String name;
-            @Nullable
             String networkType;
-            @Nullable
             String resolution;
         }
 
-        @Nullable
         Device device;
-        @Nullable
         String isSupport;
     }
 
@@ -458,7 +448,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
     }
 
     @Override
-    public void currentAppUpdated(String app) {
+    public void currentAppUpdated(@Nullable String app) {
         for (EventListener listener : listeners) {
             listener.valueReceived(SOURCE_APP, new StringType(app));
         }
@@ -483,7 +473,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
     }
 
     @Override
-    public void connectionError(Throwable error) {
+    public void connectionError(@Nullable Throwable error) {
         try {
             if (remoteController != null) {
                 remoteController.close();
@@ -507,7 +497,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
     }
 
     @Override
-    public Object getConfig(String key) {
+    public @Nullable Object getConfig(String key) {
         for (EventListener listener : listeners) {
             return listener.getConfig(key);
         }
