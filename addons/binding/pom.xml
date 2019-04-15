@@ -26,8 +26,6 @@
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.onkyo</module>
     <module>org.openhab.binding.samsungtv</module>
-    <module>org.openhab.binding.smartmeter</module>
-    <module>org.openhab.binding.smartmeter.test</module>
     <module>org.openhab.binding.systeminfo</module>
     <module>org.openhab.binding.systeminfo.test</module>
     <module>org.openhab.binding.zoneminder</module>
