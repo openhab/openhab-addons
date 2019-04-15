@@ -9,7 +9,6 @@
 /addons/binding/org.openhab.binding.exec/ @kgoderis
 /addons/binding/org.openhab.binding.feed/ @svilenvul
 /addons/binding/org.openhab.binding.feed.test/ @svilenvul
-/addons/binding/org.openhab.binding.ftpupload/ @paulianttila
 /addons/binding/org.openhab.binding.innogysmarthome/ @ollie-dev
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
 /addons/binding/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
@@ -74,6 +73,7 @@
 /bundles/org.openhab.binding.freebox/ @lolodomo
 /bundles/org.openhab.binding.fronius/ @trokohl
 /bundles/org.openhab.binding.fsinternetradio/ @paphko
+/bundles/org.openhab.binding.ftpupload/ @paulianttila
 /bundles/org.openhab.binding.gardena/ @gerrieg
 /bundles/org.openhab.binding.globalcache/ @mhilbush
 /bundles/org.openhab.binding.gpstracker/ @gbicskei
