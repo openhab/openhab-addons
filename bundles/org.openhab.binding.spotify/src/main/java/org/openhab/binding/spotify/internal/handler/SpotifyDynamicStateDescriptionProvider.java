@@ -72,11 +72,9 @@ public class SpotifyDynamicStateDescriptionProvider implements DynamicStateDescr
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
         final String channelId = channel.getUID().getId();
 
-        if (channel.getChannelTypeUID() != null
-                && CHANNEL_TYPE_ACTIVE_DEVICENAME.equals(channel.getChannelTypeUID().getId())
-                && CHANNEL_DEVICENAME.equals(channelId)) {
+        if (CHANNEL_DEVICES.equals(channelId)) {
             return devicesStateDescription;
-        } else if (CHANNEL_PLAYLIST.equals(channelId)) {
+        } else if (CHANNEL_PLAYLISTS.equals(channelId)) {
             return playlistStateDescription;
         } else {
             return originalStateDescription;

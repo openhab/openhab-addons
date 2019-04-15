@@ -48,7 +48,8 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SpotifyDeviceHandler.class);
     private @NonNullByDefault({}) SpotifyHandleCommands commandHandler;
     private @NonNullByDefault({}) SpotifyApi spotifyApi;
-    private @NonNullByDefault({}) String deviceId;
+    private @NonNullByDefault({}) String deviceName;
+    private String deviceId = "";
 
     private boolean active;
 
@@ -64,7 +65,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if (commandHandler != null) {
+            if (commandHandler != null && !deviceId.isEmpty()) {
                 commandHandler.handleCommand(channelUID, command, active, deviceId);
             }
         } catch (SpotifyException e) {
@@ -78,7 +79,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
         spotifyApi = bridgeHandler.getSpotifyApi();
 
         final Configuration config = thing.getConfiguration();
-        deviceId = (String) config.get(PROPERTY_SPOTIFY_DEVICE_ID);
+        deviceName = (String) config.get(PROPERTY_SPOTIFY_DEVICE_NAME);
         commandHandler = new SpotifyHandleCommands(spotifyApi);
         updateStatus(ThingStatus.UNKNOWN);
     }
@@ -100,10 +101,12 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
      * @return returns true if given device matches with this handler
      */
     public boolean updateDeviceStatus(Device device, boolean playing) {
-        if (deviceId.equals(device.getId())) {
-            logger.debug("Updating status of Thing: {} Device [ {} {}, {} ]", thing.getUID(), device.getId(),
+        if (deviceName.equals(device.getName())) {
+            deviceId = device.getId() == null ? "" : device.getId();
+            logger.debug("Updating status of Thing: {} Device [ {} {}, {} ]", thing.getUID(), deviceId,
                     device.getName(), device.getType());
             boolean online = setOnlineStatus(device.isRestricted());
+            updateChannelState(CHANNEL_DEVICEID, new StringType(deviceId));
             updateChannelState(CHANNEL_DEVICENAME, new StringType(device.getName()));
             updateChannelState(CHANNEL_DEVICETYPE, new StringType(device.getType()));
             updateChannelState(CHANNEL_DEVICEVOLUME,
