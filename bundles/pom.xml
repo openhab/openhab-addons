@@ -55,6 +55,7 @@
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.fronius</module>
     <module>org.openhab.binding.fsinternetradio</module>
+    <module>org.openhab.binding.ftpupload</module>
     <module>org.openhab.binding.gardena</module>
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.gpstracker</module>
