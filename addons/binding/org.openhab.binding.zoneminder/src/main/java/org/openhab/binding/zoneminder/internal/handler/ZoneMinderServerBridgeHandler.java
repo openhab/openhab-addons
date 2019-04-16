@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -52,8 +53,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 import name.eskildsen.zoneminder.IZoneMinderConnectionInfo;
 import name.eskildsen.zoneminder.IZoneMinderDaemonStatus;
 import name.eskildsen.zoneminder.IZoneMinderDiskUsage;
@@ -76,8 +75,8 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
 
     public static final int TELNET_TIMEOUT = 5000;
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets
-            .newHashSet(ZoneMinderConstants.THING_TYPE_BRIDGE_ZONEMINDER_SERVER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
+            .singleton(ZoneMinderConstants.THING_TYPE_BRIDGE_ZONEMINDER_SERVER);
 
     /**
      * Logger

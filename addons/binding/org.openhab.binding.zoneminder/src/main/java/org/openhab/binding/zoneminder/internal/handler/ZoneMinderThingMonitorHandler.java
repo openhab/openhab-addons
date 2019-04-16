@@ -15,6 +15,7 @@ package org.openhab.binding.zoneminder.internal.handler;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -41,8 +42,6 @@ import org.openhab.binding.zoneminder.internal.config.ZoneMinderThingMonitorConf
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 import name.eskildsen.zoneminder.IZoneMinderConnectionInfo;
 import name.eskildsen.zoneminder.IZoneMinderDaemonStatus;
 import name.eskildsen.zoneminder.IZoneMinderEventData;
@@ -65,8 +64,8 @@ import name.eskildsen.zoneminder.exception.ZoneMinderUrlNotFoundException;
  */
 public class ZoneMinderThingMonitorHandler extends ZoneMinderBaseThingHandler implements IZoneMinderEventSubscriber {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets
-            .newHashSet(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
+            .singleton(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR);
 
     private static final String MONITOR_STATUS_NOT_INIT = "<Not Initialized>";
     private static final int MAX_MONITOR_STATUS_WATCH_COUNT = 3;
