@@ -51,7 +51,7 @@ After setup, you can disconnect the gateway from the internet to keep your senso
         5.  Choose `wireless communication protocol`
         6.  Tap the toggle switch to enable WiFi functions. Note down the developer key (aka password), something like: 91bg8zfkf9vd6uw7
         7.  Make sure you hit the OK button (to the right of the cancel button) to save your changes
-	8.  Now update the gateway to the latest firmware
+        8.  Now update the gateway to the latest firmware
 
 *   In openHAB you should now be able to discover the Xiaomi Gateway
 *   From now on you don't really need the app anymore. Only if you want to update the gateway firmware or if you want to add devices (see below). But adding devices can also be done without the app (see below)
