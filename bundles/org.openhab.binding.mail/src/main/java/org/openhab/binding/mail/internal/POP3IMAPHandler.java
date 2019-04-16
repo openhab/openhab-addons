@@ -122,22 +122,18 @@ public class POP3IMAPHandler extends BaseThingHandler {
                     } else {
                         try (Folder mailbox = store.getFolder(folderName)) {
                             mailbox.open(Folder.READ_ONLY);
-                            int mailNum;
                             if (channelConfig.type == MailCountChannelType.TOTAL) {
-                                mailNum = mailbox.getMessageCount();
+                                updateState(channel.getUID(), new DecimalType(mailbox.getMessageCount()));
                             } else {
-                                mailNum = mailbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false)).length;
+                                updateState(channel.getUID(), new DecimalType(
+                                        mailbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false)).length));
                             }
-                            mailbox.close();
-
-                            updateState(channel.getUID(), new DecimalType(mailNum));
                         } catch (MessagingException e) {
                             throw e;
                         }
                     }
                 }
             }
-            store.close();
         } catch (MessagingException e) {
             logger.info("error when trying to refresh IMAP: {}", e.getMessage());
         }
