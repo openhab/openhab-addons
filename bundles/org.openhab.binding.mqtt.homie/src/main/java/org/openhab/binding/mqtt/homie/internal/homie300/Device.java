@@ -208,7 +208,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
             // Restores the properties attribute object via the channels configuration.
             Property property = node.createProperty(propertyID,
                     channel.getConfiguration().as(PropertyAttributes.class));
-            property.createChannelFromAttribute();
+            property.attributesReceived();
 
             node.properties.put(propertyID, property);
         }
