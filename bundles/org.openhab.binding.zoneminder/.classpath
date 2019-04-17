@@ -28,6 +28,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<!--classpathentry kind="lib" path="lib/tchaikovsky.jar" sourcepath="lib/tchaikovsky-sources.jar" /-->
+	<classpathentry kind="lib" path="lib/zoneminder4j-0.9.7.jar" />
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
