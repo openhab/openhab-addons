@@ -20,6 +20,7 @@ Bundle-Version: 2.5.0.qualifier
 Export-Package: org.openhab.io.homekit
 Import-Package: 
  com.google.common.collect,
+ javax.jmdns,
  org.apache.commons.io,
  org.apache.commons.lang.builder,
  org.eclipse.jdt.annotation;resolution:=optional,
