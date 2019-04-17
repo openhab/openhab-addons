@@ -108,7 +108,7 @@ public class RemoteControllerLegacy extends RemoteController {
 
             logger.debug("Connection successfully opened...querying access");
 
-            writeInitialInfo(localwriter);
+            writeInitialInfo(localwriter, localsocket);
             readInitialInfo(localreader);
 
             int i;
@@ -120,7 +120,7 @@ public class RemoteControllerLegacy extends RemoteController {
         }
     }
 
-    private void writeInitialInfo(Writer writer) throws RemoteControllerException {
+    private void writeInitialInfo(Writer writer, Socket socket) throws RemoteControllerException {
         try {
             /* @formatter:off
             *
@@ -286,7 +286,7 @@ public class RemoteControllerLegacy extends RemoteController {
 
     @Override
     public boolean isConnected() {
-        return socket != null && !socket.isClosed() && socket.isConnected();
+        return socket != null && !socket.isClosed() && socket != null && socket.isConnected();
     }
 
     private String createRegistrationPayload(String ip) throws IOException {
@@ -407,7 +407,7 @@ public class RemoteControllerLegacy extends RemoteController {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws RemoteControllerException {
         if (isConnected()) {
             closeConnection();
         }

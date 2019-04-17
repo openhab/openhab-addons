@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 class WebSocketRemote extends WebSocketBase {
     private final Logger logger = LoggerFactory.getLogger(WebSocketBase.class);
 
+    @SuppressWarnings("unused")
     @NonNullByDefault({})
     private static class JSONMessage {
         String event;
@@ -88,6 +89,9 @@ class WebSocketRemote extends WebSocketBase {
 
     @Override
     public void onWebSocketText(@Nullable String msgarg) {
+        if (msgarg == null) {
+            return;
+        }
         String msg = msgarg.replace('\n', ' ');
         super.onWebSocketText(msg);
         try {

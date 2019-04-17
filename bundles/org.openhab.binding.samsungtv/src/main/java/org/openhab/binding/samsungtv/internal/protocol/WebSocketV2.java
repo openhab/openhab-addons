@@ -33,6 +33,7 @@ class WebSocketV2 extends WebSocketBase {
         super(remoteControllerWebSocket);
     }
 
+    @SuppressWarnings("unused")
     @NonNullByDefault({})
     private static class JSONMessage {
         String event;
@@ -56,6 +57,9 @@ class WebSocketV2 extends WebSocketBase {
 
     @Override
     public void onWebSocketText(@Nullable String msgarg) {
+        if (msgarg == null) {
+            return;
+        }
         String msg = msgarg.replace('\n', ' ');
         super.onWebSocketText(msg);
         try {

@@ -51,6 +51,9 @@ class WebSocketArt extends WebSocketBase {
 
     @Override
     public void onWebSocketText(@Nullable String msgarg) {
+        if (msgarg == null) {
+            return;
+        }
         String msg = msgarg.replace('\n', ' ');
         super.onWebSocketText(msg);
         try {
@@ -72,12 +75,11 @@ class WebSocketArt extends WebSocketBase {
                     break;
 
                 case "d2d_service_message":
-                    if (jsonMsg.data == null || jsonMsg.data.event == null) {
-                        logger.debug("Empty d2d_service_message event: {}", msg);
+                    if (jsonMsg.data != null) {
+                        handleD2DServiceMessage(jsonMsg.data.getAsString());
                     } else {
-                        handleD2DServiceMessage(msg, jsonMsg);
+                        logger.debug("Empty d2d_service_message event: {}", msg);
                     }
-                    // ignore;
                     break;
                 default:
                     logger.debug("WebSocketArt Unknown event: {}", msg);

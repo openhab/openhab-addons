@@ -57,7 +57,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
 
     private Logger logger = LoggerFactory.getLogger(MainTVServerService.class);
 
-    private @Nullable UpnpIOService service;
+    private UpnpIOService service;
 
     private ScheduledExecutorService scheduler;
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -69,14 +69,10 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
 
     private Set<EventListener> listeners = new CopyOnWriteArraySet<>();
 
-    public MainTVServerService(@Nullable UpnpIOService upnpIOService, String udn, int pollingInterval) {
+    public MainTVServerService(UpnpIOService upnpIOService, String udn, int pollingInterval) {
         logger.debug("Creating a Samsung TV MainTVServer service");
 
-        if (upnpIOService != null) {
-            service = upnpIOService;
-        } else {
-            logger.debug("upnpIOService not set.");
-        }
+        service = upnpIOService;
 
         this.udn = udn;
         this.pollingInterval = pollingInterval;
@@ -302,31 +298,29 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     private Map<String, String> parseSourceList(String xml) {
         Map<String, String> list = new HashMap<String, String>();
 
-        if (xml != null) {
-            Document dom = SamsungTvUtils.loadXMLFromString(xml);
+        Document dom = SamsungTvUtils.loadXMLFromString(xml);
 
-            if (dom != null) {
-                NodeList nodeList = dom.getDocumentElement().getElementsByTagName("Source");
+        if (dom != null) {
+            NodeList nodeList = dom.getDocumentElement().getElementsByTagName("Source");
 
-                if (nodeList != null) {
-                    for (int i = 0; i < nodeList.getLength(); i++) {
+            if (nodeList != null) {
+                for (int i = 0; i < nodeList.getLength(); i++) {
 
-                        String sourceType = null;
-                        String id = null;
+                    String sourceType = null;
+                    String id = null;
 
-                        Element element = (Element) nodeList.item(i);
-                        NodeList l = element.getElementsByTagName("SourceType");
-                        if (l != null && l.getLength() > 0) {
-                            sourceType = l.item(0).getFirstChild().getNodeValue();
-                        }
-                        l = element.getElementsByTagName("ID");
-                        if (l != null && l.getLength() > 0) {
-                            id = l.item(0).getFirstChild().getNodeValue();
-                        }
+                    Element element = (Element) nodeList.item(i);
+                    NodeList l = element.getElementsByTagName("SourceType");
+                    if (l != null && l.getLength() > 0) {
+                        sourceType = l.item(0).getFirstChild().getNodeValue();
+                    }
+                    l = element.getElementsByTagName("ID");
+                    if (l != null && l.getLength() > 0) {
+                        id = l.item(0).getFirstChild().getNodeValue();
+                    }
 
-                        if (sourceType != null && id != null) {
-                            list.put(sourceType, id);
-                        }
+                    if (sourceType != null && id != null) {
+                        list.put(sourceType, id);
                     }
                 }
             }

@@ -54,7 +54,8 @@ class WebSocketBase extends WebSocketAdapter {
 
     @Override
     public void onWebSocketError(@Nullable Throwable error) {
-        logger.warn("{} connection error: {}", this.getClass().getSimpleName(), error.getMessage());
+        logger.warn("{} connection error: {}", this.getClass().getSimpleName(),
+                error != null ? error.getMessage() : error);
         super.onWebSocketError(error);
         isConnecting = false;
     }
@@ -78,7 +79,7 @@ class WebSocketBase extends WebSocketAdapter {
     @Override
     public void onWebSocketConnect(@Nullable Session session) {
         logger.debug("{} connection established: {}", this.getClass().getSimpleName(),
-                session.getRemoteAddress().getHostString());
+                session != null ? session.getRemoteAddress().getHostString() : "");
         super.onWebSocketConnect(session);
 
         isConnecting = false;

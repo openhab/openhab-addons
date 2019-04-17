@@ -212,7 +212,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     private void checkAndCreateServices() {
         logger.debug("Check and create missing UPnP services");
 
-        for (Device device : upnpService.getRegistry().getDevices()) {
+        for (Device<?, ?, ?> device : upnpService.getRegistry().getDevices()) {
             createService((RemoteDevice) device);
         }
 
@@ -281,13 +281,11 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
                 }
             }
 
-            if (service != null) {
-                if (service.checkConnection()) {
-                    putOnline();
-                } else {
-                    putOffline();
-                    stopService(service);
-                }
+            if (service.checkConnection()) {
+                putOnline();
+            } else {
+                putOffline();
+                stopService(service);
             }
         } catch (RuntimeException e) {
             logger.warn("Catching all exceptions because otherwise the thread would silently fail", e);
