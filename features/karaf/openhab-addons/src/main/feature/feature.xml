@@ -463,7 +463,7 @@
         <feature>openhab-runtime-base</feature>
         <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/4.2.3</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/4.2.3</bundle>
-        <bundle dependency="true">wrap:mvn:xpp3/xpp3/1.1.4c$Bundle-Name=MXP1%20XmlPull%20Engine&amp;Bundle-SymbolicName=xpp3.xpp3&amp;Bundle-Version=1.1.4c</bundle>
+        <bundle dependency="true">wrap:mvn:xpp3/xpp3/1.1.4c$Bundle-Name=MXP1%20XmlPull%20Engine&amp;Bundle-SymbolicName=xpp3.xpp3&amp;Bundle-Version=1.1.4.c</bundle>
         <bundle dependency="true">wrap:mvn:org.json/json/20140107$Bundle-Name=JSON%20in%20Java&amp;Bundle-SymbolicName=org.json.json&amp;Bundle-Version=20140107</bundle>
         <bundle dependency="true">wrap:mvn:org.java-websocket/java-websocket/1.3.2$Bundle-Name=Java%20Websocket%20Client&amp;Bundle-SymbolicName=org.java-websocket.java-websocket&amp;Bundle-Version=1.3.2</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.lgwebos/${project.version}</bundle>
