@@ -1,162 +1,179 @@
-# meteoblue Binding
+# Meteostick Binding
 
-The meteoblue binding uses the [meteoblue weather service](https://content.meteoblue.com/en/content/view/full/4511)
-to provide weather information.
-
+This is the binding for the [Meteostick](http://www.smartbedded.com/wiki/index.php/Meteostick) weather receiver dongle.
+This is an RF receiver that can receive data directly from Davis weather devices (and others).
 
 ## Supported Things
 
-The binding has two thing types.
+This binding support 2 different things types
 
-The first thing type is the weather thing. Each weather thing has the ID `weather` and retrieves weather data for one location.
-The second thing type is the bridge thing. The bridge thing, which has the ID `bridge`, holds the API key to be used for all of
-its child things.
+| Thing                | Type   | Description                       |
+|----------------------|--------|-----------------------------------|
+| meteostick_bridge    | Bridge | This is the Meteostick USB stick  |
+| meteostick_davis_iss | Thing  | This is the Davis Vue ISS         |
 
+
+## Binding Configuration
+
+The Meteostick things need to be manually added - there is no discovery in the Meteostick binding.
+
+First add and configure the Meteostick bridge - the port and frequency band for your region need to be set.
+Next add the sensor and configure the channel number.
 
 ## Thing Configuration
 
-### Bridge Thing Configuration
+### meteostick_bridge Configuration Options
 
-| Property      | Default Value | Required? | Description          |
-| ------------- |:-------------:| :-------: | -------------------- |
-| apiKey        |               | Yes       | The api key to be used with the meteoblue service |
+| Option | Description                                        |
+|--------|----------------------------------------------------|
+| port   | Sets the serial port to be used for the stick      |
+| mode   | Sets the mode (frequency band)                     |
 
+Set mode to one of the following depending on your device and region:
 
-### Weather Thing Configuration
+| Mode  | Device       | Region           | Frequency |
+|-------|--------------|------------------|-----------|
+| 0     | Davis        | North America    | 915 Mhz   |
+| 1     | Davis        | Europe           | 868 Mhz   |
+| 2     | Davis        | Australia        | 915 Mhz   |
+| 3     | Fine Offset  | North America    | 915 Mhz   |
+| 4     | Fine Offset  | Europe           | 868 Mhz   |
+| 5     | Davis        | New Zealand      | 931.5 Mhz |
 
-| Property      | Default Value | Required? | Description          |
-| ------------- |:-------------:| :-------: | -------------------- |
-| location      |               | Yes       | The latitude, longitude, and optionally altitude of the location, separated by commas (e.g. 45.6,45.7,45.8). Altitude, if given, should be in meters.
-| refresh       | 240           | No        | The time between calls to refresh the weather data, in minutes |
-| serviceType   | NonCommercial | No        | The service type to be used.  Either 'Commercial' or 'NonCommercial' |
-| timeZone      |               | No        | The time zone to use for the location. Optional, but the service recommends it be specified. The service gets the time zone from a database if not specified. |
+### meteostick_davis_iss Configuration Options
 
+| Option  | Description                               |
+|---------|-------------------------------------------|
+| channel | Sets the RF channel used for this sensor  |
+| spoon   | Size of rain spoon assembly for this sensor in mm.  Default value is 0.254 (0.01") for use with Davis part number 7345.280.  Set to 0.2 for use with Davis part number 7345.319 |
 
 ## Channels
 
-### Channel Groups
+### Meteostick
 
-| Group Name       | Description |
-| ---------------- | ----------- |
-| forecastToday    | Today's forecast |
-| forecastTomorrow | Tomorrow's forecast |
-| forecastDay2     | Forecast 2 days out |
-| forecastDay3     | Forecast 3 days out |
-| forecastDay4     | Forecast 4 days out |
-| forecastDay5     | Forecast 5 days out |
-| forecastDay6     | Forecast 6 days out |
+| Channel Type ID    | Item Type          | Description        |
+|--------------------|--------------------|--------------------|
+| pressure           | Number:Pressure    | Air pressure       |
+| indoor-temperature | Number:Temperature | Indoor temperature |
 
-### Channels
+### Davis ISS
 
-Each of the following channels is supported in all of the channel groups.
+| Channel Type ID     | Item Type             | Description                                     |
+|---------------------|-----------------------|-------------------------------------------------|
+| outdoor-temperature | Number:Temperature    | Outside temperature                             |
+| humidity            | Number                | Humidity                                        |
+| wind-direction      | Number:Angle          | Wind direction                                  |
+| wind-direction-last2min-average | Number:Angle | Wind direction average over last 2 minutes   |
+| wind-speed          | Number:Speed          | Wind speed                                      |
+| wind-speed-last2min-average     | Number:Speed | Wind speed average over last 2 minutes       |
+| wind-speed-last2min-maximum     | Number:Speed | Wind speed maximum over last 2 minutes       |
+| rain-raw            | Number                | Raw rain counter from the tipping spoon sensor  |
+| rain-currenthour    | Number:Length         | The rainfall in the last 60 minutes             |
+| rain-lasthour       | Number:Length         | The rainfall in the previous hour               |
+| solar-power         | Number                | Solar power from the sensor station             |
+| signal-strength     | Number                | Received signal strength                        |
+| low-battery         | Switch                | Low battery warning                             |
 
-| Channel                  | Item Type          | Description |
-| ------------------------ | ------------------ | ----------- |
-| height                   | Number:Length      | Altitude above sea-level of the location (in meters) |
-| forecastDate             | DateTime           | Forecast date |
-| UVIndex                  | Number             | UltraViolet radiation index at ground level (0-16) |
-| minTemperature           | Number:Temperature | Low temperature |
-| maxTemperature           | Number:Temperature | High temperature |
-| meanTemperature          | Number:Temperature | Mean temperature |
-| feltTemperatureMin       | Number:Temperature | Low "feels like" temperature |
-| feltTemperatureMax       | Number:Temperature | High "feels like" temperature |
-| relativeHumidityMin      | Number             | Low relative humidity |
-| relativeHumidityMax      | Number             | High relative humidity |
-| relativeHumidityMean     | Number             | Mean relative humidity |
-| precipitationProbability | Number             | Percentage probability of precipitation |
-| precipitation            | Number:Length      | Total precipitation (water amount) |
-| convectivePrecipitation  | Number:Length      | Total rainfall (water amount) |
-| rainSpot                 | String             | Precipitation distribution around the location |
-| rainArea                 | Image              | Color-coded image generated from rainSpot |
-| snowFraction             | Number             | Percentage of precipitation falling as snow |
-| snowFall                 | Number:Length      | Total snowfall (calculated) |
-| cardinalWindDirection    | String             | Name of the wind direction (eg. N, S, E, W, etc.) |
-| windDirection            | Number             | Wind direction (in degrees) |
-| minWindSpeed             | Number:Speed       | Low wind speed  |
-| maxWindSpeed             | Number:Speed       | High wind speed |
-| meanWindSpeed            | Number:Speed       | Mean wind speed |
-| minSeaLevelPressure      | Number:Pressure    | Low sea level pressure  |
-| maxSeaLevelPressure      | Number:Pressure    | High sea level pressure |
-| meanSeaLevelPressure     | Number:Pressure    | Mean sea level pressure |
-| condition                | String             | A brief description of the forecast weather condition (e.g. 'Overcast') |
-|                          |                    | Valid values range from 1 - 17 (see the [meteoblue docs](https://content.meteoblue.com/nl/service-specifications/standards/symbols-and-pictograms#eztoc14635_1_6)) |
-| icon                     | Image              | Image used to represent the forecast (calculated) |
-|                          |                    | see [Image icons](#image-icons) below
-| predictability           | Number             | Estimated certainty of the forecast (percentage) |
-| predictabilityClass      | Number             | Range 0-5 (0=very low, 5=very high) |
-| precipitationHours       | Number             | Total hours of the day with precipitation |
-| humidityGreater90Hours   | Number             | Total hours of the day with relative humidity greater than 90% |
+#### Rainfall
 
-
-## Image Icons
-
-To show the weather image icons in the UI, the [image files](https://content.meteoblue.com/hu/service-specifications/standards/symbols-and-pictograms) need to be downloaded and installed in the `conf/icons/classic` folder.
-
-In the "Downloads" section at the bottom of the page, download the file named `meteoblue_weather_pictograms_<date>.zip`.
-
-The files to extract from the zip file and install in the folder will be named "iday*.png" or "iday*.svg".
-
+There are three channels associated with rainfall.
+The raw counter from the tipping bucket is provided, the rainfall in the last 60 minutes is updated on each received rainfall and provides the past 60 minutes of rainfall.
+The rainfall in the previous hour is the rainfall for each hour of the day and is updated on the hour.
 
 ## Full Example
 
-demo.things:
+This example uploads weather data to for your personal weather station at Weather Underground every two minutes.
+
+Steps:
+
+1. Install the [MeteoStick](http://www.smartbedded.com/wiki/index.php/Meteostick) binding for use with your [Davis Vantage Vue Integrated Sensor Suite (ISS)](https://www.davisnet.com/solution/vantage-vue/).
+1. [Register](https://www.wunderground.com/personal-weather-station/signup.asp) your personal weather station with Weather Underground and make note of the station ID and password issued.
+1. Add the following files to your openHAB configuration:
+
+### things/meteostick.things 
+
+Things can be defined in the .things file as follows:
 
 ```
-Bridge meteoblue:bridge:metBridge "metBridge" [ apiKey="XXXXXXXXXXXX" ] {
-	Thing weather A51 "Area 51" [ serviceType="NonCommercial", location="37.23,-115.5,1360", timeZone="America/Los_Angeles", refresh=240 ] {
+meteostick:meteostick_bridge:receiver [ port="/dev/tty.usbserial-AI02XA60", mode=1 ]
+meteostick:meteostick_davis_iss:iss (meteostick:meteostick_bridge:receiver) [ channel=1, spoon=0.2 ]
+```
+
+Note the configuration options for `port`, `mode`, `channel` and `spoon` above and adjust as needed for your specific hardware.
+
+### items/meteostick.items
+
+```
+Number:Pressure MeteoStickPressure "Meteostick Pressure [%.1f hPa]"{ channel="meteostick:meteostick_bridge:receiver:pressure" }
+Number:Temperature DavisVantageVueOutdoorTemperature "ISS Outdoor Temp [%.1f 째C]" { channel="meteostick:meteostick_davis_iss:iss:outdoor-temperature" }
+Number DavisVantageVueHumidity "ISS Humidity [%.0f %%]" { channel="meteostick:meteostick_davis_iss:iss:humidity" }
+Number:Angle DavisVantageVueWindDirection "ISS Wind Direction [%.0f 째]" { channel="meteostick:meteostick_davis_iss:iss:wind-direction" }
+Number:Angle DavisVantageVueWindDirectionAverage "ISS Average Wind Direction [%.0f 째]" { channel="meteostick:meteostick_davis_iss:iss:wind-direction-last2min-average" }
+Number:Speed DavisVantageVueWindSpeed "ISS Wind Speed [%.1f m/s]" { channel="meteostick:meteostick_davis_iss:iss:wind-speed" }
+Number:Speed DavisVantageVueWindSpeedAverage "ISS Average Wind Speed [%.1f m/s]" { channel="meteostick:meteostick_davis_iss:iss:wind-speed-last2min-average" }
+Number:Speed DavisVantageVueWindSpeedMaximum "ISS Maximum Wind Speed [%.1f m/s]" { channel="meteostick:meteostick_davis_iss:iss:wind-speed-last2min-maximum" }
+Number:Length DavisVantageVueRainCurrentHour "ISS Rain Current Hour [%.1f mm]" { channel="meteostick:meteostick_davis_iss:iss:rain-currenthour" }
+```
+
+### rules/meteostick.rules
+
+Replace `YOUR_ID` and `your_password` below with the values from the the Weather Underground registration process.
+
+```
+import java.net.URLEncoder
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Map
+import java.util.TimeZone
+
+/* Uploads weather station data using the format documented here:
+
+   https://feedback.weather.com/customer/en/portal/articles/2924682-pws-upload-protocol?b_id=17298
+ */
+
+rule PWS
+when
+	Item DavisVantageVueWindDirectionAverage received update
+then
+	val id = 'YOUR_ID'
+	val pw = 'your_password'
+	val sdf = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss')
+	sdf.setTimeZone(TimeZone.getTimeZone('UTC'))
+	val double rh = DavisVantageVueHumidity.getStateAs(DecimalType).doubleValue
+	val double tempc = DavisVantageVueOutdoorTemperature.getStateAs(QuantityType).toUnit('째C').doubleValue
+	val double dewptc = 243.04 * (Math.log(rh/100) + ((17.625 * tempc) / (243.04 + tempc))) / (17.625 - Math.log(rh/100) - ((17.625 * tempc) / (243.04 + tempc)))
+	val double dewptf = new QuantityType(dewptc, CELSIUS).toUnit('째F').doubleValue
+	val Map<String, Object> params = newLinkedHashMap(
+		'action' ->           'updateraw',
+		'ID' ->               id,
+		'PASSWORD' ->         pw,
+		'dateutc' ->          sdf.format(new Date()),
+		'winddir' ->          DavisVantageVueWindDirection.getStateAs(QuantityType).toUnit('째').intValue,
+		'windspeedmph' ->     DavisVantageVueWindSpeed.getStateAs(QuantityType).toUnit('mph').doubleValue,
+		'windgustmph' ->      DavisVantageVueWindSpeedMaximum.getStateAs(QuantityType).toUnit('mph').doubleValue,
+		'windgustdir' ->      DavisVantageVueWindDirectionAverage.getStateAs(QuantityType).toUnit('째').intValue,
+		'windspdmph_avg2m' -> DavisVantageVueWindSpeedAverage.getStateAs(QuantityType).toUnit('mph').doubleValue,
+		'winddir_avg2m' ->    DavisVantageVueWindDirectionAverage.getStateAs(QuantityType).toUnit('째').intValue,
+		'humidity' ->         DavisVantageVueHumidity.state,
+		'dewptf' ->           dewptf,
+		'tempf' ->            DavisVantageVueOutdoorTemperature.getStateAs(QuantityType).toUnit('째F').doubleValue,
+		'rainin' ->           DavisVantageVueRainCurrentHour.getStateAs(QuantityType).toUnit('in').doubleValue,
+		'baromin' ->          MeteoStickPressure.getStateAs(QuantityType).toUnit('inHg').doubleValue,
+		'softwaretype' ->     'openHAB 2.4')
+
+	var url = 'https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?'
+	var first = true
+	for (key : params.keySet()) {
+		if (!first) {
+			url += '&'
+		}
+		url += key + '=' + URLEncoder::encode(params.get(key).toString, 'UTF-8')
+		first = false
 	}
-}
+
+	logDebug('PWS', 'url is {}', url)
+	sendHttpGetRequest(url)
+end
 ```
 
-demo.items:
-
-```
-// ----------------- meteoblue GROUPS ------------------------------------------
-Group weatherDay0 "Today's Weather"
-Group weatherDay1 "Tomorrow's Weather"
-Group weatherDay2 "Weather in 2 days"
-Group weatherDay3 "Weather in 3 days"
-Group weatherDay4 "Weather in 4 days"
-Group weatherDay5 "Weather in 5 days"
-Group weatherDay6 "Weather in 6 days"
-
-
-// ----------------- meteoblue ITEMS -------------------------------------------
-DateTime todayForecastDate  "Forecast for [%1$tY/%1$tm/%1$td]"  <calendar>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#forecastDate"}
-String todayPCode    "Pictocode [%d]"  <iday>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#condition"}
-String todayCond     "Condition [%s]"  <iday>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#condition"}
-String todayIcon     "Icon [%s]"       (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#icon"}
-Number todayUV       "UV Index [%d]"  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#UVIndex"}
-Number:Temperature  todayTempL  "Low Temp [%.2f 캟]"   <temperature>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#minTemperature"}
-Number:Temperature  todayTempH  "High Temp [%.2f 캟]"  <temperature>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#maxTemperature"}
-Number todayHumM     "Mean Humidity [%d %%]"  <humidity>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#relativeHumidityMean"}
-Number todayPrecPr   "Prec. Prob. [%d %%]"  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#precipitationProbability"}
-Number:Length todayPrec     "Total Prec. [%.2f in]"  <rain>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#precipitation"}
-Number:Length todayRain     "Rainfall [%.2f in]"  <rain>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#convectivePrecipitation"}
-Image  todayRainArea "Rain area"   <rain>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#rainArea"}
-Number todaySnowF    "Snow fraction [%.2f]"  <climate>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#snowFraction"}
-Number:Length  todaySnow     "Snowfall [%.2f in]"  <rain>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#snowFall"}
-Number:Pressure  todayPressL   "Low Pressure [%d %unit%]"   <pressure>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#minSeaLevelPressure"}
-Number:Pressure  todayPressH   "High Pressure [%d %unit%]"  <pressure>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#maxSeaLevelPressure"}
-Number todayWindDir   "Wind Direction [%d]"  <wind>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#windDirection"}
-String todayCWindDir  "Cardinal Wind Direction [%s]"  <wind>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#cardinalWindDirection"}
-Number:Speed  todayWindSpL   "Low Wind Speed [%.2f mph]"   <wind>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#minWindSpeed"}
-Number:Speed  todayWindSpH   "High Wind Speed [%.2f mph]"  <wind>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#maxWindSpeed"}
-```
-
-demo.sitemap:
-
-````
-sitemap weather label="Weather"
-{
-  Frame label="Weather" {
-    Group item=weatherDay0
-    Group item=weatherDay1
-    Group item=weatherDay2
-    Group item=weatherDay3
-    Group item=weatherDay4
-    Group item=weatherDay5
-    Group item=weatherDay6
-  }
-}
-````
+openHAB will now report your weather station data to Weather Underground every two minutes.
