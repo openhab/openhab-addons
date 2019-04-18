@@ -15,7 +15,7 @@ package org.openhab.binding.kodi.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Class representing a Kodi audio stream (see https://kodi.wiki/view/JSON-RPC_API/v9#Player.Subtitle)
+ * Class representing a Kodi subtitle stream (see https://kodi.wiki/view/JSON-RPC_API/v9#Player.Subtitle)
  *
  * @author m17design - Initial contribution
  */

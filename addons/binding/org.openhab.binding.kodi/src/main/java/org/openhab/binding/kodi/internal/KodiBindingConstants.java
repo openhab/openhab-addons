@@ -86,13 +86,19 @@ public class KodiBindingConstants {
     public static final String CHANNEL_SUBTITLE_INDEX = "subtitle-index";
     public static final String CHANNEL_SUBTITLE_LANGUAGE = "subtitle-language";
     public static final String CHANNEL_SUBTITLE_NAME = "subtitle-name";
-    
+
     public static final String CHANNEL_CURRENTTIME = "currenttime";
     public static final String CHANNEL_CURRENTTIMEPERCENTAGE = "currenttimepercentage";
     public static final String CHANNEL_DURATION = "duration";
     public static final String CHANNEL_UNIQUEID = "uniqueid";
-    public static final String CHANNEL_UNIQUEID_TYPE = "uniqueid_type";  
-    public static final String CHANNEL_UNIQUEID_VALUE = "uniqueid_value";  
+    public static final String CHANNEL_UNIQUEID_IMDB = "uniqueid-imdb";
+    public static final String CHANNEL_UNIQUEID_IMDBTVSHOW = "uniqueid-imdbtvshow";
+    public static final String CHANNEL_UNIQUEID_TMDB = "uniqueid-tmdb";
+    public static final String CHANNEL_UNIQUEID_TMDBTVSHOW = "uniqueid-tmdbtvshow";
+    public static final String CHANNEL_UNIQUEID_DOUBAN = "uniqueid-douban";
+
+    public static final String CHANNEL_SEASON = "season";
+    public static final String CHANNEL_EPISODE = "episode";
 
     // Module Properties
     public static final String PROPERTY_VERSION = "version";

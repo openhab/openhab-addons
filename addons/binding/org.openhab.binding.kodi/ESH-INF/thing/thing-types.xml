@@ -8,7 +8,6 @@
 	<thing-type id="kodi">
 		<label>Kodi Mediacenter</label>
 		<description>Kodi Mediacenter Binding</description>
-
 		<channels>
 			<channel id="volume" typeId="system.volume" />
 			<channel id="mute" typeId="system.mute" />
@@ -23,8 +22,9 @@
 			<channel id="inputtext" typeId="inputtext" />
 			<channel id="inputaction" typeId="inputaction" />
 			<channel id="systemcommand" typeId="systemcommand" />
-			<channel id="title" typeId="system.media-title" />
-			<channel id="showtitle" typeId="showtitle" />
+			<channel id="title" typeId="system.media-title"><label>Title</label></channel>
+            <channel id="originaltitle" typeId="system.media-title"><label>Original Title</label></channel>
+			<channel id="showtitle" typeId="showtitle"><label>TV Show Title</label></channel>
 			<channel id="album" typeId="album" />
 			<channel id="artist" typeId="system.media-artist" />
 			<channel id="mediatype" typeId="mediatype" />
@@ -33,17 +33,35 @@
 			<channel id="fanart" typeId="fanart" />
 			<channel id="playfavorite" typeId="playfavorite" />
 			<channel id="playnotification" typeId="playnotification" />
+            <channel id="audio-name" typeId="name"><label>Audio Name</label></channel>
+            <channel id="audio-channels" typeId="channels"><label>Audio Channels</label></channel>
+            <channel id="audio-index" typeId="index"><label>Audio Index</label></channel>
+            <channel id="audio-language" typeId="language"><label>Audio language</label></channel>
 			<channel id="audio-codec" typeId="codec">
 				<label>Audio Codec</label>
 				<description>Audio codec of currently playing media</description>
 			</channel>
+            <channel id="video-width" typeId="width" />
+            <channel id="video-height" typeId="height" />
+            <channel id="video-index" typeId="index"><label>Video Index</label></channel>
 			<channel id="video-codec" typeId="codec">
 				<label>Video Codec</label>
 				<description>Video codec of currently playing media</description>
 			</channel>
+            <channel id="subtitle-enabled" typeId="enabled"><label>Subtitle Enabled</label></channel>
+            <channel id="subtitle-name" typeId="name"><label>Subtitle Name</label></channel>
+            <channel id="subtitle-index" typeId="index"><label>Subtitle Index</label></channel>
+            <channel id="subtitle-language" typeId="language"><label>Subtitle Language</label></channel>
 			<channel id="currenttime" typeId="currenttime" />
 			<channel id="currenttimepercentage" typeId="currenttimepercentage" />
 			<channel id="duration" typeId="duration" />
+			<channel id="mediaid" typeId="id"><label>Kodi Media ID</label><description>media_id in kodi database</description></channel>
+            <channel id="uniqueid-douban" typeId="uniqueid"><label>Douban ID</label><description>example usage - http://www.douban.com/subject/3036644/</description></channel>
+            <channel id="uniqueid-imdb" typeId="uniqueid"><label>IMDB ID</label><description>example usage - http://www.imdb.com/title/tt7207268/</description></channel>
+            <channel id="uniqueid-imdbtvshow" typeId="uniqueid"><label>IMDB TVSHOW ID</label><description>example usage - http://www.imdb.com/title/tt0426769/</description></channel>
+            <channel id="uniqueid-tmdb" typeId="uniqueid"><label>TMDB ID</label><description>example usage - http://www.themoviedb.org/movie/123456789</description></channel>
+            <channel id="uniqueid-tmdbepisode" typeId="uniqueid"><label>TMDB EPISODE ID</label><description>example usage - http://www.themoviedb.org/tv/12225/season/5/episode/15/</description></channel>
+            <channel id="uniqueid-tmdbtvshow" typeId="uniqueid"><label>TMDB TVSHOW ID</label><description>example usage - http://www.themoviedb.org/tv/12225/</description></channel>
 		</channels>
 
 		<properties>
@@ -405,6 +423,7 @@
 		<description>Current time of currently playing media</description>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
 	</channel-type>
+	
 	<channel-type id="duration">
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
@@ -412,33 +431,67 @@
 		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 	
-	<!-- Kodi uniqueid variables -- m17 added -->
-	<channel-type id="mediaid">
+	<channel-type id="id" advanced="true">
 		<item-type>Number</item-type>
-		<label>media id</label>
-		<description>media id in table uniqueid</description>
+		<label>id</label>
+		<description>id in kodi database</description>
 		<state readOnly="true" pattern="%d" />
 	</channel-type>	
-
-	<channel-type id="uniqueid_type">
-		<item-type>String</item-type>
-		<label>uniqueid Type</label>
-		<description>unqueid type in table uniqueid</description>
-		<state readOnly="true" pattern="%s"></state>
-	</channel-type>		
 	
-	<channel-type id="uniqueid">
-		<item-type>Number</item-type>
-		<label>unique id</label>
-		<description>unique id in table uniqueid</description>
-		<state readOnly="true" pattern="%d" />
-	</channel-type>		
-
-	<channel-type id="uniqueid_value">
-		<item-type>Number</item-type>
-		<label>uniqueid value</label>
-		<description>unique value in table uniqueid</description>
-		<state readOnly="true" pattern="%d" />
-	</channel-type>			
+	<channel-type id="enabled">
+        <item-type>Switch</item-type>
+        <label>enabled</label>
+        <description>enabled</description>
+        <state readOnly="false"/>
+    </channel-type> 
 	
+    <channel-type id="channels" advanced="true">
+        <item-type>Number</item-type>
+        <label>channels</label>
+         <description>Channels</description>
+        <state readOnly="true" pattern="%d" />
+    </channel-type> 	
+    
+    <channel-type id="width" advanced="true">
+        <item-type>Number</item-type>
+        <label>Video Width</label>
+        <description>Video Width</description>
+        <state readOnly="true" pattern="%d" />
+    </channel-type>     
+
+    <channel-type id="height" advanced="true">
+        <item-type>Number</item-type>
+        <label>Video Height</label>
+         <description>Video Height</description>
+        <state readOnly="true" pattern="%d" />
+    </channel-type>     
+
+     <channel-type id="index" advanced="true">
+        <item-type>Number</item-type>
+        <label>index</label>
+        <description>stream index</description>
+        <state readOnly="false" pattern="%d" />
+    </channel-type>     
+    
+    <channel-type id="name" advanced="true">
+        <item-type>String</item-type>
+        <label>Name</label>
+        <description>Name</description>
+        <state readOnly="true" />
+    </channel-type> 
+    
+    <channel-type id="uniqueid" advanced="true">
+        <item-type>String</item-type>
+        <label>UniqueID</label>
+        <description>UniqueID</description>
+        <state readOnly="true" pattern="%s" />
+    </channel-type>	
+   
+    <channel-type id="language" advanced="false">
+        <item-type>String</item-type>
+        <label>Language</label>
+        <description>stream Language</description>
+        <state readOnly="true" />
+    </channel-type> 
+    
 </thing:thing-descriptions>
