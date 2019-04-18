@@ -271,21 +271,16 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
             RemoteControllerService service = (RemoteControllerService) findServiceInstance(
                     RemoteControllerService.SERVICE_NAME);
             if (service == null) {
+                putOffline();
                 SamsungTvConfiguration configuration = getConfigAs(SamsungTvConfiguration.class);
                 service = RemoteControllerService.createNonUpnpService(configuration.hostName, configuration.port);
                 startService(service);
             } else {
                 // open connection again if needed
                 if (!service.checkConnection()) {
+                    putOffline();
                     service.start();
                 }
-            }
-
-            if (service.checkConnection()) {
-                putOnline();
-            } else {
-                putOffline();
-                stopService(service);
             }
         } catch (RuntimeException e) {
             logger.warn("Catching all exceptions because otherwise the thread would silently fail", e);

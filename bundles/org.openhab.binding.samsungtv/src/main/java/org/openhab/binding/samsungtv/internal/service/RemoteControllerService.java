@@ -476,6 +476,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
 
     @Override
     public void connectionError(@Nullable Throwable error) {
+        logger.debug("Connection error: {}", error != null ? error.getMessage() : "");
         try {
             if (remoteController != null) {
                 remoteController.close();

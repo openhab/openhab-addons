@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.samsungtv.internal.protocol;
 
-import java.util.UUID;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,8 +51,17 @@ class WebSocketV2 extends WebSocketBase {
             String token;
         }
 
+        @NonNullByDefault({})
+        static class Error {
+            String code;
+            String details;
+            String message;
+            String status;
+        };
+
         Result result;
         Data data;
+        Error error;
     }
 
     @Override
@@ -69,6 +76,10 @@ class WebSocketV2 extends WebSocketBase {
 
             if (jsonMsg.result != null) {
                 handleResult(jsonMsg);
+            }
+            if (jsonMsg.error != null) {
+                logger.debug("WebSocketV2 Error received: {}", msg);
+                return;
             }
             if (jsonMsg.event == null) {
                 logger.debug("WebSocketV2 Unknown response format: {}", msg);
@@ -112,9 +123,9 @@ class WebSocketV2 extends WebSocketBase {
 
     @NonNullByDefault({})
     static class JSONAppStatus {
-        public JSONAppStatus(UUID uuid, String id) {
-            params.id = uuid.toString();
+        public JSONAppStatus(String id) {
             this.id = id;
+            params.id = id;
         }
 
         @NonNullByDefault({})
@@ -129,7 +140,7 @@ class WebSocketV2 extends WebSocketBase {
     }
 
     void getAppStatus(String id) {
-        sendCommand(remoteControllerWebSocket.gson.toJson(new JSONAppStatus(remoteControllerWebSocket.uuid, id)));
+        sendCommand(remoteControllerWebSocket.gson.toJson(new JSONAppStatus(id)));
     }
 
 }
