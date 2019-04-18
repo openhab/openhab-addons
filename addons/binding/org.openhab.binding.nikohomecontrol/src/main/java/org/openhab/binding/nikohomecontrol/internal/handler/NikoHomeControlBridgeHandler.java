@@ -49,6 +49,8 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeHandler.class);
 
+    protected @NonNullByDefault({}) NikoHomeControlBridgeConfig config;
+
     @Nullable
     protected NikoHomeControlCommunication nhcComm;
 
@@ -72,8 +74,6 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
      * Trigger discovery when communication setup is successful.
      */
     protected void startCommunication() {
-        Configuration config = this.getConfig();
-
         NikoHomeControlCommunication comm = this.nhcComm;
         if (comm == null) {
             bridgeOffline();
@@ -91,7 +91,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
             updateStatus(ThingStatus.ONLINE);
 
-            Integer refreshInterval = ((Number) config.get(CONFIG_REFRESH)).intValue();
+            int refreshInterval = config.refresh;
             setupRefreshTimer(refreshInterval);
 
             if (nhcDiscovery != null) {
@@ -163,7 +163,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
     public void controllerOnline() {
         bridgeOnline();
 
-        Integer refreshInterval = ((Number) this.getConfig().get(CONFIG_REFRESH)).intValue();
+        int refreshInterval = config.refresh;
         if (this.refreshTimer == null) {
             setupRefreshTimer(refreshInterval);
         }
@@ -262,19 +262,17 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
     @Override
     public @Nullable InetAddress getAddr() {
-        Configuration config = this.getConfig();
         InetAddress addr = null;
         try {
-            addr = InetAddress.getByName((String) config.get(CONFIG_HOST_NAME));
+            addr = InetAddress.getByName(config.addr);
         } catch (UnknownHostException e) {
-            logger.debug("Niko Home Control: Cannot resolve hostname {} to IP adress", config.get(CONFIG_HOST_NAME));
+            logger.debug("Niko Home Control: Cannot resolve hostname {} to IP adress", config.addr);
         }
         return addr;
     }
 
     @Override
     public @Nullable Integer getPort() {
-        Configuration config = this.getConfig();
-        return ((Number) config.get(CONFIG_PORT)).intValue();
+        return config.port;
     }
 }

@@ -53,6 +53,9 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     @NonNullByDefault({})
     private volatile NhcThermostat nhcThermostat;
 
+    private String thermostatId = "";
+    private int overruleTime;
+
     @Nullable
     private volatile ScheduledFuture<?> refreshTimer; // used to refresh the remaining overrule time every minute
 
@@ -62,8 +65,6 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String thermostatId = (String) this.getConfig().get(CONFIG_THERMOSTAT_ID);
-
         Bridge nhcBridge = getBridge();
         if (nhcBridge == null) {
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
@@ -148,7 +149,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
                     // If no overrule time is given yet, set the overrule time to the configuration parameter
                     int time = nhcThermostat.getOverruletime();
                     if (time <= 0) {
-                        time = ((Number) this.getConfig().get(CONFIG_OVERRULETIME)).intValue();
+                        time = overruleTime;
                     }
                     if (setpoint != null) {
                         nhcThermostat.executeOverrule(Math.round(setpoint.floatValue() * 10), time);
@@ -180,7 +181,8 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     public void initialize() {
         Configuration config = this.getConfig();
 
-        String thermostatId = (String) config.get(CONFIG_THERMOSTAT_ID);
+        thermostatId = (String) config.get(CONFIG_THERMOSTAT_ID);
+        overruleTime = ((Number) config.get(CONFIG_OVERRULETIME)).intValue();
 
         Bridge nhcBridge = getBridge();
         if (nhcBridge == null) {

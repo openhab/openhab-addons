@@ -55,14 +55,15 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     @NonNullByDefault({})
     private volatile NhcAction nhcAction;
 
+    private String actionId = "";
+    private int stepValue;
+
     public NikoHomeControlActionHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String actionId = (String) this.getConfig().get(CONFIG_ACTION_ID);
-
         Bridge nhcBridge = getBridge();
         if (nhcBridge == null) {
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
@@ -164,7 +165,6 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
             }
         } else if (command instanceof IncreaseDecreaseType) {
             IncreaseDecreaseType s = (IncreaseDecreaseType) command;
-            int stepValue = ((Number) this.getConfig().get(CONFIG_STEP_VALUE)).intValue();
             int currentValue = nhcAction.getState();
             int newValue;
             if (IncreaseDecreaseType.INCREASE.equals(s)) {
@@ -212,7 +212,10 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     public void initialize() {
         Configuration config = this.getConfig();
 
-        String actionId = (String) config.get(CONFIG_ACTION_ID);
+        actionId = (String) config.get(CONFIG_ACTION_ID);
+        if (thing.getThingTypeUID().equals(THING_TYPE_DIMMABLE_LIGHT)) {
+            stepValue = ((Number) config.get(CONFIG_STEP_VALUE)).intValue();
+        }
 
         Bridge nhcBridge = getBridge();
         if (nhcBridge == null) {

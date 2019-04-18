@@ -12,15 +12,12 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.handler;
 
-import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.*;
-
 import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.ConfigConstants;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -50,6 +47,8 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
     @Override
     public void initialize() {
         logger.debug("Niko Home Control: initializing NHC II bridge handler");
+
+        config = getConfig().as(NikoHomeControlBridgeConfig2.class);
 
         String profile = getProfile();
         logger.debug("Niko Home Control: touch profile {}", profile);
@@ -106,8 +105,7 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
 
     @Override
     public String getProfile() {
-        Configuration config = this.getConfig();
-        String profile = (String) config.get(CONFIG_PROFILE);
+        String profile = ((NikoHomeControlBridgeConfig2) config).profile;
         if (profile == null) {
             return "";
         }
@@ -116,8 +114,7 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
 
     @Override
     public String getPassword() {
-        Configuration config = this.getConfig();
-        String password = (String) config.get(CONFIG_PASSWORD);
+        String password = ((NikoHomeControlBridgeConfig2) config).password;
         if ((password == null) || password.isEmpty()) {
             logger.debug("Niko Home Control: no password set.");
             return "";
