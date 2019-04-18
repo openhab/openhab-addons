@@ -8,7 +8,7 @@
 	<thing-type id="kodi">
 		<label>Kodi Mediacenter</label>
 		<description>Kodi Mediacenter Binding</description>
-		
+	 	
 		<channels>
 			<channel id="volume" typeId="system.volume" />
 			<channel id="mute" typeId="system.mute" />
@@ -23,9 +23,9 @@
 			<channel id="inputtext" typeId="inputtext" />
 			<channel id="inputaction" typeId="inputaction" />
 			<channel id="systemcommand" typeId="systemcommand" />
-			<channel id="title" typeId="system.media-title"><label>Title</label></channel>
-            		<channel id="originaltitle" typeId="system.media-title"><label>Original Title</label></channel>
-			<channel id="showtitle" typeId="showtitle"><label>TV Show Title</label></channel>
+			<channel id="title" typeId="system.media-title" />
+            		<channel id="originaltitle" typeId="system.media-title" />
+			<channel id="showtitle" typeId="showtitle" />
 			<channel id="album" typeId="album" />
 			<channel id="artist" typeId="system.media-artist" />
 			<channel id="mediatype" typeId="mediatype" />
@@ -424,75 +424,64 @@
 		<description>Current time of currently playing media</description>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
 	</channel-type>
-	
 	<channel-type id="duration">
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>Length of currently playing media</description>
 		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
-	
 	<channel-type id="id" advanced="true">
 		<item-type>Number</item-type>
 		<label>id</label>
 		<description>id in kodi database</description>
 		<state readOnly="true" pattern="%d" />
 	</channel-type>	
-	
 	<channel-type id="enabled">
-        <item-type>Switch</item-type>
-        <label>enabled</label>
-        <description>enabled</description>
-        <state readOnly="false"/>
-    </channel-type> 
-	
-    <channel-type id="channels" advanced="true">
-        <item-type>Number</item-type>
-        <label>channels</label>
-         <description>Channels</description>
-        <state readOnly="true" pattern="%d" />
-    </channel-type> 	
-    
-    <channel-type id="width" advanced="true">
-        <item-type>Number</item-type>
-        <label>Video Width</label>
-        <description>Video Width</description>
-        <state readOnly="true" pattern="%d" />
-    </channel-type>     
-
-    <channel-type id="height" advanced="true">
-        <item-type>Number</item-type>
-        <label>Video Height</label>
-         <description>Video Height</description>
-        <state readOnly="true" pattern="%d" />
-    </channel-type>     
-
-     <channel-type id="index" advanced="true">
-        <item-type>Number</item-type>
-        <label>index</label>
-        <description>stream index</description>
-        <state readOnly="false" pattern="%d" />
-    </channel-type>     
-    
-    <channel-type id="name" advanced="true">
-        <item-type>String</item-type>
-        <label>Name</label>
-        <description>Name</description>
-        <state readOnly="true" />
-    </channel-type> 
-    
-    <channel-type id="uniqueid" advanced="true">
-        <item-type>String</item-type>
-        <label>UniqueID</label>
-        <description>UniqueID</description>
-        <state readOnly="true" pattern="%s" />
-    </channel-type>	
-   
-    <channel-type id="language" advanced="false">
-        <item-type>String</item-type>
-        <label>Language</label>
-        <description>stream Language</description>
-        <state readOnly="true" />
-    </channel-type> 
-    
+	        <item-type>Switch</item-type>
+      		<label>enabled</label>
+    		<description>enabled</description>
+    		<state readOnly="false"/>
+    	</channel-type> 
+	<channel-type id="channels" advanced="true">
+       		<item-type>Number</item-type>
+        	<label>channels</label>
+         	<description>Channels</description>
+       		<state readOnly="true" pattern="%d" />
+ 	</channel-type> 	
+        <channel-type id="width" advanced="true">
+    		<item-type>Number</item-type>
+        	<label>Video Width</label>
+     		<description>Video Width</description>
+    		<state readOnly="true" pattern="%d" />
+	</channel-type>     
+	<channel-type id="height" advanced="true">
+        	<item-type>Number</item-type>
+        	<label>Video Height</label>
+         	<description>Video Height</description>
+        	<state readOnly="true" pattern="%d" />
+    	</channel-type>     
+    	<channel-type id="index" advanced="true">
+        	<item-type>Number</item-type>
+        	<label>index</label>
+        	<description>stream index</description>
+       	 	<state readOnly="false" pattern="%d" />
+    	</channel-type>     
+    		<channel-type id="name" advanced="true">
+        	<item-type>String</item-type>
+        	<label>Name</label>
+        	<description>Name</description>
+        	<state readOnly="true" />
+    	</channel-type> 
+    	<channel-type id="uniqueid" advanced="true">
+        	<item-type>String</item-type>
+        	<label>UniqueID</label>
+        	<description>UniqueID</description>
+        	<state readOnly="true" pattern="%s" />
+    	</channel-type>	
+    	<channel-type id="language" advanced="false">
+        	<item-type>String</item-type>
+        	<label>Language</label>
+        	<description>stream Language</description>
+        	<state readOnly="true" />
+    	</channel-type>     
 </thing:thing-descriptions>
