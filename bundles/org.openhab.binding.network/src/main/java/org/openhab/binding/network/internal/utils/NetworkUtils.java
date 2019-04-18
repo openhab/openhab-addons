@@ -317,7 +317,7 @@ public class NetworkUtils {
             proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS), 
                                       "-x", ipV4address).start();
         } else {
-            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-C", "1", "-I",
+            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", "-I",
                     interfaceName, ipV4address).start();
         }
 
