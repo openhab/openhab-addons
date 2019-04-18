@@ -20,6 +20,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * Websocket class to retrieve app status
  *
@@ -89,7 +91,7 @@ class WebSocketV2 extends WebSocketBase {
                     logger.debug("WebSocketV2 Unknown event: {}", msg);
 
             }
-        } catch (Exception e) {
+        } catch (JsonSyntaxException e) {
             logger.warn("{}: Error ({}) in message: {}", this.getClass().getSimpleName(), e.getMessage(), msg, e);
         }
     }

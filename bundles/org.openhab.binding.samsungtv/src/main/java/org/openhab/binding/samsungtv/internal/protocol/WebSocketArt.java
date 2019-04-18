@@ -17,6 +17,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
+
 /**
  * Websocket class to retrieve artmode status (on o.a. the Frame TV's)
  *
@@ -84,7 +87,7 @@ class WebSocketArt extends WebSocketBase {
                 default:
                     logger.debug("WebSocketArt Unknown event: {}", msg);
             }
-        } catch (Exception e) {
+        } catch (JsonSyntaxException e) {
             logger.warn("{}: Error ({}) in message: {}", this.getClass().getSimpleName(), e.getMessage(), msg, e);
         }
     }

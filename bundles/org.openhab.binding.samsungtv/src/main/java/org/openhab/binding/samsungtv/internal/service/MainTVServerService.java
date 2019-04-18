@@ -123,17 +123,10 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
 
     private Runnable pollingRunnable = () -> {
         if (isRegistered()) {
-            try {
-                updateResourceState("MainTVAgent2", "GetCurrentMainTVChannel", null);
-
-                updateResourceState("MainTVAgent2", "GetCurrentExternalSource", null);
-
-                updateResourceState("MainTVAgent2", "GetCurrentContentRecognition", null);
-
-                updateResourceState("MainTVAgent2", "GetCurrentBrowserURL", null);
-            } catch (Exception e) {
-                reportError("Error occurred during poll", e);
-            }
+            updateResourceState("MainTVAgent2", "GetCurrentMainTVChannel", null);
+            updateResourceState("MainTVAgent2", "GetCurrentExternalSource", null);
+            updateResourceState("MainTVAgent2", "GetCurrentContentRecognition", null);
+            updateResourceState("MainTVAgent2", "GetCurrentBrowserURL", null);
         }
     };
 

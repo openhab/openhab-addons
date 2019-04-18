@@ -87,7 +87,10 @@ class WebSocketBase extends WebSocketAdapter {
 
     void close() {
         logger.debug("{} connection close requested", this.getClass().getSimpleName());
-        getSession().close();
+        Session session = getSession();
+        if (session != null) {
+            session.close();
+        }
     }
 
     void sendCommand(String cmd) {
@@ -104,7 +107,7 @@ class WebSocketBase extends WebSocketAdapter {
             } else {
                 logger.warn("{} sending command while socket not connected: {}", this.getClass().getSimpleName(), cmd);
             }
-        } catch (Exception e) {
+        } catch (IOException | RemoteControllerException e) {
             logger.warn("{}: cannot send command", this.getClass().getSimpleName(), e);
         }
     }

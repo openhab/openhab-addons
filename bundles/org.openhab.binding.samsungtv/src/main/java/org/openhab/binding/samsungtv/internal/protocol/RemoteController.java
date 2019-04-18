@@ -44,4 +44,7 @@ public abstract class RemoteController implements AutoCloseable {
 
     public abstract void sendKeys(List<KeyCode> keys) throws RemoteControllerException;
 
+    @Override
+    public abstract void close() throws RemoteControllerException;
+
 }

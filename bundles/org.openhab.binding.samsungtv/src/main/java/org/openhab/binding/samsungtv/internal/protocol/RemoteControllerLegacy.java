@@ -93,7 +93,7 @@ public class RemoteControllerLegacy extends RemoteController {
         socket = localsocket;
         try {
             socket.connect(new InetSocketAddress(host, port), CONNECTION_TIMEOUT);
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.debug("Cannot connect to Legacy Remote Controller: {}", e.getMessage());
             throw new RemoteControllerException("Connection failed", e);
         }
@@ -107,7 +107,6 @@ public class RemoteControllerLegacy extends RemoteController {
             reader = localreader;
 
             logger.debug("Connection successfully opened...querying access");
-
             writeInitialInfo(localwriter, localsocket);
             readInitialInfo(localreader);
 

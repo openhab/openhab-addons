@@ -13,6 +13,7 @@
 package org.openhab.binding.samsungtv.internal;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -58,7 +59,7 @@ public class WakeOnLanUtility {
                 String error = stdErr.readLine();
                 logger.warn("Cannot get MAC addres of host {}: {}", hostName, error);
             }
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException e) {
             logger.debug("Problem getting MAC address: {}", e.getMessage());
         }
         return null;
@@ -91,13 +92,13 @@ public class WakeOnLanUtility {
                         socket.send(packet);
                         socket.close();
                         logger.trace("Sent WOL packet to {} {}", broadcast, macAddress);
-                    } catch (Exception e) {
+                    } catch (IOException e) {
                         logger.warn("Problem sending WOL packet to {} {}", broadcast, macAddress);
                     }
                 }
             }
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.warn("Problem with interface while sending WOL packet to {}", macAddress);
         }
     }

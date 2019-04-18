@@ -186,34 +186,18 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     private void closeConnection() throws RemoteControllerException {
         logger.debug("RemoteControllerWebSocket closeConnection");
 
-        Exception exception = null;
-        try {
-            webSocketRemote.close();
-        } catch (Exception e) {
-            exception = e;
-        }
-        try {
-            webSocketArt.close();
-        } catch (Exception e) {
-            exception = e;
-        }
-        try {
-            webSocketV2.close();
-        } catch (Exception e) {
-            exception = e;
-        }
+        webSocketRemote.close();
+        webSocketArt.close();
+        webSocketV2.close();
         try {
             client.stop();
         } catch (Exception e) {
-            exception = e;
-        }
-        if (exception != null) {
-            throw new RemoteControllerException(exception);
+            throw new RemoteControllerException(e);
         }
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws RemoteControllerException {
         logger.debug("RemoteControllerWebSocket close");
         closeConnection();
     }

@@ -24,6 +24,8 @@ import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerWebSocket
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * Websocket class for remote control
  *
@@ -121,7 +123,7 @@ class WebSocketRemote extends WebSocketBase {
                     logger.debug("WebSocketRemote Unknown event: {}", msg);
 
             }
-        } catch (Exception e) {
+        } catch (JsonSyntaxException e) {
             logger.warn("{}: Error ({}) in message: {}", this.getClass().getSimpleName(), e.getMessage(), msg, e);
         }
     }

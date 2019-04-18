@@ -127,20 +127,15 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
 
     private Runnable pollingRunnable = () -> {
         if (isRegistered()) {
-            try {
-                updateResourceState("RenderingControl", "GetVolume",
-                        SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
-                updateResourceState("RenderingControl", "GetMute",
-                        SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
-                updateResourceState("RenderingControl", "GetBrightness",
-                        SamsungTvUtils.buildHashMap("InstanceID", "0"));
-                updateResourceState("RenderingControl", "GetContrast", SamsungTvUtils.buildHashMap("InstanceID", "0"));
-                updateResourceState("RenderingControl", "GetSharpness", SamsungTvUtils.buildHashMap("InstanceID", "0"));
-                updateResourceState("RenderingControl", "GetColorTemperature",
-                        SamsungTvUtils.buildHashMap("InstanceID", "0"));
-            } catch (Exception e) {
-                reportError("Error occurred during poll", e);
-            }
+            updateResourceState("RenderingControl", "GetVolume",
+                    SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
+            updateResourceState("RenderingControl", "GetMute",
+                    SamsungTvUtils.buildHashMap("InstanceID", "0", "Channel", "Master"));
+            updateResourceState("RenderingControl", "GetBrightness", SamsungTvUtils.buildHashMap("InstanceID", "0"));
+            updateResourceState("RenderingControl", "GetContrast", SamsungTvUtils.buildHashMap("InstanceID", "0"));
+            updateResourceState("RenderingControl", "GetSharpness", SamsungTvUtils.buildHashMap("InstanceID", "0"));
+            updateResourceState("RenderingControl", "GetColorTemperature",
+                    SamsungTvUtils.buildHashMap("InstanceID", "0"));
         }
     };
 

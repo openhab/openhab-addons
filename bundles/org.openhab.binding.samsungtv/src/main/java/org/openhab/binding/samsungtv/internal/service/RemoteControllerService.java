@@ -231,7 +231,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
         if (remoteController != null) {
             try {
                 remoteController.close();
-            } catch (Exception ignore) {
+            } catch (RemoteControllerException ignore) {
             }
         }
     }
@@ -480,7 +480,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
             if (remoteController != null) {
                 remoteController.close();
             }
-        } catch (Exception e) {
+        } catch (RemoteControllerException e) {
             logger.warn("Error in connection close: {}", e.getMessage());
         }
         remoteController = null;
