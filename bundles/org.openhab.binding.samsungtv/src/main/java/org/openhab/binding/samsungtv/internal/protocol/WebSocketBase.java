@@ -54,7 +54,7 @@ class WebSocketBase extends WebSocketAdapter {
 
     @Override
     public void onWebSocketError(@Nullable Throwable error) {
-        logger.warn("{} connection error: {}", this.getClass().getSimpleName(),
+        logger.debug("{} connection error: {}", this.getClass().getSimpleName(),
                 error != null ? error.getMessage() : error);
         super.onWebSocketError(error);
         isConnecting = false;
