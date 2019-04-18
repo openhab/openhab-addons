@@ -13,13 +13,13 @@ The Kodi binding is the successor to the openHAB 1.x xbmc binding.
 In order to allow control of Kodi by this binding, you need to enable the Kodi application remote control feature.
 Please enable "Allow remote control from applications on this/other systems" in the Kodi settings menu under:
 
-*   Settings ➔ Services ➔ Control ➔
+*   Settings ? Services ? Control ?
     * Allow remote control from applications on **this** systems
     * Allow remote control from applications on **other** systems
 
 To make use of the auto-discovery feature, you additionally need to enable "Allow control of Kodi via UPnP" in the Kodi settings menu.
 
-*   Settings ➔ Services ➔ UPnP / DLNA ➔ Allow remote control via UPnP
+*   Settings ? Services ? UPnP / DLNA ? Allow remote control via UPnP
 
 ## Supported Things
 
@@ -105,7 +105,7 @@ The Kodi thing supports the following channels:
 **group** The PVR channels can be put into user-defined PVR channel groups.
 There are two default PVR channel groups.
 One for PVR TV channels and one for PVR radio channels.
-The default labels are "All channels" (in German systems "Alle Kanäle").
+The default labels are "All channels" (in German systems "Alle Kan?le").
 You have to adjust this configuration to use the `pvr-open-tv` and `pvr-open-radio` channels properly.
 You can optionally configure an user-defined PVR channel group.
 The PVR channels from Kodi will be populated during runtime into the state options of the `pvr-open-tv` and `pvr-open-radio` channels.
