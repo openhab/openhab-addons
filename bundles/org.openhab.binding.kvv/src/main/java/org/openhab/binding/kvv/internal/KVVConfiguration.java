@@ -21,13 +21,18 @@ public class KVVConfiguration {
     public String stationId;
 
     /**
+     * the (human-readable) id of the station
+     */
+    public String name;
+
+    /**
      * the update interval
      */
     public int updateInterval;
 
     /**
-     * the (human-readable) id of the station
+     * The number of trains to be shown.
      */
-    public String name;
+    public int count;
 
 }
