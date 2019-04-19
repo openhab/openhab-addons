@@ -52,8 +52,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlActionHandler.class);
 
-    @NonNullByDefault({})
-    private volatile NhcAction nhcAction;
+    private volatile @NonNullByDefault({}) NhcAction nhcAction;
 
     private String actionId = "";
     private int stepValue;

@@ -70,15 +70,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
     private final List<NhcService2> services = new CopyOnWriteArrayList<>();
     private final List<NhcLocation2> locations = new CopyOnWriteArrayList<>();
 
-    @Nullable
-    private volatile NhcSystemInfo2 nhcSystemInfo;
-    @Nullable
-    private volatile NhcTimeInfo2 nhcTimeInfo;
+    private volatile @Nullable NhcSystemInfo2 nhcSystemInfo;
+    private volatile @Nullable NhcTimeInfo2 nhcTimeInfo;
 
     private volatile String profileUuid = "";
 
-    @Nullable
-    private volatile CompletableFuture<Boolean> communicationStarted;
+    private volatile @Nullable CompletableFuture<Boolean> communicationStarted;
 
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
 

@@ -50,8 +50,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
 
-    @NonNullByDefault({})
-    private NetworkAddressService networkAddressService;
+    private @NonNullByDefault({}) NetworkAddressService networkAddressService;
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 

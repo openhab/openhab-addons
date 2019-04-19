@@ -51,14 +51,11 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
     protected @NonNullByDefault({}) NikoHomeControlBridgeConfig config;
 
-    @Nullable
-    protected NikoHomeControlCommunication nhcComm;
+    protected @Nullable NikoHomeControlCommunication nhcComm;
 
-    @Nullable
-    private volatile ScheduledFuture<?> refreshTimer;
+    private volatile @Nullable ScheduledFuture<?> refreshTimer;
 
-    @Nullable
-    protected volatile NikoHomeControlDiscoveryService nhcDiscovery;
+    protected volatile @Nullable NikoHomeControlDiscoveryService nhcDiscovery;
 
     public NikoHomeControlBridgeHandler(Bridge nikoHomeControlBridge) {
         super(nikoHomeControlBridge);

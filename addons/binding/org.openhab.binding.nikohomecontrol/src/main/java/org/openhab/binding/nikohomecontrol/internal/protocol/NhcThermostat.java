@@ -34,8 +34,7 @@ public abstract class NhcThermostat {
 
     private final Logger logger = LoggerFactory.getLogger(NhcThermostat.class);
 
-    @Nullable
-    protected NikoHomeControlCommunication nhcComm;
+    protected @Nullable NikoHomeControlCommunication nhcComm;
 
     protected String id;
     protected String name;
@@ -48,11 +47,9 @@ public abstract class NhcThermostat {
     protected volatile int ecosave;
     protected volatile int demand;
 
-    @Nullable
-    private LocalDateTime overruleStart;
+    private @Nullable LocalDateTime overruleStart;
 
-    @Nullable
-    private NhcThermostatEvent eventHandler;
+    private @Nullable NhcThermostatEvent eventHandler;
 
     protected NhcThermostat(String id, String name, @Nullable String location) {
         this.id = id;

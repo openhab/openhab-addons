@@ -32,8 +32,7 @@ public abstract class NhcAction {
 
     private final Logger logger = LoggerFactory.getLogger(NhcAction.class);
 
-    @Nullable
-    protected NikoHomeControlCommunication nhcComm;
+    protected @Nullable NikoHomeControlCommunication nhcComm;
 
     protected String id;
     protected String name;

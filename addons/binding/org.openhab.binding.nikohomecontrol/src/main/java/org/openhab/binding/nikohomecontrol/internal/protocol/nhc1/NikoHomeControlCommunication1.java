@@ -57,12 +57,9 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
     private final NhcSystemInfo1 systemInfo = new NhcSystemInfo1();
     private final Map<String, NhcLocation1> locations = new ConcurrentHashMap<>();
 
-    @Nullable
-    private Socket nhcSocket;
-    @Nullable
-    private PrintWriter nhcOut;
-    @Nullable
-    private BufferedReader nhcIn;
+    private @Nullable Socket nhcSocket;
+    private @Nullable PrintWriter nhcOut;
+    private @Nullable BufferedReader nhcIn;
 
     private volatile boolean listenerStopped;
     private volatile boolean nhcEventsRunning;

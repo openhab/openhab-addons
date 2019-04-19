@@ -59,25 +59,18 @@ public class NhcMqttConnection2 implements MqttActionCallback {
 
     private final Logger logger = LoggerFactory.getLogger(NhcMqttConnection2.class);
 
-    @Nullable
-    private volatile MqttBrokerConnection mqttPublicConnection;
-    @Nullable
-    private volatile MqttBrokerConnection mqttProfileConnection;
+    private volatile @Nullable MqttBrokerConnection mqttPublicConnection;
+    private volatile @Nullable MqttBrokerConnection mqttProfileConnection;
 
-    @Nullable
-    private volatile CompletableFuture<Boolean> publicSubscribedFuture;
-    @Nullable
-    private volatile CompletableFuture<Boolean> profileSubscribedFuture;
+    private volatile @Nullable CompletableFuture<Boolean> publicSubscribedFuture;
+    private volatile @Nullable CompletableFuture<Boolean> profileSubscribedFuture;
 
-    @Nullable
-    private volatile CompletableFuture<Boolean> publicStoppedFuture;
-    @Nullable
-    private volatile CompletableFuture<Boolean> profileStoppedFuture;
+    private volatile @Nullable CompletableFuture<Boolean> publicStoppedFuture;
+    private volatile @Nullable CompletableFuture<Boolean> profileStoppedFuture;
 
     private Path persistenceBasePath;
     private SSLContextProvider sslContextProvider;
-    @Nullable
-    private String clientId;
+    private @Nullable String clientId;
 
     private volatile String cocoAddress = "";
     private volatile int port;

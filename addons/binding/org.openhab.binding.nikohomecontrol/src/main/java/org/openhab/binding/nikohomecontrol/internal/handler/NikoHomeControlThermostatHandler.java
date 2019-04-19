@@ -50,14 +50,13 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlThermostatHandler.class);
 
-    @NonNullByDefault({})
-    private volatile NhcThermostat nhcThermostat;
+    private volatile @NonNullByDefault({}) NhcThermostat nhcThermostat;
 
     private String thermostatId = "";
     private int overruleTime;
 
-    @Nullable
-    private volatile ScheduledFuture<?> refreshTimer; // used to refresh the remaining overrule time every minute
+    private volatile @Nullable ScheduledFuture<?> refreshTimer; // used to refresh the remaining overrule time every
+                                                                // minute
 
     public NikoHomeControlThermostatHandler(Thing thing) {
         super(thing);

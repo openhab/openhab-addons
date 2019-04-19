@@ -46,11 +46,9 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeDiscoveryService.class);
 
-    @Nullable
-    private volatile ScheduledFuture<?> nhcDiscoveryJob;
+    private volatile @Nullable ScheduledFuture<?> nhcDiscoveryJob;
 
-    @NonNullByDefault({})
-    private NetworkAddressService networkAddressService;
+    private @NonNullByDefault({}) NetworkAddressService networkAddressService;
 
     private static final int TIMEOUT = 5;
     private static final int REFRESH_INTERVAL = 60;

@@ -44,12 +44,9 @@ public class NhcAction1 extends NhcAction {
 
     private ScheduledExecutorService scheduler;
 
-    @Nullable
-    private volatile Action rollershutterTask;
-    @Nullable
-    private volatile ScheduledFuture<?> rollershutterStopTask;
-    @Nullable
-    private volatile ScheduledFuture<?> rollershutterMovingFlagTask;
+    private volatile @Nullable Action rollershutterTask;
+    private volatile @Nullable ScheduledFuture<?> rollershutterStopTask;
+    private volatile @Nullable ScheduledFuture<?> rollershutterMovingFlagTask;
 
     private volatile boolean filterEvent = false; // flag to filter first event from rollershutter on percent move to
                                                   // avoid wrong position update
