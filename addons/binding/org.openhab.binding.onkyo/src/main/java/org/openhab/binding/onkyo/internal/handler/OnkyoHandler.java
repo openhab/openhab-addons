@@ -1,16 +1,22 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.onkyo.internal.handler;
 
 import static org.openhab.binding.onkyo.internal.OnkyoBindingConstants.*;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +36,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -40,6 +47,7 @@ import org.openhab.binding.onkyo.internal.OnkyoAlbumArt;
 import org.openhab.binding.onkyo.internal.OnkyoConnection;
 import org.openhab.binding.onkyo.internal.OnkyoEventListener;
 import org.openhab.binding.onkyo.internal.ServiceType;
+import org.openhab.binding.onkyo.internal.automation.modules.OnkyoThingActionsService;
 import org.openhab.binding.onkyo.internal.config.OnkyoDeviceConfiguration;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpCommand;
 import org.openhab.binding.onkyo.internal.eiscp.EiscpMessage;
@@ -337,7 +345,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     break;
                 case VOLUME:
                     volumeLevelZone1 = handleReceivedVolume(
-                            convertDeviceValueToOpenHabState(data.getValue(), PercentType.class));
+                            convertDeviceValueToOpenHabState(data.getValue(), DecimalType.class));
                     updateState(CHANNEL_VOLUME, volumeLevelZone1);
                     break;
                 case SOURCE:
@@ -359,7 +367,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     break;
                 case ZONE2_VOLUME:
                     volumeLevelZone2 = handleReceivedVolume(
-                            convertDeviceValueToOpenHabState(data.getValue(), PercentType.class));
+                            convertDeviceValueToOpenHabState(data.getValue(), DecimalType.class));
                     updateState(CHANNEL_VOLUMEZONE2, volumeLevelZone2);
                     break;
                 case ZONE2_SOURCE:
@@ -378,7 +386,7 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                     break;
                 case ZONE3_VOLUME:
                     volumeLevelZone3 = handleReceivedVolume(
-                            convertDeviceValueToOpenHabState(data.getValue(), PercentType.class));
+                            convertDeviceValueToOpenHabState(data.getValue(), DecimalType.class));
                     updateState(CHANNEL_VOLUMEZONE3, volumeLevelZone3);
                     break;
                 case ZONE3_SOURCE:
@@ -658,6 +666,14 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         return state;
     }
 
+    public void sendRawCommand(String command, String value) {
+        if (connection != null) {
+            connection.send(command, value);
+        } else {
+            logger.debug("Cannot send command to onkyo receiver since the onkyo binding is not initialized");
+        }
+    }
+
     private void sendCommand(EiscpCommand deviceCommand) {
         if (connection != null) {
             connection.send(deviceCommand.getCommand(), deviceCommand.getValue());
@@ -763,34 +779,43 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     }
 
     private State handleReceivedVolume(State volume) {
-        if (volume instanceof PercentType) {
-            return upScaleVolume(((PercentType) volume));
+        if (volume instanceof DecimalType) {
+            return upScaleVolume(((DecimalType) volume));
         }
         return volume;
     }
 
-    private PercentType upScaleVolume(PercentType volume) {
-        PercentType newVolume = volume;
+    private PercentType upScaleVolume(DecimalType volume) {
+        PercentType newVolume = scaleVolumeFromReceiver(volume);
 
         if (configuration.volumeLimit < 100) {
             double scaleCoefficient = 100d / configuration.volumeLimit;
-            newVolume = new PercentType(((Double) (volume.doubleValue() * scaleCoefficient)).intValue());
-            logger.debug("Up scaled volume level '{}' to '{}'", volume, newVolume);
+            PercentType unLimitedVolume = newVolume;
+            newVolume = new PercentType(((Double) (newVolume.doubleValue() * scaleCoefficient)).intValue());
+            logger.debug("Up scaled volume level '{}' to '{}'", unLimitedVolume, newVolume);
         }
 
         return newVolume;
     }
 
-    private PercentType downScaleVolume(PercentType volume) {
-        PercentType newVolume = volume;
+    private DecimalType downScaleVolume(PercentType volume) {
+        PercentType limitedVolume = volume;
 
         if (configuration.volumeLimit < 100) {
             double scaleCoefficient = configuration.volumeLimit / 100d;
-            newVolume = new PercentType(((Double) (volume.doubleValue() * scaleCoefficient)).intValue());
-            logger.debug("Down scaled volume level '{}' to '{}'", volume, newVolume);
+            limitedVolume = new PercentType(((Double) (volume.doubleValue() * scaleCoefficient)).intValue());
+            logger.debug("Limited volume level '{}' to '{}'", volume, limitedVolume);
         }
 
-        return newVolume;
+        return scaleVolumeForReceiver(limitedVolume);
+    }
+
+    private DecimalType scaleVolumeForReceiver(PercentType volume) {
+        return new DecimalType(((Double) (volume.doubleValue() * configuration.volumeScale)).intValue());
+    }
+
+    private PercentType scaleVolumeFromReceiver(DecimalType volume) {
+        return new PercentType(((Double) (volume.intValue() / configuration.volumeScale)).intValue());
     }
 
     @Override
@@ -815,5 +840,10 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         }
         logger.debug("Mime type: {}", mimeType);
         return mimeType;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(OnkyoThingActionsService.class);
     }
 }

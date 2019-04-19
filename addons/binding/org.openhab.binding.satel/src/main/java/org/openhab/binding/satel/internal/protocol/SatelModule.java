@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.satel.internal.protocol;
 
@@ -95,8 +99,8 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
      * Creates new instance of the class.
      *
      * @param timeout
-     *            timeout value in milliseconds for connect/read/write
-     *            operations
+     *                    timeout value in milliseconds for connect/read/write
+     *                    operations
      */
     public SatelModule(int timeout) {
         this.integraType = IntegraType.UNKNOWN;
@@ -164,6 +168,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
      * Stops communication by disconnecting from the module and stopping all
      * background tasks.
      */
+    @SuppressWarnings("null")
     public void close() {
         // first we clear watchdog field in the object
         CommunicationWatchdog watchdog = null;
@@ -185,7 +190,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
      * Enqueues specified command in send queue if not already enqueued.
      *
      * @param cmd
-     *            command to enqueue
+     *                command to enqueue
      * @return <code>true</code> if operation succeeded
      */
     public boolean sendCommand(SatelCommand cmd) {
@@ -196,9 +201,9 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
      * Enqueues specified command in send queue.
      *
      * @param cmd
-     *            command to enqueue
+     *                  command to enqueue
      * @param force
-     *            if <code>true</code> enqueues unconditionally
+     *                  if <code>true</code> enqueues unconditionally
      * @return <code>true</code> if operation succeeded
      */
     public boolean sendCommand(SatelCommand cmd, boolean force) {
@@ -487,6 +492,7 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
             }
         }
 
+        @SuppressWarnings("null")
         private void checkThread() {
             logger.trace("Checking communication thread: {}, {}", this.thread != null,
                     Boolean.toString(this.thread != null && this.thread.isAlive()));

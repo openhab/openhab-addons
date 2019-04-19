@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="pentair"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="easytouch">
 		<supported-bridge-type-refs>
@@ -37,6 +37,15 @@
 			<channel id="aux6" typeId="auxswitch"/>
 			<channel id="aux7" typeId="auxswitch"/>
 			<channel id="aux8" typeId="auxswitch"/>
+
+			<channel id="feature1" typeId="featureswitch"/>
+			<channel id="feature2" typeId="featureswitch"/>
+			<channel id="feature3" typeId="featureswitch"/>
+			<channel id="feature4" typeId="featureswitch"/>
+			<channel id="feature5" typeId="featureswitch"/>
+			<channel id="feature6" typeId="featureswitch"/>
+			<channel id="feature7" typeId="featureswitch"/>
+			<channel id="feature8" typeId="featureswitch"/>
 		</channels>
 
 		<config-description>
@@ -76,6 +85,12 @@
 		<item-type>Switch</item-type>
 		<label>Auxillary Switch</label>
 		<description>Auxillary Switch</description>
+	</channel-type>
+
+	<channel-type id="featureswitch" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Feature Switch</label>
+		<description>Feature Switch</description>
 	</channel-type>
 
 	<channel-type id="heatmode">

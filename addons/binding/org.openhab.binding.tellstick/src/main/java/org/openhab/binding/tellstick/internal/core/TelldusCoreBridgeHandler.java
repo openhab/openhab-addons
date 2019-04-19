@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.tellstick.internal.core;
 
@@ -22,18 +26,18 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.tellstick.handler.DeviceStatusListener;
-import org.openhab.binding.tellstick.handler.TelldusBridgeHandler;
-import org.openhab.binding.tellstick.handler.TelldusDeviceController;
-import org.openhab.binding.tellstick.handler.TelldusDevicesHandler;
 import org.openhab.binding.tellstick.internal.conf.TellstickBridgeConfiguration;
+import org.openhab.binding.tellstick.internal.handler.DeviceStatusListener;
+import org.openhab.binding.tellstick.internal.handler.TelldusBridgeHandler;
+import org.openhab.binding.tellstick.internal.handler.TelldusDeviceController;
+import org.openhab.binding.tellstick.internal.handler.TelldusDevicesHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellstick.JNA;
 import org.tellstick.device.SupportedMethodsException;
-import org.tellstick.device.TellsticEventHandler;
 import org.tellstick.device.TellstickDevice;
 import org.tellstick.device.TellstickDeviceEvent;
+import org.tellstick.device.TellstickEventHandler;
 import org.tellstick.device.TellstickSensor;
 import org.tellstick.device.TellstickSensorEvent;
 import org.tellstick.device.iface.Device;
@@ -47,8 +51,7 @@ import org.tellstick.enums.DataType;
  * to the framework. All {@link TelldusDevicesHandler}s use the
  * {@link TelldusCoreDeviceController} to execute the actual commands.
  *
- * @author Jarle Hjortland
- *
+ * @author Jarle Hjortland - Initial contribution
  */
 public class TelldusCoreBridgeHandler extends BaseBridgeHandler
         implements DeviceChangeListener, SensorListener, TelldusBridgeHandler {
@@ -61,7 +64,7 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     private TelldusDeviceController deviceController = null;
     private List<TellstickDevice> deviceList = new Vector<TellstickDevice>();
     private List<TellstickSensor> sensorList = new Vector<TellstickSensor>();
-    private TellsticEventHandler eventHandler;
+    private TellstickEventHandler eventHandler;
     private static boolean initialized = false;
     private List<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
 
@@ -95,10 +98,10 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     private String init(String libraryPath) {
         if (!initialized) {
             if (libraryPath != null) {
-                logger.info("Loading {} from {}", JNA.library, libraryPath);
+                logger.info("Loading {} from {}", JNA.nativeLibrary, libraryPath);
                 System.setProperty("jna.library.path", libraryPath);
             } else {
-                logger.info("Loading {} from system default paths", JNA.library);
+                logger.info("Loading {} from system default paths", JNA.nativeLibrary);
             }
             TellstickDevice.setSupportedMethods(JNA.CLibrary.TELLSTICK_BELL | JNA.CLibrary.TELLSTICK_TURNOFF
                     | JNA.CLibrary.TELLSTICK_TURNON | JNA.CLibrary.TELLSTICK_DIM);
@@ -164,7 +167,7 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
     }
 
     private synchronized void setupListeners() {
-        eventHandler = new TellsticEventHandler(deviceList);
+        eventHandler = new TellstickEventHandler(deviceList);
         eventHandler.addListener(this);
 
     }
@@ -184,20 +187,12 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
         if (deviceStatusListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
-        boolean result = deviceStatusListeners.add(deviceStatusListener);
-        if (result) {
-            // onUpdate();
-        }
-        return result;
+        return deviceStatusListeners.add(deviceStatusListener);
     }
 
     @Override
     public boolean unregisterDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
-        boolean result = deviceStatusListeners.remove(deviceStatusListener);
-        if (result) {
-            // onUpdate();
-        }
-        return result;
+        return deviceStatusListeners.remove(deviceStatusListener);
     }
 
     public void clearDeviceList() {
@@ -221,7 +216,6 @@ public class TelldusCoreBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void onRequest(TellstickSensorEvent newEvent) {
-
         String uuid = TellstickSensor.createUUId(newEvent.getSensorId(), newEvent.getModel(), newEvent.getProtocol());
         Device device = getSensor(uuid);
         logger.debug("Sensor Event for {} event {}", device, newEvent);

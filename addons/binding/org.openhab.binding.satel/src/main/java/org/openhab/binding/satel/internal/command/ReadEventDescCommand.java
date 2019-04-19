@@ -1,14 +1,18 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.satel.internal.command;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
 import org.slf4j.Logger;
@@ -29,8 +33,8 @@ public class ReadEventDescCommand extends SatelCommandBase {
     /**
      * Creates new command class instance to read description for given parameters.
      *
-     * @param eventCode event code
-     * @param restore <code>true</code> if this is restoration
+     * @param eventCode       event code
+     * @param restore         <code>true</code> if this is restoration
      * @param longDescription <code>true</code> for long description, <code>false</code> for short one
      */
     public ReadEventDescCommand(int eventCode, boolean restore, boolean longDescription) {
@@ -64,9 +68,8 @@ public class ReadEventDescCommand extends SatelCommandBase {
      *
      * @param encoding encoding for the text
      * @return text of the description
-     * @throws UnsupportedEncodingException if provided encoding is not supported
      */
-    public String getText(String encoding) throws UnsupportedEncodingException {
+    public String getText(Charset encoding) {
         int length = isLongDescription() ? 46 : 16;
         return new String(response.getPayload(), 5, length, encoding).trim();
     }

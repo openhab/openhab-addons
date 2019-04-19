@@ -1,15 +1,19 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.somfytahoma.internal.discovery;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
@@ -17,18 +21,18 @@ import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.somfytahoma.handler.SomfyTahomaBridgeHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaBridgeHandler;
 import org.openhab.binding.somfytahoma.internal.model.*;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import static org.openhab.binding.somfytahoma.SomfyTahomaBindingConstants.*;
 
 /**
  * The {@link SomfyTahomaItemDiscoveryService} discovers rollershutters and
@@ -105,7 +109,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 THING_TYPE_EXTERIORVENETIANBLIND, THING_TYPE_GARAGEDOOR, THING_TYPE_ACTIONGROUP, THING_TYPE_AWNING,
                 THING_TYPE_ONOFF, THING_TYPE_LIGHT, THING_TYPE_LIGHTSENSOR, THING_TYPE_SMOKESENSOR,
                 THING_TYPE_CONTACTSENSOR, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_WINDOW, THING_TYPE_EXTERNAL_ALARM,
-                THING_TYPE_INTERNAL_ALARM, THING_TYPE_POD, THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA));
+                THING_TYPE_INTERNAL_ALARM, THING_TYPE_POD, THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM, THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA, THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR));
     }
 
     @Override
@@ -210,6 +214,12 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 break;
             case PERGOLA:
                 deviceDiscovered(device, THING_TYPE_PERGOLA);
+                break;
+            case WINDOWHANDLE:
+                deviceDiscovered(device, THING_TYPE_WINDOW_HANDLE);
+                break;
+            case TEMPERATURESENSOR:
+                deviceDiscovered(device, THING_TYPE_TEMPERATURESENSOR);
                 break;
             case PROTOCOLGATEWAY:
                 break;

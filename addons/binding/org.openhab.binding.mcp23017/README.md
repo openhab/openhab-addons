@@ -1,9 +1,15 @@
 # MCP23017 Binding
 
 This binding allows you to have native access for MCP23017 I/O expander on I2C bus.
-It was tested with Raspberry PI 2 and Raspberry PI 3, but probably should work with other devices supported by pi4j library.
+It was tested with Raspberry Pi 2 and Raspberry Pi 3, but probably should work with other devices supported by [Pi4J](http://pi4j.com/) library.
 
-On Raspberry PI user on which openHAB is running (default user name is "openhab") needs to be added to groups "i2c" and  "gpio".
+On Raspberry Pi the user on which openHAB is running (default user name is "openhab") needs to be added to groups "i2c" and  "gpio".
+
+## Dependencies
+
+Make sure that the [wiringPi](http://wiringpi.com/) library has been installed and that the `gpio` command line tool is available to openHAB.
+The shared library `libwiringPi.so` is required by the [Pi4J](http://pi4j.com/) Java library to access the GPIO ports.
+Without satisfying this dependency you will see strange `NoClassDefFoundError: Could not initialize class ...` errors in the openHAB logs.
 
 ## Supported Things
 
@@ -60,6 +66,8 @@ Configuration with default_state and pull_mode:
 Thing mcp23017:mcp23017:chipA  "MCP23017 chip A" [address=20,bus=1] {
     Type output_pin : output#A0 [default_state="HIGH"]
     Type output_pin : output#A1 [default_state="LOW"]
+    Type output_pin : output#A2 [active_low="y"]
+    Type output_pin : output#A2 [default_state="LOW", active_low="y"]
 
     Type input_pin : input#B0 [pull_mode="PULL_UP"]
     Type input_pin : input#B1 [pull_mode="OFF"]

@@ -1,12 +1,13 @@
 Manifest-Version: 1.0
 Automatic-Module-Name: org.openhab.binding.neato
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-ManifestVersion: 2
 Bundle-Name: Neato Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.neato;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  com.google.gson,
  com.google.gson.annotations,

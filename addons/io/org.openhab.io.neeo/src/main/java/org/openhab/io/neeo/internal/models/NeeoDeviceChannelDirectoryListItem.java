@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.io.neeo.internal.models;
 
@@ -31,18 +35,25 @@ public class NeeoDeviceChannelDirectoryListItem {
     @Nullable
     private final String thumbNailUri;
 
+    /** The ui action for the item */
+    @Nullable
+    private final ListUiAction uiAction;
+
     /**
      * Constructs the list item from the attributes
      *
-     * @param itemValue a possibly null, possibly empty item value
-     * @param title a non-null, non-empty title
+     * @param itemValue    a possibly null, possibly empty item value
+     * @param title        a non-null, non-empty title
      * @param thumbNailUri a possibly null, possibly empty thumbnail URI
+     * @param uiAction     the non-null UI action
      */
-    public NeeoDeviceChannelDirectoryListItem(String itemValue, String title, @Nullable String thumbNailUri) {
+    public NeeoDeviceChannelDirectoryListItem(String itemValue, String title, @Nullable String thumbNailUri,
+            ListUiAction uiAction) {
         NeeoUtil.requireNotEmpty(title, "title cannot be empty");
         this.itemValue = itemValue;
         this.title = title;
         this.thumbNailUri = thumbNailUri;
+        this.uiAction = uiAction;
     }
 
     /**
@@ -73,9 +84,19 @@ public class NeeoDeviceChannelDirectoryListItem {
         return thumbNailUri;
     }
 
+    /**
+     * The UI Action to perform
+     *
+     * @return the UI action
+     */
+    @Nullable
+    public ListUiAction getUiAction() {
+        return uiAction;
+    }
+
     @Override
     public String toString() {
         return "NeeoDeviceChannelDirectoryListItem [itemValue=" + itemValue + ", title=" + title + ", thumbNailUri="
-                + thumbNailUri + "]";
+                + thumbNailUri + ", uiAction=" + uiAction + "]";
     }
 }

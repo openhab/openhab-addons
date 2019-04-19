@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.chromecast.internal;
 
@@ -51,6 +55,9 @@ public class ChromecastEventReceiver implements ChromeCastSpontaneousEventListen
     @Override
     public void spontaneousEventReceived(final ChromeCastSpontaneousEvent event) {
         switch (event.getType()) {
+            case CLOSE:
+                statusUpdater.updateMediaStatus(null);
+                break;
             case MEDIA_STATUS:
                 statusUpdater.updateMediaStatus(event.getData(MediaStatus.class));
                 break;
@@ -61,7 +68,7 @@ public class ChromecastEventReceiver implements ChromeCastSpontaneousEventListen
                 logger.debug("Received an 'UNKNOWN' event (class={})", event.getType().getDataClass());
                 break;
             default:
-                logger.debug("Unhandled event type: {}", event.getData());
+                logger.debug("Unhandled event type: {}", event.getType());
                 break;
         }
     }

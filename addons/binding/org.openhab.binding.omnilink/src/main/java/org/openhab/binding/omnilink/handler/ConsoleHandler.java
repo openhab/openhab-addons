@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.omnilink.handler;
 
-import java.util.Optional;
-
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -20,14 +18,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
-import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 
 /**
  *
  * @author Craig Hamilton
  *
  */
-public class ConsoleHandler extends AbstractOmnilinkStatusHandler {
+public class ConsoleHandler extends AbstractOmnilinkHandler {
     private Logger logger = LoggerFactory.getLogger(ConsoleHandler.class);
 
     public ConsoleHandler(Thing thing) {
@@ -55,15 +52,5 @@ public class ConsoleHandler extends AbstractOmnilinkStatusHandler {
         int consoleNumber = getThingNumber();
         sendOmnilinkCommand(cmd, p1, consoleNumber);
 
-    }
-
-    @Override
-    protected Optional retrieveStatus() {
-        return Optional.empty();
-    }
-
-    @Override
-    protected void updateChannels(Status t) {
-        // No Status.
     }
 }

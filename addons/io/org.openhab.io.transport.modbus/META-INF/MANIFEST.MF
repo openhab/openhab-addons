@@ -3,7 +3,7 @@ Automatic-Module-Name: org.openhab.io.transport.modbus
 Bundle-ManifestVersion: 2
 Bundle-Name: openHAB MODBUS Transport Bundle
 Bundle-SymbolicName:  org.openhab.io.transport.modbus
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Bundle-Vendor: openHAB
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: 

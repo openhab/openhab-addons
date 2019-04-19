@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.tellstick.internal.discovery;
 
@@ -18,8 +22,10 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.tellstick.TellstickBindingConstants;
-import org.openhab.binding.tellstick.handler.TelldusBridgeHandler;
+import org.openhab.binding.tellstick.internal.TellstickBindingConstants;
+import org.openhab.binding.tellstick.internal.handler.DeviceStatusListener;
+import org.openhab.binding.tellstick.internal.handler.TelldusBridgeHandler;
+import org.openhab.binding.tellstick.internal.live.xml.LiveDataType;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetDevice;
 import org.openhab.binding.tellstick.internal.live.xml.TellstickNetSensor;
 import org.slf4j.Logger;
@@ -38,8 +44,7 @@ import org.tellstick.enums.DataType;
  *
  * @author Jarle Hjortland - Initial contribution
  */
-public class TellstickDiscoveryService extends AbstractDiscoveryService
-        implements org.openhab.binding.tellstick.handler.DeviceStatusListener {
+public class TellstickDiscoveryService extends AbstractDiscoveryService implements DeviceStatusListener {
     private static final long DEFAULT_TTL = 60 * 60; // 1 Hour
 
     public TellstickDiscoveryService(int timeout) throws IllegalArgumentException {
@@ -84,7 +89,6 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService
                     .withProperty(TellstickBindingConstants.DEVICE_NAME, device.getName()).withBridge(bridge.getUID())
                     .withLabel(device.getDeviceType() + ": " + device.getName()).build();
             thingDiscovered(discoveryResult);
-
         } else {
             logger.warn("Discovered Tellstick! device is unsupported: type '{}' with id '{}'", device.getDeviceType(),
                     device.getId());
@@ -157,10 +161,12 @@ public class TellstickDiscoveryService extends AbstractDiscoveryService
             }
         } else {
             TellstickNetSensor sensor = (TellstickNetSensor) device;
-            if (sensor.isWindSensor()) {
+            if (sensor.isSensorOfType(LiveDataType.WINDAVERAGE)) {
                 sensorThingId = TellstickBindingConstants.WINDSENSOR_THING_TYPE;
-            } else if (sensor.isRainSensor()) {
+            } else if (sensor.isSensorOfType(LiveDataType.RAINRATE)) {
                 sensorThingId = TellstickBindingConstants.RAINSENSOR_THING_TYPE;
+            } else if (sensor.isSensorOfType(LiveDataType.WATT)) {
+                sensorThingId = TellstickBindingConstants.POWERSENSOR_THING_TYPE;
             } else {
                 sensorThingId = TellstickBindingConstants.SENSOR_THING_TYPE;
             }

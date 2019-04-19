@@ -1,21 +1,27 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.io.transport.modbus.test;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeFalse;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.openhab.io.transport.modbus.BasicBitArray;
 import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
@@ -60,6 +66,18 @@ public class SmokeTest extends IntegrationTestSupport {
     private static final int DISCRETE_EVERY_N_TRUE = 3;
     private static final int HOLDING_REGISTER_MULTIPLIER = 1;
     private static final int INPUT_REGISTER_MULTIPLIER = 10;
+
+    /**
+     * Whether tests are run in Continuous Integration environment, i.e. Jenkins or Travis CI
+     *
+     * Travis CI is detected using CI environment variable, see https://docs.travis-ci.com/user/environment-variables/
+     * Jenkins CI is detected using JENKINS_HOME environment variable
+     *
+     * @return
+     */
+    private boolean isRunningInCI() {
+        return "true".equals(System.getenv("CI")) || StringUtils.isNotBlank(System.getenv("JENKINS_HOME"));
+    }
 
     private void generateData() {
         for (int i = 0; i < 100; i++) {
@@ -751,6 +769,8 @@ public class SmokeTest extends IntegrationTestSupport {
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         assertTrue(responses > 1);
 
+        // Rest of the (timing-sensitive) assertions are not run in CI
+        assumeFalse("Running in CI! Will not test timing-sensitive details", isRunningInCI());
         float averagePollPeriodMillis = ((float) (pollEndMillis - pollStartMillis)) / (responses - 1);
         assertTrue(String.format(
                 "Measured avarage poll period %f ms (%d responses in %d ms) is not withing expected limits [%d, %d]",

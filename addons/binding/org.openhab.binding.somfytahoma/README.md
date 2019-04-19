@@ -21,6 +21,7 @@ This binding integrates the [Somfy Tahoma](https://www.somfy.fr/produits/domotiq
 - occupancy sensors (OPEN/CLOSE contact)
 - smoke sensors (OPEN/CLOSE contact)
 - contact sensors (OPEN/CLOSE contact)
+- temperature sensor (get temperature)
 - door locks (LOCK/UNLOCK, OPEN/CLOSE commands)
 - heating systems (control temperature, set heating level)
 - alarms (both interior/external)
@@ -75,7 +76,8 @@ Please see the example below.
 | heating system | current_temperature | current temperature of the heating system |
 | heating system | current_state | current state of the heating system|
 | heating system | target_temperature | target temperature of the heating system |
-| heating system | battery_level | battery level of the heating system | 
+| heating system | battery_level | battery level of the heating system |
+| temperature sensor | temperature | temperature reported by the sensor |
 
 When roller shutter-like thing receives STOP command two possible behaviours are possible
 
@@ -135,6 +137,7 @@ Contact OccupancySensor "Occupancy Sensor is [%s]" { channel="somfytahoma:occupa
 Contact SmokeSensor "Smoke Sensor is [%s]" { channel="somfytahoma:smokesensor:237dbae7:9438e6ff-c17e-40d7-a4b4-3e797eca5bf7:contact" }
 Contact ContactSensor "Contact Sensor is [%s]" { channel="somfytahoma:contactsensor:237dbae7:6612f2e3-d23d-21dd-b3a6-13ef7abcd134:contact" }
 
+Number TemperatureSensor "Temperature is [%2.1f °C]" { channel="somfytahoma:temperaturesensor:237dbae7:6612f2e3-d23d-21dd-b4a7-13ef7abcd134:temperature" }
 String HeatingSystemLevel "Heating level [%s]" { channel="somfytahoma:onoffheatingsystem:237dbae7:6612f2e3-abcd-21dd-b3a6-13ef7abcd134:target_heating_level"}
 
 Switch DoorLock "Lock" { channel="somfytahoma:doorlock:237dbae7:6612f2e3-bcde-21dd-b3a6-13ef7abcd134:lock" }
@@ -160,6 +163,7 @@ Text item=LightSensor
 Text item=OccupancySensor
 Text item=SmokeSensor
 Text item=ContactSensor
+Text item=TemperatureSensor
 Switch item=HeatingSystemOnOff
 Selection item=HeatingSystemLevel mappings=["frostprotection"="FROST PROTECTION", "comfort"="COMFORT", "eco"="ECO", "off"="OFF"]
 Switch item=DoorLock

@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.io.neeo.internal.serialization;
 
@@ -61,6 +65,7 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
         final String adapterName = device.getUid().getNeeoUID();
         // jsonObject.addProperty("apiversion", "1.0"); // haven't decided if needed
         jsonObject.addProperty("adapterName", adapterName);
+        jsonObject.addProperty("driverVersion", device.getDriverVersion());
 
         jsonObject.addProperty("type", device.getType().toString());
         jsonObject.addProperty("manufacturer", device.getManufacturer());
@@ -235,10 +240,10 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
     /**
      * Helper method to create a base element with the given name/label/type/path
      *
-     * @param name the element name
+     * @param name  the element name
      * @param label the element label
-     * @param type the element type
-     * @param path the element path
+     * @param type  the element type
+     * @param path  the element path
      * @return the json object representing the base element
      */
     private JsonObject createBase(String name, String label, String type, String path) {
@@ -248,10 +253,10 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
     /**
      * Helper method to create a base element with the given name/label/type/path/sensor
      *
-     * @param name the element name
-     * @param label the element label
-     * @param type the element type
-     * @param path the element path
+     * @param name   the element name
+     * @param label  the element label
+     * @param type   the element type
+     * @param path   the element path
      * @param sensor the element sensor
      * @return the json object representing the base element
      */
@@ -262,12 +267,12 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
     /**
      * Helper method to create a base element with the given name/label/type/path/sensorname/sensor
      *
-     * @param name the element name
-     * @param label the element label
-     * @param type the element type
-     * @param path the element path
+     * @param name       the element name
+     * @param label      the element label
+     * @param type       the element type
+     * @param path       the element path
      * @param sensorName the element sensor name
-     * @param sensor the element sensor
+     * @param sensor     the element sensor
      * @return the json object representing the base element
      */
     private JsonObject createBase(String name, String label, String type, String path, @Nullable String sensorName,

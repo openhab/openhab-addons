@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.io.neeo.internal.serialization;
 
@@ -107,9 +111,10 @@ public class NeeoDeviceSerializer implements JsonSerializer<NeeoDevice>, JsonDes
         final String specificName = jo.has("specificName") ? jo.get("specificName").getAsString() : null;
 
         final String iconName = jo.has("iconName") ? jo.get("iconName").getAsString() : null;
+        final int driverVersion = jo.has("driverVersion") ? jo.get("driverVersion").getAsInt() : 0;
 
         try {
-            return new NeeoDevice(uid, devType,
+            return new NeeoDevice(uid, driverVersion, devType,
                     manufacturer == null || StringUtils.isEmpty(manufacturer) ? NeeoUtil.NOTAVAILABLE : manufacturer,
                     name, Arrays.asList(channels), timing,
                     deviceCapabilities == null ? null : Arrays.asList(deviceCapabilities), specificName, iconName);
@@ -134,6 +139,7 @@ public class NeeoDeviceSerializer implements JsonSerializer<NeeoDevice>, JsonDes
         jsonObject.addProperty("name", device.getName());
         jsonObject.addProperty("specificName", device.getSpecificName());
         jsonObject.addProperty("iconName", device.getIconName());
+        jsonObject.addProperty("driverVersion", device.getDriverVersion());
 
         final JsonArray channels = (JsonArray) jsonContext.serialize(device.getChannels());
 

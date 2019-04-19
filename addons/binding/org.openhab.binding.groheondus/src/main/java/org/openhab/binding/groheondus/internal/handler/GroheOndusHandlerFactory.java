@@ -1,10 +1,14 @@
 /**
- * Copyright (c) 2010-2018 by the respective copyright holders.
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.groheondus.internal.handler;
 
@@ -39,8 +43,8 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_APPLIANCE,
-            THING_TYPE_BRIDGE_ACCOUNT);
+    private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_SENSEGUARD,
+            THING_TYPE_SENSE, THING_TYPE_BRIDGE_ACCOUNT);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -55,8 +59,10 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
             GroheOndusAccountHandler handler = new GroheOndusAccountHandler((Bridge) thing);
             registerDeviceDiscoveryService(handler);
             return handler;
-        } else if (THING_TYPE_APPLIANCE.equals(thingTypeUID)) {
-            return new GroheOndusApplianceHandler(thing);
+        } else if (THING_TYPE_SENSEGUARD.equals(thingTypeUID)) {
+            return new GroheOndusSenseGuardHandler(thing);
+        } else if (THING_TYPE_SENSE.equals(thingTypeUID)) {
+            return new GroheOndusSenseHandler(thing);
         }
 
         return null;

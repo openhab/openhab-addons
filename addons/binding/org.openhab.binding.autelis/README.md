@@ -1,39 +1,47 @@
 # Autelis Pool Control Binding
 
-Autelis manufactures a network enabled pool interface for many popular pool systems.
-See [the Autelis website](http://www.autelis.com) and the  [Autelis Command Protocol](http://www.autelis.com/wiki/index.php?title=Pool_Control_&lparPI&rpar_HTTP_Command_Reference) for more information.
+Autelis manufactures a network enabled pool interface for many popular pool systems.  See [the Autelis website](http://www.autelis.com) and the  [Autelis Command Protocol](http://www.autelis.com/wiki/index.php?title=Pool_Control_(PI)_HTTP_Command_Reference) for more information.
 
 This binding supports:
 
-- Read circuit, auxiliary, temperature, pump, chemistry and system values  
-- Control circuit, auxiliary lighting scenes, and temperature set points
+* Jandy and Pentair models
+* Read circuit, auxiliary, temperature, pump, chemistry and system values  
+* Control circuit, auxiliary lighting scenes, and temperature set points
 
-## Discovery
 
-The binding will automatically look for a device with the DNS name 'poolcontrol'.
-If found it will try and connect with the factory default username and password.
+## Auto Discovery
+
+The binding will automatically discover Autelis controllers using UPNP.  If found it will try and connect with the factory default username and password.
 
 ## Binding Configuration
 
 The binding requires no special configuration
 
-## Thing Configuration
+## Manual Thing Configuration
 
 The Autelis binding requires the host, port, username and password
 
 In the thing file, this looks e.g. like
 
-```text
-Thing autelis:myPool [ host="192.168.1.10", port="80", user="admin", password="admin"]
+```
+Thing autelis:pentair:myPool [ host="192.168.1.10", port="80", user="admin", password="admin"]
+```
+
+or
+
+```
+Thing autelis:jandy:myPool [ host="192.168.1.10", port="80", user="admin", password="admin"]
 ```
 
 ## Channels
 
-All devices support some of the following channels:
+### Pentair
+
+Pentair devices support the following channels:
 
 | Channel Type ID     | Item Type |
 |---------------------|-----------|
-| system-runstate     | Switch    |
+| system-runstate     | Number    |
 | system-model        | Number    |
 | system-haddr        | Number    |
 | system-opmode       | Number    |
@@ -91,3 +99,67 @@ All devices support some of the following channels:
 | chlor-chlorerr      | Number    |
 | chlor-chlorname     | String    |
 | lightscmd           | String    |
+| reboot              | Switch    |
+
+### Jandy
+
+Jandy devices support the following channels:
+
+| Channel Type ID     | Item Type |
+|---------------------|-----------|
+| system-model        | Number    |
+| system-dip          | Number    |
+| system-opmode       | Number    |
+| system-vbat         | Number    |
+| system-lowbat       | Number    |
+| system-time         | Number    |
+| equipment-pump      | Number    |
+| equipment-pumplo    | Number    |
+| equipment-spa       | Number    |
+| equipment-waterfall | Number    |
+| equipment-cleaner   | Number    |
+| equipment-poolht    | Number    |
+| equipment-poolht2   | Number    |
+| equipment-spaht     | Number    |
+| equipment-solarht   | Number    |
+| equipment-htpmp     | Number    |
+| equipment-aux1      | Number    |
+| equipment-aux2      | Number    |
+| equipment-aux3      | Number    |
+| equipment-aux4      | Number    |
+| equipment-aux5      | Number    |
+| equipment-aux6      | Number    |
+| equipment-aux7      | Number    |
+| equipment-aux8      | Number    |
+| equipment-aux9      | Number    |
+| equipment-aux10     | Number    |
+| equipment-aux11     | Number    |
+| equipment-aux12     | Number    |
+| equipment-aux13     | Number    |
+| equipment-aux14     | Number    |
+| equipment-aux15     | Number    |
+| temp-poolsp         | Number    |
+| temp-poolsp2        | Number    |
+| temp-pooltemp       | Number    |
+| temp-spatemp        | Number    |
+| temp-airtemp        | Number    |
+| temp-solartemp      | Number    |
+| temp-tempunits      | String    |
+| pump-vsp1           | String    |
+| pump-vsp2           | String    |
+| pump-vsp3           | String    |
+| pump-vsp4           | String    |
+| chem-avail          | Number    |
+| chem-chlrp          | Number    |
+| chem-saltp          | Number    |
+| chem-chlrs          | Number    |
+| chem-slats          | Number    |
+| chem-orp1           | Number    |
+| chem-orp2           | Number    |
+| chem-ph1            | Number    |
+| chem-ph2            | Number    |
+| chem-orpfd1         | Number    |
+| chem-orpfd2         | Number    |
+| chem-phfd1          | Number    |
+| chem-phfd2          | Number    |
+| reboot              | Switch    |
