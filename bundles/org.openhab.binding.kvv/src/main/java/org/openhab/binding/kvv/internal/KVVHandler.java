@@ -158,8 +158,10 @@ public class KVVHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
 
                 // Schedule update and refresh tasks
-                new Timer().schedule(new UpdateTask(), 0, this.config.updateInterval);
-                new Timer().schedule(new RefreshTask(), 0, this.config.updateInterval);
+                this.scheduler.scheduleWithFixedDelay(new UpdateTask(), 0, this.config.updateInterval,
+                        TimeUnit.MILLISECONDS);
+                this.scheduler.scheduleWithFixedDelay(new RefreshTask(), 0, this.config.updateInterval,
+                        TimeUnit.MILLISECONDS);
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
