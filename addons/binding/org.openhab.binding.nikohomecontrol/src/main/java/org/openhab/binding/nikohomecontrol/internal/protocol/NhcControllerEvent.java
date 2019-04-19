@@ -42,8 +42,8 @@ public interface NhcControllerEvent {
      *
      * @return the port
      */
-    public default @Nullable Integer getPort() {
-        return null;
+    public default int getPort() {
+        return 0;
     };
 
     /**

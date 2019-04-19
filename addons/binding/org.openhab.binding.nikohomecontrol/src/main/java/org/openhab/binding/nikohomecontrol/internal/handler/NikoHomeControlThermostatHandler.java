@@ -159,7 +159,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
             case CHANNEL_OVERRULETIME:
                 if (command instanceof DecimalType) {
-                    Integer overruletime = ((DecimalType) command).intValue();
+                    int overruletime = ((DecimalType) command).intValue();
                     int overrule = nhcThermostat.getOverrule();
                     if (overruletime <= 0) {
                         overruletime = 0;
@@ -225,7 +225,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     }
 
     @Override
-    public void thermostatEvent(Integer measured, Integer setpoint, Integer mode, Integer overrule, Integer demand) {
+    public void thermostatEvent(int measured, int setpoint, int mode, int overrule, int demand) {
         updateState(CHANNEL_MEASURED, new QuantityType<Temperature>(nhcThermostat.getMeasured() / 10.0, CELSIUS));
 
         long overruletime = nhcThermostat.getRemainingOverruletime();

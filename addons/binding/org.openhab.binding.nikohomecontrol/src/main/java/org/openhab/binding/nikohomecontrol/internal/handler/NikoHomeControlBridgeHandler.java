@@ -104,19 +104,19 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
      *
      * @param interval_config Time before refresh in minutes.
      */
-    private void setupRefreshTimer(@Nullable Integer refreshInterval) {
-        if (this.refreshTimer != null) {
-            this.refreshTimer.cancel(true);
-            this.refreshTimer = null;
+    private void setupRefreshTimer(int refreshInterval) {
+        if (refreshTimer != null) {
+            refreshTimer.cancel(true);
+            refreshTimer = null;
         }
 
-        if ((refreshInterval == null) || (refreshInterval == 0)) {
+        if (refreshInterval == 0) {
             return;
         }
 
         // This timer will restart the bridge connection periodically
         logger.debug("Niko Home Control: restart bridge connection every {} min", refreshInterval);
-        this.refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
+        refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
             logger.debug("Niko Home Control: restart communication at scheduled time");
 
             NikoHomeControlCommunication comm = nhcComm;
@@ -210,7 +210,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
             updateStatus(ThingStatus.ONLINE);
 
-            Integer refreshInterval = ((Number) configuration.get(CONFIG_REFRESH)).intValue();
+            int refreshInterval = ((Number) configuration.get(CONFIG_REFRESH)).intValue();
             setupRefreshTimer(refreshInterval);
         });
     }
@@ -269,7 +269,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
     }
 
     @Override
-    public @Nullable Integer getPort() {
+    public int getPort() {
         return config.port;
     }
 }

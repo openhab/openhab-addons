@@ -35,6 +35,6 @@ public interface NhcThermostatEvent {
      * @param overrule the overrule temperature in 0.1°C multiples
      * @param demand   0 if no demand, > 0 if heating, < 0 if cooling
      */
-    public void thermostatEvent(Integer measured, Integer setpoint, Integer mode, Integer overrule, Integer demand);
+    public void thermostatEvent(int measured, int setpoint, int mode, int overrule, int demand);
 
 }

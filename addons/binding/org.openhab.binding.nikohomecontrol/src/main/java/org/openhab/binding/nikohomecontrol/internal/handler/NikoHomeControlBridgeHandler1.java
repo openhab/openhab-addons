@@ -45,7 +45,7 @@ public class NikoHomeControlBridgeHandler1 extends NikoHomeControlBridgeHandler 
 
         config = getConfig().as(NikoHomeControlBridgeConfig.class);
         InetAddress addr = getAddr();
-        Integer port = getPort();
+        int port = getPort();
 
         logger.debug("Niko Home Control: bridge handler host {}, port {}", addr, port);
 

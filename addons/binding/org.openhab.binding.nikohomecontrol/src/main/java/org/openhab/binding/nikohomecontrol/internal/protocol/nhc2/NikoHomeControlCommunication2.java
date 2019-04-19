@@ -242,6 +242,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         } catch (JsonSyntaxException e) {
             logger.debug("Niko Home Control: unexpected json {}", response);
         } catch (NoSuchElementException ignore) {
+            // Ignore if timeInfo not present in response, this should not happen in a timeInfo response
         }
         if (timeInfo != null) {
             nhcTimeInfo = timeInfo.get(0);
@@ -260,6 +261,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         } catch (JsonSyntaxException e) {
             logger.debug("Niko Home Control: unexpected json {}", response);
         } catch (NoSuchElementException ignore) {
+            // Ignore if systemInfo not present in response, this should not happen in a systemInfo response
         }
         if (systemInfo != null) {
             nhcSystemInfo = systemInfo.get(0);
@@ -278,6 +280,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         } catch (JsonSyntaxException e) {
             logger.debug("Niko Home Control: unexpected json {}", response);
         } catch (NoSuchElementException ignore) {
+            // Ignore if profiles not present in response, this should not happen in a profiles response
         }
         profiles.clear();
         if (profileList != null) {
@@ -297,6 +300,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         } catch (JsonSyntaxException e) {
             logger.debug("Niko Home Control: unexpected json {}", response);
         } catch (NoSuchElementException ignore) {
+            // Ignore if services not present in response, this should not happen in a services response
         }
         services.clear();
         if (serviceList != null) {
@@ -316,6 +320,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         } catch (JsonSyntaxException e) {
             logger.debug("Niko Home Control: unexpected json {}", response);
         } catch (NoSuchElementException ignore) {
+            // Ignore if locations not present in response, this should not happen in a locations response
         }
         locations.clear();
         if (locationList != null) {
@@ -335,6 +340,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         } catch (JsonSyntaxException e) {
             logger.debug("Niko Home Control: unexpected json {}", response);
         } catch (NoSuchElementException ignore) {
+            // Ignore if devices not present in response, this should not happen in a devices response
         }
         if (deviceList == null) {
             return;
@@ -421,6 +427,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         } catch (JsonSyntaxException e) {
             logger.debug("Niko Home Control: unexpected json {}", response);
         } catch (NoSuchElementException ignore) {
+            // Ignore if devices not present in response, this should not happen in a devices event
         }
         if (deviceList == null) {
             return;
@@ -448,6 +455,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         } catch (JsonSyntaxException e) {
             logger.debug("Niko Home Control: unexpected json {}", response);
         } catch (NoSuchElementException ignore) {
+            // Ignore if notifications not present in response, this should not happen in a notifications event
         }
         logger.debug("Niko Home Control: notifications {}", notificationList);
         if (notificationList == null) {
@@ -504,7 +512,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         }
 
         if (dimmerProperty.isPresent()) {
-            action.setState(Integer.valueOf(dimmerProperty.get().brightness));
+            action.setState(Integer.parseInt(dimmerProperty.get().brightness));
             logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(),
                     dimmerProperty.get().brightness);
         }
@@ -515,9 +523,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
                 .findFirst();
         Optional<NhcProperty> movingProperty = device.properties.stream().filter(p -> (p.moving != null)).findFirst();
 
-        if (!(movingProperty.isPresent() && Boolean.valueOf(movingProperty.get().moving))
+        if (!(movingProperty.isPresent() && Boolean.parseBoolean(movingProperty.get().moving))
                 && positionProperty.isPresent()) {
-            action.setState(Integer.valueOf(positionProperty.get().position));
+            action.setState(Integer.parseInt(positionProperty.get().position));
             logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(),
                     positionProperty.get().position);
         }
@@ -545,19 +553,19 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
                 .findFirst().orElse(thermostat.getMode());
 
         int measured = ambientTemperatureProperty.isPresent()
-                ? Math.round(Float.valueOf(ambientTemperatureProperty.get().ambientTemperature) * 10)
+                ? Math.round(Float.parseFloat(ambientTemperatureProperty.get().ambientTemperature) * 10)
                 : thermostat.getMeasured();
         int setpoint = setpointTemperatureProperty.isPresent()
-                ? Math.round(Float.valueOf(setpointTemperatureProperty.get().setpointTemperature) * 10)
+                ? Math.round(Float.parseFloat(setpointTemperatureProperty.get().setpointTemperature) * 10)
                 : thermostat.getSetpoint();
 
         int overrule = 0;
         int overruletime = 0;
         if (overruleActiveProperty.isPresent() && "True".equals(overruleActiveProperty.get().overruleActive)) {
             overrule = overruleSetpointProperty.isPresent()
-                    ? Math.round(Float.valueOf(overruleSetpointProperty.get().overruleSetpoint) * 10)
+                    ? Math.round(Float.parseFloat(overruleSetpointProperty.get().overruleSetpoint) * 10)
                     : 0;
-            overruletime = overruleTimeProperty.isPresent() ? Integer.valueOf(overruleTimeProperty.get().overruleTime)
+            overruletime = overruleTimeProperty.isPresent() ? Integer.parseInt(overruleTimeProperty.get().overruleTime)
                     : 0;
         }
 
@@ -636,7 +644,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
                 } else if (NHCDOWN.equals(value)) {
                     property.position = "0";
                 } else {
-                    int position = 100 - Integer.valueOf(value);
+                    int position = 100 - Integer.parseInt(value);
                     property.position = String.valueOf(position);
                 }
                 break;

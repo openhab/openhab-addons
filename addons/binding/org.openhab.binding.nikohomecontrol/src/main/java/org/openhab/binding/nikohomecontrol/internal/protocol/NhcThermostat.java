@@ -183,7 +183,7 @@ public abstract class NhcThermostat {
     /**
      * @return the setpoint temperature in 0.1°C multiples
      */
-    public Integer getSetpoint() {
+    public int getSetpoint() {
         return setpoint;
     }
 

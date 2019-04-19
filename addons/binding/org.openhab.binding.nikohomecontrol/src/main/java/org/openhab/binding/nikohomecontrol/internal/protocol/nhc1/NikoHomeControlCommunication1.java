@@ -71,6 +71,45 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
     protected Gson gsonIn;
 
     /**
+     * Runnable that handles inbound communication from Niko Home Control.
+     * <p>
+     * The thread listens to the TCP socket opened at instantiation of the {@link NikoHomeControlCommunication} class
+     * and interprets all inbound json messages. It triggers state updates for active channels linked to the Niko Home
+     * Control actions. It is started after initialization of the communication.
+     *
+     */
+    @SuppressWarnings("null")
+    private Runnable nhcEvents = () -> {
+        @Nullable
+        String nhcMessage;
+
+        logger.debug("Niko Home Control: listening for events");
+        listenerStopped = false;
+        nhcEventsRunning = true;
+
+        try {
+            while (!listenerStopped & ((nhcMessage = this.nhcIn.readLine()) != null)) {
+                readMessage(nhcMessage);
+            }
+        } catch (IOException e) {
+            if (!listenerStopped) {
+                nhcEventsRunning = false;
+                // this is a socket error, not a communication stop triggered from outside this runnable
+                logger.warn("Niko Home Control: IO error in listener");
+                // the IO has stopped working, so we need to close cleanly and try to restart
+                restartCommunication();
+                return;
+            }
+        } finally {
+            nhcEventsRunning = false;
+        }
+
+        nhcEventsRunning = false;
+        // this is a stop from outside the runnable, so just log it and stop
+        logger.debug("Niko Home Control: event listener thread stopped");
+    };
+
+    /**
      * Constructor for Niko Home Control I communication object, manages communication with
      * Niko Home Control IP-interface.
      *
@@ -93,7 +132,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                 Thread.sleep(1000);
             }
             if (nhcEventsRunning) {
-                logger.error("Niko Home Control: starting but previous connection still active after 5000ms");
+                logger.debug("Niko Home Control: starting but previous connection still active after 5000ms");
                 throw new IOException();
             }
 
@@ -145,43 +184,6 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
     public boolean communicationActive() {
         return (this.nhcSocket != null);
     }
-
-    /**
-     * Runnable that handles inbound communication from Niko Home Control.
-     * <p>
-     * The thread listens to the TCP socket opened at instantiation of the {@link NikoHomeControlCommunication} class
-     * and interprets all inbound json messages. It triggers state updates for active channels linked to the Niko Home
-     * Control actions. It is started after initialization of the communication.
-     *
-     */
-    @SuppressWarnings("null")
-    private Runnable nhcEvents = () -> {
-        @Nullable
-        String nhcMessage;
-
-        logger.debug("Niko Home Control: listening for events");
-        listenerStopped = false;
-        nhcEventsRunning = true;
-
-        try {
-            while (!listenerStopped & ((nhcMessage = this.nhcIn.readLine()) != null)) {
-                readMessage(nhcMessage);
-            }
-        } catch (IOException e) {
-            if (!listenerStopped) {
-                nhcEventsRunning = false;
-                // this is a socket error, not a communication stop triggered from outside this runnable
-                logger.warn("Niko Home Control: IO error in listener");
-                // the IO has stopped working, so we need to close cleanly and try to restart
-                restartCommunication();
-                return;
-            }
-        }
-
-        nhcEventsRunning = false;
-        // this is a stop from outside the runnable, so just log it and stop
-        logger.debug("Niko Home Control: event listener thread stopped");
-    };
 
     /**
      * After setting up the communication with the Niko Home Control IP-interface, send all initialization messages.
@@ -319,9 +321,9 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
     }
 
     private void cmdStartEvents(Map<String, String> data) {
-        Integer errorCode = Integer.valueOf(data.get("error"));
+        int errorCode = Integer.parseInt(data.get("error"));
 
-        if (errorCode.equals(0)) {
+        if (errorCode == 0) {
             logger.debug("Niko Home Control: start events success");
         } else {
             logger.warn("Niko Home Control: error code {} returned on start events", errorCode);
@@ -347,11 +349,11 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
         for (Map<String, String> action : data) {
 
             String id = action.get("id");
-            Integer state = Integer.valueOf(action.get("value1"));
+            int state = Integer.parseInt(action.get("value1"));
             String value2 = action.get("value2");
-            int closeTime = ((value2 == null) || value2.isEmpty() ? 0 : Integer.valueOf(value2));
+            int closeTime = ((value2 == null) || value2.isEmpty() ? 0 : Integer.parseInt(value2));
             String value3 = action.get("value3");
-            int openTime = ((value3 == null) || value3.isEmpty() ? 0 : Integer.valueOf(value3));
+            int openTime = ((value3 == null) || value3.isEmpty() ? 0 : Integer.parseInt(value3));
 
             if (!this.actions.containsKey(id)) {
                 // Initial instantiation of NhcAction class for action object
@@ -403,17 +405,17 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
         for (Map<String, String> thermostat : data) {
 
             String id = thermostat.get("id");
-            int measured = Integer.valueOf(thermostat.get("measured"));
-            int setpoint = Integer.valueOf(thermostat.get("setpoint"));
-            int mode = Integer.valueOf(thermostat.get("mode"));
-            int overrule = Integer.valueOf(thermostat.get("overrule"));
+            int measured = Integer.parseInt(thermostat.get("measured"));
+            int setpoint = Integer.parseInt(thermostat.get("setpoint"));
+            int mode = Integer.parseInt(thermostat.get("mode"));
+            int overrule = Integer.parseInt(thermostat.get("overrule"));
             // overruletime received in "HH:MM" format
             String[] overruletimeStrings = thermostat.get("overruletime").split(":");
             int overruletime = 0;
             if (overruletimeStrings.length == 2) {
-                overruletime = Integer.valueOf(overruletimeStrings[0]) * 60 + Integer.valueOf(overruletimeStrings[1]);
+                overruletime = Integer.parseInt(overruletimeStrings[0]) * 60 + Integer.parseInt(overruletimeStrings[1]);
             }
-            int ecosave = Integer.valueOf(thermostat.get("ecosave"));
+            int ecosave = Integer.parseInt(thermostat.get("ecosave"));
 
             // For parity with NHC II, assume heating/cooling if thermostat is on and setpoint different from measured
             int demand = (mode != 3) ? (setpoint > measured ? 1 : (setpoint < measured ? -1 : 0)) : 0;
@@ -440,8 +442,8 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
     }
 
     private void cmdExecuteActions(Map<String, String> data) {
-        Integer errorCode = Integer.valueOf(data.get("error"));
-        if (errorCode.equals(0)) {
+        int errorCode = Integer.parseInt(data.get("error"));
+        if (errorCode == 0) {
             logger.debug("Niko Home Control: execute action success");
         } else {
             logger.warn("Niko Home Control: error code {} returned on command execution", errorCode);
@@ -449,8 +451,8 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
     }
 
     private void cmdExecuteThermostat(Map<String, String> data) {
-        Integer errorCode = Integer.valueOf(data.get("error"));
-        if (errorCode.equals(0)) {
+        int errorCode = Integer.parseInt(data.get("error"));
+        if (errorCode == 0) {
             logger.debug("Niko Home Control: execute thermostats success");
         } else {
             logger.warn("Niko Home Control: error code {} returned on command execution", errorCode);
@@ -464,7 +466,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                 logger.warn("Niko Home Control: action in controller not known {}", id);
                 return;
             }
-            Integer state = Integer.valueOf(action.get("value1"));
+            int state = Integer.parseInt(action.get("value1"));
             logger.debug("Niko Home Control: event execute action {} with state {}", id, state);
             this.actions.get(id).setState(state);
         }
@@ -478,17 +480,17 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                 return;
             }
 
-            int measured = Integer.valueOf(thermostat.get("measured"));
-            int setpoint = Integer.valueOf(thermostat.get("setpoint"));
-            int mode = Integer.valueOf(thermostat.get("mode"));
-            int overrule = Integer.valueOf(thermostat.get("overrule"));
+            int measured = Integer.parseInt(thermostat.get("measured"));
+            int setpoint = Integer.parseInt(thermostat.get("setpoint"));
+            int mode = Integer.parseInt(thermostat.get("mode"));
+            int overrule = Integer.parseInt(thermostat.get("overrule"));
             // overruletime received in "HH:MM" format
             String[] overruletimeStrings = thermostat.get("overruletime").split(":");
             int overruletime = 0;
             if (overruletimeStrings.length == 2) {
-                overruletime = Integer.valueOf(overruletimeStrings[0]) * 60 + Integer.valueOf(overruletimeStrings[1]);
+                overruletime = Integer.parseInt(overruletimeStrings[0]) * 60 + Integer.parseInt(overruletimeStrings[1]);
             }
-            int ecosave = Integer.valueOf(thermostat.get("ecosave"));
+            int ecosave = Integer.parseInt(thermostat.get("ecosave"));
 
             int demand = (mode != 3) ? (setpoint > measured ? 1 : (setpoint < measured ? -1 : 0)) : 0;
 
@@ -500,7 +502,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
     }
 
     private void eventGetAlarms(Map<String, String> data) {
-        Integer type = Integer.valueOf(data.get("type"));
+        int type = Integer.parseInt(data.get("type"));
         String alarmText = data.get("text");
         switch (type) {
             case 0:
@@ -518,21 +520,22 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
 
     @Override
     public void executeAction(String actionId, String value) {
-        NhcMessageCmd1 nhcCmd = new NhcMessageCmd1("executeactions", Integer.valueOf(actionId), Integer.valueOf(value));
+        NhcMessageCmd1 nhcCmd = new NhcMessageCmd1("executeactions", Integer.parseInt(actionId),
+                Integer.parseInt(value));
         sendMessage(nhcCmd);
     }
 
     @Override
     public void executeThermostat(String thermostatId, String mode) {
-        NhcMessageCmd1 nhcCmd = new NhcMessageCmd1("executethermostat", Integer.valueOf(thermostatId))
-                .withMode(Integer.valueOf(mode));
+        NhcMessageCmd1 nhcCmd = new NhcMessageCmd1("executethermostat", Integer.parseInt(thermostatId))
+                .withMode(Integer.parseInt(mode));
         sendMessage(nhcCmd);
     }
 
     @Override
     public void executeThermostat(String thermostatId, int overruleTemp, int overruleTime) {
         String overruletimeString = String.format("%1$02d:%2$02d", overruleTime / 60, overruleTime % 60);
-        NhcMessageCmd1 nhcCmd = new NhcMessageCmd1("executethermostat", Integer.valueOf(thermostatId))
+        NhcMessageCmd1 nhcCmd = new NhcMessageCmd1("executethermostat", Integer.parseInt(thermostatId))
                 .withOverrule(overruleTemp).withOverruletime(overruletimeString);
         sendMessage(nhcCmd);
     }

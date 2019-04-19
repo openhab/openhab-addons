@@ -85,11 +85,11 @@ public class NhcAction1 extends NhcAction {
                 setRollershutterMovingFalse();
             }
         }
-        if (this.waitForEvent) {
+        if (waitForEvent) {
             logger.debug("Niko Home Control: received requested rollershutter {} position event {}", this.id, newState);
             executeRollershutterTask();
         } else {
-            this.state = newState;
+            state = newState;
             updateState();
         }
     }
@@ -158,7 +158,7 @@ public class NhcAction1 extends NhcAction {
                 logger.trace("handleRollerShutterCommand: rollershutter {} task running", this.id);
             }
 
-            int currentValue = Integer.valueOf(this.state);
+            int currentValue = state;
 
             if (command.equals(NHCDOWN)) {
                 executeRollershutterDown();
@@ -167,7 +167,7 @@ public class NhcAction1 extends NhcAction {
             } else if (command.equals(NHCSTOP)) {
                 executeRollershutterStop();
             } else {
-                int newValue = 100 - Integer.valueOf(command);
+                int newValue = 100 - Integer.parseInt(command);
                 if (logger.isTraceEnabled()) {
                     logger.trace("handleRollerShutterCommand: rollershutter {} percent command, current {}, new {}",
                             this.id, currentValue, newValue);
