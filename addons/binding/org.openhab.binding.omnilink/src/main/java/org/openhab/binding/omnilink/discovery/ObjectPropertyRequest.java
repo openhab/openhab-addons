@@ -44,6 +44,8 @@ class ObjectPropertyRequest<T extends ObjectProperties> implements Iterable<T> {
     private final int filter2;
     private final int filter3;
 
+    private final static int RELATIVE_OFFSET_DIRECTION = 1;
+
     private ObjectPropertyRequest(OmnilinkBridgeHandler bridgeHandler, ObjectPropertyRequests<T> request, int filter1,
             int filter2, int filter3) {
         this.bridgeHandler = bridgeHandler;
@@ -58,11 +60,11 @@ class ObjectPropertyRequest<T extends ObjectProperties> implements Iterable<T> {
 
         List<T> messages = new ArrayList<T>();
         int currentObjectNumber = 0;
-        int relativeOffsetDirection = 1;
+
         while (true) {
             try {
                 Message message = bridgeHandler.reqObjectProperties(request.getPropertyRequest(), currentObjectNumber,
-                        relativeOffsetDirection, filter1, filter2, filter3);
+                        RELATIVE_OFFSET_DIRECTION, filter1, filter2, filter3);
                 if (message.getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
                     ObjectProperties objectProperties = (ObjectProperties) message;
                     currentObjectNumber = objectProperties.getNumber();
