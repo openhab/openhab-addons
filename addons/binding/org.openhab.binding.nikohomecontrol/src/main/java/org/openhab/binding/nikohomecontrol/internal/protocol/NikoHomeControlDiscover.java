@@ -19,6 +19,7 @@ import java.net.InetAddress;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,18 +47,6 @@ public final class NikoHomeControlDiscover {
     private String nhcBridgeId = "";
     private boolean isNhcII;
 
-    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
-
-    static String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
-            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
-
     /**
      * Discover a Niko Home Control IP interface by broadcasting UDP packet 0x44 to port 10000. The IP interface will
      * reply. The address of the IP interface is than derived from that response.
@@ -82,7 +71,7 @@ public final class NikoHomeControlDiscover {
             while (true) {
                 datagramSocket.receive(packet);
                 logger.trace("Niko Home Control: bridge discovery response {}",
-                        bytesToHex(Arrays.copyOf(packet.getData(), packet.getLength())));
+                        HexUtils.bytesToHex(Arrays.copyOf(packet.getData(), packet.getLength())));
                 if (isNhc(packet)) {
                     break;
                 }

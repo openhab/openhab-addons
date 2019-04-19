@@ -19,4 +19,8 @@ package org.openhab.binding.nikohomecontrol.internal.protocol.nhc2;
  */
 class NhcService2 {
     String name;
+
+    String name() {
+        return name;
+    }
 }

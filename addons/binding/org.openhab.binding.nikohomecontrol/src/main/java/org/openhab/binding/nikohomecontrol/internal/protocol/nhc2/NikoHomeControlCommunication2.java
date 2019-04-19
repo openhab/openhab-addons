@@ -27,6 +27,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -805,13 +806,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
      * @return comma separated list of services retrieved from Connected Controller
      */
     public String getServices() {
-        StringBuilder builder = new StringBuilder();
-        for (NhcService2 service : services) {
-            if (builder.length() > 0) {
-                builder.append(", ");
-            }
-            builder.append(service.name);
-        }
-        return builder.toString();
+        return services.stream().map(NhcService2::name).collect(Collectors.joining(", "));
     }
 }

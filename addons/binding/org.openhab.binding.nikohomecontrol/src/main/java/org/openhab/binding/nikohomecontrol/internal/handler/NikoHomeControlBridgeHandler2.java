@@ -48,7 +48,7 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
     public void initialize() {
         logger.debug("Niko Home Control: initializing NHC II bridge handler");
 
-        config = getConfig().as(NikoHomeControlBridgeConfig2.class);
+        setConfig();
 
         String profile = getProfile();
         logger.debug("Niko Home Control: touch profile {}", profile);
@@ -120,5 +120,10 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
             return "";
         }
         return password;
+    }
+
+    @Override
+    protected void setConfig() {
+        config = getConfig().as(NikoHomeControlBridgeConfig2.class);
     }
 }

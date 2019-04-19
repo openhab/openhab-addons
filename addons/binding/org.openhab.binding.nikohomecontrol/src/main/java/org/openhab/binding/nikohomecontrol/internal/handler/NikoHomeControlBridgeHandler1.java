@@ -43,7 +43,7 @@ public class NikoHomeControlBridgeHandler1 extends NikoHomeControlBridgeHandler 
     public void initialize() {
         logger.debug("Niko Home Control: initializing bridge handler");
 
-        config = getConfig().as(NikoHomeControlBridgeConfig.class);
+        setConfig();
         InetAddress addr = getAddr();
         int port = getPort();
 
