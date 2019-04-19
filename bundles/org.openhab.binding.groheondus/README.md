@@ -112,7 +112,7 @@ Here's a short step-by-step guide on how to obtain a refresh token:
 5. You will automatically being redirected to the GROHE ONDUS login page, login there
 6. After logging in successfully, nothing should happen, except a failed request to a page starting with `token?`
 7. Click on this request (the URL in the request overview should start with `ondus://idp2-apigw.cloud.grohe.com/v3/iot/oidc/token?` or something like that
-8: Copy the whole request URL (which should contain a lot of stuff, like a `state` parameter and so on)
+8. Copy the whole request URL (which should contain a lot of stuff, like a `state` parameter and so on)
 9. Open a new tab in your Internet browser and paste the URL into the address bar (do not hit ENTER or start the navigation to this page, yet)
 10. Replace the `ondus://` part of the URL with `https://` and hit ENTER
 11. The response of the page should be plain text with a so called `JSON object`. Somewhere in the text should be a `refresh_token` string, select the string after this `refresh_token` text, which is encapsulated with `"`.
