@@ -13,10 +13,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Timer;
+import java.util.Collection;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -25,6 +24,8 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.type.ChannelDefinition;
+import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.kvv.internal.DepartureResult.Departure;
 import org.slf4j.Logger;
@@ -47,7 +48,7 @@ public class KVVHandler extends BaseThingHandler {
     private KVVConfiguration config;
 
     /** the channels */
-    private final List<ChannelUID> channels;
+    private final KVVTrainChannelTypeProvider channelGroupProvider;
 
     /** the most up to date status */
     @Nullable
@@ -56,36 +57,36 @@ public class KVVHandler extends BaseThingHandler {
     /**
      * Creates a new {@link KVVHandler}
      *
-     * @param thing the {@link Thing} which is refered to.
+     * @param thing the {@link Thing} which is referred to.
      */
     public KVVHandler(Thing thing) {
         super(thing);
-        this.channels = new LinkedList<ChannelUID>();
-
-        for (final Channel channel : thing.getChannels()) {
-            this.channels.add(channel.getUID());
-            logger.info(channel.getUID().getAsString());
-        }
-
-        for (final String key : thing.getConfiguration().getProperties().keySet()) {
-            logger.info(key + " -> " + thing.getConfiguration().get(key));
-        }
-
         this.config = getConfigAs(KVVConfiguration.class);
         this.departures = null;
+        this.channelGroupProvider = new KVVTrainChannelTypeProvider();
+
+        for (int i = 0; i < this.config.count; i++) {
+            this.channelGroupProvider.addChannelGroupType(i, config.name.toLowerCase());
+        }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        this.handleRefresh(channelUID);
+
     }
 
     /**
-     * Refreshes all {@link Channel Channels}
+     * Refreshes all {@link Channel Channels}.
      */
     public void refreshAll() {
-        for (final ChannelUID channel : this.channels) {
-            this.handleRefresh(channel);
+        final Collection<ChannelGroupType> channelGroups = this.channelGroupProvider.getChannelGroupTypes(null);
+        if (channelGroups == null) {
+            return;
+        }
+        for (final ChannelGroupType group : channelGroups) {
+            for (final ChannelDefinition channel : group.getChannelDefinitions()) {
+                this.handleRefresh(group, channel);
+            }
         }
     }
 
@@ -95,42 +96,40 @@ public class KVVHandler extends BaseThingHandler {
      * @param channelUID the {@link ChannelUID} of the {@link Channel}
      */
     @SuppressWarnings("null")
-    private void handleRefresh(ChannelUID channelUID) {
-        final int id = Integer.parseInt(channelUID.getId().replaceAll("[^0-9]", ""));
-        final String type = channelUID.getId().substring(channelUID.getId().lastIndexOf('_') + 1);
-
-        logger.debug("Refresh for '" + channelUID.getId() + "'. Id is #" + id + ", type is '" + type + "'");
+    private void handleRefresh(final ChannelGroupType group, final ChannelDefinition channel) {
+        final ChannelUID uid = new ChannelUID(group.getUID().getAsString() + ":train:" + channel.getId());
 
         if (this.departures == null) {
-            logger.info("departure is null...");
-            updateState(channelUID, new StringType(""));
+            logger.info("failed to update state of '" + uid.getAsString() + "': no departures available");
+            updateState(uid, new StringType(""));
             return;
         }
 
-        if (this.departures.getDepartures().size() - 1 < id) {
-            logger.info("Train with #" + id + " does not exist.");
-            updateState(channelUID, new StringType(""));
+        final int departureId = Integer.parseInt(group.getUID().getAsString().replaceAll("[^0-9]", ""));
+        if (this.departures.getDepartures().size() - 1 < departureId) {
+            logger.info("failed to update state of '" + uid.getAsString() + "': train with this id does not exist");
+            updateState(uid, new StringType(""));
             return;
         }
 
-        final Departure departure = this.departures.getDepartures().get(id);
+        final Departure departure = this.departures.getDepartures().get(departureId);
         if (departure == null) {
-            updateState(channelUID, new StringType(""));
+            updateState(uid, new StringType(""));
             return;
         }
 
-        switch (type) {
+        switch (channel.getId()) {
             case "name":
-                updateState(channelUID, new StringType(departure.getRoute()));
+                updateState(uid, new StringType(departure.getRoute()));
                 break;
             case "destination":
-                updateState(channelUID, new StringType(departure.getDestination()));
+                updateState(uid, new StringType(departure.getDestination()));
                 break;
             case "eta":
-                updateState(channelUID, new StringType(departure.getTime()));
+                updateState(uid, new StringType(departure.getTime()));
                 break;
             default:
-                updateState(channelUID, new StringType(""));
+                updateState(uid, new StringType(""));
         }
     }
 
@@ -141,27 +140,23 @@ public class KVVHandler extends BaseThingHandler {
      */
     private synchronized void setDepartures(final DepartureResult departures) {
         this.departures = departures;
-
     }
 
     @Override
     public void initialize() {
-        logger.error("Start initializing!");
-        updateStatus(ThingStatus.UNKNOWN);
-
         scheduler.execute(() -> {
             logger.info("Starting inital fetch");
             final UpdateTask updateThread = new UpdateTask();
             final DepartureResult departures = updateThread.get();
             if (departures != null) {
                 this.setDepartures(departures);
-                updateStatus(ThingStatus.ONLINE);
 
                 // Schedule update and refresh tasks
                 this.scheduler.scheduleWithFixedDelay(new UpdateTask(), 0, this.config.updateInterval,
                         TimeUnit.MILLISECONDS);
                 this.scheduler.scheduleWithFixedDelay(new RefreshTask(), 0, this.config.updateInterval,
                         TimeUnit.MILLISECONDS);
+                updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
@@ -214,7 +209,7 @@ public class KVVHandler extends BaseThingHandler {
 
                 return new Gson().fromJson(json.toString(), DepartureResult.class);
             } catch (IOException e) {
-                logger.info("Failed to connect to '" + this.url + "'", e);
+                logger.error("Failed to connect to '" + this.url + "'", e);
                 return null;
             }
         }
