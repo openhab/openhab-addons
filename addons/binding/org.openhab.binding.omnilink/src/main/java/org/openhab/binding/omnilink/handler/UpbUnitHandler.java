@@ -48,7 +48,6 @@ public class UpbUnitHandler extends DimmableUnitHandler {
         logger.debug("Requesting Status for UPB Unit: {}", unitNumber);
         sendOmnilinkCommand(CommandMessage.CMD_UNIT_UPB_REQ_STATUS, 0, unitNumber);
         updateState(OmnilinkBindingConstants.CHANNEL_UPB_STATUS, UnDefType.UNDEF);
-
     }
 
 }

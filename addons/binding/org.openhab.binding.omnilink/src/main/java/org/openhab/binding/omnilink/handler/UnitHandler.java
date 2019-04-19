@@ -28,6 +28,7 @@ import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
+import com.digitaldan.jomnilinkII.MessageTypes.systemevents.SwitchPressEvent;
 
 /**
  *
@@ -66,21 +67,21 @@ public class UnitHandler extends AbstractOmnilinkStatusHandler<UnitStatus> {
     private void handleUnitDuration(@NonNull String id, @NonNull DecimalType command) {
         final int unitId = getThingNumber();
         final OmniLinkCmd omniCmd;
-        if (id == CHANNEL_UNIT_ON_FOR_SECONDS || id == CHANNEL_UNIT_ON_FOR_MINUTES || id == CHANNEL_UNIT_ON_FOR_HOURS) {
+
+        if (id.startsWith("on")) {
             omniCmd = OmniLinkCmd.CMD_UNIT_ON;
-        } else if (id == CHANNEL_UNIT_OFF_FOR_SECONDS || id == CHANNEL_UNIT_OFF_FOR_MINUTES
-                || id == CHANNEL_UNIT_OFF_FOR_HOURS) {
+        } else if (id.startsWith("off")) {
             omniCmd = OmniLinkCmd.CMD_UNIT_OFF;
         } else {
             throw new IllegalArgumentException();
         }
 
         final int duration;
-        if (id == CHANNEL_UNIT_ON_FOR_SECONDS || id == CHANNEL_UNIT_OFF_FOR_SECONDS) {
+        if (id.endsWith("seconds")) {
             duration = command.intValue();
-        } else if (id == CHANNEL_UNIT_ON_FOR_MINUTES || id == CHANNEL_UNIT_OFF_FOR_MINUTES) {
+        } else if (id.endsWith("minutes")) {
             duration = command.intValue() + 100;
-        } else if (id == CHANNEL_UNIT_ON_FOR_HOURS || id == CHANNEL_UNIT_OFF_FOR_HOURS) {
+        } else if (id.endsWith("hours")) {
             duration = command.intValue() + 200;
         } else {
             throw new IllegalArgumentException();
@@ -154,6 +155,17 @@ public class UnitHandler extends AbstractOmnilinkStatusHandler<UnitStatus> {
         private static final int UNIT_SCENE_L = 13;
         private static final int UNIT_LEVEL_0 = 100;
         private static final int UNIT_LEVEL_100 = 200;
+    }
+
+    /**
+     * Handle a switch press event. Trigger appropriate channel.
+     *
+     * @param switchPressEvent
+     *
+     */
+    public void handleSwitchPressEvent(SwitchPressEvent switchPressEvent) {
+        ChannelUID activateChannel = new ChannelUID(getThing().getUID(), TRIGGER_CHANNEL_SWITCH_PRESS_EVENT);
+        triggerChannel(activateChannel, Integer.toString(switchPressEvent.getSwitchValue()));
     }
 
 }

@@ -29,6 +29,11 @@ import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.AudioSourceStatus;
 
+/**
+ *
+ * @author Brian O'Connell
+ *
+ */
 public class AudioSourceHandler extends AbstractOmnilinkHandler {
 
     private final static Logger logger = LoggerFactory.getLogger(AudioSourceHandler.class);

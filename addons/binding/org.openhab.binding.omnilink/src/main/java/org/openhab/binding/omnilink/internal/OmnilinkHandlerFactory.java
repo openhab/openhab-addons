@@ -26,7 +26,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.omnilink.discovery.OmnilinkDiscoveryService;
-import org.openhab.binding.omnilink.handler.AreaHandler;
 import org.openhab.binding.omnilink.handler.AudioSourceHandler;
 import org.openhab.binding.omnilink.handler.AudioZoneHandler;
 import org.openhab.binding.omnilink.handler.ButtonHandler;
@@ -34,6 +33,8 @@ import org.openhab.binding.omnilink.handler.DimmableUnitHandler;
 import org.openhab.binding.omnilink.handler.FlagHandler;
 import org.openhab.binding.omnilink.handler.HumiditySensorHandler;
 import org.openhab.binding.omnilink.handler.LockHandler;
+import org.openhab.binding.omnilink.handler.LuminaAreaHandler;
+import org.openhab.binding.omnilink.handler.OmniAreaHandler;
 import org.openhab.binding.omnilink.handler.OmnilinkBridgeHandler;
 import org.openhab.binding.omnilink.handler.OutputHandler;
 import org.openhab.binding.omnilink.handler.TempSensorHandler;
@@ -68,8 +69,8 @@ public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
     private static final Logger logger = LoggerFactory.getLogger(OmnilinkHandlerFactory.class);
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(THING_TYPE_OMNI_AREA, THING_TYPE_ZONE, THING_TYPE_BRIDGE, THING_TYPE_FLAG, THING_TYPE_ROOM,
-                    THING_TYPE_BUTTON, THING_TYPE_UNIT_UPB, THING_TYPE_THERMOSTAT, THING_TYPE_CONSOLE,
+            .of(THING_TYPE_OMNI_AREA, THING_TYPE_LUMINA_AREA, THING_TYPE_ZONE, THING_TYPE_BRIDGE, THING_TYPE_FLAG,
+                    THING_TYPE_ROOM, THING_TYPE_BUTTON, THING_TYPE_UNIT_UPB, THING_TYPE_THERMOSTAT, THING_TYPE_CONSOLE,
                     THING_TYPE_AUDIO_ZONE, THING_TYPE_AUDIO_SOURCE, THING_TYPE_TEMP_SENSOR, THING_TYPE_HUMIDITY_SENSOR,
                     THING_TYPE_LOCK, THING_TYPE_OUTPUT, THING_TYPE_UNIT, THING_TYPE_DIMMABLE)
             .collect(Collectors.toSet()));
@@ -84,6 +85,7 @@ public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+
         if (thingTypeUID.equals(THING_TYPE_UNIT_UPB)) {
             return new UpbUnitHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
@@ -93,7 +95,9 @@ public class OmnilinkHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(THING_TYPE_ZONE)) {
             return new ZoneHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_OMNI_AREA)) {
-            return new AreaHandler(thing);
+            return new OmniAreaHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_LUMINA_AREA)) {
+            return new LuminaAreaHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_FLAG)) {
             return new FlagHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_UNIT)) {

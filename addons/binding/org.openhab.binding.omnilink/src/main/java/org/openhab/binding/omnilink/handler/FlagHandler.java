@@ -16,7 +16,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,10 +63,8 @@ public class FlagHandler extends UnitHandler {
     @Override
     public void updateChannels(UnitStatus unitStatus) {
         logger.debug("need to handle status update{}", unitStatus);
-        updateState(OmnilinkBindingConstants.CHANNEL_FLAG_VALUE,
-                DecimalType.valueOf(Integer.toString(unitStatus.getStatus())));
-        updateState(OmnilinkBindingConstants.CHANNEL_FLAG_SWITCH,
-                unitStatus.getStatus() == 0 ? OnOffType.OFF : OnOffType.ON);
+        updateState(CHANNEL_FLAG_VALUE, DecimalType.valueOf(Integer.toString(unitStatus.getStatus())));
+        updateState(CHANNEL_FLAG_SWITCH, unitStatus.getStatus() == 0 ? OnOffType.OFF : OnOffType.ON);
 
     }
 

@@ -74,6 +74,16 @@
         <label>Last log entry in the OmniController</label>
         <description>Last log message on the Omni. Represented in JSON.</description>
     </channel-type>
+    <channel-type id="upb_link_activated_event">
+        <kind>trigger</kind>
+        <label>UBB Link</label>
+        <description>Event sent when a UPB link is activated</description>
+    </channel-type>
+    <channel-type id="upb_link_deactivated_event">
+        <kind>trigger</kind>
+        <label>UBB Link</label>
+        <description>Event sent when a UPB link is deactivated</description>
+    </channel-type>
     <channel-type id="phone_line_event">
         <kind>trigger</kind>
         <label>Phone Line Event</label>

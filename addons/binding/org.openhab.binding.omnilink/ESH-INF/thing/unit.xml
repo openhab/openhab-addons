@@ -50,7 +50,8 @@
             <channel id="on_for_minutes" typeId="on_for_minutes"/>
             <channel id="off_for_minutes" typeId="off_for_minutes"/>    
             <channel id="on_for_hours" typeId="on_for_hours"/>
-            <channel id="off_for_hours" typeId="off_for_hours"/>        
+            <channel id="off_for_hours" typeId="off_for_hours"/>     
+            <channel id="switch_press_event" typeId="switch_press_event"/>        
         </channels>
         <properties>
             <property name="name" />
@@ -81,6 +82,7 @@
             <channel id="on_for_hours" typeId="on_for_hours"/>
             <channel id="off_for_hours" typeId="off_for_hours"/>  
             <channel id="upb_status" typeId="upb_status"/> 	
+            <channel id="switch_press_event" typeId="switch_press_event"/>   
 		</channels>
         <properties>
             <property name="name" />
@@ -349,10 +351,10 @@
 
 
     <channel-type id="upb_status">
-        <item-type>Switch</item-type>
+        <kind>trigger</kind>
         <label>UPB Status</label>
         <description>Send request status message</description>
-        <category>Contact</category>
+        <category>Status</category>
     </channel-type>
 
     
@@ -407,6 +409,12 @@
         <label>Flag Switch</label>
         <description>On/Off for a flag</description>
         <category>Switch</category>
+    </channel-type>
+    
+    <channel-type id="switch_press_event">
+        <kind>trigger</kind>
+        <label>Switch Press</label>
+        <description>ALC, UPB, Radio RA or Starlite switch press</description>
     </channel-type>
     
 </thing:thing-descriptions>

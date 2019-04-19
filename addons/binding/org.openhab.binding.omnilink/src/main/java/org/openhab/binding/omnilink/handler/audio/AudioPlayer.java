@@ -10,6 +10,11 @@ package org.openhab.binding.omnilink.handler.audio;
 
 import java.util.Optional;
 
+/**
+ *
+ * @author Brian O'Connell
+ *
+ */
 public enum AudioPlayer {
     NUVO(1, 6, 8, 7, 9, 10),
     NUVO_GRAND_ESSENTIA_SIMPLESE(2, 6, 8, 7, 9, 10),

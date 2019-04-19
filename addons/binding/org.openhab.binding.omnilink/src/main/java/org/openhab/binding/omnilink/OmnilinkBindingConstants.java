@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.omnilink;
 
+import java.math.BigInteger;
+
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -41,9 +43,39 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_AREA_ALARM_WATER = "alarm_water";
     public final static String CHANNEL_AREA_ALARM_DURESS = "alarm_duress";
     public final static String CHANNEL_AREA_ALARM_TEMPERATURE = "alarm_temperature";
-    public final static String[] CHANNEL_AREA_ALARMS = { CHANNEL_AREA_ALARM_BURGLARY, CHANNEL_AREA_ALARM_FIRE,
-            CHANNEL_AREA_ALARM_GAS, CHANNEL_AREA_ALARM_AUXILARY, CHANNEL_AREA_ALARM_FREEZE, CHANNEL_AREA_ALARM_WATER,
-            CHANNEL_AREA_ALARM_DURESS, CHANNEL_AREA_ALARM_TEMPERATURE };
+
+    public enum AreaAlarm {
+        BURGLERY(CHANNEL_AREA_ALARM_BURGLARY, 0),
+        FIRE(CHANNEL_AREA_ALARM_FIRE, 1),
+        GAS(CHANNEL_AREA_ALARM_GAS, 2),
+        AUXILARY(CHANNEL_AREA_ALARM_AUXILARY, 3),
+        FREEZE(CHANNEL_AREA_ALARM_FREEZE, 4),
+        WATER(CHANNEL_AREA_ALARM_WATER, 5),
+        DURESS(CHANNEL_AREA_ALARM_DURESS, 6),
+        TEMPERATURE(CHANNEL_AREA_ALARM_TEMPERATURE, 7);
+
+        private final String channelUID;
+        private final int bit;
+
+        AreaAlarm(String channelUID, int bit) {
+            this.channelUID = channelUID;
+            this.bit = bit;
+        }
+
+        public boolean isSet(BigInteger alarmBits) {
+            return alarmBits.testBit(bit);
+        }
+
+        public boolean isSet(int alarmBits) {
+            return isSet(BigInteger.valueOf(alarmBits));
+        }
+
+        public String getChannelUID() {
+            return channelUID;
+        }
+
+    }
+
     public final static String CHANNEL_AREA_SECURITY_MODE_DISARM = "disarm";
     public final static String CHANNEL_AREA_SECURITY_MODE_DAY = "day";
     public final static String CHANNEL_AREA_SECURITY_MODE_NIGHT = "night";
@@ -52,15 +84,20 @@ public class OmnilinkBindingConstants {
     public final static String CHANNEL_AREA_SECURITY_MODE_DAY_INSTANT = "day_instant";
     public final static String CHANNEL_AREA_SECURITY_MODE_NIGHT_DELAYED = "night_delayed";
 
+    public final static String CHANNEL_AREA_SECURITY_MODE_HOME = "home";
+    public final static String CHANNEL_AREA_SECURITY_MODE_SLEEP = "sleep";
+    public final static String CHANNEL_AREA_SECURITY_MODE_PARTY = "party";
+    public final static String CHANNEL_AREA_SECURITY_MODE_SPECIAL = "special";
+
     // units
     public final static String CHANNEL_UNIT_LEVEL = "level";
     public final static String CHANNEL_UNIT_SWITCH = "switch";
-    public final static String CHANNEL_UNIT_ON_FOR_SECONDS = "on_seconds";
-    public final static String CHANNEL_UNIT_ON_FOR_MINUTES = "on_minutes";
-    public final static String CHANNEL_UNIT_ON_FOR_HOURS = "on_hours";
-    public final static String CHANNEL_UNIT_OFF_FOR_SECONDS = "off_seconds";
-    public final static String CHANNEL_UNIT_OFF_FOR_MINUTES = "off_minutes";
-    public final static String CHANNEL_UNIT_OFF_FOR_HOURS = "off_hours";
+    public final static String CHANNEL_UNIT_ON_FOR_SECONDS = "on_for_seconds";
+    public final static String CHANNEL_UNIT_ON_FOR_MINUTES = "on_for_minutes";
+    public final static String CHANNEL_UNIT_ON_FOR_HOURS = "on_for_hours";
+    public final static String CHANNEL_UNIT_OFF_FOR_SECONDS = "off_for_seconds";
+    public final static String CHANNEL_UNIT_OFF_FOR_MINUTES = "off_for_minutes";
+    public final static String CHANNEL_UNIT_OFF_FOR_HOURS = "off_for_hours";
     public final static String CHANNEL_FLAG_VALUE = "value";
     public final static String CHANNEL_FLAG_SWITCH = "switch";
     public final static String CHANNEL_ROOM_SWITCH = "switch";
@@ -135,6 +172,9 @@ public class OmnilinkBindingConstants {
     public final static String TRIGGER_CHANNEL_ACCESS_CONTROL_READER_EVENT = "access_control_reader_event";
     public final static String TRIGGER_CHANNEL_AREA_ALL_ON_OFF_EVENT = "all_on_off_Event";
     public final static String TRIGGER_CHANNEL_ZONE_STATE_EVENT = "zone_state_Event";
+    public final static String TRIGGER_CHANNEL_SWITCH_PRESS_EVENT = "switch_press_event";
+    public final static String TRIGGER_CHANNEL_UPB_LINK_ACTIVATED_EVENT = "upb_link_activated_event";
+    public final static String TRIGGER_CHANNEL_UPB_LINK_DEACTIVATED_EVENT = "upb_link_deactivated_event";
 
     // thing configuration and properties keys
     public final static String THING_PROPERTIES_NAME = "name";

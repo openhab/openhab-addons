@@ -21,6 +21,11 @@ import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.EventLogData;
 import com.google.gson.Gson;
 
+/**
+ *
+ * @author Craig Hamilton
+ *
+ */
 public class EventLogPoller {
 
     private final static Logger logger = LoggerFactory.getLogger(AudioSourceHandler.class);

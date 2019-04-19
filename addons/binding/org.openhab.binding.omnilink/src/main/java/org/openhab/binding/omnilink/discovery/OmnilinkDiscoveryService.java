@@ -27,6 +27,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
+import org.openhab.binding.omnilink.SystemType;
 import org.openhab.binding.omnilink.handler.BridgeOfflineException;
 import org.openhab.binding.omnilink.handler.OmnilinkBridgeHandler;
 import org.slf4j.Logger;
@@ -52,10 +53,11 @@ import com.digitaldan.jomnilinkII.MessageTypes.properties.ZoneProperties;
  *
  */
 public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
+
     private static final Logger logger = LoggerFactory.getLogger(OmnilinkDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
     private OmnilinkBridgeHandler bridgeHandler;
-    private boolean isLumina = false;
+    private SystemType systemType;
     private List<AreaProperties> areas;
 
     private final static Set<Integer> TEMP_SENSOR_TYPES = Collections
@@ -79,7 +81,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Starting scan");
         try {
             SystemInformation info = bridgeHandler.reqSystemInformation();
-            isLumina = info.getModel() == 36 || info.getModel() == 37;
+            systemType = SystemType.getType(info.getModel());
             areas = discoverAreas();
             discoverUnits();
             discoverZones();
@@ -302,7 +304,8 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
 
             int objnum = areaProperties.getNumber();
 
-            // it seems that simple configurations of an omnilink have 1 area, without a name. So if there is no name
+            // it seems that simple configurations of an omnilink have 1 area, without a name. So if there is no
+            // name
             // for
             // the first area, we will call that Main. If other areas name is blank, we will not create a thing
             String areaName = areaProperties.getName();
@@ -314,13 +317,19 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
 
             Map<String, Object> properties = new HashMap<>();
             ThingUID thingUID;
-            if (isLumina) {
-                thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_LUMINA_AREA,
-                        bridgeHandler.getThing().getUID(), Integer.toString(objnum));
-            } else {
-                thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_OMNI_AREA,
-                        bridgeHandler.getThing().getUID(), Integer.toString(objnum));
+            switch (systemType) {
+                case LUMINA:
+                    thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_LUMINA_AREA,
+                            bridgeHandler.getThing().getUID(), Integer.toString(objnum));
+                    break;
+                case OMNI:
+                    thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_OMNI_AREA,
+                            bridgeHandler.getThing().getUID(), Integer.toString(objnum));
+                    break;
+                default:
+                    throw new IllegalStateException("Unknown System Type");
             }
+
             properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objnum);
             properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, areaName);
 
@@ -334,14 +343,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
 
     private void discoverUnits()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
-        ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
-        // Group Lights_GreatRoom "Great Room" (Lights)
-        // String groupString = "Group\t%s\t\"%s\"\t(%s)\n";
-
-        // Dimmer Lights_GreatRoom_MainLights_Switch "Main Lights [%d%%]" (Lights_GreatRoom) {omnilink="unit:10"}
-        // String itemString = "%s\t%s\t\"%s\"\t(%s)\t{omnilink=\"unit:%d\"}\n";
-
-        // String groupName = "Lights";
+        final ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
 
         for (AreaProperties areaProperties : areas) {
             int areaFilter = bitFilterForArea(areaProperties);

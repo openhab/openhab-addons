@@ -58,11 +58,11 @@ class ObjectPropertyRequest<T extends ObjectProperties> implements Iterable<T> {
 
         List<T> messages = new ArrayList<T>();
         int currentObjectNumber = 0;
-        int RELATIVE_OFFSET_DIRECTION = 1;
+        int relativeOffsetDirection = 1;
         while (true) {
             try {
                 Message message = bridgeHandler.reqObjectProperties(request.getPropertyRequest(), currentObjectNumber,
-                        RELATIVE_OFFSET_DIRECTION, filter1, filter2, filter3);
+                        relativeOffsetDirection, filter1, filter2, filter3);
                 if (message.getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
                     ObjectProperties objectProperties = (ObjectProperties) message;
                     currentObjectNumber = objectProperties.getNumber();
@@ -76,40 +76,6 @@ class ObjectPropertyRequest<T extends ObjectProperties> implements Iterable<T> {
             }
         }
         return messages.iterator();
-        // return new Iterator<T>() {
-        // private final static int RELATIVE_OFFSET_DIRECTION = 1;
-        //
-        // int currentObjectNumber = 0;
-        //
-        // @Override
-        // protected T computeNext() {
-        //
-        // }
-        //
-        // @Override
-        // public boolean hasNext() {
-        // // TODO Auto-generated method stub
-        // return false;
-        // }
-        //
-        // @Override
-        // public T next() {
-        // try {
-        // Message message = bridgeHandler.reqObjectProperties(request.getPropertyRequest(),
-        // currentObjectNumber, RELATIVE_OFFSET_DIRECTION, filter1, filter2, filter3);
-        // if (message.getMessageType() == Message.MESG_TYPE_OBJ_PROP) {
-        // ObjectProperties objectProperties = (ObjectProperties) message;
-        // currentObjectNumber = objectProperties.getNumber();
-        // return request.getResponseType().cast(objectProperties);
-        // } else {
-        // return endOfData();
-        // }
-        // } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
-        // logger.error("Error retrieving object properties", e);
-        // throw new RuntimeException(e);
-        // }
-        // }
-        // };
     }
 
     public static class Builder<T extends ObjectProperties> {

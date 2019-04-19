@@ -19,7 +19,7 @@ public enum TemperatureFormat {
     // Don't convert zero - it appears that is what omni returns when there is no value.
     CELSIUS(2) {
         @Override
-        int omniToFormat(int omniNumber) {
+        float omniToFormat(int omniNumber) {
             return MessageUtils.omniToC(omniNumber);
         }
 
@@ -30,7 +30,7 @@ public enum TemperatureFormat {
     },
     FAHRENHEIT(1) {
         @Override
-        int omniToFormat(int omniNumber) {
+        float omniToFormat(int omniNumber) {
             return MessageUtils.omniToF(omniNumber);
         }
 
@@ -42,7 +42,7 @@ public enum TemperatureFormat {
 
     private final int formatNumber;
 
-    private TemperatureFormat(int formatNumber) {
+    TemperatureFormat(int formatNumber) {
         this.formatNumber = formatNumber;
     }
 
@@ -52,7 +52,7 @@ public enum TemperatureFormat {
      * @param omniNumber Number to convert
      * @return Number converted to appropriate format.
      */
-    abstract int omniToFormat(int omniNumber);
+    abstract float omniToFormat(int omniNumber);
 
     /**
      * Convert a number from this format into an omni number.

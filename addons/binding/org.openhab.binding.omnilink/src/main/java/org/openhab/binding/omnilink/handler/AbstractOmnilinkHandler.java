@@ -19,6 +19,11 @@ import org.slf4j.LoggerFactory;
 import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
 import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 
+/**
+ *
+ * @author Brian O'Connell
+ *
+ */
 public abstract class AbstractOmnilinkHandler extends BaseThingHandler {
 
     private final static Logger logger = LoggerFactory.getLogger(AbstractOmnilinkHandler.class);

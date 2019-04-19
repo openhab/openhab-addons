@@ -7,7 +7,7 @@ Bundle-Version: 2.4.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  lib/gson-2.8.2.jar,
- lib/jomnilink-1.3.0-SNAPSHOT.jar
+ lib/jomnilink-1.3.3.jar
 Import-Package: 
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
