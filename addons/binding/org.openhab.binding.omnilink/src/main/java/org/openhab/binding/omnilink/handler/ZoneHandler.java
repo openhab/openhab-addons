@@ -68,7 +68,7 @@ public class ZoneHandler extends AbstractOmnilinkStatusHandler<ZoneStatus> {
             logger.error("Invalid code length, code must be 4 digits");
         } else {
             try {
-                SecurityCodeValidation codeValidation = getOmnilinkBridgeHander().reqSecurityCodeValidation(areaNumber,
+                SecurityCodeValidation codeValidation = getOmnilinkBridgeHandler().reqSecurityCodeValidation(areaNumber,
                         Character.getNumericValue(code[0]), Character.getNumericValue(code[1]),
                         Character.getNumericValue(code[2]), Character.getNumericValue(code[3]));
                 /*
@@ -84,7 +84,7 @@ public class ZoneHandler extends AbstractOmnilinkStatusHandler<ZoneStatus> {
                  */
                 if ((codeValidation.getCodeNumber() > 0 && codeValidation.getCodeNumber() <= 99)
                         && codeValidation.getAuthorityLevel() > 0) {
-                    getOmnilinkBridgeHander().sendOmnilinkCommand(mode, codeValidation.getCodeNumber(), zoneNumber);
+                    sendOmnilinkCommand(mode, codeValidation.getCodeNumber(), zoneNumber);
                 } else {
                     logger.error("System reported an invalid code");
                 }
@@ -121,7 +121,7 @@ public class ZoneHandler extends AbstractOmnilinkStatusHandler<ZoneStatus> {
         logger.debug("Updating zone status");
         try {
             int zoneId = getThingNumber();
-            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_ZONE, zoneId,
+            ObjectStatus objStatus = getOmnilinkBridgeHandler().requestObjectStatus(Message.OBJ_TYPE_ZONE, zoneId,
                     zoneId, false);
             return Optional.of((ZoneStatus) objStatus.getStatuses()[0]);
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {

@@ -30,11 +30,11 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
  * @author craigh
  *
  */
-public class RoomHandler extends AbstractOmnilinkStatusHandler<UnitStatus> implements UnitHandler {
+public class UpbRoomHandler extends UnitHandler {
 
-    private Logger logger = LoggerFactory.getLogger(RoomHandler.class);
+    private Logger logger = LoggerFactory.getLogger(UpbRoomHandler.class);
 
-    public RoomHandler(Thing thing) {
+    public UpbRoomHandler(Thing thing) {
         super(thing);
     }
 
@@ -69,38 +69,18 @@ public class RoomHandler extends AbstractOmnilinkStatusHandler<UnitStatus> imple
             if (linkNum > -1) {
                 int roomNum = (unitNum + 7) / 8;
                 int param2 = ((roomNum * 6) - 3) + linkNum;
-                try {
-                    getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_UPB_LINK_ON.getNumber(), param1,
-                            param2);
-                } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
-                    logger.debug("Could not send command to omnilink: {}", e);
-                }
+
+                sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_UPB_LINK_ON.getNumber(), param1, param2);
+
             }
         } else if (OmnilinkBindingConstants.CHANNEL_ROOM_SWITCH.equals(channelID)) {
-            int cmd;
-            if (OnOffType.ON.equals(command)) {
-                cmd = OmniLinkCmd.CMD_UNIT_ON.getNumber();
-            } else {
-                cmd = OmniLinkCmd.CMD_UNIT_OFF.getNumber();
-            }
-            try {
-                getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, unitNum);
-            } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
-                logger.debug("Could not send command to omnilink: {}", e);
-            }
+            super.handleOnOff(command, unitNum);
         } else if (OmnilinkBindingConstants.CHANNEL_ROOM_ON.equals(channelID) && OnOffType.ON.equals(command)) {
             int cmd = OmniLinkCmd.CMD_UNIT_ON.getNumber();
-            try {
-                getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, unitNum);
-            } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
-                logger.debug("Could not send command to omnilink: {}", e);
-            }
+            sendOmnilinkCommand(cmd, 0, unitNum);
         } else if (OmnilinkBindingConstants.CHANNEL_ROOM_OFF.equals(channelID) && OnOffType.ON.equals(command)) {
-            try {
-                getOmnilinkBridgeHander().sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_OFF.getNumber(), 0, unitNum);
-            } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
-                logger.debug("Could not send command to omnilink: {}", e);
-            }
+            sendOmnilinkCommand(OmniLinkCmd.CMD_UNIT_OFF.getNumber(), 0, unitNum);
+
         } else if (OmnilinkBindingConstants.CHANNEL_ROOM_STATE.equals(channelID)) {
             int cmd = -1;
             int param2 = -1;
@@ -128,12 +108,8 @@ public class RoomHandler extends AbstractOmnilinkStatusHandler<UnitStatus> imple
 
                 }
                 if (cmd > -1 && param2 > -1) {
-                    try {
-                        getOmnilinkBridgeHander().sendOmnilinkCommand(cmd, 0, param2);
-                    } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException
-                            | BridgeOfflineException e) {
-                        logger.debug("Could not send command to omnilink: {}", e);
-                    }
+                    sendOmnilinkCommand(cmd, 0, param2);
+
                 } else {
                     logger.debug("Not sending message for scene, cmd: {}, param2: {}", cmd, param2);
                 }
@@ -174,7 +150,7 @@ public class RoomHandler extends AbstractOmnilinkStatusHandler<UnitStatus> imple
     protected Optional<UnitStatus> retrieveStatus() {
         try {
             int unitId = getThingNumber();
-            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_UNIT, unitId,
+            ObjectStatus objStatus = getOmnilinkBridgeHandler().requestObjectStatus(Message.OBJ_TYPE_UNIT, unitId,
                     unitId, false);
             return Optional.of((UnitStatus) objStatus.getStatuses()[0]);
 

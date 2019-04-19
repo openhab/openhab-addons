@@ -8,6 +8,9 @@
  */
 package org.openhab.binding.omnilink.handler;
 
+import java.math.BigInteger;
+import java.text.MessageFormat;
+import java.util.EnumSet;
 import java.util.Optional;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -18,6 +21,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
+import org.openhab.binding.omnilink.OmnilinkBindingConstants.AreaAlarm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,17 +31,17 @@ import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.ObjectStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.SecurityCodeValidation;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.AreaStatus;
-import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.AllOnOffEvent;
+import com.digitaldan.jomnilinkII.MessageTypes.systemevents.AllOnOffEvent;
 
 /**
  *
  * @author Craig Hamilton
  *
  */
-public class AreaHandler extends AbstractOmnilinkStatusHandler<AreaStatus> {
-    private Logger logger = LoggerFactory.getLogger(AreaHandler.class);
+public abstract class AbstractAreaHandler extends AbstractOmnilinkStatusHandler<AreaStatus> {
+    private Logger logger = LoggerFactory.getLogger(AbstractAreaHandler.class);
 
-    public AreaHandler(Thing thing) {
+    public AbstractAreaHandler(Thing thing) {
         super(thing);
     }
 
@@ -45,59 +49,28 @@ public class AreaHandler extends AbstractOmnilinkStatusHandler<AreaStatus> {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand: {}, command: {}", channelUID, command);
 
-        int areaNumber = getThingNumber();
-
-        // keypad command
-        if (OmnilinkBindingConstants.CHANNEL_AREA_ACTIVATE_KEYPAD_EMERGENCY.equals(channelUID.getId())) {
-            if (!(command instanceof DecimalType)) {
-                logger.debug("Command {} is not valid for channel {}, only DecimalTypes are accepted", command,
-                        channelUID.getId());
-                return;
-            }
-            try {
-                getOmnilinkBridgeHander().activateKeypadEmergency(areaNumber, ((DecimalType) command).intValue());
-            } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
-                logger.debug("Could not send command to omnilink: {}", e);
-            }
-            return;
-        }
-
-        // security mode commands;
-        int mode = -1;
         switch (channelUID.getId()) {
-            case OmnilinkBindingConstants.CHANNEL_AREA_SECURITY_MODE_DISARM:
-                mode = OmniLinkCmd.CMD_SECURITY_OMNI_DISARM.getNumber();
-                break;
-            case OmnilinkBindingConstants.CHANNEL_AREA_SECURITY_MODE_DAY:
-                mode = OmniLinkCmd.CMD_SECURITY_OMNI_DAY_MODE.getNumber();
-                break;
-            case OmnilinkBindingConstants.CHANNEL_AREA_SECURITY_MODE_NIGHT:
-                mode = OmniLinkCmd.CMD_SECURITY_OMNI_NIGHT_MODE.getNumber();
-                break;
-            case OmnilinkBindingConstants.CHANNEL_AREA_SECURITY_MODE_AWAY:
-                mode = OmniLinkCmd.CMD_SECURITY_OMNI_AWAY_MODE.getNumber();
-                break;
-            case OmnilinkBindingConstants.CHANNEL_AREA_SECURITY_MODE_VACATION:
-                mode = OmniLinkCmd.CMD_SECURITY_OMNI_VACATION_MODE.getNumber();
-                break;
-            case OmnilinkBindingConstants.CHANNEL_AREA_SECURITY_MODE_DAY_INSTANT:
-                mode = OmniLinkCmd.CMD_SECURITY_OMNI_DAY_INSTANCE_MODE.getNumber();
-                break;
-            case OmnilinkBindingConstants.CHANNEL_AREA_SECURITY_MODE_NIGHT_DELAYED:
-                mode = OmniLinkCmd.CMD_SECURITY_OMNI_NIGHT_DELAYED_MODE.getNumber();
+            case OmnilinkBindingConstants.CHANNEL_AREA_ACTIVATE_KEYPAD_EMERGENCY:
+                handleKeypadEmergency(channelUID, command);
                 break;
             default:
-                logger.debug("Unknown channel {}", channelUID.getId());
-                return;
+                handleSecurityMode(channelUID, command);
+                break;
         }
+
+    }
+
+    private void handleSecurityMode(ChannelUID channelUID, Command command) {
+        int mode = getMode(channelUID);
+        int areaNumber = getThingNumber();
 
         if (!(command instanceof StringType)) {
-            logger.debug("Command {} is not valid for channel {}, only StringType are accepted", command,
-                    channelUID.getId());
-            return;
+            throw new IllegalArgumentException(
+                    MessageFormat.format("Command {} is not valid for channel {}, only StringType are accepted",
+                            command, channelUID.getId()));
         }
 
-        logger.debug("Receievd mode {} on area {}", mode, areaNumber);
+        logger.debug("Received mode {} on area {}", mode, areaNumber);
 
         char[] code = command.toFullString().toCharArray();
         if (code.length != 4) {
@@ -105,7 +78,7 @@ public class AreaHandler extends AbstractOmnilinkStatusHandler<AreaStatus> {
         } else {
             // mode, codeNum, areaNum
             try {
-                SecurityCodeValidation codeValidation = getOmnilinkBridgeHander().reqSecurityCodeValidation(areaNumber,
+                SecurityCodeValidation codeValidation = getOmnilinkBridgeHandler().reqSecurityCodeValidation(areaNumber,
                         Character.getNumericValue(code[0]), Character.getNumericValue(code[1]),
                         Character.getNumericValue(code[2]), Character.getNumericValue(code[3]));
                 /*
@@ -122,7 +95,7 @@ public class AreaHandler extends AbstractOmnilinkStatusHandler<AreaStatus> {
                  */
                 if ((codeValidation.getCodeNumber() > 0 && codeValidation.getCodeNumber() <= 99)
                         && codeValidation.getAuthorityLevel() > 0) {
-                    getOmnilinkBridgeHander().sendOmnilinkCommand(mode, codeValidation.getCodeNumber(), areaNumber);
+                    sendOmnilinkCommand(mode, codeValidation.getCodeNumber(), areaNumber);
                 } else {
                     logger.error("System reported an invalid code");
                 }
@@ -134,7 +107,36 @@ public class AreaHandler extends AbstractOmnilinkStatusHandler<AreaStatus> {
         }
         // this is a send only channel, so don't store the user code
         updateState(channelUID, UnDefType.UNDEF);
+    }
 
+    /**
+     * Get the specific mode for the omni type
+     *
+     * @param channelUID Channel that maps to a mode
+     * @return Omni representation of mode.
+     */
+    protected abstract int getMode(ChannelUID channelUID);
+
+    /**
+     * Get the set of alarms supported by this area handler.
+     *
+     * @return Set of alarms for this handler.
+     */
+    protected abstract EnumSet<AreaAlarm> getAlarms();
+
+    private void handleKeypadEmergency(ChannelUID channelUID, Command command) {
+        if (command instanceof DecimalType) {
+            try {
+                int areaNumber = getThingNumber();
+                getOmnilinkBridgeHandler().activateKeypadEmergency(areaNumber, ((DecimalType) command).intValue());
+            } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
+                logger.debug("Could not send command to omnilink: {}", e);
+            }
+        } else {
+            throw new IllegalArgumentException(
+                    MessageFormat.format("Command {} is not valid for channel {}, only DecimalTypes are accepted",
+                            command, channelUID.getId()));
+        }
     }
 
     @Override
@@ -147,6 +149,7 @@ public class AreaHandler extends AbstractOmnilinkStatusHandler<AreaStatus> {
          * Unfortunately, this is not the case, but we can fix that by looking to see if the exit timer
          * is set and do this manually.
          */
+
         int mode = status.getExitTimer() > 0 ? status.getMode() | 1 << 3 : status.getMode();
         updateState(new ChannelUID(thing.getUID(), OmnilinkBindingConstants.CHANNEL_AREA_MODE), new DecimalType(mode));
 
@@ -154,15 +157,12 @@ public class AreaHandler extends AbstractOmnilinkStatusHandler<AreaStatus> {
          * Alarm status is actually 8 status, packed into each bit, so we loop through to see if a bit is set, note that
          * this means you can have multiple alarms set at once
          */
-        for (int i = 0; i < OmnilinkBindingConstants.CHANNEL_AREA_ALARMS.length; i++) {
-            if (((status.getAlarms() >> i) & 1) > 0) {
-                updateState(new ChannelUID(thing.getUID(), OmnilinkBindingConstants.CHANNEL_AREA_ALARMS[i]),
-                        OnOffType.ON);
-            } else {
-                updateState(new ChannelUID(thing.getUID(), OmnilinkBindingConstants.CHANNEL_AREA_ALARMS[i]),
-                        OnOffType.OFF);
-            }
+        BigInteger alarmBits = BigInteger.valueOf(status.getAlarms());
+        for (AreaAlarm alarm : getAlarms()) {
+            OnOffType alarmState = alarm.isSet(alarmBits) ? OnOffType.ON : OnOffType.OFF;
+            updateState(new ChannelUID(thing.getUID(), alarm.getChannelUID()), alarmState);
         }
+
     }
 
     public void handleAllOnOffEvent(AllOnOffEvent event) {
@@ -175,11 +175,11 @@ public class AreaHandler extends AbstractOmnilinkStatusHandler<AreaStatus> {
     protected Optional<AreaStatus> retrieveStatus() {
         try {
             int areaId = getThingNumber();
-            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_AREA, areaId,
+            ObjectStatus objStatus = getOmnilinkBridgeHandler().requestObjectStatus(Message.OBJ_TYPE_AREA, areaId,
                     areaId, false);
             return Optional.of((AreaStatus) objStatus.getStatuses()[0]);
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
-            logger.debug("Unexpected exception refreshing area:", e);
+            logger.debug("Unexpected exception refreshing area: ", e);
             return Optional.empty();
         }
     }

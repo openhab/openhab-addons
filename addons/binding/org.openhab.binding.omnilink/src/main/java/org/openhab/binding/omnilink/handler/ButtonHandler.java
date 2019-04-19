@@ -17,8 +17,6 @@ import org.openhab.binding.omnilink.OmnilinkBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
-import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 import com.digitaldan.jomnilinkII.MessageTypes.CommandMessage;
 
 /**
@@ -36,14 +34,11 @@ public class ButtonHandler extends AbstractOmnilinkHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (!(command instanceof RefreshType)) {
-            try {
-                int buttonNumber = getThingNumber();
-                logger.debug("Executing Button (macro) {}", buttonNumber);
-                getOmnilinkBridgeHander().sendOmnilinkCommand(CommandMessage.CMD_BUTTON, 0, buttonNumber);
-                updateState(OmnilinkBindingConstants.CHANNEL_BUTTON_PRESS, UnDefType.UNDEF);
-            } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
-                logger.debug("Could not send command to omnilink: {}", e);
-            }
+            int buttonNumber = getThingNumber();
+            logger.debug("Executing Button (macro) {}", buttonNumber);
+            sendOmnilinkCommand(CommandMessage.CMD_BUTTON, 0, buttonNumber);
+            updateState(OmnilinkBindingConstants.CHANNEL_BUTTON_PRESS, UnDefType.UNDEF);
+
         }
     }
 

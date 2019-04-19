@@ -8,6 +8,8 @@
  */
 package org.openhab.binding.omnilink.discovery;
 
+import static com.digitaldan.jomnilinkII.MessageTypes.properties.UnitProperties.*;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Collections;
@@ -15,7 +17,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,6 +27,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
+import org.openhab.binding.omnilink.SystemType;
 import org.openhab.binding.omnilink.handler.BridgeOfflineException;
 import org.openhab.binding.omnilink.handler.OmnilinkBridgeHandler;
 import org.slf4j.Logger;
@@ -51,10 +53,11 @@ import com.digitaldan.jomnilinkII.MessageTypes.properties.ZoneProperties;
  *
  */
 public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
+
     private static final Logger logger = LoggerFactory.getLogger(OmnilinkDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
     private OmnilinkBridgeHandler bridgeHandler;
-    private boolean isLumina = false;
+    private SystemType systemType;
     private List<AreaProperties> areas;
 
     private final static Set<Integer> TEMP_SENSOR_TYPES = Collections
@@ -78,7 +81,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Starting scan");
         try {
             SystemInformation info = bridgeHandler.reqSystemInformation();
-            isLumina = info.getModel() == 36 || info.getModel() == 37;
+            systemType = SystemType.getType(info.getModel());
             areas = discoverAreas();
             discoverUnits();
             discoverZones();
@@ -301,7 +304,8 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
 
             int objnum = areaProperties.getNumber();
 
-            // it seems that simple configurations of an omnilink have 1 area, without a name. So if there is no name
+            // it seems that simple configurations of an omnilink have 1 area, without a name. So if there is no
+            // name
             // for
             // the first area, we will call that Main. If other areas name is blank, we will not create a thing
             String areaName = areaProperties.getName();
@@ -313,13 +317,19 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
 
             Map<String, Object> properties = new HashMap<>();
             ThingUID thingUID;
-            if (isLumina) {
-                thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_LUMINA_AREA,
-                        bridgeHandler.getThing().getUID(), Integer.toString(objnum));
-            } else {
-                thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_OMNI_AREA,
-                        bridgeHandler.getThing().getUID(), Integer.toString(objnum));
+            switch (systemType) {
+                case LUMINA:
+                    thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_LUMINA_AREA,
+                            bridgeHandler.getThing().getUID(), Integer.toString(objnum));
+                    break;
+                case OMNI:
+                    thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_OMNI_AREA,
+                            bridgeHandler.getThing().getUID(), Integer.toString(objnum));
+                    break;
+                default:
+                    throw new IllegalStateException("Unknown System Type");
             }
+
             properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NUMBER, objnum);
             properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, areaName);
 
@@ -333,14 +343,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
 
     private void discoverUnits()
             throws OmniInvalidResponseException, OmniUnknownMessageTypeException, BridgeOfflineException {
-        ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
-        // Group Lights_GreatRoom "Great Room" (Lights)
-        // String groupString = "Group\t%s\t\"%s\"\t(%s)\n";
-
-        // Dimmer Lights_GreatRoom_MainLights_Switch "Main Lights [%d%%]" (Lights_GreatRoom) {omnilink="unit:10"}
-        // String itemString = "%s\t%s\t\"%s\"\t(%s)\t{omnilink=\"unit:%d\"}\n";
-
-        // String groupName = "Lights";
+        final ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
 
         for (AreaProperties areaProperties : areas) {
             int areaFilter = bitFilterForArea(areaProperties);
@@ -349,24 +352,11 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                     .builder(bridgeHandler, ObjectPropertyRequests.UNIT).selectNamed().areaFilter(areaFilter)
                     .selectAnyLoad().build();
 
-            int currentRoom = 0;
             String currentRoomName = "";
 
             for (UnitProperties unitProperties : objectPropertyRequest) {
 
                 int objnum = unitProperties.getNumber();
-
-                // boolean isInRoom = false;
-                boolean isRoomController = false;
-                logger.debug("Unit type: {}", unitProperties.getUnitType());
-                if (unitProperties.getUnitType() == UnitProperties.UNIT_TYPE_HLC_ROOM
-                        || unitProperties.getObjectType() == UnitProperties.UNIT_TYPE_VIZIARF_ROOM) {
-                    currentRoom = objnum;
-                    currentRoomName = unitProperties.getName();
-                    isRoomController = true;
-                } else if (objnum < currentRoom + 8) {
-                    // isInRoom = true;
-                }
 
                 String thingLabel = unitProperties.getName();
                 String thingID = Integer.toString(objnum);
@@ -377,40 +367,62 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService {
                 properties.put(OmnilinkBindingConstants.THING_PROPERTIES_NAME, unitProperties.getName());
                 properties.put(OmnilinkBindingConstants.THING_PROPERTIES_AREA, areaProperties.getNumber());
 
-                Optional<DiscoveryResult> discoveryResult = Optional.empty();
-                if (isRoomController) {
-                    discoveryResult = Optional.of(DiscoveryResultBuilder
-                            .create(new ThingUID(OmnilinkBindingConstants.THING_TYPE_ROOM,
-                                    bridgeHandler.getThing().getUID(), thingID))
-                            .withProperties(properties).withBridge(bridgeUID).withLabel(thingLabel).build());
-                } else {
-                    ThingUID thingUID = null;
-                    if (unitProperties.getUnitType() == UnitProperties.UNIT_TYPE_FLAG) {
+                ThingUID thingUID = null;
+
+                switch (unitProperties.getUnitType()) {
+                    case UNIT_TYPE_HLC_ROOM:
+                    case UNIT_TYPE_VIZIARF_ROOM:
+                        thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_ROOM,
+                                bridgeHandler.getThing().getUID(), thingID);
+                        currentRoomName = unitProperties.getName();
+                        break;
+                    case UNIT_TYPE_FLAG:
                         thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_FLAG,
                                 bridgeHandler.getThing().getUID(), thingID);
+                        break;
+                    case UNIT_TYPE_OUTPUT:
+                        thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_OUTPUT,
+                                bridgeHandler.getThing().getUID(), thingID);
+                        break;
+                    case UNIT_TYPE_UPB:
+                    case UNIT_TYPE_HLC_LOAD:
+                        thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_UNIT_UPB,
+                                bridgeHandler.getThing().getUID(), thingID);
+                        break;
+                    case UNIT_TYPE_CENTRALITE:
+                    case UNIT_TYPE_RADIORA:
+                    case UNIT_TYPE_VIZIARF_LOAD:
+                    case UNIT_TYPE_COMPOSE:
+                        thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_DIMMABLE,
+                                bridgeHandler.getThing().getUID(), thingID);
+                        break;
+                    default:
+                        thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_UNIT,
+                                bridgeHandler.getThing().getUID(), thingID);
+                        logger.debug("Generic unit type: {}", unitProperties.getUnitType());
+                        break;
 
-                    } else {
-                        if (unitProperties.getUnitType() == UnitProperties.UNIT_TYPE_UPB
-                                || unitProperties.getUnitType() == UnitProperties.UNIT_TYPE_HLC_LOAD) {
-                            thingUID = new ThingUID(OmnilinkBindingConstants.THING_TYPE_UNIT_UPB,
-                                    bridgeHandler.getThing().getUID(), thingID);
-                        } else {
-                            logger.debug("Unsupported unit type: {}", unitProperties.getUnitType());
-                        }
+                }
+
+                switch (unitProperties.getUnitType()) {
+                    case UNIT_TYPE_UPB:
+                    case UNIT_TYPE_HLC_LOAD:
+                    case UNIT_TYPE_CENTRALITE:
+                    case UNIT_TYPE_RADIORA:
+                    case UNIT_TYPE_VIZIARF_LOAD:
+                    case UNIT_TYPE_COMPOSE:
                         // let's prepend room name to unit name for label
                         // TODO could make this configurable
                         thingLabel = currentRoomName + ": " + unitProperties.getName();
-                    }
-                    if (thingUID != null) {
-                        discoveryResult = Optional.of(DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                                .withBridge(bridgeUID).withLabel(thingLabel).build());
-                    }
+                        break;
                 }
-                if (discoveryResult.isPresent()) {
-                    thingDiscovered(discoveryResult.get());
-                }
+
+                thingDiscovered(DiscoveryResultBuilder.create(thingUID).withProperties(properties).withBridge(bridgeUID)
+                        .withLabel(thingLabel).build());
+
             }
         }
+
     }
 
     /**

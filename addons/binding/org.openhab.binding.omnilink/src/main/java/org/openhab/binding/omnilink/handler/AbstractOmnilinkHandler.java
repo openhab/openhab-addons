@@ -14,19 +14,39 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.digitaldan.jomnilinkII.OmniInvalidResponseException;
+import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
+
+/**
+ *
+ * @author Brian O'Connell
+ *
+ */
 public abstract class AbstractOmnilinkHandler extends BaseThingHandler {
+
+    private final static Logger logger = LoggerFactory.getLogger(AbstractOmnilinkHandler.class);
 
     public AbstractOmnilinkHandler(Thing thing) {
         super(thing);
     }
 
-    public OmnilinkBridgeHandler getOmnilinkBridgeHander() {
+    public OmnilinkBridgeHandler getOmnilinkBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge != null) {
             return (OmnilinkBridgeHandler) bridge.getHandler();
         } else {
             return null;
+        }
+    }
+
+    protected void sendOmnilinkCommand(int message, int param1, int param2) {
+        try {
+            getOmnilinkBridgeHandler().sendOmnilinkCommand(message, param1, param2);
+        } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {
+            logger.error("Could not send command to omnilink: {}", e);
         }
     }
 

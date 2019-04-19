@@ -92,27 +92,27 @@
 		<description>Lumina Area</description>
 		<channels>
 			<channel id="mode" typeId="lumina_area_mode" />
-			<channel id="home" typeId="lumina_area_command">
+			<channel id="home" typeId="area_command">
 				<label>Set System to Home</label>
 				<description>Send a 4 digit user code to set the system to home</description>
 			</channel>
-			<channel id="sleep" typeId="lumina_area_command">
+			<channel id="sleep" typeId="area_command">
 				<label>Set System to Sleep</label>
 				<description>Send a 4 digit user code to set the system to sleep</description>
 			</channel>
-			<channel id="away" typeId="lumina_area_command">
+			<channel id="away" typeId="area_command">
 				<label>Set System to Away</label>
 				<description>Send a 4 digit user code to set the system to away</description>
 			</channel>
-			<channel id="vacation" typeId="lumina_area_command">
+			<channel id="vacation" typeId="area_command">
 				<label>Set System to Vacation</label>
 				<description>Send a 4 digit user code to set the system to vacation</description>
 			</channel>
-			<channel id="party" typeId="lumina_area_command">
+			<channel id="party" typeId="area_command">
 				<label>Set System to Party</label>
 				<description>Send a 4 digit user code to set the system to party</description>
 			</channel>
-			<channel id="special" typeId="lumina_area_command">
+			<channel id="special" typeId="area_command">
 				<label>Set System to Special</label>
 				<description>Send a 4 digit user code to set the system to special</description>
 			</channel>

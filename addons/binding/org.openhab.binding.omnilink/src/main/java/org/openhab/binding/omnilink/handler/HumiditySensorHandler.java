@@ -57,7 +57,7 @@ public class HumiditySensorHandler extends AbstractOmnilinkStatusHandler<AuxSens
     protected Optional<AuxSensorStatus> retrieveStatus() {
         try {
             int sensorID = getThingNumber();
-            ObjectStatus objStatus = getOmnilinkBridgeHander().requestObjectStatus(Message.OBJ_TYPE_AUX_SENSOR,
+            ObjectStatus objStatus = getOmnilinkBridgeHandler().requestObjectStatus(Message.OBJ_TYPE_AUX_SENSOR,
                     sensorID, sensorID, true);
             return Optional.of((AuxSensorStatus) objStatus.getStatuses()[0]);
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {

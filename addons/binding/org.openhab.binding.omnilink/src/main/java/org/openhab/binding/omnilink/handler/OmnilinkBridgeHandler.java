@@ -31,6 +31,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.omnilink.OmnilinkBindingConstants;
+import org.openhab.binding.omnilink.SystemType;
 import org.openhab.binding.omnilink.config.OmnilinkBridgeConfig;
 import org.openhab.binding.omnilink.handler.audio.AudioPlayer;
 import org.slf4j.Logger;
@@ -59,9 +60,11 @@ import com.digitaldan.jomnilinkII.MessageTypes.statuses.ExtendedThermostatStatus
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.Status;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.UnitStatus;
 import com.digitaldan.jomnilinkII.MessageTypes.statuses.ZoneStatus;
-import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.AllOnOffEvent;
-import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.ButtonEvent;
-import com.digitaldan.jomnilinkII.MessageTypes.systemEvents.SystemEvent;
+import com.digitaldan.jomnilinkII.MessageTypes.systemevents.AllOnOffEvent;
+import com.digitaldan.jomnilinkII.MessageTypes.systemevents.ButtonEvent;
+import com.digitaldan.jomnilinkII.MessageTypes.systemevents.SwitchPressEvent;
+import com.digitaldan.jomnilinkII.MessageTypes.systemevents.SystemEvent;
+import com.digitaldan.jomnilinkII.MessageTypes.systemevents.UPBLinkEvent;
 import com.google.gson.Gson;
 
 /**
@@ -78,6 +81,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     private final int autoReconnectPeriod = 60;
     private TemperatureFormat temperatureFormat;
     private Optional<AudioPlayer> audioPlayer = Optional.empty();
+    private SystemType systemType;
     private final Gson gson = new Gson();
     private int eventLogNumber = 0;
 
@@ -215,6 +219,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                     .filter(Optional::isPresent).findFirst().orElse(Optional.empty());
 
             temperatureFormat = TemperatureFormat.valueOf(reqSystemFormats().getTempFormat());
+            systemType = SystemType.getType(reqSystemInformation().getModel());
 
             if (config.getLogPollingSeconds() > 0) {
                 startEventPolling(config.getLogPollingSeconds());
@@ -244,6 +249,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         } catch (Exception e) {
             setOfflineAndReconnect(e.getMessage());
             logger.debug("Error connecting to omni {}", e);
+
         }
     }
 
@@ -266,12 +272,20 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                 theThing.map(Thing::getHandler).ifPresent(theHandler -> ((ZoneHandler) theHandler).handleStatus(stat));
             } else if (status instanceof AreaStatus) {
                 AreaStatus areaStatus = (AreaStatus) status;
-                // TODO we should check if this is a lumina system and return that if so
-                Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_OMNI_AREA,
-                        status.getNumber());
+                Optional<Thing> theThing;
+                switch (systemType) {
+                    case OMNI:
+                        theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_OMNI_AREA, status.getNumber());
+                        break;
+                    case LUMINA:
+                        theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_LUMINA_AREA, status.getNumber());
+                        break;
+                    default:
+                        theThing = Optional.empty();
+                }
                 logger.debug("AreaStatus: Mode={}", areaStatus.getMode());
                 theThing.map(Thing::getHandler)
-                        .ifPresent(theHandler -> ((AreaHandler) theHandler).updateChannels(areaStatus));
+                        .ifPresent(theHandler -> ((AbstractAreaHandler) theHandler).updateChannels(areaStatus));
             } else if (status instanceof AccessControlReaderLockStatus) {
                 AccessControlReaderLockStatus lockStatus = (AccessControlReaderLockStatus) status;
                 Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_LOCK, status.getNumber());
@@ -369,13 +383,46 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
                         ((AllOnOffEvent) event).getArea());
                 if (areaThing.isPresent()) {
                     logger.debug("thing for allOnOff event: {}", areaThing.get().getUID());
-                    areaThing.map(Thing::getHandler).ifPresent(
-                            theHandler -> ((AreaHandler) theHandler).handleAllOnOffEvent((AllOnOffEvent) event));
+                    areaThing.map(Thing::getHandler).ifPresent(theHandler -> ((AbstractAreaHandler) theHandler)
+                            .handleAllOnOffEvent((AllOnOffEvent) event));
+                }
+                break;
+            case UPB_LINK:
+                UPBLinkEvent linkEvent = (UPBLinkEvent) event;
+                UPBLinkEvent.Command command = linkEvent.getLinkCommand();
+                int link = linkEvent.getLinkNumber();
+                handleUPBLink(link, command);
+                break;
+            case ALC_UPB_RADIORA_STARLITE_SWITCH_PRESS:
+                SwitchPressEvent switchPressEvent = (SwitchPressEvent) event;
+                int unitNumber = switchPressEvent.getUnitNumber();
+                Optional<Thing> unitThing = getUnitThing(unitNumber);
+                if (unitThing.isPresent()) {
+                    unitThing.map(Thing::getHandler).ifPresent(
+                            theHandler -> ((UnitHandler) theHandler).handleSwitchPressEvent(switchPressEvent));
+
                 }
                 break;
             default:
                 logger.debug("Ignoring message of type type: {}", event.getType());
         }
+    }
+
+    private void handleUPBLink(int link, UPBLinkEvent.Command command) {
+
+        final ChannelUID activateChannel;
+
+        if (command == UPBLinkEvent.Command.ACTIVATED) {
+            activateChannel = new ChannelUID(getThing().getUID(),
+                    OmnilinkBindingConstants.TRIGGER_CHANNEL_UPB_LINK_ACTIVATED_EVENT);
+        } else if (command == UPBLinkEvent.Command.DEACTIVATED) {
+            activateChannel = new ChannelUID(getThing().getUID(),
+                    OmnilinkBindingConstants.TRIGGER_CHANNEL_UPB_LINK_DEACTIVATED_EVENT);
+        } else {
+            logger.debug("Received Unsupported UPB Link Event: {} ", command);
+            return;
+        }
+        triggerChannel(activateChannel, Integer.toString(link));
     }
 
     @Override
@@ -465,6 +512,7 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
     }
 
     private Optional<Thing> getUnitThing(int unitId) {
+
         Optional<Thing> theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_UNIT_UPB, unitId);
         if (theThing.isPresent() == false) {
             theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_ROOM, unitId);
@@ -472,6 +520,16 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
         if (theThing.isPresent() == false) {
             theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_FLAG, unitId);
         }
+        if (theThing.isPresent() == false) {
+            theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_OUTPUT, unitId);
+        }
+        if (theThing.isPresent() == false) {
+            theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_DIMMABLE, unitId);
+        }
+        if (theThing.isPresent() == false) {
+            theThing = getChildThing(OmnilinkBindingConstants.THING_TYPE_UNIT, unitId);
+        }
+
         return theThing;
     }
 
