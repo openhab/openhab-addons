@@ -114,7 +114,7 @@
 		<description>Safe exposure time for Fitzpatrick Skin Types</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 		<config-description>
-			<parameter name="Index" type="integer">
+			<parameter name="index" type="integer">
 				<label>Skin Type</label>
 				<description>Fitzpatrick Skin Type.</description>
 				<options>
@@ -125,7 +125,7 @@
 					<option value="5">V – Dark brown</option>
 					<option value="6">VI – Black</option>
 				</options>
-				<default>1</default>
+				<default>2</default>
 			</parameter>
 		</config-description>
 	</channel-type>

@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.openhab.binding.onewire.internal.OwBindingConstants;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
 import org.openhab.binding.onewire.internal.handler.AdvancedMultisensorThingHandler;
+import org.openhab.binding.onewire.internal.handler.BAE091xSensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.BasicMultisensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.BasicThingHandler;
 import org.openhab.binding.onewire.internal.handler.EDSSensorThingHandler;
@@ -38,16 +39,15 @@ import org.openhab.binding.onewire.internal.handler.EDSSensorThingHandler;
  */
 public class CompletenessTest {
     // internal/temporary types, DS2409 (MicroLAN Coupler), DS2431 (EEPROM)
-    private static final Set<OwSensorType> IGNORED_SENSOR_TYPES = Collections.unmodifiableSet(Stream
-            .of(OwSensorType.DS2409, OwSensorType.DS2431, OwSensorType.EDS, OwSensorType.MS_TH_S, OwSensorType.UNKNOWN)
-            .collect(Collectors.toSet()));
+    private static final Set<OwSensorType> IGNORED_SENSOR_TYPES = Collections
+            .unmodifiableSet(Stream.of(OwSensorType.DS2409, OwSensorType.DS2431, OwSensorType.EDS, OwSensorType.MS_TH_S,
+                    OwSensorType.BAE, OwSensorType.BAE0911, OwSensorType.UNKNOWN).collect(Collectors.toSet()));
 
-    private static final Set<OwSensorType> THINGHANDLER_SENSOR_TYPES = Collections
-            .unmodifiableSet(Stream
-                    .of(AdvancedMultisensorThingHandler.SUPPORTED_SENSOR_TYPES,
-                            BasicMultisensorThingHandler.SUPPORTED_SENSOR_TYPES,
-                            BasicThingHandler.SUPPORTED_SENSOR_TYPES, EDSSensorThingHandler.SUPPORTED_SENSOR_TYPES)
-                    .flatMap(Set::stream).collect(Collectors.toSet()));
+    private static final Set<OwSensorType> THINGHANDLER_SENSOR_TYPES = Collections.unmodifiableSet(Stream
+            .of(AdvancedMultisensorThingHandler.SUPPORTED_SENSOR_TYPES,
+                    BasicMultisensorThingHandler.SUPPORTED_SENSOR_TYPES, BasicThingHandler.SUPPORTED_SENSOR_TYPES,
+                    EDSSensorThingHandler.SUPPORTED_SENSOR_TYPES, BAE091xSensorThingHandler.SUPPORTED_SENSOR_TYPES)
+            .flatMap(Set::stream).collect(Collectors.toSet()));
 
     private static final Set<ThingTypeUID> DEPRECATED_THING_TYPES = Collections.unmodifiableSet(Stream
             .of(OwBindingConstants.THING_TYPE_MS_TH, OwBindingConstants.THING_TYPE_MS_TV,
@@ -72,7 +72,7 @@ public class CompletenessTest {
         for (OwSensorType sensorType : EnumSet.allOf(OwSensorType.class)) {
             if (!OwBindingConstants.SENSOR_TYPE_CHANNEL_MAP.containsKey(sensorType)
                     && !IGNORED_SENSOR_TYPES.contains(sensorType)) {
-                Assert.fail("missing thing type map for sensor type " + sensorType.name());
+                Assert.fail("missing channel configuration map for sensor type " + sensorType.name());
             }
         }
     }
@@ -114,5 +114,4 @@ public class CompletenessTest {
             }
         }
     }
-
 }

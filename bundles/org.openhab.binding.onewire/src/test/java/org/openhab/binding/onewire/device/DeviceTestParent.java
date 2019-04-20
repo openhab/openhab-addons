@@ -12,7 +12,6 @@ package org.openhab.binding.onewire.device;
  * SPDX-License-Identifier: EPL-2.0
  */
 
-
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.CHANNEL_PRESENT;
@@ -28,6 +27,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.junit.Assert;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -35,8 +35,8 @@ import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.device.AbstractOwDevice;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
-import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
+import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 
 /**
  * Abtract test class for onewire devices.
@@ -77,6 +77,12 @@ public abstract class DeviceTestParent {
     public void addChannel(String channelId, String itemType, Configuration channelConfiguration) {
         Channel channel = ChannelBuilder.create(new ChannelUID(mockThing.getUID(), channelId), itemType)
                 .withConfiguration(channelConfiguration).build();
+        Mockito.when(mockThing.getChannel(channelId)).thenReturn(channel);
+    }
+
+    public void addChannel(String channelId, String itemType, ChannelTypeUID channelTypeUID) {
+        Channel channel = ChannelBuilder.create(new ChannelUID(mockThing.getUID(), channelId), itemType)
+                .withType(channelTypeUID).build();
         Mockito.when(mockThing.getChannel(channelId)).thenReturn(channel);
     }
 

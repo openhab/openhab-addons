@@ -20,10 +20,14 @@
   <modules>
     <module>org.openhab.binding.astro.tests</module>
     <module>org.openhab.binding.avmfritz.tests</module>
-    <module>org.openhab.binding.nest.tests</module>
+    <module>org.openhab.binding.hue.tests</module>
+    <module>org.openhab.binding.max.tests</module>
     <module>org.openhab.binding.mqtt.homeassistant.tests</module>
     <module>org.openhab.binding.mqtt.homie.tests</module>
+    <module>org.openhab.binding.nest.tests</module>
+    <module>org.openhab.binding.ntp.tests</module>
     <module>org.openhab.binding.tradfri.tests</module>
+    <module>org.openhab.binding.wemo.tests</module>
     <module>org.openhab.persistence.mapdb.tests</module>
   </modules>
 

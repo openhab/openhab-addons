@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,9 +30,6 @@ import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
  */
 @NonNullByDefault
 public class DS2438Configuration {
-    private static final Pattern ASSOC_SENSOR_ID_PATTERN = Pattern
-            .compile("^(26|28|3A)([0-9A-Fa-f]{12})[0-9A-Fa-f]{2}$");
-
     private OwSensorType sensorSubType = OwSensorType.DS2438;
     private String vendor = "Dallas/Maxim";
     private String hwRevision = "0";

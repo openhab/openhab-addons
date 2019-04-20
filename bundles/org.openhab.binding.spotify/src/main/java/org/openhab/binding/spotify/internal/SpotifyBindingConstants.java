@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.spotify.internal;
 
-import java.util.Arrays;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -32,8 +32,8 @@ public class SpotifyBindingConstants {
     /**
      * Spotify scopes needed by this binding to work.
      */
-    public static final String SPOTIFY_SCOPES = Arrays.asList("user-read-playback-state", "user-modify-playback-state",
-            "playlist-read-private", "playlist-read-collaborative").stream().collect(Collectors.joining(" "));
+    public static final String SPOTIFY_SCOPES = Stream.of("user-read-playback-state", "user-modify-playback-state",
+            "playlist-read-private", "playlist-read-collaborative").collect(Collectors.joining(" "));
     public static final String SPOTIFY_API_URL = "https://api.spotify.com/v1/me";
     public static final String SPOTIFY_API_PLAYER_URL = SPOTIFY_API_URL + "/player";
 
@@ -53,7 +53,8 @@ public class SpotifyBindingConstants {
     public static final String CHANNEL_TRACKPLAYER = "trackPlayer";
     public static final String CHANNEL_TRACKREPEAT = "trackRepeat";
 
-    public static final String CHANNEL_PLAYLIST = "playlist";
+    public static final String CHANNEL_PLAYLISTS = "playlists";
+    public static final String CHANNEL_PLAYLISTNAME = "playlistName";
 
     public static final String CHANNEL_PLAYED_TRACKID = "trackId";
     public static final String CHANNEL_PLAYED_TRACKURI = "trackUri";
@@ -82,7 +83,7 @@ public class SpotifyBindingConstants {
     public static final String CHANNEL_PLAYED_ARTISTTYPE = "artistType";
 
     public static final String CHANNEL_DEVICEID = "deviceId";
-    public static final String CHANNEL_TYPE_ACTIVE_DEVICENAME = "activeDeviceName";
+    public static final String CHANNEL_DEVICES = "devices";
     public static final String CHANNEL_DEVICENAME = "deviceName";
     public static final String CHANNEL_DEVICETYPE = "deviceType";
     public static final String CHANNEL_DEVICEACTIVE = "deviceActive";
@@ -96,5 +97,5 @@ public class SpotifyBindingConstants {
 
     // List of Bridge/Thing properties
     public static final String PROPERTY_SPOTIFY_USER = "user";
-    public static final String PROPERTY_SPOTIFY_DEVICE_ID = "id";
+    public static final String PROPERTY_SPOTIFY_DEVICE_NAME = "deviceName";
 }

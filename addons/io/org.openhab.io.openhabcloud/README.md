@@ -13,14 +13,21 @@ The openHAB Cloud service (and thus the connector to it) is useful for different
 
 ## UUID and Secret
 
-To authenticate with the openHAB Cloud your local openHAB runtime generates two values, which need to be entered in your account settings of the openHAB Cloud service. The first one is a unique identifier, which allows to identify your runtime. One can think of it as something similar like a username for the cloud authentication. The second one is a random secret key which serves as a password. Both values are written to the local file system. If you loose these files for some reason, openHAB will automatically generates new ones. You will then have to reconfigure UUID and secret in the openHAB Cloud service under the _My account_ section.
+To authenticate with the openHAB Cloud service the add-on generates two values when the add-on is installed.
+These values need to be entered in your account settings of the openHAB Cloud service.
+The first one is a unique identifier, which allows to identify your runtime.
+One can think of it as something similar like a username for the cloud authentication.
+The second one is a random secret key which serves as a password.
+Both values are written to the local file system.
+If you loose these files for some reason, openHAB will automatically generate new ones.
+You will then have to reconfigure UUID and secret in the openHAB Cloud service under the _My account_ section.
 
 Location of UUID and Secret:
 
-|File | regular Installation | APT Installation |
-|-----|----------------------|------------------|
-|UUID | userdata/uuid        | /var/lib/openhab2/uuid |
-|Secret | userdata/openhabcloud/secret | /var/lib/openhab2/openhabcloud/secret |
+| File   | Regular Installation         | APT Installation                      |
+|--------|------------------------------|---------------------------------------|
+| UUID   | userdata/uuid                | /var/lib/openhab2/uuid                |
+| Secret | userdata/openhabcloud/secret | /var/lib/openhab2/openhabcloud/secret |
 
 ## Configuration
 

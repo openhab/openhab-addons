@@ -4,7 +4,7 @@ MQTT is one of the most commonly used protocols in IoT (Internet of Things) proj
 
 It is designed as a lightweight messaging protocol that uses publish/subscribe operations to exchange data between clients and the server.
 
-[](doc/mqtt.jpg)
+![MQTT Architecture](doc/mqtt.jpg)
 
 MQTT servers are called brokers and the clients are simply the connected devices.
 
@@ -12,7 +12,7 @@ MQTT servers are called brokers and the clients are simply the connected devices
 * When a device (a client) wants to receive data from the broker, we call this operation a “subscribe”.
 
 
-[](doc/subpub.png)
+![Publish and Subscribe](doc/subpub.png)
 
 openHAB itself is not an MQTT Broker and needs to connect to one as a regular client.
 Therefore you must have configured a *Broker Thing* first via the **MQTT Broker Binding**!

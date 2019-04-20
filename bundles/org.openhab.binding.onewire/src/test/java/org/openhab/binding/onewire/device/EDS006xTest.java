@@ -24,12 +24,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwException;
-import org.openhab.binding.onewire.internal.device.DS2438;
 import org.openhab.binding.onewire.internal.device.EDS006x;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
 
 /**
- * Tests cases for {@link DS2438}.
+ * Tests cases for {@link EDS006x}.
  *
  * @author Jan N. Klug - Initial contribution
  */
