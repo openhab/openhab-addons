@@ -71,6 +71,8 @@ public interface KodiEventListener extends EventListener {
 
     void updateUniqueIDTmdbtvshow(String uniqueid);
 
+    void updateUniqueIDTmdbepisode(String uniqueid);
+    
     void updateTitle(String title);
 
     void updateOriginalTitle(String originaltitle);

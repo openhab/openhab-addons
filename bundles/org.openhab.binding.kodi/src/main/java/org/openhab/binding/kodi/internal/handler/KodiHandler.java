@@ -736,6 +736,11 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     @Override
+    public void updateUniqueIDTmdbepisode(String uniqueid) {
+        updateState(CHANNEL_UNIQUEID_TMDBEPISODE, createStringState(uniqueid));
+    }    
+    
+    @Override
     public void updateSeason(int season) {
         updateState(CHANNEL_SEASON, new DecimalType(season));
     }

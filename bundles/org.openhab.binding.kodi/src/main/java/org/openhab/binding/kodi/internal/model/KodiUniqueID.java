@@ -26,6 +26,7 @@ public class KodiUniqueID {
     private @NonNullByDefault({}) String tmdb;
     private @NonNullByDefault({}) String imdbtvshow;
     private @NonNullByDefault({}) String tmdbtvshow;
+    private @NonNullByDefault({}) String tmdbepisode;
 
     public String getDouban() {
         return douban;
@@ -65,5 +66,13 @@ public class KodiUniqueID {
 
     public void setTmdbtvshow(String tmdbtvshow) {
         this.tmdbtvshow = tmdbtvshow;
+    }
+
+    public String getTmdbepisode() {
+        return tmdbepisode;
+    }
+
+    public void setTmdbepisode(String tmdbepisode) {
+        this.tmdbtvshow = tmdbepisode;
     }
 }

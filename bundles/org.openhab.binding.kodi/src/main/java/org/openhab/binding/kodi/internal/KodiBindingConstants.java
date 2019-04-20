@@ -95,6 +95,7 @@ public class KodiBindingConstants {
     public static final String CHANNEL_UNIQUEID_IMDBTVSHOW = "uniqueid-imdbtvshow";
     public static final String CHANNEL_UNIQUEID_TMDB = "uniqueid-tmdb";
     public static final String CHANNEL_UNIQUEID_TMDBTVSHOW = "uniqueid-tmdbtvshow";
+    public static final String CHANNEL_UNIQUEID_TMDBEPISODE = "uniqueid-tmdbepisode";
     public static final String CHANNEL_UNIQUEID_DOUBAN = "uniqueid-douban";
 
     public static final String CHANNEL_SEASON = "season";

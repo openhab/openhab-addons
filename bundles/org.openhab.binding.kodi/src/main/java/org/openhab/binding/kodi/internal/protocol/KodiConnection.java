@@ -533,27 +533,23 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     mediaid = item.get("id").getAsInt();
                 }
 
-                // int uniqueid = -1;
-                // if (item.has("uniqueid")) {
-                // uniqueid = item.get("uniqueid").getAsInt();
-                // }
-
                 String uniqueIDDouban = "";
                 String uniqueIDImdb = "";
                 String uniqueIDTmdb = "";
                 String uniqueIDImdbtvshow = "";
                 String uniqueIDTmdbtvshow = "";
+                String uniqueIDTmdbepisode = "";
 
                 if (result.has(PROPERTY_UNIQUEID)) {
                     try {
                         KodiUniqueID uniqueID = gson.fromJson(result.get(PROPERTY_UNIQUEID), KodiUniqueID.class);
                         if (uniqueID != null) {
-                            uniqueIDDouban = uniqueID.getDouban();
                             uniqueIDImdb = uniqueID.getImdb();
+                        	uniqueIDDouban = uniqueID.getDouban();
                             uniqueIDTmdb = uniqueID.getTmdb();
                             uniqueIDImdbtvshow = uniqueID.getImdbtvshow();
                             uniqueIDTmdbtvshow = uniqueID.getTmdbtvshow();
-
+                            uniqueIDTmdbepisode = uniqueID.getTmdbepisode();
                         }
                     } catch (JsonSyntaxException e) {
                         // do nothing
@@ -633,7 +629,6 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 logger.info(originaltitle);
                 logger.info(mediaType);
                 listener.updateMediaID(mediaid);
-                // listener.updateUniqueID(uniqueid);
                 listener.updateAlbum(album);
                 listener.updateTitle(title);
                 listener.updateOriginalTitle(originaltitle);
@@ -651,6 +646,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 listener.updateUniqueIDTmdb(uniqueIDTmdb);
                 listener.updateUniqueIDImdbtvshow(uniqueIDImdbtvshow);
                 listener.updateUniqueIDTmdbtvshow(uniqueIDTmdbtvshow);
+                listener.updateUniqueIDTmdbepisode(uniqueIDTmdbepisode);
 
             }
         }
