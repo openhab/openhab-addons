@@ -302,7 +302,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
                     is(equalTo(ThingStatus.OFFLINE)));
             assertThat(systemInfoThing.getStatusInfo().getStatusDetail(),
                     is(equalTo(ThingStatusDetail.HANDLER_INITIALIZING_ERROR)));
-            assertThat(systemInfoThing.getStatusInfo().getDescription(), is(equalTo("Thing can not be initialized!")));
+            assertThat(systemInfoThing.getStatusInfo().getDescription(), is(equalTo("Thing cannot be initialized!")));
         });
     }
 
