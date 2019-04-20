@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="apcupsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="apcupsd-tcp">
+		<label>APC UPS TPC</label>
+		<description>A TCP connection to the APC UPS daemon</description>
+
+		<channels>
+			<channel id="status" typeId="ups-status" />
+			<channel id="line_v" typeId="ups-line-v" />
+			<channel id="batt_timeleft" typeId="ups-batt-timeleft" />
+			<channel id="batt_charge" typeId="ups-batt-charge" />
+			<channel id="batt_v" typeId="ups-batt-v" />
+			<channel id="batt_date" typeId="ups-batt-date" />
+            <channel id="load_pct" typeId="ups-load-pct" />
+			<channel id="start_time" typeId="ups-start-time" />
+		</channels>
+		
+		<properties>
+			<property name="name" />
+			<property name="model" />
+			<property name="firmware" />
+			<property name="serialNumber" />
+		</properties>
+
+		<config-description>
+			<parameter name="ip" type="text">
+				<label>APC UPS Daemon IP</label>
+				<required>true</required>
+				<default>127.0.0.1</default>
+				<description>The IP address where the APC UPS Daemon is installed</description>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>APC UPS Daemon Port</label>
+				<required>true</required>
+				<default>3551</default>
+				<description>The IP port where the APC UPS Daemon is installed</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Period</label>
+				<required>true</required>
+				<default>10</default>
+				<description>Refresh interval to get data from APC UPS Daemon (seconds)</description>
+			</parameter>
+			<parameter name="updateOnlyOnChange" type="boolean">
+				<label>Update only on change</label>
+				<required>true</required>
+				<default>true</default>
+				<description>Update the channel only when the value changes</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="apcupsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="ups-status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>The current status of the UPS (ONLINE, ONBATT, etc.)</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+	<channel-type id="ups-line-v">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Line Voltage</label>
+		<description>The current line voltage as returned by the UPS.</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+	
+	<channel-type id="ups-load-pct">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Load Percentage</label>
+		<description>The percentage of load capacity as estimated by the UPS.</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+    <channel-type id="ups-batt-timeleft">
+		<item-type>Number:Time</item-type>
+		<label>Battery Timeleft</label>
+		<description>The remaining runtime left on batteries as estimated by the UPS.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="ups-batt-charge">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Charge</label>
+		<description>The percentage charge on the batteries.</description>
+		<category>BatteryLevel</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+    <channel-type id="ups-batt-v" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<description>Battery voltage as supplied by the UPS.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+    <channel-type id="ups-batt-date" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Battery Date</label>
+		<description>The date that batteries were last replaced.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td" />
+	</channel-type>
+
+    <channel-type id="ups-start-time" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Start Time</label>
+		<description>The time/date that apcupsd was started.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+	</channel-type>
+
+</thing:thing-descriptions>
