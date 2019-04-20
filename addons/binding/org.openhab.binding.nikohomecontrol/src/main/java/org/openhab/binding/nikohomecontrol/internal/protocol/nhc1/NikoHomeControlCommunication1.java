@@ -71,45 +71,6 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
     protected Gson gsonIn;
 
     /**
-     * Runnable that handles inbound communication from Niko Home Control.
-     * <p>
-     * The thread listens to the TCP socket opened at instantiation of the {@link NikoHomeControlCommunication} class
-     * and interprets all inbound json messages. It triggers state updates for active channels linked to the Niko Home
-     * Control actions. It is started after initialization of the communication.
-     *
-     */
-    @SuppressWarnings("null")
-    private Runnable nhcEvents = () -> {
-        @Nullable
-        String nhcMessage;
-
-        logger.debug("Niko Home Control: listening for events");
-        listenerStopped = false;
-        nhcEventsRunning = true;
-
-        try {
-            while (!listenerStopped & ((nhcMessage = this.nhcIn.readLine()) != null)) {
-                readMessage(nhcMessage);
-            }
-        } catch (IOException e) {
-            if (!listenerStopped) {
-                nhcEventsRunning = false;
-                // this is a socket error, not a communication stop triggered from outside this runnable
-                logger.warn("Niko Home Control: IO error in listener");
-                // the IO has stopped working, so we need to close cleanly and try to restart
-                restartCommunication();
-                return;
-            }
-        } finally {
-            nhcEventsRunning = false;
-        }
-
-        nhcEventsRunning = false;
-        // this is a stop from outside the runnable, so just log it and stop
-        logger.debug("Niko Home Control: event listener thread stopped");
-    };
-
-    /**
      * Constructor for Niko Home Control I communication object, manages communication with
      * Niko Home Control IP-interface.
      *
@@ -151,7 +112,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
 
             // Start Niko Home Control event listener. This listener will act on all messages coming from
             // IP-interface.
-            (new Thread(nhcEvents)).start();
+            (new Thread(this::runNhcEvents)).start();
 
         } catch (IOException | InterruptedException e) {
             logger.warn("Niko Home Control: error initializing communication");
@@ -184,6 +145,44 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
     public boolean communicationActive() {
         return (this.nhcSocket != null);
     }
+
+    /**
+     * Method that handles inbound communication from Niko Home Control, to be called on a separate thread.
+     * <p>
+     * The thread listens to the TCP socket opened at instantiation of the {@link NikoHomeControlCommunication} class
+     * and interprets all inbound json messages. It triggers state updates for active channels linked to the Niko Home
+     * Control actions. It is started after initialization of the communication.
+     *
+     */
+    private void runNhcEvents() {
+        @Nullable
+        String nhcMessage;
+
+        logger.debug("Niko Home Control: listening for events");
+        listenerStopped = false;
+        nhcEventsRunning = true;
+
+        try {
+            while (!listenerStopped & (nhcIn != null) & ((nhcMessage = nhcIn.readLine()) != null)) {
+                readMessage(nhcMessage);
+            }
+        } catch (IOException e) {
+            if (!listenerStopped) {
+                nhcEventsRunning = false;
+                // this is a socket error, not a communication stop triggered from outside this runnable
+                logger.warn("Niko Home Control: IO error in listener");
+                // the IO has stopped working, so we need to close cleanly and try to restart
+                restartCommunication();
+                return;
+            }
+        } finally {
+            nhcEventsRunning = false;
+        }
+
+        nhcEventsRunning = false;
+        // this is a stop from outside the runnable, so just log it and stop
+        logger.debug("Niko Home Control: event listener thread stopped");
+    };
 
     /**
      * After setting up the communication with the Niko Home Control IP-interface, send all initialization messages.
