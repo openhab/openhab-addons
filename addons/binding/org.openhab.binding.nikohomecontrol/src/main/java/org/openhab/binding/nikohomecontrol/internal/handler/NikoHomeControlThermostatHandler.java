@@ -23,7 +23,6 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -178,10 +177,10 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
     @Override
     public void initialize() {
-        Configuration config = this.getConfig();
+        NikoHomeControlThermostatConfig config = getConfig().as(NikoHomeControlThermostatConfig.class);
 
-        thermostatId = (String) config.get(CONFIG_THERMOSTAT_ID);
-        overruleTime = ((Number) config.get(CONFIG_OVERRULETIME)).intValue();
+        thermostatId = config.thermostatId;
+        overruleTime = config.overruleTime;
 
         Bridge nhcBridge = getBridge();
         if (nhcBridge == null) {

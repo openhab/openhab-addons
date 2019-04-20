@@ -275,7 +275,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
         return config.port;
     }
 
-    protected void setConfig() {
+    protected synchronized void setConfig() {
         config = getConfig().as(NikoHomeControlBridgeConfig.class);
     }
 }

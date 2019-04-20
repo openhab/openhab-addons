@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -209,12 +208,14 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
     @Override
     public void initialize() {
-        Configuration config = this.getConfig();
-
-        actionId = (String) config.get(CONFIG_ACTION_ID);
+        NikoHomeControlActionConfig config;
         if (thing.getThingTypeUID().equals(THING_TYPE_DIMMABLE_LIGHT)) {
-            stepValue = ((Number) config.get(CONFIG_STEP_VALUE)).intValue();
+            config = getConfig().as(NikoHomeControlActionDimmerConfig.class);
+            stepValue = ((NikoHomeControlActionDimmerConfig) config).step;
+        } else {
+            config = getConfig().as(NikoHomeControlActionConfig.class);
         }
+        actionId = config.actionId;
 
         Bridge nhcBridge = getBridge();
         if (nhcBridge == null) {

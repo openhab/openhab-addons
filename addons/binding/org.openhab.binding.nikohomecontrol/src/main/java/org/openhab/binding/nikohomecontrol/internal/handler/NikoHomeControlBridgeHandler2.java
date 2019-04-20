@@ -123,7 +123,7 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
     }
 
     @Override
-    protected void setConfig() {
+    protected synchronized void setConfig() {
         config = getConfig().as(NikoHomeControlBridgeConfig2.class);
     }
 }
