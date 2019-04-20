@@ -1194,12 +1194,6 @@
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.voice.googletts/${project.version}</bundle>
     </feature>
 
-<!--    <feature name="openhab-voice-kaldi" description="Kaldi Speech-to-Text" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.kaldi/${project.version}</bundle>
-    </feature>
--->
-
     <feature name="openhab-voice-mactts" description="macOS Text-to-Speech" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.voice.mactts/${project.version}</bundle>

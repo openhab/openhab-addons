@@ -31,7 +31,6 @@
 /addons/io/org.openhab.io.openhabcloud/ @kaikreuzer
 /addons/io/org.openhab.io.sound/ @kaikreuzer
 /addons/io/org.openhab.io.transport.feed/ @svilenvul
-/addons/voice/org.openhab.voice.kaldi/ @kaikreuzer
 /addons/voice/org.openhab.voice.pollytts/ @hillmanr
 /bundles/org.openhab.binding.airquality/ @kubawolanin
 /bundles/org.openhab.binding.airvisualnode/ @3cky
