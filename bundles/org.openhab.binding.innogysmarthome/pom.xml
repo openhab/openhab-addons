@@ -13,4 +13,25 @@
 
   <name>openHAB Add-ons :: Bundles :: innogy Smarthome Binding</name>
 
+  <dependencies>
+    <dependency> 
+      <groupId>com.google.http-client</groupId> 
+      <artifactId>google-http-client-jackson2</artifactId> 
+      <version>1.27.0</version> 
+      <scope>provided</scope>
+    </dependency>
+    <dependency> 
+      <groupId>com.google.http-client</groupId> 
+      <artifactId>google-http-client</artifactId> 
+      <version>1.27.0</version> 
+      <scope>provided</scope>
+    </dependency>
+    <dependency> 
+      <groupId>com.google.oauth-client</groupId> 
+      <artifactId>google-oauth-client</artifactId> 
+      <version>1.27.0</version> 
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
 </project>
