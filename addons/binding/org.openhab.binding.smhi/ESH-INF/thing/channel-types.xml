@@ -9,7 +9,7 @@
 		<channels>
 			<channel id="time-stamp" typeId="time-stamp" />
 			<channel id="condition" typeId="condition" />
-			<channel id="condition-id" typeId="Wsymb2" />
+			<channel id="condition-id" typeId="wsymb2" />
 			<channel id="temperature" typeId="system.outdoor-temperature" />
 			<channel id="temperature-min" typeId="temperature-min" />
 			<channel id="temperature-max" typeId="temperature-max" />
@@ -41,7 +41,7 @@
 		<channels>
 			<channel id="time-stamp" typeId="daily-forecast-time-stamp" />
 			<channel id="condition" typeId="forecasted-condition" />
-			<channel id="condition-id" typeId="Wsymb2" />
+			<channel id="condition-id" typeId="wsymb2" />
 			<channel id="temperature" typeId="forecasted-t" />
 			<channel id="temperature-min" typeId="forecasted-temperature-min" />
 			<channel id="temperature-max" typeId="forecasted-temperature-max" />
@@ -98,7 +98,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="Wsymb2" advanced="true">
+	<channel-type id="wsymb2" advanced="true">
 		<item-type>Number</item-type>
 		<label>Weather Condition Id</label>
 		<description>Id of the weather condition.</description>

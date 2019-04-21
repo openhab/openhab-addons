@@ -29,7 +29,7 @@ Channel             |SMHI Parameter| Unit    | Level Type |Level (m) |Descriptio
  :---               | :---         | :---    | :---       | :---     | :---                                   | :--- 
 time-stamp          |              |date/time|            |          |Forecast time                           |
 condition           |              |text     |            |          |Weather Condition                       |
-condition-id        |Wsymb2        |code     |hl          |0         |Weather symbol                          |Integer, 1-27
+condition-id        |wsymb2        |code     |hl          |0         |Weather symbol                          |Integer, 1-27
 temperature         |t             |C        |hl          |2         |Air temperature                         |Decimal number, one decimal
 temperature-min     |              |C        |hl          |2         |Air temperature Min                     |Decimal number, one decimal
 temperature-max     |              |C        |hl          |2         |Air temperature Max                     |Decimal number, one decimal
