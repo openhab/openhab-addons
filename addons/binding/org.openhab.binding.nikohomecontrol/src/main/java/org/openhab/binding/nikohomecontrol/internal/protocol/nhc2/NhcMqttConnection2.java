@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.protocol.nhc2;
 
-import static org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.*;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +24,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -84,24 +83,20 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     }
 
     private SSLContextProvider getSSLContext() throws CertificateException {
+        ResourceBundle certificatesBundle = ResourceBundle.getBundle("nikohomecontrol/certificates");
+
         try {
             // Load server public certificates into key store
             CertificateFactory cf = CertificateFactory.getInstance("X509");
-            InputStream certificateStream = new ByteArrayInputStream(CERTCA.getBytes(StandardCharsets.UTF_8));
-            X509Certificate caCertificate = (X509Certificate) cf.generateCertificate(certificateStream);
-            certificateStream = new ByteArrayInputStream(CERTINTERMEDIATE.getBytes(StandardCharsets.UTF_8));
-            X509Certificate intCertificate = (X509Certificate) cf.generateCertificate(certificateStream);
-            certificateStream = new ByteArrayInputStream(CERTNEWCA.getBytes(StandardCharsets.UTF_8));
-            X509Certificate newCaCertificate = (X509Certificate) cf.generateCertificate(certificateStream);
-            certificateStream = new ByteArrayInputStream(CERTNEWINTERMEDIATE.getBytes(StandardCharsets.UTF_8));
-            X509Certificate newIntCertificate = (X509Certificate) cf.generateCertificate(certificateStream);
-
+            InputStream certificateStream;
             final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, null);
-            keyStore.setCertificateEntry("ca-certificate", caCertificate);
-            keyStore.setCertificateEntry("intermediate-certificate", intCertificate);
-            keyStore.setCertificateEntry("newca-certificate", newCaCertificate);
-            keyStore.setCertificateEntry("newintermediate-certificate", newIntCertificate);
+            for (String certName : certificatesBundle.keySet()) {
+                certificateStream = new ByteArrayInputStream(
+                        certificatesBundle.getString(certName).getBytes(StandardCharsets.UTF_8));
+                X509Certificate certificate = (X509Certificate) cf.generateCertificate(certificateStream);
+                keyStore.setCertificateEntry(certName, certificate);
+            }
 
             // Create trust managers used to validate server
             TrustManagerFactory tmFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
