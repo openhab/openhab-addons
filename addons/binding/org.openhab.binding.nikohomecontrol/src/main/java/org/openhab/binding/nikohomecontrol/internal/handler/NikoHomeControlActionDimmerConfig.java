@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.handler;
 
+/**
+ * {@link NikoHomeControlActionDimmerConfig} is the config class for Niko Home Control Dimmer Actions.
+ *
+ * @author Mark Herwege - Initial Contribution
+ */
 public class NikoHomeControlActionDimmerConfig extends NikoHomeControlActionConfig {
     public int step;
 }

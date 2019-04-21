@@ -27,7 +27,7 @@ abstract class NhcMessageBase1 {
     private String event;
 
     String getCmd() {
-        return this.cmd;
+        return cmd;
     }
 
     void setCmd(String cmd) {
@@ -35,7 +35,7 @@ abstract class NhcMessageBase1 {
     }
 
     String getEvent() {
-        return this.event;
+        return event;
     }
 
     void setEvent(String event) {

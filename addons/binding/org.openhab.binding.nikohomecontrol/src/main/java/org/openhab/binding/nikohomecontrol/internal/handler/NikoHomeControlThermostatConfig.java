@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.handler;
 
+/**
+ * {@link NikoHomeControlThermostatConfig} is the config class for Niko Home Control Thermostats.
+ *
+ * @author Mark Herwege - Initial Contribution
+ */
 public class NikoHomeControlThermostatConfig {
     public String thermostatId;
     public int overruleTime;

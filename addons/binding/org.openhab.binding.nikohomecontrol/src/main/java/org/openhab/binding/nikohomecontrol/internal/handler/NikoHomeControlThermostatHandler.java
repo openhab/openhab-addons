@@ -260,7 +260,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
             return;
         }
 
-        this.refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
+        refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
             long remainingTime = nhcThermostat.getRemainingOverruletime();
             updateState(CHANNEL_OVERRULETIME, new DecimalType(remainingTime));
             if (remainingTime <= 0) {
@@ -270,10 +270,10 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     }
 
     private void cancelRefreshTimer() {
-        ScheduledFuture<?> timer = this.refreshTimer;
+        ScheduledFuture<?> timer = refreshTimer;
         if (timer != null) {
             timer.cancel(true);
         }
-        this.refreshTimer = null;
+        refreshTimer = null;
     }
 }

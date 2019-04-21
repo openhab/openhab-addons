@@ -30,7 +30,7 @@ class NhcMessageListMap1 extends NhcMessageBase1 {
     private List<Map<String, String>> data = new ArrayList<>();
 
     List<Map<String, String>> getData() {
-        return this.data;
+        return data;
     }
 
     void setData(List<Map<String, String>> data) {

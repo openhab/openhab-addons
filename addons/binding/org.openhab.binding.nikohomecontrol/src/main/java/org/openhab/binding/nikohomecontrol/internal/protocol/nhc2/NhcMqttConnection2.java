@@ -76,10 +76,10 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     private volatile int port;
 
     NhcMqttConnection2(String clientId, String persistencePath) throws CertificateException {
-        this.persistenceBasePath = Paths.get(persistencePath).resolve("nikohomecontrol");
+        persistenceBasePath = Paths.get(persistencePath).resolve("nikohomecontrol");
         // to be removed after testing
         logger.debug("Niko Home Control: base persistence path set to {}", persistenceBasePath);
-        this.sslContextProvider = getSSLContext();
+        sslContextProvider = getSSLContext();
         this.clientId = clientId;
     }
 

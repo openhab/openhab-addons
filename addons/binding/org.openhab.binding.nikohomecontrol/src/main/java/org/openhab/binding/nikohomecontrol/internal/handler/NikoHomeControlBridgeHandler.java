@@ -71,7 +71,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
      * Trigger discovery when communication setup is successful.
      */
     protected void startCommunication() {
-        NikoHomeControlCommunication comm = this.nhcComm;
+        NikoHomeControlCommunication comm = nhcComm;
         if (comm == null) {
             bridgeOffline();
             return;
@@ -161,7 +161,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
         bridgeOnline();
 
         int refreshInterval = config.refresh;
-        if (this.refreshTimer == null) {
+        if (refreshTimer == null) {
             setupRefreshTimer(refreshInterval);
         }
     }
@@ -174,14 +174,14 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
     @Override
     public void dispose() {
-        if (this.refreshTimer != null) {
-            this.refreshTimer.cancel(true);
+        if (refreshTimer != null) {
+            refreshTimer.cancel(true);
         }
-        this.refreshTimer = null;
-        if (this.nhcComm != null) {
+        refreshTimer = null;
+        if (nhcComm != null) {
             nhcComm.stopCommunication();
         }
-        this.nhcComm = null;
+        nhcComm = null;
     }
 
     @Override
@@ -256,7 +256,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
      * @return Niko Home Control communication object
      */
     public @Nullable NikoHomeControlCommunication getCommunication() {
-        return this.nhcComm;
+        return nhcComm;
     }
 
     @Override

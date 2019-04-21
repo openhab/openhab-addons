@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.handler;
 
+/**
+ * {@link NikoHomeControlActionConfig} is the general config class for Niko Home Control Actions.
+ *
+ * @author Mark Herwege - Initial Contribution
+ */
 public class NikoHomeControlActionConfig {
     public String actionId;
 }

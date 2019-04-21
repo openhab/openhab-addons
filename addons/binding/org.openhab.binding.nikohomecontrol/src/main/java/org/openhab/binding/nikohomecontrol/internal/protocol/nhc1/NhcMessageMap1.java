@@ -28,7 +28,7 @@ class NhcMessageMap1 extends NhcMessageBase1 {
     private Map<String, String> data = new HashMap<>();
 
     Map<String, String> getData() {
-        return this.data;
+        return data;
     }
 
     void setData(Map<String, String> data) {

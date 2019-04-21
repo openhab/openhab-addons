@@ -48,31 +48,31 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
     public NikoHomeControlDiscoveryService(NikoHomeControlBridgeHandler handler) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT, false);
         logger.debug("Niko Home Control: discovery service {}", handler);
-        this.bridgeUID = handler.getThing().getUID();
+        bridgeUID = handler.getThing().getUID();
         this.handler = handler;
     }
 
     public void activate() {
-        this.handler.setNhcDiscovery(this);
+        handler.setNhcDiscovery(this);
     }
 
     @Override
     public void deactivate() {
         removeOlderResults(new Date().getTime());
-        this.handler.setNhcDiscovery(null);
+        handler.setNhcDiscovery(null);
     }
 
     /**
      * Discovers devices connected to a Niko Home Control controller
      */
     public void discoverDevices() {
-        NikoHomeControlCommunication nhcComm = this.handler.getCommunication();
+        NikoHomeControlCommunication nhcComm = handler.getCommunication();
 
         if ((nhcComm == null) || !nhcComm.communicationActive()) {
             logger.warn("Niko Home Control: not connected.");
             return;
         }
-        logger.debug("Niko Home Control: getting devices on {}", this.handler.getThing().getUID().getId());
+        logger.debug("Niko Home Control: getting devices on {}", handler.getThing().getUID().getId());
 
         Map<String, NhcAction> actions = nhcComm.getActions();
 
@@ -85,20 +85,20 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
 
             switch (nhcAction.getType()) {
                 case TRIGGER:
-                    addActionDevice(new ThingUID(THING_TYPE_PUSHBUTTON, this.handler.getThing().getUID(), actionId),
+                    addActionDevice(new ThingUID(THING_TYPE_PUSHBUTTON, handler.getThing().getUID(), actionId),
                             actionId, thingName, thingLocation);
                     break;
                 case RELAY:
-                    addActionDevice(new ThingUID(THING_TYPE_ON_OFF_LIGHT, this.handler.getThing().getUID(), actionId),
+                    addActionDevice(new ThingUID(THING_TYPE_ON_OFF_LIGHT, handler.getThing().getUID(), actionId),
                             actionId, thingName, thingLocation);
                     break;
                 case DIMMER:
-                    addActionDevice(new ThingUID(THING_TYPE_DIMMABLE_LIGHT, this.handler.getThing().getUID(), actionId),
+                    addActionDevice(new ThingUID(THING_TYPE_DIMMABLE_LIGHT, handler.getThing().getUID(), actionId),
                             actionId, thingName, thingLocation);
                     break;
                 case ROLLERSHUTTER:
-                    addActionDevice(new ThingUID(THING_TYPE_BLIND, this.handler.getThing().getUID(), actionId),
-                            actionId, thingName, thingLocation);
+                    addActionDevice(new ThingUID(THING_TYPE_BLIND, handler.getThing().getUID(), actionId), actionId,
+                            thingName, thingLocation);
                     break;
                 default:
                     logger.debug("Niko Home Control: unrecognized action type {} for {} {}", nhcAction.getType(),
@@ -114,7 +114,7 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
             NhcThermostat nhcThermostat = thermostatEntry.getValue();
             String thingName = nhcThermostat.getName();
             String thingLocation = nhcThermostat.getLocation();
-            addThermostatDevice(new ThingUID(THING_TYPE_THERMOSTAT, this.handler.getThing().getUID(), thermostatId),
+            addThermostatDevice(new ThingUID(THING_TYPE_THERMOSTAT, handler.getThing().getUID(), thermostatId),
                     thermostatId, thingName, thingLocation);
         }
     }

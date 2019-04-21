@@ -49,12 +49,12 @@ public class NhcAction2 extends NhcAction {
      * @return action on/off state
      */
     boolean booleanState() {
-        return this.booleanState;
+        return booleanState;
     }
 
     @Override
     public int getState() {
-        return this.booleanState ? this.state : 0;
+        return booleanState ? state : 0;
     }
 
     /**
@@ -63,16 +63,16 @@ public class NhcAction2 extends NhcAction {
      * @param state - boolean false for on, true for off
      */
     public void setBooleanState(boolean state) {
-        this.booleanState = state;
-        if (this.getType().equals(ActionType.DIMMER)) {
-            if (this.booleanState) {
+        booleanState = state;
+        if (getType().equals(ActionType.DIMMER)) {
+            if (booleanState) {
                 // only send stored brightness value if on
                 updateState();
             } else {
                 updateState(0);
             }
         } else {
-            if (this.booleanState) {
+            if (booleanState) {
                 this.state = 100;
                 updateState(100);
             } else {
@@ -93,7 +93,7 @@ public class NhcAction2 extends NhcAction {
     @Override
     public void setState(int state) {
         this.state = state;
-        if (this.booleanState) { // only send the update to the event handler if on
+        if (booleanState) { // only send the update to the event handler if on
             updateState();
         }
     }
@@ -108,10 +108,10 @@ public class NhcAction2 extends NhcAction {
      */
     @Override
     public void execute(String command) {
-        logger.debug("Niko Home Control: execute action {} of type {} for {}", command, this.type, this.id);
+        logger.debug("Niko Home Control: execute action {} of type {} for {}", command, type, id);
 
         if (nhcComm != null) {
-            nhcComm.executeAction(this.id, command);
+            nhcComm.executeAction(id, command);
         }
     }
 

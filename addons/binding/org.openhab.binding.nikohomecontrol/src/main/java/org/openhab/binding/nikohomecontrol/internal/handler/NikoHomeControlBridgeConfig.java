@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.handler;
 
+/**
+ * {@link NikoHomeControlBridgeConfig} is the general config class for Niko Home Control Bridges.
+ *
+ * @author Mark Herwege - Initial Contribution
+ */
 public class NikoHomeControlBridgeConfig {
     public String addr;
     public int port;

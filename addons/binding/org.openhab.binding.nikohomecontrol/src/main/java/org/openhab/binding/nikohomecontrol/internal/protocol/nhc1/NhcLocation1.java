@@ -30,6 +30,6 @@ public final class NhcLocation1 {
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 }

@@ -80,7 +80,7 @@ public abstract class NhcAction {
      * @return the id
      */
     public String getId() {
-        return this.id;
+        return id;
     }
 
     /**
@@ -89,7 +89,7 @@ public abstract class NhcAction {
      * @return action name
      */
     public String getName() {
-        return this.name;
+        return name;
     }
 
     /**
@@ -100,7 +100,7 @@ public abstract class NhcAction {
      * @return {@link ActionType}
      */
     public ActionType getType() {
-        return this.type;
+        return type;
     }
 
     /**
@@ -109,7 +109,7 @@ public abstract class NhcAction {
      * @return location name
      */
     public @Nullable String getLocation() {
-        return this.location;
+        return location;
     }
 
     /**
@@ -122,7 +122,7 @@ public abstract class NhcAction {
      * @return action state
      */
     public int getState() {
-        return this.state;
+        return state;
     }
 
     /**
@@ -146,7 +146,7 @@ public abstract class NhcAction {
      * @return action openTime
      */
     public int getOpenTime() {
-        return this.openTime;
+        return openTime;
     }
 
     /**
@@ -157,11 +157,11 @@ public abstract class NhcAction {
      * @return action closeTime
      */
     public int getCloseTime() {
-        return this.closeTime;
+        return closeTime;
     }
 
     protected void updateState() {
-        updateState(this.state);
+        updateState(state);
     }
 
     protected void updateState(int state) {

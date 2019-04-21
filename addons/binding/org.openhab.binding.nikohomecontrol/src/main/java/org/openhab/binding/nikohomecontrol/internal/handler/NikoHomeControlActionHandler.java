@@ -266,7 +266,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     private void updateProperties() {
         Map<String, String> properties = new HashMap<>();
         properties.put("type", String.valueOf(nhcAction.getType()));
-        if (this.getThing().getThingTypeUID() == THING_TYPE_BLIND) {
+        if (getThing().getThingTypeUID() == THING_TYPE_BLIND) {
             properties.put("timeToOpen", String.valueOf(nhcAction.getOpenTime()));
             properties.put("timeToClose", String.valueOf(nhcAction.getCloseTime()));
         }

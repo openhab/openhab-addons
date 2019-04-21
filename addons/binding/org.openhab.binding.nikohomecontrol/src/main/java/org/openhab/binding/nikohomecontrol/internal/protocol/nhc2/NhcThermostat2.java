@@ -38,22 +38,22 @@ public class NhcThermostat2 extends NhcThermostat {
 
     @Override
     public void executeMode(int mode) {
-        logger.debug("Niko Home Control: execute thermostat mode {} for {}", mode, this.id);
+        logger.debug("Niko Home Control: execute thermostat mode {} for {}", mode, id);
 
         String program = THERMOSTATMODES[mode];
 
         if (nhcComm != null) {
-            nhcComm.executeThermostat(this.id, program);
+            nhcComm.executeThermostat(id, program);
         }
     }
 
     @Override
     public void executeOverrule(int overrule, int overruletime) {
         logger.debug("Niko Home Control: execute thermostat overrule {} during {} min for {}", overrule, overruletime,
-                this.id);
+                id);
 
         if (nhcComm != null) {
-            nhcComm.executeThermostat(this.id, overrule / 10, overruletime);
+            nhcComm.executeThermostat(id, overrule / 10, overruletime);
         }
     }
 }

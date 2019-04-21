@@ -91,7 +91,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
     public NikoHomeControlCommunication2(NhcControllerEvent handler, String clientId, String persistencePath)
             throws CertificateException {
         super(handler);
-        this.mqttConnection = new NhcMqttConnection2(clientId, persistencePath);
+        mqttConnection = new NhcMqttConnection2(clientId, persistencePath);
     }
 
     @Override
@@ -382,26 +382,26 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
                         break;
                 }
 
-                if (!this.actions.containsKey(device.uuid)) {
+                if (!actions.containsKey(device.uuid)) {
                     logger.debug("Niko Home Control: adding action device {}, {}", device.uuid, device.name);
 
                     NhcAction2 nhcAction = new NhcAction2(device.uuid, device.name, device.model, device.technology,
                             actionType, location);
                     nhcAction.setNhcComm(this);
-                    this.actions.put(device.uuid, nhcAction);
+                    actions.put(device.uuid, nhcAction);
                 }
 
-                updateActionState((NhcAction2) this.actions.get(device.uuid), device);
+                updateActionState((NhcAction2) actions.get(device.uuid), device);
             } else if ("thermostat".equals(device.type)) {
-                if (!this.thermostats.containsKey(device.uuid)) {
+                if (!thermostats.containsKey(device.uuid)) {
                     logger.debug("Niko Home Control: adding thermostatdevice {}, {}", device.uuid, device.name);
 
                     NhcThermostat2 nhcThermostat = new NhcThermostat2(device.uuid, device.name, location);
                     nhcThermostat.setNhcComm(this);
-                    this.thermostats.put(device.uuid, nhcThermostat);
+                    thermostats.put(device.uuid, nhcThermostat);
                 }
 
-                updateThermostatState((NhcThermostat2) this.thermostats.get(device.uuid), device);
+                updateThermostatState((NhcThermostat2) thermostats.get(device.uuid), device);
             } else {
                 logger.debug("Niko Home Control: device type {} not supported for {}, {}", device.type, device.uuid,
                         device.name);
@@ -435,10 +435,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         }
 
         for (NhcDevice2 device : deviceList) {
-            if (this.actions.containsKey(device.uuid)) {
-                updateActionState((NhcAction2) this.actions.get(device.uuid), device);
-            } else if (this.thermostats.containsKey(device.uuid)) {
-                updateThermostatState((NhcThermostat2) this.thermostats.get(device.uuid), device);
+            if (actions.containsKey(device.uuid)) {
+                updateActionState((NhcAction2) actions.get(device.uuid), device);
+            } else if (thermostats.containsKey(device.uuid)) {
+                updateThermostatState((NhcThermostat2) thermostats.get(device.uuid), device);
             }
         }
     }

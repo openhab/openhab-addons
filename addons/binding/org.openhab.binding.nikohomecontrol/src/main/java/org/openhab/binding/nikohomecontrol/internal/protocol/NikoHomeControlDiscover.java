@@ -76,10 +76,10 @@ public final class NikoHomeControlDiscover {
                     break;
                 }
             }
-            this.addr = packet.getAddress();
+            addr = packet.getAddress();
             setNhcBridgeId(packet);
             setIsNhcII(packet);
-            logger.debug("Niko Home Control: IP address is {}, unique ID is {}", this.addr, this.nhcBridgeId);
+            logger.debug("Niko Home Control: IP address is {}, unique ID is {}", addr, nhcBridgeId);
         }
     }
 
@@ -87,14 +87,14 @@ public final class NikoHomeControlDiscover {
      * @return the addr
      */
     public InetAddress getAddr() {
-        return this.addr;
+        return addr;
     }
 
     /**
      * @return the nhcBridgeId
      */
     public String getNhcBridgeId() {
-        return this.nhcBridgeId;
+        return nhcBridgeId;
     }
 
     /**
@@ -124,7 +124,7 @@ public final class NikoHomeControlDiscover {
         for (int i = 0; i < packetLength; i++) {
             sb.append(String.format("%02x", packetData[i]));
         }
-        this.nhcBridgeId = sb.toString();
+        nhcBridgeId = sb.toString();
     }
 
     /**
@@ -137,9 +137,9 @@ public final class NikoHomeControlDiscover {
         int packetLength = packet.getLength();
         // The 16th byte in the packet is 2 for a NHC II Connected Controller
         if ((packetLength >= 16) && (packetData[15] >= 2)) {
-            this.isNhcII = true;
+            isNhcII = true;
         } else {
-            this.isNhcII = false;
+            isNhcII = false;
         }
     }
 

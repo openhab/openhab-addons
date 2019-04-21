@@ -82,7 +82,7 @@ public abstract class NikoHomeControlCommunication {
      * @return <code>Map&ltString, {@link NhcAction}></code>
      */
     public Map<String, NhcAction> getActions() {
-        return this.actions;
+        return actions;
     }
 
     /**
@@ -91,7 +91,7 @@ public abstract class NikoHomeControlCommunication {
      * @return <code>Map&ltString, {@link NhcThermostat}></code>
      */
     public Map<String, NhcThermostat> getThermostats() {
-        return this.thermostats;
+        return thermostats;
     }
 
     /**

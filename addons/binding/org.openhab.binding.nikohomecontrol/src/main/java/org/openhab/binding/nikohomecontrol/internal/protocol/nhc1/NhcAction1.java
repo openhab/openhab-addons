@@ -70,23 +70,23 @@ public class NhcAction1 extends NhcAction {
     @Override
     public void setState(int newState) {
         if (getType() == ActionType.ROLLERSHUTTER) {
-            if (this.filterEvent) {
-                this.filterEvent = false;
-                logger.debug("Niko Home Control: filtered event {} for {}", newState, this.id);
+            if (filterEvent) {
+                filterEvent = false;
+                logger.debug("Niko Home Control: filtered event {} for {}", newState, id);
                 return;
             }
 
             cancelRollershutterStop();
 
-            if (((newState == 0) || (newState == 100)) && (newState != this.state)) {
-                long duration = rollershutterMoveTime(this.state, newState);
+            if (((newState == 0) || (newState == 100)) && (newState != state)) {
+                long duration = rollershutterMoveTime(state, newState);
                 setRollershutterMovingTrue(duration);
             } else {
                 setRollershutterMovingFalse();
             }
         }
         if (waitForEvent) {
-            logger.debug("Niko Home Control: received requested rollershutter {} position event {}", this.id, newState);
+            logger.debug("Niko Home Control: received requested rollershutter {} position event {}", id, newState);
             executeRollershutterTask();
         } else {
             state = newState;
@@ -101,7 +101,7 @@ public class NhcAction1 extends NhcAction {
      */
     @Override
     public void execute(String command) {
-        logger.debug("Niko Home Control: execute action {} of type {} for {}", command, this.type, this.id);
+        logger.debug("Niko Home Control: execute action {} of type {} for {}", command, type, id);
 
         String value = "";
         switch (getType()) {
@@ -129,7 +129,7 @@ public class NhcAction1 extends NhcAction {
         }
 
         if (nhcComm != null) {
-            nhcComm.executeAction(this.id, value);
+            nhcComm.executeAction(id, value);
             return;
         }
 
@@ -140,22 +140,22 @@ public class NhcAction1 extends NhcAction {
 
     private void executeRollershutter(String command) {
         if (logger.isTraceEnabled()) {
-            logger.trace("handleRollerShutterCommand: rollershutter {} command {}", this.id, command);
-            logger.trace("handleRollerShutterCommand: rollershutter {}, current position {}", this.id, this.state);
+            logger.trace("handleRollerShutterCommand: rollershutter {} command {}", id, command);
+            logger.trace("handleRollerShutterCommand: rollershutter {}, current position {}", id, state);
         }
 
         // first stop all current movement of rollershutter and wait until exact position is known
-        if (this.rollershutterMoving) {
+        if (rollershutterMoving) {
             if (logger.isTraceEnabled()) {
-                logger.trace("handleRollerShutterCommand: rollershutter {} moving, therefore stop", this.id);
+                logger.trace("handleRollerShutterCommand: rollershutter {} moving, therefore stop", id);
             }
             rollershutterPositionStop();
         }
 
         // task to be executed once exact position received from Niko Home Control
-        this.rollershutterTask = () -> {
+        rollershutterTask = () -> {
             if (logger.isTraceEnabled()) {
-                logger.trace("handleRollerShutterCommand: rollershutter {} task running", this.id);
+                logger.trace("handleRollerShutterCommand: rollershutter {} task running", id);
             }
 
             int currentValue = state;
@@ -169,8 +169,8 @@ public class NhcAction1 extends NhcAction {
             } else {
                 int newValue = 100 - Integer.parseInt(command);
                 if (logger.isTraceEnabled()) {
-                    logger.trace("handleRollerShutterCommand: rollershutter {} percent command, current {}, new {}",
-                            this.id, currentValue, newValue);
+                    logger.trace("handleRollerShutterCommand: rollershutter {} percent command, current {}, new {}", id,
+                            currentValue, newValue);
                 }
                 if (currentValue == newValue) {
                     return;
@@ -187,9 +187,9 @@ public class NhcAction1 extends NhcAction {
         };
 
         // execute immediately if not waiting for exact position
-        if (!this.waitForEvent) {
+        if (!waitForEvent) {
             if (logger.isTraceEnabled()) {
-                logger.trace("handleRollerShutterCommand: rollershutter {} task executing immediately", this.id);
+                logger.trace("handleRollerShutterCommand: rollershutter {} task executing immediately", id);
             }
             executeRollershutterTask();
         }
@@ -197,19 +197,19 @@ public class NhcAction1 extends NhcAction {
 
     private void executeRollershutterStop() {
         if (nhcComm != null) {
-            nhcComm.executeAction(this.id, "253");
+            nhcComm.executeAction(id, "253");
         }
     }
 
     private void executeRollershutterDown() {
         if (nhcComm != null) {
-            nhcComm.executeAction(this.id, "254");
+            nhcComm.executeAction(id, "254");
         }
     }
 
     private void executeRollershutterUp() {
         if (nhcComm != null) {
-            nhcComm.executeAction(this.id, "255");
+            nhcComm.executeAction(id, "255");
         }
     }
 
@@ -219,25 +219,25 @@ public class NhcAction1 extends NhcAction {
      */
     private void rollershutterPositionStop() {
         if (logger.isTraceEnabled()) {
-            logger.trace("rollershutterPositionStop: rollershutter {} executing", this.id);
+            logger.trace("rollershutterPositionStop: rollershutter {} executing", id);
         }
         cancelRollershutterStop();
-        this.rollershutterTask = null;
-        this.filterEvent = false;
-        this.waitForEvent = true;
+        rollershutterTask = null;
+        filterEvent = false;
+        waitForEvent = true;
         executeRollershutterStop();
     }
 
     private void executeRollershutterTask() {
         if (logger.isTraceEnabled()) {
-            logger.trace("executeRollershutterTask: rollershutter {} task triggered", this.id);
+            logger.trace("executeRollershutterTask: rollershutter {} task triggered", id);
         }
-        this.waitForEvent = false;
+        waitForEvent = false;
 
-        Action action = this.rollershutterTask;
+        Action action = rollershutterTask;
         if (action != null) {
             action.execute();
-            this.rollershutterTask = null;
+            rollershutterTask = null;
         }
     }
 
@@ -252,55 +252,55 @@ public class NhcAction1 extends NhcAction {
     private void scheduleRollershutterStop(int currentValue, int newValue) {
         // filter first event for a rollershutter coming from Niko Home Control if moving to an intermediate
         // position to avoid updating state to full open or full close
-        this.filterEvent = true;
+        filterEvent = true;
 
         long duration = rollershutterMoveTime(currentValue, newValue);
         setRollershutterMovingTrue(duration);
 
         if (logger.isTraceEnabled()) {
-            logger.trace("scheduleRollershutterStop: schedule rollershutter {} stop in {}ms", this.id, duration);
+            logger.trace("scheduleRollershutterStop: schedule rollershutter {} stop in {}ms", id, duration);
         }
-        this.rollershutterStopTask = this.scheduler.schedule(() -> {
-            logger.trace("scheduleRollershutterStop: run rollershutter {} stop", this.id);
+        rollershutterStopTask = scheduler.schedule(() -> {
+            logger.trace("scheduleRollershutterStop: run rollershutter {} stop", id);
             executeRollershutterStop();
         }, duration, TimeUnit.MILLISECONDS);
     }
 
     private void cancelRollershutterStop() {
-        ScheduledFuture<?> stopTask = this.rollershutterStopTask;
+        ScheduledFuture<?> stopTask = rollershutterStopTask;
         if (stopTask != null) {
             if (logger.isTraceEnabled()) {
-                logger.trace("cancelRollershutterStop: cancel rollershutter {} stop", this.id);
+                logger.trace("cancelRollershutterStop: cancel rollershutter {} stop", id);
             }
             stopTask.cancel(true);
         }
-        this.rollershutterStopTask = null;
+        rollershutterStopTask = null;
 
-        this.filterEvent = false;
+        filterEvent = false;
     }
 
     private void setRollershutterMovingTrue(long duration) {
         if (logger.isTraceEnabled()) {
-            logger.trace("setRollershutterMovingTrue: rollershutter {} moving", this.id);
+            logger.trace("setRollershutterMovingTrue: rollershutter {} moving", id);
         }
-        this.rollershutterMoving = true;
-        this.rollershutterMovingFlagTask = this.scheduler.schedule(() -> {
+        rollershutterMoving = true;
+        rollershutterMovingFlagTask = scheduler.schedule(() -> {
             if (logger.isTraceEnabled()) {
-                logger.trace("setRollershutterMovingTrue: rollershutter {} stopped moving", this.id);
+                logger.trace("setRollershutterMovingTrue: rollershutter {} stopped moving", id);
             }
-            this.rollershutterMoving = false;
+            rollershutterMoving = false;
         }, duration, TimeUnit.MILLISECONDS);
     }
 
     private void setRollershutterMovingFalse() {
         if (logger.isTraceEnabled()) {
-            logger.trace("setRollershutterMovingFalse: rollershutter {} not moving", this.id);
+            logger.trace("setRollershutterMovingFalse: rollershutter {} not moving", id);
         }
-        this.rollershutterMoving = false;
-        ScheduledFuture<?> future = this.rollershutterMovingFlagTask;
+        rollershutterMoving = false;
+        ScheduledFuture<?> future = rollershutterMovingFlagTask;
         if (future != null) {
             future.cancel(true);
-            this.rollershutterMovingFlagTask = null;
+            rollershutterMovingFlagTask = null;
         }
     }
 
@@ -308,7 +308,7 @@ public class NhcAction1 extends NhcAction {
         int totalTime = (newValue > currentValue) ? getOpenTime() : getCloseTime();
         long duration = Math.abs(newValue - currentValue) * totalTime * 10;
         if (logger.isTraceEnabled()) {
-            logger.trace("rollershutterMoveTime: rollershutter {} move time {}", this.id, duration);
+            logger.trace("rollershutterMoveTime: rollershutter {} move time {}", id, duration);
         }
         return duration;
     }

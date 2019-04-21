@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.handler;
 
+/**
+ * {@link NikoHomeControlBridgeConfig2} is the extended config class for Niko Home Control II Bridges.
+ *
+ * @author Mark Herwege - Initial Contribution
+ */
 public class NikoHomeControlBridgeConfig2 extends NikoHomeControlBridgeConfig {
     public String profile;
     public String password;

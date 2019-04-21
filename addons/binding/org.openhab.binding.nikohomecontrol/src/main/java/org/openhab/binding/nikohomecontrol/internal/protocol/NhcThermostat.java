@@ -125,8 +125,8 @@ public abstract class NhcThermostat {
      *
      * @param eventHandler
      */
-    public void setEventHandler(NhcThermostatEvent handler) {
-        this.eventHandler = handler;
+    public void setEventHandler(NhcThermostatEvent eventHandler) {
+        this.eventHandler = eventHandler;
     }
 
     /**
@@ -146,7 +146,7 @@ public abstract class NhcThermostat {
      * @return the id
      */
     public String getId() {
-        return this.id;
+        return id;
     }
 
     /**
@@ -155,7 +155,7 @@ public abstract class NhcThermostat {
      * @return thermostat name
      */
     public String getName() {
-        return this.name;
+        return name;
     }
 
     /**
@@ -164,7 +164,7 @@ public abstract class NhcThermostat {
      * @return location name
      */
     public @Nullable String getLocation() {
-        return this.location;
+        return location;
     }
 
     /**
@@ -173,7 +173,7 @@ public abstract class NhcThermostat {
      * @return measured temperature in 0.1°C multiples
      */
     public int getMeasured() {
-        return this.measured;
+        return measured;
     }
 
     private void setMeasured(int measured) {
@@ -305,13 +305,13 @@ public abstract class NhcThermostat {
      * Start a new overrule, this method is used to be able to calculate the remaining overrule time
      */
     private void startOverrule() {
-        this.overruleStart = LocalDateTime.now();
+        overruleStart = LocalDateTime.now();
     }
 
     /**
      * Reset overrule start
      */
     private void stopOverrule() {
-        this.overruleStart = null;
+        overruleStart = null;
     }
 }
