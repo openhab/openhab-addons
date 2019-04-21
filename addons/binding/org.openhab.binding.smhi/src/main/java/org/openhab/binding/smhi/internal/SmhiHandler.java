@@ -173,7 +173,7 @@ public class SmhiHandler extends BaseThingHandler {
 
             Date currentvaliddate = calendar.getTime();
 
-            calendar.set(Calendar.HOUR_OF_DAY, 13);
+            calendar.set(Calendar.HOUR_OF_DAY, 12);
             calendar.add(Calendar.DATE, 1);
             Date tomorrowvaliddate = calendar.getTime();
 
