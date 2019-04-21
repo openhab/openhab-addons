@@ -98,6 +98,8 @@ public class NhcMqttConnection2 implements MqttActionCallback {
                 keyStore.setCertificateEntry(certName, certificate);
             }
 
+            ResourceBundle.clearCache();
+
             // Create trust managers used to validate server
             TrustManagerFactory tmFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             tmFactory.init(keyStore);
@@ -109,6 +111,8 @@ public class NhcMqttConnection2 implements MqttActionCallback {
         } catch (CertificateException | KeyStoreException | NoSuchAlgorithmException | IOException e) {
             logger.warn("Niko Home Control: error with SSL context creation", e.getMessage());
             throw new CertificateException("SSL context creation exception", e);
+        } finally {
+            ResourceBundle.clearCache();
         }
     }
 
