@@ -69,6 +69,7 @@ public class KodiBindingConstants {
     public static final String CHANNEL_ALBUM = "album";
     public static final String CHANNEL_MEDIATYPE = "mediatype";
     public static final String CHANNEL_MEDIAID = "mediaid";
+    public static final String CHANNEL_MEDIAFILE = "mediafile";
     public static final String CHANNEL_GENRELIST = "genreList";
     public static final String CHANNEL_PVR_CHANNEL = "pvr-channel";
     public static final String CHANNEL_THUMBNAIL = "thumbnail";
@@ -97,6 +98,8 @@ public class KodiBindingConstants {
     public static final String CHANNEL_UNIQUEID_TMDBTVSHOW = "uniqueid-tmdbtvshow";
     public static final String CHANNEL_UNIQUEID_TMDBEPISODE = "uniqueid-tmdbepisode";
     public static final String CHANNEL_UNIQUEID_DOUBAN = "uniqueid-douban";
+    public static final String CHANNEL_MPAA = "mpaa";
+    public static final String CHANNEL_RATING = "rating";
 
     public static final String CHANNEL_SEASON = "season";
     public static final String CHANNEL_EPISODE = "episode";

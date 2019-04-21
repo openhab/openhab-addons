@@ -21,20 +21,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class KodiUniqueID {
-    private @NonNullByDefault({}) String douban;
     private @NonNullByDefault({}) String imdb;
     private @NonNullByDefault({}) String tmdb;
     private @NonNullByDefault({}) String imdbtvshow;
     private @NonNullByDefault({}) String tmdbtvshow;
     private @NonNullByDefault({}) String tmdbepisode;
-
-    public String getDouban() {
-        return douban;
-    }
-
-    public void setDouban(String douban) {
-        this.douban = douban;
-    }
+    private @NonNullByDefault({}) String douban;
 
     public String getImdb() {
         return imdb;
@@ -74,5 +66,12 @@ public class KodiUniqueID {
 
     public void setTmdbepisode(String tmdbepisode) {
         this.tmdbtvshow = tmdbepisode;
+    }
+    public String getDouban() {
+        return douban;
+    }
+
+    public void setDouban(String douban) {
+        this.douban = douban;
     }
 }

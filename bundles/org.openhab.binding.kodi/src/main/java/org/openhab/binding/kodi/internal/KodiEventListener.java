@@ -130,4 +130,10 @@ public interface KodiEventListener extends EventListener {
     void updateEpisode(int episode);
 
     void updateSeason(int season);
+    
+    void updateMediaFile (String mediafile);
+    
+    void updateRating (double rating);
+    
+    void updateMpaa (String mpaa);
 }

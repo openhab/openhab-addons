@@ -532,7 +532,22 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 if (item.has("id")) {
                     mediaid = item.get("id").getAsInt();
                 }
+                
+                double rating = -1;
+                if (item.has("rating")) {
+                    rating = item.get("rating").getAsDouble();
+                }
 
+                String mpaa = "";
+                if (item.has("mpaa")) {
+                    mpaa = item.get("mpaa").getAsString();
+                }             
+                
+                String mediafile = "";
+                if (item.has("file")) {
+                    mpaa = item.get("file").getAsString();
+                }                   
+                
                 String uniqueIDDouban = "";
                 String uniqueIDImdb = "";
                 String uniqueIDTmdb = "";
@@ -641,6 +656,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 listener.updateFanart(fanart);
                 listener.updateSeason(season);
                 listener.updateEpisode(episode);
+                listener.updateMediaFile(mediafile);
+                listener.updateMpaa(mpaa);
+                listener.updateRating(rating);
                 listener.updateUniqueIDDouban(uniqueIDDouban);
                 listener.updateUniqueIDImdb(uniqueIDImdb);
                 listener.updateUniqueIDTmdb(uniqueIDTmdb);
