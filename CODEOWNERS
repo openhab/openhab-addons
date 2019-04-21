@@ -6,7 +6,6 @@
 
 # Add-on maintainers:
 /addons/binding/org.openhab.binding.enocean/ @fruggy83
-/addons/binding/org.openhab.binding.feed.test/ @svilenvul
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
 /addons/binding/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
 /addons/binding/org.openhab.binding.onkyo/ @pail23 @paulianttila
@@ -21,7 +20,6 @@
 /addons/io/org.openhab.io.mqttembeddedbroker/ @davidgraeff
 /addons/io/org.openhab.io.mqttembeddedbroker.test/ @davidgraeff
 /addons/io/org.openhab.io.sound/ @kaikreuzer
-/addons/io/org.openhab.io.transport.feed/ @svilenvul
 /addons/voice/org.openhab.voice.pollytts/ @hillmanr
 /bundles/org.openhab.binding.airquality/ @kubawolanin
 /bundles/org.openhab.binding.airvisualnode/ @3cky
