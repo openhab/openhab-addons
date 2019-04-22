@@ -57,8 +57,6 @@ public class KVVTrainChannelTypeProvider implements ChannelGroupTypeProvider, Ch
                 return ct;
             }
         }
-        System.out.println("fuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuck");
-        System.out.println(channelTypeUID);
         return null;
     }
 
