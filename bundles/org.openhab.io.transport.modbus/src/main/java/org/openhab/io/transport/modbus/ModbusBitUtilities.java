@@ -26,6 +26,8 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 
 /**
  * Utilities for working with binary data.
@@ -71,6 +73,7 @@ public class ModbusBitUtilities {
      * - registers (index) and (index + 1) are interpreted as signed 32bit floating point number.
      * - it assumed that the first register contains the most significant 16 bits
      * - it is assumed that each register is encoded in most significant bit first order
+     * - floating point NaN and infinity will return as <tt>UnDefType.UNDEF</tt>
      * FLOAT32_SWAP:
      * - Same as FLOAT32 but registers swapped
      * INT64:
@@ -86,17 +89,19 @@ public class ModbusBitUtilities {
      * - same as INT64_SWAP except value is interpreted as unsigned integer
      *
      * @param registers list of registers, each register represent 16bit of data
-     * @param index zero based item index. Interpretation of this depends on type, see examples above.
-     *            With type larger or equal to 16 bits, the index tells the register index to start reading from.
-     *            With type less than 16 bits, the index tells the N'th item to read from the registers.
-     * @param type item type, e.g. unsigned 16bit integer (<tt>ModbusBindingProvider.ValueType.UINT16</tt>)
-     * @return number representation queried value
-     * @throws NotImplementedException in cases where implementation is lacking for the type. This can be considered a
-     *             bug
+     * @param index     zero based item index. Interpretation of this depends on type, see examples above.
+     *                      With type larger or equal to 16 bits, the index tells the register index to start reading
+     *                      from.
+     *                      With type less than 16 bits, the index tells the N'th item to read from the registers.
+     * @param type      item type, e.g. unsigned 16bit integer (<tt>ModbusBindingProvider.ValueType.UINT16</tt>)
+     * @return number representation queried value, <tt>DecimalType</tt> or <tt>UnDefType.UNDEF</tt>. UNDEF is returned
+     *         with NaN and infinity floating point values
+     * @throws NotImplementedException  in cases where implementation is lacking for the type. This can be considered a
+     *                                      bug
      * @throws IllegalArgumentException when <tt>index</tt> is out of bounds of registers
      *
      */
-    public static DecimalType extractStateFromRegisters(ModbusRegisterArray registers, int index,
+    public static State extractStateFromRegisters(ModbusRegisterArray registers, int index,
             ModbusConstants.ValueType type) {
         int endBitIndex = (type.getBits() >= 16 ? 16 * index : type.getBits() * index) + type.getBits() - 1;
         // each register has 16 bits
@@ -138,7 +143,12 @@ public class ModbusBitUtilities {
                 ByteBuffer buff = ByteBuffer.allocate(4);
                 buff.put(registers.getRegister(index).getBytes());
                 buff.put(registers.getRegister(index + 1).getBytes());
-                return new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getFloat(0));
+                try {
+                    return new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getFloat(0));
+                } catch (NumberFormatException e) {
+                    // floating point NaN or infinity encountered
+                    return UnDefType.UNDEF;
+                }
             }
             case INT64: {
                 ByteBuffer buff = ByteBuffer.allocate(8);
@@ -173,7 +183,12 @@ public class ModbusBitUtilities {
                 ByteBuffer buff = ByteBuffer.allocate(4);
                 buff.put(registers.getRegister(index + 1).getBytes());
                 buff.put(registers.getRegister(index).getBytes());
-                return new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getFloat(0));
+                try {
+                    return new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getFloat(0));
+                } catch (NumberFormatException e) {
+                    // floating point NaN or infinity encountered
+                    return UnDefType.UNDEF;
+                }
             }
             case INT64_SWAP: {
                 ByteBuffer buff = ByteBuffer.allocate(8);
@@ -205,10 +220,10 @@ public class ModbusBitUtilities {
      * NUL byte encountered.
      *
      * @param registers list of registers, each register represent 16bit of data
-     * @param index zero based register index. Registers are handled as 16bit registers,
-     *            this parameter defines the starting register.
-     * @param length maximum length of string in 8bit characters.
-     * @param charset the character set used to construct the string.
+     * @param index     zero based register index. Registers are handled as 16bit registers,
+     *                      this parameter defines the starting register.
+     * @param length    maximum length of string in 8bit characters.
+     * @param charset   the character set used to construct the string.
      * @return string representation queried value
      * @throws IllegalArgumentException when <tt>index</tt> is out of bounds of registers
      */
@@ -250,10 +265,10 @@ public class ModbusBitUtilities {
      * Convert command to array of registers using a specific value type
      *
      * @param command command to be converted
-     * @param type value type to use in conversion
+     * @param type    value type to use in conversion
      * @return array of registers
      * @throws NotImplementedException in cases where implementation is lacking for the type. This is thrown with 1-bit
-     *             and 8-bit value types
+     *                                     and 8-bit value types
      */
     public static ModbusRegisterArray commandToRegisters(Command command, ModbusConstants.ValueType type) {
         DecimalType numericCommand;

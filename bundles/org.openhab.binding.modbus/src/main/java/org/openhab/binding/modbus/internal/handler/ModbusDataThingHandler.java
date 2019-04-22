@@ -653,7 +653,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         if (readValueType == null) {
             return;
         }
-        DecimalType numericState;
+        State numericState;
 
         // extractIndex:
         // e.g. with bit, extractIndex=4 means 5th bit (from right) ("10.4" -> 5th bit of register 10, "10.4" -> 5th bit
@@ -790,11 +790,11 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     /**
      * Update linked channels
      *
-     * @param numericState numeric state corresponding to polled data
+     * @param numericState numeric state corresponding to polled data (or UNDEF with floating point NaN or infinity)
      * @param boolValue    boolean value corresponding to polled data
      * @return updated channel data
      */
-    private Map<ChannelUID, State> processUpdatedValue(DecimalType numericState, boolean boolValue) {
+    private Map<ChannelUID, State> processUpdatedValue(State numericState, boolean boolValue) {
         Map<@NonNull ChannelUID, @NonNull State> states = new HashMap<>();
         CHANNEL_ID_TO_ACCEPTED_TYPES.keySet().stream().forEach(channelId -> {
             ChannelUID channelUID = getChannelUID(channelId);
