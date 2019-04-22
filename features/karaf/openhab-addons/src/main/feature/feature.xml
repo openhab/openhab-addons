@@ -1045,6 +1045,11 @@
     <feature name="openhab-misc-azureiothub" description="Azure IoT Hub Connector" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mqtt</feature>
+        <feature prerequisite="true">wrap</feature>
+        <bundle dependency="true">wrap:mvn:com.microsoft.azure.sdk.iot/iot-device-client/1.2.28$Bundle-Name=Azure%20IoT%20Hub%20Device%20Client&amp;Bundle-SymbolicName=com.microsoft.azure.sdk.iot.iot-device-client&amp;Bundle-Version=1.2.28</bundle>
+        <bundle dependency="true">wrap:mvn:com.microsoft.azure.sdk.iot/iot-service-client/1.4.22$Bundle-Name=Azure%20IoT%20Hub%20Service%20Client&amp;Bundle-SymbolicName=com.microsoft.azure.sdk.iot.iot-service-client&amp;Bundle-Version=1.4.22</bundle>
+        <bundle dependency="true">wrap:mvn:com.microsoft.azure/azure-eventhubs/0.14.5$Bundle-Name=Azure%20EventHubs&amp;Bundle-SymbolicName=com.microsoft.azure.azure-eventhubs&amp;Bundle-Version=0.14.5</bundle>
+        <bundle dependency="true">mvn:javax.json/javax.json-api/1.0</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.io.azureiothub/${project.version}</bundle>
     </feature>
 
