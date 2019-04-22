@@ -21,8 +21,5 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  <properties>
-    <!--bnd.importpackage>org.slf4j.impl.*;resolution:=optional,de.kaizencode.tchaikovsky.*</bnd.importpackage-->
-  </properties>
   
 </project>
