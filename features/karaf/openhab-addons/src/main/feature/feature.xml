@@ -1045,7 +1045,7 @@
     <feature name="openhab-misc-azureiothub" description="Azure IoT Hub Connector" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mqtt</feature>
-        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.azureiothub/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.io.azureiothub/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-misc-openhabcloud" description="openHAB Cloud Connector" version="${project.version}">
