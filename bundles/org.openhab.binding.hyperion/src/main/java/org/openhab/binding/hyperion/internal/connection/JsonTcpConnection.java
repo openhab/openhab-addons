@@ -59,9 +59,10 @@ public class JsonTcpConnection {
 
     public String send(String json) throws IOException {
         String response = null;
-        try (Socket hyperionServer = new Socket(address, port)) {
-            DataOutputStream outToServer = new DataOutputStream(hyperionServer.getOutputStream());
-            BufferedReader inFromServer = new BufferedReader(new InputStreamReader(hyperionServer.getInputStream()));
+        try (Socket hyperionServer = new Socket(address, port);
+                DataOutputStream outToServer = new DataOutputStream(hyperionServer.getOutputStream());
+                BufferedReader inFromServer = new BufferedReader(
+                        new InputStreamReader(hyperionServer.getInputStream()))) {
             logger.debug("Sending: {}", json);
             outToServer.writeBytes(json + System.lineSeparator());
             outToServer.flush();
