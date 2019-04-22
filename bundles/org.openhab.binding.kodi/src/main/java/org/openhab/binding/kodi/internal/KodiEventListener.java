@@ -72,7 +72,7 @@ public interface KodiEventListener extends EventListener {
     void updateUniqueIDTmdbtvshow(String uniqueid);
 
     void updateUniqueIDTmdbepisode(String uniqueid);
-    
+
     void updateTitle(String title);
 
     void updateOriginalTitle(String originaltitle);
@@ -130,10 +130,12 @@ public interface KodiEventListener extends EventListener {
     void updateEpisode(int episode);
 
     void updateSeason(int season);
-    
-    void updateMediaFile (String mediafile);
-    
-    void updateRating (double rating);
-    
-    void updateMpaa (String mpaa);
+
+    void updateMediaFile(String mediafile);
+
+    void updateRating(double rating);
+
+    void updateUserRating(double rating);
+
+    void updateMpaa(String mpaa);
 }
