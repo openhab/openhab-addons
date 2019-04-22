@@ -299,8 +299,10 @@ public class KeContactHandler extends BaseThingHandler {
                         maxPresetCurrent = state;
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_PRESET_CURRENT),
                                 new DecimalType(state));
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_PRESET_CURRENT_RANGE),
-                                new PercentType(Math.min(100, (state - 6000) * 100 / (maxSystemCurrent - 6000))));
+                        if (maxSystemCurrent != 0) {
+                            updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_PRESET_CURRENT_RANGE),
+                                    new PercentType(Math.min(100, (state - 6000) * 100 / (maxSystemCurrent - 6000))));
+                        }
                         break;
                     }
                     case "Curr FS": {
