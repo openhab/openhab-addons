@@ -150,8 +150,6 @@ public abstract class AbstractWiFiLEDDriver {
             logger.debug("RGBW: {},{},{},{}, {}", red, green, blue, white, white2);
 
             return new LEDState(state, program, programSpeed, red, green, blue, white, white2);
-        } catch (IOException e) {
-            throw new IOException(e);
         }
     }
 
@@ -171,8 +169,8 @@ public abstract class AbstractWiFiLEDDriver {
             if (delay > 0) {
                 Thread.sleep(delay);
             }
-        } catch (IOException | InterruptedException e) {
-            throw new IOException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
