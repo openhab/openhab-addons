@@ -16,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -61,8 +62,8 @@ public class JsonTcpConnection {
         String response = null;
         try (Socket hyperionServer = new Socket(address, port);
                 DataOutputStream outToServer = new DataOutputStream(hyperionServer.getOutputStream());
-                BufferedReader inFromServer = new BufferedReader(
-                        new InputStreamReader(hyperionServer.getInputStream()))) {
+                Reader isr = new InputStreamReader(hyperionServer.getInputStream());
+                BufferedReader inFromServer = new BufferedReader(isr)) {
             logger.debug("Sending: {}", json);
             outToServer.writeBytes(json + System.lineSeparator());
             outToServer.flush();

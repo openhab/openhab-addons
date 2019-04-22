@@ -326,8 +326,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Sending command: {}", sanitizeCommand(command));
-        try (Writer ows = new OutputStreamWriter(clientSocket.getOutputStream());
-                BufferedWriter writer = new BufferedWriter(ows)) {
+        try (Writer osw = new OutputStreamWriter(clientSocket.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(osw)) {
             writer.write(command + NEW_LINE);
             writer.flush();
         } catch (IOException e) {
