@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Class representing a Kodi subtitle stream (see https://kodi.wiki/view/JSON-RPC_API/v9#Player.Subtitle)
  *
- * @author Meng Yiqi - Initial contribution
+ * @author m17design - Initial contribution
  */
 @NonNullByDefault
 public class KodiSubtitle {

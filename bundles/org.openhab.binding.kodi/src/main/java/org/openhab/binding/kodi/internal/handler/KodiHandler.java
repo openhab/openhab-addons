@@ -704,7 +704,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     public void updateMediaFile(String mediaFile) {
         updateState(CHANNEL_MEDIAFILE, createStringState(mediaFile));
     }
-
+        
     @Override
     public void updateMediaType(String mediaType) {
         updateState(CHANNEL_MEDIATYPE, createStringState(mediaType));
@@ -718,18 +718,13 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void updateRating(double rating) {
         updateState(CHANNEL_RATING, new DecimalType(rating));
-    }
-
-    @Override
-    public void updateUserRating(double rating) {
-        updateState(CHANNEL_USERRATING, new DecimalType(rating));
-    }
-
+    }    
+    
     @Override
     public void updateMpaa(String mpaa) {
         updateState(CHANNEL_MPAA, createStringState(mpaa));
     }
-
+    
     @Override
     public void updateUniqueIDDouban(String uniqueid) {
         updateState(CHANNEL_UNIQUEID_DOUBAN, createStringState(uniqueid));
@@ -758,8 +753,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void updateUniqueIDTmdbepisode(String uniqueid) {
         updateState(CHANNEL_UNIQUEID_TMDBEPISODE, createStringState(uniqueid));
-    }
-
+    }    
+    
     @Override
     public void updateSeason(int season) {
         updateState(CHANNEL_SEASON, new DecimalType(season));

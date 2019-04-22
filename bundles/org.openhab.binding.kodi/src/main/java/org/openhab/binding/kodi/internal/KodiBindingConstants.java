@@ -91,6 +91,7 @@ public class KodiBindingConstants {
     public static final String CHANNEL_CURRENTTIME = "currenttime";
     public static final String CHANNEL_CURRENTTIMEPERCENTAGE = "currenttimepercentage";
     public static final String CHANNEL_DURATION = "duration";
+    public static final String CHANNEL_UNIQUEID = "uniqueid";
     public static final String CHANNEL_UNIQUEID_IMDB = "uniqueid-imdb";
     public static final String CHANNEL_UNIQUEID_IMDBTVSHOW = "uniqueid-imdbtvshow";
     public static final String CHANNEL_UNIQUEID_TMDB = "uniqueid-tmdb";
@@ -99,7 +100,6 @@ public class KodiBindingConstants {
     public static final String CHANNEL_UNIQUEID_DOUBAN = "uniqueid-douban";
     public static final String CHANNEL_MPAA = "mpaa";
     public static final String CHANNEL_RATING = "rating";
-    public static final String CHANNEL_USERRATING = "userrating";
 
     public static final String CHANNEL_SEASON = "season";
     public static final String CHANNEL_EPISODE = "episode";

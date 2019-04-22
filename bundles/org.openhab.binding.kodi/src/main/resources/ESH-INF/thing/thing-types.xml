@@ -66,7 +66,6 @@
            		 <channel id="uniqueid-tmdbtvshow" typeId="uniqueid"><label>TMDB TVSHOW ID</label><description>example usage - http://www.themoviedb.org/tv/12225/</description></channel>
 			<channel id="mpaa" typeId="mpaa" />
 			<channel id="rating" typeId="rating" />
-            <channel id="userrating" typeId="rating" />
 		</channels>
 
 		<properties>
@@ -503,7 +502,7 @@
     	<channel-type id="mpaa" advanced="true">
         	<item-type>String</item-type>
         	<label>MPAA Rating</label>
-        	<description>MPAA Rating - Motion Picture Association of America film rating system</description>
+        	<description>MPAA Rating</description>
         	<state readOnly="true" />
     	</channel-type>   
 </thing:thing-descriptions>

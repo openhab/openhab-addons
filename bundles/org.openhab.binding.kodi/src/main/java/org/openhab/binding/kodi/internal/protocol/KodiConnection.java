@@ -515,8 +515,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private void requestPlayerItemUpdate(int activePlayer) {
         final String[] properties = { PROPERTY_UNIQUEID, "title", "originaltitle", "album", "artist", "track",
-                "director", PROPERTY_THUMBNAIL, PROPERTY_FANART, "file", "showtitle", "season", "episode", "channel",
-                "channeltype", "genre", "mpaa", "rating", "votes", "userrating" };
+                "director", PROPERTY_THUMBNAIL, PROPERTY_FANART, "file", "streamdetails", "showtitle", "season",
+                "episode", "channel", "channeltype", "genre", "mpaa", "rating", "votes", "userrating" };
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
@@ -532,27 +532,22 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 if (item.has("id")) {
                     mediaid = item.get("id").getAsInt();
                 }
-
+                
                 double rating = -1;
                 if (item.has("rating")) {
                     rating = item.get("rating").getAsDouble();
                 }
 
-                double userrating = -1;
-                if (item.has("userrating")) {
-                    rating = item.get("userrating").getAsDouble();
-                }
-
                 String mpaa = "";
                 if (item.has("mpaa")) {
                     mpaa = item.get("mpaa").getAsString();
-                }
-
+                }             
+                
                 String mediafile = "";
                 if (item.has("file")) {
                     mpaa = item.get("file").getAsString();
-                }
-
+                }                   
+                
                 String uniqueIDDouban = "";
                 String uniqueIDImdb = "";
                 String uniqueIDTmdb = "";
@@ -565,7 +560,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
                         KodiUniqueID uniqueID = gson.fromJson(result.get(PROPERTY_UNIQUEID), KodiUniqueID.class);
                         if (uniqueID != null) {
                             uniqueIDImdb = uniqueID.getImdb();
-                            uniqueIDDouban = uniqueID.getDouban();
+                        	uniqueIDDouban = uniqueID.getDouban();
                             uniqueIDTmdb = uniqueID.getTmdb();
                             uniqueIDImdbtvshow = uniqueID.getImdbtvshow();
                             uniqueIDTmdbtvshow = uniqueID.getTmdbtvshow();
@@ -664,7 +659,6 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 listener.updateMediaFile(mediafile);
                 listener.updateMpaa(mpaa);
                 listener.updateRating(rating);
-                listener.updateUserRating(userrating);
                 listener.updateUniqueIDDouban(uniqueIDDouban);
                 listener.updateUniqueIDImdb(uniqueIDImdb);
                 listener.updateUniqueIDTmdb(uniqueIDTmdb);

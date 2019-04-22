@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Class representing a Kodi UniqueID
  *
- * @author Meng Yiqi - Initial contribution
+ * @author m17design - Initial contribution
  */
 @NonNullByDefault
 public class KodiUniqueID {
@@ -67,7 +67,6 @@ public class KodiUniqueID {
     public void setTmdbepisode(String tmdbepisode) {
         this.tmdbtvshow = tmdbepisode;
     }
-
     public String getDouban() {
         return douban;
     }
