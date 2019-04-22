@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.innogysmarthome.internal;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -33,8 +36,6 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 /**
  * The {@link InnogyHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -44,8 +45,9 @@ import com.google.common.collect.Sets;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.innogysmarthome")
 public class InnogyHandlerFactory extends BaseThingHandlerFactory implements ThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.union(InnogyBridgeHandler.SUPPORTED_THING_TYPES,
-            InnogyDeviceHandler.SUPPORTED_THING_TYPES);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
+            .unmodifiableSet(Stream.concat(InnogyBridgeHandler.SUPPORTED_THING_TYPES.stream(),
+                    InnogyDeviceHandler.SUPPORTED_THING_TYPES.stream()).collect(Collectors.toSet()));
 
     private final Logger logger = LoggerFactory.getLogger(InnogyHandlerFactory.class);
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();

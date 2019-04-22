@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.innogysmarthome.internal;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link InnogyBindingConstants} class defines common constants, which are
@@ -101,10 +102,13 @@ public class InnogyBindingConstants {
     public static final String DEVICE_SMART_METER = "SmartMeter";
     public static final String DEVICE_TWO_WAY_METER = "TwoWayMeter";
 
-    public static final Set<String> SUPPORTED_DEVICES = ImmutableSet.of(DEVICE_SHC, DEVICE_PSS, DEVICE_PSSO,
-            DEVICE_VARIABLE_ACTUATOR, DEVICE_RST, DEVICE_RST2, DEVICE_WRT, DEVICE_WDS, DEVICE_ISS2, DEVICE_WSD,
-            DEVICE_WSD2, DEVICE_WMD, DEVICE_WMDO, DEVICE_WSC2, DEVICE_BRC8, DEVICE_ISC2, DEVICE_ISD2, DEVICE_ISR2,
-            DEVICE_PSD, DEVICE_ANALOG_METER, DEVICE_GENERATION_METER, DEVICE_SMART_METER, DEVICE_TWO_WAY_METER);
+    public static final Set<String> SUPPORTED_DEVICES = Collections
+            .unmodifiableSet(Stream
+                    .of(DEVICE_SHC, DEVICE_PSS, DEVICE_PSSO, DEVICE_VARIABLE_ACTUATOR, DEVICE_RST, DEVICE_RST2,
+                            DEVICE_WRT, DEVICE_WDS, DEVICE_ISS2, DEVICE_WSD, DEVICE_WSD2, DEVICE_WMD, DEVICE_WMDO,
+                            DEVICE_WSC2, DEVICE_BRC8, DEVICE_ISC2, DEVICE_ISD2, DEVICE_ISR2, DEVICE_PSD,
+                            DEVICE_ANALOG_METER, DEVICE_GENERATION_METER, DEVICE_SMART_METER, DEVICE_TWO_WAY_METER)
+                    .collect(Collectors.toSet()));
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
@@ -133,11 +137,14 @@ public class InnogyBindingConstants {
     public static final ThingTypeUID THING_TYPE_SMART_METER = new ThingTypeUID(BINDING_ID, DEVICE_SMART_METER);
     public static final ThingTypeUID THING_TYPE_TWO_WAY_METER = new ThingTypeUID(BINDING_ID, DEVICE_TWO_WAY_METER);
 
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES = ImmutableSet.of(THING_TYPE_PSS,
-            THING_TYPE_PSSO, THING_TYPE_VARIABLE_ACTUATOR, THING_TYPE_RST, THING_TYPE_RST2, THING_TYPE_WRT,
-            THING_TYPE_WDS, THING_TYPE_ISS2, THING_TYPE_WSD, THING_TYPE_WSD2, THING_TYPE_WMD, THING_TYPE_WMDO,
-            THING_TYPE_WSC2, THING_TYPE_BRC8, THING_TYPE_ISC2, THING_TYPE_ISD2, THING_TYPE_ISR2, THING_TYPE_PSD,
-            THING_TYPE_ANALOG_METER, THING_TYPE_GENERATION_METER, THING_TYPE_SMART_METER, THING_TYPE_TWO_WAY_METER);
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES = Collections
+            .unmodifiableSet(Stream
+                    .of(THING_TYPE_PSS, THING_TYPE_PSSO, THING_TYPE_VARIABLE_ACTUATOR, THING_TYPE_RST, THING_TYPE_RST2,
+                            THING_TYPE_WRT, THING_TYPE_WDS, THING_TYPE_ISS2, THING_TYPE_WSD, THING_TYPE_WSD2,
+                            THING_TYPE_WMD, THING_TYPE_WMDO, THING_TYPE_WSC2, THING_TYPE_BRC8, THING_TYPE_ISC2,
+                            THING_TYPE_ISD2, THING_TYPE_ISR2, THING_TYPE_PSD, THING_TYPE_ANALOG_METER,
+                            THING_TYPE_GENERATION_METER, THING_TYPE_SMART_METER, THING_TYPE_TWO_WAY_METER)
+                    .collect(Collectors.toSet()));
 
     // List of all Channel ids
     public static final String CHANNEL_SWITCH = "switch";
