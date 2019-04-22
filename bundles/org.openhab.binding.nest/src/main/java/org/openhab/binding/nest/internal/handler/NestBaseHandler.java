@@ -77,7 +77,8 @@ public abstract class NestBaseHandler<T> extends BaseThingHandler
             logger.debug("Adding {} with ID '{}' as device data listener, result: {}", getClass().getSimpleName(),
                     getId(), success);
         } else {
-            logger.debug("Unable to add {} with ID '{}' as device data listener because bridge is null");
+            logger.debug("Unable to add {} with ID '{}' as device data listener because bridge is null",
+                    getClass().getSimpleName(), getId());
         }
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Waiting for refresh");

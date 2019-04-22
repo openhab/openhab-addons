@@ -291,7 +291,7 @@ public class SilvercrestWifiSocketHandler extends BaseThingHandler {
                 address = InetAddress.getByName(this.hostAddress);
                 this.sendRequestPacket(new SilvercrestWifiSocketRequest(this.macAddress, type, this.vendor), address);
             } catch (UnknownHostException e) {
-                logger.debug("Host Address not found: {}. Will lookup Mac address.");
+                logger.debug("Host Address not found: {}. Will lookup Mac address.", this.hostAddress);
                 this.hostAddress = null;
                 this.lookupForSocketHostAddress();
             }

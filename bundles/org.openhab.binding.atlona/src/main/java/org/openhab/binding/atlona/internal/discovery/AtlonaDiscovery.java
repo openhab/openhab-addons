@@ -233,7 +233,7 @@ public class AtlonaDiscovery extends AbstractDiscoveryService {
             } else if (model.equalsIgnoreCase("AT-UHD-PRO3-1616M")) {
                 typeId = THING_TYPE_PRO3_1616M;
             } else {
-                logger.warn("Unknown model #: {}");
+                logger.warn("Unknown model #: {}", model);
             }
 
             if (typeId != null) {

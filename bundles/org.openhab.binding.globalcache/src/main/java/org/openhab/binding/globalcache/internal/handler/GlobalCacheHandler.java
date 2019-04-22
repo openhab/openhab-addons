@@ -130,7 +130,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == null) {
-            logger.warn("Command passed to handler for thing {} is null");
+            logger.warn("Command passed to handler for thing {} is null", thingID());
             return;
         }
 
