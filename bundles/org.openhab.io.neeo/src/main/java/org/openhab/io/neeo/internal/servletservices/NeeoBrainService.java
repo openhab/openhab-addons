@@ -333,7 +333,7 @@ public class NeeoBrainService extends DefaultServletService {
             api.getDeviceKeys().remove(uid);
             NeeoUtil.write(resp, gson.toJson(ReturnStatus.SUCCESS));
         } catch (IllegalArgumentException e) {
-            logger.debug("AdapterName {} is not a valid thinguid - ignoring");
+            logger.debug("AdapterName {} is not a valid thinguid - ignoring", adapterName);
             NeeoUtil.write(resp, gson.toJson(new ReturnStatus("AdapterName not a valid ThingUID: " + adapterName)));
         }
     }
@@ -358,7 +358,7 @@ public class NeeoBrainService extends DefaultServletService {
             api.getDeviceKeys().put(uid, deviceKey);
             NeeoUtil.write(resp, gson.toJson(ReturnStatus.SUCCESS));
         } catch (IllegalArgumentException e) {
-            logger.debug("AdapterName {} is not a valid thinguid - ignoring");
+            logger.debug("AdapterName {} is not a valid thinguid - ignoring", adapterName);
             NeeoUtil.write(resp, gson.toJson(new ReturnStatus("AdapterName not a valid ThingUID: " + adapterName)));
         }
     }
@@ -377,7 +377,7 @@ public class NeeoBrainService extends DefaultServletService {
         Objects.requireNonNull(resp, "resp cannot be null");
         Objects.requireNonNull(pathInfo, "pathInfo cannot be null");
 
-        logger.debug("handleDirectory{}: {}", pathInfo);
+        logger.debug("handleDirectory {}", pathInfo);
 
         final NeeoDevice device = context.getDefinitions().getDevice(pathInfo.getThingUid());
         if (device != null) {
