@@ -863,7 +863,10 @@
 
     <feature name="openhab-binding-systeminfo" description="System Info Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.systeminfo/${project.version}</bundle>
+        <bundle dependency="true">mvn:net.java.dev.jna/jna/5.3.0</bundle>
+        <bundle dependency="true">mvn:net.java.dev.jna/jna-platform/5.3.0</bundle>
+        <bundle dependency="true">mvn:com.github.oshi/oshi-core/3.13.0</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.systeminfo/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-tado" description="Tado Binding" version="${project.version}">
