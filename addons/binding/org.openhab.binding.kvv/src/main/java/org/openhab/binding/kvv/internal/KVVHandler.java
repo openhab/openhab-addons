@@ -66,7 +66,7 @@ public class KVVHandler extends BaseThingHandler {
         this.channelGroupProvider = new KVVTrainChannelTypeProvider();
 
         for (int i = 0; i < this.config.count; i++) {
-            this.channelGroupProvider.addChannelGroupType(i, config.name.toLowerCase());
+            this.channelGroupProvider.addChannelGroupType(i, config.stationId.replaceAll(":", ""));
         }
     }
 
@@ -100,14 +100,17 @@ public class KVVHandler extends BaseThingHandler {
         final ChannelUID uid = new ChannelUID(group.getUID().getAsString() + ":train:" + channel.getId());
 
         if (this.departures == null) {
-            logger.info("failed to update state of '" + uid.getAsString() + "': no departures available");
+            logger.warn("failed to update state of '" + uid.getAsString() + "': no departures available");
             updateState(uid, new StringType(""));
             return;
         }
 
-        final int departureId = Integer.parseInt(group.getUID().getAsString().replaceAll("[^0-9]", ""));
-        if (this.departures.getDepartures().size() - 1 < departureId) {
-            logger.info("failed to update state of '" + uid.getAsString() + "': train with this id does not exist");
+        final String[] tokens = group.getUID().getAsString().split("-");
+        final int departureId = Integer.parseInt(tokens[tokens.length - 1].replaceAll("[^0-9]", ""));
+        if (this.departures.getDepartures().size() < departureId) {
+            logger.warn(
+                    "failed to update state of '" + uid.getAsString() + "': train with this id does not exist. only '"
+                            + this.departures.getDepartures().size() + "' available");
             updateState(uid, new StringType(""));
             return;
         }
@@ -117,7 +120,7 @@ public class KVVHandler extends BaseThingHandler {
             updateState(uid, new StringType(""));
             return;
         }
-
+        logger.info("Refreshing " + uid + ": " + channel.getId());
         switch (channel.getId()) {
             case "name":
                 updateState(uid, new StringType(departure.getRoute()));
@@ -154,7 +157,7 @@ public class KVVHandler extends BaseThingHandler {
                 // Schedule update and refresh tasks
                 this.scheduler.scheduleWithFixedDelay(new UpdateTask(), 0, this.config.updateInterval,
                         TimeUnit.MILLISECONDS);
-                this.scheduler.scheduleWithFixedDelay(new RefreshTask(), 0, this.config.updateInterval,
+                this.scheduler.scheduleWithFixedDelay(new RefreshTask(), 1000, this.config.updateInterval,
                         TimeUnit.MILLISECONDS);
                 updateStatus(ThingStatus.ONLINE);
             } else {
@@ -188,7 +191,7 @@ public class KVVHandler extends BaseThingHandler {
 
         /** the url of the KVV API */
         private final String url = KVVBindingConstants.API_URL + "/departures/bystop/" + config.stationId + "?key="
-                + KVVBindingConstants.API_KEY;
+                + KVVBindingConstants.API_KEY + "&maxInfos=" + config.count;
 
         /**
          * Returns the latest {@link DepartureResult}.

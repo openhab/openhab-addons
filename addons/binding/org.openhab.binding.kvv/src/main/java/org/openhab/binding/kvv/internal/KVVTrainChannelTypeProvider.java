@@ -35,12 +35,12 @@ public class KVVTrainChannelTypeProvider implements ChannelGroupTypeProvider, Ch
         channelGroupTypes = new HashMap<ChannelGroupTypeUID, ChannelGroupType>();
     }
 
-    public void addChannelGroupType(final int id, final String stationName) {
+    public void addChannelGroupType(final int id, final String stationId) {
         final List<ChannelDefinition> channels = new ArrayList<ChannelDefinition>();
         for (final ChannelType ct : channelTypes) {
             channels.add(new ChannelDefinition(ct.getUID().getId(), ct.getUID()));
         }
-        final ChannelGroupTypeUID gid = new ChannelGroupTypeUID("kvv", stationName + "-train" + id);
+        final ChannelGroupTypeUID gid = new ChannelGroupTypeUID("kvv", stationId + "-train" + id);
         this.channelGroupTypes.put(gid,
                 ChannelGroupTypeBuilder.instance(gid, "KVV Train").withChannelDefinitions(channels).build());
     }
