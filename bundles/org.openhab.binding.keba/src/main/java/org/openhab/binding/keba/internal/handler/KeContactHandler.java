@@ -417,6 +417,18 @@ public class KeContactHandler extends BaseThingHandler {
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_TOTAL_CONSUMPTION), newState);
                         break;
                     }
+                    case "AuthON": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new DecimalType(state);
+                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_AUTHON), newState);
+                        break;
+                    }
+                    case "Authreq": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new DecimalType(state);
+                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_AUTHREQ), newState);
+                        break;
+                    }
                 }
             }
         } catch (JsonParseException e) {
