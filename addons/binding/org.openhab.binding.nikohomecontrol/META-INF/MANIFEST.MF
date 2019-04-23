@@ -10,9 +10,11 @@ Bundle-Vendor: openHAB
 Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  com.google.gson,
- com.google.gson.stream,
+ com.google.gson.annotations,
+ com.google.gson.reflect,
  javax.measure.quantity,
  org.eclipse.jdt.annotation;resolution:=optional,
+ org.eclipse.paho.client.mqttv3,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
@@ -21,6 +23,11 @@ Import-Package:
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.types,
+ org.eclipse.smarthome.core.util,
+ org.eclipse.smarthome.io.transport.mqtt,
+ org.eclipse.smarthome.io.transport.mqtt.sslcontext,
  org.osgi.framework,
+ org.osgi.service.cm,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
+

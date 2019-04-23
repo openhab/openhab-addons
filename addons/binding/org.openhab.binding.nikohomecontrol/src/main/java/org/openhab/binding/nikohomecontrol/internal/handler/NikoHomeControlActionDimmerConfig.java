@@ -10,23 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.nikohomecontrol.internal.protocol;
+package org.openhab.binding.nikohomecontrol.internal.handler;
 
 /**
- * The {@link NhcLocation} class represents the location Niko Home Control communication object. It contains all fields
- * representing a Niko Home Control location.
+ * {@link NikoHomeControlActionDimmerConfig} is the config class for Niko Home Control Dimmer Actions.
  *
  * @author Mark Herwege - Initial Contribution
  */
-final class NhcLocation {
-
-    private String name;
-
-    NhcLocation(String name) {
-        this.name = name;
-    }
-
-    String getName() {
-        return this.name;
-    }
+public class NikoHomeControlActionDimmerConfig extends NikoHomeControlActionConfig {
+    public int step;
 }

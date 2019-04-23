@@ -19,6 +19,8 @@ import java.net.InetAddress;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -39,13 +41,14 @@ import org.slf4j.LoggerFactory;
  * @author Mark Herwege - Initial Contribution
  */
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.nikohomecontrol")
+@NonNullByDefault
 public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeDiscoveryService.class);
 
-    private ScheduledFuture<?> nhcDiscoveryJob;
+    private volatile @Nullable ScheduledFuture<?> nhcDiscoveryJob;
 
-    private NetworkAddressService networkAddressService;
+    private @NonNullByDefault({}) NetworkAddressService networkAddressService;
 
     private static final int TIMEOUT = 5;
     private static final int REFRESH_INTERVAL = 60;
@@ -67,17 +70,32 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
             }
             logger.debug("Niko Home Control: discovery broadcast on {}", broadcastAddr);
             NikoHomeControlDiscover nhcDiscover = new NikoHomeControlDiscover(broadcastAddr);
-            addBridge(nhcDiscover.getAddr(), nhcDiscover.getNhcBridgeId());
+            if (nhcDiscover.isNhcII()) {
+                addNhcIIBridge(nhcDiscover.getAddr(), nhcDiscover.getNhcBridgeId());
+            } else {
+                addNhcIBridge(nhcDiscover.getAddr(), nhcDiscover.getNhcBridgeId());
+            }
         } catch (IOException e) {
             logger.debug("Niko Home Control: no bridge found.");
         }
     }
 
-    private void addBridge(InetAddress addr, String bridgeId) {
-        logger.debug("Niko Home Control: bridge found at {}", addr);
+    private void addNhcIBridge(InetAddress addr, String bridgeId) {
+        logger.debug("Niko Home Control: NHC I bridge found at {}", addr);
 
         String bridgeName = "Niko Home Control Bridge";
         ThingUID uid = new ThingUID(BINDING_ID, "bridge", bridgeId);
+
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(bridgeName)
+                .withProperty(CONFIG_HOST_NAME, addr.getHostAddress()).build();
+        thingDiscovered(discoveryResult);
+    }
+
+    private void addNhcIIBridge(InetAddress addr, String bridgeId) {
+        logger.debug("Niko Home Control: NHC II bridge found at {}", addr);
+
+        String bridgeName = "Niko Home Control II Bridge";
+        ThingUID uid = new ThingUID(BINDING_ID, "bridge2", bridgeId);
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(bridgeName)
                 .withProperty(CONFIG_HOST_NAME, addr.getHostAddress()).build();
@@ -98,7 +116,8 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Niko Home Control: Start background bridge discovery");
-        if (nhcDiscoveryJob == null || nhcDiscoveryJob.isCancelled()) {
+        ScheduledFuture<?> job = nhcDiscoveryJob;
+        if (job == null || job.isCancelled()) {
             nhcDiscoveryJob = scheduler.scheduleWithFixedDelay(this::discoverBridge, 0, REFRESH_INTERVAL,
                     TimeUnit.SECONDS);
         }
@@ -107,8 +126,9 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Niko Home Control: Stop bridge background discovery");
-        if (nhcDiscoveryJob != null && !nhcDiscoveryJob.isCancelled()) {
-            nhcDiscoveryJob.cancel(true);
+        ScheduledFuture<?> job = nhcDiscoveryJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
             nhcDiscoveryJob = null;
         }
     }

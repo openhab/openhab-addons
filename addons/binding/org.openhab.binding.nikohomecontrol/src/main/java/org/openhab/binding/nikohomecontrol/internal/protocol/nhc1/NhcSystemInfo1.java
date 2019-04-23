@@ -10,20 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.nikohomecontrol.internal.protocol;
+package org.openhab.binding.nikohomecontrol.internal.protocol.nhc1;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link NhcSystemInfo} class represents the systeminfo Niko Home Control communication object. It contains all
+ * The {@link NhcSystemInfo1} class represents the systeminfo Niko Home Control communication object. It contains all
  * Niko Home Control system data received from the Niko Home Control controller when initializing the connection.
  *
  * @author Mark Herwege - Initial Contribution
  */
-public final class NhcSystemInfo {
+@NonNullByDefault
+public final class NhcSystemInfo1 {
 
-    // Initialize with empty strings. If null, downstream methods may throw null pointer exceptions. These
-    // exceptions cause threads to stop without warning, no way to catch the exception. This behavior happened when
-    // trying to write null to properties of things. So this avoids having to check before the call for null
-    // pointers each time as the null exceptions cannot be caught.
     private String swVersion = "";
     private String api = "";
     private String time = "";
