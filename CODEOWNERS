@@ -11,7 +11,6 @@
 /addons/binding/org.openhab.binding.feed.test/ @svilenvul
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
 /addons/binding/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
-/addons/binding/org.openhab.binding.nikohomecontrol/ @mherwege
 /addons/binding/org.openhab.binding.onkyo/ @pail23 @paulianttila
 /addons/binding/org.openhab.binding.samsungtv/ @paulianttila
 /addons/binding/org.openhab.binding.yamahareceiver/ @davidgraeff @zarusz
@@ -121,6 +120,7 @@
 /bundles/org.openhab.binding.network/ @davidgraeff @mettke
 /bundles/org.openhab.binding.nibeheatpump/ @paulianttila
 /bundles/org.openhab.binding.nibeuplink/ @alexf2015
+/bundles/org.openhab.binding.nikohomecontrol/ @mherwege
 /bundles/org.openhab.binding.ntp/ @marcelrv
 /bundles/org.openhab.binding.nuki/ @mkatter
 /bundles/org.openhab.binding.oceanic/ @kgoderis
