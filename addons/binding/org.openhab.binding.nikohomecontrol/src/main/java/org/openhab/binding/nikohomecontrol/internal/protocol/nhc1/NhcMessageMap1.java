@@ -10,25 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.nikohomecontrol.internal.protocol;
+package org.openhab.binding.nikohomecontrol.internal.protocol.nhc1;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class {@link NhcMessageMap} used as output from gson for cmd or event feedback from Niko Home Control where the
- * data part is a simple json string. Extends {@link NhcMessageBase}.
+ * Class {@link NhcMessageMap1} used as output from gson for cmd or event feedback from Niko Home Control where the
+ * data part is a simple json string. Extends {@link NhcMessageBase1}.
  * <p>
  * Example: <code>{"cmd":"executeactions", "data":{"error":0}}</code>
  *
  * @author Mark Herwege - Initial Contribution
  */
-class NhcMessageMap extends NhcMessageBase {
+class NhcMessageMap1 extends NhcMessageBase1 {
 
     private Map<String, String> data = new HashMap<>();
 
     Map<String, String> getData() {
-        return this.data;
+        return data;
     }
 
     void setData(Map<String, String> data) {
