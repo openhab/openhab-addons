@@ -22,7 +22,6 @@
     <module>org.openhab.binding.feed</module>
     <module>org.openhab.binding.feed.test</module>
     <module>org.openhab.binding.loxone</module>
-    <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.onkyo</module>
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.zoneminder</module>
