@@ -3,21 +3,20 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.openhab</groupId>
-    <artifactId>pom-addons2</artifactId>
+    <groupId>org.openhab.addons</groupId>
+    <artifactId>org.openhab.addons.reactor</artifactId>
     <version>2.5.0-SNAPSHOT</version>
+    <relativePath>../poms/bnd</relativePath>
   </parent>
 
-  <groupId>org.openhab</groupId>
-  <artifactId>features</artifactId>
-
+  <groupId>org.openhab.addons.features</groupId>
+  <artifactId>org.openhab.addons.reactor.features</artifactId>
   <packaging>pom</packaging>
 
-  <name>openHAB Features</name>
+  <name>openHAB Add-ons :: Features</name>
 
   <modules>
-    <module>openhab-addons</module>
-    <module>openhab-addons-external</module>
-    <module>openhab-addons-verify</module>
+    <module>karaf</module>
   </modules>
+
 </project>

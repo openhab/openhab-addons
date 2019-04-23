@@ -69,6 +69,7 @@
     <module>org.openhab.binding.hyperion</module>
     <module>org.openhab.binding.icloud</module>
     <module>org.openhab.binding.ihc</module>
+    <module>org.openhab.binding.innogysmarthome</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.irtrans</module>
     <module>org.openhab.binding.jeelink</module>
@@ -147,6 +148,7 @@
     <module>org.openhab.binding.spotify</module>
     <module>org.openhab.binding.squeezebox</module>
     <module>org.openhab.binding.synopanalyzer</module>
+    <module>org.openhab.binding.systeminfo</module>
     <module>org.openhab.binding.tado</module>
     <module>org.openhab.binding.tankerkoenig</module>
     <module>org.openhab.binding.tellstick</module>
