@@ -17,42 +17,41 @@ import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlThermostatHandler;
+import org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NhcThermostat1;
+import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcThermostat2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NhcThermostat} class represents the thermostat Niko Home Control communication object. It contains all
  * fields representing a Niko Home Control thermostat and has methods to set the thermostat in Niko Home Control and
- * receive thermostat updates.
+ * receive thermostat updates. Specific implementation are {@link NhcThermostat1} and {@link NhcThermostat2}.
  *
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public final class NhcThermostat {
+public abstract class NhcThermostat {
 
     private final Logger logger = LoggerFactory.getLogger(NhcThermostat.class);
 
-    @Nullable
-    private NikoHomeControlCommunication nhcComm;
+    protected @Nullable NikoHomeControlCommunication nhcComm;
 
-    private int id;
-    private String name;
-    private String location;
-    private Integer measured = 0;
-    private Integer setpoint = 0;
-    private Integer mode = 0;
-    private Integer overrule = 0;
-    private Integer overruletime = 0;
-    private Integer ecosave = 0;
+    protected String id;
+    protected String name;
+    protected @Nullable String location;
+    protected volatile int measured;
+    protected volatile int setpoint;
+    protected volatile int mode;
+    protected volatile int overrule;
+    protected volatile int overruletime;
+    protected volatile int ecosave;
+    protected volatile int demand;
 
-    @Nullable
-    private LocalDateTime overruleStart;
+    private @Nullable LocalDateTime overruleStart;
 
-    @Nullable
-    private NikoHomeControlThermostatHandler thingHandler;
+    private @Nullable NhcThermostatEvent eventHandler;
 
-    NhcThermostat(int id, String name, String location) {
+    protected NhcThermostat(String id, String name, @Nullable String location) {
         this.id = id;
         this.name = name;
         this.location = location;
@@ -64,36 +63,70 @@ public final class NhcThermostat {
      *
      * @param measured     current temperature in 0.1°C multiples
      * @param setpoint     the setpoint temperature in 0.1°C multiples
-     * @param              mode: 0 = day, 1 = night, 2 = eco, 3 = off, 4 = cool, 5 = prog 1, 6 = prog 2, 7 = prog 3
+     * @param mode         thermostat mode 0 = day, 1 = night, 2 = eco, 3 = off, 4 = cool, 5 = prog1, 6 = prog2, 7 =
+     *                         prog3
      * @param overrule     the overrule temperature in 0.1°C multiples
      * @param overruletime in minutes
      * @param ecosave
+     * @param demand       0 if no demand, > 0 if heating, < 0 if cooling
      */
-    public void updateState(Integer measured, Integer setpoint, Integer mode, Integer overrule, Integer overruletime,
-            Integer ecosave) {
+    public void updateState(int measured, int setpoint, int mode, int overrule, int overruletime, int ecosave,
+            int demand) {
         setMeasured(measured);
         setSetpoint(setpoint);
         setMode(mode);
         setOverrule(overrule);
         setOverruletime(overruletime);
         setEcosave(ecosave);
+        setDemand(demand);
 
-        NikoHomeControlThermostatHandler handler = thingHandler;
+        updateChannels();
+    }
+
+    /**
+     * Update overrule values of the thermostat without touching the thermostat definition (id, name and location) and
+     * without changing the ThingHandler callback.
+     *
+     * @param overrule     the overrule temperature in 0.1°C multiples
+     * @param overruletime in minutes
+     */
+    public void updateState(int overrule, int overruletime) {
+        setOverrule(overrule);
+        setOverruletime(overruletime);
+
+        updateChannels();
+    }
+
+    /**
+     * Update overrule values of the thermostat without touching the thermostat definition (id, name and location) and
+     * without changing the ThingHandler callback.
+     *
+     * @param overrule     the overrule temperature in 0.1°C multiples
+     * @param overruletime in minutes
+     */
+    public void updateState(int mode) {
+        setMode(mode);
+
+        updateChannels();
+    }
+
+    private void updateChannels() {
+        NhcThermostatEvent handler = eventHandler;
         if (handler != null) {
             logger.debug("Niko Home Control: update channels for {}", id);
-            handler.handleStateUpdate(this);
+            handler.thermostatEvent(measured, setpoint, mode, overrule, demand);
         }
     }
 
     /**
-     * This method should be called if the ThingHandler for the thing corresponding to this action is initialized.
-     * It keeps a record of the thing handler in this object so the thing can be updated when
-     * the action receives an update from the Niko Home Control IP-interface.
+     * This method should be called when an object implementing the {@NhcThermostatEvent} interface is initialized.
+     * It keeps a record of the event handler in that object so it can be updated when the action receives an update
+     * from the Niko Home Control IP-interface.
      *
-     * @param handler
+     * @param eventHandler
      */
-    public void setThingHandler(NikoHomeControlThermostatHandler handler) {
-        this.thingHandler = handler;
+    public void setEventHandler(NhcThermostatEvent eventHandler) {
+        this.eventHandler = eventHandler;
     }
 
     /**
@@ -108,12 +141,21 @@ public final class NhcThermostat {
     }
 
     /**
-     * Get name of action.
+     * Get the id of the thermostat.
      *
-     * @return action name
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * Get name of thermostat.
+     *
+     * @return thermostat name
      */
     public String getName() {
-        return this.name;
+        return name;
     }
 
     /**
@@ -121,8 +163,8 @@ public final class NhcThermostat {
      *
      * @return location name
      */
-    public String getLocation() {
-        return this.location;
+    public @Nullable String getLocation() {
+        return location;
     }
 
     /**
@@ -130,35 +172,36 @@ public final class NhcThermostat {
      *
      * @return measured temperature in 0.1°C multiples
      */
-    public Integer getMeasured() {
-        return this.measured;
+    public int getMeasured() {
+        return measured;
     }
 
-    private void setMeasured(Integer measured) {
+    private void setMeasured(int measured) {
         this.measured = measured;
     }
 
     /**
      * @return the setpoint temperature in 0.1°C multiples
      */
-    public Integer getSetpoint() {
+    public int getSetpoint() {
         return setpoint;
     }
 
-    private void setSetpoint(Integer setpoint) {
+    private void setSetpoint(int setpoint) {
         this.setpoint = setpoint;
     }
 
     /**
      * Get the thermostat mode.
      *
-     * @return the mode: 0 = day, 1 = night, 2 = eco, 3 = off, 4 = cool, 5 = prog 1, 6 = prog 2, 7 = prog 3
+     * @return the mode:
+     *         0 = day, 1 = night, 2 = eco, 3 = off, 4 = cool, 5 = prog 1, 6 = prog 2, 7 = prog 3
      */
-    public Integer getMode() {
+    public int getMode() {
         return mode;
     }
 
-    private void setMode(Integer mode) {
+    private void setMode(int mode) {
         this.mode = mode;
     }
 
@@ -167,11 +210,15 @@ public final class NhcThermostat {
      *
      * @return the overrule temperature in 0.1°C multiples
      */
-    public Integer getOverrule() {
-        return overrule;
+    public int getOverrule() {
+        if (overrule > 0) {
+            return overrule;
+        } else {
+            return setpoint;
+        }
     }
 
-    private void setOverrule(Integer overrule) {
+    private void setOverrule(int overrule) {
         this.overrule = overrule;
     }
 
@@ -201,52 +248,47 @@ public final class NhcThermostat {
     /**
      * @return the ecosave mode
      */
-    public Integer getEcosave() {
+    public int getEcosave() {
         return ecosave;
     }
 
     /**
      * @param ecosave the ecosave mode to set
      */
-    private void setEcosave(Integer ecosave) {
+    private void setEcosave(int ecosave) {
         this.ecosave = ecosave;
     }
 
     /**
-     * Sends thermostat mode to Niko Home Control.
-     *
-     * @param mode
+     * @return the heating/cooling demand: 0 if no demand, >0 if heating, <0 if cooling
      */
-    public void executeMode(int mode) {
-        logger.debug("Niko Home Control: execute thermostat mode {} for {}", mode, this.id);
-
-        NhcMessageCmd nhcCmd = new NhcMessageCmd("executethermostat", this.id).withMode(mode);
-
-        NikoHomeControlCommunication comm = nhcComm;
-        if (comm != null) {
-            comm.sendMessage(nhcCmd);
-        }
+    public int getDemand() {
+        return demand;
     }
 
     /**
-     * Sends thermostat setpoint to Niko Home Control.
+     * @param demand set the heating/cooling demand
+     */
+    private void setDemand(int demand) {
+        this.demand = demand;
+    }
+
+    /**
+     * Sends thermostat mode to Niko Home Control. This method is implemented in {@link NhcThermostat1} and
+     * {@link NhcThermostat2}.
+     *
+     * @param mode
+     */
+    public abstract void executeMode(int mode);
+
+    /**
+     * Sends thermostat setpoint to Niko Home Control. This method is implemented in {@link NhcThermostat1} and
+     * {@link NhcThermostat2}.
      *
      * @param overrule temperature to overrule the setpoint in 0.1°C multiples
      * @param time     time duration in min for overrule
      */
-    public void executeOverrule(int overrule, int overruletime) {
-        logger.debug("Niko Home Control: execute thermostat overrule {} during {} min for {}", overrule, overruletime,
-                this.id);
-
-        String overruletimeString = String.format("%1$02d:%2$02d", overruletime / 60, overruletime % 60);
-        NhcMessageCmd nhcCmd = new NhcMessageCmd("executethermostat", this.id).withOverrule(overrule)
-                .withOverruletime(overruletimeString);
-
-        NikoHomeControlCommunication comm = nhcComm;
-        if (comm != null) {
-            comm.sendMessage(nhcCmd);
-        }
-    }
+    public abstract void executeOverrule(int overrule, int overruletime);
 
     /**
      * @return remaining overrule time in minutes
@@ -263,13 +305,13 @@ public final class NhcThermostat {
      * Start a new overrule, this method is used to be able to calculate the remaining overrule time
      */
     private void startOverrule() {
-        this.overruleStart = LocalDateTime.now();
+        overruleStart = LocalDateTime.now();
     }
 
     /**
      * Reset overrule start
      */
     private void stopOverrule() {
-        this.overruleStart = null;
+        overruleStart = null;
     }
 }
