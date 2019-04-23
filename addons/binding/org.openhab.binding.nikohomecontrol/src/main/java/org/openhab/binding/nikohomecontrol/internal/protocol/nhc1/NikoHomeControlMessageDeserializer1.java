@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.nikohomecontrol.internal.protocol;
+package org.openhab.binding.nikohomecontrol.internal.protocol.nhc1;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -27,16 +27,16 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 /**
- * Class {@link NikoHomeControlMessageDeserializer} deserializes all json messages from Niko Home Control. Various json
+ * Class {@link NikoHomeControlMessageDeserializer1} deserializes all json messages from Niko Home Control. Various json
  * message formats are supported. The format is selected based on the content of the cmd and event json objects.
  *
  * @author Mark Herwege - Initial Contribution
  *
  */
-class NikoHomeControlMessageDeserializer implements JsonDeserializer<NhcMessageBase> {
+class NikoHomeControlMessageDeserializer1 implements JsonDeserializer<NhcMessageBase1> {
 
     @Override
-    public NhcMessageBase deserialize(final JsonElement json, final Type typeOfT,
+    public NhcMessageBase1 deserialize(final JsonElement json, final Type typeOfT,
             final JsonDeserializationContext context) throws JsonParseException {
         final JsonObject jsonObject = json.getAsJsonObject();
 
@@ -55,22 +55,22 @@ class NikoHomeControlMessageDeserializer implements JsonDeserializer<NhcMessageB
                 jsonData = jsonObject.get("data");
             }
 
-            NhcMessageBase message = null;
+            NhcMessageBase1 message = null;
 
             if (jsonData != null) {
                 if (jsonData.isJsonObject()) {
-                    message = new NhcMessageMap();
+                    message = new NhcMessageMap1();
 
                     Map<String, String> data = new HashMap<>();
                     for (Entry<String, JsonElement> entry : jsonData.getAsJsonObject().entrySet()) {
                         data.put(entry.getKey(), entry.getValue().getAsString());
                     }
-                    ((NhcMessageMap) message).setData(data);
+                    ((NhcMessageMap1) message).setData(data);
 
                 } else if (jsonData.isJsonArray()) {
                     JsonArray jsonDataArray = jsonData.getAsJsonArray();
 
-                    message = new NhcMessageListMap();
+                    message = new NhcMessageListMap1();
 
                     List<Map<String, String>> dataList = new ArrayList<>();
                     for (int i = 0; i < jsonDataArray.size(); i++) {
@@ -82,7 +82,7 @@ class NikoHomeControlMessageDeserializer implements JsonDeserializer<NhcMessageB
                         }
                         dataList.add(data);
                     }
-                    ((NhcMessageListMap) message).setData(dataList);
+                    ((NhcMessageListMap1) message).setData(dataList);
                 }
             }
 
