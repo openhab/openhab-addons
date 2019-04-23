@@ -19,6 +19,5 @@
   <modules>
     <module>binding</module>
     <module>io</module>
-    <module>voice</module>
   </modules>
 </project>
