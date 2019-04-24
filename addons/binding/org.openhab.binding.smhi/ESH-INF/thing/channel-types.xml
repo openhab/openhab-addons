@@ -7,12 +7,12 @@
 	<channel-group-type id="weather">
 		<label>Current Weather</label>
 		<channels>
-			<channel id="time-stamp" typeId="time-stamp" />
-			<channel id="condition" typeId="condition" />
-			<channel id="condition-id" typeId="wsymb2" />
+			<channel id="timestamp" typeId="timestamp" />
+			<channel id="condition" typeId="currentCondition" />
+			<channel id="conditionId" typeId="wsymb2" />
 			<channel id="temperature" typeId="system.outdoor-temperature" />
-			<channel id="temperature-min" typeId="temperature-min" />
-			<channel id="temperature-max" typeId="temperature-max" />
+			<channel id="temperatureMin" typeId="temperatureMin" />
+			<channel id="temperatureMax" typeId="temperatureMax" />
 			<channel id="pressure" typeId="msl" />
 			<channel id="humidity" typeId="system.atmospheric-humidity" />
 			<channel id="wind-speed" typeId="ws" />
@@ -39,12 +39,12 @@
 		<label>Daily Forecast</label>
 		<description>This is the 3 day / daily weather forecast.</description>
 		<channels>
-			<channel id="time-stamp" typeId="daily-forecast-time-stamp" />
-			<channel id="condition" typeId="forecasted-condition" />
-			<channel id="condition-id" typeId="wsymb2" />
+			<channel id="timestamp" typeId="daily-forecast-timestamp" />
+			<channel id="condition" typeId="forecastedCondition" />
+			<channel id="conditionId" typeId="wsymb2" />
 			<channel id="temperature" typeId="forecasted-t" />
-			<channel id="temperature-min" typeId="forecasted-temperature-min" />
-			<channel id="temperature-max" typeId="forecasted-temperature-max" />
+			<channel id="temperatureMin" typeId="forecasted-temperatureMin" />
+			<channel id="temperatureMax" typeId="forecasted-temperatureMax" />
 			<channel id="pressure" typeId="forecasted-msl" />
 			<channel id="humidity" typeId="forecasted-r" />
 			<channel id="wind-speed" typeId="forecasted-ws" />
@@ -66,7 +66,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="time-stamp">
+	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
 		<label>Observation Time</label>
 		<description>Time of data observation.</description>
@@ -74,7 +74,7 @@
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
 	</channel-type>
 
-	<channel-type id="daily-forecast-time-stamp">
+	<channel-type id="daily-forecast-timestamp">
 		<item-type>DateTime</item-type>
 		<label>Forecast Date</label>
 		<description>Date of data forecasted.</description>
@@ -82,7 +82,7 @@
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td" />
 	</channel-type>
 	
-	<channel-type id="condition">
+	<channel-type id="currentCondition">
 		<item-type>String</item-type>
 		<label>Weather Condition</label>
 		<description>Current weather condition.</description>
@@ -90,7 +90,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="forecasted-condition">
+	<channel-type id="forecastedCondition">
 		<item-type>String</item-type>
 		<label>Forecasted Weather Condition</label>
 		<description>Forecasted weather condition.</description>
@@ -113,7 +113,7 @@
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
-	<channel-type id="temperature-min">
+	<channel-type id="temperatureMin">
 		<item-type>Number:Temperature</item-type>
 		<label>Min Temperature</label>
 		<description>Min outdoor temperature rest of day.</description>
@@ -121,7 +121,7 @@
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
-	<channel-type id="temperature-max">
+	<channel-type id="temperatureMax">
 		<item-type>Number:Temperature</item-type>
 		<label>Max Temperature</label>
 		<description>Max outdoor temperature rest of day.</description>
@@ -129,7 +129,7 @@
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
-	<channel-type id="forecasted-temperature-min">
+	<channel-type id="forecasted-temperatureMin">
 		<item-type>Number:Temperature</item-type>
 		<label>Forecasted Min Temperature</label>
 		<description>Forecasted min outdoor temperature.</description>
@@ -137,7 +137,7 @@
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
-	<channel-type id="forecasted-temperature-max">
+	<channel-type id="forecasted-temperatureMax">
 		<item-type>Number:Temperature</item-type>
 		<label>Forecasted Max Temperature</label>
 		<description>Forecasted max outdoor temperature.</description>

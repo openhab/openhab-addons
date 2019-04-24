@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
-	<thing-type id="weather-and-forecast">
+	<thing-type id="weatherAndForecast">
 		<label>SMHI Weather And Forecast</label>
 		<description>Provides current weather and forecast data from the SMHI API.</description>
 
@@ -24,22 +24,17 @@
 		</channel-groups>
 
 		<config-description>
-			<parameter name="weatherlocation" type="text">
+			<parameter name="location" type="text">
 					<label>Location</label>
 					<description>Location of weather in lat,lon coordinates. Defauls to Stockholm Castle</description>
 					<required>true</required>
 					<default>59.322665376,18.069666388</default>
 			</parameter>
-
 			<parameter name="refresh" type="text">
 					<label>Refresh Interval</label>
 					<description>Specifies the refresh interval in minutes.</description>
-					<required>true</required>
 					<default>60</default>
 			</parameter>
-			
-		</config-description>
-
+    	</config-description>
 	</thing-type>
-
 </thing:thing-descriptions>	

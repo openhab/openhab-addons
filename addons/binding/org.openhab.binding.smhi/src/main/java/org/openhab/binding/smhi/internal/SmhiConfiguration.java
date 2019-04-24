@@ -19,11 +19,8 @@ package org.openhab.binding.smhi.internal;
  */
 public class SmhiConfiguration {
 
-    /**
-     * Sample configuration parameter. Replace with your own.
-     */
     public Integer refresh;
 
-    public String weatherlocation;
+    public String location;
 
 }

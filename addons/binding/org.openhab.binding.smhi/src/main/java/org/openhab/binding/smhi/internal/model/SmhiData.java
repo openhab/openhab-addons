@@ -22,7 +22,7 @@ import java.util.List;
  */
 
 public class SmhiData {
-    public List<SmhiTimeSeries> timeSeries;
+    private List<SmhiTimeSeries> timeSeries;
 
     private String referenceTime;
 

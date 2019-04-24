@@ -14,15 +14,16 @@ package org.openhab.binding.smhi.internal;
 
 import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -64,7 +65,7 @@ public class SmhiHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SmhiHandler.class);
     private @Nullable ScheduledFuture<?> refreshJob;
 
-    protected static final String URL = "http://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/%s/lat/%s/data.json";
+    protected static final String smhiURL = "http://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/%s/lat/%s/data.json";
 
     // Timeout for weather data requests.
     private static final int SMHI_TIMEOUT = 5000;
@@ -80,14 +81,12 @@ public class SmhiHandler extends BaseThingHandler {
         super(thing);
     }
 
-    private SmhiParameterTables pt = new SmhiParameterTables();
+    private SmhiParameterTables parameterTable = new SmhiParameterTables();
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_TEMPERATURE.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                queryApiAndUpdateChannels();
-            }
+        if (command instanceof RefreshType) {
+            queryApiAndUpdateChannels();
         }
     }
 
@@ -97,56 +96,37 @@ public class SmhiHandler extends BaseThingHandler {
 
         config = getConfigAs(SmhiConfiguration.class);
 
-        updateStatus(ThingStatus.UNKNOWN);
+        boolean configValid = true;
 
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            boolean configValid = true;
+        DecimalFormat df = new DecimalFormat("##.######");
+        DecimalFormatSymbols custom = new DecimalFormatSymbols();
+        custom.setDecimalSeparator('.');
+        df.setDecimalFormatSymbols(custom);
 
-            DecimalFormat df = new DecimalFormat("##.######");
-            DecimalFormatSymbols custom = new DecimalFormatSymbols();
-            custom.setDecimalSeparator('.');
-            df.setDecimalFormatSymbols(custom);
+        String[] parts = config.location.split(",");
+        double dlatitude = Double.valueOf(parts[0]);
+        double dlongitude = Double.valueOf(parts[1]);
+        String latitude = df.format(Double.valueOf(parts[0]));
+        String longitude = df.format(Double.valueOf(parts[1]));
 
-            String[] parts = config.weatherlocation.split(",");
-            double dlatitude = Double.valueOf(parts[0]);
-            double dlongitude = Double.valueOf(parts[1]);
-            String latitude = df.format(Double.valueOf(parts[0]));
-            String longitude = df.format(Double.valueOf(parts[1]));
+        if (!isValidGpsCoordinate(dlatitude, dlongitude)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Location is not a valid GPS coordinate.");
+            return;
+        }
 
-            if (!is_valid_gps_coordinate(dlatitude, dlongitude)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Location is not a valid GPS coordinate.");
-                configValid = false;
-            }
-            /*
-             * ArrayList<String> polygon_lat_long_pairs = new ArrayList<String>();
-             * polygon_lat_long_pairs.add("0.00000,70.666011"); // -8.553029
-             * polygon_lat_long_pairs.add("37.934697,70.742227");
-             * polygon_lat_long_pairs.add("27.392184,52.542473");
-             * polygon_lat_long_pairs.add("2.250475,52.500440");
-             *
-             * if (!coordinate_is_inside_polygon(dlatitude, dlongitude, polygon_lat_long_pairs)) {
-             * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-             * "Location not within SMHI Covered area.");
-             * configValid = false;
-             * }
-             */
-            if (configValid) {
+        apiRequest = String.format(smhiURL, longitude, latitude);
+        updateStatus(ThingStatus.ONLINE);
+        startAutomaticRefresh(config.refresh);
 
-                apiRequest = String.format(URL, longitude, latitude);
-                updateStatus(ThingStatus.ONLINE);
-                startAutomaticRefresh(config.refresh);
-            }
-        });
     }
 
     private void startAutomaticRefresh(int refresh) {
         if (refreshJob == null || refreshJob.isCancelled()) {
-            Runnable runnable = () -> {
-                queryApiAndUpdateChannels();
-            };
-            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 10, refresh * 60, TimeUnit.SECONDS);
+
+            refreshJob = scheduler.scheduleWithFixedDelay(this::queryApiAndUpdateChannels, 10, refresh * 60,
+                    TimeUnit.SECONDS);
+
         }
     }
 
@@ -165,27 +145,31 @@ public class SmhiHandler extends BaseThingHandler {
             dataList = gson.fromJson(apiResponseJson, SmhiData.class);
 
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new Date());
-            calendar.add(Calendar.HOUR_OF_DAY, 1);
+            calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
             calendar.set(Calendar.MILLISECOND, 0);
 
-            Date currentvaliddate = calendar.getTime();
+            Date currentValidDate = calendar.getTime();
 
             calendar.set(Calendar.HOUR_OF_DAY, 12);
             calendar.add(Calendar.DATE, 1);
-            Date tomorrowvaliddate = calendar.getTime();
+            Date tomorrowValidDate = calendar.getTime();
 
             calendar.add(Calendar.DATE, 1);
-            Date day2validdate = calendar.getTime();
+            Date day2ValidDate = calendar.getTime();
 
             calendar.add(Calendar.DATE, 1);
-            Date day3validdate = calendar.getTime();
+            Date day3ValidDate = calendar.getTime();
 
-            SimpleDateFormat cdtf = new SimpleDateFormat("yyyy-MM-dd HH:00:00");
+            SimpleDateFormat cDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:00:00");
+            cDateTimeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-            SimpleDateFormat cdf = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat cDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            cDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+            logger.debug("Current date : " + cDateTimeFormat.format(currentValidDate));
+            logger.debug("Tomorrow date : " + cDateTimeFormat.format(tomorrowValidDate));
 
             final List<SmhiTimeSeries> timeSeries = dataList.getTimeSeries();
 
@@ -195,13 +179,14 @@ public class SmhiHandler extends BaseThingHandler {
 
             double temp;
 
-            double tmin, tmin1, tmin2, tmin3;
-            tmin = tmin1 = tmin2 = tmin3 = 100;
-            double tmax, tmax1, tmax2, tmax3;
-            tmax = tmax1 = tmax2 = tmax3 = -100;
+            double temperatureMinToday, temperatureMinDay1, temperatureMinDay2, temperatureMinDay3;
+            temperatureMinToday = temperatureMinDay1 = temperatureMinDay2 = temperatureMinDay3 = 100;
+            double temperatureMaxToday, temperatureMaxDay1, temperatureMaxDay2, temperatureMaxDay3;
+            temperatureMaxToday = temperatureMaxDay1 = temperatureMaxDay2 = temperatureMaxDay3 = -100;
 
             while (timeSeries.size() > 1) {
-                logger.debug("Handeling date : " + timeSeries.get(0).getValidTime());
+
+                logger.debug("Processing date : " + cDateTimeFormat.format(timeSeries.get(0).getValidTime()));
 
                 parameters = timeSeries.get(0).getParameters();
 
@@ -209,49 +194,53 @@ public class SmhiHandler extends BaseThingHandler {
                     hashParameters.put(parameter.name, parameter);
                 }
 
-                if (cdtf.format(currentvaliddate).equals(cdtf.format(timeSeries.get(0).getValidTime()))) {
+                if (cDateTimeFormat.format(currentValidDate)
+                        .equals(cDateTimeFormat.format(timeSeries.get(0).getValidTime()))) {
                     logger.debug("Getting Weatherdata for : " + timeSeries.get(0).getValidTime());
                     getThing().getChannels().stream().map(Channel::getUID)
                             .filter(channelUID -> isLinked(channelUID)
                                     && CHANNEL_GROUP_CURRENT_WEATHER.equals(channelUID.getGroupId()))
                             .forEach(channelUID -> {
-                                State state = getValue(channelUID.getIdWithoutGroup(), hashParameters,
+                                State state = extractValue(channelUID.getIdWithoutGroup(), hashParameters,
                                         timeSeries.get(0).getValidTime());
                                 updateState(channelUID, state);
                             });
                 }
 
-                if (cdtf.format(tomorrowvaliddate).equals(cdtf.format(timeSeries.get(0).getValidTime()))) {
+                if (cDateTimeFormat.format(tomorrowValidDate)
+                        .equals(cDateTimeFormat.format(timeSeries.get(0).getValidTime()))) {
                     logger.debug("Getting Weatherdata for : " + timeSeries.get(0).getValidTime());
                     getThing().getChannels().stream().map(Channel::getUID)
                             .filter(channelUID -> isLinked(channelUID)
                                     && CHANNEL_GROUP_FORECAST_TOMORROW.equals(channelUID.getGroupId()))
                             .forEach(channelUID -> {
-                                State state = getValue(channelUID.getIdWithoutGroup(), hashParameters,
+                                State state = extractValue(channelUID.getIdWithoutGroup(), hashParameters,
                                         timeSeries.get(0).getValidTime());
                                 updateState(channelUID, state);
                             });
                 }
 
-                if (cdtf.format(day2validdate).equals(cdtf.format(timeSeries.get(0).getValidTime()))) {
+                if (cDateTimeFormat.format(day2ValidDate)
+                        .equals(cDateTimeFormat.format(timeSeries.get(0).getValidTime()))) {
                     logger.debug("Getting Weatherdata for : " + timeSeries.get(0).getValidTime());
                     getThing().getChannels().stream().map(Channel::getUID)
                             .filter(channelUID -> isLinked(channelUID)
                                     && CHANNEL_GROUP_DAILY_FORECAST_DAY2.equals(channelUID.getGroupId()))
                             .forEach(channelUID -> {
-                                State state = getValue(channelUID.getIdWithoutGroup(), hashParameters,
+                                State state = extractValue(channelUID.getIdWithoutGroup(), hashParameters,
                                         timeSeries.get(0).getValidTime());
                                 updateState(channelUID, state);
                             });
                 }
 
-                if (cdtf.format(day3validdate).equals(cdtf.format(timeSeries.get(0).getValidTime()))) {
+                if (cDateTimeFormat.format(day3ValidDate)
+                        .equals(cDateTimeFormat.format(timeSeries.get(0).getValidTime()))) {
                     logger.debug("Getting Weatherdata for : " + timeSeries.get(0).getValidTime());
                     getThing().getChannels().stream().map(Channel::getUID)
                             .filter(channelUID -> isLinked(channelUID)
                                     && CHANNEL_GROUP_DAILY_FORECAST_DAY3.equals(channelUID.getGroupId()))
                             .forEach(channelUID -> {
-                                State state = getValue(channelUID.getIdWithoutGroup(), hashParameters,
+                                State state = extractValue(channelUID.getIdWithoutGroup(), hashParameters,
                                         timeSeries.get(0).getValidTime());
                                 updateState(channelUID, state);
                             });
@@ -259,33 +248,36 @@ public class SmhiHandler extends BaseThingHandler {
 
                 temp = hashParameters.get(CHANNEL_TEMPERATURE_JSON).getValues()[0];
 
-                if (cdf.format(currentvaliddate).equals(cdf.format(timeSeries.get(0).getValidTime()))) {
-                    if (temp < tmin) {
-                        tmin = temp;
+                if (cDateFormat.format(currentValidDate).equals(cDateFormat.format(timeSeries.get(0).getValidTime()))) {
+                    if (temp < temperatureMinToday) {
+                        temperatureMinToday = temp;
                     }
-                    if (temp > tmax) {
-                        tmax = temp;
+                    if (temp > temperatureMaxToday) {
+                        temperatureMaxToday = temp;
                     }
-                } else if (cdf.format(tomorrowvaliddate).equals(cdf.format(timeSeries.get(0).getValidTime()))) {
-                    if (temp < tmin1) {
-                        tmin1 = temp;
+                } else if (cDateFormat.format(tomorrowValidDate)
+                        .equals(cDateFormat.format(timeSeries.get(0).getValidTime()))) {
+                    if (temp < temperatureMinDay1) {
+                        temperatureMinDay1 = temp;
                     }
-                    if (temp > tmax1) {
-                        tmax1 = temp;
+                    if (temp > temperatureMaxDay1) {
+                        temperatureMaxDay1 = temp;
                     }
-                } else if (cdf.format(day2validdate).equals(cdf.format(timeSeries.get(0).getValidTime()))) {
-                    if (temp < tmin2) {
-                        tmin2 = temp;
+                } else if (cDateFormat.format(day2ValidDate)
+                        .equals(cDateFormat.format(timeSeries.get(0).getValidTime()))) {
+                    if (temp < temperatureMinDay2) {
+                        temperatureMinDay2 = temp;
                     }
-                    if (temp > tmax2) {
-                        tmax2 = temp;
+                    if (temp > temperatureMaxDay2) {
+                        temperatureMaxDay2 = temp;
                     }
-                } else if (cdf.format(day3validdate).equals(cdf.format(timeSeries.get(0).getValidTime()))) {
-                    if (temp < tmin3) {
-                        tmin3 = temp;
+                } else if (cDateFormat.format(day3ValidDate)
+                        .equals(cDateFormat.format(timeSeries.get(0).getValidTime()))) {
+                    if (temp < temperatureMinDay3) {
+                        temperatureMinDay3 = temp;
                     }
-                    if (temp > tmax3) {
-                        tmax3 = temp;
+                    if (temp > temperatureMaxDay3) {
+                        temperatureMaxDay3 = temp;
                     }
                 }
 
@@ -296,31 +288,32 @@ public class SmhiHandler extends BaseThingHandler {
 
             // update channels min max
             logger.debug("Updating min/max channels");
-            updateState("current#temperature-min", new DecimalType(tmin));
-            updateState("current#temperature-max", new DecimalType(tmax));
-            updateState("forecastTomorrow#temperature-min", new DecimalType(tmin1));
-            updateState("forecastTomorrow#temperature-max", new DecimalType(tmax1));
-            updateState("forecastDay2#temperature-min", new DecimalType(tmin2));
-            updateState("forecastDay2#temperature-max", new DecimalType(tmax2));
-            updateState("forecastDay3#temperature-min", new DecimalType(tmin3));
-            updateState("forecastDay3#temperature-max", new DecimalType(tmax3));
-        } catch (final Exception e) {
+            updateState("current#temperatureMin", new DecimalType(temperatureMinToday));
+            updateState("current#temperatureMax", new DecimalType(temperatureMaxToday));
+            updateState("forecastTomorrow#temperatureMin", new DecimalType(temperatureMinDay1));
+            updateState("forecastTomorrow#temperatureMax", new DecimalType(temperatureMaxDay1));
+            updateState("forecastDay2#temperatureMin", new DecimalType(temperatureMinDay2));
+            updateState("forecastDay2#temperatureMax", new DecimalType(temperatureMaxDay2));
+            updateState("forecastDay3#temperatureMin", new DecimalType(temperatureMinDay3));
+            updateState("forecastDay3#temperatureMax", new DecimalType(temperatureMaxDay3));
+
+        } catch (IOException e) {
             logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
-    public State getValue(String channelId, HashMap<String, SmhiParameters> hashParameters, Date vt) {
+    public State extractValue(String channelId, HashMap<String, SmhiParameters> hashParameters, Date processingDate) {
         logger.debug("Getting Weatherdata for : " + channelId);
 
         switch (channelId) {
             case CHANNEL_TIME_STAMP:
-                DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-                return new DateTimeType(df.format(vt));
+                DateFormat cDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                return new DateTimeType(cDateFormat.format(processingDate));
             case CHANNEL_CONDITION:
-                return new StringType(
-                        pt.getCondition().get(hashParameters.get(CHANNEL_CONDITION_ID_JSON).getValues()[0].intValue()));
+                return new StringType(parameterTable.getCondition()
+                        .get(hashParameters.get(CHANNEL_CONDITION_ID_JSON).getValues()[0].intValue()));
             case CHANNEL_CONDITION_ID:
                 return new DecimalType(hashParameters.get(CHANNEL_CONDITION_ID_JSON).getValues()[0].intValue());
             case CHANNEL_TEMPERATURE:
@@ -348,7 +341,7 @@ public class SmhiHandler extends BaseThingHandler {
             case CHANNEL_VISIBILITY:
                 return new DecimalType(hashParameters.get(CHANNEL_VISIBILITY_JSON).getValues()[0]);
             case CHANNEL_PRECIPITATION_CATEGORY:
-                return new StringType(pt.getPcat()
+                return new StringType(parameterTable.getPcat()
                         .get(hashParameters.get(CHANNEL_PRECIPITATION_CATEGORY_ID_JSON).getValues()[0].intValue()));
             case CHANNEL_PRECIPITATION_CATEGORY_ID:
                 return new DecimalType(
@@ -372,65 +365,7 @@ public class SmhiHandler extends BaseThingHandler {
         return UnDefType.NULL;
     }
 
-    public static boolean coordinate_is_inside_polygon(double latitude, double longitude,
-            ArrayList<String> polygon_lat_long_pairs) {
-
-        double PI = 3.14159265;
-
-        ArrayList<Double> lat_array = new ArrayList<Double>();
-        ArrayList<Double> long_array = new ArrayList<Double>();
-
-        for (String s : polygon_lat_long_pairs) {
-            lat_array.add(Double.parseDouble(s.split(",")[0]));
-            long_array.add(Double.parseDouble(s.split(",")[1]));
-        }
-
-        int i;
-        double angle = 0;
-        double point1_lat;
-        double point1_long;
-        double point2_lat;
-        double point2_long;
-        int n = lat_array.size();
-
-        for (i = 0; i < n; i++) {
-            point1_lat = lat_array.get(i) - latitude;
-            point1_long = long_array.get(i) - longitude;
-            point2_lat = lat_array.get((i + 1) % n) - latitude;
-            // you should have paid more attention in high school geometry.
-            point2_long = long_array.get((i + 1) % n) - longitude;
-            angle += Angle2D(point1_lat, point1_long, point2_lat, point2_long);
-        }
-
-        if (Math.abs(angle) < PI) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public static double Angle2D(double y1, double x1, double y2, double x2) {
-
-        double PI = 3.14159265;
-        double TWOPI = 2 * PI;
-
-        double dtheta, theta1, theta2;
-
-        theta1 = Math.atan2(y1, x1);
-        theta2 = Math.atan2(y2, x2);
-        dtheta = theta2 - theta1;
-        while (dtheta > PI) {
-            dtheta -= TWOPI;
-        }
-        while (dtheta < -PI) {
-            dtheta += TWOPI;
-        }
-
-        return (dtheta);
-    }
-
-    public static boolean is_valid_gps_coordinate(double latitude, double longitude) {
-        // This is a bonus function, it's unused, to reject invalid lat/longs.
+    private boolean isValidGpsCoordinate(double latitude, double longitude) {
         if (latitude > -90 && latitude < 90 && longitude > -180 && longitude < 180) {
             return true;
         }

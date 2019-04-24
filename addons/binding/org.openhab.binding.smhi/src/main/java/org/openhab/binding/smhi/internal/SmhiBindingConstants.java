@@ -28,21 +28,21 @@ public class SmhiBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_WEATHER_AND_FORECAST = new ThingTypeUID(BINDING_ID,
-            "weather-and-forecast");
+            "weatherAndForecast");
 
     public static final String CHANNEL_GROUP_CURRENT_WEATHER = "current";
     public static final String CHANNEL_GROUP_FORECAST_TOMORROW = "forecastTomorrow";
     public static final String CHANNEL_GROUP_DAILY_FORECAST_DAY2 = "forecastDay2";
     public static final String CHANNEL_GROUP_DAILY_FORECAST_DAY3 = "forecastDay3";
     // List of all Channel ids
-    public static final String CHANNEL_TIME_STAMP = "time-stamp";
+    public static final String CHANNEL_TIME_STAMP = "timestamp";
     public static final String CHANNEL_CONDITION = "condition";
-    public static final String CHANNEL_CONDITION_ID = "condition-id";
+    public static final String CHANNEL_CONDITION_ID = "conditionId";
     public static final String CHANNEL_CONDITION_ICON = "icon";
     public static final String CHANNEL_CONDITION_ICON_ID = "icon-id";
     public static final String CHANNEL_TEMPERATURE = "temperature";
-    public static final String CHANNEL_MIN_TEMPERATURE = "temperature-min";
-    public static final String CHANNEL_MAX_TEMPERATURE = "temperature-max";
+    public static final String CHANNEL_MIN_TEMPERATURE = "temperatureMin";
+    public static final String CHANNEL_MAX_TEMPERATURE = "temperatureMax";
     public static final String CHANNEL_PRESSURE = "pressure";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_WIND_SPEED = "wind-speed";
