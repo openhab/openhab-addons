@@ -41,7 +41,7 @@ public class VerisureUserPresenceJSON extends VerisureBaseThingJSON {
 
     @Override
     public @Nullable String getDeviceId() {
-        return "userpresence_" + id;
+        return "userpresence" + id;
     }
 
     public @Nullable String getWebAccount() {

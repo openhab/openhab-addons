@@ -56,7 +56,7 @@ public class VerisureBroadbandConnectionJSON extends VerisureBaseThingJSON {
 
     @Override
     public @Nullable String getDeviceId() {
-        return "broadband_" + id;
+        return "broadband" + id;
     }
 
     /*

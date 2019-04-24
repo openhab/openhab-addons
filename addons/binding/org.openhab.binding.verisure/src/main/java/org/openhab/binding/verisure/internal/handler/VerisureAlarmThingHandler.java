@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -46,7 +45,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
         SUPPORTED_THING_TYPES.add(THING_TYPE_ALARM);
     }
 
-    public VerisureAlarmThingHandler(@NonNull Thing thing) {
+    public VerisureAlarmThingHandler(Thing thing) {
         super(thing);
     }
 
@@ -65,7 +64,8 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
 
     private void handleAlarmState(Command command) {
         if (session != null && config.deviceId != null) {
-            VerisureAlarmJSON alarm = (VerisureAlarmJSON) session.getVerisureThing(config.deviceId);
+            VerisureAlarmJSON alarm = (VerisureAlarmJSON) session
+                    .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
             if (alarm != null) {
                 BigDecimal pinCode = session.getPinCode();
                 String csrf = session.getCsrf();
@@ -121,7 +121,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
                 val = new DecimalType(0);
             } else if (alarmStatus.equals("armedhome")) {
                 val = new DecimalType(1);
-            } else if (alarmStatus.equals("armedaway")) {
+            } else if (alarmStatus.equals("armed")) {
                 val = new DecimalType(2);
             } else {
                 logger.warn("Unknown alarmstatus: {}", alarmStatus);

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.verisure.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.verisure.internal.model.VerisureThingJSON;
 
 /**
@@ -21,6 +22,7 @@ import org.openhab.binding.verisure.internal.model.VerisureThingJSON;
  * @author Jarle Hjortland - Initial contribution
  *
  */
+@NonNullByDefault
 public interface DeviceStatusListener {
 
     /**

@@ -20,7 +20,7 @@ import java.util.Set;
 
 import javax.measure.quantity.Temperature;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -39,17 +39,18 @@ import org.openhab.binding.verisure.internal.model.VerisureThingJSON;
  * @author Jan Gustafsson - Initial contribution
  *
  */
+@NonNullByDefault
 public class VerisureClimateDeviceThingHandler extends VerisureThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>();
     static {
         SUPPORTED_THING_TYPES.add(THING_TYPE_SMOKEDETECTOR);
-        SUPPORTED_THING_TYPES.add(THING_TYPE_WATERDETETOR);
+        SUPPORTED_THING_TYPES.add(THING_TYPE_WATERDETECTOR);
         SUPPORTED_THING_TYPES.add(THING_TYPE_SIREN);
         SUPPORTED_THING_TYPES.add(THING_TYPE_NIGHT_CONTROL);
     }
 
-    public VerisureClimateDeviceThingHandler(@NonNull Thing thing) {
+    public VerisureClimateDeviceThingHandler(Thing thing) {
         super(thing);
     }
 
@@ -62,7 +63,7 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler {
             if (obj != null) {
                 updateClimateDeviceState(obj);
             }
-        } else if (getThing().getThingTypeUID().equals(THING_TYPE_WATERDETETOR)) {
+        } else if (getThing().getThingTypeUID().equals(THING_TYPE_WATERDETECTOR)) {
             VerisureClimateBaseJSON obj = (VerisureClimateBaseJSON) thing;
             if (obj != null) {
                 updateClimateDeviceState(obj);

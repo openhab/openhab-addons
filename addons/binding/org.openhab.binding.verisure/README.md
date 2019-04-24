@@ -73,7 +73,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 #### Configuration Options
 
 *   deviceId - Device Id
-    *   Since Alarm lacks a Verisure ID, the following naming convention is used for alarm on first site: 'alarm_1'
+    *   Since Alarm lacks a Verisure ID, the following naming convention is used for alarm on first site: 'alarm1'
 
 #### Channels
 
@@ -83,19 +83,19 @@ Only the bridge require manual configuration. The devices and sensors can be add
 |-----------------|-----------|-------------------------------------------------------------------------------------------|
 | status          | String    | This channel reports the overall alarm status (armed/unarmed).                            |
 | numericStatus   | Number    | This channel reports the alarm status as a number.                                        |
-| alarmStatus     | String    | This channel reports the specific alarm status ("DISARMED", "ARMED_HOME" or "ARMED AWAY").|
+| alarmStatus     | String    | This channel reports the specific alarm status ("DISARMED", "ARMED HOME" or "ARMED AWAY").|
 | lastUpdate      | String    | This channel reports the last time the alarm status was changed.                          |
 | changedByUser   | String    | This channel reports the user that last changed the state of the alarm.                   |
 | siteName        | String    | This channel reports the name of the site.                                                |
 | siteId          | Number    | This channel reports the site ID of the site.                                             |
-| setAlarmStatus  | Number    | This channel is used to arm/disarm the alarm. Available alarm status are 0 for "DISARMED", for "ARMED_HOME" and 2 for "ARMED AWAY".|               |
+| setAlarmStatus  | Number    | This channel is used to arm/disarm the alarm. Available alarm status are 0 for "DISARMED", 1 for "ARMED HOME" and 2 for "ARMED AWAY".|               |
 
 ### Verisure Smoke Detector
 
 #### Configuration Options
 
 *   deviceId - Device Id
-    *   Sensor Id. Example 5A4C_35FT (Note: the '_' in the Verisure ID, found in the Verisure App)
+    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App)
 
 #### Channels
 
@@ -115,7 +115,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 #### Configuration Options
 
 *   deviceId - Device Id
-    *   Sensor Id. Example 5A4C_35FT (Note: the '_' in the Verisure ID, found in the Verisure App or My Pages)
+    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
 
 #### Channels
 
@@ -134,7 +134,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 #### Configuration Options
 
 *   deviceId - Device Id
-    *   Sensor Id. Example 5A4C_35FT (Note: the '_' in the Verisure ID, found in the Verisure App or My Pages)
+    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
 
 #### Channels
 
@@ -153,7 +153,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 #### Configuration Options
 
 *   deviceId - Device Id
-    *   Sensor Id. Example 5A4C_35FT (Note: the '_' in the Verisure ID, found in the Verisure App or My Pages)
+    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
 
 #### Channels
 
@@ -172,7 +172,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 #### Configuration Options
 
 *   deviceId - Device Id
-    *   Sensor Id. Example 5A4C_35FT (Note: the '_' in the Verisure ID, found in the Verisure App or My Pages)
+    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
 
 #### Channels
 
@@ -203,7 +203,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 #### Configuration Options
 
 *   deviceId - Device Id
-    *   Sensor Id. Example 5A4C_35FT (Note: the '_' in the Verisure ID, found in the Verisure App or My Pages)
+    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
 
 #### Channels
 
@@ -224,7 +224,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 #### Configuration Options
 
 *   deviceId - Device Id
-    *   Sensor Id. Example 5A4C_35FT (Note: the '_' in the Verisure ID, found in the Verisure App or My Pages)
+    *   Sensor Id. Example 5A4C35FT (Note: Verisure ID, found in the Verisure App or My Pages)
 
 #### Channels
 
@@ -242,7 +242,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 #### Configuration Options
 
 *   deviceId - Device Id
-    *   Since User presence lacks a Verisure ID, it is constructed from the user's email address, where the '@' sign is exchanged by '_", and the site numbering where first site is 1. The following naming convention is used for User presence on first site for a user with email address test@gmail.com: 'userpresence_test_gmail_com_1'
+    *   Since User presence lacks a Verisure ID, it is constructed from the user's email address, where the '@' sign is removed, and the site numbering where first site is 1. The following naming convention is used for User presence on first site for a user with email address test@gmail.com: 'userpresencetestgmailcom1'
 
 #### Channels
 
@@ -262,7 +262,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 #### Configuration Options
 
 *   deviceId - Device Id
-    *   Since Broadband connection lacks a Verisure ID, the following naming convention is used for Broadband connection on first site: 'broadband_1'
+    *   Since Broadband connection lacks a Verisure ID, the following naming convention is used for Broadband connection on first site: 'broadband1'
 
 #### Channels
 
@@ -284,10 +284,11 @@ Only the bridge require manual configuration. The devices and sensors can be add
 // Bridge configuration
 Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", password="1234", refresh="600", pin="111111", numberOfInstallations="1"] {
 
-     Thing smartLock JannesSmartLock "Verisure Entrance Yale Doorman"  [ deviceId="3C44_6NPO" ]
-     Thing smartPlug JannesSmartPlug "Verisure SmartPlug" [ deviceId="3D7G_MANV" ]
-     Thing waterDetector JannesVattenDetetktor "Verisure Water Detector" [ deviceId="3WET_QRH5" ] 
-     Thing userPresence JannesUserPresence "Verisure User Presence" [ deviceId="userpresence_test_gmail_com_2" ]
+     Thing alarm         JannesAlarm         "Verisure Alarm"                  [ deviceId="alarm2" ]
+     Thing smartLock     JannesSmartLock     "Verisure Entrance Yale Doorman"  [ deviceId="3C446NPO" ]
+     Thing smartPlug     JannesSmartPlug     "Verisure SmartPlug"              [ deviceId="3D7GMANV" ]
+     Thing waterDetector JannesWaterDetector "Verisure Water Detector"         [ deviceId="3WETQRH5" ] 
+     Thing userPresence  JannesUserPresence  "Verisure User Presence"          [ deviceId="userpresencetestgmailcom2" ]
 }
 ````
 
@@ -296,13 +297,13 @@ Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", passwor
 ````
 // SmartLock and Alarm
 Switch   SmartLock                     "Verisure SmartLock"  <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:JannesSmartLock:setSmartLockStatus"}
-Number   AlarmHome                     "Alarm Home"          <alarm>                    {channel="verisure:alarm:myverisure:alarm_2:setAlarmStatus"}
+Number   AlarmHome                     "Alarm Home"          <alarm>                    {channel="verisure:alarm:myverisure:alarm2:setAlarmStatus"}
 Switch   AlarmHomeVirtual              "Verisure Alarm"      <alarm>  [ "Switchable" ] 
-String   AlarmStatus                   "Verisure Alarm Status"                          {channel="verisure:alarm:myverisure:alarm_2:status"}
-Number   AlarmNumericStatus            "Verisure Alarm Numeric Status"                  {channel="verisure:alarm:myverisure:alarm_2:numericStatus"}
-String   AlarmAlarmStatus              "Verisure Alarm Status"                          {channel="verisure:alarm:myverisure:alarm_2:alarmStatus"}
-String   AlarmTimeStamp                "Verisure Alarm Time Stamp"                      {channel="verisure:alarm:myverisure:alarm_2:timestamp"}
-String   AlarmChangedByUser            "Verisure Alarm Changed By User"                 {channel="verisure:alarm:myverisure:alarm_2:changedByUser"}
+String   AlarmStatus                   "Verisure Alarm Status"                          {channel="verisure:alarm:myverisure:alarm2:status"}
+Number   AlarmNumericStatus            "Verisure Alarm Numeric Status"                  {channel="verisure:alarm:myverisure:alarm2:numericStatus"}
+String   AlarmAlarmStatus              "Verisure Alarm Status"                          {channel="verisure:alarm:myverisure:alarm2:alarmStatus"}
+String   AlarmTimeStamp                "Verisure Alarm Time Stamp"                      {channel="verisure:alarm:myverisure:alarm2:timestamp"}
+String   AlarmChangedByUser            "Verisure Alarm Changed By User"                 {channel="verisure:alarm:myverisure:alarm2:changedByUser"}
 Switch   AutoLock                      "AutoLock"            <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:JannesSmartLock:setAutoRelock"}
 String   SmartLockStatus               "SmartLock Status"                               {channel="verisure:smartLock:myverisure:JannesSmartLock:smartLockStatus"}
 String   SmartLockCurrentStatus        "SmartLock Current Status"                       {channel="verisure:smartLock:myverisure:JannesSmartLock:status"}

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="verisure"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
 		<label>Verisure Bridge</label>
@@ -420,8 +420,8 @@
 		<state>
 			<options>
 				<option value="0">DISARMED</option>
-				<option value="1">ARMED_HOME</option>
-				<option value="2">ARMED_AWAY</option>
+				<option value="1">ARMED HOME</option>
+				<option value="2">ARMED AWAY</option>
 			</options>
 		</state>
 	</channel-type>

@@ -31,7 +31,7 @@ public class VerisureBindingConstants {
     public static final ThingTypeUID THING_TYPE_ALARM = new ThingTypeUID(BINDING_ID, "alarm");
     public static final ThingTypeUID THING_TYPE_SMARTPLUG = new ThingTypeUID(BINDING_ID, "smartPlug");
     public static final ThingTypeUID THING_TYPE_SMOKEDETECTOR = new ThingTypeUID(BINDING_ID, "smokeDetector");
-    public static final ThingTypeUID THING_TYPE_WATERDETETOR = new ThingTypeUID(BINDING_ID, "waterDetector");
+    public static final ThingTypeUID THING_TYPE_WATERDETECTOR = new ThingTypeUID(BINDING_ID, "waterDetector");
     public static final ThingTypeUID THING_TYPE_SIREN = new ThingTypeUID(BINDING_ID, "siren");
     public static final ThingTypeUID THING_TYPE_DOORWINDOW = new ThingTypeUID(BINDING_ID, "doorWindowSensor");
     public static final ThingTypeUID THING_TYPE_USERPRESENCE = new ThingTypeUID(BINDING_ID, "userPresence");

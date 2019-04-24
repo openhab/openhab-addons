@@ -14,6 +14,8 @@ package org.openhab.binding.verisure.internal;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.verisure.internal.handler.VerisureBridgeHandler;
 
 /**
@@ -22,10 +24,11 @@ import org.openhab.binding.verisure.internal.handler.VerisureBridgeHandler;
  *
  * @author Jarle Hjortland - Initial contribution
  */
+@NonNullByDefault
 public class VerisureBridgeConfiguration {
-    public String username;
-    public String password;
-    public BigDecimal refresh;
-    public BigDecimal pin;
-    public BigDecimal numberOfInstallations;
+    public @Nullable String username;
+    public @Nullable String password;
+    public @Nullable BigDecimal refresh;
+    public @Nullable BigDecimal pin;
+    public @Nullable BigDecimal numberOfInstallations;
 }

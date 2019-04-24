@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -47,7 +46,7 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
         SUPPORTED_THING_TYPES.add(THING_TYPE_SMARTPLUG);
     }
 
-    public VerisureSmartPlugThingHandler(@NonNull Thing thing) {
+    public VerisureSmartPlugThingHandler(Thing thing) {
         super(thing);
     }
 
@@ -66,7 +65,8 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
 
     private void handleSmartPlugState(Command command) {
         if (session != null && config.deviceId != null) {
-            VerisureSmartPlugJSON smartPlug = (VerisureSmartPlugJSON) session.getVerisureThing(config.deviceId);
+            VerisureSmartPlugJSON smartPlug = (VerisureSmartPlugJSON) session
+                    .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
             if (smartPlug != null) {
                 String siteName = smartPlug.getSiteName();
                 if (siteName != null) {

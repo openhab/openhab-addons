@@ -75,7 +75,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
     private @Nullable String authstring;
     private @Nullable BigDecimal pinCode;
     private @Nullable BigDecimal numberOfInstallations;
-    private BigDecimal refresh = new BigDecimal(600);
+    private @Nullable BigDecimal refresh = new BigDecimal(600);
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> immediateRefreshJob;
     private @Nullable VerisureSession session;

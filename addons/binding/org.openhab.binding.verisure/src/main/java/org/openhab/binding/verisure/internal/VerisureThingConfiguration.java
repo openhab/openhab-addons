@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.verisure.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.verisure.internal.handler.VerisureThingHandler;
 
 /**
@@ -20,8 +22,9 @@ import org.openhab.binding.verisure.internal.handler.VerisureThingHandler;
  *
  * @author Jan Gustafsson - Initial contribution
  */
+@NonNullByDefault
 public class VerisureThingConfiguration {
     public static final String DEVICE_ID_LABEL = "deviceId";
 
-    public String deviceId;
+    public @Nullable String deviceId;
 }

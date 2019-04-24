@@ -57,6 +57,8 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public class VerisureSession {
+
+    @NonNullByDefault
     private final class VerisureInstallation {
         private @Nullable String installationName;
         private int installationInstance;
@@ -433,9 +435,9 @@ public class VerisureSession {
                 for (VerisureThingJSON thing : things) {
                     int instInst = inst.getInstallationInstance();
                     if (thing instanceof VerisureUserPresenceJSON) {
-                        String deviceId = ((VerisureUserPresenceJSON) thing).getWebAccount() + "_"
+                        String deviceId = ((VerisureUserPresenceJSON) thing).getWebAccount()
                                 + Integer.toString(instInst);
-                        thing.setDeviceId(deviceId.replaceAll("[^a-zA-Z0-9_]", "_"));
+                        thing.setDeviceId(deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
                     } else if (thing instanceof VerisureAlarmJSON) {
                         String type = ((VerisureAlarmJSON) thing).getType();
                         if ("ARM_STATE".equals(type)) {
@@ -449,7 +451,7 @@ public class VerisureSession {
                     } else {
                         String deviceId = thing.getDeviceId();
                         if (deviceId != null) {
-                            thing.setDeviceId(deviceId.replaceAll("[^a-zA-Z0-9_]", "_"));
+                            thing.setDeviceId(deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
                         }
                     }
                     VerisureThingJSON oldObj = verisureThings.get(thing.getDeviceId());
@@ -516,7 +518,7 @@ public class VerisureSession {
         }
         String deviceId = smartLockThing.getDeviceId();
         if (deviceId != null) {
-            smartLockThing.setDeviceId(deviceId.replaceAll("[^a-zA-Z0-9_]", "_"));
+            smartLockThing.setDeviceId(deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
         }
         return smartLockThing;
     }

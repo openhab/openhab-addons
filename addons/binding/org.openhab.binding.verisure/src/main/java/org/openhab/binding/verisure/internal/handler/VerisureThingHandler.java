@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -71,7 +70,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
 
     protected @Nullable VerisureThingConfiguration config;
 
-    public VerisureThingHandler(@NonNull Thing thing) {
+    public VerisureThingHandler(Thing thing) {
         super(thing);
     }
 
@@ -87,7 +86,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
                 }
             }
             if (session != null && config.deviceId != null) {
-                VerisureThingJSON thing = session.getVerisureThing(config.deviceId);
+                VerisureThingJSON thing = session.getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
                 update(thing);
             }
         } else {
@@ -146,7 +145,7 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
                 if (vbh != null) {
                     session = vbh.getSession();
                     if (session != null && config.deviceId != null) {
-                        update(session.getVerisureThing(config.deviceId));
+                        update(session.getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", "")));
                         session.registerDeviceStatusListener(this);
                     }
                 }
@@ -254,7 +253,8 @@ public class VerisureThingHandler extends BaseThingHandler implements DeviceStat
         logger.trace("onDeviceStateChanged on thing: {}", thing);
         if (thing != null) {
             String id = thing.getDeviceId();
-            if (config.deviceId.equals(id)) {
+            id.replaceAll("[^a-zA-Z0-9]+", "");
+            if (config.deviceId.replaceAll("[^a-zA-Z0-9]+", "").equalsIgnoreCase((id))) {
                 update(thing);
             }
         }

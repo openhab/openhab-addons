@@ -112,7 +112,7 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService {
             ThingUID bridgeUID = verisureBridgeHandler.getThing().getUID();
             String deviceId = thing.getDeviceId();
             if (deviceId != null) {
-                deviceId.replaceAll("[^a-zA-Z0-9_]", "_");
+                deviceId.replaceAll("[^a-zA-Z0-9]+", "");
                 if (thing instanceof VerisureAlarmJSON) {
                     String type = ((VerisureAlarmJSON) thing).getType();
                     if ("ARM_STATE".equals(type)) {
@@ -133,7 +133,7 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService {
                     if ("Smoke detector".equals(type)) {
                         thingUID = new ThingUID(THING_TYPE_SMOKEDETECTOR, bridgeUID, deviceId);
                     } else if ("Water detector".equals(type)) {
-                        thingUID = new ThingUID(THING_TYPE_WATERDETETOR, bridgeUID, deviceId);
+                        thingUID = new ThingUID(THING_TYPE_WATERDETECTOR, bridgeUID, deviceId);
                     } else if ("Night Control".equals(type)) {
                         thingUID = new ThingUID(THING_TYPE_NIGHT_CONTROL, bridgeUID, deviceId);
                     } else if ("Siren".equals(type)) {

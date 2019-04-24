@@ -12,17 +12,21 @@
  */
 package org.openhab.binding.verisure.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * A Verisure SmartPlug.
  *
  * @author Jarle Hjortland - Initial contribution
  *
  */
+@NonNullByDefault
 public class VerisureSmartPlugJSON extends VerisureBaseThingJSON {
 
     private String statusText;
     private Boolean hazardous;
-    private String deviceLabel;
+    private @Nullable String deviceLabel;
 
     public VerisureSmartPlugJSON(String deviceId, String location, String status, String statusText,
             Boolean hazardous) {
@@ -55,7 +59,7 @@ public class VerisureSmartPlugJSON extends VerisureBaseThingJSON {
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
         }
@@ -93,12 +97,12 @@ public class VerisureSmartPlugJSON extends VerisureBaseThingJSON {
     }
 
     @Override
-    public String getDeviceId() {
+    public @Nullable String getDeviceId() {
         return deviceLabel;
     }
 
     @Override
-    public void setDeviceId(String deviceId) {
+    public void setDeviceId(@Nullable String deviceId) {
         this.deviceLabel = deviceId;
     }
 
@@ -118,7 +122,7 @@ public class VerisureSmartPlugJSON extends VerisureBaseThingJSON {
         this.status = statusText;
     }
 
-    public String getDeviceLabel() {
+    public @Nullable String getDeviceLabel() {
         return deviceLabel;
     }
 

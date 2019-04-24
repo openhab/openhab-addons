@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -53,7 +52,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
         SUPPORTED_THING_TYPES.add(THING_TYPE_SMARTLOCK);
     }
 
-    public VerisureSmartLockThingHandler(@NonNull Thing thing) {
+    public VerisureSmartLockThingHandler(Thing thing) {
         super(thing);
     }
 
@@ -81,7 +80,8 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
 
     private void handleSmartLockState(Command command) {
         if (session != null && config.deviceId != null) {
-            VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session.getVerisureThing(config.deviceId);
+            VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session
+                    .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
             if (smartLock != null) {
                 BigDecimal pinCode = session.getPinCode();
                 String csrf = session.getCsrf();
@@ -117,7 +117,8 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
 
     private void handleAutoRelock(Command command) {
         if (session != null && config.deviceId != null) {
-            VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session.getVerisureThing(config.deviceId);
+            VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session
+                    .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
             if (smartLock != null) {
                 BigDecimal pinCode = session.getPinCode();
                 String csrf = session.getCsrf();
@@ -164,7 +165,8 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
 
     private void handleSmartLockVolume(Command command) {
         if (session != null && config.deviceId != null) {
-            VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session.getVerisureThing(config.deviceId);
+            VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session
+                    .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
             if (smartLock != null) {
                 DoorLockVolumeSettings settings = smartLock.getDoorLockVolumeSettings();
                 String csrf = session.getCsrf();
@@ -209,7 +211,8 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
 
     private void handleSmartLockVoiceLevel(Command command) {
         if (session != null && config.deviceId != null) {
-            VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session.getVerisureThing(config.deviceId);
+            VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session
+                    .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
             if (smartLock != null) {
                 DoorLockVolumeSettings settings = smartLock.getDoorLockVolumeSettings();
                 String csrf = session.getCsrf();

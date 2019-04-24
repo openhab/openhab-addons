@@ -68,6 +68,7 @@ public class VerisureSmartLockJSON extends VerisureAlarmJSON {
         this.doorLockVolumeSettings = doorLockVolumeSettings;
     }
 
+    @NonNullByDefault
     public class DoorLockVolumeSettings {
         @SerializedName("volume")
         private @Nullable String volume;
