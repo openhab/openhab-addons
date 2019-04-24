@@ -18,7 +18,6 @@
 
   <modules>
     <module>org.openhab.binding.enocean</module>
-    <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
     <module>org.openhab.binding.feed.test</module>
     <module>org.openhab.binding.loxone</module>
