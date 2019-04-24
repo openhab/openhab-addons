@@ -111,13 +111,12 @@ public abstract class AbstractWiFiLEDDriver {
     public abstract LEDStateDTO getLEDStateDTO() throws IOException;
 
     protected synchronized LEDState getLEDState() throws IOException {
-        try (Socket socket = new Socket(host, port)) {
+        try (Socket socket = new Socket(host, port);
+                DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
+                DataInputStream inputStream = new DataInputStream(socket.getInputStream())) {
             logger.debug("Connected to '{}'", socket);
 
             socket.setSoTimeout(DEFAULT_SOCKET_TIMEOUT);
-
-            DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
-            DataInputStream inputStream = new DataInputStream(socket.getInputStream());
 
             byte[] data = { (byte) 0x81, (byte) 0x8A, (byte) 0x8B, (byte) 0x96 };
             outputStream.write(data);
@@ -135,8 +134,8 @@ public abstract class AbstractWiFiLEDDriver {
             int state = statusBytes[2] & 0xFF; // On/Off
             int program = statusBytes[3] & 0xFF;
             int programSpeed = statusBytes[5] & 0xFF;
-            
-            // On factory default the controller can be configured 
+
+            // On factory default the controller can be configured
             // with a value of 255 but max should be 31.
             if (programSpeed > 31) {
                 programSpeed = 31;
@@ -151,8 +150,6 @@ public abstract class AbstractWiFiLEDDriver {
             logger.debug("RGBW: {},{},{},{}, {}", red, green, blue, white, white2);
 
             return new LEDState(state, program, programSpeed, red, green, blue, white, white2);
-        } catch (Exception e) {
-            throw new IOException(e);
         }
     }
 
@@ -161,20 +158,19 @@ public abstract class AbstractWiFiLEDDriver {
     }
 
     protected synchronized void sendRaw(byte[] data, int delay) throws IOException {
-        try (Socket socket = new Socket(host, port)) {
+        try (Socket socket = new Socket(host, port);
+                DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream())) {
             logger.debug("Connected to '{}'", socket);
 
             socket.setSoTimeout(DEFAULT_SOCKET_TIMEOUT);
-
-            DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
 
             sendRaw(data, outputStream);
 
             if (delay > 0) {
                 Thread.sleep(delay);
             }
-        } catch (Exception e) {
-            throw new IOException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 

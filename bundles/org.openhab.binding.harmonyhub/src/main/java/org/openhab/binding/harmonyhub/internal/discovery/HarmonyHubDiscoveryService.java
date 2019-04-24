@@ -17,6 +17,7 @@ import static org.openhab.binding.harmonyhub.internal.HarmonyHubBindingConstants
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -235,8 +236,9 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
 
         private void run() {
             while (running) {
-                try (Socket socket = serverSocket.accept()) {
-                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                try (Socket socket = serverSocket.accept();
+                        Reader isr = new InputStreamReader(socket.getInputStream());
+                        BufferedReader in = new BufferedReader(isr)) {
                     String input;
                     while ((input = in.readLine()) != null) {
                         if (!running) {
