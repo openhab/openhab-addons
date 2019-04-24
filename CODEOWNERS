@@ -6,7 +6,6 @@
 
 # Add-on maintainers:
 /addons/binding/org.openhab.binding.enocean/ @fruggy83
-/addons/binding/org.openhab.binding.exec/ @kgoderis
 /addons/binding/org.openhab.binding.feed/ @svilenvul
 /addons/binding/org.openhab.binding.feed.test/ @svilenvul
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
@@ -61,6 +60,7 @@
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.evohome/ @Nebula83
+/bundles/org.openhab.binding.exec/ @kgoderis
 /bundles/org.openhab.binding.feican/ @Hilbrand
 /bundles/org.openhab.binding.folding/ @fa2k
 /bundles/org.openhab.binding.freebox/ @lolodomo
