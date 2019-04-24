@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -147,20 +148,23 @@ public class ControllerHandler extends BaseBridgeHandler {
                 out.write(command.getBytes());
                 out.write("\r\n".getBytes());
 
-                BufferedReader in = new BufferedReader(new InputStreamReader(localSocket.getInputStream()));
-                while (true) {
-                    String line = in.readLine();
-                    logger.trace("Read result '{}'", line);
-                    if ("OK".equals(line)) {
-                        return response.toString();
-                    }
-                    response.append(line);
-                    if (response.length() > 100) {
-                        /*
-                         * Usually this loop times out on errors, but in the case that we just keep getting
-                         * data we should also fail with an error.
-                         */
-                        throw new CoolMasterClientError(String.format("Got gibberish response to command %s", command));
+                try (Reader isr = new InputStreamReader(localSocket.getInputStream());
+                        BufferedReader in = new BufferedReader(isr)) {
+                    while (true) {
+                        String line = in.readLine();
+                        logger.trace("Read result '{}'", line);
+                        if ("OK".equals(line)) {
+                            return response.toString();
+                        }
+                        response.append(line);
+                        if (response.length() > 100) {
+                            /*
+                             * Usually this loop times out on errors, but in the case that we just keep getting
+                             * data we should also fail with an error.
+                             */
+                            throw new CoolMasterClientError(
+                                    String.format("Got gibberish response to command %s", command));
+                        }
                     }
                 }
             } catch (SocketTimeoutException e) {
