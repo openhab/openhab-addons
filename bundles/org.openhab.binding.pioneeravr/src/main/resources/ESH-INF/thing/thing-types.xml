@@ -198,6 +198,7 @@
 			<channel id="volumeDb" typeId="volumeChannelDb" />
 			<channel id="mute" typeId="muteChannel" />
 			<channel id="setInputSource" typeId="setInputSourceChannel" />
+			<channel id="playingListeningMode" typeId="playingListeningModeChannel" />
 		</channels>
 	</channel-group-type>
 
@@ -623,6 +624,13 @@
 		<item-type>String</item-type>
 		<label>Display</label>
 		<description>Display the information displayed on the AVR front screen</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="playingListeningModeChannel">
+		<item-type>String</item-type>
+		<label>Playing Listening Mode</label>
+		<description>Display the effective listening mode</description>
 		<state readOnly="true" />
 	</channel-type>
 

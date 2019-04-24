@@ -86,6 +86,110 @@ Here after are the ID values of the input sources (depending on you AVR input so
 * 57: Spotify
 * 31: HDMI (cyclic)
 
+## Playing Listening Modes
+
+The *Playing Listening Mode* is the Listening Mode that is actually playing as opposed to the *Listening Mode* set by the user. The *Playing Listening Mode* is what the display on the device shows.
+
+* 0101: [)(]PLIIx MOVIE
+* 0102: [)(]PLII MOVIE
+* 0103: [)(]PLIIx MUSIC
+* 0104: [)(]PLII MUSIC
+* 0105: [)(]PLIIx GAME
+* 0106: [)(]PLII GAME
+* 0107: [)(]PROLOGIC
+* 0108: Neo:6 CINEMA
+* 0109: Neo:6 MUSIC
+* 010c: 2ch Straight Decode
+* 010d: [)(]PLIIz HEIGHT
+* 010e: WIDE SURR MOVIE
+* 010f: WIDE SURR MUSIC
+* 0110: STEREO
+* 0111: Neo:X CINEMA
+* 0112: Neo:X MUSIC
+* 0113: Neo:X GAME
+* 0117: Dolby Surround
+* 0118: EXTENDED STEREO
+* 1101: [)(]PLIIx MOVIE
+* 1102: [)(]PLIIx MUSIC
+* 1103: [)(]DIGITAL EX
+* 1104: DTS Neo:6
+* 1105: ES MATRIX
+* 1106: ES DISCRETE
+* 1107: DTS-ES 8ch
+* 1108: multi ch Channel base Straight Decode
+* 1109: [)(]PLIIz HEIGHT
+* 110a: WIDE SURR MOVIE
+* 110b: WIDE SURR MUSIC
+* 110c: Neo:X CINEMA
+* 110d: Neo:X MUSIC
+* 110e: Neo:X GAME
+* 110f: Dolby Surround
+* 0201: ACTION
+* 0202: DRAMA
+* 0208: ADVANCEDGAME
+* 0209: SPORTS
+* 020a: CLASSICAL
+* 020b: ROCK/POP
+* 020e: PHONES SURR.
+* 020f: FRONT STAGE SURROUND ADVANCE
+* 0211: SOUND RETRIEVER AIR
+* 0212: ECO MODE 1
+* 0213: ECO MODE 2
+* 0401: STEREO
+* 0402: [)(]PLII MOVIE
+* 0403: [)(]PLIIx MOVIE
+* 0405: AUTO SURROUND Straight Decode
+* 0406: [)(]DIGITAL EX
+* 0407: [)(]PLIIx MOVIE
+* 0408: DTS +Neo:6
+* 0409: ES MATRIX
+* 040a: ES DISCRETE
+* 040b: DTS-ES 8ch
+* 040e: RETRIEVER AIR
+* 040f: Neo:X CINEMA
+* 0411: Dolby Surround
+* 0501: STEREO
+* 0502: [)(]PLII MOVIE
+* 0503: [)(]PLIIx MOVIE
+* 0504: DTS/DTS-HD
+* 0505: ALC Straight Decode
+* 0506: [)(]DIGITAL EX
+* 0507: [)(]PLIIx MOVIE
+* 0508: DTS +Neo:6
+* 0509: ES MATRIX
+* 050a: ES DISCRETE
+* 050b: DTS-ES 8ch
+* 050e: RETRIEVER AIR
+* 050f: Neo:X CINEMA
+* 0601: STEREO
+* 0602: [)(]PLII MOVIE
+* 0603: [)(]PLIIx MOVIE
+* 0604: Neo:6 CINEMA
+* 0605: STREAM DIRECT NORMAL Straight Decode
+* 0606: [)(]DIGITAL EX
+* 0607: [)(]PLIIx MOVIE
+* 0609: ES MATRIX
+* 060a: ES DISCRETE
+* 060b: DTS-ES 8ch
+* 060c: Neo:X CINEMA
+* 060e: NORMAL DIRECT Dolby Surround
+* 0701: STREAM DIRECT PURE 2ch
+* 0702: [)(]PLII MOVIE
+* 0703: [)(]PLIIx MOVIE
+* 0704: Neo:6 CINEMA
+* 0705: STREAM DIRECT PURE Straight Decode
+* 0706: [)(]DIGITAL EX
+* 0707: [)(]PLIIx MOVIE
+* 0708: (nothing)
+* 0709: ES MATRIX
+* 070a: ES DISCRETE
+* 070b: DTS-ES 8ch
+* 070c: Neo:X CINEMA
+* 070e: PURE DIRECT Dolby Surround
+* 0881: OPTIMUM
+* 0e01: HDMI THROUGH
+* 0f01: MULTI CH IN
+
 ## Example
 
 *demo.Things:
@@ -104,6 +208,7 @@ Dimmer vsx921VolumeDimmer        "Volume [%.1f] %"        <none>        (All)   
 Number vsx921VolumeNumber        "Volume [%.1f] dB"        <none>        (All)    { channel="pioneeravr:ipAvr:vsx921:volumeDb" }
 String vsx921InputSourceSet        "Input"                    <none>        (All)    { channel="pioneeravr:ipAvr:vsx921:setInputSource" }
 String vsx921InformationDisplay "Information [%s]"        <none>         (All)    { channel="pioneeravr:ipAvr:vsx921:displayInformation" }
+String vsx921PlayingListeningMode "Playing Listening Mode [%s]"        <none>         (All)    { channel="pioneeravr:ipAvr:vsx921:playingListeningMode" }
 ```
 
 *demo.sitemap:
@@ -118,6 +223,7 @@ sitemap demo label="Main Menu"
 		Setpoint item=vsx921VolumeNumber minValue="-80" maxValue="12" step="0.5"
 		Switch item=vsx921InputSourceSet mappings=[04="DVD", 15="DVR/BDR", 25="BD"]
 		Text item=vsx921InformationDisplay
+		Text item=vsx921PlayingListeningMode
 	}
 }
 ```

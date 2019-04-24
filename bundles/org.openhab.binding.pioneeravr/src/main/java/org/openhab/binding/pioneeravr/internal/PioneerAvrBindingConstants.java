@@ -71,6 +71,7 @@ public class PioneerAvrBindingConstants {
     public static final String VOLUME_DB_CHANNEL = "volumeDb";
     public static final String MUTE_CHANNEL = "mute";
     public static final String SET_INPUT_SOURCE_CHANNEL = "setInputSource";
+    public static final String PLAYING_LISTENING_MODE_CHANNEL = "playingListeningMode";
     public static final String DISPLAY_INFORMATION_CHANNEL = "displayInformation#displayInformation";
 
     public static final String GROUP_CHANNEL_PATTERN = "zone%s#%s";
