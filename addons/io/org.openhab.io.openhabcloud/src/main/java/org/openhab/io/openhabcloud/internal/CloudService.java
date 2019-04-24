@@ -17,6 +17,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -99,9 +101,9 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     /**
      * This method sends notification message to mobile app through the openHAB Cloud service
      *
-     * @param userId   the {@link String} containing the openHAB Cloud user id to send message to
-     * @param message  the {@link String} containing a message to send to specified user id
-     * @param icon     the {@link String} containing a name of the icon to be used with this notification
+     * @param userId the {@link String} containing the openHAB Cloud user id to send message to
+     * @param message the {@link String} containing a message to send to specified user id
+     * @param icon the {@link String} containing a name of the icon to be used with this notification
      * @param severity the {@link String} containing severity (good, info, warning, error) of notification
      */
     public void sendNotification(String userId, String message, String icon, String severity) {
@@ -113,8 +115,8 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * Sends an advanced notification to log. Log notifications are not pushed to user
      * devices but are shown to all account users in notifications log
      *
-     * @param message  the {@link String} containing a message to send to specified user id
-     * @param icon     the {@link String} containing a name of the icon to be used with this notification
+     * @param message the {@link String} containing a message to send to specified user id
+     * @param icon the {@link String} containing a name of the icon to be used with this notification
      * @param severity the {@link String} containing severity (good, info, warning, error) of notification
      */
     public void sendLogNotification(String message, String icon, String severity) {
@@ -126,8 +128,8 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * Sends a broadcast notification. Broadcast notifications are pushed to all
      * mobile devices of all users of the account
      *
-     * @param message  the {@link String} containing a message to send to specified user id
-     * @param icon     the {@link String} containing a name of the icon to be used with this notification
+     * @param message the {@link String} containing a message to send to specified user id
+     * @param icon the {@link String} containing a name of the icon to be used with this notification
      * @param severity the {@link String} containing severity (good, info, warning, error) of notification
      */
     public void sendBroadcastNotification(String message, String icon, String severity) {
@@ -236,8 +238,8 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
     private String readFirstLine(File file) {
         List<String> lines = null;
-        try {
-            lines = IOUtils.readLines(new FileInputStream(file));
+        try (InputStream fis = new FileInputStream(file)) {
+            lines = IOUtils.readLines(fis);
         } catch (IOException ioe) {
             // no exception handling - we just return the empty String
         }
@@ -251,8 +253,8 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     private void writeFile(File file, String content) {
         // create intermediary directories
         file.getParentFile().mkdirs();
-        try {
-            IOUtils.write(content, new FileOutputStream(file));
+        try (OutputStream fos = new FileOutputStream(file)) {
+            IOUtils.write(content, fos);
             logger.debug("Created file '{}' with content '{}'", file.getAbsolutePath(), content);
         } catch (FileNotFoundException e) {
             logger.error("Couldn't create file '{}'.", file.getPath(), e);

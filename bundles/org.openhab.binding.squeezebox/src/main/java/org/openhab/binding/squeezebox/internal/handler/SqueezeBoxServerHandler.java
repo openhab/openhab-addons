@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -325,8 +326,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Sending command: {}", sanitizeCommand(command));
-        try {
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+        try (Writer osw = new OutputStreamWriter(clientSocket.getOutputStream());
+                BufferedWriter writer = new BufferedWriter(osw)) {
             writer.write(command + NEW_LINE);
             writer.flush();
         } catch (IOException e) {
