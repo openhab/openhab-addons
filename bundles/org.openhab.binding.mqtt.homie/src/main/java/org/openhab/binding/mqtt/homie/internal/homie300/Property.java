@@ -312,7 +312,7 @@ public class Property implements AttributeChanged {
             f -> {return String.format("%s/$%s", this.propertyID, f.getName());}).collect(Collectors.toList()));
 
         try {
-		    if(attributes.getClass().getDeclaredField("retained").getBoolean(attributes))
+            if(attributes.getClass().getDeclaredField("retained").getBoolean(attributes))
                 topics.add(this.propertyID);
         } catch (NoSuchFieldException e) {
         } catch (SecurityException e) {
