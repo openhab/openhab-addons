@@ -16,7 +16,6 @@
   <name>openHAB I/O Add-Ons</name>
 
   <modules>
-    <module>org.openhab.io.azureiothub</module>
     <module>org.openhab.io.homekit</module>
     <module>org.openhab.io.hueemulation</module>
     <module>org.openhab.io.hueemulation.test</module>
