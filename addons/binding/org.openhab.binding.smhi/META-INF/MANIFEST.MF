@@ -11,9 +11,13 @@ Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  com.google.gson,
  com.google.gson.annotations,
+ javax.measure;version="1.0.0",
+ javax.measure.quantity;version="1.0.0",
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
+ org.eclipse.smarthome.core.library.dimension,
  org.eclipse.smarthome.core.library.types,
+ org.eclipse.smarthome.core.library.unit,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
  org.eclipse.smarthome.core.thing.binding.builder,

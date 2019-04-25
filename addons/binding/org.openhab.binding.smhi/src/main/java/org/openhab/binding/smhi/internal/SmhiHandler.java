@@ -73,6 +73,7 @@ public class SmhiHandler extends BaseThingHandler {
     private Gson gson = new GsonBuilder().create();
 
     private String apiRequest = "";
+    private String groupId = "";
 
     @Nullable
     private SmhiConfiguration config;
@@ -144,8 +145,9 @@ public class SmhiHandler extends BaseThingHandler {
 
             dataList = gson.fromJson(apiResponseJson, SmhiData.class);
 
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+            TimeZone timeZone = TimeZone.getTimeZone("UTC");
+            Calendar calendar = Calendar.getInstance(timeZone);
+            calendar.add(Calendar.HOUR, 1);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
             calendar.set(Calendar.MILLISECOND, 0);
@@ -163,10 +165,10 @@ public class SmhiHandler extends BaseThingHandler {
             Date day3ValidDate = calendar.getTime();
 
             SimpleDateFormat cDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:00:00");
-            cDateTimeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+            cDateTimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
             SimpleDateFormat cDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            cDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+            cDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
             logger.debug("Current date : " + cDateTimeFormat.format(currentValidDate));
             logger.debug("Tomorrow date : " + cDateTimeFormat.format(tomorrowValidDate));
@@ -193,59 +195,31 @@ public class SmhiHandler extends BaseThingHandler {
                 for (SmhiParameters parameter : parameters) {
                     hashParameters.put(parameter.name, parameter);
                 }
-
+                groupId = "";
                 if (cDateTimeFormat.format(currentValidDate)
                         .equals(cDateTimeFormat.format(timeSeries.get(0).getValidTime()))) {
-                    logger.debug("Getting Weatherdata for : " + timeSeries.get(0).getValidTime());
-                    getThing().getChannels().stream().map(Channel::getUID)
-                            .filter(channelUID -> isLinked(channelUID)
-                                    && CHANNEL_GROUP_CURRENT_WEATHER.equals(channelUID.getGroupId()))
-                            .forEach(channelUID -> {
-                                State state = extractValue(channelUID.getIdWithoutGroup(), hashParameters,
-                                        timeSeries.get(0).getValidTime());
-                                updateState(channelUID, state);
-                            });
-                }
-
-                if (cDateTimeFormat.format(tomorrowValidDate)
+                    groupId = CHANNEL_GROUP_CURRENT_WEATHER;
+                } else if (cDateTimeFormat.format(tomorrowValidDate)
                         .equals(cDateTimeFormat.format(timeSeries.get(0).getValidTime()))) {
-                    logger.debug("Getting Weatherdata for : " + timeSeries.get(0).getValidTime());
-                    getThing().getChannels().stream().map(Channel::getUID)
-                            .filter(channelUID -> isLinked(channelUID)
-                                    && CHANNEL_GROUP_FORECAST_TOMORROW.equals(channelUID.getGroupId()))
-                            .forEach(channelUID -> {
-                                State state = extractValue(channelUID.getIdWithoutGroup(), hashParameters,
-                                        timeSeries.get(0).getValidTime());
-                                updateState(channelUID, state);
-                            });
-                }
-
-                if (cDateTimeFormat.format(day2ValidDate)
+                    groupId = CHANNEL_GROUP_FORECAST_TOMORROW;
+                } else if (cDateTimeFormat.format(day2ValidDate)
                         .equals(cDateTimeFormat.format(timeSeries.get(0).getValidTime()))) {
-                    logger.debug("Getting Weatherdata for : " + timeSeries.get(0).getValidTime());
-                    getThing().getChannels().stream().map(Channel::getUID)
-                            .filter(channelUID -> isLinked(channelUID)
-                                    && CHANNEL_GROUP_DAILY_FORECAST_DAY2.equals(channelUID.getGroupId()))
-                            .forEach(channelUID -> {
-                                State state = extractValue(channelUID.getIdWithoutGroup(), hashParameters,
-                                        timeSeries.get(0).getValidTime());
-                                updateState(channelUID, state);
-                            });
-                }
-
-                if (cDateTimeFormat.format(day3ValidDate)
+                    groupId = CHANNEL_GROUP_DAILY_FORECAST_DAY2;
+                } else if (cDateTimeFormat.format(day3ValidDate)
                         .equals(cDateTimeFormat.format(timeSeries.get(0).getValidTime()))) {
+                    groupId = CHANNEL_GROUP_DAILY_FORECAST_DAY3;
+                }
+
+                if (groupId != "") {
                     logger.debug("Getting Weatherdata for : " + timeSeries.get(0).getValidTime());
                     getThing().getChannels().stream().map(Channel::getUID)
-                            .filter(channelUID -> isLinked(channelUID)
-                                    && CHANNEL_GROUP_DAILY_FORECAST_DAY3.equals(channelUID.getGroupId()))
+                            .filter(channelUID -> isLinked(channelUID) && groupId.equals(channelUID.getGroupId()))
                             .forEach(channelUID -> {
                                 State state = extractValue(channelUID.getIdWithoutGroup(), hashParameters,
                                         timeSeries.get(0).getValidTime());
                                 updateState(channelUID, state);
                             });
                 }
-
                 temp = hashParameters.get(CHANNEL_TEMPERATURE_JSON).getValues()[0];
 
                 if (cDateFormat.format(currentValidDate).equals(cDateFormat.format(timeSeries.get(0).getValidTime()))) {
@@ -288,14 +262,14 @@ public class SmhiHandler extends BaseThingHandler {
 
             // update channels min max
             logger.debug("Updating min/max channels");
-            updateState("current#temperatureMin", new DecimalType(temperatureMinToday));
-            updateState("current#temperatureMax", new DecimalType(temperatureMaxToday));
-            updateState("forecastTomorrow#temperatureMin", new DecimalType(temperatureMinDay1));
-            updateState("forecastTomorrow#temperatureMax", new DecimalType(temperatureMaxDay1));
-            updateState("forecastDay2#temperatureMin", new DecimalType(temperatureMinDay2));
-            updateState("forecastDay2#temperatureMax", new DecimalType(temperatureMaxDay2));
-            updateState("forecastDay3#temperatureMin", new DecimalType(temperatureMinDay3));
-            updateState("forecastDay3#temperatureMax", new DecimalType(temperatureMaxDay3));
+            updateState("current#temperature-min", new DecimalType(temperatureMinToday));
+            updateState("current#temperature-max", new DecimalType(temperatureMaxToday));
+            updateState("forecastTomorrow#temperature-min", new DecimalType(temperatureMinDay1));
+            updateState("forecastTomorrow#temperature-max", new DecimalType(temperatureMaxDay1));
+            updateState("forecastDay2#temperature-min", new DecimalType(temperatureMinDay2));
+            updateState("forecastDay2#temperature-max", new DecimalType(temperatureMaxDay2));
+            updateState("forecastDay3#temperature-min", new DecimalType(temperatureMinDay3));
+            updateState("forecastDay3#temperature-max", new DecimalType(temperatureMaxDay3));
 
         } catch (IOException e) {
             logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
@@ -310,6 +284,7 @@ public class SmhiHandler extends BaseThingHandler {
         switch (channelId) {
             case CHANNEL_TIME_STAMP:
                 DateFormat cDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                cDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
                 return new DateTimeType(cDateFormat.format(processingDate));
             case CHANNEL_CONDITION:
                 return new StringType(parameterTable.getCondition()
