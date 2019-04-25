@@ -61,12 +61,6 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
     /** This refresh status. */
     private boolean thingRefreshed;
 
-    /** Unique Id of the thing in zoneminder. */
-    private String zoneMinderId;
-
-    /** ZoneMidner ConnectionInfo */
-    private IZoneMinderConnectionInfo zoneMinderConnection;
-
     private Lock lockSession = new ReentrantLock();
     private IZoneMinderSession zoneMinderSession;
 
@@ -150,7 +144,11 @@ public abstract class ZoneMinderBaseThingHandler extends BaseThingHandler implem
      */
     public ChannelUID getChannelUIDFromChannelId(String id) {
         Channel ch = thing.getChannel(id);
-        return ch.getUID();
+        if (ch == null) {
+            return null;
+        } else {
+            return ch.getUID();
+        }
     }
 
     protected abstract void onFetchData();
