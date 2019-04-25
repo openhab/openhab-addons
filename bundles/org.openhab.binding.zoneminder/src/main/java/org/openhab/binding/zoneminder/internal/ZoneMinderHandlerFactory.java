@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.zoneminder.internal;
 
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -26,8 +29,6 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 /**
  * The {@link ZoneMinderHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -40,8 +41,9 @@ public class ZoneMinderHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(ZoneMinderHandlerFactory.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.union(
-            ZoneMinderServerBridgeHandler.SUPPORTED_THING_TYPES, ZoneMinderThingMonitorHandler.SUPPORTED_THING_TYPES);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
+            .unmodifiableSet(Stream.concat(ZoneMinderServerBridgeHandler.SUPPORTED_THING_TYPES.stream(),
+                    ZoneMinderThingMonitorHandler.SUPPORTED_THING_TYPES.stream()).collect(Collectors.toSet()));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
