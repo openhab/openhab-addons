@@ -15,8 +15,11 @@ package org.openhab.binding.mqtt.homie.internal.homie300;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -296,5 +299,29 @@ public class Property implements AttributeChanged {
             return;
         }
         attributesReceived();
+    }
+
+    /**
+     * Creates a list of retained topics related to the property
+     * @return Returns a list of relative topics
+     */
+    public ArrayList<String> getRetainedTopics() {
+        ArrayList<String> topics = new ArrayList<String>();
+
+        topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(
+            f -> {return String.format("%s/$%s", this.propertyID, f.getName());}).collect(Collectors.toList()));
+
+        // All exceptions can be ignored because the 'retained' attribute of the PropertyAttributes class
+        // is public, is a boolean variable and has a default value (true)
+        try {
+            if(attributes.getClass().getDeclaredField("retained").getBoolean(attributes))
+                topics.add(this.propertyID);
+        } catch (NoSuchFieldException ignored) {
+        } catch (SecurityException ignored) {
+        } catch (IllegalArgumentException ignored) {
+        } catch (IllegalAccessException ignored) {
+        }
+
+        return topics;
     }
 }

@@ -32,4 +32,8 @@ public class HandlerConfiguration {
      * The device id.
      */
     public String deviceid = "";
+    /**
+     * Indicates if retained topics should be removed when the Thing is deleted.
+     */
+    public boolean removetopics = false;
 }
