@@ -14,26 +14,6 @@ https://github.com/openhab/openhab2-addons
 
 == Third-party Content
 
-google-gson
-* License: Apache 2.0 License
-* Project: https://github.com/google/gson
-* Source:  https://github.com/google/gson
-
-guava
-* License: Apache 2.0 License
-* Project: https://github.com/google/guava
-* Source:  https://github.com/google/guava
-
-java.ws.rs-api
-* License: CDDL Version 1.1 License + GPL v2 License
-* Project: https://projects.eclipse.org/projects/ee4j.jaxrs
-* Source:  https://github.com/jax-rs/api
-
-jersey-common
-* License: CDDL Version 1.1 License + GPL v2 License
-* Project: https://projects.eclipse.org/projects/ee4j.jersey
-* Source:  https://github.com/jersey/jersey
-
 jsoup
 * License: MIT License
 * Project: https://jsoup.org/

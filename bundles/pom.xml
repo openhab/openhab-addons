@@ -172,6 +172,7 @@
     <module>org.openhab.binding.xmppclient</module>
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.yeelight</module>
+    <module>org.openhab.binding.zoneminder</module>
     <module>org.openhab.binding.zway</module>
     <module>org.openhab.extensionservice.marketplace</module>
     <module>org.openhab.extensionservice.marketplace.automation</module>
