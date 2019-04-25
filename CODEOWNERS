@@ -11,7 +11,6 @@
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
 /addons/binding/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
 /addons/binding/org.openhab.binding.onkyo/ @pail23 @paulianttila
-/addons/binding/org.openhab.binding.samsungtv/ @paulianttila
 /addons/binding/org.openhab.binding.yamahareceiver/ @davidgraeff @zarusz
 /addons/binding/org.openhab.binding.yamahareceiver.test/ @davidgraeff @zarusz
 /addons/binding/org.openhab.binding.zoneminder/ @Mr-Eskildsen
@@ -143,6 +142,7 @@
 /bundles/org.openhab.binding.robonect/ @reyem
 /bundles/org.openhab.binding.rotelra1x/ @fa2k
 /bundles/org.openhab.binding.russound/ @tmrobert8
+/bundles/org.openhab.binding.samsungtv/ @paulianttila
 /bundles/org.openhab.binding.satel/ @druciak
 /bundles/org.openhab.binding.seneye/ @nikotanghe
 /bundles/org.openhab.binding.sensebox/ @hakan42
