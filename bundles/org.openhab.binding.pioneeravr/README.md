@@ -86,6 +86,66 @@ Here after are the ID values of the input sources (depending on you AVR input so
 * 57: Spotify
 * 31: HDMI (cyclic)
 
+## Listening Modes
+
+The *Listening Mode* is set by user to instruct the AVR how to treat the audio signal and do upscaling, downscaling and amplification. This settings corresponds to the settings made with the remote control or front panel. What the AVR actually does with each setting/input-signal-combination can be read out using the *Playing Listening Mode* channel.
+
+* 0001: STEREO (cyclic)
+* 0010: STANDARD (cyclic)
+* 0009: STEREO (direct set)
+* 0011: (2ch source)
+* 0013: PRO LOGIC2 MOVIE
+* 0018: PRO LOGIC2x MOVIE
+* 0014: PRO LOGIC2 MUSIC
+* 0019: PRO LOGIC2x MUSIC
+* 0015: PRO LOGIC2 GAME
+* 0020: PRO LOGIC2x GAME
+* 0031: PRO LOGIC2z HEIGHT
+* 0032: WIDE SURROUND MOVIE
+* 0033: WIDE SURROUND MUSIC
+* 0012: PRO LOGIC
+* 0016: Neo:6 CINEMA
+* 0017: Neo:6 MUSIC
+* 0037: Neo:X CINEMA
+* 0038: Neo:X MUSIC
+* 0039: Neo:X GAME
+* 0040: Dolby Surround
+* 0041: EXTENDED STEREO
+* 0021: (Multi ch source) Channel base straight decode
+* 0022: (Multi ch source)+DOLBY EX
+* 0023: (Multi ch source)+PRO LOGIC2x MOVIE
+* 0024: (Multi ch source)+PRO LOGIC2x MUSIC
+* 0034: (Multi-ch Source)+PRO LOGIC2z HEIGHT
+* 0035: (Multi-ch Source)+WIDE SURROUND MOVIE
+* 0036: (Multi-ch Source)+WIDE SURROUND MUSIC
+* 0025: (Multi ch source)DTS-ES Neo:6
+* 0026: (Multi ch source)DTS-ES matrix
+* 0027: (Multi ch source)DTS-ES discrete
+* 0030: (Multi ch source)DTS-ES 8ch discrete
+* 0043: (Multi ch source)+Neo:X CINEMA
+* 0044: (Multi ch source)+Neo:X MUSIC
+* 0045: (Multi ch source)+Neo:X GAME
+* 0050: (Multi ch source)+Dolby Surround
+* 0100: ADVANCED SURROUND (cyclic)
+* 0101: ACTION
+* 0103: DRAMA
+* 0118: ADVANCED GAME
+* 0117: SPORTS
+* 0107: CLASSICAL
+* 0110: ROCK/POP
+* 0003: Front Stage Surround Advance
+* 0200: ECO MODE (cyclic)
+* 0212: ECO MODE 1
+* 0213: ECO MODE 2
+* 0153: RETRIEVER AIR
+* 0113: PHONES SURROUND
+* 0005: AUTO SURR/STREAM DIRECT (cyclic)
+* 0006: AUTO SURROUND
+* 0151: Auto Level Control (A.L.C.)
+* 0007: DIRECT
+* 0008: PURE DIRECT
+* 0152: OPTIMUM SURROUND
+
 ## Playing Listening Modes
 
 The *Playing Listening Mode* is the Listening Mode that is actually playing as opposed to the *Listening Mode* set by the user. The *Playing Listening Mode* is what the display on the device shows.
@@ -208,6 +268,7 @@ Dimmer vsx921VolumeDimmer        "Volume [%.1f] %"        <none>        (All)   
 Number vsx921VolumeNumber        "Volume [%.1f] dB"        <none>        (All)    { channel="pioneeravr:ipAvr:vsx921:volumeDb" }
 String vsx921InputSourceSet        "Input"                    <none>        (All)    { channel="pioneeravr:ipAvr:vsx921:setInputSource" }
 String vsx921InformationDisplay "Information [%s]"        <none>         (All)    { channel="pioneeravr:ipAvr:vsx921:displayInformation" }
+String vsx921ListeningMode "Listening Mode [%s]"        <none>         (All)    { channel="pioneeravr:ipAvr:vsx921:listeningMode" }
 String vsx921PlayingListeningMode "Playing Listening Mode [%s]"        <none>         (All)    { channel="pioneeravr:ipAvr:vsx921:playingListeningMode" }
 ```
 
@@ -223,6 +284,7 @@ sitemap demo label="Main Menu"
 		Setpoint item=vsx921VolumeNumber minValue="-80" maxValue="12" step="0.5"
 		Switch item=vsx921InputSourceSet mappings=[04="DVD", 15="DVR/BDR", 25="BD"]
 		Text item=vsx921InformationDisplay
+		Switch item=vsx921ListeningMode mappings=["0009"="Stereo", "0040"="Dolby Surround", "0010"="next"]
 		Text item=vsx921PlayingListeningMode
 	}
 }
