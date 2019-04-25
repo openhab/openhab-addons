@@ -22,7 +22,6 @@
 /addons/io/org.openhab.io.javasound/ @kaikreuzer
 /addons/io/org.openhab.io.mqttembeddedbroker/ @davidgraeff
 /addons/io/org.openhab.io.mqttembeddedbroker.test/ @davidgraeff
-/addons/io/org.openhab.io.openhabcloud/ @kaikreuzer
 /addons/io/org.openhab.io.sound/ @kaikreuzer
 /addons/io/org.openhab.io.transport.feed/ @svilenvul
 /addons/voice/org.openhab.voice.pollytts/ @hillmanr
@@ -187,6 +186,7 @@
 /bundles/org.openhab.io.imperihome/ @pdegeus
 /bundles/org.openhab.io.javasound/ @kaikreuzer
 /bundles/org.openhab.io.neeo/ @tmrobert8
+/bundles/org.openhab.io.openhabcloud/ @kaikreuzer
 /bundles/org.openhab.io.transport.modbus/ @ssalonen
 /bundles/org.openhab.io.webaudio/ @kaikreuzer
 /bundles/org.openhab.persistence.mapdb/ @mkhl
