@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt.homie.internal.handler;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
@@ -102,6 +103,14 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         }
         device.initialize(config.basetopic, config.deviceid, thing.getChannels());
         super.initialize();
+    }
+
+    @Override
+    public void handleRemoval() {
+        this.stop();
+        if(config.removetopics)
+            this.removeRetainedTopics();
+        updateStatus(ThingStatus.REMOVED);
     }
 
     @Override
@@ -207,5 +216,15 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
                 logger.debug("Homie device {} fully attached", device.attributes.name);
             });
         }
+    }
+    /**
+     * Removes all retained topics related to the device
+     */
+    private void removeRetainedTopics() {
+        ArrayList<String> topics = new ArrayList<String>();
+        topics.addAll(this.device.getRetainedTopics().stream().map(
+                d -> {return String.format("%s/%s", config.basetopic, d);}).collect(Collectors.toList()));
+
+        topics.stream().forEach(t -> this.connection.publish(t, new byte[0], 1, true));;
     }
 }

@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.mqtt.homie.internal.homie300;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
@@ -199,5 +201,22 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
     @Override
     public String toString() {
         return channelGroupUID.toString();
+    }
+
+    /**
+     * Creates a list of retained topics related to the node
+     * @return Returns a list of relative topics
+     */
+    public ArrayList<String> getRetainedTopics() {
+        ArrayList<String> topics = new ArrayList<String>();
+        Map<String, Object> map = this.attributes.asMap();
+        topics.addAll(map.keySet().stream().map(
+            a -> {return String.format("%s/$%s", this.nodeID, a);}).collect(Collectors.toList()));
+
+        this.properties.stream().map(
+                p -> p.getRetainedTopics().stream().map(
+                    a -> {return String.format("%s/%s", this.nodeID, a);}).collect(Collectors.toList())).collect(Collectors.toList()).forEach(topics::addAll);
+
+        return topics;
     }
 }

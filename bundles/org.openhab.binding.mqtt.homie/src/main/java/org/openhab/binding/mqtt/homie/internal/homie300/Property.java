@@ -15,8 +15,11 @@ package org.openhab.binding.mqtt.homie.internal.homie300;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -296,5 +299,21 @@ public class Property implements AttributeChanged {
             return;
         }
         attributesReceived();
+    }
+
+    /**
+     * Creates a list of retained topics related to the property
+     * @return Returns a list of relative topics
+     */
+    public ArrayList<String> getRetainedTopics() {
+        ArrayList<String> topics = new ArrayList<String>();
+        Map<String, Object> map = this.attributes.asMap();
+        topics.addAll(map.keySet().stream().map(
+                a -> {return String.format("%s/$%s", this.propertyID, a);}).collect(Collectors.toList()));
+
+        if(Boolean.parseBoolean(map.get("retained").toString()))
+            topics.add(this.propertyID);
+
+        return topics;
     }
 }
