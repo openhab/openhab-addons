@@ -16,10 +16,10 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -307,12 +307,18 @@ public class Property implements AttributeChanged {
      */
     public ArrayList<String> getRetainedTopics() {
         ArrayList<String> topics = new ArrayList<String>();
-        Map<String, Object> map = this.attributes.asMap();
-        topics.addAll(map.keySet().stream().map(
-                a -> {return String.format("%s/$%s", this.propertyID, a);}).collect(Collectors.toList()));
 
-        if(Boolean.parseBoolean(map.get("retained").toString()))
-            topics.add(this.propertyID);
+        topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(
+            f -> {return String.format("%s/$%s", this.propertyID, f.getName());}).collect(Collectors.toList()));
+
+        try {
+		    if(attributes.getClass().getDeclaredField("retained").getBoolean(attributes))
+                topics.add(this.propertyID);
+        } catch (NoSuchFieldException e) {
+        } catch (SecurityException e) {
+        } catch (IllegalArgumentException e) {
+        } catch (IllegalAccessException e) {
+        }
 
         return topics;
     }

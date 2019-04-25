@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.mqtt.homie.internal.homie300;
 
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.mapping.MQTTvalueTransform;
@@ -36,16 +33,5 @@ public class NodeAttributes extends AbstractMqttAttributeClass {
     @Override
     public @NonNull Object getFieldsOf() {
         return this;
-    }
-
-    /**
-     * Return a map with all field values.
-     */
-    public Map<String, Object> asMap() {
-        Map<String, Object> attributes = new TreeMap<>();
-        attributes.put("name", name);
-        attributes.put("properties", properties);
-        attributes.put("type", type);
-        return attributes;
     }
 }

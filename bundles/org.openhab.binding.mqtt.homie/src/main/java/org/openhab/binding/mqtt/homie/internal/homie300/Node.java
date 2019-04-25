@@ -14,10 +14,10 @@ package org.openhab.binding.mqtt.homie.internal.homie300;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -209,13 +209,13 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
      */
     public ArrayList<String> getRetainedTopics() {
         ArrayList<String> topics = new ArrayList<String>();
-        Map<String, Object> map = this.attributes.asMap();
-        topics.addAll(map.keySet().stream().map(
-            a -> {return String.format("%s/$%s", this.nodeID, a);}).collect(Collectors.toList()));
+
+        topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(
+            f -> {return String.format("%s/$%s", this.nodeID, f.getName());}).collect(Collectors.toList()));
 
         this.properties.stream().map(
-                p -> p.getRetainedTopics().stream().map(
-                    a -> {return String.format("%s/%s", this.nodeID, a);}).collect(Collectors.toList())).collect(Collectors.toList()).forEach(topics::addAll);
+            p -> p.getRetainedTopics().stream().map(
+                a -> {return String.format("%s/%s", this.nodeID, a);}).collect(Collectors.toList())).collect(Collectors.toList()).forEach(topics::addAll);
 
         return topics;
     }
