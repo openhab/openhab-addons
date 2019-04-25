@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="mail" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="http://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://openhab.org/schemas/binding/v1.0.0 http://openhab.org/schemas/binding-1.0.0.xsd">
+
+	<name>Mail Binding</name>
+	<description>Email support</description>
+	<author>Jan N. Klug</author>
+
+</binding:binding>

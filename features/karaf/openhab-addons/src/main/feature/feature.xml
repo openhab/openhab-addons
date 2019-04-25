@@ -500,6 +500,13 @@
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.lutron/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-mail" description="Mail Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle dependency="true" start-level="80">mvn:com.sun.mail/javax.mail/1.6.2</bundle>
+        <bundle dependency="true" start-level="80">mvn:org.apache.commons/commons-email/1.5</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.mail/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-max" description="MAX! Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.max/${project.version}</bundle>
