@@ -134,6 +134,12 @@ public class SubscribeFieldToMQTTtopic implements MqttMessageSubscriber {
             scheduledFuture.cancel(false);
             this.scheduledFuture = null;
         }
+
+        if (payload.length == 0) {
+            logger.debug("NULL payload on topic: {}", topic);
+            return;
+        }
+
         String valueStr = new String(payload, StandardCharsets.UTF_8);
 
         // Check if there is a manipulation annotation attached to the field

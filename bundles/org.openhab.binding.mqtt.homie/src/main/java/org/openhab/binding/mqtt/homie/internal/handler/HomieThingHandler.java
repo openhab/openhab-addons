@@ -105,6 +105,14 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
     }
 
     @Override
+    public void handleRemoval() {
+        this.stop();
+        if(config.removetopics)
+            this.removeRetainedTopics();
+        super.handleRemoval();
+    }
+
+    @Override
     protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection) {
         logger.debug("About to start Homie device {}", device.attributes.name);
         // We have mostly retained messages for Homie. QoS 1 is required.
@@ -207,5 +215,13 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
                 logger.debug("Homie device {} fully attached", device.attributes.name);
             });
         }
+    }
+    /**
+     * Removes all retained topics related to the device
+     */
+    private void removeRetainedTopics() {
+        device.getRetainedTopics().stream().map(
+            d -> {return String.format("%s/%s", config.basetopic, d);}).collect(Collectors.toList()).forEach(
+                t -> this.connection.publish(t, new byte[0], 1, true));
     }
 }
