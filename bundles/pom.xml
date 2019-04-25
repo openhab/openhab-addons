@@ -88,6 +88,7 @@
     <module>org.openhab.binding.lirc</module>
     <module>org.openhab.binding.logreader</module>
     <module>org.openhab.binding.lutron</module>
+    <module>org.openhab.binding.mail</module>
     <module>org.openhab.binding.max</module>
     <module>org.openhab.binding.mcp23017</module>
     <module>org.openhab.binding.meteoblue</module>
