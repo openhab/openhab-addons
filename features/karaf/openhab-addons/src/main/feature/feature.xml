@@ -1240,7 +1240,16 @@
 
     <feature name="openhab-voice-pollytts" description="Polly Text-to-Speech" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.voice/org.openhab.voice.pollytts/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.9</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.5</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.8</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.8</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.8</bundle>
+        <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-core/1.11.490</bundle>
+        <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-polly/1.11.490</bundle>
+        <bundle dependency="true">mvn:commons-logging/commons-logging/1.2</bundle>
+        <bundle dependency="true">mvn:joda-time/joda-time/2.8.1</bundle> 
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.voice.pollytts/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-voice-voicerss" description="VoiceRSS Text-to-Speech" version="${project.version}">
