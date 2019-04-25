@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mail"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://openhab.org/schemas/thing-description/v1.0.0 http://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="smtp">
+		<label>SMTP server</label>
+		<description>Used for sending mail via rule-actions</description>
+		<config-description>
+			<parameter name="sender" type="text" required="true">
+				<label>Sender</label>
+				<description>Default sender address for mail</description>
+			</parameter>
+			<parameter name="hostname" type="text" required="true">
+				<label>Server hostname</label>
+			</parameter>
+			<parameter name="port" type="text" required="false">
+				<label>Server port</label>
+				<description>Default values are 25 for plain/TLS and 465 for SSL</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="security" type="text" required="false">
+				<label>SMTP server security protocol</label>
+				<options>
+					<option value="PLAIN">plain</option>
+					<option value="SSL">SSL</option>
+					<option value="TLS">TLS</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>PLAIN</default>
+			</parameter>
+			<parameter name="username" type="text" required="false">
+				<label>SMTP server username</label>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<label>SMTP server password</label>
+				<context>password</context>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="imap" extensible="mailcount">
+		<label>IMAP server</label>
+		<description>Used for receiving mail</description>
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Server hostname</label>
+			</parameter>
+			<parameter name="port" type="text" required="false">
+				<label>Server port</label>
+				<description>Default values are 143 for plain/TLS and 993 for SSL</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="security" type="text" required="false">
+				<label>SMTP server security protocol</label>
+				<options>
+					<option value="PLAIN">plain</option>
+					<option value="SSL">SSL</option>
+					<option value="TLS">TLS</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>PLAIN</default>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<label>SMTP server username</label>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>SMTP server password</label>
+				<context>password</context>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<label>refresh time for this account in s</label>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="pop3" extensible="mailcount">
+		<label>POP3 server</label>
+		<description>Used for receiving mail</description>
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Server hostname</label>
+			</parameter>
+			<parameter name="port" type="text" required="false">
+				<label>Server port</label>
+				<description>Default values are 110 for plain/TLS and 995 for SSL</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="security" type="text" required="false">
+				<label>SMTP server security protocol</label>
+				<options>
+					<option value="PLAIN">plain</option>
+					<option value="SSL">SSL</option>
+					<option value="TLS">TLS</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>PLAIN</default>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<label>SMTP server username</label>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>SMTP server password</label>
+				<context>password</context>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<label>refresh time for this account in s</label>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="mailcount">
+		<item-type>Number</item-type>
+		<label>Mail count</label>
+		<description>Number of mails in folder</description>
+		<state readOnly="true" />
+		<config-description>
+			<parameter name="folder" type="text" required="true">
+				<label>Folder name</label>
+				<required>true</required>
+			</parameter>
+			<parameter name="type" type="text" required="false">
+				<options>
+					<option value="UNREAD">Unread</option>
+					<option value="TOTAL">Total</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>TOTAL</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+</thing:thing-descriptions>
