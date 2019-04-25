@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -51,8 +51,6 @@ import org.openhab.binding.zoneminder.internal.discovery.ZoneMinderDiscoveryServ
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Sets;
 
 import name.eskildsen.zoneminder.IZoneMinderConnectionInfo;
 import name.eskildsen.zoneminder.IZoneMinderDaemonStatus;
@@ -76,8 +74,8 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
 
     public static final int TELNET_TIMEOUT = 5000;
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets
-            .newHashSet(ZoneMinderConstants.THING_TYPE_BRIDGE_ZONEMINDER_SERVER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
+            .singleton(ZoneMinderConstants.THING_TYPE_BRIDGE_ZONEMINDER_SERVER);
 
     /**
      * Logger
@@ -187,8 +185,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
             for (Thing thing : getThing().getThings()) {
                 try {
                     if (thing.getThingTypeUID().equals(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR)) {
-                        Thing thingMonitor = thing;
-
                         ZoneMinderBaseThingHandler thingHandler = (ZoneMinderBaseThingHandler) thing.getHandler();
                         if (thingHandler != null) {
                             if (thingHandler.getRefreshPriority() == DataRefreshPriorityEnum.HIGH_PRIORITY) {
@@ -336,22 +332,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
         return getThing().getUID().getAsString();
     }
 
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        // can be overridden by subclasses
-        ThingUID s1 = getThing().getUID();
-        ThingTypeUID s2 = getThing().getThingTypeUID();
-        logger.debug("{}: Channel '{}' was linked to '{}'", getLogIdentifier(), channelUID.getAsString(),
-                this.thing.getThingTypeUID());
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        // can be overridden by subclasses
-        logger.debug("{}: Channel '{}' was unlinked from '{}'", getLogIdentifier(), channelUID.getAsString(),
-                this.thing.getThingTypeUID());
-    }
-
     protected ArrayList<IZoneMinderMonitorData> getMonitors(IZoneMinderSession session) {
         if (isConnected()) {
             return ZoneMinderFactory.getServerProxy(session).getMonitors();
@@ -374,7 +354,8 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
 
         for (Thing thing : things) {
             ZoneMinderBaseThingHandler thingHandler = (ZoneMinderBaseThingHandler) thing.getHandler();
-            if ((thingHandler.getZoneMinderId().equals(zoneMinderId))
+
+            if ((thingHandler != null) && (thingHandler.getZoneMinderId().equals(zoneMinderId))
                     && (thing.getThingTypeUID().equals(thingTypeUID))) {
                 return thingHandler;
             }
@@ -439,10 +420,10 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
                 if (diskUsage == null) {
                     logger.warn("{}: ZoneMinderDiskUsage dataset could not be obtained (received 'null')",
                             getLogIdentifier());
-                } else if (hostLoad.getHttpResponseCode() != 200) {
+                } else if (diskUsage.getHttpResponseCode() != 200) {
                     logger.warn(
                             "{}: ZoneMinderDiskUsage dataset could not be obtained (HTTP Response: Code='{}', Message='{}')",
-                            getLogIdentifier(), hostLoad.getHttpResponseCode(), hostLoad.getHttpResponseMessage());
+                            getLogIdentifier(), diskUsage.getHttpResponseCode(), diskUsage.getHttpResponseMessage());
                 } else {
                     channelDiskUsage = diskUsage.getDiskUsage();
                 }
@@ -467,21 +448,14 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
         for (Thing thing : things) {
             try {
                 if (thing.getThingTypeUID().equals(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR)) {
-                    Thing thingMonitor = thing;
                     ZoneMinderBaseThingHandler thingHandler = (ZoneMinderBaseThingHandler) thing.getHandler();
-
+                    if (thingHandler == null) {
+                        continue;
+                    }
                     thingHandler.refreshThing(session, DataRefreshPriorityEnum.SCHEDULED);
                 }
-            } catch (NullPointerException ex) {
-                // This isn't critical (unless it comes over and over). There seems to be a bug so that a null
-                // pointer exception is coming every now and then.
-                // HAve to find the reason for that. Until thenm, don't Spamm
-                logger.debug("{}: Method 'refreshThing()' for Bridge {} failed for thing='{}' - Exception='{}'",
-                        getLogIdentifier(), this.getZoneMinderId(), thing.getUID(), ex.getMessage());
-
-                // Other exceptions has to be shown as errors
-            } catch (Exception ex) {
-                logger.error("{}: Method 'refreshThing()' for Bridge {} failed for thing='{}' - Exception='{}'",
+            } catch (Exception ex) { // Other exceptions has to be shown as errors
+                logger.warn("{}: Method 'refreshThing()' for Bridge {} failed for thing='{}' - Exception='{}'",
                         getLogIdentifier(), this.getZoneMinderId(), thing.getUID(), ex.getMessage());
             }
         }
@@ -496,10 +470,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
 
     public boolean isOnline() {
         return online;
-    }
-
-    private synchronized boolean getConnected() {
-        return this.connected;
     }
 
     /**
@@ -540,15 +510,6 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
         }
 
         setConnected(connected);
-    }
-
-    /**
-     * Set channel 'bridge_connection'.
-     *
-     * @param connected
-     */
-    private boolean getBridgeConnectionStatus() {
-        return getConnected();
     }
 
     /**
@@ -799,12 +760,16 @@ public class ZoneMinderServerBridgeHandler extends BaseBridgeHandler implements 
         }
     }
 
+    @SuppressWarnings("null")
     protected void updateBridgeStatus(ThingStatus newStatus, ThingStatusDetail statusDetail, String statusDescription) {
         ThingStatusInfo curStatusInfo = thing.getStatusInfo();
-        String curDescription = StringUtils.isBlank(curStatusInfo.getDescription()) ? ""
-                : curStatusInfo.getDescription();
 
-        // Status changed
+        String curDescription = curStatusInfo.getDescription();
+        if (StringUtils.isBlank(curStatusInfo.getDescription())) {
+            curDescription = "";
+        }
+
+        // Status changed, curDescription is null checked
         if ((curStatusInfo.getStatus() != newStatus) || (curStatusInfo.getStatusDetail() != statusDetail)
                 || (!curDescription.equals(statusDescription))) {
             // if (thing.getStatus() != newStatus) {
