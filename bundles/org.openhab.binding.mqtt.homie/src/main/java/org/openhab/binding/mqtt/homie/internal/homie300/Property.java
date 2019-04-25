@@ -311,13 +311,15 @@ public class Property implements AttributeChanged {
         topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(
             f -> {return String.format("%s/$%s", this.propertyID, f.getName());}).collect(Collectors.toList()));
 
+        // All exceptions can be ignored because the 'retained' attribute of the PropertyAttributes class
+        // is public, is a boolean variable and has a default value (true)
         try {
             if(attributes.getClass().getDeclaredField("retained").getBoolean(attributes))
                 topics.add(this.propertyID);
-        } catch (NoSuchFieldException e) {
-        } catch (SecurityException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
+        } catch (NoSuchFieldException ignored) {
+        } catch (SecurityException ignored) {
+        } catch (IllegalArgumentException ignored) {
+        } catch (IllegalAccessException ignored) {
         }
 
         return topics;
