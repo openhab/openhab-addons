@@ -19,6 +19,5 @@
   <modules>
     <module>org.openhab.binding.enocean</module>
     <module>org.openhab.binding.loxone</module>
-    <module>org.openhab.binding.onkyo</module>
   </modules>
 </project>
