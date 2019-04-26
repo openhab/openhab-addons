@@ -230,7 +230,7 @@
         <label>Output</label>
         <description>An Omnilink output</description>
         <channels>
-            <channel id="level" typeId="unit_level" />
+            <channel id="switch" typeId="unit_switch" />
             <channel id="on_for_seconds" typeId="on_for_seconds"/>
             <channel id="off_for_seconds" typeId="off_for_seconds"/>
             <channel id="on_for_minutes" typeId="on_for_minutes"/>
