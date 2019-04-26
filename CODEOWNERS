@@ -7,19 +7,9 @@
 # Add-on maintainers:
 /addons/binding/org.openhab.binding.enocean/ @fruggy83
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
-/addons/binding/org.openhab.binding.netatmo/ @clinique @cweitkamp @lolodomo
-/addons/binding/org.openhab.binding.yamahareceiver/ @davidgraeff @zarusz
-/addons/binding/org.openhab.binding.yamahareceiver.test/ @davidgraeff @zarusz
-/addons/binding/org.openhab.binding.zoneminder/ @Mr-Eskildsen
 /addons/io/org.openhab.io.homekit/ @beowulfe
 /addons/io/org.openhab.io.hueemulation/ @davidgraeff @digitaldan
 /addons/io/org.openhab.io.hueemulation.test/ @davidgraeff @digitaldan
-/addons/io/org.openhab.io.imperihome/ @pdegeus
-/addons/io/org.openhab.io.javasound/ @kaikreuzer
-/addons/io/org.openhab.io.mqttembeddedbroker/ @davidgraeff
-/addons/io/org.openhab.io.mqttembeddedbroker.test/ @davidgraeff
-/addons/io/org.openhab.io.sound/ @kaikreuzer
-/addons/voice/org.openhab.voice.pollytts/ @hillmanr
 /bundles/org.openhab.binding.airquality/ @kubawolanin
 /bundles/org.openhab.binding.airvisualnode/ @3cky
 /bundles/org.openhab.binding.allplay/ @dominicdesun
@@ -176,13 +166,16 @@
 /bundles/org.openhab.binding.windcentrale/ @marcelrv
 /bundles/org.openhab.binding.xmltv/ @clinique
 /bundles/org.openhab.binding.xmppclient/ @pavel-gololobov
+/bundles/org.openhab.binding.yamahareceiver/ @davidgraeff @zarusz
 /bundles/org.openhab.binding.yeelight/ @claell
+/bundles/org.openhab.binding.zoneminder/ @Mr-Eskildsen
 /bundles/org.openhab.binding.zway/ @pathec
 /bundles/org.openhab.extensionservice.marketplace/ @kaikreuzer
 /bundles/org.openhab.extensionservice.marketplace.automation/ @kaikreuzer
 /bundles/org.openhab.io.azureiothub/ @nikotanghe
 /bundles/org.openhab.io.imperihome/ @pdegeus
 /bundles/org.openhab.io.javasound/ @kaikreuzer
+/bundles/org.openhab.io.mqttembeddedbroker/ @davidgraeff
 /bundles/org.openhab.io.neeo/ @tmrobert8
 /bundles/org.openhab.io.openhabcloud/ @kaikreuzer
 /bundles/org.openhab.io.transport.modbus/ @ssalonen
@@ -201,6 +194,7 @@
 /bundles/org.openhab.voice.mactts/ @kaikreuzer
 /bundles/org.openhab.voice.marytts/ @kaikreuzer
 /bundles/org.openhab.voice.picotts/ @FlorianSW
+/bundles/org.openhab.voice.pollytts/ @hillmanr
 /bundles/org.openhab.voice.voicerss/ @JochenHiller
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
