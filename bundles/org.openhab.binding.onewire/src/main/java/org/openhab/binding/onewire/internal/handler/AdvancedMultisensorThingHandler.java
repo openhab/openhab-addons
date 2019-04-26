@@ -14,7 +14,6 @@ package org.openhab.binding.onewire.internal.handler;
 
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,6 +34,7 @@ import org.openhab.binding.onewire.internal.DS2438Configuration;
 import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
+import org.openhab.binding.onewire.internal.config.AMSHandlerConfiguration;
 import org.openhab.binding.onewire.internal.device.AbstractOwDevice;
 import org.openhab.binding.onewire.internal.device.DS18x20;
 import org.openhab.binding.onewire.internal.device.DS2406_DS2413;
@@ -83,7 +83,7 @@ public class AdvancedMultisensorThingHandler extends OwBaseThingHandler {
 
     @Override
     public void initialize() {
-        Configuration configuration = getConfig();
+        AMSHandlerConfiguration configuration = getConfig().as(AMSHandlerConfiguration.class);
         Map<String, String> properties = editProperties();
 
         if (!super.configureThingHandler()) {
@@ -97,13 +97,7 @@ public class AdvancedMultisensorThingHandler extends OwBaseThingHandler {
         if (THING_TYPE_AMS.equals(thingType)) {
             sensors.add(new DS2438(new SensorId(properties.get(PROPERTY_DS2438)), this));
             sensors.add(new DS2406_DS2413(new SensorId(properties.get(PROPERTY_DS2413)), this));
-
-            if (configuration.containsKey(CONFIG_DIGITALREFRESH)) {
-                digitalRefreshInterval = ((BigDecimal) configuration.get(CONFIG_DIGITALREFRESH)).intValue() * 1000;
-            } else {
-                digitalRefreshInterval = 10 * 1000;
-            }
-
+            digitalRefreshInterval = configuration.digitalRefresh * 1000;
             digitalLastRefresh = 0;
         }
 

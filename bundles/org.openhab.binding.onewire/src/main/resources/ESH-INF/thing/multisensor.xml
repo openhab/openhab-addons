@@ -9,7 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>Multisensor (T, TC, TH, TL, TV, generic)</label>
 		<description>A 1-wire multisensor (DS1923/DS2438-based)</description>
-		<config-description-ref uri="thing-type:onewire:basethingconfig" />
+		<config-description-ref uri="thing-type:onewire:mstxconfig" />
 	</thing-type>
 	<thing-type id="bms">
 		<supported-bridge-type-refs>
@@ -84,7 +84,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="owserver" />
 		</supported-bridge-type-refs>
-		<label>Multisensor</label>
+		<label>Multisensor EDS</label>
 		<description>A 1-wire multisensor (EDS00xx-based)</description>
 		<properties>
 			<property name="sensorCount">1</property>

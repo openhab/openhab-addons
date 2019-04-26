@@ -13,11 +13,10 @@
 package org.openhab.binding.onewire.internal.config;
 
 /**
- * The {@link BaseHandlerConfiguration} is a helper class for the base thing handler configuration
+ * The {@link AMSHandlerConfiguration} is a helper class for the mstx thing handler configuration
  *
  * @author Jan N. Klug - Initial contribution
  */
-public class BaseHandlerConfiguration {
-    public String id;
-    public int refresh = 300;
+public class AMSHandlerConfiguration extends BaseHandlerConfiguration {
+    public int digitalRefresh = 10;
 }
