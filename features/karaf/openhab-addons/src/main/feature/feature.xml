@@ -237,8 +237,9 @@
 
     <feature name="openhab-binding-feed" description="Feed Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>openhab-transport-feed</feature>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.feed/${project.version}</bundle>
+        <bundle dependency="true">mvn:com.rometools/rome/1.12.0</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jdom/2.0.6_1</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.feed/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-feican" description="Feican Binding" version="${project.version}">
@@ -1036,11 +1037,6 @@
 
     <!-- io -->
 
-    <feature name="openhab-transport-feed" description="Feed Transport" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.transport.feed/${project.version}</bundle>
-    </feature>
-
     <feature name="openhab-transport-modbus" description="Modbus Transport" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
@@ -1049,7 +1045,6 @@
         <bundle dependency="true">mvn:org.apache.commons/commons-pool2/2.4.3</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.io.transport.modbus/${project.version}</bundle>
     </feature>
-
 
     <feature name="openhab-io-javasound" description="JavaSound Audio Support" version="${project.version}">
         <feature>openhab-runtime-base</feature>
