@@ -83,6 +83,7 @@ public class KeContactHandler extends BaseThingHandler {
     private int maxSystemCurrent = 63000;
     private KebaType type;
     private KebaSeries series;
+    private int lastState = 0;
 
     public KeContactHandler(Thing thing) {
         super(thing);
@@ -258,8 +259,14 @@ public class KeContactHandler extends BaseThingHandler {
                         break;
                     }
                     case "State": {
-                        State newState = new DecimalType(entry.getValue().getAsInt());
+                        int state = entry.getValue().getAsInt();
+                        State newState = new DecimalType(state);
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_STATE), newState);
+                        if (lastState != state){
+                            // the state is different from the last one, so we will trigger a report100
+                            transceiver.send("report 100", this);
+                            lastState = state;
+                        }
                         break;
                     }
                     case "Enable sys": {
@@ -429,6 +436,24 @@ public class KeContactHandler extends BaseThingHandler {
                         int state = entry.getValue().getAsInt();
                         State newState = new DecimalType(state);
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_AUTHREQ), newState);
+                        break;
+                    }
+                    case "RFID tag": {
+                        String state = entry.getValue().getAsString().trim();
+                        State newState = new StringType(state);
+                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_SESSION_RFID_TAG), newState);
+                        break;
+                    }
+                    case "RFID class": {
+                        String state = entry.getValue().getAsString().trim();
+                        State newState = new StringType(state);
+                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_SESSION_RFID_CLASS), newState);
+                        break;
+                    }
+                    case "Session ID": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new DecimalType(state);
+                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_SESSION_SESSION_ID), newState);
                         break;
                     }
                 }
