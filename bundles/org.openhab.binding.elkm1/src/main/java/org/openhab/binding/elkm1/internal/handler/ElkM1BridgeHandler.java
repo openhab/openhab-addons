@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -64,6 +65,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Bennett - Initial contribution
  */
+@NonNullByDefault
 public class ElkM1BridgeHandler extends BaseBridgeHandler implements ElkListener {
     private final Logger logger = LoggerFactory.getLogger(ElkM1BridgeHandler.class);
 

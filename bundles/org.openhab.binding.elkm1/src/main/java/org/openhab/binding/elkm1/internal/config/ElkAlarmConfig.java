@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.elkm1.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The configuration for the elk alarm.
  *
  * @author David Bennett - Initial Contribution
  */
+@NonNullByDefault
 public class ElkAlarmConfig {
     public String ipAddress;
     public int port;

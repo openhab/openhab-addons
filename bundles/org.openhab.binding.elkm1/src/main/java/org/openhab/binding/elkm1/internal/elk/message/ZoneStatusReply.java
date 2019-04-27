@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.elkm1.internal.elk.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.elkm1.internal.elk.ElkCommand;
 import org.openhab.binding.elkm1.internal.elk.ElkMessage;
 import org.openhab.binding.elkm1.internal.elk.ElkMessageFactory;
@@ -23,6 +24,7 @@ import org.openhab.binding.elkm1.internal.elk.ElkZoneStatus;
  *
  * @author David Bennett - Initial Contribution
  */
+@NonNullByDefault
 public class ZoneStatusReply extends ElkMessage {
     private final ElkZoneConfig[] config;
     private final ElkZoneStatus[] status;
