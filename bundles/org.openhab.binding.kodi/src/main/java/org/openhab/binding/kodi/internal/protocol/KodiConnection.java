@@ -540,7 +540,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
                 double userrating = -1;
                 if (item.has("userrating")) {
-                    rating = item.get("userrating").getAsDouble();
+                    userrating = item.get("userrating").getAsDouble();
                 }
 
                 String mpaa = "";
@@ -550,7 +550,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
                 String mediafile = "";
                 if (item.has("file")) {
-                    mpaa = item.get("file").getAsString();
+                    mediafile = item.get("file").getAsString();
                 }
 
                 String uniqueIDDouban = "";
@@ -560,9 +560,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 String uniqueIDTmdbtvshow = "";
                 String uniqueIDTmdbepisode = "";
 
-                if (result.has(PROPERTY_UNIQUEID)) {
+                if (item.has(PROPERTY_UNIQUEID)) {
                     try {
-                        KodiUniqueID uniqueID = gson.fromJson(result.get(PROPERTY_UNIQUEID), KodiUniqueID.class);
+                        KodiUniqueID uniqueID = gson.fromJson(item.get(PROPERTY_UNIQUEID), KodiUniqueID.class);
                         if (uniqueID != null) {
                             uniqueIDImdb = uniqueID.getImdb();
                             uniqueIDDouban = uniqueID.getDouban();
@@ -646,8 +646,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     fanart = getImageForElement(item.get(PROPERTY_FANART));
                 }
 
-                logger.info(originaltitle);
-                logger.info(mediaType);
+                logger.debug("Original title: {} - {}", originaltitle, mediaType,mediaid,uniqueIDImdb);
                 listener.updateMediaID(mediaid);
                 listener.updateAlbum(album);
                 listener.updateTitle(title);

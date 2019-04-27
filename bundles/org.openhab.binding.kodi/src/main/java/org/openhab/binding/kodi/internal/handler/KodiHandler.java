@@ -267,10 +267,16 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             case CHANNEL_FANART:
             case CHANNEL_AUDIO_CODEC:
             case CHANNEL_AUDIO_INDEX:
-                connection.setAudioStream(((DecimalType) command).intValue());
+                if (command instanceof DecimalType) {
+                	connection.setAudioStream(((DecimalType) command).intValue());
+            	}
+                break;
             case CHANNEL_VIDEO_CODEC:
             case CHANNEL_VIDEO_INDEX:
-                connection.setVideoStream(((DecimalType) command).intValue());
+                if (command instanceof DecimalType) {
+                	connection.setVideoStream(((DecimalType) command).intValue());
+                }
+                break;
             case CHANNEL_SUBTITLE_ENABLED:
                 if (command.equals(OnOffType.ON)) {
                     connection.setSubtitleEnabled(true);
@@ -279,7 +285,10 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_SUBTITLE_INDEX:
-                connection.setSubtitle(((DecimalType) command).intValue());
+                if (command instanceof DecimalType) {
+                	connection.setSubtitle(((DecimalType) command).intValue());
+                }
+            	break;
             case CHANNEL_CURRENTTIME:
             case CHANNEL_CURRENTTIMEPERCENTAGE:
             case CHANNEL_DURATION:

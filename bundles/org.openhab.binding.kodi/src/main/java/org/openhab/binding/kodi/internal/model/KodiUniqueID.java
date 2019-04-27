@@ -19,14 +19,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Meng Yiqi - Initial contribution
  */
-@NonNullByDefault
 public class KodiUniqueID {
-    private @NonNullByDefault({}) String imdb;
-    private @NonNullByDefault({}) String tmdb;
-    private @NonNullByDefault({}) String imdbtvshow;
-    private @NonNullByDefault({}) String tmdbtvshow;
-    private @NonNullByDefault({}) String tmdbepisode;
-    private @NonNullByDefault({}) String douban;
+    private String imdb;
+    private String tmdb;
+    private String imdbtvshow;
+    private String tmdbtvshow;
+    private String tmdbepisode;
+    private String douban;
 
     public String getImdb() {
         return imdb;
