@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -58,6 +59,7 @@ import org.openhab.binding.spotify.internal.api.exception.SpotifyAuthorizationEx
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.binding.spotify.internal.api.model.Album;
 import org.openhab.binding.spotify.internal.api.model.Artist;
+import org.openhab.binding.spotify.internal.api.model.Context;
 import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
 import org.openhab.binding.spotify.internal.api.model.Image;
@@ -316,19 +318,21 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             try {
                 // Collect devices and populate selection with available devices.
                 final List<Device> ld = devicesCache.getValue();
-                final List<Device> listDevices = ld == null ? Collections.emptyList() : ld;
-                spotifyDynamicStateDescriptionProvider.setDevices(listDevices);
+                final List<Device> devices = ld == null ? Collections.emptyList() : ld;
+                spotifyDynamicStateDescriptionProvider.setDevices(devices);
                 // Collect currently playing context.
                 final CurrentlyPlayingContext pc = playingContextCache.getValue();
                 final CurrentlyPlayingContext playingContext = pc == null ? EMPTY_CURRENTLYPLAYINGCONTEXT : pc;
+                final List<Playlist> lp = playlistCache.getValue();
+                final List<Playlist> playlists = lp == null ? Collections.emptyList() : lp;
                 updateStatus(ThingStatus.ONLINE);
-                updatePlayerInfo(playingContext);
 
-                final List<Playlist> playlists = playlistCache.getValue();
+                handleCommand.setLists(devices, playlists);
+                updatePlayerInfo(playingContext, playlists);
                 spotifyDynamicStateDescriptionProvider
                         .setPlayList(playlists == null ? Collections.emptyList() : playlists);
 
-                updateDevicesStatus(listDevices, playingContext.isPlaying());
+                updateDevicesStatus(devices, playingContext.isPlaying());
                 return true;
             } catch (SpotifyAuthorizationException e) {
                 logger.debug("Authorization error during polling: ", e);
@@ -383,8 +387,9 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
      * Update the player data.
      *
      * @param playerInfo The object with the current playing context
+     * @param playlists List of available playlists
      */
-    private void updatePlayerInfo(CurrentlyPlayingContext playerInfo) {
+    private void updatePlayerInfo(CurrentlyPlayingContext playerInfo, List<Playlist> playlists) {
         updateChannelState(CHANNEL_TRACKPLAYER, playerInfo.isPlaying() ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
         updateChannelState(CHANNEL_DEVICESHUFFLE, playerInfo.isShuffleState() ? OnOffType.ON : OnOffType.OFF);
         updateChannelState(CHANNEL_TRACKREPEAT, playerInfo.getRepeatState());
@@ -403,10 +408,8 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 updateChannelState(CHANNEL_PLAYED_TRACKDURATION_FMT,
                         MUSIC_TIME_FORMAT.format(new Date(item.getDurationMs())));
             }
-            updateChannelState(CHANNEL_PLAYLIST,
-                    valueOrEmpty(playerInfo.getContext() != null && "playlist".equals(playerInfo.getContext().getType())
-                            ? playerInfo.getContext().getUri()
-                            : ""));
+
+            updateChannelsPlayList(playerInfo, playlists);
             updateChannelState(CHANNEL_PLAYED_TRACKID, lastTrackId);
             updateChannelState(CHANNEL_PLAYED_TRACKHREF, valueOrEmpty(item.getHref()));
             updateChannelState(CHANNEL_PLAYED_TRACKURI, valueOrEmpty(item.getUri()));
@@ -440,7 +443,8 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         if (device.getId() != null) {
             lastKnownDeviceId = device.getId();
             updateChannelState(CHANNEL_DEVICEID, valueOrEmpty(lastKnownDeviceId));
-            updateChannelState(CHANNEL_DEVICENAME, valueOrEmpty(lastKnownDeviceId));
+            updateChannelState(CHANNEL_DEVICES, valueOrEmpty(lastKnownDeviceId));
+            updateChannelState(CHANNEL_DEVICENAME, valueOrEmpty(device.getName()));
         }
         lastKnownDeviceActive = device.isActive();
         updateChannelState(CHANNEL_DEVICEACTIVE, lastKnownDeviceActive ? OnOffType.ON : OnOffType.OFF);
@@ -449,6 +453,27 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         // experienced situations where volume seemed to be undefined...
         updateChannelState(CHANNEL_DEVICEVOLUME,
                 device.getVolumePercent() == null ? UnDefType.UNDEF : new PercentType(device.getVolumePercent()));
+    }
+
+    private void updateChannelsPlayList(CurrentlyPlayingContext playerInfo, @Nullable List<Playlist> playlists) {
+        final Context context = playerInfo.getContext();
+        final String playlistId;
+        String playlistName = "";
+
+        if (context != null && "playlist".equals(context.getType())) {
+            playlistId = "spotify:playlist" + context.getUri().substring(context.getUri().lastIndexOf(':'));
+
+            if (playlists != null) {
+                final Optional<Playlist> optionalPlaylist = playlists.stream()
+                        .filter(pl -> playlistId.equals(pl.getUri())).findFirst();
+
+                playlistName = optionalPlaylist.isPresent() ? optionalPlaylist.get().getName() : "";
+            }
+        } else {
+            playlistId = "";
+        }
+        updateChannelState(CHANNEL_PLAYLISTS, valueOrEmpty(playlistId));
+        updateChannelState(CHANNEL_PLAYLISTNAME, valueOrEmpty(playlistName));
     }
 
     /**

@@ -17,44 +17,8 @@
   <name>openHAB Bindings</name>
 
   <modules>
-    <module>org.openhab.binding.bluetooth</module>
-    <module>org.openhab.binding.bluetooth.bluegiga</module>
-    <module>org.openhab.binding.bluetooth.bluegiga.test</module>
-    <module>org.openhab.binding.bluetooth.bluez</module>
-    <module>org.openhab.binding.bluetooth.blukii</module>
-    <module>org.openhab.binding.bluetooth.ruuvitag</module>
-    <module>org.openhab.binding.bluetooth.test</module>
-    <module>org.openhab.binding.boschindego</module>
-    <module>org.openhab.binding.chromecast</module>
-    <module>org.openhab.binding.chromecast.test</module>
-    <module>org.openhab.binding.dsmr</module>
-    <module>org.openhab.binding.dsmr.test</module>
     <module>org.openhab.binding.enocean</module>
-    <module>org.openhab.binding.exec</module>
-    <module>org.openhab.binding.feed</module>
-    <module>org.openhab.binding.feed.test</module>
-    <module>org.openhab.binding.ftpupload</module>
-    <module>org.openhab.binding.ihc</module>
-    <module>org.openhab.binding.ihc.test</module>
-    <module>org.openhab.binding.innogysmarthome</module>
-    <module>org.openhab.binding.lgwebos</module>
     <module>org.openhab.binding.loxone</module>
-    <module>org.openhab.binding.modbus</module>
-    <module>org.openhab.binding.modbus.test</module>
-    <module>org.openhab.binding.netatmo</module>
-    <module>org.openhab.binding.nikohomecontrol</module>
-    <module>org.openhab.binding.onewiregpio</module>
-    <module>org.openhab.binding.onkyo</module>
-    <module>org.openhab.binding.orvibo</module>
-    <module>org.openhab.binding.samsungtv</module>
-    <module>org.openhab.binding.smartmeter</module>
-    <module>org.openhab.binding.smartmeter.test</module>
-    <module>org.openhab.binding.systeminfo</module>
-    <module>org.openhab.binding.systeminfo.test</module>
-    <module>org.openhab.binding.yamahareceiver</module>
-    <module>org.openhab.binding.yamahareceiver.test</module>
-    <module>org.openhab.binding.zoneminder</module>
-    <module>org.openhab.binding.zway</module>
     <module>org.openhab.binding.freemobilesms</module>
   </modules>
 </project>

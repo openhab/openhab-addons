@@ -15,6 +15,9 @@ package org.openhab.binding.openuv.internal.handler;
 import static org.openhab.binding.openuv.internal.OpenUVBindingConstants.BASE_URL;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,9 +36,11 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.openuv.internal.OpenUVBindingConstants;
-import org.openhab.binding.openuv.internal.json.OpenUVJsonResponse;
+import org.openhab.binding.openuv.internal.json.OpenUVResponse;
+import org.openhab.binding.openuv.internal.json.OpenUVResult;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +60,10 @@ import com.google.gson.JsonDeserializer;
 @NonNullByDefault
 public class OpenUVBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(OpenUVBridgeHandler.class);
+    private static final String ERROR_QUOTA_EXCEEDED = "Daily API quota exceeded";
+    private static final String ERROR_NO_API_KEY = "No API Key provided";
+    private static final String ERROR_WRONG_KEY = "User with API Key not found";
+
     private static final int REQUEST_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(30);
 
     private final Gson gson = new GsonBuilder()
@@ -75,44 +84,30 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        String error = "";
-        String errorDetail = null;
-
         logger.debug("Initializing OpenUV API bridge handler.");
         Configuration config = getThing().getConfiguration();
-        header.put("x-access-token", config.get(OpenUVBindingConstants.APIKEY));
-
-        // Check if an api key has been provided during the bridge creation
-        if (StringUtils.trimToNull((String) config.get(OpenUVBindingConstants.APIKEY)) == null) {
-            error += " Parameter 'apikey' must be configured.";
+        String apiKey = (String) config.get(OpenUVBindingConstants.APIKEY);
+        if (StringUtils.trimToNull(apiKey) == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Parameter 'apikey' must be configured.");
         } else {
-            // Check if the provided api key is valid for use with the OpenUV service
-            try {
-                // Run the HTTP request and get the JSON response
-                OpenUVJsonResponse response = getUVData("0", "0", null);
-                if ("Invalid API Key".equalsIgnoreCase(response.getError())) {
-                    error = "API key has to be fixed";
-                    errorDetail = response.getError();
-                } else {
-                    updateStatus(ThingStatus.ONLINE);
-                }
-            } catch (IOException | IllegalArgumentException e) {
-                error = "Error running OpenUV API request";
-                errorDetail = e.getMessage();
-            }
-        }
-
-        // Updates the thing status accordingly
-        if (!"".equals(error)) {
-            error = error.trim();
-            logger.debug("Disabling thing '{}': Error '{}': {}", getThing().getUID(), error, errorDetail);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, error);
+            header.put("x-access-token", apiKey);
+            initiateConnexion();
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // not needed
+        if (command instanceof RefreshType) {
+            initiateConnexion();
+        } else {
+            logger.debug("The OpenUV bridge only handles Refresh command and not '{}'", command);
+        }
+    }
+
+    private void initiateConnexion() {
+        // Check if the provided api key is valid for use with the OpenUV service
+        getUVData("0", "0", null);
     }
 
     public Map<ThingUID, @Nullable ServiceRegistration<?>> getDiscoveryServiceRegs() {
@@ -126,25 +121,48 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleRemoval() {
         // removes the old registration service associated to the bridge, if existing
-        ServiceRegistration<?> dis = getDiscoveryServiceRegs().get(this.getThing().getUID());
+        ServiceRegistration<?> dis = getDiscoveryServiceRegs().get(getThing().getUID());
         if (dis != null) {
             dis.unregister();
         }
         super.handleRemoval();
     }
 
-    public OpenUVJsonResponse getUVData(String latitude, String longitude, @Nullable String altitude)
-            throws IOException {
+    public @Nullable OpenUVResult getUVData(String latitude, String longitude, @Nullable String altitude) {
         StringBuilder urlBuilder = new StringBuilder(BASE_URL).append("?lat=").append(latitude).append("&lng=")
                 .append(longitude);
 
         if (altitude != null) {
             urlBuilder.append("&alt=").append(altitude);
         }
-        String jsonData = HttpUtil.executeUrl("GET", urlBuilder.toString(), header, null, null, REQUEST_TIMEOUT);
-        logger.debug("URL = {}", jsonData);
+        String errorMessage = null;
+        try {
+            String jsonData = HttpUtil.executeUrl("GET", urlBuilder.toString(), header, null, null, REQUEST_TIMEOUT);
+            OpenUVResponse uvResponse = gson.fromJson(jsonData, OpenUVResponse.class);
+            if (uvResponse.getError() == null) {
+                updateStatus(ThingStatus.ONLINE);
+                return uvResponse.getResult();
+            } else {
+                errorMessage = uvResponse.getError();
+            }
+        } catch (IOException e) {
+            errorMessage = e.getMessage();
+        }
 
-        return gson.fromJson(jsonData, OpenUVJsonResponse.class);
+        if (errorMessage.startsWith(ERROR_QUOTA_EXCEEDED)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+            LocalDate today = LocalDate.now();
+            LocalDate tomorrow = today.plusDays(1);
+            LocalDateTime tomorrowMidnight = tomorrow.atStartOfDay().plusMinutes(2);
+
+            logger.warn("Quota Exceeded, going OFFLINE for today, will retry at : {} ", tomorrowMidnight);
+            scheduler.schedule(this::initiateConnexion,
+                    Duration.between(LocalDateTime.now(), tomorrowMidnight).toMinutes(), TimeUnit.MINUTES);
+
+        } else if (errorMessage.startsWith(ERROR_WRONG_KEY)) {
+            logger.error("Error occured during API query : {}", errorMessage);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
+        }
+        return null;
     }
-
 }

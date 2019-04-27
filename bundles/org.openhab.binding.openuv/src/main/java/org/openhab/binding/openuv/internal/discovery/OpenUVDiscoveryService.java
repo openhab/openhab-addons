@@ -106,6 +106,7 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService {
                 .build());
     }
 
+    @SuppressWarnings("null")
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping OpenUV background discovery");

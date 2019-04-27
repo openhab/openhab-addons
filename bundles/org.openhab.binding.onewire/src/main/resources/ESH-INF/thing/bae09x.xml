@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="onewire"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="bae091x">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="owserver" />
+		</supported-bridge-type-refs>
+		<label>Multisensor BAE0910</label>
+		<description>1-wire multisensor (BAE0910-based)</description>
+		<properties>
+			<property name="sensorCount">1</property>
+		</properties>
+		<config-description>
+			<parameter name="id" type="text">
+				<label>Sensor ID</label>
+				<description>Sensor ID in format: xx.xxxxxxxxxxxx)</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="refresh" type="integer" min="1">
+				<label>Refresh Time</label>
+				<description>Time in seconds after which the thing is refreshed</description>
+				<default>300</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+			<parameter name="pin1" type="text">
+				<label>Pin 1 Mode Configuration</label>
+				<options>
+					<option value="disabled">disabled</option>
+					<option value="counter">Counter</option>
+				</options>
+				<default>counter</default>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="pin2" type="text">
+				<label>Pin 2 Mode Configuration</label>
+				<options>
+					<option value="disabled">disabled</option>
+					<option value="output">Digital Output</option>
+					<option value="pwm">Software PWM 4</option>
+				</options>
+				<default>output</default>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="pin6" type="text">
+				<label>Pin 6 Mode Configuration</label>
+				<options>
+					<option value="disabled">disabled</option>
+					<option value="pio">PIO</option>
+					<option value="pwm">Software PWM 3</option>
+				</options>
+				<default>pio</default>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="pin7" type="text">
+				<label>Pin 7 Mode Configuration</label>
+				<options>
+					<option value="disabled">disabled</option>
+					<option value="analog">Analog Input</option>
+					<option value="output">Digital Output</option>
+					<option value="pwm">Hardware PWM 2</option>
+				</options>
+				<default>analog</default>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="pin8" type="text">
+				<label>Pin 8 Mode Configuration</label>
+				<options>
+					<option value="disabled">disabled</option>
+					<option value="input">Digital Input</option>
+					<option value="output">Digital Output</option>
+					<option value="pwm">Hardware PWM 1</option>
+				</options>
+				<default>output</default>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<!-- PWM Channels -->
+	<channel-type id="bae-pwm-frequency">
+		<item-type>Number:Frequency</item-type>
+		<label>Frequency</label>
+		<description>Frequency of PWM output in Hz</description>
+		<config-description>
+			<parameter name="prescaler" type="integer">
+				<label>Range</label>
+				<description>defines the frequency range of PWM output</description>
+				<options>
+					<option value="0">245 Hz - 8 MHz</option>
+					<option value="1">123 Hz - 4 MHz</option>
+					<option value="2">62 Hz - 2 MHz</option>
+					<option value="3">31 Hz - 1 MHz</option>
+					<option value="4">16 Hz - 500 kHz</option>
+					<option value="5">8 Hz - 250 kHz</option>
+					<option value="6">4 Hz - 125 kHz</option>
+					<option value="7">2 Hz - 62.5 kHz</option>
+				</options>
+				<default>0</default>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="reversePolarity" type="boolean">
+				<label>Reverse polarity</label>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="bae-pwm-duty">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Duty Cycle</label>
+		<description>Duty cycle of PWM output in %</description>
+	</channel-type>
+	<!-- Digital Channels -->
+	<channel-type id="bae-pio">
+		<item-type>Switch</item-type>
+		<label>PIO</label>
+		<description>Programmable I/O channel</description>
+		<config-description>
+			<parameter name="mode" type="text">
+				<label>Mode</label>
+				<options>
+					<option value="input">Input</option>
+					<option value="output">Output</option>
+				</options>
+				<default>input</default>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="pulldevice" type="text">
+				<label>Pull-Up/Pull-Down Resistor</label>
+				<options>
+					<option value="disabled">disabled</option>
+					<option value="pullup">Pull-Up</option>
+					<option value="pulldown">Pull-Down</option>
+				</options>
+				<default>disabled</default>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="bae-do">
+		<item-type>Switch</item-type>
+		<label>Digital Out</label>
+	</channel-type>
+	<channel-type id="bae-di">
+		<item-type>Switch</item-type>
+		<label>Digital In</label>
+	</channel-type>
+	<!-- Analog In (ADC) -->
+	<channel-type id="bae-analog">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Analog Input</label>
+		<description>Analog input (ADC)</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
+		<config-description>
+			<parameter name="hires" type="boolean">
+				<label>Hires</label>
+				<description>High resolution Mode (10bit)</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<!-- Counter Channel -->
+	<channel-type id="bae-counter">
+		<item-type>Number</item-type>
+		<label>Counter</label>
+		<state readOnly="true" pattern="%d" />
+	</channel-type>
+</thing:thing-descriptions>

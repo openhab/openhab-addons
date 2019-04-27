@@ -35,6 +35,8 @@
 			<channel id="sessionconsumption" typeId="energy" />
 			<channel id="totalconsumption" typeId="energy" />
 			<channel id="display" typeId="display" />
+			<channel id="authreq" typeId="switch" />
+			<channel id="authon" typeId="switch" />
 		</channels>
 
 		<config-description>
@@ -154,6 +156,18 @@
 		<label>Display</label>
 		<description>Text to show on the P30 Series C or X display</description>
 		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="authreq">
+		<item-type>Number</item-type>
+		<label>Authentication required</label>
+		<description>Authentication required</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="authon">
+		<item-type>Number</item-type>
+		<label>Authentication enabled</label>
+		<description>Authentication enabled</description>
+		<state readOnly="true"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

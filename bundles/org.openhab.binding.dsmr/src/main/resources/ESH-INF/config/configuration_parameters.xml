@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:dsmr:bridgesettings">
+		<parameter name="serialPort" type="text" required="true">
+			<context>serial-port</context>
+			<label>Serial Port</label>
+			<description>The serial port where the P1 port of the Smart Meter is connected (e.g. Linux: /dev/ttyUSB0, Windows: COM1)</description>
+		</parameter>
+		<parameter name="receivedTimeout" type="integer" min="1">
+			<default>30</default>
+			<label>Received Timeout</label>
+			<description>The time period within results are expected in seconds</description>
+		</parameter>
+		<parameter name="baudrate" type="integer">
+			<advanced>true</advanced>
+			<label>Baud Rate</label>
+			<description>Set the baud rate in case auto detect fails.</description>
+			<options>
+				<option value="4800">4800</option>
+				<option value="9600">9600</option>
+				<option value="19200">19200</option>
+				<option value="38400">38400</option>
+				<option value="57600">57600</option>
+				<option value="115200">115200</option>
+			</options>
+		</parameter>
+		<parameter name="databits" type="integer">
+			<advanced>true</advanced>
+			<label>Data Bits</label>
+			<description>Set the data bits in case auto detect fails.</description>
+			<options>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+			</options>
+		</parameter>
+		<parameter name="parity" type="text">
+			<advanced>true</advanced>
+			<label>Parity</label>
+			<description>Set the parity in case auto detect fails.</description>
+			<options>
+				<option value="E">E(ven)</option>
+				<option value="O">O(dd)</option>
+				<option value="N">N(ormal)</option>
+			</options>
+		</parameter>
+		<parameter name="stopbits" type="text">
+			<advanced>true</advanced>
+			<label>Stop Bits</label>
+			<description>Set the stop bits in case auto detect fails.</description>
+			<options>
+				<option value="1">1</option>
+				<option value="1.5">1.5</option>
+				<option value="2">2</option>
+			</options>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:dsmr:smartybridgesettings">
+		<parameter name="serialPort" type="text" required="true">
+			<context>serial-port</context>
+			<label>Serial Port</label>
+			<description>The serial port where the P1 port of the Smart Meter is connected (e.g. Linux: /dev/ttyUSB0, Windows: COM1)</description>
+		</parameter>
+		<parameter name="decryptionKey" type="text" required="true">
+			<label>Decryption Key</label>
+			<description>The Luxembourgian Smart meter decryption key. Ask for your energy grid operator for your Smart meter P1 key.</description>
+		</parameter>
+		<parameter name="receivedTimeout" type="integer" min="1">
+			<default>30</default>
+			<label>Received Timeout</label>
+			<description>The time period within results are expected in seconds</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:dsmr:meterdescriptor">
+		<parameter name="refresh" type="integer" min="1">
+			<default>60</default>
+			<label>Refresh</label>
+			<description>The time interval the data is refreshed in seconds</description>
+		</parameter>
+		<parameter name="channel" type="integer">
+			<advanced>true</advanced>
+			<label>Channel</label>
+			<description><![CDATA[ The DSMR-device channel for this meter (M-Bus channel). 
+The binding will auto detect this value. In normal situations it is not necessary to adapt this value.
+If the auto detection failed or if physical changes are made to the meter setup (changed water, gas, heating) meters
+it can be necessary to update the M-Bus channel.]]></description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
