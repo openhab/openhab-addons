@@ -23,10 +23,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.eclipse.smarthome.core.library.types.PointType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +44,8 @@ public class BuienradarPredictionAPI implements PredictionAPI {
 
     private static final String BASE_ADDRESS = "https://gpsgadget.buienradar.nl/data/raintext";
 
-    private static final int TIMEOUT = 15000;
+    private static final int TIMEOUT_MS = 3000;
+
     private final Logger logger = LoggerFactory.getLogger(BuienradarPredictionAPI.class);
 
     /**
@@ -68,7 +71,7 @@ public class BuienradarPredictionAPI implements PredictionAPI {
      * match.
      *
      * @param timeStr The time string to parse.
-     * @param now     The reference time to use.
+     * @param now The reference time to use.
      * @return A ZonedDateTime of the indicated time.
      * @throws BuienradarParseException When the time string cannot be correctly parsed.
      */
@@ -97,7 +100,7 @@ public class BuienradarPredictionAPI implements PredictionAPI {
      * Parses a line returned from the buienradar API service. An example line could be <code>100|23:00</code>.
      *
      * @param line The line to parse, such as <code>100|23:00</code>
-     * @param now  The reference time to determine which instant to match to.
+     * @param now The reference time to determine which instant to match to.
      * @return A Prediction interface, which contains the tuple with the intensity and the time.
      * @throws BuienradarParseException Thrown when the line could not be correctly parsed.
      */
@@ -124,12 +127,13 @@ public class BuienradarPredictionAPI implements PredictionAPI {
     }
 
     @Override
-    public List<Prediction> getPredictions(double lat, double lon) throws IOException {
-        final String address = String.format(BASE_ADDRESS + "?lat=%.6f&lon=%.6f", lat, lon);
-        final String result = HttpUtil.executeUrl("GET", address, TIMEOUT);
+    public List<Prediction> getPredictions(PointType location) throws IOException {
+        final String address = String.format(Locale.ENGLISH, BASE_ADDRESS + "?lat=%.8f&lon=%.8f",
+                location.getLatitude().doubleValue(), location.getLongitude().doubleValue());
+        final String result = HttpUtil.executeUrl("GET", address, TIMEOUT_MS);
 
         if (result.trim().isEmpty()) {
-            logger.error(String.format("Buienradar API at URI %s return empty result", address));
+            logger.warn(String.format("Buienradar API at URI %s return empty result", address));
             return Collections.emptyList();
         }
         final List<Prediction> predictions = new ArrayList<Prediction>(24);
@@ -144,7 +148,7 @@ public class BuienradarPredictionAPI implements PredictionAPI {
             }
         }
         if (!errors.isEmpty()) {
-            logger.error("Could not parse all results: " + errors.stream().collect(Collectors.joining(", ")));
+            logger.warn("Could not parse all results: " + errors.stream().collect(Collectors.joining(", ")));
         }
         return predictions;
     }

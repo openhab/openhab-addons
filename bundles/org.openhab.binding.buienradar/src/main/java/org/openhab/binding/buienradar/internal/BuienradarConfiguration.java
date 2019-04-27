@@ -20,14 +20,9 @@ package org.openhab.binding.buienradar.internal;
 public class BuienradarConfiguration {
 
     /**
-     * Longitude of the measurements
+     * Location of the forecast from buienradar
      */
-    public Double longitude;
-
-    /**
-     * Latitude of the measurements
-     */
-    public Double latitude;
+    public String location;
 
     /**
      * Refresh interval for retrieving results from buienradar.

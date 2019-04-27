@@ -39,14 +39,10 @@
 
 		<config-description>
 
-			<parameter name="latitude" type="decimal" required="true">
-				<label>Latitude</label>
-				<description>The latitude of the predictions</description>
-			</parameter>
-
-			<parameter name="longitude" type="decimal" required="true">
-				<label>Longitude</label>
-				<description>The longitude of the predictions</description>
+			<parameter name="location" type="text" required="true">
+				<context>location</context>
+				<label>Location of Weather</label>
+				<description>Location of weather in geographical coordinates (latitude/longitude/altitude).</description>
 			</parameter>
 
 			<parameter name="refreshIntervalMinutes" type="integer" required="true" min="5" unit="min">

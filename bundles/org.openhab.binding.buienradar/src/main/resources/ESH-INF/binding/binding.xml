@@ -4,9 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>Buienradar Binding</name>
-	<description>
-	The Buienradar Binding periodically (5 minutes) retrieves results from the Buienradar API. For personal use only.
-	</description>
+	<description>The Buienradar Binding periodically (5 minutes) retrieves results from the Buienradar API. For personal use only.</description>
 	<author>Edwin de Jong</author>
 
 </binding:binding>

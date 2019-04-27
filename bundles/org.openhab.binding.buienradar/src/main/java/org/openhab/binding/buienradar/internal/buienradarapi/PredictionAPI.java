@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.PointType;
 
 /**
  * The {@link PredictionAPI} interface.
@@ -24,5 +25,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface PredictionAPI {
-    List<Prediction> getPredictions(double lat, double lon) throws IOException;
+    List<Prediction> getPredictions(PointType location) throws IOException;
 }
