@@ -33,7 +33,7 @@ import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.registry.Registry;
 import org.jupnp.registry.RegistryListener;
 import org.openhab.io.hueemulation.internal.ConfigStore;
-import org.openhab.io.hueemulation.internal.UpnpServer;
+import org.openhab.io.hueemulation.internal.upnp.UpnpServer;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;

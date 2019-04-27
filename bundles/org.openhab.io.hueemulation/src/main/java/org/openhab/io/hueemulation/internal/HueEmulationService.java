@@ -33,6 +33,7 @@ import org.openhab.io.hueemulation.internal.rest.Schedules;
 import org.openhab.io.hueemulation.internal.rest.Sensors;
 import org.openhab.io.hueemulation.internal.rest.StatusResource;
 import org.openhab.io.hueemulation.internal.rest.UserManagement;
+import org.openhab.io.hueemulation.internal.upnp.UpnpServer;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;

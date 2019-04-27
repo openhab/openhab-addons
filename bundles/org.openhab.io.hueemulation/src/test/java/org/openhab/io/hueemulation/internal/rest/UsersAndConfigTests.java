@@ -82,10 +82,11 @@ public class UsersAndConfigTests {
         ConfigStore configStore = new ConfigStoreWithoutMetadata(commonSetup.networkAddressService,
                 commonSetup.configAdmin, commonSetup.scheduler);
 
-        configStore.activate(Collections.emptyMap());
-
         // No uuid known yet
         assertThat(configStore.ds.config.uuid, is(""));
+        configStore.activate(Collections.emptyMap());
+
+        assertThat(configStore.getConfig().uuid, not(is("")));
         // The config admin service was requested for the service config
         Mockito.verify(commonSetup.configAdminConfig).getProperties();
         Dictionary<String, Object> p = commonSetup.configAdminConfig.getProperties();

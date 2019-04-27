@@ -59,12 +59,12 @@ import org.osgi.service.cm.ConfigurationAdmin;
 public class CommonSetup {
 
     @Spy
-    UserManagement userManagement;
+    public UserManagement userManagement;
 
     @Mock
-    EventPublisher eventPublisher;
+    public EventPublisher eventPublisher;
 
-    ConfigStore cs;
+    public ConfigStore cs;
 
     @Mock
     ConfigurationAdmin configAdmin;

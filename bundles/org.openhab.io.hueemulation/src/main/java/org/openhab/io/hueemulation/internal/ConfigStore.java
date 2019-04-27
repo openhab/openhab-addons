@@ -123,7 +123,8 @@ public class ConfigStore {
 
     private int highestAssignedHueID = 1;
 
-    public ConfigStore() { // keep for OSGi happiness
+    public ConfigStore() {
+        scheduler = ThreadPoolManager.getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
     }
 
     /**
@@ -145,7 +146,6 @@ public class ConfigStore {
     public void activate(Map<String, Object> properties) {
         this.config = new Configuration(properties).as(HueEmulationConfig.class);
 
-        scheduler = ThreadPoolManager.getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
         determineHighestAssignedHueID();
 
         if (config.uuid.isEmpty()) {

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.io.hueemulation.internal;
+package org.openhab.io.hueemulation.internal.upnp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,11 +33,15 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
@@ -53,11 +57,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
-import org.joda.time.Instant;
+import org.openhab.io.hueemulation.internal.ConfigStore;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
@@ -77,15 +81,23 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("serial")
 @NonNullByDefault
 @Component(immediate = false, // Don't start the upnp server on its own. Must be pulled in by HueEmulationService.
-        property = { EventConstants.EVENT_TOPIC + "=" + ConfigStore.EVENT_ADDRESS_CHANGED,
+        configurationPolicy = ConfigurationPolicy.IGNORE, property = {
+                EventConstants.EVENT_TOPIC + "=" + ConfigStore.EVENT_ADDRESS_CHANGED,
                 "com.eclipsesource.jaxrs.publish=false" }, //
         service = { UpnpServer.class, EventHandler.class })
-public class UpnpServer extends HttpServlet implements Runnable, EventHandler {
+public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConfigWithRuntime>, EventHandler {
+    /**
+     * Used by async IO. This is our context object class.
+     */
+    static class ClientRecord {
+        public @Nullable SocketAddress clientAddress;
+        public ByteBuffer buffer = ByteBuffer.allocate(1000);
+    }
 
     public static final String DISCOVERY_FILE = "/description.xml";
 
     // jUPNP shares port 1900, but since this is multicast, we can also bind to it
-    private static final int UPNP_PORT_RECV = 1900;
+    public static final int UPNP_PORT = 1900;
     /**
      * Send a keep alive every 2 minutes
      */
@@ -93,15 +105,14 @@ public class UpnpServer extends HttpServlet implements Runnable, EventHandler {
 
     private final Logger logger = LoggerFactory.getLogger(UpnpServer.class);
 
-    private final InetAddress MULTI_ADDR_IPV4;
-    private final InetAddress MULTI_ADDR_IPV6;
+    public final InetAddress MULTI_ADDR_IPV4;
+    public final InetAddress MULTI_ADDR_IPV6;
     private String[] stVersions = { "", "", "" };
     private String notifyMsg = "";
-    private @Nullable Thread upnpResponseThread;
 
     //// objects, set within activate()
-    private @NonNullByDefault({}) String xmlDoc;
-    private @NonNullByDefault({}) String xmlDocWithAddress;
+    protected @NonNullByDefault({}) String xmlDoc;
+    protected @NonNullByDefault({}) String xmlDocWithAddress;
     private @NonNullByDefault({}) String baseurl;
 
     //// services
@@ -110,49 +121,33 @@ public class UpnpServer extends HttpServlet implements Runnable, EventHandler {
     @Reference
     protected @NonNullByDefault({}) HttpService httpService;
 
-    // IO
-    private @Nullable Selector asyncIOselector;
-    private @NonNullByDefault({}) HueEmulationConfig emulationConfig;
+    public boolean overwriteReadyToFalse = false;
 
-    /**
-     * A self test report includes the tested address, a success flag and
-     * if the service at the given address is actually ours.
-     */
-    public static class SelfTestReport {
-        final public String address;
-        final public boolean reachable;
-        final public boolean isOurs;
-
-        private SelfTestReport(String address, boolean testReport, boolean isOurs) {
-            this.address = address;
-            this.reachable = testReport;
-            this.isOurs = isOurs;
-        }
-
-        /**
-         * A failed address is not reachable and not ours
-         */
-        public static SelfTestReport failed(String address) {
-            return new SelfTestReport(address, false, false);
-        }
-    }
+    private HueEmulationConfigWithRuntime config;
+    protected CompletableFuture<@Nullable HueEmulationConfigWithRuntime> configChangeFuture = CompletableFuture
+            .completedFuture(config);
 
     private List<SelfTestReport> selfTests = new ArrayList<>();
-    private InetAddress defaultAddress;
-    private int defaultport;
+    private final Executor executor;
 
     /**
      * Creates a server instance.
      * UPnP IPv4/v6 multicast addresses are determined.
      */
     public UpnpServer() {
+        this(ForkJoinPool.commonPool());
+    }
+
+    public UpnpServer(Executor executor) {
         try {
             MULTI_ADDR_IPV4 = InetAddress.getByName("239.255.255.250");
             MULTI_ADDR_IPV6 = InetAddress.getByName("ff02::c");
-            defaultAddress = InetAddress.getByName("localhost");
+            config = new HueEmulationConfigWithRuntime(this, null, MULTI_ADDR_IPV4, MULTI_ADDR_IPV6);
         } catch (UnknownHostException e) {
             throw new IllegalStateException(e);
         }
+
+        this.executor = executor;
     }
 
     /**
@@ -161,6 +156,10 @@ public class UpnpServer extends HttpServlet implements Runnable, EventHandler {
     @NonNullByDefault({})
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (xmlDocWithAddress == null || xmlDocWithAddress.isEmpty()) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
         try (PrintWriter out = resp.getWriter()) {
             resp.setContentType("application/xml");
             out.write(xmlDocWithAddress);
@@ -187,7 +186,6 @@ public class UpnpServer extends HttpServlet implements Runnable, EventHandler {
         try (InputStreamReader r = new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8);
                 BufferedReader br = new BufferedReader(r)) {
             xmlDoc = br.lines().collect(Collectors.joining("\n"));
-            xmlDocWithAddress = xmlDoc;
         } catch (IOException e) {
             logger.warn("Could not start Hue Emulation UPNP server: {}", e.getMessage(), e);
             return;
@@ -204,72 +202,134 @@ public class UpnpServer extends HttpServlet implements Runnable, EventHandler {
             logger.warn("Could not start Hue Emulation UPNP server: {}", e.getMessage(), e);
         }
 
-        if (cs.isReady()) {
+        if (cs.isReady() && !overwriteReadyToFalse) {
             handleEvent(null);
         }
     }
 
-    private void startThread(String address, int httpPort) {
-        if (this.upnpResponseThread != null) {
-            throw new IllegalStateException("Thread is not null!");
-        }
-
-        Thread thread = new Thread(this);
-        this.upnpResponseThread = thread;
-        thread.start();
-    }
-
-    private void stopThread() {
-        Thread thread = this.upnpResponseThread;
-        Selector selector = this.asyncIOselector;
-        if (thread != null && selector != null) {
-            try {
-                selector.close();
-            } catch (IOException ignored) {
-            }
-
-            try {
-                thread.join();
-            } catch (InterruptedException ignore) {
-                Thread.currentThread().interrupt();
-            }
-            this.upnpResponseThread = null;
-            this.asyncIOselector = null;
-        }
-
-    }
-
-    // Don't restart the service on config change
-    @Modified
-    public void modified() {
-    }
-
-    private void useAddressPort(String address, int port, String multicastAddr) {
-        final String urlBase = "http://" + address + ":" + String.valueOf(port);
+    private void useAddressPort(HueEmulationConfigWithRuntime r) {
+        final String urlBase = "http://" + r.addressString + ":" + String.valueOf(r.port);
         this.baseurl = urlBase + DISCOVERY_FILE;
 
         final String[] stVersions = { "upnp:rootdevice", "urn:schemas-upnp-org:device:basic:1",
-                "uuid:" + emulationConfig.uuid };
+                "uuid:" + config.config.uuid };
         for (int i = 0; i < stVersions.length; ++i) {
             this.stVersions[i] = String.format(
                     "HTTP/1.1 200 OK\r\n" + "HOST: %s:%d\r\n" + "EXT:\r\n" + "CACHE-CONTROL: max-age=%d\r\n"
                             + "LOCATION: %s\r\n" + "SERVER: Linux/3.14.0 UPnP/1.0 IpBridge/%s\r\n"
                             + "hue-bridgeid: %s\r\n" + "ST: %s\r\n" + "USN: uuid:%s\r\n\r\n",
-                    multicastAddr, UPNP_PORT_RECV, CACHE_MSECS / 1000, baseurl, // host:port, cache,location
+                    r.getMulticastAddress(), UPNP_PORT, CACHE_MSECS / 1000, baseurl, // host:port,
+                                                                                     // cache,location
                     cs.ds.config.apiversion, cs.ds.config.bridgeid, // version, bridgeid
-                    stVersions[i], emulationConfig.uuid);
+                    stVersions[i], config.config.uuid);
         }
 
         this.notifyMsg = String.format(
                 "NOTIFY * HTTP/1.1\r\n" + "HOST: %s:%d\r\n" + "CACHE-CONTROL: max-age=%d\r\n" + "LOCATION: %s\r\n"
                         + "SERVER: Linux/3.14.0 UPnP/1.0 IpBridge/%s\r\nNTS: ssdp:alive\r\nNT: upnp:rootdevice\r\n"
                         + "USN: uuid:%s::upnp:rootdevice\r\n" + "hue-bridgeid: %s\r\n\r\n",
-                multicastAddr, UPNP_PORT_RECV, CACHE_MSECS / 1000, baseurl, // host:port, cache,location
-                cs.ds.config.apiversion, emulationConfig.uuid, cs.ds.config.bridgeid);// version, uuid, bridgeid
+                r.getMulticastAddress(), UPNP_PORT, CACHE_MSECS / 1000, baseurl, // host:port, cache,location
+                cs.ds.config.apiversion, config.config.uuid, cs.ds.config.bridgeid);// version, uuid, bridgeid
 
-        xmlDocWithAddress = String.format(xmlDoc, urlBase, address, cs.ds.config.bridgeid, cs.ds.config.uuid,
+        xmlDocWithAddress = String.format(xmlDoc, urlBase, r.addressString, cs.ds.config.bridgeid, cs.ds.config.uuid,
                 cs.ds.config.devicename);
 
+    }
+
+    protected @Nullable HueEmulationConfigWithRuntime performAddressTest(
+            @Nullable HueEmulationConfigWithRuntime config) {
+        if (config == null) {
+            return null; // Config hasn't changed
+        }
+
+        selfTests.clear();
+
+        ClientConfig configuration = new ClientConfig();
+        configuration = configuration.property(ClientProperties.CONNECT_TIMEOUT, 1000);
+        configuration = configuration.property(ClientProperties.READ_TIMEOUT, 1000);
+        Client client = ClientBuilder.newClient(configuration);
+        Response response;
+        String url = "";
+        try {
+            logger.debug("Async address test: Testing for port 80");
+            boolean selfTestOnPort80;
+            try {
+                response = client.target("http://" + cs.ds.config.ipaddress + ":80" + DISCOVERY_FILE).request().get();
+                selfTestOnPort80 = response.getStatus() == 200
+                        && response.readEntity(String.class).contains(cs.ds.config.bridgeid);
+            } catch (ProcessingException ignored) {
+                selfTestOnPort80 = false;
+            }
+
+            logger.debug("Async address test: useAddressPort+startThread");
+            // Prefer port 80 if possible and if not overwritten by discoveryHttpPort
+            config.port = config.config.discoveryHttpPort == 0 && selfTestOnPort80 ? 80 : config.port;
+
+            // Test on all assigned interface addresses on org.osgi.service.http.port as well as port 80
+            // Other services might run on port 80, so we search for our bridge ID in the returned document.
+            for (InetAddress address : cs.getDiscoveryIps()) {
+                String ip = address.getHostAddress();
+                if (address instanceof Inet6Address) {
+                    ip = "[" + ip.split("%")[0] + "]";
+                }
+                logger.debug("Async address test: Test address {}", ip);
+                try {
+                    url = "http://" + ip + ":" + String.valueOf(config.port) + DISCOVERY_FILE;
+                    response = client.target(url).request().get();
+                    boolean isOurs = response.readEntity(String.class).contains(cs.ds.config.bridgeid);
+                    selfTests.add(new SelfTestReport(url, response.getStatus() == 200, isOurs));
+                } catch (ProcessingException e) {
+                    logger.debug("Self test fail on {}: {}", url, e.getMessage());
+                    selfTests.add(SelfTestReport.failed(url));
+                }
+                try {
+                    url = "http://" + ip + DISCOVERY_FILE; // Port 80
+                    response = client.target(url).request().get();
+                    boolean isOurs = response.readEntity(String.class).contains(cs.ds.config.bridgeid);
+                    selfTests.add(new SelfTestReport(url, response.getStatus() == 200, isOurs));
+                } catch (ProcessingException e) {
+                    logger.debug("Self test fail on {}: {}", url, e.getMessage());
+                    selfTests.add(SelfTestReport.failed(url));
+                }
+            }
+        } finally {
+            client.close();
+        }
+        return config;
+    }
+
+    /**
+     * Create and return new runtime configuration based on {@link ConfigStore}s current configuration.
+     * Return null if the configuration has not changed compared to {@link #config}.
+     *
+     * @throws IllegalStateException If the {@link ConfigStore}s IP is invalid this exception is thrown.
+     */
+    protected @Nullable HueEmulationConfigWithRuntime createConfiguration(
+            @Nullable HueEmulationConfigWithRuntime ignoredParameter) throws IllegalStateException {
+        HueEmulationConfigWithRuntime r;
+        try {
+            r = new HueEmulationConfigWithRuntime(this, cs.getConfig(), cs.ds.config.ipaddress, MULTI_ADDR_IPV4,
+                    MULTI_ADDR_IPV6);
+        } catch (UnknownHostException e) {
+            logger.warn("The picked default IP address is not valid: ", e.getMessage());
+            throw new IllegalStateException(e);
+        }
+        return r;
+    }
+
+    /**
+     * Apply the given runtime configuration by stopping the current udp thread, shutting down the socket and restarting
+     * the thread.
+     */
+    protected @Nullable HueEmulationConfigWithRuntime applyConfiguration(
+            @Nullable HueEmulationConfigWithRuntime newRuntimeConfig) {
+        if (newRuntimeConfig == null) {
+            return null;// Config hasn't changed
+        }
+        config.dispose();
+        this.config = newRuntimeConfig;
+        useAddressPort(config);
+        return config;
     }
 
     /**
@@ -277,90 +337,30 @@ public class UpnpServer extends HttpServlet implements Runnable, EventHandler {
      * completely. That initialization happens asynchronously and therefore we cannot rely on OSGi activate/modified
      * state changes. Instead the {@link EventAdmin} is used and we listen for the
      * {@link ConfigStore#EVENT_ADDRESS_CHANGED} event that is fired as soon as the config is ready.
+     * <p>
+     * To be really sure that we are called here, this is also issued by the main service after it has received the
+     * configuration ready event and depending on service start order we are also called by our own activate() method
+     * when the configuration is already ready at that time.
+     * <p>
+     * Therefore this method is "synchronized" and chains a completeable future for each call to re-evaluate the config
+     * after the former future has finished.
      */
     @Override
     public synchronized void handleEvent(@Nullable Event event) {
-        this.emulationConfig = cs.getConfig();
-        this.defaultport = emulationConfig.discoveryHttpPort == 0
-                ? Integer.getInteger("org.osgi.service.http.port", 8080)
-                : emulationConfig.discoveryHttpPort;
-
-        try {
-            defaultAddress = InetAddress.getByName(cs.ds.config.ipaddress);
-        } catch (UnknownHostException e) {
-            logger.warn("The picked default IP address is not valid: ", e.getMessage());
+        CompletableFuture<@Nullable HueEmulationConfigWithRuntime> root;
+        // There is either already a running future, then chain a new one
+        if (!configChangeFuture.isDone()) {
+            root = configChangeFuture;
+        } else { // Or there is none -> create a new one
+            root = CompletableFuture.completedFuture(null);
         }
-
-        // Use default port preliminary before the async self-test is completed.
-        useAddressPort(cs.ds.config.ipaddress, defaultport, MULTI_ADDR_IPV4.getHostAddress());
-        stopThread();
-
-        CompletableFuture.supplyAsync(() -> {
-            stopThread();
-            selfTests.clear();
-
-            ClientConfig configuration = new ClientConfig();
-            configuration = configuration.property(ClientProperties.CONNECT_TIMEOUT, 1000);
-            configuration = configuration.property(ClientProperties.READ_TIMEOUT, 1000);
-            Client client = ClientBuilder.newClient(configuration);
-            Response response;
-            String url = "";
-            int announcePort;
-            try {
-                logger.debug("Async address test: Testing for port 80");
-                boolean selfTestOnPort80;
-                try {
-                    response = client.target("http://" + cs.ds.config.ipaddress + ":80" + DISCOVERY_FILE).request()
-                            .get();
-                    selfTestOnPort80 = response.getStatus() == 200
-                            && response.readEntity(String.class).contains(cs.ds.config.bridgeid);
-                } catch (ProcessingException ignored) {
-                    selfTestOnPort80 = false;
-                }
-
-                logger.debug("Async address test: useAddressPort+startThread");
-                // Prefer port 80 if possible and if not overwritten by discoveryHttpPort
-                announcePort = emulationConfig.discoveryHttpPort == 0 && selfTestOnPort80 ? 80 : defaultport;
-                useAddressPort(cs.ds.config.ipaddress, announcePort, MULTI_ADDR_IPV4.getHostAddress());
-                startThread(cs.ds.config.ipaddress, announcePort);
-
-                // Test on all assigned interface addresses on org.osgi.service.http.port as well as port 80
-                // Other services might run on port 80, so we search for our bridge ID in the returned document.
-                for (InetAddress address : cs.getDiscoveryIps()) {
-                    String ip = address.getHostAddress();
-                    if (address instanceof Inet6Address) {
-                        ip = "[" + ip.split("%")[0] + "]";
+        configChangeFuture = root.thenApply(this::createConfiguration)
+                .thenApplyAsync(this::performAddressTest, executor).thenApply(this::applyConfiguration)
+                .thenCompose(config::startNow)
+                .whenComplete((HueEmulationConfigWithRuntime config, @Nullable Throwable e) -> {
+                    if (e != null) {
+                        logger.warn("Upnp server: Address test failed", e);
                     }
-                    logger.debug("Async address test: Test address {}", ip);
-                    try {
-                        url = "http://" + ip + ":" + String.valueOf(defaultport) + DISCOVERY_FILE;
-                        response = client.target(url).request().get();
-                        boolean isOurs = response.readEntity(String.class).contains(cs.ds.config.bridgeid);
-                        selfTests.add(new SelfTestReport(url, response.getStatus() == 200, isOurs));
-                    } catch (ProcessingException e) {
-                        logger.debug("Self test fail on {}: {}", url, e.getMessage());
-                        selfTests.add(SelfTestReport.failed(url));
-                    }
-                    try {
-                        url = "http://" + ip + DISCOVERY_FILE; // Port 80
-                        response = client.target(url).request().get();
-                        boolean isOurs = response.readEntity(String.class).contains(cs.ds.config.bridgeid);
-                        selfTests.add(new SelfTestReport(url, response.getStatus() == 200, isOurs));
-                    } catch (ProcessingException e) {
-                        logger.debug("Self test fail on {}: {}", url, e.getMessage());
-                        selfTests.add(SelfTestReport.failed(url));
-                    }
-                }
-            } finally {
-                client.close();
-            }
-            return announcePort;
-        }) //
-                .thenAccept(announcePort -> logger.info("Hue Emulation UPNP server started on {}:{}",
-                        cs.ds.config.ipaddress, announcePort)) //
-                .exceptionally(e -> {
-                    logger.warn("Upnp server: Address test failed", e);
-                    return null;
                 });
     }
 
@@ -371,16 +371,11 @@ public class UpnpServer extends HttpServlet implements Runnable, EventHandler {
      */
     @Deactivate
     public void deactivate() {
-        stopThread();
+        config.dispose();
         try {
             httpService.unregister(DISCOVERY_FILE);
         } catch (IllegalArgumentException ignore) {
         }
-    }
-
-    static class ClientRecord {
-        public @Nullable SocketAddress clientAddress;
-        public ByteBuffer buffer = ByteBuffer.allocate(1000);
     }
 
     private void handleRead(SelectionKey key, Set<InetAddress> addresses) throws IOException {
@@ -427,19 +422,17 @@ public class UpnpServer extends HttpServlet implements Runnable, EventHandler {
     }
 
     @Override
-    public void run() {
-        logger.debug("upnp thread is running");
-        Thread.currentThread().setName("HueEmulation UPNP Server");
+    public void accept(HueEmulationConfigWithRuntime threadContext) {
+        logger.info("Hue Emulation UPNP server started on {}:{}", threadContext.addressString, threadContext.port);
         boolean hasIPv4 = false;
         boolean hasIPv6 = false;
 
         try (DatagramChannel channel = DatagramChannel.open(); Selector selector = Selector.open()) {
 
-            this.asyncIOselector = selector;
+            threadContext.asyncIOselector = selector;
 
             channel.setOption(StandardSocketOptions.SO_REUSEADDR, true)
-                    .setOption(StandardSocketOptions.IP_MULTICAST_LOOP, true)
-                    .bind(new InetSocketAddress(UPNP_PORT_RECV));
+                    .setOption(StandardSocketOptions.IP_MULTICAST_LOOP, true).bind(new InetSocketAddress(UPNP_PORT));
             for (InetAddress address : cs.getDiscoveryIps()) {
                 NetworkInterface networkInterface = NetworkInterface.getByInetAddress(address);
                 if (networkInterface == null) {
@@ -455,6 +448,8 @@ public class UpnpServer extends HttpServlet implements Runnable, EventHandler {
             }
             if (!hasIPv4 && !hasIPv6) {
                 logger.warn("Could not join upnp multicast network!");
+                threadContext.future
+                        .completeExceptionally(new IllegalStateException("Could not join upnp multicast network!"));
                 return;
             }
 
@@ -463,16 +458,17 @@ public class UpnpServer extends HttpServlet implements Runnable, EventHandler {
             channel.register(selector, SelectionKey.OP_READ, new ClientRecord());
 
             if (hasIPv4) {
-                try (DatagramSocket sendSocket = new DatagramSocket(new InetSocketAddress(defaultAddress, 0))) {
-                    sendUPNPDatagrams(sendSocket, MULTI_ADDR_IPV4, UPNP_PORT_RECV);
+                try (DatagramSocket sendSocket = new DatagramSocket(new InetSocketAddress(config.address, 0))) {
+                    sendUPNPDatagrams(sendSocket, MULTI_ADDR_IPV4, UPNP_PORT);
                 }
             }
             if (hasIPv6) {
                 try (DatagramSocket sendSocket = new DatagramSocket()) {
-                    sendUPNPDatagrams(sendSocket, MULTI_ADDR_IPV6, UPNP_PORT_RECV);
+                    sendUPNPDatagrams(sendSocket, MULTI_ADDR_IPV6, UPNP_PORT);
                 }
             }
 
+            threadContext.future.complete(threadContext);
             Instant time = Instant.now();
 
             while (selector.isOpen()) { // Run forever, receiving and echoing datagrams
@@ -487,17 +483,17 @@ public class UpnpServer extends HttpServlet implements Runnable, EventHandler {
                     keyIter.remove();
                 }
 
-                if (time.plus(CACHE_MSECS - 200).isBefore(Instant.now())) {
+                if (time.plusMillis(CACHE_MSECS - 200).isBefore(Instant.now())) {
                     logger.debug("upnp thread send periodic announcement");
                     time = Instant.now();
                     if (hasIPv4) {
-                        try (DatagramSocket sendSocket = new DatagramSocket(new InetSocketAddress(defaultAddress, 0))) {
-                            sendUPNPNotify(sendSocket, MULTI_ADDR_IPV4, UPNP_PORT_RECV);
+                        try (DatagramSocket sendSocket = new DatagramSocket(new InetSocketAddress(config.address, 0))) {
+                            sendUPNPNotify(sendSocket, MULTI_ADDR_IPV4, UPNP_PORT);
                         }
                     }
                     if (hasIPv6) {
                         try (DatagramSocket sendSocket = new DatagramSocket()) {
-                            sendUPNPNotify(sendSocket, MULTI_ADDR_IPV6, UPNP_PORT_RECV);
+                            sendUPNPNotify(sendSocket, MULTI_ADDR_IPV6, UPNP_PORT);
                         }
                     }
                 }
@@ -505,8 +501,9 @@ public class UpnpServer extends HttpServlet implements Runnable, EventHandler {
         } catch (ClosedSelectorException ignored) {
         } catch (IOException e) {
             logger.warn("Socket error with UPNP server", e);
+            threadContext.future.completeExceptionally(e);
         } finally {
-            this.asyncIOselector = null;
+            threadContext.asyncIOselector = null;
             logger.debug("upnp thread ends");
         }
     }
@@ -525,10 +522,10 @@ public class UpnpServer extends HttpServlet implements Runnable, EventHandler {
     }
 
     public int getDefaultport() {
-        return defaultport;
+        return config.port;
     }
 
     public boolean upnpAnnouncementThreadRunning() {
-        return asyncIOselector != null;
+        return config.asyncIOselector != null;
     }
 }
