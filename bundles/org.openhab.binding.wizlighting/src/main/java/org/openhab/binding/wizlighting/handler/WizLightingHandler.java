@@ -20,7 +20,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -31,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.wizlighting.WizLightingBindingConstants;
 import org.openhab.binding.wizlighting.internal.entities.ColorRequestParam;
 import org.openhab.binding.wizlighting.internal.entities.DimmingRequestParam;
@@ -80,6 +80,7 @@ public class WizLightingHandler extends BaseThingHandler {
     public WizLightingHandler(final Thing thing, final String myAddress, final String myMacAddress)
             throws MacAddressNotValidException {
         super(thing);
+
         saveMacAddressFromConfiguration(this.getConfig());
         saveHostAddressFromConfiguration(this.getConfig());
         saveHomeIdFromConfiguration(this.getConfig());
@@ -91,42 +92,46 @@ public class WizLightingHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
+        if (command instanceof RefreshType) {
+            return;
+        }
+
         switch (channelUID.getId()) {
             case WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID:
                 sendRequestPacket(WizLightingMethodType.setPilot, new StateRequestParam((OnOffType) command));
                 break;
+
             case WizLightingBindingConstants.BULB_COLOR_CHANNEL_ID:
-                handleColorCommand(command);
+                if (command instanceof HSBType) {
+                    HSBType hsbCommand = (HSBType) command;
+                    if (hsbCommand.getBrightness().intValue() == 0) {
+                        sendRequestPacket(WizLightingMethodType.setPilot, new StateRequestParam(OnOffType.OFF));
+                    } else {
+                        sendRequestPacket(WizLightingMethodType.setPilot, new ColorRequestParam((HSBType) command));
+                    }
+                } else if (command instanceof PercentType) {
+                    sendRequestPacket(WizLightingMethodType.setPilot, new DimmingRequestParam(command));
+                } else if (command instanceof OnOffType) {
+                    sendRequestPacket(WizLightingMethodType.setPilot, new StateRequestParam((OnOffType) command));
+                }
                 break;
+
             case WizLightingBindingConstants.BULB_SCENE_CHANNEL_ID:
                 sendRequestPacket(WizLightingMethodType.setPilot, new SceneRequestParam(command));
                 break;
+
             case WizLightingBindingConstants.BULB_SPEED_CHANNEL_ID:
-                handleSpeedCommand(command);
+                if (command instanceof PercentType) {
+                    sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(command));
+                } else if (command instanceof OnOffType) {
+                    OnOffType onOffCommand = (OnOffType) command;
+                    if (onOffCommand.equals(OnOffType.ON)) {
+                        sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(100));
+                    } else {
+                        sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(0));
+                    }
+                }
                 break;
-        }
-    }
-
-    private void handleColorCommand(Command command) {
-        if (command instanceof HSBType) {
-            sendRequestPacket(WizLightingMethodType.setPilot, new ColorRequestParam((HSBType) command));
-        } else if (command instanceof PercentType) {
-            sendRequestPacket(WizLightingMethodType.setPilot, new DimmingRequestParam(command));
-        } else if (command instanceof OnOffType) {
-            sendRequestPacket(WizLightingMethodType.setPilot, new StateRequestParam((OnOffType) command));
-        }
-    }
-
-    private void handleSpeedCommand(Command command) {
-        if (command instanceof PercentType) {
-            sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(command));
-        } else if (command instanceof OnOffType) {
-            OnOffType onOffCommand = (OnOffType) command;
-            if (onOffCommand.equals(OnOffType.ON)) {
-                sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(100));
-            } else {
-                sendRequestPacket(WizLightingMethodType.setPilot, new SpeedRequestParam(0));
-            }
         }
     }
 
@@ -204,12 +209,8 @@ public class WizLightingHandler extends BaseThingHandler {
     public void newReceivedResponseMessage(final WizLightingSyncResponse receivedMessage) {
         SyncResponseParam params = receivedMessage.getParams();
 
-        // on-off switch channel
-        if (params.state) {
-            updateState(WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID, OnOffType.ON);
-        } else {
-            updateState(WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID, OnOffType.OFF);
-        }
+        // update on-off switch channel
+        updateState(WizLightingBindingConstants.BULB_SWITCH_CHANNEL_ID, OnOffType.from(params.state));
 
         // update scene channel
         updateState(WizLightingBindingConstants.BULB_SCENE_CHANNEL_ID, new StringType(String.valueOf(params.sceneId)));
@@ -217,28 +218,16 @@ public class WizLightingHandler extends BaseThingHandler {
         // update speed channel
         updateState(WizLightingBindingConstants.BULB_SPEED_CHANNEL_ID, new PercentType(params.speed));
 
-        // update color channel
-        float[] hsv = new float[3];
-
         // check whether the bulb sent temperature
+        HSBType colorHSB = null;
         if (params.temp != 0) {
             Color color = ImageUtils.getRGBFromK(params.temp);
-            Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), hsv);
+            colorHSB = HSBType.fromRGB(color.getRed(), color.getGreen(), color.getBlue());
         } else {
-            Color.RGBtoHSB(params.r, params.g, params.b, hsv);
+            colorHSB = HSBType.fromRGB(params.r, params.g, params.b);
         }
 
-        // convert color
-        long hue = (long) (hsv[0] * 360);
-        int saturation = (int) (hsv[1] * 100);
-        int brightness = (int) (hsv[2] * 100);
-
-        DecimalType h = new DecimalType(hue);
-        PercentType s = new PercentType(saturation);
-        PercentType b = new PercentType(brightness);
-
-        HSBType colorHSB = new HSBType(h, s, b);
-
+        // update color channel
         updateState(WizLightingBindingConstants.BULB_COLOR_CHANNEL_ID, colorHSB);
 
         updateStatus(ThingStatus.ONLINE);
@@ -317,6 +306,7 @@ public class WizLightingHandler extends BaseThingHandler {
             if (address != null) {
                 WizLightingRequest request = new WizLightingRequest(method, param);
                 request.setId(requestId++);
+
                 byte[] message = this.converter.transformToByteMessage(request);
                 logger.trace("Preparing packet to send...", message);
 
