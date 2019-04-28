@@ -18,6 +18,5 @@
 
   <modules>
     <module>org.openhab.binding.enocean</module>
-    <module>org.openhab.binding.loxone</module>
   </modules>
 </project>
