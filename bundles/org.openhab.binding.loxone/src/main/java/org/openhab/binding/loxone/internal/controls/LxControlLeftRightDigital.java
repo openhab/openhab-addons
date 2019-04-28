@@ -47,6 +47,5 @@ class LxControlLeftRightDigital extends LxControlUpDownDigital {
     @Override
     public void initialize(LxControlConfig config) {
         super.initialize(config, " / Left", "Left/Right Digital: Left", " / Right", "Left/Right Digital: Right");
-
     }
 }
