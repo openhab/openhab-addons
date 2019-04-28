@@ -14,8 +14,6 @@ package org.openhab.binding.enocean.internal.eep.A5_11;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
-import javax.measure.quantity.Energy;
-
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -25,7 +23,7 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.core.util.HexUtils;
-import org.openhab.binding.enocean.internal.config.EnOceanChannelTotalusageConfig;
+import org.openhab.binding.enocean.internal.eep.EEPHelper;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.slf4j.Logger;
@@ -195,37 +193,7 @@ public class A5_11_04 extends _4BSMessage {
             case CHANNEL_TOTALUSAGE:
                 State value = getEnergyMeasurementData();
 
-                EnOceanChannelTotalusageConfig c = config.as(EnOceanChannelTotalusageConfig.class);
-
-                if (c.validate && (value instanceof QuantityType) && (currentState instanceof QuantityType)) {
-                    @SuppressWarnings("unchecked")
-                    QuantityType<Energy> newValue = value.as(QuantityType.class);
-
-                    if (newValue != null) {
-                        newValue = newValue.toUnit(SmartHomeUnits.KILOWATT_HOUR);
-                    }
-
-                    @SuppressWarnings("unchecked")
-                    QuantityType<Energy> oldValue = currentState.as(QuantityType.class);
-
-                    if (oldValue != null) {
-                        oldValue = oldValue.toUnit(SmartHomeUnits.KILOWATT_HOUR);
-                    }
-
-                    if ((newValue != null) && (oldValue != null)) {
-                        if (newValue.compareTo(oldValue) < 0) {
-                            if ((oldValue.subtract(newValue).doubleValue() < 1.0)) {
-                                return UnDefType.UNDEF;
-                            }
-                        } else {
-                            if (newValue.subtract(oldValue).doubleValue() > 10.0) {
-                                return UnDefType.UNDEF;
-                            }
-                        }
-                    }
-                }
-
-                return value;
+                return EEPHelper.validateTotalUsage(value, currentState, config);
             case CHANNEL_COUNTER:
                 return getOperatingHours();
         }
