@@ -6,7 +6,6 @@
 
 # Add-on maintainers:
 /addons/binding/org.openhab.binding.enocean/ @fruggy83
-/addons/binding/org.openhab.binding.loxone/ @ppieczul
 /addons/io/org.openhab.io.homekit/ @beowulfe
 /addons/io/org.openhab.io.hueemulation/ @davidgraeff @digitaldan
 /addons/io/org.openhab.io.hueemulation.test/ @davidgraeff @digitaldan
@@ -81,6 +80,7 @@
 /bundles/org.openhab.binding.lifx/ @wborn
 /bundles/org.openhab.binding.lirc/ @kabili207
 /bundles/org.openhab.binding.logreader/ @paulianttila
+/bundles/org.openhab.binding.loxone/ @ppieczul
 /bundles/org.openhab.binding.lutron/ @actong
 /bundles/org.openhab.binding.mail/ @J-N-K
 /bundles/org.openhab.binding.max/ @marcelrv
