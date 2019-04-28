@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="buienradar" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+	<name>Buienradar Binding</name>
+	<description>The Buienradar Binding periodically (5 minutes) retrieves results from the Buienradar API. For personal use only.</description>
+	<author>Edwin de Jong</author>
+
+</binding:binding>
