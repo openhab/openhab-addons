@@ -33,7 +33,7 @@ Location of UUID and Secret:
 
 After installing this add-on, you will find configuration options in the Paper UI under _Configuration->Services->IO->openHAB Cloud_:
 
-![Configuration](doc/cfg.png)
+![Configuration](contrib/doc/cfg.png)
 
 Please note, that you don't need to expose all your items in this settings dialog.
 You just need to expose those items, which you want to be accessible by a third party service.
