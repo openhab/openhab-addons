@@ -338,7 +338,7 @@
 		<category>Sun</category>
 		<event>
 			<options>
-				<option value="START">start</option>
+				<option value="START">START</option>
 			</options>
 		</event>
 		<config-description-ref uri="channel-type:darksky:sunrise-sunset-event" />
