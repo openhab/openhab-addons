@@ -12,11 +12,19 @@
  */
 package org.openhab.io.hueemulation.internal;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Application;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -80,7 +88,30 @@ public class HueEmulationService implements EventHandler {
 
     }
 
+    public class LogAccessInterceptor implements ContainerResponseFilter {
+        @NonNullByDefault({})
+        @Override
+        public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
+                throws IOException {
+
+            if (!logger.isDebugEnabled()) {
+                return;
+            }
+
+            InputStream stream = requestContext.getEntityStream();
+            String body = stream != null
+                    ? new BufferedReader(new InputStreamReader(stream)).lines().collect(Collectors.joining("\n"))
+                    : "";
+
+            logger.debug("REST request {} {}: {}", requestContext.getMethod(), requestContext.getUriInfo().getPath(),
+                    body);
+            logger.debug("REST response: {}", responseContext.getEntity());
+        }
+
+    }
+
     private final Logger logger = LoggerFactory.getLogger(HueEmulationService.class);
+    private final LogAccessInterceptor accessInterceptor = new LogAccessInterceptor();
 
     //// Required services ////
     // Don't fail the service if the upnp server does not come up
@@ -163,7 +194,7 @@ public class HueEmulationService implements EventHandler {
         resourceConfig.property(ServerProperties.PROCESSING_RESPONSE_ERRORS_ENABLED, true);
 
         resourceConfig.registerInstances(userManagement, configurationAccess, lightItems, sensors, scenes, schedules,
-                rules, statusResource);
+                rules, statusResource, accessInterceptor);
 
         try {
             Hashtable<String, String> initParams = new Hashtable<>();

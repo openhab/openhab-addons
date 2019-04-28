@@ -221,6 +221,20 @@ public class LightsAndGroupsTests {
     }
 
     @Test
+    public void changeOnValue() throws IOException {
+
+        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));
+
+        String body = "{'on':true}";
+        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/2/state").request()
+                .put(Entity.json(body));
+        assertEquals(200, response.getStatus());
+        String entity = response.readEntity(String.class);
+        assertThat(entity, is("[{\"success\":{\"/lights/2/state/on\":true}}]"));
+        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(true));
+    }
+
+    @Test
     public void changeOnAndBriValues() throws IOException {
 
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));

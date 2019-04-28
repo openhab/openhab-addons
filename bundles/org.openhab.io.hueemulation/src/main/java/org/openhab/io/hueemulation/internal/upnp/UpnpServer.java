@@ -251,7 +251,6 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
         Response response;
         String url = "";
         try {
-            logger.debug("Async address test: Testing for port 80");
             boolean selfTestOnPort80;
             try {
                 response = client.target("http://" + cs.ds.config.ipaddress + ":80" + DISCOVERY_FILE).request().get();
@@ -261,7 +260,6 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
                 selfTestOnPort80 = false;
             }
 
-            logger.debug("Async address test: useAddressPort+startThread");
             // Prefer port 80 if possible and if not overwritten by discoveryHttpPort
             config.port = config.config.discoveryHttpPort == 0 && selfTestOnPort80 ? 80 : config.port;
 
@@ -272,7 +270,6 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
                 if (address instanceof Inet6Address) {
                     ip = "[" + ip.split("%")[0] + "]";
                 }
-                logger.debug("Async address test: Test address {}", ip);
                 try {
                     url = "http://" + ip + ":" + String.valueOf(config.port) + DISCOVERY_FILE;
                     response = client.target(url).request().get();
@@ -379,7 +376,7 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
     }
 
     private void handleRead(SelectionKey key, Set<InetAddress> addresses) throws IOException {
-        logger.debug("upnp thread handle received message");
+        logger.trace("upnp thread handle received message");
         DatagramChannel channel = (DatagramChannel) key.channel();
         ClientRecord clntRec = (ClientRecord) key.attachment();
         clntRec.buffer.clear(); // Prepare buffer for receiving
@@ -399,7 +396,7 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
     }
 
     private void sendUPNPDatagrams(DatagramSocket sendSocket, InetAddress address, int port) {
-        logger.debug("upnp thread send announcement");
+        logger.trace("upnp thread send announcement");
         for (String msg : stVersions) {
             DatagramPacket response = new DatagramPacket(msg.getBytes(), msg.length(), address, port);
             try {
@@ -484,7 +481,7 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
                 }
 
                 if (time.plusMillis(CACHE_MSECS - 200).isBefore(Instant.now())) {
-                    logger.debug("upnp thread send periodic announcement");
+                    logger.trace("upnp thread send periodic announcement");
                     time = Instant.now();
                     if (hasIPv4) {
                         try (DatagramSocket sendSocket = new DatagramSocket(new InetSocketAddress(config.address, 0))) {
@@ -504,7 +501,6 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
             threadContext.future.completeExceptionally(e);
         } finally {
             threadContext.asyncIOselector = null;
-            logger.debug("upnp thread ends");
         }
     }
 

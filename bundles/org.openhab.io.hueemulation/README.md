@@ -154,7 +154,7 @@ You want this tag for all items that are purely used for rules, as proxy items e
 
 ## Troubleshooting
 
-Some devices like Amazon Echo, Google Home and all Philips devices expect a Hue bridge to
+Some devices like Amazon Echo, Google Home and all Philips devices (TVs, Apps) expect a Hue bridge to
 run on port 80. You must either
 
 * port forward your openHAB installation to port 80,
@@ -182,13 +182,16 @@ You can test if the hue emulation does its job by enabling pairing mode includin
 2. Navigate with your browser to "http://your-openhab-ip/api/status"
    to check the self test report.
 
+If you use the port forwarding way, the self-test page will not be able to correctly determine if your installation works on port 80.
+A reverse proxy is recommended.
+
 Depending on the firmware version of your Amazon Echo, it may not support colored bulbs or switches.
 Please assign "ColorLighting" and "Switchable" to the `WhiteLights` type as explained above.
 
 Also note that Amazon Echos are stubborn as. You might need to remove all former recognized devices multiple
 times and perform the search via different Echos and also the web or mobile application.
 
-It might help to lower the emulated bridge version in the configuration as described above, 
+It might help to (temporarly) lower the emulated bridge version in the configuration as described above, 
 
 ## Text configuration example
 

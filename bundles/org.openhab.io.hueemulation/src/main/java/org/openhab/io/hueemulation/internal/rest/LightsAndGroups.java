@@ -368,8 +368,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
 
         String itemUID = hueDevice.item.getUID();
         List<HueResponse> responses = new ArrayList<>();
-        String hueID = cs.mapItemUIDtoHueID(hueDevice.item);
-        Command command = StateUtils.computeCommandByState(responses, "/lights/" + hueID + "/state", hueDevice.state,
+        Command command = StateUtils.computeCommandByState(responses, "/lights/" + id + "/state", hueDevice.state,
                 newState);
 
         // If a command could be created, post it to the framework now
@@ -413,8 +412,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         hueDevice.action = StateUtils.colorStateFromItemState(groupItem.getState(), hueDevice.deviceType);
 
         List<HueResponse> responses = new ArrayList<>();
-        String hueID = cs.mapItemUIDtoHueID(groupItem);
-        Command command = StateUtils.computeCommandByState(responses, "/groups/" + hueID + "/state/", hueDevice.action,
+        Command command = StateUtils.computeCommandByState(responses, "/groups/" + id + "/state/", hueDevice.action,
                 state);
 
         // If a command could be created, post it to the framework now

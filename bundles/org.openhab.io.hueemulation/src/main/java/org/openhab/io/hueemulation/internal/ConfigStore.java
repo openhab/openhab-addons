@@ -78,6 +78,7 @@ import com.google.gson.GsonBuilder;
                 ConfigurableService.SERVICE_PROPERTY_LABEL + "=Hue Emulation" })
 @NonNullByDefault
 public class ConfigStore {
+
     public static final String METAKEY = "HUEEMU";
     public static final String EVENT_ADDRESS_CHANGED = "ESH_EMU_CONFIG_ADDR_CHANGED";
 
