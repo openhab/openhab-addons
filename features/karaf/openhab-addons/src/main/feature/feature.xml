@@ -376,12 +376,11 @@
         <feature prerequisite="true">wrap</feature>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.4</bundle>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.2</bundle>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.8</bundle>
         <bundle dependency="true">mvn:com.google.guava/guava/20.0</bundle>
         <bundle dependency="true">mvn:commons-codec/commons-codec/1.10</bundle>
         <bundle dependency="true">mvn:com.google.oauth-client/google-oauth-client/1.27.0</bundle>
         <bundle dependency="true">mvn:com.google.http-client/google-http-client/1.27.0</bundle>
-        <bundle dependency="true">wrap:mvn:com.google.http-client/google-http-client-jackson2/1.27.0$Bundle-Name=Jackson%202%20Extensions&amp;Bundle-SymbolicName=com.google.http-client.google-http-client-jackson2&amp;Bundle-Version=1.27.0</bundle>
+        <bundle dependency="true">wrap:mvn:com.google.http-client/google-http-client-gson/1.27.0$Bundle-Name=GSON%202%20Extensions&amp;Bundle-SymbolicName=com.google.http-client.google-http-client-gson&amp;Bundle-Version=1.27.0</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.innogysmarthome/${project.version}</bundle>
     </feature>
 
