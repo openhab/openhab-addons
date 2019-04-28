@@ -151,9 +151,9 @@ public class A5_11_04 extends _4BSMessage {
                 case WATT:
                     factor = 1;
                     break;
-                case KILOWATT:
-                    factor *= 1000;
                 case MEGAWATT:
+                    factor *= 1000;
+                case KILOWATT:
                     factor *= 1000;
                     break;
                 default:
