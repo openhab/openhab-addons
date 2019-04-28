@@ -1158,7 +1158,7 @@
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.8</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.8</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.8</bundle>
-        <bundle dependency="true">mvn:com.google.guava/guava/20.0</bundle>
+        <bundle dependency="true">mvn:com.google.guava/guava/21.0</bundle>
         <bundle dependency="true">mvn:ch.obermuhlner/big-math/2.1.0</bundle>
         <bundle dependency="true">mvn:org.jsoup/jsoup/1.8.3</bundle>
         <bundle dependency="true">wrap:mvn:com.google.re2j/re2j/1.2$Bundle-Name=re2j&amp;Bundle-SymbolicName=com.google.re2j.re2j&amp;Bundle-Version=1.2</bundle>
