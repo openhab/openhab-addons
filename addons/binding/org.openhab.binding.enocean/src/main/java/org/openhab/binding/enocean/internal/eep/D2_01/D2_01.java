@@ -144,7 +144,7 @@ public abstract class D2_01 extends _VLDMessage {
 
             switch (bytes[1] >>> 5) {
                 case 0:
-                    factor /= 3600.0;
+                    factor /= (3600 * 1000);
                     break;
                 case 1:
                     factor /= 1000;
