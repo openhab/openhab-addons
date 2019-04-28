@@ -71,7 +71,7 @@ public class ModbusBitUtilities {
      * - registers (index) and (index + 1) are interpreted as signed 32bit floating point number.
      * - it assumed that the first register contains the most significant 16 bits
      * - it is assumed that each register is encoded in most significant bit first order
-     * - floating point NaN and infinity will return as <tt>UnDefType.UNDEF</tt>
+     * - floating point NaN and infinity will return as empty optional
      * FLOAT32_SWAP:
      * - Same as FLOAT32 but registers swapped
      * INT64:
