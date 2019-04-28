@@ -53,6 +53,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
@@ -674,7 +675,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             int itemsPerRegister = 16 / readValueType.getBits();
             extractIndex = (readIndex.get() - pollStart) * itemsPerRegister + subIndex;
         }
-        numericState = ModbusBitUtilities.extractStateFromRegisters(registers, extractIndex, readValueType);
+        numericState = ModbusBitUtilities.extractStateFromRegisters(registers, extractIndex, readValueType)
+                .map(state -> (State) state).orElse(UnDefType.UNDEF);
         boolean boolValue = !numericState.equals(DecimalType.ZERO);
         Map<ChannelUID, State> values = processUpdatedValue(numericState, boolValue);
         logger.debug(
