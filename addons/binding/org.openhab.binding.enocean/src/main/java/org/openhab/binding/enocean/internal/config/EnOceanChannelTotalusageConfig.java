@@ -17,10 +17,5 @@ package org.openhab.binding.enocean.internal.config;
  * @author Dominik Vorreiter - Initial contribution
  */
 public class EnOceanChannelTotalusageConfig {
-
-    public Boolean validate;
-
-    public EnOceanChannelTotalusageConfig() {
-        validate = false;
-    }
+    public boolean validate = false;
 }
