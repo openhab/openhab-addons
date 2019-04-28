@@ -125,7 +125,7 @@ Once the parameters `forecastHours` or `forecastDays` will be changed, the avail
 
 **Offset:** For each trigger channel you can optionally configure an `offset` in minutes.
 The `offset` must be configured in the channel properties for the corresponding thing.
-The minimum allowed offset is -1440 and the maximum allowed offset is 1440.
+The minimum allowed `offset` is -1440 and the maximum allowed `offset` is 1440.
 
 If an `offset` is set, the event is moved forward or backward accordingly.
 
