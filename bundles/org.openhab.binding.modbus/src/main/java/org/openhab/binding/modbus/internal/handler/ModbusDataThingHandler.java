@@ -231,7 +231,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
      * In case of JSON as transformation output, the output processed using {@link processJsonTransform}.
      *
      * @param channelUID channel UID corresponding to received command
-     * @param command    command to be transformed
+     * @param command command to be transformed
      * @return transformed command. Null is returned with JSON transformation outputs and configuration errors
      *
      * @see processJsonTransform
@@ -793,7 +793,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
      * Update linked channels
      *
      * @param numericState numeric state corresponding to polled data (or UNDEF with floating point NaN or infinity)
-     * @param boolValue    boolean value corresponding to polled data
+     * @param boolValue boolean value corresponding to polled data
      * @return updated channel data
      */
     private Map<ChannelUID, State> processUpdatedValue(State numericState, boolean boolValue) {

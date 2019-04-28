@@ -1064,9 +1064,9 @@ public class ModbusDataHandlerTest extends JavaTest {
     /**
      *
      * @param pollerFunctionCode poller function code. Use null if you want to have data thing direct child of endpoint
-     *                               thing
-     * @param config             thing config
-     * @param statusConsumer     assertion method for data thingstatus
+     *            thing
+     * @param config thing config
+     * @param statusConsumer assertion method for data thingstatus
      */
     private void testInitGeneric(ModbusReadFunctionCode pollerFunctionCode, Configuration config,
             Consumer<ThingStatusInfo> statusConsumer) {

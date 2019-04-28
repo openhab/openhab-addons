@@ -87,15 +87,15 @@ public class ModbusBitUtilities {
      * - same as INT64_SWAP except value is interpreted as unsigned integer
      *
      * @param registers list of registers, each register represent 16bit of data
-     * @param index     zero based item index. Interpretation of this depends on type, see examples above.
-     *                      With type larger or equal to 16 bits, the index tells the register index to start reading
-     *                      from.
-     *                      With type less than 16 bits, the index tells the N'th item to read from the registers.
-     * @param type      item type, e.g. unsigned 16bit integer (<tt>ModbusBindingProvider.ValueType.UINT16</tt>)
+     * @param index zero based item index. Interpretation of this depends on type, see examples above.
+     *            With type larger or equal to 16 bits, the index tells the register index to start reading
+     *            from.
+     *            With type less than 16 bits, the index tells the N'th item to read from the registers.
+     * @param type item type, e.g. unsigned 16bit integer (<tt>ModbusBindingProvider.ValueType.UINT16</tt>)
      * @return number representation queried value, <tt>DecimalType</tt>. Empty optional is returned
      *         with NaN and infinity floating point values
-     * @throws NotImplementedException  in cases where implementation is lacking for the type. This can be considered a
-     *                                      bug
+     * @throws NotImplementedException in cases where implementation is lacking for the type. This can be considered a
+     *             bug
      * @throws IllegalArgumentException when <tt>index</tt> is out of bounds of registers
      *
      */
@@ -221,10 +221,10 @@ public class ModbusBitUtilities {
      * NUL byte encountered.
      *
      * @param registers list of registers, each register represent 16bit of data
-     * @param index     zero based register index. Registers are handled as 16bit registers,
-     *                      this parameter defines the starting register.
-     * @param length    maximum length of string in 8bit characters.
-     * @param charset   the character set used to construct the string.
+     * @param index zero based register index. Registers are handled as 16bit registers,
+     *            this parameter defines the starting register.
+     * @param length maximum length of string in 8bit characters.
+     * @param charset the character set used to construct the string.
      * @return string representation queried value
      * @throws IllegalArgumentException when <tt>index</tt> is out of bounds of registers
      */
@@ -266,10 +266,10 @@ public class ModbusBitUtilities {
      * Convert command to array of registers using a specific value type
      *
      * @param command command to be converted
-     * @param type    value type to use in conversion
+     * @param type value type to use in conversion
      * @return array of registers
      * @throws NotImplementedException in cases where implementation is lacking for the type. This is thrown with 1-bit
-     *                                     and 8-bit value types
+     *             and 8-bit value types
      */
     public static ModbusRegisterArray commandToRegisters(Command command, ModbusConstants.ValueType type) {
         DecimalType numericCommand;
