@@ -44,9 +44,9 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
-import org.apache.commons.codec.binary.Hex;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.id.InstanceUUID;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.LxWebSocket;
 import org.openhab.binding.loxone.internal.types.LxErrorCode;
@@ -157,11 +157,11 @@ class LxWsSecurityToken extends LxWsSecurity {
     /**
      * Create a token-based authentication instance.
      *
-     * @param debugId      instance of the client used for debugging purposes only
+     * @param debugId instance of the client used for debugging purposes only
      * @param thingHandler API to the thing handler
-     * @param socket       websocket to perform communication with Miniserver
-     * @param user         user to authenticate
-     * @param password     password to authenticate
+     * @param socket websocket to perform communication with Miniserver
+     * @param user user to authenticate
+     * @param password password to authenticate
      */
     LxWsSecurityToken(int debugId, LxServerHandlerApi thingHandler, LxWebSocket socket, String user, String password) {
         super(debugId, thingHandler, socket, user, password);
@@ -341,10 +341,10 @@ class LxWsSecurityToken extends LxWsSecurity {
     }
 
     private byte[] generateSessionKey(Cipher rsaCipher) {
-        String key = Hex.encodeHexString(aesKey.getEncoded()) + ":" + Hex.encodeHexString(initVector);
+        String key = HexUtils.bytesToHex(aesKey.getEncoded()) + ":" + HexUtils.bytesToHex(initVector);
         try {
             byte[] sessionKey = rsaCipher.doFinal(key.getBytes());
-            logger.debug("[{}] Generated session key: {}", debugId, Hex.encodeHexString(sessionKey));
+            logger.debug("[{}] Generated session key: {}", debugId, HexUtils.bytesToHex(sessionKey));
             return sessionKey;
         } catch (IllegalBlockSizeException | BadPaddingException e) {
             setError(LxErrorCode.INTERNAL_ERROR, "Exception encrypting session key: " + e.getMessage());
@@ -357,7 +357,7 @@ class LxWsSecurityToken extends LxWsSecurity {
             MessageDigest msgDigest = MessageDigest.getInstance("SHA-1");
             String pwdHashStr = password + ":" + keySalt.salt;
             byte[] rawData = msgDigest.digest(pwdHashStr.getBytes(StandardCharsets.UTF_8));
-            String pwdHash = Hex.encodeHexString(rawData).toUpperCase();
+            String pwdHash = HexUtils.bytesToHex(rawData).toUpperCase();
             logger.debug("[{}] PWDHASH: {}", debugId, pwdHash);
             return hashString(user + ":" + pwdHash, keySalt.key);
         } catch (NoSuchAlgorithmException e) {
@@ -540,7 +540,7 @@ class LxWsSecurityToken extends LxWsSecurity {
     private String generateSalt() {
         byte[] bytes = new byte[SALT_BYTES];
         secureRandom.nextBytes(bytes);
-        String salt = Hex.encodeHexString(bytes);
+        String salt = HexUtils.bytesToHex(bytes);
         try {
             salt = URLEncoder.encode(salt, "UTF-8");
         } catch (UnsupportedEncodingException e) {
