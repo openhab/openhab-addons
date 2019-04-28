@@ -246,6 +246,7 @@ Some channels can be configured with parameters.
 | dimmer        | rampingTime    | Duration of dimming                                                  | A5-38-08: Ramping Time (in seconds), 0 = default ramping, 1..255 = seconds to 100%; D2-01-01: 0 = switch, 1-3 = timer 1-3, 4 = stop |
 | teachInCMD    | manufacturerId | Id is used for 4BS teach in with EEP                                 | HEX                                                                                                                                 |
 |               | teachInMSG     | Use this message if teach in type and/or manufacturer id are unknown | HEX                                                                                                                                 |
+|  totalusage   | validateValue  | Filter out increases more than 10.0 kWh and decreases less than 1.0 kWh | true / false                                                                                                                        |
 
 Possible declaration in Thing DSL:
 

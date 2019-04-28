@@ -141,13 +141,14 @@ public abstract class D2_01 extends _VLDMessage {
             float factor = 1;
 
             switch (bytes[1] >>> 5) {
-                case 0:
+                case 0: // value is given as watt seconds, so divide it by 3600 to get watt hours, and 1000 to get
+                        // kilowatt hours
                     factor /= (3600 * 1000);
                     break;
-                case 1:
+                case 1: // value is given as watt hours, so divide it by 1000 to get kilowatt hours
                     factor /= 1000;
                     break;
-                case 2:
+                case 2: // value is given as kilowatt hours
                     factor = 1;
                     break;
                 default:
@@ -167,10 +168,10 @@ public abstract class D2_01 extends _VLDMessage {
             float factor = 1;
 
             switch (bytes[1] >>> 5) {
-                case 3:
+                case 3: // value is given as watt
                     factor = 1;
                     break;
-                case 4:
+                case 4: // value is given as kilowatt
                     factor /= 1000;
                     break;
                 default:
