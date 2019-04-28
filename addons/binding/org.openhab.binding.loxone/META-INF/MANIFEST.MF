@@ -11,12 +11,15 @@ Bundle-Version: 2.5.0.qualifier
 Import-Package: 
  com.google.gson,
  com.google.gson.annotations,
+ com.google.gson.reflect,
+ com.google.gson.stream,
  org.apache.commons.codec,
  org.apache.commons.codec.binary,
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.jetty.http,
  org.eclipse.jetty.util,
  org.eclipse.jetty.util.component,
+ org.eclipse.jetty.util.thread,
  org.eclipse.jetty.websocket.api,
  org.eclipse.jetty.websocket.api.annotations,
  org.eclipse.jetty.websocket.api.extensions,
@@ -40,5 +43,6 @@ Import-Package:
  org.jupnp.model.meta,
  org.jupnp.model.types,
  org.osgi.framework,
+ org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml
