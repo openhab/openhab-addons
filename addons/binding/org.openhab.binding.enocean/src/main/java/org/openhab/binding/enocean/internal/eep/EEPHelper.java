@@ -13,7 +13,7 @@ public abstract class EEPHelper {
     public static State validateTotalUsage(State value, State currentState, Configuration config) {
         EnOceanChannelTotalusageConfig c = config.as(EnOceanChannelTotalusageConfig.class);
 
-        if (c.validate && (value instanceof QuantityType) && (currentState instanceof QuantityType)) {
+        if (c.validateValue && (value instanceof QuantityType) && (currentState instanceof QuantityType)) {
             @SuppressWarnings("unchecked")
             QuantityType<Energy> newValue = value.as(QuantityType.class);
 
