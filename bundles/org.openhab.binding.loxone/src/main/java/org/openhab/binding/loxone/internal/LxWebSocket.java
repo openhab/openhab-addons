@@ -27,7 +27,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.codec.binary.Hex;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.WebSocketPolicy;
@@ -37,6 +36,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.loxone.internal.security.LxWsSecurity;
 import org.openhab.binding.loxone.internal.types.LxConfig;
 import org.openhab.binding.loxone.internal.types.LxErrorCode;
@@ -99,10 +99,10 @@ public class LxWebSocket {
     /**
      * Create websocket object.
      *
-     * @param debugId      instance of the client used for debugging purposes only
+     * @param debugId instance of the client used for debugging purposes only
      * @param thingHandler API to the thing handler
-     * @param cfg          binding configuration
-     * @param host         IP address of the Miniserver
+     * @param cfg binding configuration
+     * @param host IP address of the Miniserver
      */
     LxWebSocket(int debugId, LxServerHandler thingHandler, LxBindingConfiguration cfg, InetAddress host) {
         this.debugId = debugId;
@@ -210,7 +210,7 @@ public class LxWebSocket {
         int offset = msgOffset;
         int length = msgLength;
         if (logger.isTraceEnabled()) {
-            String s = Hex.encodeHexString(data);
+            String s = HexUtils.bytesToHex(data);
             logger.trace("[{}] Binary message: length {}: {}", debugId, length, s);
         }
         webSocketLock.lock();
@@ -344,7 +344,7 @@ public class LxWebSocket {
      * send the command.
      *
      * @param command command to send to the Miniserver
-     * @param sync    true is synchronous request, false if ansynchronous
+     * @param sync true is synchronous request, false if ansynchronous
      * @param encrypt true if command can be encrypted (does not mean it will)
      * @return response received (for sync command) or to be received (for async), null if error occurred
      */
@@ -419,7 +419,7 @@ public class LxWebSocket {
     /**
      * Sends an action to a Loxone Miniserver's control.
      *
-     * @param id        identifier of the control
+     * @param id identifier of the control
      * @param operation identifier of the operation
      * @throws IOException when communication error with Miniserver occurs
      */
@@ -478,7 +478,7 @@ public class LxWebSocket {
     /**
      * Disconnect websocket session - initiated from this end.
      *
-     * @param code   error code for disconnecting the websocket
+     * @param code error code for disconnecting the websocket
      * @param reason reason for disconnecting the websocket
      */
     void disconnect(LxErrorCode code, String reason) {
