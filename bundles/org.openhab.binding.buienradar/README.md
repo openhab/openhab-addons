@@ -1,0 +1,52 @@
+# Buienradar Binding
+
+The Buienradar Binding periodically (5 minute intervals) retrieves rainfall predictions from the Dutch buienradar.nl webservice API.
+
+This allows us to warn of upcoming rainfal when there are still open windows, or prevents watering the outside plants needlessly. 
+
+## Supported Things
+
+The webservice supports one thing, which can be added manually via the web interface. The thing needs longitude and latitude of the location which needs forecasts.
+
+## Discovery
+
+No auto-discovery is currently possible.
+
+## Configuration of the thing
+
+The configuration can be done via the PaperUI web interface, or manually by adding a Thing to your `.things` file:
+
+```
+Thing buienradar:rain_forecast:home [ location="52.198864211111925,5.4192629660193585" ]
+```
+
+and adding the relevant items as such in your `.items` file. Please note that the buienradar service only provides predictions in 5 minutes intervals with a maximum of two hours (120 minutes):
+
+```
+Number RAIN_CURRENT "Current rain" (Rain) {channel="buienradar:rain_forecast:home:forecast_0" }
+Number RAIN_5MIN "Rain 5 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_5" }
+Number RAIN_10MIN "Rain 10 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_10" }
+Number RAIN_15MIN "Rain 15 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_15" }
+Number RAIN_20MIN "Rain 20 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_20" }
+Number RAIN_25MIN "Rain 25 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_25" }
+Number RAIN_30MIN "Rain 30 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_30" }
+Number RAIN_35MIN "Rain 35 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_35" }
+Number RAIN_40MIN "Rain 40 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_40" }
+Number RAIN_45MIN "Rain 45 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_45" }
+Number RAIN_50MIN "Rain 50 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_50" }
+Number RAIN_55MIN "Rain 55 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_55" }
+Number RAIN_60MIN "Rain 60 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_60" }
+Number RAIN_65MIN "Rain 65 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_65" }
+Number RAIN_70MIN "Rain 70 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_70" }
+Number RAIN_75MIN "Rain 75 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_75" }
+Number RAIN_80MIN "Rain 80 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_80" }
+Number RAIN_85MIN "Rain 85 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_85" }
+Number RAIN_90MIN "Rain 90 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_90" }
+Number RAIN_95MIN "Rain 95 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_95" }
+Number RAIN_100MIN "Rain 100 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_100" }
+Number RAIN_105MIN "Rain 105 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_105" }
+Number RAIN_110MIN "Rain 110 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_110" }
+Number RAIN_115MIN "Rain 115 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_115" }
+Number RAIN_120MIN "Rain 120 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_120" }
+```
+

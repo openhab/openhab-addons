@@ -112,6 +112,11 @@
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bosesoundtouch/${project.version}</bundle>
     </feature>
 
+    <feature name="openhab-binding-buienradar" description="Buienradar Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.buienradar/${project.version}</bundle>
+    </feature>
+
     <feature name="openhab-binding-chromecast" description="Chromecast Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
