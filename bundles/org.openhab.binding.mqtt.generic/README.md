@@ -173,6 +173,21 @@ The channel expects values on the corresponding MQTT topic to be in this format 
 
 You can connect this channel to a Rollershutter or Dimmer item.
 
+## Item Actions
+In order for OH to publish to an MQTT broker (either embedded, local or remote) the MQTT version 1.x binding supported actions defined within an items file:
+
+```Switch MySwitch {mqtt=">[mqtt:broker:/mytopic:command:ON:1],>[mqtt:broker:/mytopic:command:OFF:0]"}```
+
+In the MQTT version 2.x binding, the publish action is performed via Rules instead.
+
+Items file:
+```Switch MySwitch "MySwitch"```
+
+Sitemap file:
+```Switch item=MySwitch```
+
+Configure a rule which is triggered by the switch (or some other input) and include the rule action below.
+
 ## Rule Actions
 
 This binding includes a rule action, which allows to publish MQTT messages from within rules.
