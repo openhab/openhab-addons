@@ -23,6 +23,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.loxone.internal.LxServerHandler;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.LxWebSocket;
@@ -54,11 +55,11 @@ public abstract class LxWsSecurity {
     /**
      * Create an authentication instance.
      *
-     * @param debugId      instance of the client used for debugging purposes only
+     * @param debugId instance of the client used for debugging purposes only
      * @param thingHandler API to the thing handler
-     * @param socket       websocket to perform communication with Miniserver
-     * @param user         user to authenticate
-     * @param password     password to authenticate
+     * @param socket websocket to perform communication with Miniserver
+     * @param user user to authenticate
+     * @param password password to authenticate
      */
     LxWsSecurity(int debugId, LxServerHandlerApi thingHandler, LxWebSocket socket, String user, String password) {
         this.debugId = debugId;
@@ -125,7 +126,7 @@ public abstract class LxWsSecurity {
      * Hash string (e.g. containing user name and password or token) according to the algorithm required by the
      * Miniserver.
      *
-     * @param string     string to be hashed
+     * @param string string to be hashed
      * @param hashKeyHex hash key received from the Miniserver in hex format
      * @return hashed string or null if failed
      */
@@ -139,7 +140,7 @@ public abstract class LxWsSecurity {
             Mac mac = Mac.getInstance("HmacSHA1");
             mac.init(signKey);
             byte[] rawData = mac.doFinal(string.getBytes());
-            return Hex.encodeHexString(rawData);
+            return HexUtils.bytesToHex(rawData);
         } catch (DecoderException | NoSuchAlgorithmException | InvalidKeyException e) {
             return null;
         }
@@ -173,7 +174,7 @@ public abstract class LxWsSecurity {
     /**
      * Set error code and return false. It is used to report detailed error information from inside the algorithms.
      *
-     * @param reason  reason for failure
+     * @param reason reason for failure
      * @param details details of the failure
      * @return always false
      */
@@ -190,13 +191,13 @@ public abstract class LxWsSecurity {
     /**
      * Create an authentication instance.
      *
-     * @param type         type of security algorithm
-     * @param swVersion    Miniserver's software version or null if unknown
-     * @param debugId      instance of the client used for debugging purposes only
+     * @param type type of security algorithm
+     * @param swVersion Miniserver's software version or null if unknown
+     * @param debugId instance of the client used for debugging purposes only
      * @param thingHandler API to the thing handler
-     * @param socket       websocket to perform communication with Miniserver
-     * @param user         user to authenticate
-     * @param password     password to authenticate
+     * @param socket websocket to perform communication with Miniserver
+     * @param user user to authenticate
+     * @param password password to authenticate
      * @return created security object
      */
     public static LxWsSecurity create(LxWsSecurityType type, String swVersion, int debugId,
