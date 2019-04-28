@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -101,7 +101,6 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
     public void setChannelStateDescription(ChannelUID channelId, StateDescription description) {
         assertNotNull(channelId);
         assertNotNull(description);
-        assertNull(stateDescriptions.get(channelId));
         stateDescriptions.put(channelId, description);
     }
 

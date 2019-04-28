@@ -95,13 +95,14 @@ class LxControlTest {
             assertEquals(readOnly, d.isReadOnly());
             List<StateOption> opts = d.getOptions();
             if (options == null) {
-                assertTrue(opts == null || opts.isEmpty());
+                assertTrue(opts.isEmpty());
             } else {
                 assertNotNull(opts);
                 assertEquals(options.size(), opts.size());
                 options.forEach(o -> {
-                    long num = opts.stream()
-                            .filter(f -> o.getLabel().equals(f.getLabel()) && o.getValue().equals(f.getValue()))
+                    String label = o.getLabel();
+                    long num = opts.stream().filter(
+                            f -> label != null && label.equals(f.getLabel()) && o.getValue().equals(f.getValue()))
                             .collect(Collectors.counting());
                     assertEquals(1, num);
                 });
