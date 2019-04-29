@@ -248,6 +248,7 @@ Some channels can be configured with parameters.
 |               | storeValue     | Store final value. For Eltako devices, block dimming value.          | True or false. Defaults to false.                                         |
 | teachInCMD    | manufacturerId | Id is used for 4BS teach in with EEP                                 | HEX                                                                                                                                 |
 |               | teachInMSG     | Use this message if teach in type and/or manufacturer id are unknown | HEX                                                                                                                                 |
+|  totalusage   | validateValue  | Filter out increases more than 10.0 kWh and decreases less than 1.0 kWh | true / false                                                                                                                        |
 
 Possible declaration in Thing DSL:
 
