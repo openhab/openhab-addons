@@ -23,6 +23,11 @@ import javax.net.ssl.HttpsURLConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * An helper class to compute and send request.
+ *
+ * @author Guilhem Bonnefille <guilhem.bonnefille@gmail.com> - Initial contribution
+ */
 public class Sender {
 
     static public String DEFAULT_URL = "https://smsapi.free-mobile.fr/sendmsg";
@@ -35,6 +40,7 @@ public class Sender {
     public Sender(String url) {
         this.url = url;
     }
+
     public Sender() {
         this.url = DEFAULT_URL;
     }

@@ -12,6 +12,11 @@
  */
 package fr.free.smsapi;
 
+/**
+ * An interface for handling account's related data.
+ *
+ * @author Guilhem Bonnefille <guilhem.bonnefille@gmail.com> - Initial contribution
+ */
 public interface Account {
 
     String getUser();

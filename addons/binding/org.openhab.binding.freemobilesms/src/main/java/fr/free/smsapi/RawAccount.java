@@ -12,6 +12,11 @@
  */
 package fr.free.smsapi;
 
+/**
+ * An {@link Account} implementation.
+ *
+ * @author Guilhem Bonnefille <guilhem.bonnefille@gmail.com> - Initial contribution
+ */
 public class RawAccount implements Account {
 
     protected final String user;
