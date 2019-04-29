@@ -96,20 +96,4 @@ public class Sender {
             }
         }
     }
-
-    public static void main(String args[]) {
-        if (args.length != 3) {
-            System.err.print("Incorrect number of arguments: given "+args.length);
-            System.exit(1);
-        }
-
-        Account tempAccount = new RawAccount(args[0], args[1]);
-        try {
-            new Sender().send(tempAccount, args[2]);
-        } catch (IOException e) {
-            System.err.println("Failed to send message");
-            e.printStackTrace();
-            System.exit(2);
-        }
-    }
 }
