@@ -12,11 +12,14 @@
  */
 package fr.free.smsapi;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * An interface for handling account's related data.
  *
  * @author Guilhem Bonnefille <guilhem.bonnefille@gmail.com> - Initial contribution
  */
+@NonNullByDefault
 public interface Account {
 
     String getUser();

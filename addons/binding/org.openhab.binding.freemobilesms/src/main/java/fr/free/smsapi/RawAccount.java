@@ -12,11 +12,14 @@
  */
 package fr.free.smsapi;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * An {@link Account} implementation.
  *
  * @author Guilhem Bonnefille <guilhem.bonnefille@gmail.com> - Initial contribution
  */
+@NonNullByDefault
 public class RawAccount implements Account {
 
     protected final String user;

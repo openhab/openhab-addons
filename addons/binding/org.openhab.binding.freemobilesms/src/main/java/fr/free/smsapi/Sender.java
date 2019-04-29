@@ -20,6 +20,8 @@ import java.net.URLEncoder;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Guilhem Bonnefille <guilhem.bonnefille@gmail.com> - Initial contribution
  */
+@NonNullByDefault
 public class Sender {
 
     static public String DEFAULT_URL = "https://smsapi.free-mobile.fr/sendmsg";
