@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.core.util.HexUtils;
+import org.openhab.binding.enocean.internal.eep.EEPHelper;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.slf4j.Logger;
@@ -150,9 +151,9 @@ public class A5_11_04 extends _4BSMessage {
                 case WATT:
                     factor = 1;
                     break;
-                case KILOWATT:
-                    factor *= 1000;
                 case MEGAWATT:
+                    factor *= 1000;
+                case KILOWATT:
                     factor *= 1000;
                     break;
                 default:
@@ -176,7 +177,8 @@ public class A5_11_04 extends _4BSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
+            Configuration config) {
         if (isErrorState()) {
             return UnDefType.UNDEF;
         }
@@ -189,7 +191,9 @@ public class A5_11_04 extends _4BSMessage {
             case CHANNEL_INSTANTPOWER:
                 return getPowerMeasurementData();
             case CHANNEL_TOTALUSAGE:
-                return getEnergyMeasurementData();
+                State value = getEnergyMeasurementData();
+
+                return EEPHelper.validateTotalUsage(value, currentState, config);
             case CHANNEL_COUNTER:
                 return getOperatingHours();
         }
