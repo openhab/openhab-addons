@@ -1,0 +1,1160 @@
+= OSRAM Lightify Binary Protocol Documentation
+Christoph Engelbert <https://github.com/noctarius[@noctarius2k]>
+// Settings:
+:compat-mode!:
+:idseperator: -
+// Aliases:
+:project-name: OSRAM Lightify Binary Protocol
+:project-handle: osram-lightify-binary-protocol
+:toc:
+
+OSRAM
+link:https://www.osram.com/osram_com/tools-and-services/tools/lightify---smart-connected-light/[Lightify] is a smart home, connected lightning technology. Lights, switches and other paired devices are controlled using the Lightify gateway device. This gateway is an always-on, always-connected device which can be controlled using the official Lightify REST API on the Lightify Cloud. That, however, means that all commands need to be routed through the internet.
+
+The official Lightify app, on the other hand, communicates directly with the gateway and uses a proprietary binary protocol which is not publicly specified.
+
+This document is meant to create a public specification of the known facts about how to discover gateway devices, paired devices and zones/groups, as well as how to control those devices.
+
+== Disclaimer
+
+All information in this document are collected using *reverse engineering practices* or are available by other implementations / people on the internet. Certain *information might be incorrect, outdated or unspecific*. Any help completing this document is appreciated, please file pull requests.
+
+Using and/or implementing information in this document *might brick your device*, *render it unfunctional*, *change behavior of any connected device* and/or *may void your warranty*. Any action taken upon information in this document is *strictly at your own risk*. *The author(s) are not liable* for any losses and damages in connection with the use of this document.
+
+The author(s) are *not affiliated* to OSRAM Light AG in any way. Furthermore is this document *not official publicated or approved* by OSRAM Licht AG.
+
+== Basics about the Protocol
+
+The OSRAM Lightify gateway protocol is a binary protocol with a specified header.
+
+The underlying protocol is a persistent TCP connection which does not seem to support multiplexing, therefore multiple requests should be sent one after another. To support multithreading, multiple connections should be used.
+
+The TCP protocol works over port _4000_ and discovery can be implemented using mDNS (multicast DNS, aka Bonjour). Further information in <<Lightify Gateway Discovery>>.
+
+Multibyte values encoded using little-endian encoding and considered unsigned values.
+
+String values are encoded using UTF-8 encoding and of fixed length. Unused bytes are filled with _0x00_ and should be trimmed out to get the real string.
+
+=== Headers
+
+The protocol defines a common header for both requests and responses. The header consists of the packet's length, a packet type and the command id.
+
+Furthermore the header contains a request id which is recommended, but not required, to be monotonly increasing but must wrapping around to startover when surpassing _0xFFFFFFFF_. The response will feature the same request id and can be used to correlate responses with requests.
+
+.Packet Header
+|===
+| Byte(s) | Description | Data type
+
+| 0-1
+| Length of the packet, excl header length
+| uint16_t
+
+| 2
+| Packet type (flag)
+| uint8_t: enum { +
+  _0x00_: Light Device +
+  _0x01_: Device response? +
+  _0x02_: Broadcast / Zone Command +
+  _0x03_: Zone Response? +
+}
+
+| 3
+| Command Id
+| uint8_t: See <<Lightify Commands>>
+
+| 4-7
+| Unique, increasing request id
+| uint64_t
+
+|===
+
+Response packets have an additional field in the header, which seems to return a status / error code for the request.
+
+.Response Header Status Code
+|===
+| Byte(s) | Description | Data type
+
+| 8
+| Status code?
+| uint8_t: enum { +
+_0x00_: No error? +
+_0x01_: Wrong (number of) parameter(s)? +
+_0x14_: ? +
+_0x15_: Command is not a broadcast? +
+_0x16_: Reset required? Occurs after sending an unknown command or "too fast" (2 LIST_PAIRED at once is ok, 5 isn't). All requests get this response until reset. +
+_0xA7_: ? +
+_0x0B_: ? +
+_0xC2_: ? +
+_0xD1_: ? +
+_0xFF_: Unknown command? All requests get an 0x16 status code return until reset. +
+}
+
+|===
+
+If the packet is not a broadcast (addressing type != _0x02_), the device or zone address header is following up right after the header. In case of a broadcast, the header is followed by the commands data. Addressing of specific zones or devices is defined in the following section.
+
+=== Error Response
+
+In case of an illegally addressed packet or any other type of error, an error response packet is returned from the gateway. The packet consists of the header only and the last byte seems to define an error code. See previous table for a list of known? error codes.
+
+== Device Types
+
+The OSRAM Lightify gateway uses the Zigbee Light Link communication protocol, however it is also able to communicate with certain other device types of the Lightify series, such as switches, motion sensors and power plugs / sockets.
+
+A device type is sent with status updates to identify the type of the device as well as the capabilities of a specific device.
+
+.Device Type
+|===
+| Id | Description
+
+| 1
+| Bulb: Fixed white, dimmable, non-softswitch
+
+| 2
+| Bulb: Tunable white, dimmable, soft-switchable
+
+| 4
+| Bulb: Fixed white, dimmable, soft-switchable
+
+| 10
+| Bulb: RGB, tunable white, dimmable, soft-switchable
+
+| 16
+| Plug / Power socket
+
+| 32
+| Motion Sensor
+
+| 64
+| Switch (2 switches)
+
+| 65
+| Switch (4 switches)
+
+|===
+
+== Device and Zone Addressing
+
+Each paired device has a unique address (MAC). Multiple paired devices can be controlled at once by adding them to zones / groups, which are addressed using the zone's id.
+
+An address always contains 8 byte, no matter it's adressing a device or zone and is directly followed by the command's specific data.
+
+.Addressing Header
+|===
+| Byte(s) | Description | Data type
+
+| 8-15
+| Address
+| uint64_t: See the following specification
+
+| 16-...
+| Command specific data
+| See <<Lightify Commands>>
+
+|===
+
+=== Device address
+
+Devices are addressed by, what seems to be, a hardware address, similar to MAC addresses used in networking devices.
+
+.Device Addressing
+|===
+| Byte(s) | Description | Data type
+
+| 0-7
+| Device address
+| uint64_t
+
+|===
+
+While discovering devices the device's address is made known to the application, controlling the gateway, and the paired device can be addressed directly (whereas the command packet is still routed through the gateway).
+
+*Attention:* Device addresses are transmitted as 8 bytes, not as strings!
+
+=== Zone address
+
+Zones are identified by their zone id. Addressing itself, however, is still using 8 bytes, even if zone ids seem to be limited to _0xFFFF_. That said, the addressing is built as following:
+
+.Zone Addressing
+|===
+| Byte | Data type
+
+| 1
+| uint8_t: lower significant byte
+
+| 2
+| uint8_t: higher significant byte
+
+| 3-7
+| uint8_t[6]: _0x00_
+
+|===
+
+*Attention:* Also note, that zone commands have a packet type of _0x02_ at byte position _2_ in the packet's header.
+
+== Lightify Gateway Discovery
+
+To discover the OSRAM Lightify gateway's IP address, a link:https://en.wikipedia.org/wiki/Multicast_DNS[mDNS (multicast DNS)] request is used. mDNS is also known as Bonjour and is originally developed by Apple.
+
+To find the gateway's address a SSDP lookup request is sent to the UDP broadcast address _224.0.0.251_ (IPv4) or _FF02::FB_ (IPv6). The service type to search for is `_http._tcp` which will find a Lightify device named as `Lightify-XXXXXXXX`, where `XXXXXXXX` is a part of the gateway's serial number (`S/N: OSRXXXXXXXX-YY`) which is also used in the gateway's own SSID (last 6 numbers of the code).
+
+Since more items, especially of other vendors, might be found, the instance name should be tested for starting with `Lightify-` to make sure only the Lightify gateway is discovered.
+
+According to the search type and the mDNS response, there is supposed to be a HTTP service on port 80, which does not seem to exist. However, the gateway seems to communicate over link:https://en.wikipedia.org/wiki/QUIC[QUIC] to the OSRAM servers, so maybe the port 80 is also available using QUIC.
+
+After discovering the gateway's IP address, the communication port to use the described protocol is TCP/4000.
+
+Lightify devices and zones will be discovered using the gateway binary protocol, using tge commands <<PACKET_LIST_PAIRED_DEVICES>> and <<PACKET_LIST_ZONES>>.
+
+== Lightify Commands
+
+Lightify commands are either used for broadcasts, like device or zone discovery, or contain information to control a specfic device or zone.
+
+The following table is most probably incomplete and more commands are available. Response packets often follow a very similar scheme, therefore it should be easy to find new packets and analyze their content.
+
+Known command ids are put into the following list:
+
+.Commands
+|===
+| Command Id | Description | Addressing | Packet Definition
+
+| _0x02_
+| Unknown, 1 byte data => no error
+| BROADCAST?
+| ???
+
+| _0x0A_
+| Unknown,  byte data => no error
+| BROADCAST?
+| ???
+
+| _0x0B_
+| Unknown, 1 byte data => error 0x01
+| BROADCAST?
+| ???
+
+| _0x13_
+| List paired devices
+| BROADCAST
+| <<PACKET_LIST_PAIRED_DEVICES>>
+
+| _0x15_
+| Unknown, 1 byte data => no error
+| BROADCAST?
+| ???
+
+| _0x16_
+| Unknown, error code 15 (wrong addressing)
+| ZONE?, DEVICE?
+| ???
+
+| _0x1C_
+| Unknown, 1 byte data => error 0x0B, 0x19
+| BROADCAST?
+| ???
+
+| _0x1D_
+| Unknown, 1 byte data => no error
+| BROADCAST?
+| ???
+
+| _0x1E_
+| List configured zones
+| BROADCAST
+| <<PACKET_LIST_ZONES>>
+
+| _0x1F_
+| Unknown, actual content returned (uint16_t(0,0))
+| BROADCAST?
+| ???
+
+| _0x20_
+| Add Device to Zone
+| DEVICE?
+| ???
+
+| _0x21_
+| Remove Device from Zone
+| DEVICE?
+| ???
+
+| _0x26_
+| Get Zone information
+| ZONE
+| <<PACKET_GET_ZONE_INFO>>
+
+| _0x27_
+| Set Zone name
+| ZONE?
+| ???
+
+| _0x28_
+| Set Device name
+| DEVICE?
+| ???
+
+| _0x29_
+| Unknown, 1 byte data => ~1k bytes returned (all zero)
+| BROADCAST?
+| ???
+
+| _0x31_
+| Set luminance of light or zone
+| ZONE, DEVICE
+| <<PACKET_SET_LUMINANCE>>
+
+| _0x32_
+| Set power switch on/off (also set default???)
+| ZONE, DEVICE
+| <<PACKET_SET_SWITCH>>
+
+| _0x33_
+| Set white light temperature
+| ZONE, DEVICE
+| <<PACKET_SET_TEMPERATURE>>
+
+| _0x34_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x36_
+| Set light color (RGB)
+| ZONE, DEVICE
+| <<PACKET_SET_COLOR>>
+
+| _0x37_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x38_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x51_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x52_
+| Activate scene
+| ZONE, DEVICE
+| <<PACKET_ACTIVATE_SCENE>>
+
+| _0x53_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x54_
+| Unknown, returned actual data (uint16_t(0,0))
+| BROADCAST?
+| ???
+
+| _0x55_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x56_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x57_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x58_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x61_
+| Unknown, retured unknown error code 0xD1, 0xC2
+| BROADCAST?
+| ???
+
+| _0x62_
+| Unknown, retured unknown error code 0xD1
+| BROADCAST?
+| ???
+
+| _0x63_
+| Unknown, retured unknown error code 0xD1
+| BROADCAST?
+| ???
+
+| _0x64_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x66_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x67_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x68_
+| Get device information
+| DEVICE
+| <<PACKET_GET_DEVICE_INFO>>
+
+| _0x6A_
+| Unknown, retured unknown error code 0xD1
+| BROADCAST?
+| ???
+
+| _0x6B_
+| Unknown, retured unknown error code 0xD1
+| BROADCAST?
+| ???
+
+| _0x6D_
+| Unknown, retured unknown error code 0xD1
+| BROADCAST?
+| ???
+
+| _0x6F_
+| Gateway Firmware version
+| BROADCAST
+| <<PACKET_GET_GATEWAY_FIRMWARE_VERSION>>
+
+| _0x70_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x71_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x76_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x79_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x7A_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x7B_
+| Unknown, 1 byte data => no error
+| BROADCAST?
+| ???
+
+| _0x7C_
+| Unknown, 1 byte data => wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0x7D_
+| Unknown, retured unknown error code 0x16 - no return with data, maybe firmware update?
+| ???
+| ???
+
+| _0x91_
+| Unknown, retured unknown error code 0xA7, 0xC2
+| ???
+| ???
+
+| _0xC0_
+| Unknown, no error
+| BROADCAST?
+| ???
+
+| _0xC1_
+| Unknown, no error
+| BROADCAST?
+| ???
+
+| _0xC3_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0xC4_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0xC6_
+| Unknown, no error
+| BROADCAST?
+| ???
+
+| _0xC7_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0xC8_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0xD0_
+| Unknown, retured unknown error code 0xD1
+| ???
+| ???
+
+| _0xD1_
+| Unknown, no response, system reset?
+| ???
+| Gateway goes unresponsive for ~5s but does NOT reset.
+
+| _0xD2_
+| Unknown, 1 byte data => 0xD1, crashed? needs restart
+| ???
+| ???
+
+| _0xD3_
+| Unknown, no answer (0x00), firmware update or more data?
+| ???
+| ???
+
+| _0xD4_
+| Unknown, no answer (0x00), firmware update or more data?
+| ???
+| ???
+
+| _0xD5_
+| Set Color Wheel? HSL?
+| ZONE?, DEVICE?
+| ???
+
+| _0xD6_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0xD8_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0xD9_
+| Unknown, wrong addressing (scene builder???)
+| ZONE?, DEVICE?
+| ???
+
+| _0xDA_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0xDB_
+| Soft on, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0xDC_
+| Soft off, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0xDD_
+| Remove all scenes and groups
+| ZONE?, BROADCAST?
+| ???
+
+| _0xD0_
+| Unknown, no error (0x00)
+| BROADCAST?
+| ???
+
+| _0xE1_
+| Unknown, wrong addressing
+| ZONE?, DEVICE?
+| ???
+
+| _0xE2_
+| Unknown, no answer
+| BROADCAST?
+| ???
+
+
+| _0xE3_
+| Get / Scan / Set  Wifi Configuration
+| BROADCAST
+| <<PACKET_GET_WIFI_CONFIGURATION>>
+
+| _0xE4_
+| Unknown, activates light (with 1 byte data) - seems to reset the light
+| BROADCAST?
+| ???
+
+| _0xE5_
+| Unknown, returned actual data (uint64_t(1,0,0,0))
+| BROADCAST?
+| ???
+
+| _0xE6_
+| Unknown, returned actual data (uint16_t(1,15))
+| BROADCAST?
+| ???
+
+| _0xE6_
+| Unknown, returned actual data (uint16_t(1,15))
+| BROADCAST?
+| ???
+
+| _0xE7_
+| Unknown, no answer
+| BROADCAST?
+| ???
+
+| _0xE8_
+| Unknown, retured unknown error code 0x16
+| BROADCAST?
+| ???
+
+| _0xE9_
+| Unknown, retured unknown error code 0xD1
+| BROADCAST?
+| ???
+
+| _0xEA_
+| Unknown, retured unknown error code 0xD1
+| BROADCAST?
+| ???
+
+|===
+
+As visible from the list, a lot of command ids seem either unused or, what is more presumable, unknown at the current point in time.
+
+== Command data
+
+Most commands carry additional information starting after the header (for broadcast packets) or after the addressing header (non-broadcast packets).
+
+The following sections define the packet's structure after either of both headers, according to the command type.
+
+=== PACKET_LIST_PAIRED_DEVICES
+
+Returns a list of all paired devices.
+
+.Request data
+|===
+| Byte(s) | Description | Data type
+
+| 16
+| Unknown
+| uint8_t: always? _0x01_
+
+|===
+
+.Response data
+|===
+| Byte(s) | Description | Data type
+
+| 9-10
+| Number of devices
+| uint16_t
+
+| ...50 bytes each device
+| Device status information
+| See following table
+
+|===
+
+.Device status information
+|===
+| Byte(s) | Description | Data type
+
+| 0-1
+| Device id? 0xffff for powered off devices.
+| uint16_t
+
+| 2-9
+| Device address
+| uint64_t: See <<Device address>>
+
+| 10
+| Device type?
+| uint8_t: See <<Device Types>>
+
+| 11-15
+| Firmware version
+| uint8_t[5]: Translation into firmware version string -> +
+{%02d, uint8_t[0]}+{%02d, uint8_t[1]}+{%02d, uint8_t[2]}+uint8_t[3]+uint8_t[4]
+
+| 16-17
+| Zone Id
+| uint16_t
+
+| 18
+| Power switch status
+| uint8_t: bool
+
+| 19
+| Luminance value
+| uint8_t
+
+| 20-21
+| Temparature value (in Kelvin)
+| uint16_t: _1900_ >= x <= _6500_
+
+| 22
+| Red value
+| uint8_t
+
+| 23
+| Green value
+| uint8_t
+
+| 24
+| Blue value
+| uint8_t
+
+| 25
+| Alpha value
+| uint8_t: always? _0xFF_
+
+| 26-41
+| Device name
+| uint8_t[16]: UTF-8 encoded, zero terminated string
+
+| 42-45
+| Unknown. 0 for powered on devices, 2013 for powered off devices?
+| uint32_t
+
+| 46-49
+| Unknown. Always 0?
+| uint32_t
+
+|===
+
+
+=== PACKET_LIST_ZONES
+
+Returns a list of all configured zones.
+
+.Request data
+|===
+| Byte(s) | Description | Data type
+
+| -
+| No additional information to send
+| -
+
+|===
+
+.Response data
+|===
+| Byte(s) | Description | Data type
+
+| 9-10
+| Number of zones
+| uint16_t
+
+| ...18 bytes each zone
+| Zone information
+| See following table
+
+|===
+
+.Zone information
+|===
+| Byte(s) | Description | Data type
+
+| 0-1
+| Zone id
+| uint16_t
+
+| 2-17
+| Zone name
+| uint8_t[16]: UTF-8 encoded, zero terminated string
+
+|===
+
+Assigned devices need to be discovered using <<PACKET_GET_ZONE_INFO>> after the zone id has been seen with this packet.
+
+=== PACKET_GET_ZONE_INFO
+
+Returns information about the requested zone, including assigned devices.
+
+.Request data
+|===
+| Byte(s) | Description | Data type
+
+| -
+| No additional information to send
+| -
+
+|===
+
+.Response data
+|===
+| Byte(s) | Description | Data type
+
+| 9-10
+| Zone id
+| uint32_t
+
+| 11-27
+| Zone name
+| uint8_t[16]: UTF-8 encoded, zero terminated string
+
+| 28
+| Number of assigned devices
+| uint8_t
+
+| ...8 bytes each device
+| Device addresses
+| See <<Device address>>
+
+|===
+
+=== PACKET_SET_LUMINANCE
+
+Sets the luminance value of the addressed device or zone.
+
+.Request data
+|===
+| Byte(s) | Description | Data type
+
+| 16
+| Luminance value
+| uint8_t
+
+| 17-18
+| Transition time in 1/10 seconds
+| uint16_t
+
+|===
+
+.Response data
+|===
+| Byte(s) | Description | Data type
+
+| 9-10
+| Device or zone id
+| uint16_t
+
+| 11-18
+| Device or zone address
+| uint64_t: See <<Device and Zone Addressing>>
+
+|===
+
+=== PACKET_SET_SWITCH
+
+Sets the power switch state of the addressed device or zone.
+
+.Request data
+|===
+| Byte(s) | Description | Data type
+
+| 16
+| Power switch state
+| uint8_t: bool
+
+|===
+
+.Response data
+|===
+| Byte(s) | Description | Data type
+
+| 9-10
+| WRONG:Device or zone id??? Number of devices changed?
+| uint16_t
+
+| 11-18
+| Device or zone address
+| uint64_t: See <<Device and Zone Addressing>>
+
+|===
+
+=== PACKET_SET_TEMPERATURE
+
+Sets the white light temperature of the addressed device or zone between 1900 and 6500 Kelvin.
+
+.Request data
+|===
+| Byte(s) | Description | Data type
+
+| 16-17
+| White light temperature
+| uint16_t: _1900_ >= x <= _6500_
+
+| 18-19
+| Transition time in 1/10 seconds
+| uint16_t
+
+|===
+
+.Response data
+|===
+| Byte(s) | Description | Data type
+
+| 9-10
+| Device or zone id
+| uint16_t
+
+| 11-18
+| Device or zone address
+| uint64_t: See <<Device and Zone Addressing>>
+
+|===
+
+=== PACKET_SET_COLOR
+
+Sets the RGB color value of the addressed device or zone.
+
+.Request data
+|===
+| Byte(s) | Description | Data type
+
+| 16
+| Red value
+| uint8_t
+
+| 17
+| Green value
+| uint8_t
+
+| 18
+| Blue value
+| uint8_t
+
+| 19
+| Alpha value
+| uint8_t: always _0xFF_?
+
+| 20-21
+| Transition time in 1/10 seconds
+| uint16_t
+
+|===
+
+.Response data
+|===
+| Byte(s) | Description | Data type
+
+| 9-10
+| Device or zone id
+| uint16_t
+
+| 11-18
+| Device or zone address
+| uint64_t: See <<Device and Zone Addressing>>
+
+|===
+
+=== PACKET_ACTIVATE_SCENE
+
+Activates a predefined scene on the addressed device or zone.
+
+.Request data
+|===
+| Byte(s) | Description | Data type
+
+| 16-17
+| Scene id
+| uint16_t
+
+|===
+
+.Response data
+|===
+| Byte(s) | Description | Data type
+
+| 9-10
+| Device or zone id
+| uint16_t
+
+| 11-18
+| Device or zone address
+| uint64_t: See <<Device and Zone Addressing>>
+
+|===
+
+=== PACKET_GET_DEVICE_INFO
+
+Returns information about the requested device.
+
+.Request data
+|===
+| Byte(s) | Description | Possible values
+
+| -
+| No additional information to send
+| -
+
+|===
+
+.Response data
+|===
+| Byte(s) | Description | Data type
+
+
+| 9-10
+| Device id?
+| uint16_t
+
+| 11-18
+| Device address
+| uint64_t: See <<Device address>>
+
+| 19
+| Reachability
+| uint8_t: <255 = hops?, 255 = offline
+
+| 20
+| Unknown
+| uint8_t: ???
+
+| 21
+| Power switch status
+| uint8_t: bool
+
+| 22
+| Luminance value
+| uint8_t
+
+| 23-24
+| Temparature value (in Kelvin)
+| uint16_t: _1900_ >= x <= _6500_
+
+| 25
+| Red value
+| uint8_t
+
+| 26
+| Green value
+| uint8_t
+
+| 27
+| Blue value
+| uint8_t
+
+| 28
+| Alpha value
+| uint8_t: always _0xFF_?
+
+| 29-31
+| Unknown
+| uint8_t[3]: ???
+
+|===
+
+If the response packet's byte at index _19_ is _0xFF_ (the device is offline / non-reachable) the packet is only those 20 bytes, otherwise the full packet comes back.
+
+
+=== PACKET_GET_WIFI_CONFIGURATION
+
+Retrieves or configures the wifi configuration.
+
+.Request data
+|===
+| Byte(s) | Description | Data type
+
+| 16
+| Subcommand
+| uint8_t: enum { +
+_0x00_: Get wifi configuration +
+_0x01_: Set wifi configuration +
+_0x03_: Scan wifi configuration +
+}
+
+|===
+
+.Response data
+|===
+| Byte(s) | Description | Data type
+
+| 9
+| Number of profiles
+| uint8_t
+
+| ...97 bytes each profile
+| Profile information
+| See following table
+
+|===
+
+.Profile information
+|===
+| Byte(s) | Description | Data type
+
+| 0-31
+| Profile Name
+| uint8_t[32]: UTF-8 encoded, zero terminated string
+
+| 32-64
+| SSID
+| uint8_t[33]: UTF-8 encoded, zero terminated string
+
+| 65-70
+| BSSID
+| uint8_t[6]: UTF-8 encoded, zero terminated string
+
+| 71-74
+| Channel
+| uint32_t
+
+| 75-76
+| Unknown
+| uint16_t: ???
+
+| 77-80
+| IP Address
+| uint64_t: 4 bytes of IP address
+
+| 81-84
+| Gateway
+| uint64_t: 4 bytes of IP address
+
+| 85-88
+| Netmask
+| uint64_t: 4 bytes of IP address
+
+| 89-92
+| DNS #1
+| uint64_t: 4 bytes of IP address
+
+| 93-96
+| DNS #2
+| uint64_t: 4 bytes of IP address
+
+|===
+
+=== PACKET_GET_GATEWAY_FIRMWARE_VERSION
+
+Retrieves the current firmware version of the gateway.
+
+.Request data
+|===
+| Byte(s) | Description | Data type
+
+| -
+| No additional information to send
+| -
+
+|===
+
+.Response data
+|===
+| Byte(s) | Description | Data type
+
+| 9-12
+| Firmware version
+| uint8_t[4]: Translation into firmware version string -> +
+{%02d, uint8_t[0]}+{%02d, uint8_t[1]}+{%02d, uint8_t[2]}+{%02d, uint8_t[3]}
+
+|===
