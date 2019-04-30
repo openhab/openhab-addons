@@ -44,7 +44,8 @@ import org.slf4j.LoggerFactory;
 public abstract class EnOceanTransceiver {
 
     // Thread management
-    private Future<?> readingTask;
+    private Future<?> readingTask = null;
+    private Future<?> timeOut = null;
 
     private Logger logger = LoggerFactory.getLogger(EnOceanTransceiver.class);
 
@@ -97,9 +98,13 @@ public abstract class EnOceanTransceiver {
                             outputStream.write(b);
                             outputStream.flush();
 
+                            if (timeOut != null) {
+                                timeOut.cancel(true);
+                            }
+
                             // slowdown sending of message to avoid hickups at receivers
                             // Todo tweak sending intervall (250 ist just a first try)
-                            scheduler.schedule(() -> {
+                            timeOut = scheduler.schedule(() -> {
                                 try {
                                     sendNext();
                                 } catch (IOException e) {
@@ -163,8 +168,12 @@ public abstract class EnOceanTransceiver {
     }
 
     public void ShutDown() {
-
         logger.debug("Interrupt rx Thread");
+
+        if (timeOut != null) {
+            timeOut.cancel(true);
+        }
+
         if (readingTask != null) {
             readingTask.cancel(true);
             try {
@@ -174,6 +183,7 @@ public abstract class EnOceanTransceiver {
         }
 
         readingTask = null;
+        timeOut = null;
         listeners.clear();
         teachInListener = null;
         errorListener = null;
