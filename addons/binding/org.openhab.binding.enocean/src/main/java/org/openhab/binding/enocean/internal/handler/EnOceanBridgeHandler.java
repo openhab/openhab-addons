@@ -136,17 +136,13 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                                     public void responseReceived(BaseResponse response) {
 
                                         if (response.isOK()) {
-                                            logger.info("New Id successfully set!");
                                             updateState(channelUID, new StringType("New Id successfully set"));
                                         } else if (response.getResponseType() == ResponseType.RET_FLASH_HW_ERROR) {
-                                            logger.warn("The write/erase/verify process failed!");
                                             updateState(channelUID,
                                                     new StringType("The write/erase/verify process failed"));
                                         } else if (response.getResponseType() == ResponseType.RET_BASEID_OUT_OF_RANGE) {
-                                            logger.warn("Base id out of range!");
                                             updateState(channelUID, new StringType("Base id out of range"));
                                         } else if (response.getResponseType() == ResponseType.RET_BASEID_MAX_REACHED) {
-                                            logger.warn("No more change possible!");
                                             updateState(channelUID, new StringType("No more change possible"));
                                         }
                                     }
@@ -154,7 +150,6 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                                 });
 
                     } catch (IllegalArgumentException e) {
-                        logger.warn("BaseId could not be parsed!", e);
                         updateState(channelUID, new StringType("BaseId could not be parsed"));
                     }
                 }
@@ -254,13 +249,10 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                     });
 
         } catch (IOException e) {
-            logger.warn("error during bridge init occured", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Port could not be found");
         } catch (PortInUseException e) {
-            logger.warn("error during bridge init occured", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Port already in use");
         } catch (Exception e) {
-            logger.warn("error during bridge init occured", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Port could not be initialized");
             return;
         }
@@ -343,7 +335,6 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
         try {
             transceiver.sendESP3Packet(message, responseListener);
         } catch (IOException e) {
-            logger.warn("Error while sending data! Taking Thing offline...", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }

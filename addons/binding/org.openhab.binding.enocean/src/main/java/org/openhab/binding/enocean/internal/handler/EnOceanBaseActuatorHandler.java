@@ -227,8 +227,6 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                         .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
 
                 getBridgeHandler().sendMessage(msg, null);
-            } else {
-                logger.debug("Not gonna send this message...");
             }
 
         } catch (IllegalArgumentException e) {
