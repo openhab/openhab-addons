@@ -77,7 +77,7 @@ public abstract class EEP {
         setOptionalData(packet.getOptionalPayload());
     }
 
-    public void convertFromCommand(String channelId, String channelTypeId, Command command,
+    public EEP convertFromCommand(String channelId, String channelTypeId, Command command,
             Map<String, State> currentState, Configuration config) {
         if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
             throw new IllegalArgumentException(String.format("Command %s of channel %s(%s) is not supported",
@@ -89,6 +89,7 @@ public abstract class EEP {
         } else {
             convertFromCommandImpl(channelId, channelTypeId, command, currentState, config);
         }
+        return this;
     }
 
     public State convertToState(String channelId, String channelTypeId, Configuration config, State currentState) {
