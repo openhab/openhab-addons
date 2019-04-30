@@ -102,6 +102,7 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_VIRTUALROCKERSWITCHB = "virtualRockerswitchB";
     public final static String CHANNEL_ROCKERSWITCHLISTENERSWITCH = "rockerswitchListenerSwitch";
     public final static String CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER = "rockerswitchListenerRollershutter";
+    public final static String CHANNEL_ROCKERSWITCHLISTENER_START = "rockerswitchListener";
 
     public final static String CHANNEL_WINDOWHANDLESTATE = "windowHandleState";
     public final static String CHANNEL_CONTACT = "contact";

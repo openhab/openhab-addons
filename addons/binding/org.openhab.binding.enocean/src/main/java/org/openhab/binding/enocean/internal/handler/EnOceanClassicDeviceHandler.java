@@ -127,7 +127,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
         ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
         String id = channelTypeUID == null ? "" : channelTypeUID.getId();
 
-        if (id.startsWith("rockerswitchListener")) {
+        if (id.startsWith(CHANNEL_ROCKERSWITCHLISTENER_START)) {
             EnOceanChannelRockerSwitchListenerConfig config = channel.getConfiguration()
                     .as(EnOceanChannelRockerSwitchListenerConfig.class);
 
@@ -155,7 +155,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
         ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
         String id = channelTypeUID == null ? "" : channelTypeUID.getId();
 
-        if (id.startsWith("rockerswitchListener")) {
+        if (id.startsWith(CHANNEL_ROCKERSWITCHLISTENER_START)) {
             String channelId = channel.getUID().getId();
 
             if (channelConfigById.containsKey(channelId)) {
@@ -184,7 +184,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
             ChannelTypeUID channelTypeUID = c.getChannelTypeUID();
             String id = channelTypeUID == null ? "" : channelTypeUID.getId();
 
-            return ChannelKind.STATE.equals(c.getKind()) && id.startsWith("rockerswitchListener")
+            return ChannelKind.STATE.equals(c.getKind()) && id.startsWith(CHANNEL_ROCKERSWITCHLISTENER_START)
                     && c.getConfiguration().as(EnOceanChannelRockerSwitchListenerConfig.class).enoceanId
                             .equalsIgnoreCase(HexUtils.bytesToHex(senderId));
         };
@@ -196,7 +196,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
             ChannelTypeUID channelTypeUID = c.getChannelTypeUID();
             String id = channelTypeUID == null ? "" : channelTypeUID.getId();
 
-            return ChannelKind.TRIGGER.equals(c.getKind()) && id.startsWith("rockerswitchListener")
+            return ChannelKind.TRIGGER.equals(c.getKind()) && id.startsWith(CHANNEL_ROCKERSWITCHLISTENER_START)
                     && c.getConfiguration().as(EnOceanChannelRockerSwitchListenerConfig.class).enoceanId
                             .equalsIgnoreCase(HexUtils.bytesToHex(senderId));
         };
