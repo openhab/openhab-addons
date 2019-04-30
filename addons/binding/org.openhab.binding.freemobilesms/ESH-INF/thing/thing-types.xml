@@ -6,8 +6,8 @@
 
 	<!-- Sample Thing Type -->
 	<thing-type id="account">
-		<label>FreeMobileSms Binding Thing</label>
-		<description>SMS thing for FreeMobileSms Binding</description>
+		<label>FreeMobileSms Account</label>
+		<description>Account for the SMS service of FreeMobile.</description>
 
 		<channels>
 			<channel id="message" typeId="message" />
@@ -29,8 +29,8 @@
 	<!-- Sample Channel Type -->
 	<channel-type id="message">
 		<item-type>String</item-type>
-		<label>FreeMobileSms Binding Channel</label>
-		<description>Sample channel for FreeMobileSms Binding</description>
+		<label>Send message</label>
+		<description>Channel to send message via account.</description>
 		<state readOnly="false" />
 	</channel-type>
 
