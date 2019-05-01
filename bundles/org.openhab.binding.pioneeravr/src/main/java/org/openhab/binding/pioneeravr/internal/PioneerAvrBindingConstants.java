@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * The {@link PioneerAvrBinding} class defines common constants, which are used across the whole binding.
  *
  * @author Antoine Besnard - Initial contribution
+ * @author Leroy Foerster - Listening Mode, Playing Listening Mode
  */
 @NonNullByDefault
 public class PioneerAvrBindingConstants {
@@ -45,7 +46,7 @@ public class PioneerAvrBindingConstants {
                     .collect(Collectors.toSet()));
 
     public static final Set<String> SUPPORTED_DEVICE_MODELS2016 = Collections.unmodifiableSet(
-            Stream.of("SC-99", "SC-LX89", "SC-97", "SC-LX79", "SC-95", "SC-LX59", "SC-92", "SC-91", "VSX-90", "VSX-45")
+            Stream.of("SC-99", "SC-LX89", "SC-97", "SC-LX79", "SC-95", "SC-LX59", "SC-92", "SC-91", "VSX-90", "VSX-45", "VSX-830")
                     .collect(Collectors.toSet()));
 
     // List of all Thing Type UIDs
@@ -71,6 +72,8 @@ public class PioneerAvrBindingConstants {
     public static final String VOLUME_DB_CHANNEL = "volumeDb";
     public static final String MUTE_CHANNEL = "mute";
     public static final String SET_INPUT_SOURCE_CHANNEL = "setInputSource";
+    public static final String LISTENING_MODE_CHANNEL = "listeningMode";
+    public static final String PLAYING_LISTENING_MODE_CHANNEL = "playingListeningMode";
     public static final String DISPLAY_INFORMATION_CHANNEL = "displayInformation#displayInformation";
 
     public static final String GROUP_CHANNEL_PATTERN = "zone%s#%s";

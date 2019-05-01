@@ -23,6 +23,7 @@ import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrResponse;
  * Represent an AVR response.
  *
  * @author Antoine Besnard - Initial contribution
+ * @author Leroy Foerster - Listening Mode, Playing Listening Mode
  */
 public class Response implements AvrResponse {
 
@@ -34,6 +35,8 @@ public class Response implements AvrResponse {
         VOLUME_LEVEL("[0-9]{2,3}", "VOL", "ZV", "YV", "HZV"),
         MUTE_STATE("[0-1]", "MUT", "Z2MUT", "Z3MUT", "HZM"),
         INPUT_SOURCE_CHANNEL("[0-9]{2}", "FN", "Z2F", "Z3F", "ZEA"),
+        LISTENING_MODE("[0-9]{4}", "SR"),
+        PLAYING_LISTENING_MODE("[0-9a-f]{4}", "LM"),
         DISPLAY_INFORMATION("[0-9a-fA-F]{30}", "FL");
 
         private String[] responsePrefixZone;
