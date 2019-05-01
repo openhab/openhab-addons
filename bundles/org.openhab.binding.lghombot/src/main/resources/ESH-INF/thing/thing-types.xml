@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="LGHomBot">
-		<label>LG-HomBot</label>
+		<label>LG HomBot</label>
 		<description>HomBot vacuum robot.</description>
 		<category>CleaningRobot</category>
 

@@ -17,6 +17,7 @@ import static org.openhab.binding.lghombot.internal.LGHomBotBindingConstants.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -68,6 +69,9 @@ public class LGHomBotHandler extends BaseThingHandler {
     private String currentSrvMem = "";
     private DecimalType currentBattery = DecimalType.ZERO;
     private DecimalType currentCPULoad = DecimalType.ZERO;
+    private OnOffType currentCleanState = OnOffType.OFF;
+    private OnOffType currentStartState = OnOffType.OFF;
+    private OnOffType currentHomeState = OnOffType.OFF;
     private OnOffType currentTurbo = OnOffType.OFF;
     private OnOffType currentRepeat = OnOffType.OFF;
     private State currentImage = UnDefType.UNDEF;
@@ -114,17 +118,13 @@ public class LGHomBotHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_START:
-                    if (command instanceof OnOffType) {
-                        if (((OnOffType) command) == OnOffType.ON) {
-                            sendHomBotCommand("CLEAN_START");
-                        }
+                    if (command instanceof OnOffType && ((OnOffType) command) == OnOffType.ON) {
+                        sendHomBotCommand("CLEAN_START");
                     }
                     break;
                 case CHANNEL_HOME:
-                    if (command instanceof OnOffType) {
-                        if (((OnOffType) command) == OnOffType.ON) {
-                            sendHomBotCommand("HOMING");
-                        }
+                    if (command instanceof OnOffType && ((OnOffType) command) == OnOffType.ON) {
+                        sendHomBotCommand("HOMING");
                     }
                     break;
                 case CHANNEL_PAUSE:
@@ -196,7 +196,7 @@ public class LGHomBotHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         disposed = false;
-        logger.debug("Initializing handler for LG-HomBot");
+        logger.debug("Initializing handler for LG HomBot");
         config = getConfigAs(LGHomBotConfiguration.class);
 
         updateAllChannels();
@@ -211,8 +211,9 @@ public class LGHomBotHandler extends BaseThingHandler {
      *            initiate a refresh.
      */
     private void setupRefreshTimer(int initialWaitTime) {
-        if (refreshTimer != null) {
-            refreshTimer.cancel(false);
+        ScheduledFuture<?> localTimer = refreshTimer;
+        if (localTimer != null) {
+            localTimer.cancel(false);
         }
         refreshTimer = scheduler.scheduleWithFixedDelay(() -> updateAllChannels(), initialWaitTime,
                 config.getPollingPeriod(), TimeUnit.SECONDS);
@@ -255,6 +256,15 @@ public class LGHomBotHandler extends BaseThingHandler {
         switch (channelUID.getId()) {
             case CHANNEL_STATE:
                 updateState(channelUID, StringType.valueOf(currentState));
+                break;
+            case CHANNEL_CLEAN:
+                updateState(channelUID, currentCleanState);
+                break;
+            case CHANNEL_START:
+                updateState(channelUID, currentStartState);
+                break;
+            case CHANNEL_HOME:
+                updateState(channelUID, currentHomeState);
                 break;
             case CHANNEL_BATTERY:
                 updateState(channelUID, currentBattery);
@@ -329,86 +339,85 @@ public class LGHomBotHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         if (status != null && !status.isEmpty()) {
+            boolean parsingOk = true;
             String[] rows = status.split("\\r?\\n");
             ChannelUID channel;
             for (String row : rows) {
                 int idx = row.indexOf('=');
-                String name = row.substring(0, idx);
-                String state = row.substring(idx + 1).replace("\"", "");
-                switch (name) {
+                if (idx == -1) {
+                    continue;
+                }
+                final String key = row.substring(0, idx);
+                String value = row.substring(idx + 1).replace("\"", "");
+                switch (key) {
                     case "JSON_ROBOT_STATE":
-                        if (!state.equals(currentState)) {
-                            if (state.isEmpty()) {
-                                state = "ERROR";
-                            }
-                            currentState = state;
+                        if (value.isEmpty()) {
+                            value = HBSTATE_UNKNOWN;
+                        }
+                        if (!value.equals(currentState)) {
+                            currentState = value;
                             channel = new ChannelUID(getThing().getUID(), CHANNEL_STATE);
-                            updateState(channel, StringType.valueOf(state));
+                            updateState(channel, StringType.valueOf(value));
 
-                            if (state.equals(HBSTATE_WORKING) || state.equals(HBSTATE_BACKMOVING)
-                                    || state.equals(HBSTATE_BACKMOVING_INIT)) {
-                                channel = new ChannelUID(getThing().getUID(), CHANNEL_START);
-                                updateState(channel, OnOffType.ON);
-                                channel = new ChannelUID(getThing().getUID(), CHANNEL_CLEAN);
-                                updateState(channel, OnOffType.ON);
-                                channel = new ChannelUID(getThing().getUID(), CHANNEL_HOME);
-                                updateState(channel, OnOffType.OFF);
+                            if (value.equals(HBSTATE_WORKING) || value.equals(HBSTATE_BACKMOVING)
+                                    || value.equals(HBSTATE_BACKMOVING_INIT)) {
+                                currentCleanState = OnOffType.ON;
+                                currentStartState = OnOffType.ON;
+                                currentHomeState = OnOffType.OFF;
+                            } else if (value.equals(HBSTATE_HOMING) || value.equals(HBSTATE_DOCKING)) {
+                                currentCleanState = OnOffType.OFF;
+                                currentStartState = OnOffType.OFF;
+                                currentHomeState = OnOffType.ON;
+                            } else {
+                                currentCleanState = OnOffType.OFF;
+                                currentStartState = OnOffType.OFF;
+                                currentHomeState = OnOffType.OFF;
                             }
-                            if (state.equals(HBSTATE_HOMING) || state.equals(HBSTATE_DOCKING)) {
-                                channel = new ChannelUID(getThing().getUID(), CHANNEL_START);
-                                updateState(channel, OnOffType.OFF);
-                                channel = new ChannelUID(getThing().getUID(), CHANNEL_CLEAN);
-                                updateState(channel, OnOffType.OFF);
-                                channel = new ChannelUID(getThing().getUID(), CHANNEL_HOME);
-                                updateState(channel, OnOffType.ON);
-                            }
-                            if (state.equals(HBSTATE_STANDBY) || state.equals(HBSTATE_PAUSE)
-                                    || state.equals(HBSTATE_CHARGING) || state.equals(HBSTATE_DIAGNOSIS)
-                                    || state.equals(HBSTATE_RESERVATION) || state.equals(HBSTATE_ERROR)) {
-                                channel = new ChannelUID(getThing().getUID(), CHANNEL_START);
-                                updateState(channel, OnOffType.OFF);
-                                channel = new ChannelUID(getThing().getUID(), CHANNEL_CLEAN);
-                                updateState(channel, OnOffType.OFF);
-                                channel = new ChannelUID(getThing().getUID(), CHANNEL_HOME);
-                                updateState(channel, OnOffType.OFF);
-                            }
+                            channel = new ChannelUID(getThing().getUID(), CHANNEL_CLEAN);
+                            updateState(channel, currentCleanState);
+                            channel = new ChannelUID(getThing().getUID(), CHANNEL_START);
+                            updateState(channel, currentStartState);
+                            channel = new ChannelUID(getThing().getUID(), CHANNEL_HOME);
+                            updateState(channel, currentHomeState);
                         }
                         break;
                     case "JSON_BATTPERC":
                         try {
-                            DecimalType battery = DecimalType.valueOf(state);
+                            DecimalType battery = DecimalType.valueOf(value);
                             if (!battery.equals(currentBattery)) {
                                 currentBattery = battery;
                                 channel = new ChannelUID(getThing().getUID(), CHANNEL_BATTERY);
                                 updateState(channel, battery);
                             }
                         } catch (NumberFormatException e) {
-                            // Wrong format, ignore
+                            logger.debug("Couldn't parse Battery Percent.");
+                            parsingOk = false;
                         }
                         break;
                     case "CPU_IDLE":
                         if (isLinked(CHANNEL_CPU_LOAD)) {
                             try {
-                                DecimalType cpuLoad = new DecimalType(100 - Double.valueOf(state).longValue());
+                                DecimalType cpuLoad = new DecimalType(100 - Double.valueOf(value).longValue());
                                 if (!cpuLoad.equals(currentCPULoad)) {
                                     currentCPULoad = cpuLoad;
                                     channel = new ChannelUID(getThing().getUID(), CHANNEL_CPU_LOAD);
                                     updateState(channel, cpuLoad);
                                 }
                             } catch (NumberFormatException e) {
-                                // Wrong format, ignore
+                                logger.debug("Couldn't parse CPU Idle.");
+                                parsingOk = false;
                             }
                         }
                         break;
                     case "LGSRV_MEMUSAGE":
-                        if (!state.equals(currentSrvMem)) {
-                            currentSrvMem = state;
+                        if (!value.equals(currentSrvMem)) {
+                            currentSrvMem = value;
                             channel = new ChannelUID(getThing().getUID(), CHANNEL_SRV_MEM);
-                            updateState(channel, StringType.valueOf(state));
+                            updateState(channel, StringType.valueOf(value));
                         }
                         break;
                     case "JSON_TURBO":
-                        OnOffType turbo = state.equalsIgnoreCase("true") ? OnOffType.ON : OnOffType.OFF;
+                        OnOffType turbo = value.equalsIgnoreCase("true") ? OnOffType.ON : OnOffType.OFF;
                         if (!turbo.equals(currentTurbo)) {
                             currentTurbo = turbo;
                             channel = new ChannelUID(getThing().getUID(), CHANNEL_TURBO);
@@ -416,7 +425,7 @@ public class LGHomBotHandler extends BaseThingHandler {
                         }
                         break;
                     case "JSON_REPEAT":
-                        OnOffType repeat = state.equalsIgnoreCase("true") ? OnOffType.ON : OnOffType.OFF;
+                        OnOffType repeat = value.equalsIgnoreCase("true") ? OnOffType.ON : OnOffType.OFF;
                         if (!repeat.equals(currentRepeat)) {
                             currentRepeat = repeat;
                             channel = new ChannelUID(getThing().getUID(), CHANNEL_REPEAT);
@@ -424,38 +433,40 @@ public class LGHomBotHandler extends BaseThingHandler {
                         }
                         break;
                     case "JSON_MODE":
-                        if (!state.equals(currentMode)) {
-                            currentMode = state;
+                        if (!value.equals(currentMode)) {
+                            currentMode = value;
                             channel = new ChannelUID(getThing().getUID(), CHANNEL_MODE);
-                            updateState(channel, StringType.valueOf(state));
+                            updateState(channel, StringType.valueOf(value));
                         }
                         break;
                     case "JSON_NICKNAME":
-                        if (!state.equals(currentNickname)) {
-                            currentNickname = state;
+                        if (!value.equals(currentNickname)) {
+                            currentNickname = value;
                             channel = new ChannelUID(getThing().getUID(), CHANNEL_NICKNAME);
-                            updateState(channel, StringType.valueOf(state));
+                            updateState(channel, StringType.valueOf(value));
                         }
                         break;
                     case "CLREC_LAST_CLEAN":
-                        final String stringDate = row.substring(17, 37).replace("\"", "");
-                        ZonedDateTime date = ZonedDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault());
                         try {
+                            final String stringDate = value.substring(0, 19);
                             LocalDateTime localDateTime = LocalDateTime.parse(stringDate, formatterLG);
-                            date = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
-                        } catch (Exception e) {
-                            logger.info("Couldn't parse DateTime.", e);
-                        }
-                        DateTimeType lastClean = new DateTimeType(date);
-                        if (!lastClean.equals(currentLastClean)) {
-                            currentLastClean = lastClean;
-                            channel = new ChannelUID(getThing().getUID(), CHANNEL_LAST_CLEAN);
-                            updateState(channel, lastClean);
+                            ZonedDateTime date = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
+                            DateTimeType lastClean = new DateTimeType(date);
+                            if (!lastClean.equals(currentLastClean)) {
+                                currentLastClean = lastClean;
+                                channel = new ChannelUID(getThing().getUID(), CHANNEL_LAST_CLEAN);
+                                updateState(channel, lastClean);
+                            }
+                        } catch (IndexOutOfBoundsException | DateTimeException e) {
+                            logger.debug("Couldn't parse Last Clean. String length: {}", value.length());
                         }
                         break;
                     default:
                         break;
                 }
+            }
+            if (!parsingOk) {
+                logger.debug("Couldn't parse response;\n {}", status);
             }
         }
     }
@@ -581,7 +592,9 @@ public class LGHomBotHandler extends BaseThingHandler {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            ImageIO.write(image, "jpg", baos);
+            if (!ImageIO.write(image, "jpg", baos)) {
+                logger.debug("Couldn't find JPEG writer.");
+            }
         } catch (IOException e) {
             logger.info("IOException creating JPEG image.", e);
         }
@@ -617,7 +630,11 @@ public class LGHomBotHandler extends BaseThingHandler {
 
         String blackBox = findBlackBoxFile();
         String url = buildHttpAddress(blackBox);
-        byte[] mapData = HttpUtil.downloadData(url, null, false, -1).getBytes();
+        RawType dlData = HttpUtil.downloadData(url, null, false, -1);
+        if (dlData == null) {
+            return;
+        }
+        byte[] mapData = dlData.getBytes();
 
         final int tileCount = mapData[32];
         int maxX = 0;
@@ -674,9 +691,11 @@ public class LGHomBotHandler extends BaseThingHandler {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            ImageIO.write(image, "png", baos);
+            if (!ImageIO.write(image, "png", baos)) {
+                logger.debug("Couldn't find PNG writer.");
+            }
         } catch (IOException e) {
-            logger.error("IOException creating PNG image.", e);
+            logger.info("IOException creating PNG image.", e);
         }
         byte[] byteArray = baos.toByteArray();
         if (byteArray != null && byteArray.length > 0) {

@@ -49,7 +49,8 @@ import org.slf4j.LoggerFactory;
  * @author Fredrik Ahlström - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.lghombot")
+@Component(service = { DiscoveryService.class,
+        LGHomBotDiscovery.class }, immediate = true, configurationPid = "discovery.lghombot")
 public class LGHomBotDiscovery extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(LGHomBotDiscovery.class);
@@ -187,9 +188,9 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
     private @Nullable CidrAddress getLocalIP4Address() {
         List<CidrAddress> l = NetUtil.getAllInterfaceAddresses().stream()
                 .filter(a -> a.getAddress() instanceof Inet4Address).map(a -> a).collect(Collectors.toList());
-        for (int i = 0; i < l.size(); i++) {
-            if (!l.get(i).toString().startsWith("169.254.")) {
-                return l.get(i);
+        for (CidrAddress adr : l) {
+            if (!adr.toString().startsWith("169.254.")) {
+                return adr;
             }
         }
         return null;
@@ -277,11 +278,9 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        if (executorService != null) {
-            ExecutorService localExecutorService = executorService;
-
+        ExecutorService localExecutorService = executorService;
+        if (localExecutorService != null) {
             scanning = false;
-
             try {
                 localExecutorService.awaitTermination(TIMEOUT * SCAN_THREADS, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {

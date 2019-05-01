@@ -13,7 +13,6 @@
 package org.openhab.binding.lghombot.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lghombot.internal.discovery.LGHomBotDiscovery;
 
 /**
  * The {@link LGHomBotConfiguration} class contains fields mapping thing configuration parameters.
@@ -37,12 +36,12 @@ public class LGHomBotConfiguration {
     /**
      * Port used by the HomBot
      */
-    private Integer port = new Integer(6260);
+    private Integer port = Integer.valueOf(6260);
 
     /**
      * Polling time (in seconds) to refresh state from the HomBot itself.
      */
-    private Integer pollingPeriod = new Integer(3);
+    private Integer pollingPeriod = Integer.valueOf(3);
 
     /**
      * Gets the IP address or host name of the HomBot
