@@ -56,7 +56,7 @@ public class RuleUtils {
             throw new IllegalStateException("Time pattern incorrect. Must be 'hh:mm[:ss]'. " + baseTime);
         }
 
-        String r[] = baseTime.split(":");
+        String randomizedTime[] = baseTime.split(":");
 
         if (upperTime != null && !upperTime.isEmpty()) {
             String[] upperTimeParts = upperTime.split(":");
