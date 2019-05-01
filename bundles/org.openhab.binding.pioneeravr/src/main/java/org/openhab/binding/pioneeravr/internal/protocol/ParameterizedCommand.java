@@ -20,6 +20,7 @@ import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrConnectionExcepti
  * A command which accept a parameter.
  *
  * @author Antoine Besnard - Initial contribution
+ * @author Leroy Foerster - Listening Mode, Playing Listening Mode
  */
 public class ParameterizedCommand extends SimpleCommand {
 
@@ -29,7 +30,8 @@ public class ParameterizedCommand extends SimpleCommand {
     public enum ParameterizedCommandType implements AvrCommand.CommandType {
 
         VOLUME_SET("[0-9]{2,3}", "VL", "ZV", "YV", "HZV"),
-        INPUT_CHANNEL_SET("[0-9]{2}", "FN", "ZS", "ZT", "ZEA");
+        INPUT_CHANNEL_SET("[0-9]{2}", "FN", "ZS", "ZT", "ZEA"),
+        LISTENING_MODE_SET("[0-9]{4}", "SR");
 
         private String[] zoneCommands;
         private String parameterPattern;
