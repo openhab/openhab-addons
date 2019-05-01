@@ -78,12 +78,13 @@ It always provides a `temperature` channel.
 Depnding on the actual sensor, additional channels (`current`, `humidity`, `light`, `voltage`, `supplyvoltage`) are added.
 If the voltage input of the DS2438 is connected to a humidity sensor, several common types are supported (see below).
 
-It has two parameters: sensor id `id` and refresh time `refresh`.
+It has three parameters: sensor id `id`, refresh time `refresh` and `manualsensor` (advanced option).
 
 Known DS2438-base sensors are iButtonLink (https://www.ibuttonlink.com/) MS-T (recognized as generic DS2438), MS-TH, MS-TC, MS-TL, MS-TV.
 Unknown multisensors are added as generic DS2438 and have `temperature`, `current`, `voltage` and `supplyvoltage` channels.
 
-In case the sensor is not properly detected (e.g. because it is a self-made sensor), check if it is compatible with one of the sensors listed above. If so, the first byte of page 3 of the DS2438 needs to be set to the correct identification (0x00 = generic/MS-T, 0x19 = MS-TH, 0x1A = MS-TV, 0x1B = MS-TL, 0x1C = MS-TC). **Note: Updating the pages of a sensor can break other software. This is fully your own risk.** 
+In case the sensor is not properly detected (e.g. because it is a self-made sensor), check if it is compatible with one of the sensors listed above. 
+You can use `manualsensor` to override the auto-detected sensortype by setting `DS2438`, `MS_TH`, `MS_TV`, `MS_TL` or `MS_TC`.
 
 ### Elaborated Networks Multisensors (`ams`, `bms`)
 

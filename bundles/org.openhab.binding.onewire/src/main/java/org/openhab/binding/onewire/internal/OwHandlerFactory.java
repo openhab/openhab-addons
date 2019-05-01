@@ -39,6 +39,8 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OwHandlerFactory} is responsible for creating things and thing
@@ -49,7 +51,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.onewire", configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class OwHandlerFactory extends BaseThingHandlerFactory {
-
+    Logger logger = LoggerFactory.getLogger(OwHandlerFactory.class);
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @NonNullByDefault({})
@@ -62,6 +64,7 @@ public class OwHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
+        logger.error("factory {} creating thing {}", this, thing);
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (OwserverBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
@@ -81,6 +84,12 @@ public class OwHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
+    }
+
+    @Override
+    public void unregisterHandler(Thing thing) {
+        super.unregisterHandler(thing);
+        logger.error("factory {} deleting thing {}", this, thing);
     }
 
     private synchronized void registerDiscoveryService(OwserverBridgeHandler owserverBridgeHandler) {

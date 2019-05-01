@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.onewire.internal.config;
 
+import org.openhab.binding.onewire.internal.device.OwSensorType;
+
 /**
- * The {@link BaseHandlerConfiguration} is a helper class for the base thing handler configuration
+ * The {@link MstxHandlerConfiguration} is a helper class for the mstx thing handler configuration
  *
  * @author Jan N. Klug - Initial contribution
  */
-public class BaseHandlerConfiguration {
-    public String id;
-    public int refresh = 300;
+public class MstxHandlerConfiguration extends BaseHandlerConfiguration {
+    public OwSensorType manualsensor;
 }
