@@ -59,8 +59,8 @@ Thing mail:smtp:samplesmtp [ hostname="smtp.example.com", sender="foo@example.co
 
 Thing mail:imap:sampleimap [ hostname="imap.example.com", security="SSL", username="user", password="pass" ] {
     Channels:
-        Type mailcount : inbox_total [ folder="INBOX" type="TOTAL" ]
-        Type mailcount : inbox_unread [ folder="INBOX" type="UNREAD" ]
+        Type mailcount : inbox_total [ folder="INBOX", type="TOTAL" ]
+        Type mailcount : inbox_unread [ folder="INBOX", type="UNREAD" ]
 }
 ```
 
