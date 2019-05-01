@@ -62,8 +62,6 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_OWSERVER);
 
     private final Logger logger = LoggerFactory.getLogger(OwserverBridgeHandler.class);
-
-    // set by implementation when bridge is ready
     protected boolean refreshable = false;
 
     protected ScheduledFuture<?> refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, 1, 1000,
