@@ -99,6 +99,7 @@ rule "LogReader"
 ```
 
 Use the rules with your Telegram Bot (need openHAB Telegram Action installed and configured)
+
 ```xtend
 rule "LogReader"
     when
