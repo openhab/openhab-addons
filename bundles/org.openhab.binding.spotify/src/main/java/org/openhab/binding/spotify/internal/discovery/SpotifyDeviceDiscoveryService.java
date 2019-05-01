@@ -107,7 +107,7 @@ public class SpotifyDeviceDiscoveryService extends AbstractDiscoveryService {
             try {
                 bridgeHandler.listDevices().forEach(this::thingDiscovered);
             } catch (RuntimeException e) {
-                logger.debug("Finding devices failed with message: ", e.getMessage());
+                logger.debug("Finding devices failed with message: {}", e.getMessage(), e);
             }
         }
     }

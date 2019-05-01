@@ -210,7 +210,7 @@ sitemap spotify label="Spotify Sitemap" {
 
   Frame label="Spotify Player Info" {
     Selection item=spotifyDevices       label="Active device [%]"
-    Player    item=spotifyTrackPlayer   label="Player"
+    Default   item=spotifyTrackPlayer   label="Player"
     Switch    item=spotifyDeviceShuffle label="Shuffle mode:"
     Text      item=spotifyTrackRepeat   label="Repeat mode: [%s]"
     Text      item=spotifyTrackProgress label="Track progress: [%s]"
@@ -223,17 +223,17 @@ sitemap spotify label="Spotify Sitemap" {
   }
 
   Frame label="My Spotify Device 1" {
-    Text item=device1DeviceName label="Device Name [%s]"
-    Player item=device1Player
-    Slider item=device1DeviceVolume
-    Switch item=device1DeviceShuffle
+    Text    item=device1DeviceName label="Device Name [%s]"
+    Default item=device1Player
+    Slider  item=device1DeviceVolume
+    Switch  item=device1DeviceShuffle
   }
 
    Frame label="My Spotify Device 2" {
-    Text item=device2DeviceName label="Device Name [%s]"
-    Player item=device2Player
-    Slider item=device2DeviceVolume
-    Switch item=device2DeviceShuffle
+    Text    item=device2DeviceName label="Device Name [%s]"
+    Default item=device2Player
+    Slider  item=device2DeviceVolume
+    Switch  item=device2DeviceShuffle
   }
 }
 ```

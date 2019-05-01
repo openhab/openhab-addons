@@ -137,7 +137,7 @@ bridge you have configured.</description>
 	</channel-type>
 	<channel-type id="activeDevices">
 		<item-type>String</item-type>
-		<label>Active Device Name</label>
+		<label>Active Devices</label>
 		<description>List of active devices.</description>
 	</channel-type>
 	<channel-type id="activeDeviceType" advanced="true">

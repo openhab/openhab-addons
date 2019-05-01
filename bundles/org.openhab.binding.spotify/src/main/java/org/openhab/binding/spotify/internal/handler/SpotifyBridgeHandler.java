@@ -176,9 +176,12 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     @Override
     public boolean isAuthorized() {
         try {
-            return oAuthService != null && oAuthService.getAccessTokenResponse() != null
-                    && oAuthService.getAccessTokenResponse().getAccessToken() != null
-                    && oAuthService.getAccessTokenResponse().getRefreshToken() != null;
+            if (oAuthService == null) {
+                return false;
+            }
+            final AccessTokenResponse accessTokenResponse = oAuthService.getAccessTokenResponse();
+            return accessTokenResponse != null && accessTokenResponse.getAccessToken() != null
+                    && accessTokenResponse.getRefreshToken() != null;
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
             logger.debug("Exception checking authorization: ", e);
             return false;
@@ -276,16 +279,18 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     /**
      * Scheduled method to restart polling in case polling is not running.
      */
-    private synchronized void scheduledPollingRestart() {
-        try {
-            final boolean pollingNotRunning = pollingFuture == null || pollingFuture.isCancelled();
+    private void scheduledPollingRestart() {
+        synchronized (pollSynchronization) {
+            try {
+                final boolean pollingNotRunning = pollingFuture == null || pollingFuture.isCancelled();
 
-            expireCache();
-            if (pollStatus() && pollingNotRunning) {
-                startPolling();
+                expireCache();
+                if (pollStatus() && pollingNotRunning) {
+                    startPolling();
+                }
+            } catch (RuntimeException e) {
+                logger.debug("Restarting polling failed: ", e);
             }
-        } catch (RuntimeException e) {
-            logger.debug("Restarting polling failed: ", e);
         }
     }
 
@@ -293,12 +298,14 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
      * This method initiates a new thread for polling the available Spotify Connect devices and update the player
      * information.
      */
-    private synchronized void startPolling() {
-        cancelSchedulers();
-        if (active) {
-            expireCache();
-            pollingFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, configuration.refreshPeriod,
-                    TimeUnit.SECONDS);
+    private void startPolling() {
+        synchronized (pollSynchronization) {
+            cancelSchedulers();
+            if (active) {
+                expireCache();
+                pollingFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, configuration.refreshPeriod,
+                        TimeUnit.SECONDS);
+            }
         }
     }
 
@@ -403,11 +410,12 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         if (!lastTrackId.equals(trackId)) {
             lastTrackId = trackId;
             updateChannelState(CHANNEL_PLAYED_TRACKDURATION_MS, new DecimalType(item.getDurationMs()));
+            final String formattedProgress;
             synchronized (MUSIC_TIME_FORMAT) {
                 // synchronize because SimpleDateFormat is not thread safe
-                updateChannelState(CHANNEL_PLAYED_TRACKDURATION_FMT,
-                        MUSIC_TIME_FORMAT.format(new Date(item.getDurationMs())));
+                formattedProgress = MUSIC_TIME_FORMAT.format(new Date(item.getDurationMs()));
             }
+            updateChannelState(CHANNEL_PLAYED_TRACKDURATION_FMT, formattedProgress);
 
             updateChannelsPlayList(playerInfo, playlists);
             updateChannelState(CHANNEL_PLAYED_TRACKID, lastTrackId);
@@ -562,10 +570,13 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
          */
         private void setProgress(long progress) {
             this.progress = progress;
+            final String formattedProgress;
+
             synchronized (MUSIC_TIME_FORMAT) {
-                updateChannelState(CHANNEL_PLAYED_TRACKPROGRESS_MS, new DecimalType(progress));
-                updateChannelState(CHANNEL_PLAYED_TRACKPROGRESS_FMT, MUSIC_TIME_FORMAT.format(new Date(progress)));
+                formattedProgress = MUSIC_TIME_FORMAT.format(new Date(progress));
             }
+            updateChannelState(CHANNEL_PLAYED_TRACKPROGRESS_MS, new DecimalType(progress));
+            updateChannelState(CHANNEL_PLAYED_TRACKPROGRESS_FMT, formattedProgress);
         }
 
         /**
