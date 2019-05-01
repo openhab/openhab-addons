@@ -14,14 +14,12 @@ package org.openhab.binding.onewire.internal.handler;
 
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -64,11 +62,10 @@ public class BasicThingHandler extends OwBaseThingHandler {
 
     @Override
     public void initialize() {
-        // TODO: remove after 0.11.0 release
+        // TODO: remove after 2.5.0 release
         if (!thing.getThingTypeUID().equals(THING_TYPE_BASIC)) {
             changeThingType(THING_TYPE_BASIC, getConfig());
         }
-        Configuration configuration = getConfig();
 
         if (!super.configureThingHandler()) {
             return;
@@ -84,34 +81,23 @@ public class BasicThingHandler extends OwBaseThingHandler {
             case DS1420:
             case DS2401:
                 sensors.add(new DS2401(sensorId, this));
-                refreshInterval = 10 * 1000;
                 break;
             case DS2405:
                 sensors.add(new DS2405(sensorId, this));
-                refreshInterval = 10 * 1000;
                 break;
             case DS2406:
             case DS2413:
                 sensors.add(new DS2406_DS2413(sensorId, this));
-                refreshInterval = 10 * 1000;
                 break;
             case DS2408:
                 sensors.add(new DS2408(sensorId, this));
-                refreshInterval = 10 * 1000;
                 break;
             case DS2423:
                 sensors.add(new DS2423(sensorId, this));
-                refreshInterval = 10 * 1000;
                 break;
             default:
                 throw new IllegalArgumentException(
                         "unsupported sensorType " + sensorType.name() + ", this should have been checked before!");
-        }
-
-        if (configuration.containsKey(CONFIG_REFRESH)) {
-            // override default with configured value
-            // TODO: remove default from OwBaseThingHandler
-            refreshInterval = ((BigDecimal) configuration.get(CONFIG_REFRESH)).intValue() * 1000;
         }
 
         scheduler.execute(() -> {

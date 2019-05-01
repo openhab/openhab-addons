@@ -26,11 +26,14 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.onewire.internal.DS2438Configuration;
 import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
 import org.openhab.binding.onewire.internal.OwException;
+import org.openhab.binding.onewire.internal.config.MstxHandlerConfiguration;
 import org.openhab.binding.onewire.internal.device.DS1923;
 import org.openhab.binding.onewire.internal.device.DS2438;
 import org.openhab.binding.onewire.internal.device.DS2438.CurrentSensorType;
 import org.openhab.binding.onewire.internal.device.DS2438.LightSensorType;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BasicMultisensorThingHandler} is responsible for handling DS2438/DS1923 based multisensors (single
@@ -40,6 +43,7 @@ import org.openhab.binding.onewire.internal.device.OwSensorType;
  */
 @NonNullByDefault
 public class BasicMultisensorThingHandler extends OwBaseThingHandler {
+    public Logger logger = LoggerFactory.getLogger(BasicMultisensorThingHandler.class);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(
             Stream.of(THING_TYPE_MS_TX, THING_TYPE_MS_TH, THING_TYPE_MS_TV).collect(Collectors.toSet()));
     public static final Set<OwSensorType> SUPPORTED_SENSOR_TYPES = Collections
@@ -53,13 +57,20 @@ public class BasicMultisensorThingHandler extends OwBaseThingHandler {
 
     @Override
     public void initialize() {
-        // TODO: remove after 0.11.0 release
+        // TODO: remove after 2.5.0 release
         if (!thing.getThingTypeUID().equals(THING_TYPE_MS_TX)) {
             changeThingType(THING_TYPE_MS_TX, getConfig());
         }
 
         if (!super.configureThingHandler()) {
             return;
+        }
+
+        MstxHandlerConfiguration configuration = getConfig().as(MstxHandlerConfiguration.class);
+        if (configuration.manualsensor != null && sensorType != configuration.manualsensor) {
+            logger.debug("sensorType override for thing {}: old={}, new={}", thing.getUID(), sensorType,
+                    configuration.manualsensor);
+            sensorType = configuration.manualsensor;
         }
 
         // add sensors
@@ -112,4 +123,5 @@ public class BasicMultisensorThingHandler extends OwBaseThingHandler {
 
         updateProperties(properties);
     }
+
 }
