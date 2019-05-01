@@ -43,7 +43,7 @@ class SpotifyHandleCommands {
 
     private final Logger logger = LoggerFactory.getLogger(SpotifyDeviceHandler.class);
 
-    private SpotifyApi spotifyApi;
+    private final SpotifyApi spotifyApi;
 
     private List<Device> devices = Collections.emptyList();
     private List<Playlist> playlists = Collections.emptyList();
