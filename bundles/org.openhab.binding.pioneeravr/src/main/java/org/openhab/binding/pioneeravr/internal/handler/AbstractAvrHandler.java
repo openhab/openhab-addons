@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
  * AVR connection.
  *
  * @author Antoine Besnard - Initial contribution
+ * @author Leroy Foerster - Listening Mode, Playing Listening Mode
  */
 public abstract class AbstractAvrHandler extends BaseThingHandler
         implements AvrUpdateListener, AvrDisconnectionListener {
@@ -120,6 +121,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
         connection.sendVolumeQuery(zone);
         connection.sendMuteQuery(zone);
         connection.sendSourceInputQuery(zone);
+        connection.sendListeningModeQuery(zone);
     }
 
     /**
@@ -131,6 +133,8 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
         updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DB_CHANNEL, zone), UnDefType.UNDEF);
         updateState(getChannelUID(PioneerAvrBindingConstants.VOLUME_DIMMER_CHANNEL, zone), UnDefType.UNDEF);
         updateState(getChannelUID(PioneerAvrBindingConstants.SET_INPUT_SOURCE_CHANNEL, zone), UnDefType.UNDEF);
+        updateState(getChannelUID(PioneerAvrBindingConstants.LISTENING_MODE_CHANNEL, zone), UnDefType.UNDEF);
+        updateState(getChannelUID(PioneerAvrBindingConstants.PLAYING_LISTENING_MODE_CHANNEL, zone), UnDefType.UNDEF);
     }
 
     /**
@@ -168,6 +172,8 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
                 commandSent = connection.sendVolumeCommand(command, getZoneFromChannelUID(channelUID.getId()));
             } else if (channelUID.getId().contains(PioneerAvrBindingConstants.SET_INPUT_SOURCE_CHANNEL)) {
                 commandSent = connection.sendInputSourceCommand(command, getZoneFromChannelUID(channelUID.getId()));
+            } else if (channelUID.getId().contains(PioneerAvrBindingConstants.LISTENING_MODE_CHANNEL)) {
+                commandSent = connection.sendListeningModeCommand(command, getZoneFromChannelUID(channelUID.getId()));
             } else if (channelUID.getId().contains(PioneerAvrBindingConstants.MUTE_CHANNEL)) {
                 commandSent = connection.sendMuteCommand(command, getZoneFromChannelUID(channelUID.getId()));
             } else {
@@ -206,6 +212,14 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
 
                 case INPUT_SOURCE_CHANNEL:
                     manageInputSourceChannelUpdate(response);
+                    break;
+
+                case LISTENING_MODE:
+                    manageListeningModeUpdate(response);
+                    break;
+
+                case PLAYING_LISTENING_MODE:
+                    managePlayingListeningModeUpdate(response);
                     break;
 
                 case DISPLAY_INFORMATION:
@@ -285,6 +299,26 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
      */
     private void manageInputSourceChannelUpdate(AvrResponse response) {
         updateState(getChannelUID(PioneerAvrBindingConstants.SET_INPUT_SOURCE_CHANNEL, response.getZone()),
+                new StringType(response.getParameterValue()));
+    }
+
+    /**
+     * Notify an AVR now-playing, in-effect listening mode (audio output format) update to openHAB
+     *
+     * @param response
+     */
+    private void managePlayingListeningModeUpdate(AvrResponse response) {
+        updateState(getChannelUID(PioneerAvrBindingConstants.PLAYING_LISTENING_MODE_CHANNEL, response.getZone()),
+                new StringType(response.getParameterValue()));
+    }
+
+    /**
+     * Notify an AVR set listening mode (user-selected audio mode) update to openHAB
+     *
+     * @param response
+     */
+    private void manageListeningModeUpdate(AvrResponse response) {
+        updateState(getChannelUID(PioneerAvrBindingConstants.LISTENING_MODE_CHANNEL, response.getZone()),
                 new StringType(response.getParameterValue()));
     }
 
