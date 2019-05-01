@@ -15,7 +15,6 @@ package org.openhab.binding.spotify.internal.handler;
 import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
@@ -78,10 +77,14 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
         final SpotifyBridgeHandler bridgeHandler = (SpotifyBridgeHandler) getBridge().getHandler();
         spotifyApi = bridgeHandler.getSpotifyApi();
 
-        final Configuration config = thing.getConfiguration();
-        deviceName = (String) config.get(PROPERTY_SPOTIFY_DEVICE_NAME);
-        commandHandler = new SpotifyHandleCommands(spotifyApi);
-        updateStatus(ThingStatus.UNKNOWN);
+        deviceName = (String) getConfig().get(PROPERTY_SPOTIFY_DEVICE_NAME);
+        if (deviceName == null || deviceName.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The deviceName property is not set or empty. If you have an older thing please recreate this thing.");
+        } else {
+            commandHandler = new SpotifyHandleCommands(spotifyApi);
+            updateStatus(ThingStatus.UNKNOWN);
+        }
     }
 
     @Override
@@ -125,12 +128,15 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
      * Updates the device as showing status is gone and reset all device status to default.
      */
     public void setStatusGone() {
-        logger.debug("Device is gone: {}", thing.getUID());
-        getThing().setStatusInfo(
-                new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Device not available on Spotify"));
-        updateChannelState(CHANNEL_DEVICERESTRICTED, OnOffType.ON);
-        updateChannelState(CHANNEL_DEVICEACTIVE, OnOffType.OFF);
-        updateChannelState(CHANNEL_DEVICEPLAYER, PlayPauseType.PAUSE);
+        if (getThing().getStatus() != ThingStatus.OFFLINE
+                && getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.GONE) {
+            logger.debug("Device is gone: {}", thing.getUID());
+            getThing().setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                    "Device not available on Spotify"));
+            updateChannelState(CHANNEL_DEVICERESTRICTED, OnOffType.ON);
+            updateChannelState(CHANNEL_DEVICEACTIVE, OnOffType.OFF);
+            updateChannelState(CHANNEL_DEVICEPLAYER, PlayPauseType.PAUSE);
+        }
     }
 
     /**
