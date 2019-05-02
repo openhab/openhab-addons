@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.elkm1.internal.elk.message;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.elkm1.internal.elk.ElkCommand;
 import org.openhab.binding.elkm1.internal.elk.ElkMessage;
 import org.openhab.binding.elkm1.internal.elk.ElkVoiceWords;
@@ -22,7 +21,6 @@ import org.openhab.binding.elkm1.internal.elk.ElkVoiceWords;
  *
  * @author David Bennett - Initial COntribution
  */
-@NonNullByDefault
 public class SpeakWordAtVoiceOutput extends ElkMessage {
     private ElkVoiceWords word;
 

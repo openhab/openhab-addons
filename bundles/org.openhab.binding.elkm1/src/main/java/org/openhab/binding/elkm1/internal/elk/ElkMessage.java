@@ -12,14 +12,11 @@
  */
 package org.openhab.binding.elkm1.internal.elk;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * The basic default elk message that everything else will use as a base.
  *
  * @author David Bennett - Initial Contribution
  */
-@NonNullByDefault
 public abstract class ElkMessage {
     // Has the two char mesage type in it.
     private final ElkCommand command;

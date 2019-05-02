@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.elkm1.internal.elk.message;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.elkm1.internal.elk.ElkCommand;
 import org.openhab.binding.elkm1.internal.elk.ElkMessage;
 
@@ -22,7 +21,6 @@ import org.openhab.binding.elkm1.internal.elk.ElkMessage;
  * @author David Bennett - Initial Contribution
  *
  */
-@NonNullByDefault
 public class AlarmZoneReply extends ElkMessage {
     public AlarmZoneReply(String input) {
         super(ElkCommand.AlarmZoneRequestReply);

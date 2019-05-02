@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.elkm1.internal.elk;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.elkm1.internal.elk.message.AlarmZoneReply;
 import org.openhab.binding.elkm1.internal.elk.message.ArmingStatusReply;
 import org.openhab.binding.elkm1.internal.elk.message.EthernetModuleTest;
@@ -31,7 +30,6 @@ import org.slf4j.LoggerFactory;
  * @author David Bennett - Initial COntribution
  *
  */
-@NonNullByDefault
 public class ElkMessageFactory {
     private final Logger logger = LoggerFactory.getLogger(ElkMessageFactory.class);
     public static final int MAX_ZONES = 208;

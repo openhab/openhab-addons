@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.elkm1.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -34,7 +33,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Bennett - Initial Contribution
  */
-@NonNullByDefault
 public class ElkM1ZoneHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(ElkM1ZoneHandler.class);
 

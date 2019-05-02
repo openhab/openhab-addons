@@ -15,7 +15,6 @@ package org.openhab.binding.elkm1.internal.discovery;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -32,7 +31,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Bennett - Initial Contribution
  */
-@NonNullByDefault
 public class ElkM1DiscoveryHandler extends AbstractDiscoveryService implements ElkM1HandlerListener {
     private final Logger logger = LoggerFactory.getLogger(ElkM1DiscoveryHandler.class);
 

@@ -33,7 +33,6 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.elkm1.internal.config.ElkAlarmConfig;
 import org.openhab.binding.elkm1.internal.elk.message.EthernetModuleTestReply;
 import org.slf4j.Logger;
@@ -45,7 +44,6 @@ import org.slf4j.LoggerFactory;
  * @author David Bennett - Initial Contribution
  * @author Noah Jacobson - Added Secure Socket Connection
  */
-@NonNullByDefault
 public class ElkAlarmConnection {
     private final Logger logger = LoggerFactory.getLogger(ElkAlarmConnection.class);
     private final ElkAlarmConfig config;

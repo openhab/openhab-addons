@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.elkm1.internal.elk.message;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.elkm1.internal.elk.ElkCommand;
 import org.openhab.binding.elkm1.internal.elk.ElkMessage;
 import org.openhab.binding.elkm1.internal.elk.ElkMessageFactory;
@@ -23,7 +22,6 @@ import org.openhab.binding.elkm1.internal.elk.ElkMessageFactory;
  * @author David Bennett - Initial Contribution
  *
  */
-@NonNullByDefault
 public class ArmAway extends ElkMessage {
     private int area;
     private String pincode;

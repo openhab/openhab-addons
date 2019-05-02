@@ -20,7 +20,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -45,7 +44,6 @@ import org.slf4j.LoggerFactory;
  * @author David Bennett - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.elkm1")
-@NonNullByDefault
 public class ElkM1HandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(ElkM1BridgeHandler.class);
     private static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(

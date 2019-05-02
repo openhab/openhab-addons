@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.elkm1.internal.elk.message;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.elkm1.internal.elk.ElkCommand;
 import org.openhab.binding.elkm1.internal.elk.ElkDefinition;
 import org.openhab.binding.elkm1.internal.elk.ElkMessage;
@@ -23,7 +22,6 @@ import org.openhab.binding.elkm1.internal.elk.ElkMessageFactory;
  *
  * @author David Bennett - Initial COntribution
  */
-@NonNullByDefault
 public class ZoneDefitionReply extends ElkMessage {
     private ElkDefinition[] definition;
 
