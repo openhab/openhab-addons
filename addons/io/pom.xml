@@ -17,8 +17,6 @@
 
   <modules>
     <module>org.openhab.io.homekit</module>
-    <module>org.openhab.io.hueemulation</module>
-    <module>org.openhab.io.hueemulation.test</module>
   </modules>
 
 </project>

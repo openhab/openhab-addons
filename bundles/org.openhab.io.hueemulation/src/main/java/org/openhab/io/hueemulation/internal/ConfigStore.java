@@ -1,0 +1,358 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.io.hueemulation.internal;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.ConfigurableService;
+import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
+import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.items.Metadata;
+import org.eclipse.smarthome.core.items.MetadataKey;
+import org.eclipse.smarthome.core.items.MetadataRegistry;
+import org.eclipse.smarthome.core.net.CidrAddress;
+import org.eclipse.smarthome.core.net.NetUtil;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
+import org.openhab.io.hueemulation.internal.dto.HueAuthorizedConfig;
+import org.openhab.io.hueemulation.internal.dto.HueDataStore;
+import org.openhab.io.hueemulation.internal.dto.HueGroupEntry;
+import org.openhab.io.hueemulation.internal.dto.HueLightEntry;
+import org.openhab.io.hueemulation.internal.dto.HueRuleEntry;
+import org.openhab.io.hueemulation.internal.dto.HueSensorEntry;
+import org.openhab.io.hueemulation.internal.dto.response.HueSuccessGeneric;
+import org.openhab.io.hueemulation.internal.dto.response.HueSuccessResponseStateChanged;
+import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventAdmin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+/**
+ * This component sets up the hue data store and gets the service configuration.
+ * It also determines the address for the upnp service by the given configuration.
+ * <p>
+ * Also manages the pairing timeout. The service is restarted after a pairing timeout, due to the ConfigAdmin
+ * configuration change.
+ * <p>
+ * This is a central component and required by all other components and may not
+ * depend on anything in this bundle.
+ *
+ * @author David Graeff - Initial contribution
+ */
+@Component(immediate = false, service = { ConfigStore.class }, configurationPid = {
+        HueEmulationService.CONFIG_PID }, property = { "com.eclipsesource.jaxrs.publish=false",
+                ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=io:hueemulation",
+                ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=io",
+                ConfigurableService.SERVICE_PROPERTY_LABEL + "=Hue Emulation" })
+@NonNullByDefault
+public class ConfigStore {
+
+    public static final String METAKEY = "HUEEMU";
+    public static final String EVENT_ADDRESS_CHANGED = "ESH_EMU_CONFIG_ADDR_CHANGED";
+
+    private final Logger logger = LoggerFactory.getLogger(ConfigStore.class);
+
+    public HueDataStore ds = new HueDataStore();
+
+    protected @NonNullByDefault({}) ScheduledExecutorService scheduler;
+    private @Nullable ScheduledFuture<?> pairingOffFuture;
+    private @Nullable ScheduledFuture<?> writeUUIDFuture;
+
+    /**
+     * This is the main gson instance, to be obtained by all components that operate on the dto data fields
+     */
+    public final Gson gson = new GsonBuilder().registerTypeAdapter(HueLightEntry.class, new HueLightEntry.Serializer())
+            .registerTypeAdapter(HueSensorEntry.class, new HueSensorEntry.Serializer())
+            .registerTypeAdapter(HueRuleEntry.Condition.class, new HueRuleEntry.SerializerCondition())
+            .registerTypeAdapter(HueAuthorizedConfig.class, new HueAuthorizedConfig.Serializer())
+            .registerTypeAdapter(HueSuccessGeneric.class, new HueSuccessGeneric.Serializer())
+            .registerTypeAdapter(HueSuccessResponseStateChanged.class, new HueSuccessResponseStateChanged.Serializer())
+            .registerTypeAdapter(HueGroupEntry.class, new HueGroupEntry.Serializer(this)).create();
+
+    @Reference
+    protected @NonNullByDefault({}) ConfigurationAdmin configAdmin;
+
+    @Reference
+    protected @NonNullByDefault({}) NetworkAddressService networkAddressService;
+
+    @Reference
+    protected @NonNullByDefault({}) MetadataRegistry metadataRegistry;
+
+    @Reference
+    protected @NonNullByDefault({}) EventAdmin eventAdmin;
+
+    //// objects, set within activate()
+    private Set<InetAddress> discoveryIps = Collections.emptySet();
+    protected volatile @NonNullByDefault({}) HueEmulationConfig config;
+
+    public Set<String> switchFilter = Collections.emptySet();
+    public Set<String> colorFilter = Collections.emptySet();
+    public Set<String> whiteFilter = Collections.emptySet();
+    public Set<String> ignoreItemsFilter = Collections.emptySet();
+
+    private int highestAssignedHueID = 1;
+
+    public ConfigStore() {
+        scheduler = ThreadPoolManager.getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
+    }
+
+    /**
+     * For test dependency injection
+     *
+     * @param networkAddressService The network address service
+     * @param configAdmin The configuration admin service
+     * @param metadataRegistry The metadataRegistry service
+     */
+    public ConfigStore(NetworkAddressService networkAddressService, ConfigurationAdmin configAdmin,
+            @Nullable MetadataRegistry metadataRegistry, ScheduledExecutorService scheduler) {
+        this.networkAddressService = networkAddressService;
+        this.configAdmin = configAdmin;
+        this.metadataRegistry = metadataRegistry;
+        this.scheduler = scheduler;
+    }
+
+    @Activate
+    public void activate(Map<String, Object> properties) {
+        this.config = new Configuration(properties).as(HueEmulationConfig.class);
+
+        determineHighestAssignedHueID();
+
+        if (config.uuid.isEmpty()) {
+            config.uuid = UUID.randomUUID().toString();
+            writeUUIDFuture = scheduler.schedule(() -> {
+                logger.info("No unique ID assigned yet. Assigning {} and restarting...", config.uuid);
+                WriteConfig.setUUID(configAdmin, config.uuid);
+            }, 100, TimeUnit.MILLISECONDS);
+            return;
+        } else {
+            modified(properties);
+        }
+    }
+
+    private @Nullable InetAddress byName(@Nullable String address) {
+        if (address == null) {
+            return null;
+        }
+        try {
+            return InetAddress.getByName(address);
+        } catch (UnknownHostException e) {
+            logger.warn("Given IP address could not be resolved: {}", address, e);
+            return null;
+        }
+    }
+
+    @Modified
+    public void modified(Map<String, Object> properties) {
+        this.config = new Configuration(properties).as(HueEmulationConfig.class);
+
+        switchFilter = Collections.unmodifiableSet(
+                Stream.of(config.restrictToTagsSwitches.split(",")).map(String::trim).collect(Collectors.toSet()));
+
+        colorFilter = Collections.unmodifiableSet(
+                Stream.of(config.restrictToTagsColorLights.split(",")).map(String::trim).collect(Collectors.toSet()));
+
+        whiteFilter = Collections.unmodifiableSet(
+                Stream.of(config.restrictToTagsWhiteLights.split(",")).map(String::trim).collect(Collectors.toSet()));
+
+        ignoreItemsFilter = Collections.unmodifiableSet(
+                Stream.of(config.ignoreItemsWithTags.split(",")).map(String::trim).collect(Collectors.toSet()));
+
+        // Use either the user configured
+        InetAddress configuredAddress = null;
+        int networkPrefixLength = 24; // Default for most networks: 255.255.255.0
+
+        if (config.discoveryIps != null) {
+            discoveryIps = Collections.unmodifiableSet(Stream.of(config.discoveryIps.split(",")).map(String::trim)
+                    .map(this::byName).filter(e -> e != null).collect(Collectors.toSet()));
+        } else {
+            discoveryIps = new HashSet<>();
+            configuredAddress = byName(networkAddressService.getPrimaryIpv4HostAddress());
+            if (configuredAddress != null) {
+                discoveryIps.add(configuredAddress);
+            }
+            for (CidrAddress a : NetUtil.getAllInterfaceAddresses()) {
+                if (a.getAddress().equals(configuredAddress)) {
+                    networkPrefixLength = a.getPrefix();
+                } else {
+                    discoveryIps.add(a.getAddress());
+                }
+            }
+        }
+
+        if (discoveryIps.size() == 0) {
+            logger.warn("No interface IP address configured or found. Hue emulation service disabled!");
+            return;
+        }
+
+        if (configuredAddress == null) {
+            configuredAddress = InetAddress.getLoopbackAddress();
+        }
+
+        // Get and apply configurations
+        ds.config.createNewUserOnEveryEndpoint = config.createNewUserOnEveryEndpoint;
+        ds.config.networkopenduration = config.pairingTimeout;
+        ds.config.devicename = config.devicename;
+
+        ds.config.uuid = config.uuid;
+        ds.config.bridgeid = config.uuid.replace("-", "").toUpperCase();
+        if (ds.config.bridgeid.length() > 12) {
+            ds.config.bridgeid = ds.config.bridgeid.substring(0, 12);
+        }
+
+        if (config.permanentV1bridge) {
+            ds.config.makeV1bridge();
+        }
+
+        setLinkbutton(config.pairingEnabled, config.createNewUserOnEveryEndpoint, config.temporarilyEmulateV1bridge);
+        ds.config.mac = NetworkUtils.getMAC(configuredAddress);
+        ds.config.ipaddress = configuredAddress.getHostAddress();
+        ds.config.netmask = networkPrefixLength < 32 ? NetUtil.networkPrefixLengthToNetmask(networkPrefixLength)
+                : "255.255.255.0";
+
+        if (eventAdmin != null) {
+            eventAdmin.postEvent(new Event(EVENT_ADDRESS_CHANGED, Collections.emptyMap()));
+        }
+    }
+
+    @Deactivate
+    public void deactive(int reason) {
+        ScheduledFuture<?> future = pairingOffFuture;
+        if (future != null) {
+            future.cancel(false);
+        }
+        future = writeUUIDFuture;
+        if (future != null) {
+            future.cancel(false);
+        }
+    }
+
+    protected void determineHighestAssignedHueID() {
+        for (Metadata metadata : metadataRegistry.getAll()) {
+            if (!metadata.getUID().getNamespace().equals(METAKEY)) {
+                continue;
+            }
+            try {
+                int hueId = Integer.parseInt(metadata.getValue());
+                if (hueId > highestAssignedHueID) {
+                    highestAssignedHueID = hueId;
+                }
+            } catch (NumberFormatException e) {
+                logger.warn("A non numeric hue ID '{}' was assigned. Ignoring!", metadata.getValue());
+            }
+        }
+    }
+
+    /**
+     * Although hue IDs are strings, a lot of implementations out there assume them to be numbers. Therefore
+     * we map each item to a number and store that in the meta data provider.
+     *
+     * @param item The item to map
+     * @return A stringified integer number
+     */
+    public String mapItemUIDtoHueID(Item item) {
+        MetadataKey key = new MetadataKey(METAKEY, item.getUID());
+        Metadata metadata = metadataRegistry.get(key);
+        int hueId = 0;
+        if (metadata != null) {
+            try {
+                hueId = Integer.parseInt(metadata.getValue());
+            } catch (NumberFormatException e) {
+                logger.warn("A non numeric hue ID '{}' was assigned. Ignore and reassign a different id now!",
+                        metadata.getValue());
+            }
+        }
+        if (hueId == 0) {
+            ++highestAssignedHueID;
+            hueId = highestAssignedHueID;
+            metadataRegistry.add(new Metadata(key, String.valueOf(hueId), null));
+        }
+
+        return String.valueOf(hueId);
+    }
+
+    public boolean isReady() {
+        return discoveryIps.size() > 0;
+    }
+
+    public HueEmulationConfig getConfig() {
+        return config;
+    }
+
+    public int getHighestAssignedHueID() {
+        return highestAssignedHueID;
+    }
+
+    /**
+     * Sets the link button state.
+     *
+     * Starts a pairing timeout thread if set to true.
+     * Stops any already running timers.
+     *
+     * @param linkbutton New link button state
+     */
+    public void setLinkbutton(boolean linkbutton, boolean createUsersOnEveryEndpoint,
+            boolean temporarilyEmulateV1bridge) {
+        ds.config.linkbutton = linkbutton;
+        config.createNewUserOnEveryEndpoint = createUsersOnEveryEndpoint;
+        if (temporarilyEmulateV1bridge) {
+            ds.config.makeV1bridge();
+        } else if (!config.permanentV1bridge) {
+            ds.config.makeV2bridge();
+        }
+        ScheduledFuture<?> future = pairingOffFuture;
+        if (future != null) {
+            future.cancel(false);
+        }
+        if (!linkbutton) {
+            logger.info("Hue Emulation pairing disabled");
+            return;
+        }
+
+        logger.info("Hue Emulation pairing enabled for {}s", ds.config.networkopenduration);
+        pairingOffFuture = scheduler.schedule(() -> {
+            logger.info("Hue Emulation disable pairing...");
+            if (!config.permanentV1bridge) { // Restore bridge version
+                ds.config.makeV2bridge();
+            }
+            config.createNewUserOnEveryEndpoint = false;
+            config.temporarilyEmulateV1bridge = false;
+            WriteConfig.unsetPairingMode(configAdmin);
+        }, ds.config.networkopenduration * 1000, TimeUnit.MILLISECONDS);
+    }
+
+    public Set<InetAddress> getDiscoveryIps() {
+        return discoveryIps;
+    }
+}
