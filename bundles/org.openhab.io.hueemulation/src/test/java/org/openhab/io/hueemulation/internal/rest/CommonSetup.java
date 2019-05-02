@@ -38,8 +38,8 @@ import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.logging.LoggingFeature.Verbosity;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.openhab.io.hueemulation.internal.ConfigStore;
 import org.openhab.io.hueemulation.internal.rest.mocks.ConfigStoreWithoutMetadata;
 import org.openhab.io.hueemulation.internal.rest.mocks.DummyMetadataRegistry;
@@ -58,7 +58,6 @@ import org.osgi.service.cm.ConfigurationAdmin;
  */
 public class CommonSetup {
 
-    @Spy
     public UserManagement userManagement;
 
     @Mock
@@ -124,8 +123,7 @@ public class CommonSetup {
         cs.whiteFilter = Collections.singleton("Switchable");
         cs.colorFilter = Collections.singleton("ColorLighting");
 
-        userManagement.cs = cs;
-        userManagement.setStorageService(storageService);
+        userManagement = Mockito.spy(new UserManagement(storageService, cs));
 
         basePath = "http://localhost:8080/api";
     }

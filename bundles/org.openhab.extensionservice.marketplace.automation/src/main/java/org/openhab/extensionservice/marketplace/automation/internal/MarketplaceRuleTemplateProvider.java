@@ -25,9 +25,9 @@ import org.openhab.core.automation.parser.Parser;
 import org.openhab.core.automation.parser.ParsingException;
 import org.openhab.core.automation.template.RuleTemplate;
 import org.openhab.core.automation.template.RuleTemplateProvider;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +45,11 @@ public class MarketplaceRuleTemplateProvider extends DefaultAbstractManagedProvi
     private final Logger logger = LoggerFactory.getLogger(MarketplaceRuleTemplateProvider.class);
 
     private Parser<RuleTemplate> parser;
+
+    @Activate
+    public MarketplaceRuleTemplateProvider(final @Reference StorageService storageService) {
+        super(storageService);
+    }
 
     @Override
     public RuleTemplate getTemplate(String uid, Locale locale) {
@@ -78,7 +83,7 @@ public class MarketplaceRuleTemplateProvider extends DefaultAbstractManagedProvi
     /**
      * This adds a new rule template to the persistent storage.
      *
-     * @param uid  the UID to be used for the template
+     * @param uid the UID to be used for the template
      * @param json the template content as a json string
      *
      * @throws ParsingException if the content cannot be parsed correctly
@@ -98,17 +103,6 @@ public class MarketplaceRuleTemplateProvider extends DefaultAbstractManagedProvi
         } catch (IOException e) {
             logger.error("Cannot close input stream.", e);
         }
-    }
-
-    @Override
-    @Reference(policy = ReferencePolicy.DYNAMIC)
-    public void setStorageService(StorageService StorageService) {
-        super.setStorageService(StorageService);
-    }
-
-    @Override
-    public void unsetStorageService(StorageService StorageService) {
-        super.unsetStorageService(StorageService);
     }
 
 }
