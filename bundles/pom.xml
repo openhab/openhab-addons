@@ -183,6 +183,7 @@
     <module>org.openhab.extensionservice.marketplace</module>
     <module>org.openhab.extensionservice.marketplace.automation</module>
     <module>org.openhab.io.azureiothub</module>
+    <module>org.openhab.io.hueemulation</module>
     <module>org.openhab.io.imperihome</module>
     <module>org.openhab.io.javasound</module>
     <module>org.openhab.io.neeo</module>
