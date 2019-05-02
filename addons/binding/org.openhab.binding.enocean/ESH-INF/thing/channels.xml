@@ -319,4 +319,100 @@
 		<state readOnly="true" />
 	</channel-type>
 
+	<channel-type id="valvePosition">
+		<item-type>Number</item-type>
+		<label>Valve position</label>
+		<description>Indicates the actual percent position of the valve.</description>
+		<category>thermostat</category>
+		<state min="0" max="100" step="1" pattern="%d %%" />
+	</channel-type>
+
+	<channel-type id="buttonLock">
+		<item-type>Switch</item-type>
+		<label>Button lock</label>
+		<description>Enables or disables buttons on the device.</description>
+		<category>thermostat</category>
+	</channel-type>
+
+	<channel-type id="measurementControl" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Measurement control</label>
+		<description>Enables or disables temperature measurement on the device.</description>
+		<category>thermostat</category>
+	</channel-type>
+
+	<channel-type id="displayOrientation" advanced="true">
+		<item-type>Number</item-type>
+		<label>Display orientation</label>
+		<description>Orientation of the display.</description>
+		<category>thermostat</category>
+		<state>
+			<options>
+				<option value="0">0</option>
+				<option value="90">90</option>
+				<option value="180">180</option>
+				<option value="270">270</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="temperatureSetPoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Set point</label>
+		<description>Desired temperature</description>
+		<state min="10" max="30" />
+	</channel-type>
+
+	<channel-type id="feedTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Feed temperature</label>
+		<description>Water temperature in the radiator input</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="failureCode">
+		<item-type>Number</item-type>
+		<label>Failure code</label>
+		<description>Failure code</description>
+		<category>thermostat</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="wakeUpCycle">
+		<item-type>Number</item-type>
+		<label>Wakeup cycle</label>
+		<description>Defines the cyclic wake-up time. The time corresponding to the number has to be looked up.</description>
+		<category>thermostat</category>
+		<state min="0" max="63" />
+	</channel-type>
+
+	<channel-type id="serviceCommand" advanced="true">
+		<item-type>Number</item-type>
+		<label>Service command</label>
+		<description>Command to be sent to actuator</description>
+		<category>thermostat</category>
+		<state>
+			<options>
+				<option value="0">no change</option>
+				<option value="1">open valve</option>
+				<option value="2">run initialisation</option>
+				<option value="3">close valve</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="statusRequestEvent">
+		<kind>trigger</kind>
+		<label>Status Request Event</label>
+		<description>Is triggered when the actuator wakes up from sleep and asks for the current status.</description>
+		<event />
+	</channel-type>
+
+	<channel-type id="sendCommand">
+		<item-type>Switch</item-type>
+		<label>Send command</label>
+		<description>You can send telegrams to the device by switching this channel on</description>
+		<category>thermostat</category>
+	</channel-type>
+
 </thing:thing-descriptions>

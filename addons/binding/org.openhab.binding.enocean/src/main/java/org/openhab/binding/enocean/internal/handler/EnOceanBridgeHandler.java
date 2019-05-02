@@ -149,8 +149,8 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
 
                                 });
 
-                    } catch (Exception e) {
-                        updateState(channelUID, new StringType("Id could not be parsed"));
+                    } catch (IllegalArgumentException e) {
+                        updateState(channelUID, new StringType("BaseId could not be parsed"));
                     }
                 }
                 break;
@@ -194,8 +194,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                 transceiver.ShutDown();
             }
 
-            transceiver = new EnOceanSerialTransceiver((String) getThing().getConfiguration().get(PATH), this,
-                    scheduler, serialPortManager);
+            transceiver = new EnOceanSerialTransceiver((String) c.get(PATH), this, scheduler, serialPortManager);
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "opening serial port...");
             transceiver.Initialize();
@@ -250,13 +249,10 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                     });
 
         } catch (IOException e) {
-            logger.debug("error during bridge init occured", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Port could not be found");
         } catch (PortInUseException e) {
-            logger.debug("error during bridge init occured", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Port already in use");
         } catch (Exception e) {
-            logger.debug("error during bridge init occured", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Port could not be initialized");
             return;
         }
