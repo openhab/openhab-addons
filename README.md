@@ -28,8 +28,6 @@ You find the following repository structure:
 
 ```
 .
-+-- addons/  Legacy addons that are currently ported to the new buildsystem
-|
 +-- bom      Maven buildsystem: Bill of materials
 |   +-- openhab-addons  Lists all extensions for other repos to reference them
 |   +-- ...             Other boms
