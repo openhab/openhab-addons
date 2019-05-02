@@ -29,7 +29,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.enocean.internal.config.EnOceanActuatorConfig;
 import org.openhab.binding.enocean.internal.eep.EEP;
@@ -48,7 +47,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
     // List of thing types which support sending of eep messages
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
             Arrays.asList(THING_TYPE_CENTRALCOMMAND, THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_GENERICTHING,
-                    THING_TYPE_ROLLERSHUTTER));
+                    THING_TYPE_ROLLERSHUTTER, THING_TYPE_THERMOSTAT));
 
     protected byte[] senderId; // base id of bridge + senderIdOffset, used for sending msg
     protected byte[] destinationId; // in case of broadcast FFFFFFFF otherwise the enocean id of the device
@@ -194,6 +193,9 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             return;
         }
 
+        ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+        String channelTypeId = (channelTypeUID != null) ? channelTypeUID.getId() : "";
+
         // check if we do support refreshs
         if (command == RefreshType.REFRESH) {
             if (!sendingEEPType.getSupportsRefresh()) {
@@ -201,16 +203,11 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             }
 
             // receiving status cannot be refreshed
-            ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
-            if (channelTypeUID != null) {
-                String channelTypeId = channelTypeUID.getId();
-
-                switch (channelTypeId) {
-                    case CHANNEL_RSSI:
-                    case CHANNEL_REPEATCOUNT:
-                    case CHANNEL_LASTRECEIVED:
-                        return;
-                }
+            switch (channelTypeId) {
+                case CHANNEL_RSSI:
+                case CHANNEL_REPEATCOUNT:
+                case CHANNEL_LASTRECEIVED:
+                    return;
             }
         }
 
@@ -220,23 +217,20 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         }
 
         try {
-            EEP eep = EEPFactory.createEEP(sendingEEPType);
             Configuration channelConfig = channel.getConfiguration();
 
-            // Eltako rollershutter do not support absolute value just values relative to the current position
-            // If we want to go to 80% we must know the current position to determine how long the rollershutter has
-            // to drive up/down. However items seems to be stateless, so we have to store the state by ourself.
-            // The currentState is updated by EnOceanBaseSensorHandler after receiving a response.
-            State currentState = getCurrentState(channelId);
+            EEP eep = EEPFactory.createEEP(sendingEEPType);
+            eep.convertFromCommand(channelId, channelTypeId, command, channelState, channelConfig);
 
-            ESP3Packet msg = eep
-                    .setSenderId(senderId).setDestinationId(destinationId).convertFromCommand(channelId,
-                            channel.getChannelTypeUID().getId(), command, currentState, channelConfig)
-                    .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
+            if (eep.hasData()) {
+                ESP3Packet msg = eep.setSenderId(senderId).setDestinationId(destinationId)
+                        .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
 
-            getBridgeHandler().sendMessage(msg, null);
-        } catch (Exception e) {
-            logger.debug(e.getMessage());
+                getBridgeHandler().sendMessage(msg, null);
+            }
+
+        } catch (IllegalArgumentException e) {
+            logger.warn("Exception while sending telegram!", e);
         }
     }
 

@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.enocean.internal.EnOceanChannelDescription;
 import org.openhab.binding.enocean.internal.eep.A5_02.A5_02_01;
 import org.openhab.binding.enocean.internal.eep.A5_02.A5_02_02;
@@ -103,12 +104,14 @@ import org.openhab.binding.enocean.internal.eep.A5_12.A5_12_03;
 import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_01;
 import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_01_ELTAKO;
 import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_09;
+import org.openhab.binding.enocean.internal.eep.A5_20.A5_20_04;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Blinds;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Dimming;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Switching;
 import org.openhab.binding.enocean.internal.eep.A5_3F.A5_3F_7F_EltakoFSB;
 import org.openhab.binding.enocean.internal.eep.Base.PTM200Message;
 import org.openhab.binding.enocean.internal.eep.Base.UTEResponse;
+import org.openhab.binding.enocean.internal.eep.Base._4BSTeachInVariation3Response;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_00;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_01;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_02;
@@ -150,6 +153,7 @@ public enum EEPType {
     Undef(RORG.Unknown, 0, 0, false, null, null, 0),
 
     UTEResponse(RORG.UTE, 0, 0, false, UTEResponse.class, null),
+    _4BSTeachInVariation3Response(RORG._4BS, 0, 0, false, _4BSTeachInVariation3Response.class, null),
 
     GenericRPS(RORG.RPS, 0xFF, 0xFF, false, GenericRPS.class, THING_TYPE_GENERICTHING, CHANNEL_GENERIC_SWITCH,
             CHANNEL_GENERIC_ROLLERSHUTTER, CHANNEL_GENERIC_DIMMER, CHANNEL_GENERIC_NUMBER, CHANNEL_GENERIC_STRING,
@@ -292,10 +296,12 @@ public enum EEPType {
             CHANNEL_FANSPEEDSTAGE),
     RoomPanel_A5_10_0A(RORG._4BS, 0x10, 0x0A, false, A5_10_0A.class, THING_TYPE_ROOMOPERATINGPANEL, CHANNEL_TEMPERATURE,
             CHANNEL_SETPOINT),
-    RoomPanel_A5_10_0B(RORG._4BS, 0x10, 0x0B, false, A5_10_0B.class, THING_TYPE_ROOMOPERATINGPANEL, CHANNEL_TEMPERATURE),
+    RoomPanel_A5_10_0B(RORG._4BS, 0x10, 0x0B, false, A5_10_0B.class, THING_TYPE_ROOMOPERATINGPANEL,
+            CHANNEL_TEMPERATURE),
     RoomPanel_A5_10_0C(RORG._4BS, 0x10, 0x0C, false, A5_10_0C.class, THING_TYPE_ROOMOPERATINGPANEL, CHANNEL_TEMPERATURE,
             CHANNEL_OCCUPANCY),
-    RoomPanel_A5_10_0D(RORG._4BS, 0x10, 0x0D, false, A5_10_0D.class, THING_TYPE_ROOMOPERATINGPANEL, CHANNEL_TEMPERATURE),
+    RoomPanel_A5_10_0D(RORG._4BS, 0x10, 0x0D, false, A5_10_0D.class, THING_TYPE_ROOMOPERATINGPANEL,
+            CHANNEL_TEMPERATURE),
     RoomPanel_A5_10_10(RORG._4BS, 0x10, 0x10, false, A5_10_10.class, THING_TYPE_ROOMOPERATINGPANEL, CHANNEL_TEMPERATURE,
             CHANNEL_SETPOINT, CHANNEL_OCCUPANCY),
     RoomPanel_A5_10_11(RORG._4BS, 0x10, 0x11, false, A5_10_11.class, THING_TYPE_ROOMOPERATINGPANEL, CHANNEL_TEMPERATURE,
@@ -304,8 +310,10 @@ public enum EEPType {
             CHANNEL_SETPOINT),
     RoomPanel_A5_10_13(RORG._4BS, 0x10, 0x13, false, A5_10_13.class, THING_TYPE_ROOMOPERATINGPANEL, CHANNEL_TEMPERATURE,
             CHANNEL_OCCUPANCY),
-    RoomPanel_A5_10_14(RORG._4BS, 0x10, 0x14, false, A5_10_14.class, THING_TYPE_ROOMOPERATINGPANEL, CHANNEL_TEMPERATURE),
-    RoomPanel_A5_10_15(RORG._4BS, 0x10, 0x15, false, A5_10_15.class, THING_TYPE_ROOMOPERATINGPANEL, CHANNEL_TEMPERATURE),
+    RoomPanel_A5_10_14(RORG._4BS, 0x10, 0x14, false, A5_10_14.class, THING_TYPE_ROOMOPERATINGPANEL,
+            CHANNEL_TEMPERATURE),
+    RoomPanel_A5_10_15(RORG._4BS, 0x10, 0x15, false, A5_10_15.class, THING_TYPE_ROOMOPERATINGPANEL,
+            CHANNEL_TEMPERATURE),
     RoomPanel_A5_10_16(RORG._4BS, 0x10, 0x16, false, A5_10_16.class, THING_TYPE_ROOMOPERATINGPANEL, CHANNEL_TEMPERATURE,
             CHANNEL_OCCUPANCY),
     RoomPanel_A5_10_17(RORG._4BS, 0x10, 0x17, false, A5_10_17.class, THING_TYPE_ROOMOPERATINGPANEL, CHANNEL_TEMPERATURE,
@@ -370,6 +378,11 @@ public enum EEPType {
                     });
                 }
             }),
+
+    Thermostat(RORG._4BS, 0x20, 0x04, false, A5_20_04.class, THING_TYPE_THERMOSTAT, CHANNEL_VALVE_POSITION,
+            CHANNEL_BUTTON_LOCK, CHANNEL_DISPLAY_ORIENTATION, CHANNEL_TEMPERATURE_SETPOINT, CHANNEL_TEMPERATURE,
+            CHANNEL_FEED_TEMPERATURE, CHANNEL_MEASUREMENT_CONTROL, CHANNEL_FAILURE_CODE, CHANNEL_WAKEUPCYCLE,
+            CHANNEL_SERVICECOMMAND, CHANNEL_STATUS_REQUEST_EVENT, CHANNEL_SEND_COMMAND),
 
     SwitchWithEnergyMeasurment_00(RORG.VLD, 0x01, 0x00, true, D2_01_00.class, THING_TYPE_MEASUREMENTSWITCH,
             CHANNEL_GENERAL_SWITCHING, CHANNEL_TOTALUSAGE),
@@ -528,7 +541,10 @@ public enum EEPType {
     }
 
     public boolean isChannelSupported(Channel channel) {
-        return isChannelSupported(channel.getUID().getId(), channel.getChannelTypeUID().getId());
+        ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+        String id = channelTypeUID == null ? "" : channelTypeUID.getId();
+
+        return isChannelSupported(channel.getUID().getId(), id);
     }
 
     public boolean isChannelSupported(String channelId, String channelTypeId) {
@@ -573,7 +589,7 @@ public enum EEPType {
             }
         }
 
-        throw new IllegalArgumentException(String.format("EEP with id {} could not be found", receivingEEPId));
+        throw new IllegalArgumentException(String.format("EEP with id %s could not be found", receivingEEPId));
     }
 
     public static EEPType getType(Class<? extends EEP> eepClass) {
@@ -583,7 +599,7 @@ public enum EEPType {
             }
         }
 
-        throw new IllegalArgumentException(String.format("EEP with class {} could not be found", eepClass));
+        throw new IllegalArgumentException(String.format("EEP with class %s could not be found", eepClass.getName()));
     }
 
     public static EEPType getType(RORG rorg, int func, int type, int manufId) {

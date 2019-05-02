@@ -14,6 +14,8 @@ package org.openhab.binding.enocean.internal.eep.D2_01;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
+import java.util.Map;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -115,7 +117,7 @@ public abstract class D2_01 extends _VLDMessage {
         }
 
         EnOceanChannelDimmerConfig c = config.as(EnOceanChannelDimmerConfig.class);
-        byte rampingTime = (c.rampingTime == null) ? Zero : c.rampingTime.byteValue();
+        byte rampingTime = Integer.valueOf(c.rampingTime).byteValue();
 
         setData(CMD_ACTUATOR_SET_STATUS, (byte) ((rampingTime << 5) | outputChannel), outputValue);
     }
@@ -194,8 +196,8 @@ public abstract class D2_01 extends _VLDMessage {
     }
 
     @Override
-    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command, State currentState,
-            Configuration config) {
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
+            Map<String, State> currentState, Configuration config) {
 
         if (channelId.equals(CHANNEL_GENERAL_SWITCHING)) {
             if (command == RefreshType.REFRESH) {

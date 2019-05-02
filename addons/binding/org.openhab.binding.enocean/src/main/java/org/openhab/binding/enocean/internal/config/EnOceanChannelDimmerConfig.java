@@ -19,8 +19,8 @@ package org.openhab.binding.enocean.internal.config;
  */
 public class EnOceanChannelDimmerConfig {
 
-    public Integer rampingTime = 0;
-    public Boolean eltakoDimmer = true;
-    public Boolean storeValue = false;
+    public int rampingTime = 0;
+    public boolean eltakoDimmer = true;
+    public boolean storeValue = false;
 
 }

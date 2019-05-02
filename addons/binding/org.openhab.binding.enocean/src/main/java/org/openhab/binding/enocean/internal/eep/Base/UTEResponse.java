@@ -33,7 +33,7 @@ public class UTEResponse extends _VLDMessage {
         bytes[0] = (byte) 0x91; // bidirectional communication, teach in accepted, teach in response
 
         setStatus((byte) 0x80);
-
+        setSuppressRepeating(true);
         setDestinationId(packet.getSenderId());
     }
 }

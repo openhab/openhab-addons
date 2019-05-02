@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_3F;
 
+import java.util.Map;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
@@ -45,7 +47,8 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     }
 
     @Override
-    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command, State currentState, Configuration config) {
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
+            Map<String, State> currentState, Configuration config) {
 
         int shutTime = 0xFF;
         if (config != null) {
@@ -53,13 +56,15 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
         }
 
         if (command instanceof PercentType) {
+            State channelState = currentState.get(channelId);
+
             PercentType target = (PercentType) command;
             if (target.intValue() == PercentType.ZERO.intValue()) {
                 setData(Zero, (byte) shutTime, MoveUp, TeachInBit); // => move completely up
             } else if (target.intValue() == PercentType.HUNDRED.intValue()) {
                 setData(Zero, (byte) shutTime, MoveDown, TeachInBit); // => move completely down
-            } else if (currentState != null) {
-                PercentType current = currentState.as(PercentType.class);
+            } else if (channelState != null) {
+                PercentType current = channelState.as(PercentType.class);
                 if (config != null && current != null) {
                     if (current.intValue() != target.intValue()) {
                         byte direction = current.intValue() > target.intValue() ? MoveUp : MoveDown;
@@ -86,7 +91,8 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
+            Configuration config) {
 
         if (currentState != null) {
             int direction = getDB_1() == MoveUp ? -1 : 1;
