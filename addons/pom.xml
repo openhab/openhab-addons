@@ -17,7 +17,6 @@
   <name>openHAB Add-ons</name>
 
   <modules>
-    <module>binding</module>
     <module>io</module>
   </modules>
 </project>
