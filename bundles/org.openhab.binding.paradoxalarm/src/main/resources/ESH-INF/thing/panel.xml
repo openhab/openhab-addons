@@ -4,7 +4,6 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="panel">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ip150" />
@@ -15,11 +14,6 @@
 
  		<channels>
 			<channel id="state" typeId="panelState" />
-			<!-- <channel id="serialNumber" typeId="serialNumber" />
-			<channel id="panelType" typeId="panelType" />
-			<channel id="hardwareVersion" typeId="hardwareVersion" />
-			<channel id="applicationVersion" typeId="applicationVersion" />
-			<channel id="bootloaderVersion" typeId="bootloaderVersion" /> -->
 		</channels>
         <properties>
 	        <property name="serialNumber"/>

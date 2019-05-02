@@ -51,7 +51,7 @@ public abstract class Entity {
 
     @Override
     public String toString() {
-        return "Entity [id=" + id + ", label=" + label;
+        return "Entity [id=" + id + ", label=" + label + "]";
     }
 
 }

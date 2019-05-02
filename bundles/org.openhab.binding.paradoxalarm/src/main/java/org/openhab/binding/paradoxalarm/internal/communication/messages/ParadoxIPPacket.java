@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 
@@ -64,7 +65,7 @@ public class ParadoxIPPacket {
     }
 
     public ParadoxIPPacket(String payload, boolean isChecksumRequired) throws IOException {
-        this(payload.getBytes("US-ASCII"), isChecksumRequired);
+        this(payload.getBytes(StandardCharsets.US_ASCII), isChecksumRequired);
     }
 
     public ParadoxIPPacket(byte[] payload, boolean isChecksumRequired) throws IOException {

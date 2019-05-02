@@ -85,7 +85,7 @@ public class ParadoxPanel {
     }
 
     private List<Zone> createZones() {
-        zones = new ArrayList<Zone>();
+        zones = new ArrayList<>();
         List<String> zoneLabels = RawStructuredDataCache.getInstance().getZoneLabels();
         for (int i = 0; i < zoneLabels.size(); i++) {
             Zone zone = new Zone(i + 1, zoneLabels.get(i));
@@ -95,7 +95,7 @@ public class ParadoxPanel {
     }
 
     private List<Partition> createPartitions() {
-        partitions = new ArrayList<Partition>();
+        partitions = new ArrayList<>();
         List<String> partitionLabels = RawStructuredDataCache.getInstance().getPartitionLabels();
         for (int i = 0; i < partitionLabels.size(); i++) {
             Partition partition = new Partition(i + 1, partitionLabels.get(i));

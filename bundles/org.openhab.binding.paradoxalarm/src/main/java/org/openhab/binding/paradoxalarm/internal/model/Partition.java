@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Partition extends Entity {
 
-    private static Logger logger = LoggerFactory.getLogger(Partition.class);
+    private final Logger logger = LoggerFactory.getLogger(Partition.class);
 
     private PartitionState state = new PartitionState();
 

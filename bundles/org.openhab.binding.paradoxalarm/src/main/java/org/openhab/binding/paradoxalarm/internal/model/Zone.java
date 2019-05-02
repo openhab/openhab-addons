@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Zone extends Entity {
 
-    private static Logger logger = LoggerFactory.getLogger(Zone.class);
+    private final Logger logger = LoggerFactory.getLogger(Zone.class);
 
     private ZoneState zoneState;
 
@@ -38,7 +38,7 @@ public class Zone extends Entity {
 
     public void setZoneState(ZoneState zoneState) {
         this.zoneState = zoneState;
-        logger.trace("Zone {} state updated to:\tOpened: {}, Tampered: {}, LowBattery: {}",
-                new Object[] { getLabel(), zoneState.isOpened(), zoneState.isTampered(), zoneState.hasLowBattery() });
+        logger.trace("Zone {} state updated to:\tOpened: {}, Tampered: {}, LowBattery: {}", getLabel(),
+                zoneState.isOpened(), zoneState.isTampered(), zoneState.hasLowBattery());
     }
 }

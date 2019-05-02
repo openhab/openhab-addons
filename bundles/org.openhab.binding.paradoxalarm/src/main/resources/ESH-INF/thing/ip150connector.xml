@@ -4,7 +4,6 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<bridge-type id="ip150">
 		<label>Paradox IP150 Module Connector</label>
 		<description>Paradox IP150 module connector</description>
@@ -37,6 +36,7 @@
 			<parameter name="ipAddress" type="text" required="true">
 				<label>IP Address</label>
 				<description>IP address of IP150</description>
+				<context>network-address</context>
 			</parameter>
 			<parameter name="port" type="integer" required="true">
 				<label>Port</label>

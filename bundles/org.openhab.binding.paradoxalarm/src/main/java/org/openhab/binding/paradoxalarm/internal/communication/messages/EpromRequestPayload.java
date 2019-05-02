@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link EpromRequestPayload} Object representing payload of IP packet which retrieves data from Paradox EPROM
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class EpromRequestPayload extends MemoryRequestPayload implements IPPacketPayload {
 
@@ -33,7 +33,8 @@ public class EpromRequestPayload extends MemoryRequestPayload implements IPPacke
     @Override
     protected byte calculateControlByte() {
         int address = getAddress();
-        logger.trace("Address: {}", String.format("0x%02X,\t", address));
+        logTraceHexFormatted("Address: {}", address);
+
         byte controlByte = 0x00;
         byte[] shortToByteArray = ParadoxUtil.intToByteArray(address);
         if (shortToByteArray.length > 2) {
@@ -45,4 +46,5 @@ public class EpromRequestPayload extends MemoryRequestPayload implements IPPacke
         logger.trace("ControlByte value: {}", controlByte);
         return controlByte;
     }
+
 }

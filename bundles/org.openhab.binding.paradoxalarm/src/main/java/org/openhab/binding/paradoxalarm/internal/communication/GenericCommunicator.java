@@ -81,16 +81,6 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
             tx.close();
             rx.close();
             socket.close();
-            // This is very ugly but Paradox supports only one connection at a time and if not closed properly when
-            // handler gets destroyed/recreated before the full socket closure, the new handler cannot establish proper
-            // communication.
-            logger.info("Waiting the socket to close...");
-            Thread.sleep(1000);
-
-        } catch (InterruptedException e) {
-            logger.warn(
-                    "Unable to sleep thread during socket close phase. Could lead to issues if reconnect occurs. {}",
-                    e);
         } catch (IOException e) {
             logger.warn("IO exception during socket/stream close operation.", e);
         }
@@ -110,32 +100,51 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
             initializeSocket();
         }
 
+        step1LoginToPanel();
+
+        step2LoginSequence();
+
+        step3LoginSequence();
+
+        step4InitCommunicationToUIP();
+
+        step5LoginSequence();
+
+        byte[] initializationMessage = step6InitializeSerialCommunication();
+
+        step7FinalInitializationRequest(initializationMessage);
+    }
+
+    // 1: Login to module request (IP150 only)
+    private boolean step1LoginToPanel() throws IOException, InterruptedException {
         logger.debug("Step1");
-        // 1: Login to module request (IP150 only)
         ParadoxIPPacket ipPacket = new ParadoxIPPacket(password, false).setCommand(HeaderCommand.CONNECT_TO_IP_MODULE);
         sendPacket(ipPacket);
         byte[] loginPacketResponse = receivePacket();
-        if (!isInialLoginSuccessful(loginPacketResponse)) {
-            // logoutSequence();
-            return;
-        }
+        return isInitialLoginSuccessful(loginPacketResponse);
+    }
 
+    // 2: Unknown request (IP150 only)
+    private void step2LoginSequence() throws IOException, InterruptedException {
         logger.debug("Step2");
-        // 2: Unknown request (IP150 only)
         ParadoxIPPacket step2 = new ParadoxIPPacket(ParadoxIPPacket.EMPTY_PAYLOAD, false)
                 .setCommand(HeaderCommand.LOGIN_COMMAND1);
         sendPacket(step2);
         receivePacket();
+    }
 
+    // 3: Unknown request (IP150 only)
+    private void step3LoginSequence() throws IOException, InterruptedException {
         logger.debug("Step3");
-        // 3: Unknown request (IP150 only)
         ParadoxIPPacket step3 = new ParadoxIPPacket(ParadoxIPPacket.EMPTY_PAYLOAD, false)
                 .setCommand(HeaderCommand.LOGIN_COMMAND2);
         sendPacket(step3);
         receivePacket();
+    }
 
+    // 4: Init communication over UIP software request (IP150 and direct serial)
+    private void step4InitCommunicationToUIP() throws IOException, InterruptedException {
         logger.debug("Step4");
-        // 4: Init communication over UIP softawre request (IP150 and direct serial)
         byte[] message4 = new byte[37];
         message4[0] = 0x72;
         ParadoxIPPacket step4 = new ParadoxIPPacket(message4, true)
@@ -145,16 +154,20 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
         if (receivedPacket != null && receivedPacket.length >= 53) {
             panelInfoBytes = Arrays.copyOfRange(receivedPacket, 16, 53);
         }
+    }
 
+    // 5: Unknown request (IP150 only)
+    private void step5LoginSequence() throws IOException, InterruptedException {
         logger.debug("Step5");
-        // 5: Unknown request (IP150 only)
         ParadoxIPPacket step5 = new ParadoxIPPacket(IpMessagesConstants.UNKNOWN_IP150_REQUEST_MESSAGE01, false)
                 .setCommand(HeaderCommand.SERIAL_CONNECTION_INITIATED);
         sendPacket(step5);
         receivePacket();
+    }
 
+    // 6: Initialize serial communication request (IP150 and direct serial)
+    private byte[] step6InitializeSerialCommunication() throws IOException, InterruptedException {
         logger.debug("Step6");
-        // 6: Initialize serial communication request (IP150 and direct serial)
         byte[] message6 = new byte[37];
         message6[0] = 0x5F;
         message6[1] = 0x20;
@@ -164,10 +177,14 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
         byte[] response6 = receivePacket();
         byte[] initializationMessage = Arrays.copyOfRange(response6, 16, response6.length);
         ParadoxUtil.printPacket("Init communication sub array: ", initializationMessage);
+        return initializationMessage;
+    }
 
+    // 7: Initialization request (in response to the initialization from the panel)
+    // (IP150 and direct serial)
+    private void step7FinalInitializationRequest(byte[] initializationMessage)
+            throws IOException, InterruptedException {
         logger.debug("Step7");
-        // 7: Initialization request (in response to the initialization from the panel)
-        // (IP150 and direct serial)
         byte[] message7 = generateInitializationRequest(initializationMessage, pcPasswordBytes);
         ParadoxIPPacket step7 = new ParadoxIPPacket(message7, true)
                 .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
@@ -186,7 +203,7 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
         receivePacket();
     }
 
-    protected boolean isInialLoginSuccessful(byte[] loginPacketResponse) {
+    private boolean isInitialLoginSuccessful(byte[] loginPacketResponse) {
         byte payloadResponseByte = loginPacketResponse[16];
 
         byte headerResponseByte = loginPacketResponse[4];
@@ -197,6 +214,7 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
                     logger.info("Login - Login to IP150 - OK");
                     return true;
                 }
+                break;
             case 0x30:
                 logger.warn("Login - Login to IP150 failed - Incorrect password");
                 break;
@@ -209,12 +227,13 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
         switch (payloadResponseByte) {
             case 0x01:
                 logger.warn("Login - Invalid password");
+                break;
             case 0x02:
             case 0x04:
                 logger.warn("Login - User already connected");
+                break;
             default:
                 logger.warn("Login - Connection refused");
-
         }
         return false;
     }
@@ -238,6 +257,7 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
         tx.write(packet);
     }
 
+    // TODO think about better approach
     protected byte[] receivePacket() throws InterruptedException, IOException {
         for (int retryCounter = 1; retryCounter <= 3; retryCounter++) {
             try {
@@ -248,13 +268,16 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
                     return Arrays.copyOfRange(result, 0, result[1] + 16);
                 }
             } catch (IOException e) {
-                logger.debug("Unable to retrieve data from RX. {}", e.getMessage());
+                logger.debug("Unable to retrieve data from RX. ", e);
                 Thread.sleep(200);
                 if (retryCounter <= 3) {
                     logger.debug("That was {} attempt.", retryCounter);
+                } else {
+                    throw e;
                 }
             }
         }
+        // Usualy we should not reach this but if we get to here. Better to throw exception.
         throw new IOException("Unable to read from socket or received data is wrong.");
     }
 

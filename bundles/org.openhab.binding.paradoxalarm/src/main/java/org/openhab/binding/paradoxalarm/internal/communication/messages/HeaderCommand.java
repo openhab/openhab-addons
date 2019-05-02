@@ -24,7 +24,7 @@ package org.openhab.binding.paradoxalarm.internal.communication.messages;
  * 0xFB: Multicommand
  * 0xFF: Disconnect from IP module (byte 00 in the response payload MUST be 01 to indicate a successful disconnect)
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public enum HeaderCommand {
     SERIAL((byte) 0x00),

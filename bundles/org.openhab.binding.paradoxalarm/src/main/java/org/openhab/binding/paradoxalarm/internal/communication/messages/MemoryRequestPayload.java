@@ -43,7 +43,7 @@ public abstract class MemoryRequestPayload implements IPPacketPayload {
         this.address = address;
         this.bytesToRead = bytesToRead;
 
-        logger.trace("MessageStart: {}", String.format("0x%02X,\t", MESSAGE_START));
+        logTraceHexFormatted("MessageStart: {}", MESSAGE_START);
     }
 
     protected abstract byte calculateControlByte();
@@ -69,6 +69,16 @@ public abstract class MemoryRequestPayload implements IPPacketPayload {
 
     protected int getAddress() {
         return address;
+    }
+
+    protected void logTraceHexFormatted(String text, int address) {
+        logTraceOptional(text, "0x%02X,\t", address);
+    }
+
+    private void logTraceOptional(String text, String format, int address) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Address: {}", String.format(format, address));
+        }
     }
 
 }

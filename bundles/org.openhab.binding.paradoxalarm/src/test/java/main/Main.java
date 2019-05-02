@@ -10,12 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.paradoxalarm.internal.communication;
+package main;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
+import org.openhab.binding.paradoxalarm.internal.communication.ParadoxCommunicatorFactory;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 import org.openhab.binding.paradoxalarm.internal.model.Partition;
@@ -58,7 +60,7 @@ public class Main {
                 infiniteLoop(paradoxSystem, communicator);
             }
         } catch (Exception e) {
-            logger.error("Exception: {}, {}", e.getMessage(), e);
+            logger.error("Exception: ", e);
             System.exit(0);
         }
     }
@@ -95,7 +97,7 @@ public class Main {
     private static List<Zone> initializeZones(IParadoxCommunicator paradoxSystem)
             throws IOException, InterruptedException, ParadoxBindingException {
         List<String> zoneLabels = paradoxSystem.readZoneLabels();
-        List<Zone> zones = new ArrayList<Zone>();
+        List<Zone> zones = new ArrayList<>();
         for (int i = 0; i < 40; i++) {
             Zone zone = new Zone(i + 1, zoneLabels.get(i));
             zones.add(zone);
@@ -106,7 +108,7 @@ public class Main {
     private static List<Partition> initializePartitions(IParadoxCommunicator paradoxSystem)
             throws IOException, InterruptedException, ParadoxBindingException {
         List<String> partitionLabels = paradoxSystem.readPartitionLabels();
-        List<Partition> partitions = new ArrayList<Partition>();
+        List<Partition> partitions = new ArrayList<>();
         for (int i = 0; i < partitionLabels.size(); i++) {
             Partition partition = new Partition(i + 1, partitionLabels.get(i));
             partitions.add(partition);

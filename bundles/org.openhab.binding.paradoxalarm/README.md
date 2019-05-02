@@ -2,7 +2,7 @@
 
 This binding is intended to provide basic support for Paradox Alarm system.
 
-With the power of OpenHab this binding can be used for complex decision rules combining motion/magnetic sensor or whole partitions states with different scenarios.
+With the power of OpenHAB this binding can be used for complex decision rules combining motion/magnetic sensor or whole partitions states with different scenarios.
 
 
 Examples: 
@@ -47,6 +47,7 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 | LOGOUT | Logs out and disconnects from Paradox alarm system                                 |
 | LOGIN  | Creates socket if necessary, connects to paradox system and uses the logon data from the thing parameters to connect.|
 | RESET  | Does logout and then login with recreation of communicator objects inside the code.| 
+
 ### Entities (zones, partitions) configuration parameters:
 
 | Value  | Description                                                                        |

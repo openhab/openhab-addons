@@ -19,7 +19,7 @@ package org.openhab.binding.paradoxalarm.internal.communication.messages;
  * 0x04: Serial/pass through command request
  * 0x02: Serial/pass through command response
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public enum HeaderMessageType {
     IP_REQUEST((byte) 0x03),

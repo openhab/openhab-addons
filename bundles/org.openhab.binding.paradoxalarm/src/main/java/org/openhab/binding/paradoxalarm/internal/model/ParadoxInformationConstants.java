@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.paradoxalarm.internal.model;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.eclipse.smarthome.core.util.HexUtils;
 
 /**
  * The {@link ParadoxInformation} Class that provides the basic panel
@@ -23,7 +26,7 @@ import java.util.Map;
  * @author Konstantin_Polihronov - Initial contribution
  */
 public class ParadoxInformationConstants {
-    public static Map<String, PanelType> panelTypes = new HashMap<String, PanelType>();
+    public static Map<String, PanelType> panelTypes = new HashMap<>();
     static {
         panelTypes.put("0xA122", PanelType.EVO48);
         panelTypes.put("0xA133", PanelType.EVO48);
@@ -42,5 +45,15 @@ public class ParadoxInformationConstants {
         panelTypes.put("0xAE53", PanelType.SP4000);
         panelTypes.put("0xAE54", PanelType.SP65);
     };
+
+    public static PanelType parsePanelType(byte[] infoPacket) {
+        if (infoPacket == null || infoPacket.length != 37) {
+            return PanelType.UNKNOWN;
+        }
+        byte[] panelTypeBytes = Arrays.copyOfRange(infoPacket, 6, 8);
+        String key = "0x" + HexUtils.bytesToHex(panelTypeBytes);
+
+        return ParadoxInformationConstants.panelTypes.getOrDefault(key, PanelType.UNKNOWN);
+    }
 
 }

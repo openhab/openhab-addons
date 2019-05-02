@@ -67,7 +67,7 @@ public class ParadoxPanelHandler extends EntityBaseHandler {
                         panelInformation.getBootLoaderVersion().toString());
             }
         } catch (ParadoxBindingException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Unable to retrieve ParadoxPanel instance. " + e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
         }
     }
 }

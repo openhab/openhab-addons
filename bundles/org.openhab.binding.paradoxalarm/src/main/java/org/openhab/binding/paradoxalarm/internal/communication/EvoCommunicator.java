@@ -13,8 +13,8 @@
 package org.openhab.binding.paradoxalarm.internal.communication;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -112,7 +112,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
 
     @Override
     public List<byte[]> readPartitionFlags() {
-        List<byte[]> result = new ArrayList<byte[]>();
+        List<byte[]> result = new ArrayList<>();
 
         byte[] element = memoryMap.getElement(2);
         byte[] firstBlock = Arrays.copyOfRange(element, 32, 64);
@@ -170,7 +170,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
                 memoryMap.updateElement(j, readRAMBlock(i));
             }
         } else {
-            logger.warn("Unable to refresh memory map. Communicator is offline");
+            logger.debug("Unable to refresh memory map. Communicator is offline");
         }
     }
 
@@ -254,12 +254,12 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
             retryCounter++;
         }
 
-        logger.warn("Failed to receive data for command 0x{0:X}", command);
+        logger.debug("Failed to receive data for command 0x{0:X}", command);
         return null;
     }
 
     private List<byte[]> splitResponsePackets(byte[] response) throws ParadoxBindingException {
-        List<byte[]> packets = new ArrayList<byte[]>();
+        List<byte[]> packets = new ArrayList<>();
         byte[] responseCopy = Arrays.copyOf(response, response.length);
         int totalLength = responseCopy.length;
         while (responseCopy.length > 0) {
@@ -298,8 +298,8 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         return packets;
     }
 
-    private String createString(byte[] payloadResult) throws UnsupportedEncodingException {
-        return new String(payloadResult, "US-ASCII");
+    private String createString(byte[] payloadResult) {
+        return new String(payloadResult, StandardCharsets.US_ASCII);
     }
 
     @Override
@@ -318,7 +318,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
                     loginSequence();
                     return;
                 default:
-                    logger.warn("Command {} not implemented.", command);
+                    logger.debug("Command {} not implemented.", command);
             }
         } catch (IOException | InterruptedException e) {
             logger.warn("Error while executing command {}. Exception:{}", command, e);

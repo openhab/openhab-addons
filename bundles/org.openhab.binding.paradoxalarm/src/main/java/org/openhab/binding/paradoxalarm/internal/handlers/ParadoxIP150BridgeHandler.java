@@ -37,6 +37,7 @@ import org.openhab.binding.paradoxalarm.internal.communication.IParadoxGenericCo
 import org.openhab.binding.paradoxalarm.internal.communication.ParadoxCommunicatorFactory;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.model.PanelType;
+import org.openhab.binding.paradoxalarm.internal.model.ParadoxInformationConstants;
 import org.openhab.binding.paradoxalarm.internal.model.RawStructuredDataCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,12 +75,12 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
         String ip150Password = config.getIp150Password();
         String pcPassword = config.getPcPassword();
 
-        logger.info("Phase1 - Identify communicator");
+        logger.debug("Phase1 - Identify communicator");
         IParadoxGenericCommunicator initialCommunicator = new GenericCommunicator(ipAddress, tcpPort, ip150Password,
                 pcPassword);
         byte[] panelInfoBytes = initialCommunicator.getPanelInfoBytes();
 
-        PanelType panelType = PanelType.parsePanelType(panelInfoBytes);
+        PanelType panelType = ParadoxInformationConstants.parsePanelType(panelInfoBytes);
         logger.info("Found {} panel type.", panelType);
         initialCommunicator.close();
 
@@ -91,7 +92,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
             panelTypeStr = config.getPanelType();
         }
 
-        logger.info("Phase2 - Creating communicator for panel {}", panelType);
+        logger.debug("Phase2 - Creating communicator for panel {}", panelType);
         ParadoxCommunicatorFactory factory = new ParadoxCommunicatorFactory(ipAddress, tcpPort, ip150Password,
                 pcPassword);
         return factory.createCommunicator(panelTypeStr);
@@ -101,7 +102,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Start initialize()...");
         updateStatus(ThingStatus.UNKNOWN);
-        logger.info("Starting creation of communicator.");
+        logger.debug("Starting creation of communicator.");
         config = getConfigAs(ParadoxIP150BridgeConfiguration.class);
         updateStatus(ThingStatus.OFFLINE);
 
@@ -113,7 +114,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
         try {
             communicator = initializeCommunicator();
             if (communicator.isOnline()) {
-                logger.info("Communicator created successfully. Update Data cache...");
+                logger.debug("Communicator created successfully. Update Data cache...");
                 updateDataCache(true);
 
                 updateStatus(ThingStatus.ONLINE);
@@ -166,7 +167,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
             announceUpdateToHandlers();
 
             if (failedReadAttempts > 0) {
-                logger.info("Successfully refreshed memory map after {} failed attempts.", failedReadAttempts);
+                logger.debug("Successfully refreshed memory map after {} failed attempts.", failedReadAttempts);
                 failedReadAttempts = 0;
             }
 
@@ -179,12 +180,10 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
 
     private void handleSocketReadError(IOException e) {
         failedReadAttempts++;
-        logger.warn("Communicator cannot refresh cached memory map. Attempt: {}, IOException msg: {}",
-                failedReadAttempts, e.getMessage());
-        logger.debug("Stack trace:", e);
+        logger.debug("Communicator cannot refresh cached memory map. Attempt: {}", failedReadAttempts, e);
 
         if (failedReadAttempts == FAILED_READ_ATTEMPTS_TRESHOLD) {
-            logger.info("Will attempt to reinitialize communicator.");
+            logger.debug("Will attempt to reinitialize communicator.");
             ChannelUID uid = getThing().getChannel(ParadoxAlarmBindingConstants.IP150_COMMUNICATION_COMMAND_CHANNEL_UID)
                     .getUID();
             handleCommand(uid, new StringType(RESET_COMMAND));
@@ -218,8 +217,8 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {}", command.toFullString());
-        if (ThingStatus.OFFLINE.equals(getThing().getStatus()) && command instanceof RefreshType) {
+        logger.debug("Received command {}", command);
+        if (ThingStatus.OFFLINE == getThing().getStatus() && command instanceof RefreshType) {
             logger.debug("Received REFRESH command but {} is OFFLINE", getThing().getUID());
             return;
         }

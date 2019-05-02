@@ -33,7 +33,7 @@ public class ParadoxInformation {
     private Version bootloaderVersion;
 
     public ParadoxInformation(byte[] panelInfoBytes, IParadoxParser parser) {
-        panelType = PanelType.parsePanelType(panelInfoBytes);
+        panelType = ParadoxInformationConstants.parsePanelType(panelInfoBytes);
 
         applicationVersion = parser.parseApplicationVersion(panelInfoBytes);
         hardwareVersion = parser.parseHardwareVersion(panelInfoBytes);

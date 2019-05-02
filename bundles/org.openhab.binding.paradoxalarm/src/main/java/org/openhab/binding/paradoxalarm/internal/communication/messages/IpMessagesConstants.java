@@ -15,7 +15,7 @@ package org.openhab.binding.paradoxalarm.internal.communication.messages;
 /**
  * Constants representing packet headers / messages which are easier written as static final byte arrays
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class IpMessagesConstants {
     public static final byte[] UNKNOWN_IP150_REQUEST_MESSAGE01 = { 0x0A, 0x50, 0x08, 0x00, 0x00, 0x01, 0x00, 0x00, 0x59 };

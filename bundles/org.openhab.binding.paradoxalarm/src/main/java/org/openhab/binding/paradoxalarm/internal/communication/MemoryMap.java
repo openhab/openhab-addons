@@ -22,7 +22,7 @@ import java.util.List;
  * @author Konstantin_Polihronov - Initial contribution
  */
 public class MemoryMap {
-    private List<byte[]> ramCache = new ArrayList<byte[]>();
+    private List<byte[]> ramCache = new ArrayList<>();
 
     public MemoryMap(List<byte[]> ramCache) {
         this.ramCache = ramCache;

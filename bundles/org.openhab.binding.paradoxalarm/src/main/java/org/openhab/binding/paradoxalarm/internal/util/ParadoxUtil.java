@@ -49,10 +49,12 @@ public class ParadoxUtil {
 
     public static void printPacket(String description, byte[] array) {
         logger.trace("Packet payload size: {}", array[1]);
-        printByteArray(description, array, array[1] + 16);
+        if (logger.isTraceEnabled()) {
+            printByteArray(description, array, array[1] + 16);
+        }
     }
 
-    public static void printByteArray(String description, byte[] array, int length) {
+    private static void printByteArray(String description, byte[] array, int length) {
         if (description != null && !description.isEmpty()) {
             logger.trace(description);
         }

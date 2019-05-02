@@ -13,17 +13,13 @@
 package org.openhab.binding.paradoxalarm.internal.exceptions;
 
 /**
- * The {@link ParadoxBindingException} Wrapper of Exception class. May not be needed.
+ * The {@link ParadoxBindingException} Wrapper of Exception class.
  *
  * @author Konstantin_Polihronov - Initial contribution
  */
 public class ParadoxBindingException extends Exception {
 
     private static final long serialVersionUID = -5771699322577106346L;
-
-    public ParadoxBindingException() {
-        super();
-    }
 
     public ParadoxBindingException(String message, Throwable cause, boolean enableSuppression,
             boolean writableStackTrace) {
