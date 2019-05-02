@@ -17,6 +17,5 @@
   <name>openHAB Bindings</name>
 
   <modules>
-    <module>org.openhab.binding.enocean</module>
   </modules>
 </project>
