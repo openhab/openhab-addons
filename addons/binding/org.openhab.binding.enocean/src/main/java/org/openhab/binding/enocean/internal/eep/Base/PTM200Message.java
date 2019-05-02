@@ -14,6 +14,8 @@ package org.openhab.binding.enocean.internal.eep.Base;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
+import java.util.Map;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -45,12 +47,14 @@ public class PTM200Message extends _RPSMessage {
     }
 
     @Override
-    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command, State currentState, Configuration config) {
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
+            Map<String, State> currentState, Configuration config) {
 
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
+            Configuration config) {
         if (!isValid()) {
             return UnDefType.UNDEF;
         }

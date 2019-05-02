@@ -14,6 +14,8 @@ package org.openhab.binding.enocean.internal.eep.A5_38;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_DIMMER;
 
+import java.util.Map;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -52,7 +54,7 @@ public class A5_38_08_Dimming extends _4BSMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command outputCommand,
-            State currentState, Configuration config) {
+            Map<String, State> currentState, Configuration config) {
         switch (channelId) {
             case CHANNEL_DIMMER:
                 byte dimmValue;
@@ -73,24 +75,21 @@ public class A5_38_08_Dimming extends _4BSMessage {
 
                 EnOceanChannelDimmerConfig c = config.as(EnOceanChannelDimmerConfig.class);
 
-                boolean eltakoDimmer = (c.eltakoDimmer == null) ? true : c.eltakoDimmer;
-                boolean storeValue = (c.storeValue == null) ? false : c.storeValue;
-
                 byte storeByte = 0x00; // "Store final value" (standard) vs. "block value" (Eltako)
 
-                if (!eltakoDimmer) {
+                if (!c.eltakoDimmer) {
                     dimmValue *= 2.55; // 0-100% = 0-255
 
-                    if (storeValue) {
+                    if (c.storeValue) {
                         storeByte = 0x02; // set DB0.1
                     }
                 } else {
-                    if (storeValue) {
+                    if (c.storeValue) {
                         storeByte = 0x04; // set DB0.2
                     }
                 }
 
-                byte rampingTime = (c.rampingTime == null) ? Zero : c.rampingTime.byteValue();
+                byte rampingTime = Integer.valueOf(c.rampingTime).byteValue();
                 byte switchingCommand = (dimmValue == Zero) ? SwitchOff : SwitchOn;
 
                 setData(CommandId, dimmValue, rampingTime, (byte) (TeachInBit | storeByte | switchingCommand));
@@ -110,9 +109,7 @@ public class A5_38_08_Dimming extends _4BSMessage {
 
                     EnOceanChannelDimmerConfig c = config.as(EnOceanChannelDimmerConfig.class);
 
-                    boolean eltakoDimmer = (c.eltakoDimmer == null) ? true : c.eltakoDimmer;
-
-                    if (!eltakoDimmer) {
+                    if (!c.eltakoDimmer) {
                         if (getBit(0, 2)) {
                             // relative value
                         } else {

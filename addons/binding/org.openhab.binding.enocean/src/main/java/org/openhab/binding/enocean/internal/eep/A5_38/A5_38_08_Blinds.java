@@ -14,6 +14,8 @@ package org.openhab.binding.enocean.internal.eep.A5_38;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
+import java.util.Map;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -61,7 +63,7 @@ public class A5_38_08_Blinds extends _4BSMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command outputCommand,
-            State currentState, Configuration config) {
+            Map<String, State> currentState, Configuration config) {
 
         switch (channelId) {
             case CHANNEL_ROLLERSHUTTER:

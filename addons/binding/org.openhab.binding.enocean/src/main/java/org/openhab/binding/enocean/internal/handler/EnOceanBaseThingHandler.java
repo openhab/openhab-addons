@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.enocean.internal.EnOceanChannelDescription;
@@ -134,8 +135,12 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
             }
 
             // if we already created a channel with the same type => skip
-            if (channelList.stream()
-                    .anyMatch(channel -> cd.channelTypeUID.getId().equals(channel.getChannelTypeUID().getId()))) {
+            if (channelList.stream().anyMatch(channel -> {
+                ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+                String id = channelTypeUID == null ? "" : channelTypeUID.getId();
+
+                return cd.channelTypeUID.getId().equals(id);
+            })) {
                 continue;
             }
 

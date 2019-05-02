@@ -81,17 +81,20 @@ public class EnOceanUsbSerialDiscoveryParticipant implements UsbSerialDiscoveryP
     }
 
     private boolean isEnoceanUSB300Dongle(UsbSerialDeviceInformation deviceInformation) {
+        String manufacturer = deviceInformation.getManufacturer();
+        String product = deviceInformation.getProduct();
+
         return deviceInformation.getVendorId() == ENOCEAN_USB300_DONGLE_VENDOR_ID
-                && deviceInformation.getProductId() == ENOCEAN_USB300_DONGLE_PRODUCT_ID
-                && deviceInformation.getManufacturer() != null
-                && deviceInformation.getManufacturer().equalsIgnoreCase(ENOCEAN_USB300_DONGLE_MANUFACTURER)
-                && deviceInformation.getProduct() != null
-                && deviceInformation.getProduct().toLowerCase().contains(ENOCEAN_USB300_DONGLE_PRODUCT);
+                && deviceInformation.getProductId() == ENOCEAN_USB300_DONGLE_PRODUCT_ID && manufacturer != null
+                && manufacturer.equalsIgnoreCase(ENOCEAN_USB300_DONGLE_MANUFACTURER) && product != null
+                && product.toLowerCase().contains(ENOCEAN_USB300_DONGLE_PRODUCT);
     }
 
     private @Nullable String createEnoceanUSB300DongleLabel(UsbSerialDeviceInformation deviceInformation) {
-        if (deviceInformation.getSerialNumber() != null && !deviceInformation.getSerialNumber().isEmpty()) {
-            return String.format("%s (%s)", ENOCEAN_USB300_DONGLE_DEFAULT_LABEL, deviceInformation.getSerialNumber());
+        String serialNumber = deviceInformation.getSerialNumber();
+
+        if (serialNumber != null && !serialNumber.isEmpty()) {
+            return String.format("%s (%s)", ENOCEAN_USB300_DONGLE_DEFAULT_LABEL, serialNumber);
         } else {
             return ENOCEAN_USB300_DONGLE_DEFAULT_LABEL;
         }

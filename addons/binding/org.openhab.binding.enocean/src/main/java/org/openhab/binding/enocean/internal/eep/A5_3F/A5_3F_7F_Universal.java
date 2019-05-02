@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_3F;
 
+import java.util.Map;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.transform.actions.Transformation;
 import org.eclipse.smarthome.core.types.Command;
@@ -38,7 +40,8 @@ public class A5_3F_7F_Universal extends _4BSMessage {
     }
 
     @Override
-    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command, State currentState, Configuration config) {
+    protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
+            Map<String, State> currentState, Configuration config) {
 
         if (config != null) {
             try {
