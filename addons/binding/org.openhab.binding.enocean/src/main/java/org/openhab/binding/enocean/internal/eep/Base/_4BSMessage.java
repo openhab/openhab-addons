@@ -25,6 +25,12 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
  */
 public abstract class _4BSMessage extends EEP {
 
+    protected boolean supportsTeachInVariation3 = false;
+
+    public boolean isTeachInVariation3Supported() {
+        return supportsTeachInVariation3;
+    }
+
     public _4BSMessage(ERP1Message packet) {
         super(packet);
     }

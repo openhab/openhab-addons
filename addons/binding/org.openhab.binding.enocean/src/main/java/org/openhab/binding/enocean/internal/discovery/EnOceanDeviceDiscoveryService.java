@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.eep.EEPFactory;
 import org.openhab.binding.enocean.internal.eep.Base.UTEResponse;
+import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.handler.EnOceanBridgeHandler;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
@@ -103,7 +104,7 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
         ThingTypeUID thingTypeUID = eep.getThingTypeUID();
         ThingUID thingUID = new ThingUID(thingTypeUID, bridgeHandler.getThing().getUID(), enoceanId);
 
-        int deviceId = 0;
+        int senderIdOffset = 0;
         boolean broadcastMessages = true;
 
         // check for bidirectional communication => do not use broadcast in this case
@@ -114,21 +115,16 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
 
         // if ute => send response if needed
         if (msg.getRORG() == RORG.UTE && (msg.getPayload(1, 1)[0] & UTEResponse.ResponseNeeded_MASK) == 0) {
-
-            // get new sender Id
-            deviceId = bridgeHandler.getNextSenderId(enoceanId);
-            if (deviceId > 0) {
-                byte[] newSenderId = bridgeHandler.getBaseId();
-                newSenderId[3] += deviceId;
-
-                // send response
-                EEP response = EEPFactory.buildResponseEEPFromTeachInERP1(msg, newSenderId);
-                response.setSuppressRepeating(true);
-                bridgeHandler.sendMessage(response.getERP1Message(), null);
-                logger.info("Send teach in response for {}", enoceanId);
-            }
-
+            logger.info("Sending UTE response to {}", enoceanId);
+            senderIdOffset = sendTeachInResponse(msg, enoceanId);
         }
+
+        // if 4BS teach in variation 3 => send response
+        if ((eep instanceof _4BSMessage) && ((_4BSMessage) eep).isTeachInVariation3Supported()) {
+            logger.info("Sending 4BS teach in variation 3 response to {}", enoceanId);
+            senderIdOffset = sendTeachInResponse(msg, enoceanId);
+        }
+
         DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID)
                 .withRepresentationProperty(enoceanId).withBridge(bridgeHandler.getThing().getUID());
 
@@ -136,9 +132,9 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
         discoveryResultBuilder.withProperty(PARAMETER_BROADCASTMESSAGES, broadcastMessages);
         discoveryResultBuilder.withProperty(PARAMETER_ENOCEANID, enoceanId);
 
-        if (deviceId > 0) {
+        if (senderIdOffset > 0) {
             // advance config with new device id
-            discoveryResultBuilder.withProperty(PARAMETER_SENDERIDOFFSET, deviceId);
+            discoveryResultBuilder.withProperty(PARAMETER_SENDERIDOFFSET, senderIdOffset);
         }
 
         thingDiscovered(discoveryResultBuilder.build());
@@ -146,6 +142,27 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
         // As we only support sensors to be teached in, we do not need to send a teach in response => 4bs
         // bidirectional teach in proc is not supported yet
         // this is true except for UTE teach in => we always have to send a response here
+    }
+
+    private int sendTeachInResponse(ERP1Message msg, String enoceanId) {
+        int offset;
+        // get new sender Id
+        offset = bridgeHandler.getNextSenderId(enoceanId);
+        if (offset > 0) {
+            byte[] newSenderId = bridgeHandler.getBaseId();
+            newSenderId[3] += offset;
+
+            // send response
+            EEP response = EEPFactory.buildResponseEEPFromTeachInERP1(msg, newSenderId);
+            if (response != null) {
+                bridgeHandler.sendMessage(response.getERP1Message(), null);
+                logger.info("Teach in response for {} with new senderId {} (= offset {}) sent", enoceanId,
+                        HexUtils.bytesToHex(newSenderId), offset);
+            } else {
+                logger.warn("Teach in response for enoceanId {} not supported!", enoceanId);
+            }
+        }
+        return offset;
     }
 
     @Override
