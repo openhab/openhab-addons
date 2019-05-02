@@ -368,7 +368,7 @@
         <bundle dependency="true" start-level="80">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.10</bundle>
         <bundle dependency="true" start-level="80">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.8</bundle>
         <bundle dependency="true" start-level="80">mvn:commons-logging/commons-logging/1.2</bundle>
-        <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.ihc/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.ihc/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-binding-innogysmarthome" description="innogy Smarthome Binding" version="${project.version}">
