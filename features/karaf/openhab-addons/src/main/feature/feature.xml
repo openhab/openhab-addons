@@ -1087,7 +1087,9 @@
 
     <feature name="openhab-misc-hueemulation" description="Hue Emulation" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.hueemulation/${project.version}</bundle>
+        <feature>openhab-transport-upnp</feature>
+        <feature>openhab-core-automation</feature>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.io.hueemulation/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-misc-homekit" description="HomeKit Integration" version="${project.version}">
