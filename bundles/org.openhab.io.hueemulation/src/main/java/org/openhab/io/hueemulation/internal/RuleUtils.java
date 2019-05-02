@@ -60,21 +60,22 @@ public class RuleUtils {
 
         if (upperTime != null && !upperTime.isEmpty()) {
             String[] upperTimeParts = upperTime.split(":");
-            if (!upperTime.matches("[0-9]{1,2}:[0-9]{1,2}(:[0-9]{1,2})?") || r.length != upperTimeParts.length) {
+            if (!upperTime.matches("[0-9]{1,2}:[0-9]{1,2}(:[0-9]{1,2})?")
+                    || randomizedTime.length != upperTimeParts.length) {
                 throw new IllegalStateException("Random Time pattern incorrect. Must be 'hh:mm[:ss]'. " + upperTime);
             }
-            for (int i = 0; i < r.length; ++i) {
-                int n = Integer.parseInt(r[i]);
+            for (int i = 0; i < randomizedTime.length; ++i) {
+                int n = Integer.parseInt(randomizedTime[i]);
                 int n2 = Integer.parseInt(upperTimeParts[i]);
                 int diff = Math.abs(n2 - n); // Example: 12 and 14 -> diff = 2
                 if (diff > 0) { // diff = rnd [0,3)
                     diff = random.nextInt(diff + 1);
                 }
-                r[i] = String.valueOf(n2 > n ? n + diff : n2 + diff);
+                randomizedTime[i] = String.valueOf(n2 > n ? n + diff : n2 + diff);
             }
         }
 
-        return r;
+        return randomizedTime;
     }
 
     /**
