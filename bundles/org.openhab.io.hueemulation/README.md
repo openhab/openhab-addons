@@ -1,10 +1,9 @@
 # openHAB Hue Emulation Service
 
-Hue Emulation exposes openHAB items as Hue lights to other Hue API compatible applications like Amazon Echos, Google Homes or
-any Hue compatible application.
+Hue Emulation exposes openHAB items as Hue lights to other Hue API compatible applications like Amazon Echos, Google Homes or any Hue compatible application.
 
-Because Amazon Echo and Google Home control openHAB locally this way, it is a fast and reliable way
-to voice control your installation. See the Troubleshoot section down below though.
+Because Amazon Echo and Google Home control openHAB locally this way, it is a fast and reliable way to voice control your installation.
+See the Troubleshoot section down below though.
 
 This service is independent of the also available Hue binding!
 
@@ -53,8 +52,7 @@ The following default tags are setup:
 * "Lighting": Item will be exposed as a dimmable white bulb
 * "ColorLighting": Item will be exposed as a color bulb
 
-It is the responsibility of binding developers to categories and default tag their
-available *Channels*, so that linked Items are automatically exposed with this service.
+It is the responsibility of binding developers to categories and default tag their available *Channels*, so that linked Items are automatically exposed with this service.
 
 You can tag items manually though as well.
 
@@ -92,8 +90,7 @@ org.openhab.hueemulation:createNewUserOnEveryEndpoint=false
 ```
 
 Some Amazon Echo versions only allow V1 Hue bridges (the round ones, not the square ones) to be discovered.
-If the following option is enabled in combination with the pairing mode,
-the service will pretend to be an old Hue bridge.
+If the following option is enabled in combination with the pairing mode, the service will pretend to be an old Hue bridge.
 
 This option resets automatically after pairing mode has been switched off by the timeout.
 
@@ -119,8 +116,8 @@ You can have multiple comma separated entries.
 org.openhab.hueemulation:discoveryIps=192.168.1.100,::FFFF:A9DB:0D85
 ```
 
-The hue emulation service supports three types of emulated bulbs. You need to tell the service
-which item tag corresponds to which emulated bulb type.
+The hue emulation service supports three types of emulated bulbs.
+You need to tell the service which item tag corresponds to which emulated bulb type.
 One of the comma separated tags must match for the item to be exposed.
 Can be empty to match an item based on other criteria.
 
@@ -130,10 +127,8 @@ org.openhab.hueemulation:restrictToTagsWhiteLights=Lighting
 org.openhab.hueemulation:restrictToTagsColorLights=ColorLighting
 ```
 
-The above default assignment means that every item that has the tag "Switchable"
-will be emulated as a Zigbee Switch. If you want your switches to be exposed
-as lights instead (because your Amazon Echo does not support switches for example),
-you want to have:
+The above default assignment means that every item that has the tag "Switchable" will be emulated as a Zigbee Switch.
+If you want your switches to be exposed as lights instead (because your Amazon Echo does not support switches for example), you want to have:
 
 ```
 org.openhab.hueemulation:restrictToTagsSwitches=NONE
@@ -141,9 +136,8 @@ org.openhab.hueemulation:restrictToTagsWhiteLights=Lighting,Switchable
 org.openhab.hueemulation:restrictToTagsColorLights=ColorLighting
 ```
 
-The service tries to expose as much items as possible (greedy), based on some criteria as explained in
-the section above. If you want to exclude items, you need to tag them. Define the tags with the
-following option:
+The service tries to expose as much items as possible (greedy), based on some criteria as explained in the section above.
+If you want to exclude items, you need to tag them. Define the tags with the following option:
 
 ```
 org.openhab.hueemulation:ignoreItemsWithTags=internal
@@ -154,8 +148,8 @@ You want this tag for all items that are purely used for rules, as proxy items e
 
 ## Troubleshooting
 
-Some devices like Amazon Echo, Google Home and all Philips devices (TVs, Apps) expect a Hue bridge to
-run on port 80. You must either
+Some devices like Amazon Echo, Google Home and all Philips devices (TVs, Apps) expect a Hue bridge to run on port 80.
+You must either
 
 * port forward your openHAB installation to port 80,
   (`iptables -t nat -A PREROUTING -p tcp -m tcp --dport 80 -j REDIRECT --to-ports 8080`)
@@ -174,13 +168,11 @@ run on port 80. You must either
 
 Please open port 80 tcp and port 1900 udp in your firewall installation.
 
-You can test if the hue emulation does its job by enabling pairing mode including the option
-"Amazon Echo device discovery fix".
+You can test if the hue emulation does its job by enabling pairing mode including the option "Amazon Echo device discovery fix".
 
-1. Navigate with your browser to "http://your-openhab-ip/description.xml" to check the discovery
-   response. Check the IP address in there.
-2. Navigate with your browser to "http://your-openhab-ip/api/status"
-   to check the self test report.
+1. Navigate with your browser to "http://your-openhab-ip/description.xml" to check the discovery response.
+   Check the IP address in there.
+2. Navigate with your browser to "http://your-openhab-ip/api/status" to check the self test report.
 
 If you use the port forwarding way, the self-test page will not be able to correctly determine if your installation works on port 80.
 A reverse proxy is recommended.
@@ -188,15 +180,15 @@ A reverse proxy is recommended.
 Depending on the firmware version of your Amazon Echo, it may not support colored bulbs or switches.
 Please assign "ColorLighting" and "Switchable" to the `WhiteLights` type as explained above.
 
-Also note that Amazon Echos are stubborn as. You might need to remove all former recognized devices multiple
-times and perform the search via different Echos and also the web or mobile application.
+Also note that Amazon Echos are stubborn as.
+You might need to remove all former recognized devices multiple times and perform the search via different Echos and also the web or mobile application.
 
 It might help to (temporarly) lower the emulated bridge version in the configuration as described above, 
 
 ## Text configuration example
 
-The item label will be used as the Hue device name. Please be aware that textual defined items are generally
-a bad idea. In this case renaming items in Hue compatible Apps will fail.  
+The item label will be used as the Hue device name. Please be aware that textual defined items are generally a bad idea.
+In this case renaming items in Hue compatible Apps will fail.  
 
 ```
 Switch  TestSwitch      "Kitchen Switch" [ "Switchable" ]    {channel="..."}

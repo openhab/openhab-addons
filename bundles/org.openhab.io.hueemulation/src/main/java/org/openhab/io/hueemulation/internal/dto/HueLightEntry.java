@@ -131,8 +131,8 @@ public class HueLightEntry {
                 this.productname = null;
                 this.capabilities.certified = true;
                 break;
-            default:
             case SwitchType:
+            default:
                 /**
                  * Pretend to be an OSRAM plug, there is no native Philips Hue plug on the market.
                  * Those are supported by most of the external apps and Alexa.
