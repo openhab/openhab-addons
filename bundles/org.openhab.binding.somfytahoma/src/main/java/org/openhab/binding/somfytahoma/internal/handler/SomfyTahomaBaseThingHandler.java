@@ -57,10 +57,15 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        thingStates = new ExpiringCache<>(CACHE_EXPIRY, () -> getThingStates());
 
-        SomfyTahomaState state = getCachedThingState(STATUS_STATE);
-        updateThingStatus(state);
+        if (ThingStatus.ONLINE.equals(getBridge().getStatus())) {
+            thingStates = new ExpiringCache<>(CACHE_EXPIRY, () -> getThingStates());
+
+            SomfyTahomaState state = getCachedThingState(STATUS_STATE);
+            updateThingStatus(state);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
     }
 
     private synchronized @Nullable SomfyTahomaState getCachedThingState(String state) {

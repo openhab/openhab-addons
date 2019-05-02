@@ -90,9 +90,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     @Override
     public void initialize() {
-        String thingUid = getThing().getUID().toString();
         thingConfig = getConfigAs(SomfyTahomaConfig.class);
-        thingConfig.setThingUid(thingUid);
 
         httpClient.setFollowRedirects(false);
 
@@ -134,7 +132,7 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             httpClient.start();
 
             url = TAHOMA_URL + "login";
-            String urlParameters = "userId=" + thingConfig.getEmail() + "&userPassword=" + thingConfig.getPassword();
+            String urlParameters = "userId=" + thingConfig.getEmailUrlEncoded() + "&userPassword=" + thingConfig.getPasswordUrlEncoded();
 
             ContentResponse response = sendRequestBuilder(url, HttpMethod.POST)
                     .content(new StringContentProvider(urlParameters), "application/x-www-form-urlencoded; charset=UTF-8")
@@ -147,14 +145,11 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 logger.debug("Login response: {}", response.getContentAsString());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error logging in");
-                throw new SomfyTahomaException(response.getContentAsString());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error logging in" + data.getError());
             }
         } catch (JsonSyntaxException e) {
             logger.debug("Received invalid data", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data");
-        } catch (SomfyTahomaException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unauthorized. Please check credentials");
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.debug("Cannot get login cookie!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot get login cookie");
@@ -776,5 +771,16 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private boolean isAuthenticationChallenge(Exception ex) {
         return ex.getMessage().contains(AUTHENTICATION_CHALLENGE);
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+        if (configurationParameters.containsKey("email")) {
+            thingConfig.setEmail(configurationParameters.get("email").toString());
+        }
+        if (configurationParameters.containsKey("password")) {
+            thingConfig.setPassword(configurationParameters.get("password").toString());
+        }
     }
 }

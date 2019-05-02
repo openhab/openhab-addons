@@ -14,6 +14,10 @@ package org.openhab.binding.somfytahoma.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 /**
  * The {@link SomfyTahomaConfig} is  is the base class for configuration
  * information held by devices and modules.
@@ -24,7 +28,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SomfyTahomaConfig {
     private String email = "";
     private String password =  "";
-    private String thingUid = "";
     private int refresh = 30;
     private int statusTimeout = 300;
 
@@ -32,16 +35,16 @@ public class SomfyTahomaConfig {
         return email;
     }
 
+    public String getEmailUrlEncoded() throws UnsupportedEncodingException {
+        return URLEncoder.encode(email, StandardCharsets.UTF_8.toString());
+    }
+
     public String getPassword() {
         return password;
     }
 
-    public String getThingUid() {
-        return thingUid;
-    }
-
-    public void setThingUid(String thingUid) {
-        this.thingUid = thingUid;
+    public String getPasswordUrlEncoded() throws UnsupportedEncodingException {
+        return URLEncoder.encode(password, StandardCharsets.UTF_8.toString());
     }
 
     public int getRefresh() {
@@ -50,5 +53,13 @@ public class SomfyTahomaConfig {
 
     public int getStatusTimeout() {
         return statusTimeout;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
