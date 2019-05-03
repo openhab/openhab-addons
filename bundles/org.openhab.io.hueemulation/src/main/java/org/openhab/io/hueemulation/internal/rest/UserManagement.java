@@ -31,7 +31,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.registry.DefaultAbstractManagedProvider;
 import org.eclipse.smarthome.core.storage.StorageService;
 import org.openhab.io.hueemulation.internal.ConfigStore;
@@ -44,7 +43,6 @@ import org.openhab.io.hueemulation.internal.dto.response.HueSuccessResponseCreat
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,36 +73,16 @@ import io.swagger.annotations.ApiResponses;
 public class UserManagement extends DefaultAbstractManagedProvider<HueUserAuthWithSecrets, String> {
     private final Logger logger = LoggerFactory.getLogger(UserManagement.class);
 
-    @Reference
-    protected @NonNullByDefault({}) ConfigStore cs;
-    private boolean storageSet = false;
+    protected final ConfigStore cs;
 
-    @Override
-    @Reference(policy = ReferencePolicy.DYNAMIC)
-    public void setStorageService(@Nullable StorageService storageService) {
-        super.setStorageService(storageService);
-        storageSet = true;
-        if (cs == null) {
-            return;
-        }
+    @Activate
+    public UserManagement(final @Reference StorageService storageService, final @Reference ConfigStore cs) {
+        super(storageService);
+        this.cs = cs;
+
         for (HueUserAuthWithSecrets userAuth : getAll()) {
             cs.ds.config.whitelist.put(userAuth.getUID(), userAuth);
         }
-    }
-
-    @Activate
-    public void activate() {
-        if (storageSet) {
-            for (HueUserAuthWithSecrets userAuth : getAll()) {
-                cs.ds.config.whitelist.put(userAuth.getUID(), userAuth);
-            }
-        }
-    }
-
-    @Override
-    protected void unsetStorageService(@Nullable StorageService storageService) {
-        super.unsetStorageService(storageService);
-        storageSet = false;
     }
 
     /**
