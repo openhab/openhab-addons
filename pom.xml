@@ -17,7 +17,6 @@
   -->
 
   <modules>
-    <module>poms/tycho</module>
     <module>poms/bnd</module>
   </modules>
 
