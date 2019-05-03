@@ -10,7 +10,7 @@
   <packaging>pom</packaging>
 
   <name>openHAB Add-ons</name>
-  <description>This project contains the add-ons of openHAB</description>
+  <description>This project contains the official add-ons of openHAB</description>
 
   <organization>
     <name>openHAB.org</name>
@@ -538,8 +538,8 @@ Import-Package: \\
           <artifactId>sat-plugin</artifactId>
           <version>${sat.version}</version>
           <configuration>
-            <checkstyleProperties>${basedirRoot}/../../tools/checkstyle/ruleset.properties</checkstyleProperties>
-            <checkstyleFilter>${basedirRoot}/../../tools/checkstyle/suppressions.xml</checkstyleFilter>
+            <checkstyleProperties>${basedirRoot}/tools/checkstyle/ruleset.properties</checkstyleProperties>
+            <checkstyleFilter>${basedirRoot}/tools/checkstyle/suppressions.xml</checkstyleFilter>
           </configuration>
           <executions>
             <execution>
@@ -654,7 +654,7 @@ Import-Package: \\
         </property>
       </activation>
       <properties>
-        <bnd.includeresource>${.}/../../lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+        <bnd.includeresource>${.}/lib/; filter:=*.jar; lib:=true</bnd.includeresource>
       </properties>
       <build>
         <plugins>
@@ -708,7 +708,7 @@ Import-Package: \\
         </property>
       </activation>
       <modules>
-        <module>../../itests</module>
+        <module>itests</module>
       </modules>
     </profile>
     <profile>
