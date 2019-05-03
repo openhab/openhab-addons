@@ -37,7 +37,7 @@ You find the following repository structure:
 |   +-- org.openhab.binding.astro
 |   +-- ...
 |
-+-- features/karaf  An extension usually has dependencies (at least openHAB core).
++-- features/       An extension usually has dependencies (at least openHAB core).
 |            |      In those feature files are the dependencies for the OSGi container declared.
 |            +-- openhab-addons-external/src/main/feature/feature.xml
 |            +-- openhab-addons/src/main/feature/feature.xml
@@ -47,7 +47,6 @@ You find the following repository structure:
 |   +-- org.openhab.binding.avmfritz.tests
 |   +-- ...
 |
-+-- poms     Maven buildsystem files
 +-- src/etc  Auxilary buildsystem files: The license header for automatic checks for example
 +-- tools    Static code analyser instructions
 |
