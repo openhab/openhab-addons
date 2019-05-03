@@ -55,6 +55,7 @@ import org.eclipse.smarthome.core.library.items.StringItem;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -78,6 +79,7 @@ import org.eclipse.smarthome.core.transform.TransformationService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.test.java.JavaTest;
 import org.eclipse.smarthome.test.storage.VolatileStorageService;
 import org.hamcrest.Matcher;
@@ -754,15 +756,37 @@ public class ModbusDataHandlerTest extends JavaTest {
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(notNullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_ERROR, is(nullValue(State.class)));
 
-        // -3 converts to "true"
+        // transformation output (-30) is not valid for contact or switch
         assertSingleStateUpdate(dataHandler, CHANNEL_CONTACT, is(nullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_SWITCH, is(nullValue(State.class)));
+        // -30 is not valid value for Dimmer (PercentType) (not between 0...100)
         assertSingleStateUpdate(dataHandler, CHANNEL_DIMMER, is(nullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_NUMBER, new DecimalType(-30));
         // roller shutter fails since -3 is invalid value (not between 0...100)
         assertSingleStateUpdate(dataHandler, CHANNEL_ROLLERSHUTTER, is(nullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_STRING, new StringType("-30"));
         // no datetime, conversion not possible without transformation
+    }
+
+    @Test
+    public void testOnRegistersNaNFloatInRegisters() throws InvalidSyntaxException {
+        ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
+                "0", "default", ModbusConstants.ValueType.FLOAT32, null, new BasicModbusRegisterArray(
+                        // equivalent of floating point NaN
+                        new ModbusRegister[] { new BasicModbusRegister((byte) 0x7f, (byte) 0xc0),
+                                new BasicModbusRegister((byte) 0x00, (byte) 0x00) }),
+                null, bundleContext);
+
+        assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(notNullValue(State.class)));
+        assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_ERROR, is(nullValue(State.class)));
+
+        // UNDEF is treated as "boolean true" (OPEN/ON) since it is != 0.
+        assertSingleStateUpdate(dataHandler, CHANNEL_CONTACT, OpenClosedType.OPEN);
+        assertSingleStateUpdate(dataHandler, CHANNEL_SWITCH, OnOffType.ON);
+        assertSingleStateUpdate(dataHandler, CHANNEL_DIMMER, OnOffType.ON);
+        assertSingleStateUpdate(dataHandler, CHANNEL_NUMBER, UnDefType.UNDEF);
+        assertSingleStateUpdate(dataHandler, CHANNEL_ROLLERSHUTTER, UnDefType.UNDEF);
+        assertSingleStateUpdate(dataHandler, CHANNEL_STRING, UnDefType.UNDEF);
     }
 
     @Test
