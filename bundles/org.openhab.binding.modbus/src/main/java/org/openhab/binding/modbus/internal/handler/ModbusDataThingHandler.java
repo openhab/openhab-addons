@@ -53,6 +53,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
@@ -230,7 +231,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
      * In case of JSON as transformation output, the output processed using {@link processJsonTransform}.
      *
      * @param channelUID channel UID corresponding to received command
-     * @param command    command to be transformed
+     * @param command command to be transformed
      * @return transformed command. Null is returned with JSON transformation outputs and configuration errors
      *
      * @see processJsonTransform
@@ -653,7 +654,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         if (readValueType == null) {
             return;
         }
-        DecimalType numericState;
+        State numericState;
 
         // extractIndex:
         // e.g. with bit, extractIndex=4 means 5th bit (from right) ("10.4" -> 5th bit of register 10, "10.4" -> 5th bit
@@ -674,7 +675,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             int itemsPerRegister = 16 / readValueType.getBits();
             extractIndex = (readIndex.get() - pollStart) * itemsPerRegister + subIndex;
         }
-        numericState = ModbusBitUtilities.extractStateFromRegisters(registers, extractIndex, readValueType);
+        numericState = ModbusBitUtilities.extractStateFromRegisters(registers, extractIndex, readValueType)
+                .map(state -> (State) state).orElse(UnDefType.UNDEF);
         boolean boolValue = !numericState.equals(DecimalType.ZERO);
         Map<ChannelUID, State> values = processUpdatedValue(numericState, boolValue);
         logger.debug(
@@ -790,11 +792,11 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
     /**
      * Update linked channels
      *
-     * @param numericState numeric state corresponding to polled data
-     * @param boolValue    boolean value corresponding to polled data
+     * @param numericState numeric state corresponding to polled data (or UNDEF with floating point NaN or infinity)
+     * @param boolValue boolean value corresponding to polled data
      * @return updated channel data
      */
-    private Map<ChannelUID, State> processUpdatedValue(DecimalType numericState, boolean boolValue) {
+    private Map<ChannelUID, State> processUpdatedValue(State numericState, boolean boolValue) {
         Map<@NonNull ChannelUID, @NonNull State> states = new HashMap<>();
         CHANNEL_ID_TO_ACCEPTED_TYPES.keySet().stream().forEach(channelId -> {
             ChannelUID channelUID = getChannelUID(channelId);

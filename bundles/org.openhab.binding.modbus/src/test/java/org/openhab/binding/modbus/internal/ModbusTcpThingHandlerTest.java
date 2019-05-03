@@ -32,7 +32,6 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
