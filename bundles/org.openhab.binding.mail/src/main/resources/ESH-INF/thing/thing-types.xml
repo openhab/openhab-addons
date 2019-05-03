@@ -72,11 +72,6 @@
 				<label>refresh time for this account in s</label>
 				<default>60</default>
 			</parameter>
-            <parameter name="starttls" type="boolean">
-                <label>STARTTLS</label>
-                <advanced>true</advanced>
-                <default>false</default>
-            </parameter>
 		</config-description>
 	</thing-type>
 	<thing-type id="pop3" extensible="mailcount">

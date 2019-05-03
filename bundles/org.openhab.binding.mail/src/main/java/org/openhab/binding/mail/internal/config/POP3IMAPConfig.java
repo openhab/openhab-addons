@@ -23,5 +23,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class POP3IMAPConfig extends BaseConfig {
     public int refresh = 60;
-    public Boolean starttls = Boolean.FALSE;
 }
