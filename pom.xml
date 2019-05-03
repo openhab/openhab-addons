@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -63,7 +64,7 @@
     <bnd.importpackage></bnd.importpackage>
     <bnd.exportpackage></bnd.exportpackage>
     <bnd.includeresource></bnd.includeresource>
-    
+
   </properties>
 
   <repositories>
@@ -191,9 +192,7 @@ Import-Package: \\
 -contract: *
 -includeresource: ${bnd.includeresource}
 ]]></bnd>
-<!--
--dsannotations-options: norequirements
--->
+            <!-- -dsannotations-options: norequirements -->
             <!-- Bundle-SymbolicName: ${project.groupId}.${project.artifactId} -->
           </configuration>
           <executions>
@@ -204,7 +203,8 @@ Import-Package: \\
             </execution>
           </executions>
         </plugin>
-        <!-- Required to make the maven-jar-plugin pick up the bnd generated manifest. Also avoid packaging empty Jars -->
+        <!-- Required to make the maven-jar-plugin pick up the bnd generated 
+          manifest. Also avoid packaging empty Jars -->
         <!-- Moved... -->
 
         <!-- Setup the indexer for running and testing -->
@@ -293,7 +293,8 @@ Import-Package: \\
           </executions>
         </plugin>
 
-        <!-- Define the version of the baseline plugin we use and avoid failing when no baseline jar exists. -->
+        <!-- Define the version of the baseline plugin we use and avoid failing 
+          when no baseline jar exists. -->
         <!-- (for example before the first release) -->
         <plugin>
           <groupId>biz.aQute.bnd</groupId>
@@ -466,7 +467,8 @@ Import-Package: \\
           </executions>
         </plugin>
 
-        <!-- This plugin's configuration is used to store Eclipse m2e settings only. -->
+        <!-- This plugin's configuration is used to store Eclipse m2e settings 
+          only. -->
         <!-- It has no influence on the Maven build itself. -->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
@@ -571,10 +573,10 @@ Import-Package: \\
             <phase>initialize</phase>
             <configuration>
               <property>basedirRoot</property>
-			  <project>
-			    <groupId>org.openhab.addons</groupId>
-				<artifactId>org.openhab.addons.reactor</artifactId>
-			  </project>
+              <project>
+                <groupId>org.openhab.addons</groupId>
+                <artifactId>org.openhab.addons.reactor</artifactId>
+              </project>
             </configuration>
           </execution>
         </executions>
@@ -663,22 +665,22 @@ Import-Package: \\
             <artifactId>addjars-maven-plugin</artifactId>
             <version>1.0.5</version>
             <executions>
-            <execution>
-              <goals>
-              <goal>add-jars</goal>
-              </goals>
-              <configuration>
-              <resources>
-                <resource>
-                  <directory>${project.basedir}/lib</directory>
-                  <includes>
-                    <include>**/*.jar</include>
-                  </includes>
-		  <scope>provided</scope>
-                </resource>
-              </resources>
-              </configuration>
-            </execution>
+              <execution>
+                <goals>
+                  <goal>add-jars</goal>
+                </goals>
+                <configuration>
+                  <resources>
+                    <resource>
+                      <directory>${project.basedir}/lib</directory>
+                      <includes>
+                        <include>**/*.jar</include>
+                      </includes>
+                      <scope>provided</scope>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
             </executions>
           </plugin>
         </plugins>
