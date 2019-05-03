@@ -77,7 +77,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
 
         logger.debug("Phase1 - Identify communicator");
         IParadoxGenericCommunicator initialCommunicator = new GenericCommunicator(ipAddress, tcpPort, ip150Password,
-                pcPassword);
+                pcPassword, scheduler);
         byte[] panelInfoBytes = initialCommunicator.getPanelInfoBytes();
 
         PanelType panelType = ParadoxInformationConstants.parsePanelType(panelInfoBytes);
@@ -94,7 +94,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler {
 
         logger.debug("Phase2 - Creating communicator for panel {}", panelType);
         ParadoxCommunicatorFactory factory = new ParadoxCommunicatorFactory(ipAddress, tcpPort, ip150Password,
-                pcPassword);
+                pcPassword, scheduler);
         return factory.createCommunicator(panelTypeStr);
     }
 

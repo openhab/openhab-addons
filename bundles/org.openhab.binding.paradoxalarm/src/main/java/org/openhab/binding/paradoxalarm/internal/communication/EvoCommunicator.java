@@ -18,6 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.openhab.binding.paradoxalarm.internal.communication.messages.EpromRequestPayload;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderMessageType;
@@ -41,9 +43,10 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
 
     private MemoryMap memoryMap;
 
-    public EvoCommunicator(String ipAddress, int tcpPort, String ip150Password, String pcPassword)
+    public EvoCommunicator(String ipAddress, int tcpPort, String ip150Password, String pcPassword,
+            ScheduledExecutorService scheduler)
             throws UnknownHostException, IOException, InterruptedException, ParadoxBindingException {
-        super(ipAddress, tcpPort, ip150Password, pcPassword);
+        super(ipAddress, tcpPort, ip150Password, pcPassword, scheduler);
         initializeMemoryMap();
     }
 
@@ -222,17 +225,17 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
      * @throws ParadoxBindingException
      */
     private byte[] receivePacket(byte command) throws IOException, InterruptedException, ParadoxBindingException {
-        if (command > 0xF) {
-            command = ParadoxUtil.getHighNibble(command);
-        }
-
-        byte retryCounter = 0;
-
         // We might enter this too early, meaning the panel has not yet had time to
-        // respond
-        // to our command. We add a retry counter that will wait and retry.
-        while (retryCounter < 3) {
+        // respond to our command. We add a retry counter that will wait and retry.
+        Callable<byte[]> receivePacketCallable = getReceivePacketCallable(command);
+        return asyncReceivePacketHandle(receivePacketCallable);
+    }
+
+    private Callable<byte[]> getReceivePacketCallable(byte command) {
+        final byte finalCommand = command > 0xF ? ParadoxUtil.getHighNibble(command) : command;
+        return () -> {
             byte[] packetResponse = receivePacket();
+
             List<byte[]> responses = splitResponsePackets(packetResponse);
             for (byte[] response : responses) {
                 // Message too short
@@ -241,21 +244,14 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
                 }
 
                 // Response command (after header) is not related to reading memory
-                if (ParadoxUtil.getHighNibble(response[16]) != command) {
+                if (ParadoxUtil.getHighNibble(response[16]) != finalCommand) {
                     continue;
                 }
 
                 return Arrays.copyOfRange(response, 22, response.length - 1);
             }
-
-            // Give the panel time to send us a response
-            Thread.sleep(100);
-
-            retryCounter++;
-        }
-
-        logger.debug("Failed to receive data for command 0x{0:X}", command);
-        return null;
+            return null;
+        };
     }
 
     private List<byte[]> splitResponsePackets(byte[] response) throws ParadoxBindingException {

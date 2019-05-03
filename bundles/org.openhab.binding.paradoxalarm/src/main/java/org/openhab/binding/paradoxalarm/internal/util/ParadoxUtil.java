@@ -48,8 +48,8 @@ public class ParadoxUtil {
     }
 
     public static void printPacket(String description, byte[] array) {
-        logger.trace("Packet payload size: {}", array[1]);
         if (logger.isTraceEnabled()) {
+            logger.trace("Packet payload size: {}", array[1]);
             printByteArray(description, array, array[1] + 16);
         }
     }

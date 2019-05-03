@@ -14,6 +14,8 @@ package org.openhab.binding.paradoxalarm.internal.communication;
 
 import java.io.IOException;
 
+import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
+
 /**
  * The {@link IParadoxGenericCommunicator} is representing the functionality of generic communication. Only login/logout
  * sequence which is used to determine the Panel type.
@@ -25,7 +27,7 @@ public interface IParadoxGenericCommunicator {
 
     void logoutSequence() throws IOException;
 
-    void loginSequence() throws IOException, InterruptedException;
+    void loginSequence() throws IOException, InterruptedException, ParadoxBindingException;
 
     byte[] getPanelInfoBytes();
 

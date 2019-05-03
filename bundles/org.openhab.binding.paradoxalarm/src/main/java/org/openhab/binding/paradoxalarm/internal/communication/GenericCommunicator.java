@@ -18,6 +18,11 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderCommand;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderMessageType;
@@ -53,11 +58,14 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
     private byte[] panelInfoBytes;
     private boolean isOnline;
 
-    public GenericCommunicator(String ipAddress, int tcpPort, String ip150Password, String pcPassword)
-            throws UnknownHostException, IOException, InterruptedException {
+    protected ScheduledExecutorService scheduler;
+
+    public GenericCommunicator(String ipAddress, int tcpPort, String ip150Password, String pcPassword,
+            ScheduledExecutorService scheduler) throws UnknownHostException, IOException, InterruptedException {
         this.ipAddress = ipAddress;
         this.tcpPort = tcpPort;
         this.password = ip150Password;
+        this.scheduler = scheduler;
 
         initializeSocket();
 
@@ -197,10 +205,13 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
             logger.warn("Logon to panel failure.");
             logoutSequence();
         }
-        Thread.sleep(300);
-        // TODO check why after a short sleep, a 37 bytes packet is received after logon
-        // ! ! !
-        receivePacket();
+
+        try {
+            scheduler.schedule(this::receivePacket, 300, TimeUnit.MILLISECONDS).get();
+        } catch (ExecutionException e) {
+            logger.debug("Error reading final packet after 300ms of delay", e);
+        }
+
     }
 
     private boolean isInitialLoginSuccessful(byte[] loginPacketResponse) {
@@ -257,28 +268,40 @@ public class GenericCommunicator implements IParadoxGenericCommunicator {
         tx.write(packet);
     }
 
-    // TODO think about better approach
     protected byte[] receivePacket() throws InterruptedException, IOException {
-        for (int retryCounter = 1; retryCounter <= 3; retryCounter++) {
-            try {
-                byte[] result = new byte[256];
-                rx.read(result);
-                ParadoxUtil.printPacket("RX:", result);
-                if (result[1] > 0 && result[1] + 16 < 256) {
-                    return Arrays.copyOfRange(result, 0, result[1] + 16);
-                }
-            } catch (IOException e) {
-                logger.debug("Unable to retrieve data from RX. ", e);
-                Thread.sleep(200);
-                if (retryCounter <= 3) {
-                    logger.debug("That was {} attempt.", retryCounter);
-                } else {
-                    throw e;
-                }
+        Callable<byte[]> receivePacketCallable = getReceivePacketCallable();
+        return asyncReceivePacketHandle(receivePacketCallable);
+    }
+
+    private Callable<byte[]> getReceivePacketCallable() {
+        return () -> {
+            byte[] result = new byte[256];
+            rx.read(result);
+            ParadoxUtil.printPacket("RX:", result);
+            if (result[1] > 0 && result[1] + 16 < 256) {
+                return Arrays.copyOfRange(result, 0, result[1] + 16);
             }
-        }
-        // Usualy we should not reach this but if we get to here. Better to throw exception.
-        throw new IOException("Unable to read from socket or received data is wrong.");
+            return null;
+        };
+    }
+
+    protected byte[] asyncReceivePacketHandle(Callable<byte[]> receivePacketCallable)
+            throws InterruptedException, IOException {
+        Future<byte[]> resultFuture = scheduler.submit(receivePacketCallable);
+        int retryCounter = 0;
+        do {
+            try {
+                byte[] receivedPacket = resultFuture.get();
+                if (receivedPacket != null) {
+                    return receivedPacket;
+                }
+            } catch (ExecutionException e) {
+                logger.debug("Error receiving the packet", e);
+            }
+            resultFuture = scheduler.schedule(receivePacketCallable, 200, TimeUnit.MILLISECONDS);
+        } while (retryCounter++ < 3);
+
+        throw new IOException("Unable to receive packet after 3 retries.");
     }
 
     private byte[] generateInitializationRequest(byte[] initializationMessage, byte[] pcPassword) {

@@ -15,6 +15,9 @@ package main;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
 import org.openhab.binding.paradoxalarm.internal.communication.ParadoxCommunicatorFactory;
@@ -44,14 +47,18 @@ public class Main {
     // PC Password is the value of section 3012, i.e. if value is 0987, PC Password is two bytes 0x09, 0x87
     private static String pcPassword;
 
+    private static ScheduledExecutorService scheduler;
+
     private static final String PANEL_TYPE = "EVO192";
 
     public static void main(String[] args) {
         readArguments(args);
 
         try {
+            scheduler = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
+
             ParadoxCommunicatorFactory factory = new ParadoxCommunicatorFactory(ipAddress, port, ip150Password,
-                    pcPassword);
+                    pcPassword, scheduler);
             IParadoxCommunicator communicator = factory.createCommunicator(PANEL_TYPE);
             updateDataCache(communicator, true);
 
@@ -68,8 +75,7 @@ public class Main {
     private static void infiniteLoop(ParadoxPanel paradoxSystem, IParadoxCommunicator communicator) {
         try {
             updateDataCache(communicator, false);
-            Thread.sleep(5000);
-            paradoxSystem.updateEntitiesStates();
+            scheduler.schedule(paradoxSystem::updateEntitiesStates, 5000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e1) {
             logger.error(e1.getMessage(), e1);
         } catch (Exception e) {
