@@ -120,7 +120,7 @@ public class ModbusDataHandlerTest extends JavaTest {
     private class ItemChannelLinkRegistryTestImpl extends ItemChannelLinkRegistry {
         private final class ManagedItemChannelLinkProviderExtension extends ManagedItemChannelLinkProvider {
             ManagedItemChannelLinkProviderExtension() {
-                setStorageService(new VolatileStorageService());
+                super(new VolatileStorageService());
             }
         }
 
@@ -140,7 +140,7 @@ public class ModbusDataHandlerTest extends JavaTest {
 
         private final class ManagedProviderTestImpl extends ManagedItemProvider {
             public ManagedProviderTestImpl() {
-                setStorageService(new VolatileStorageService());
+                super(new VolatileStorageService());
             }
         }
 
