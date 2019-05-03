@@ -18,19 +18,18 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.openhab.binding.modbus.internal.AtomicStampedKeyValue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AtomicStampedKeyValueTest {
 
     @Test(expected = NullPointerException.class)
     public void testInitWithNullKey() {
-        new AtomicStampedKeyValue<Object, Object>(0, null, new Object());
+        new AtomicStampedKeyValue<>(0, null, new Object());
     }
 
     @Test(expected = NullPointerException.class)
     public void testInitWithNullValue() {
-        new AtomicStampedKeyValue<Object, Object>(0, new Object(), null);
+        new AtomicStampedKeyValue<>(0, new Object(), null);
     }
 
     @Test
