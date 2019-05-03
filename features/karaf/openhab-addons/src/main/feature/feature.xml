@@ -1095,7 +1095,16 @@
     <feature name="openhab-misc-homekit" description="HomeKit Integration" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
-        <bundle start-level="80">mvn:org.openhab.io/org.openhab.io.homekit/${project.version}</bundle>
+        <feature prerequisite="true">wrap</feature>
+        <bundle dependency="true">mvn:org.glassfish/javax.json/1.0.4</bundle>
+        <bundle dependency="true">mvn:javax.json/javax.json-api/1.0</bundle>
+        <bundle dependency="true">wrap:mvn:io.netty/netty-all/4.0.32.Final</bundle>
+        <bundle dependency="true">wrap:mvn:com.nimbusds/srp6a/1.5.2</bundle>
+        <bundle dependency="true">mvn:net.i2p.crypto/eddsa/0.1.0</bundle>
+        <bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk15on/1.51</bundle>
+        <bundle dependency="true">wrap:mvn:org.zeromq/curve25519-java/0.1.0</bundle>
+        <bundle dependency="true">wrap:mvn:com.beowulfe.hap/hap/1.1.4</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.io.homekit/${project.version}</bundle>
     </feature>
 
     <feature name="openhab-misc-imperihome" description="ImperiHome Integration" version="${project.version}">
