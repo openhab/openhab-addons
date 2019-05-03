@@ -18,10 +18,12 @@ import static org.junit.Assert.assertThat;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.junit.Rule;
 import org.junit.Test;
@@ -254,6 +256,8 @@ public class BitUtilitiesExtractStateFromRegistersTest {
                         shortArrayToRegisterArray(0x4, 0xC47B, 0x199A), 1 },
                 new Object[] { new DecimalType(-1004.4f), ValueType.FLOAT32,
                         shortArrayToRegisterArray(0xC47B, 0x199A, 0x4), 0 },
+                new Object[] { // equivalent of NaN
+                        Optional.empty(), ValueType.FLOAT32, shortArrayToRegisterArray(0x7fc0, 0x0000), 0 },
                 new Object[] { new DecimalType(-1004.4f), ValueType.FLOAT32,
                         shortArrayToRegisterArray(0x4, 0x0, 0x0, 0x0, 0xC47B, 0x199A), 4 },
                 new Object[] { IllegalArgumentException.class, ValueType.FLOAT32, shortArrayToRegisterArray(4, -1004),
@@ -275,6 +279,8 @@ public class BitUtilitiesExtractStateFromRegistersTest {
                         shortArrayToRegisterArray(0x199A, 0xC47B), 0 },
                 new Object[] { new DecimalType("64000"), ValueType.FLOAT32_SWAP,
                         shortArrayToRegisterArray(0x0000, 0x477A), 0 },
+                new Object[] { // equivalent of NaN
+                        Optional.empty(), ValueType.FLOAT32_SWAP, shortArrayToRegisterArray(0x0000, 0x7fc0), 0 },
                 new Object[] {
                         // out of bounds of unsigned 16bit (0 to 65,535)
                         new DecimalType(70004.4f), ValueType.FLOAT32_SWAP, shortArrayToRegisterArray(0xBA33, 0x4788),
@@ -350,6 +356,7 @@ public class BitUtilitiesExtractStateFromRegistersTest {
                         // 70004 -> 0x00011174 (32bit) -> 0x1174 (16bit)
                         ValueType.INT64_SWAP, shortArrayToRegisterArray(0x0, 0x0, 0x8, 0x0), 0 },
                 new Object[] { new DecimalType("-2322243636186679031"), ValueType.INT64_SWAP,
+
                         shortArrayToRegisterArray(0x7909, 0x772E, 0xBBB7, 0xDFC5), 0 },
 
                 //
@@ -382,8 +389,13 @@ public class BitUtilitiesExtractStateFromRegistersTest {
             shouldThrow.expect((Class) expectedResult);
         }
 
-        DecimalType actualState = ModbusBitUtilities.extractStateFromRegisters(this.registers, this.index, this.type);
+        Optional<@NonNull DecimalType> actualState = ModbusBitUtilities.extractStateFromRegisters(this.registers,
+                this.index, this.type);
+        // Wrap given expectedResult to Optional, if necessary
+        Optional<@NonNull DecimalType> expectedStateWrapped = expectedResult instanceof DecimalType
+                ? Optional.of((DecimalType) expectedResult)
+                : (Optional<@NonNull DecimalType>) expectedResult;
         assertThat(String.format("registers=%s, index=%d, type=%s", registers, index, type), actualState,
-                is(equalTo(expectedResult)));
+                is(equalTo(expectedStateWrapped)));
     }
 }

@@ -71,6 +71,7 @@ public class ModbusBitUtilities {
      * - registers (index) and (index + 1) are interpreted as signed 32bit floating point number.
      * - it assumed that the first register contains the most significant 16 bits
      * - it is assumed that each register is encoded in most significant bit first order
+     * - floating point NaN and infinity will return as empty optional
      * FLOAT32_SWAP:
      * - Same as FLOAT32 but registers swapped
      * INT64:
@@ -87,16 +88,18 @@ public class ModbusBitUtilities {
      *
      * @param registers list of registers, each register represent 16bit of data
      * @param index zero based item index. Interpretation of this depends on type, see examples above.
-     *            With type larger or equal to 16 bits, the index tells the register index to start reading from.
+     *            With type larger or equal to 16 bits, the index tells the register index to start reading
+     *            from.
      *            With type less than 16 bits, the index tells the N'th item to read from the registers.
      * @param type item type, e.g. unsigned 16bit integer (<tt>ModbusBindingProvider.ValueType.UINT16</tt>)
-     * @return number representation queried value
+     * @return number representation queried value, <tt>DecimalType</tt>. Empty optional is returned
+     *         with NaN and infinity floating point values
      * @throws NotImplementedException in cases where implementation is lacking for the type. This can be considered a
      *             bug
      * @throws IllegalArgumentException when <tt>index</tt> is out of bounds of registers
      *
      */
-    public static DecimalType extractStateFromRegisters(ModbusRegisterArray registers, int index,
+    public static Optional<DecimalType> extractStateFromRegisters(ModbusRegisterArray registers, int index,
             ModbusConstants.ValueType type) {
         int endBitIndex = (type.getBits() >= 16 ? 16 * index : type.getBits() * index) + type.getBits() - 1;
         // each register has 16 bits
@@ -108,37 +111,43 @@ public class ModbusBitUtilities {
         }
         switch (type) {
             case BIT:
-                return new DecimalType((registers.getRegister(index / 16).toUnsignedShort() >> (index % 16)) & 1);
+                return Optional
+                        .of(new DecimalType((registers.getRegister(index / 16).toUnsignedShort() >> (index % 16)) & 1));
             case INT8:
-                return new DecimalType(registers.getRegister(index / 2).getBytes()[1 - (index % 2)]);
+                return Optional.of(new DecimalType(registers.getRegister(index / 2).getBytes()[1 - (index % 2)]));
             case UINT8:
-                return new DecimalType(
-                        (registers.getRegister(index / 2).toUnsignedShort() >> (8 * (index % 2))) & 0xff);
+                return Optional.of(new DecimalType(
+                        (registers.getRegister(index / 2).toUnsignedShort() >> (8 * (index % 2))) & 0xff));
             case INT16: {
                 ByteBuffer buff = ByteBuffer.allocate(2);
                 buff.put(registers.getRegister(index).getBytes());
-                return new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getShort(0));
+                return Optional.of(new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getShort(0)));
             }
             case UINT16:
-                return new DecimalType(registers.getRegister(index).toUnsignedShort());
+                return Optional.of(new DecimalType(registers.getRegister(index).toUnsignedShort()));
             case INT32: {
                 ByteBuffer buff = ByteBuffer.allocate(4);
                 buff.put(registers.getRegister(index).getBytes());
                 buff.put(registers.getRegister(index + 1).getBytes());
-                return new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getInt(0));
+                return Optional.of(new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getInt(0)));
             }
             case UINT32: {
                 ByteBuffer buff = ByteBuffer.allocate(8);
                 buff.position(4);
                 buff.put(registers.getRegister(index).getBytes());
                 buff.put(registers.getRegister(index + 1).getBytes());
-                return new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getLong(0));
+                return Optional.of(new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getLong(0)));
             }
             case FLOAT32: {
                 ByteBuffer buff = ByteBuffer.allocate(4);
                 buff.put(registers.getRegister(index).getBytes());
                 buff.put(registers.getRegister(index + 1).getBytes());
-                return new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getFloat(0));
+                try {
+                    return Optional.of(new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getFloat(0)));
+                } catch (NumberFormatException e) {
+                    // floating point NaN or infinity encountered
+                    return Optional.empty();
+                }
             }
             case INT64: {
                 ByteBuffer buff = ByteBuffer.allocate(8);
@@ -146,7 +155,7 @@ public class ModbusBitUtilities {
                 buff.put(registers.getRegister(index + 1).getBytes());
                 buff.put(registers.getRegister(index + 2).getBytes());
                 buff.put(registers.getRegister(index + 3).getBytes());
-                return new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getLong(0));
+                return Optional.of(new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getLong(0)));
             }
             case UINT64: {
                 ByteBuffer buff = ByteBuffer.allocate(8);
@@ -154,26 +163,32 @@ public class ModbusBitUtilities {
                 buff.put(registers.getRegister(index + 1).getBytes());
                 buff.put(registers.getRegister(index + 2).getBytes());
                 buff.put(registers.getRegister(index + 3).getBytes());
-                return new DecimalType(new BigDecimal(new BigInteger(1, buff.order(ByteOrder.BIG_ENDIAN).array())));
+                return Optional.of(
+                        new DecimalType(new BigDecimal(new BigInteger(1, buff.order(ByteOrder.BIG_ENDIAN).array()))));
             }
             case INT32_SWAP: {
                 ByteBuffer buff = ByteBuffer.allocate(4);
                 buff.put(registers.getRegister(index + 1).getBytes());
                 buff.put(registers.getRegister(index).getBytes());
-                return new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getInt(0));
+                return Optional.of(new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getInt(0)));
             }
             case UINT32_SWAP: {
                 ByteBuffer buff = ByteBuffer.allocate(8);
                 buff.position(4);
                 buff.put(registers.getRegister(index + 1).getBytes());
                 buff.put(registers.getRegister(index).getBytes());
-                return new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getLong(0));
+                return Optional.of(new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getLong(0)));
             }
             case FLOAT32_SWAP: {
                 ByteBuffer buff = ByteBuffer.allocate(4);
                 buff.put(registers.getRegister(index + 1).getBytes());
                 buff.put(registers.getRegister(index).getBytes());
-                return new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getFloat(0));
+                try {
+                    return Optional.of(new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getFloat(0)));
+                } catch (NumberFormatException e) {
+                    // floating point NaN or infinity encountered
+                    return Optional.empty();
+                }
             }
             case INT64_SWAP: {
                 ByteBuffer buff = ByteBuffer.allocate(8);
@@ -181,7 +196,7 @@ public class ModbusBitUtilities {
                 buff.put(registers.getRegister(index + 2).getBytes());
                 buff.put(registers.getRegister(index + 1).getBytes());
                 buff.put(registers.getRegister(index).getBytes());
-                return new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getLong(0));
+                return Optional.of(new DecimalType(buff.order(ByteOrder.BIG_ENDIAN).getLong(0)));
             }
             case UINT64_SWAP: {
                 ByteBuffer buff = ByteBuffer.allocate(8);
@@ -189,7 +204,8 @@ public class ModbusBitUtilities {
                 buff.put(registers.getRegister(index + 2).getBytes());
                 buff.put(registers.getRegister(index + 1).getBytes());
                 buff.put(registers.getRegister(index).getBytes());
-                return new DecimalType(new BigDecimal(new BigInteger(1, buff.order(ByteOrder.BIG_ENDIAN).array())));
+                return Optional.of(
+                        new DecimalType(new BigDecimal(new BigInteger(1, buff.order(ByteOrder.BIG_ENDIAN).array()))));
             }
             default:
                 throw new IllegalArgumentException(type.getConfigValue());
