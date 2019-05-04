@@ -656,7 +656,7 @@ Import-Package: \\
         </property>
       </activation>
       <properties>
-        <bnd.includeresource>${.}/lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+        <bnd.includeresource>${.}/../../lib/; filter:=*.jar; lib:=true</bnd.includeresource>
       </properties>
       <build>
         <plugins>
