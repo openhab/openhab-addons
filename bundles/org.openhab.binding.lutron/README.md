@@ -212,7 +212,7 @@ Supplying a model is not required, as there is only one model.
 
 To support the contact closure inputs, CCI channels named *cci[n]* are created with item type Contact and category Switch.
 They are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
-They accept both OPEN/CLOSED and ON/OFF commands and present OPEN/CLOSED states.
+They present OPEN/CLOSED states but do not accept commands as Contact items are read-only in OpenHAB.
 Note that the `autorelease` option **does not** apply to CCI channels.
 
 Example:
@@ -359,7 +359,7 @@ Appropriate channels will be created automatically by the keypad, ttkeypad, and 
 |cco        |switchstatus   |OnOffType     |OnOffType, RefreshType                                 |
 |keypads    |button*        |OnOffType     |OnOffType                                              |
 |           |led*           |OnOffType     |OnOffType, RefreshType                                 |
-|           |cci*           |OpenClosedType|OpenClosedType, OnOffType                              |
+|           |cci*           |OpenClosedType|(*readonly*)                                           |
 |shade      |shadelevel     |PercentType   |PercentType, UpDownType, StopMoveType.STOP, RefreshType|
 |greenmode  |step           |DecimalType   |DecimalType, OnOffType (ON=2,OFF=1), RefreshType       |
 |timeclock  |clockmode      |DecimalType   |DecimalType, RefreshType                               |

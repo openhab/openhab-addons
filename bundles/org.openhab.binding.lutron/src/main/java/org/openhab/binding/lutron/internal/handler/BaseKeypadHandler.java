@@ -287,24 +287,10 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             return;
         }
         
-        // For CCIs, handle OpenClosedType and OnOffType commands
+        // Contact channels for CCIs are read-only, so ignore commands
         if (isCCI(componentID)) {
-            if (command instanceof OpenClosedType) {
-                if (command == OpenClosedType.CLOSED) {
-                    device(componentID, ACTION_PRESS);
-                } else if (command == OpenClosedType.OPEN) {
-                    device(componentID, ACTION_RELEASE);
-                }
-            } else if (command instanceof OnOffType) {
-                if (command == OnOffType.ON) {
-                    device(componentID, ACTION_PRESS);
-                } else if (command == OnOffType.OFF) {
-                    device(componentID, ACTION_RELEASE);
-                }
-            } else {
-                logger.warn("Invalid command type {} received for channel {} device {}", command, channelUID,
-                        getThing().getUID());
-            }
+            logger.debug("Invalid command type {} received for channel {} device {}", command, channelUID,
+                    getThing().getUID());
             return;
         }
     }
