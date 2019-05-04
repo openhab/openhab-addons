@@ -111,6 +111,7 @@
     <module>org.openhab.binding.kodi</module>
     <module>org.openhab.binding.konnected</module>
     <module>org.openhab.binding.kostalinverter</module>
+    <module>org.openhab.binding.kvv</module>
     <module>org.openhab.binding.lametrictime</module>
     <module>org.openhab.binding.leapmotion</module>
     <module>org.openhab.binding.lgtvserial</module>
