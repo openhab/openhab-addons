@@ -67,52 +67,35 @@ public class FreeMobileSmsHandler extends BaseThingHandler {
       }
     }
 
-    private void handleMessage(Command command) {
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (!CHANNEL_MESSAGE.equals(channelUID.getId())) {
+            logger.warn("Received command {} for unknown channel: {}", command, channelUID);
+            return;
+        }
         logger.debug("Message command");
         if (command instanceof StringType) {
-            sendMessage(command.toString());
+            scheduler.execute(() -> {
+                sendMessage(command.toString());
+            });
         } else {
             logger.warn("Unsupported Command type");
         }
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_MESSAGE.equals(channelUID.getId())) {
-            handleMessage(command);
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
-        } else {
-          logger.warn("Received command {} for unknown channel: {}", command, channelUID);
-        }
-    }
-
-    @Override
     public void initialize() {
-        // logger.debug("Start initializing!");
+        logger.debug("Start initializing!");
+
+        // Check configuration
         config = getConfigAs(FreeMobileSmsConfiguration.class);
+        if (config != null && config.user != null && config.password != null) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                "Failed to retrieve configuration");
+        }
 
-        updateStatus(ThingStatus.UNKNOWN);
-
-        scheduler.execute(() -> {
-            // Check configuration
-            if (config != null && config.user != null && config.password != null) {
-              updateStatus(ThingStatus.ONLINE);
-            } else {
-              updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                      "Failed to retrieve configuration");
-            }
-        });
-
-        // logger.debug("Finished initializing!");
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+        logger.debug("Finished initializing!");
     }
 }
