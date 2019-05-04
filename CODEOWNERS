@@ -6,7 +6,6 @@
 
 # Add-on maintainers:
 /addons/binding/org.openhab.binding.enocean/ @fruggy83
-/addons/binding/org.openhab.binding.freemobilesms/ @guyou
 /addons/binding/org.openhab.binding.loxone/ @ppieczul
 /addons/io/org.openhab.io.homekit/ @beowulfe
 /addons/io/org.openhab.io.hueemulation/ @davidgraeff @digitaldan
@@ -49,6 +48,7 @@
 /bundles/org.openhab.binding.feican/ @Hilbrand
 /bundles/org.openhab.binding.folding/ @fa2k
 /bundles/org.openhab.binding.freebox/ @lolodomo
+/bundles/org.openhab.binding.freemobilesms/ @guyou
 /bundles/org.openhab.binding.fronius/ @trokohl
 /bundles/org.openhab.binding.fsinternetradio/ @paphko
 /bundles/org.openhab.binding.ftpupload/ @paulianttila
