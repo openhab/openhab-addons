@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.free.smsapi.Account;
 import fr.free.smsapi.Sender;
 
 /**
@@ -42,6 +43,7 @@ public class FreeMobileSmsHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FreeMobileSmsHandler.class);
 
+    @Nullable
     private FreeMobileSmsConfiguration config;
 
     private final Sender sender = new Sender();
@@ -53,7 +55,13 @@ public class FreeMobileSmsHandler extends BaseThingHandler {
     protected void sendMessage(String message) {
       logger.debug("Message to send: {}", message);
       try {
-        sender.send(config, message);
+        // Local variable to disable Null annotation locally
+        Account account = this.config;
+        if (account != null) {
+          sender.send(account, message);
+        } else {
+          logger.error("Failed to send message: configuration not set");
+        }
       } catch (IOException e) {
         logger.error("Failed to send message: {}", e.getMessage());
       }
