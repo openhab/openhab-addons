@@ -18,7 +18,6 @@ import org.eclipse.smarthome.core.transform.TransformationException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.transform.jsonpath.internal.JSonPathTransformationService;
 
 /**
  * @author Gaël L'hopital
@@ -90,7 +89,7 @@ public class JSonPathTransformationServiceTest {
     @Test
     public void testIndefinite_notFiltered() throws TransformationException {
         String transformedResponse = processor.transform("$.*.id", jsonArray);
-        assertEquals("NULL", transformedResponse);
+        assertEquals("[1, 2]", transformedResponse);
     }
 
     @Test
@@ -99,4 +98,35 @@ public class JSonPathTransformationServiceTest {
         assertEquals("NULL", transformedResponse);
     }
 
+    @Test
+    public void testBooleanList() throws TransformationException {
+        final String list = "[true, false, true, true, false]";
+        final String json = "{\"data\":" + list + "}";
+        String transformedResponse = processor.transform("$.data", json);
+        assertEquals(list, transformedResponse);
+    }
+
+    @Test
+    public void testNumberList() throws TransformationException {
+        final String list = "[0, 160, 253, -9, 21]";
+        final String json = "{\"data\":" + list + "}";
+        String transformedResponse = processor.transform("$.data", json);
+        assertEquals(list, transformedResponse);
+    }
+
+    @Test
+    public void testDoubleList() throws TransformationException {
+        final String list = "[1.0, 2.16, 5.253, -3.9, 21.21]";
+        final String json = "{\"data\":" + list + "}";
+        String transformedResponse = processor.transform("$.data", json);
+        assertEquals(list, transformedResponse);
+    }
+
+    @Test
+    public void testStringList() throws TransformationException {
+        final String list = "[\"test1\", \"test2\", \"test3\", \"test4\"]";
+        final String json = "{\"data\":" + list + "}";
+        String transformedResponse = processor.transform("$.data", json);
+        assertEquals(list, transformedResponse);
+    }
 }
