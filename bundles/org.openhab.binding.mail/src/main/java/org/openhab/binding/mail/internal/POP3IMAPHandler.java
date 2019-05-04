@@ -52,10 +52,12 @@ public class POP3IMAPHandler extends BaseThingHandler {
 
     private @NonNullByDefault({}) POP3IMAPConfig config;
     private @Nullable ScheduledFuture<?> refreshTask;
-    private String provider = "imap";
+    private final String baseProtocol;
+    private String protocol = "imap";
 
     public POP3IMAPHandler(Thing thing) {
         super(thing);
+        baseProtocol = thing.getThingTypeUID().getId(); // pop3 or imap
     }
 
     @Override
@@ -66,14 +68,14 @@ public class POP3IMAPHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(POP3IMAPConfig.class);
 
-        provider = thing.getThingTypeUID().getId(); // pop3 or imap
+        protocol = baseProtocol;
 
         if (config.security == ServerSecurity.SSL) {
-            provider.concat("s");
+            protocol.concat("s");
         }
 
         if (config.port == 0) {
-            switch (provider) {
+            switch (protocol) {
                 case "imap":
                     config.port = 143;
                     break;
@@ -107,9 +109,12 @@ public class POP3IMAPHandler extends BaseThingHandler {
     }
 
     private void refresh() {
-        Session session = Session.getDefaultInstance(new Properties(), null);
+        Properties props = new Properties();
+        props.setProperty("mail." + baseProtocol + ".starttls.enable", "true");
+        props.setProperty("mail.store.protocol", protocol);
+        Session session = Session.getInstance(props);
 
-        try (Store store = session.getStore(provider)) {
+        try (Store store = session.getStore()) {
             store.connect(config.hostname, config.port, config.username, config.password);
 
             for (Channel channel : thing.getChannels()) {
