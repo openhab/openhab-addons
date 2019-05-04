@@ -76,6 +76,7 @@ class WebSocketV2 extends WebSocketBase {
 
             if (jsonMsg.result != null) {
                 handleResult(jsonMsg);
+                return;
             }
             if (jsonMsg.error != null) {
                 logger.debug("WebSocketV2 Error received: {}", msg);
@@ -88,18 +89,19 @@ class WebSocketV2 extends WebSocketBase {
 
             switch (jsonMsg.event) {
                 case "ms.channel.connect":
-                    logger.debug("Remote channel connected");
+                    logger.debug("V2 channel connected. Token = {}", jsonMsg.data.token);
+
                     // update is requested from ed.installedApp.get event: small risk that this websocket is not
                     // yet connected
                     break;
                 case "ms.channel.clientConnect":
-                    logger.debug("Remote client connected");
+                    logger.debug("V2 client connected");
                     break;
                 case "ms.channel.clientDisconnect":
-                    logger.debug("Remote client disconnected");
+                    logger.debug("V2 client disconnected");
                     break;
                 default:
-                    logger.debug("WebSocketV2 Unknown event: {}", msg);
+                    logger.debug("V2 Unknown event: {}", msg);
 
             }
         } catch (JsonSyntaxException e) {
@@ -131,7 +133,6 @@ class WebSocketV2 extends WebSocketBase {
         @NonNullByDefault({})
         static class Params {
             String id;
-
         }
 
         String method = "ms.application.get";
@@ -142,5 +143,4 @@ class WebSocketV2 extends WebSocketBase {
     void getAppStatus(String id) {
         sendCommand(remoteControllerWebSocket.gson.toJson(new JSONAppStatus(id)));
     }
-
 }

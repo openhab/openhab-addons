@@ -14,12 +14,9 @@ package org.openhab.binding.samsungtv.internal.protocol;
 
 import java.util.stream.Collectors;
 
-<<<<<<< HEAD
-=======
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration;
->>>>>>> Fixed static code check errors
 import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerWebSocket.App;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,12 +48,9 @@ class WebSocketRemote extends WebSocketBase {
         static class Data {
             String update_type;
             App[] data;
-<<<<<<< HEAD
-=======
 
             String id;
             String token;
->>>>>>> Fixed static code check errors
         };
 
         Data data;
@@ -100,7 +94,11 @@ class WebSocketRemote extends WebSocketBase {
             JSONMessage jsonMsg = remoteControllerWebSocket.gson.fromJson(msg, JSONMessage.class);
             switch (jsonMsg.event) {
                 case "ms.channel.connect":
-                    logger.debug("Remote channel connected");
+                    logger.debug("Remote channel connected. Token = {}", jsonMsg.data.token);
+                    if (jsonMsg.data.token != null) {
+                        this.remoteControllerWebSocket.callback.putConfig(SamsungTvConfiguration.WEBSOCKET_TOKEN,
+                                jsonMsg.data.token);
+                    }
                     getApps();
                     break;
                 case "ms.channel.clientConnect":
@@ -163,8 +161,7 @@ class WebSocketRemote extends WebSocketBase {
     @NonNullByDefault({})
     static class JSONSourceApp {
         public JSONSourceApp(String appName, boolean deepLink) {
-            params.data.appId = appName;
-            params.data.action_type = deepLink ? "DEEP_LINK" : "NATIVE_LAUNCH";
+            this(appName, deepLink, null);
         }
 
         public JSONSourceApp(String appName, boolean deepLink, String metaTag) {

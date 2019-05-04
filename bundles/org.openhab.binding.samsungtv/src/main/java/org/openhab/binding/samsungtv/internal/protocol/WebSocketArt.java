@@ -157,6 +157,6 @@ class WebSocketArt extends WebSocketBase {
     }
 
     void getArtmodeStatus() {
-        sendCommand(remoteControllerWebSocket.gson.toJson(new JSONArtModeStatus(remoteControllerWebSocket.uuid)));
+        sendCommand(remoteControllerWebSocket.gson.toJson(new JSONArtModeStatus()));
     }
 }

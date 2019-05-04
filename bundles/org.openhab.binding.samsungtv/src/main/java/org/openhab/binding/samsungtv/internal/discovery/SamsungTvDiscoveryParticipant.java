@@ -28,8 +28,6 @@ import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Activate;
 import org.openhab.binding.samsungtv.internal.service.RemoteControllerService;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -59,12 +57,14 @@ public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
             Map<String, Object> properties = new HashMap<>();
             properties.put(HOST_NAME, device.getIdentity().getDescriptorURL().getHost());
 
+            properties.putAll(RemoteControllerService.discover(device.getIdentity().getDescriptorURL().getHost()));
+
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withLabel(getLabel(device)).build();
 
-            logger.debug("Created a DiscoveryResult for device '{}' with UDN '{}'",
+            logger.debug("Created a DiscoveryResult for device '{}' with UDN '{}' and properties: {}",
                     device.getDetails().getModelDetails().getModelName(),
-                    device.getIdentity().getUdn().getIdentifierString());
+                    device.getIdentity().getUdn().getIdentifierString(), properties);
             return result;
         } else {
             return null;
