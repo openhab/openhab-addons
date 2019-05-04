@@ -25,7 +25,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,12 +75,6 @@ public class FreeMobileSmsHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (CHANNEL_MESSAGE.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                logger.debug("Refresh command");
-                // TODO: handle data refresh
-                return;
-            }
-
             handleMessage(command);
 
             // Note: if communication with thing fails for some reason,
@@ -109,7 +102,6 @@ public class FreeMobileSmsHandler extends BaseThingHandler {
               updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                       "Failed to retrieve configuration");
             }
-            // TODO check network
         });
 
         // logger.debug("Finished initializing!");
