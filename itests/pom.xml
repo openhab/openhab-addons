@@ -8,7 +8,6 @@
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
     <version>2.5.0-SNAPSHOT</version>
-    <relativePath>../poms/bnd</relativePath>
   </parent>
 
   <groupId>org.openhab.addons.itests</groupId>
