@@ -4,7 +4,7 @@
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
+	<!-- Thing Type -->
 	<thing-type id="account">
 		<label>FreeMobileSms Account</label>
 		<description>Account for the SMS service of FreeMobile.</description>
@@ -26,7 +26,7 @@
 
 	</thing-type>
 
-	<!-- Sample Channel Type -->
+	<!-- Channel Type -->
 	<channel-type id="message">
 		<item-type>String</item-type>
 		<label>Send message</label>
