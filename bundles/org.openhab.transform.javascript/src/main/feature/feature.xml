@@ -1,0 +1,4 @@
+    <feature name="openhab-transformation-javascript" description="Javascript Transformation" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.javascript/${project.version}</bundle>
+    </feature>

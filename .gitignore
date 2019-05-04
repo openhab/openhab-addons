@@ -13,4 +13,5 @@ xtend-gen/
 */plugin.xml_gen
 **/.settings/org.eclipse.*
 
-features/*/src/main/history
+features/**/src/main/history
+features/**/src/main/feature

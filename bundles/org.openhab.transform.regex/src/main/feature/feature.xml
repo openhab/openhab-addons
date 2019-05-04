@@ -1,0 +1,4 @@
+    <feature name="openhab-transformation-regex" description="RegEx Transformation" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.regex/${project.version}</bundle>
+    </feature>
