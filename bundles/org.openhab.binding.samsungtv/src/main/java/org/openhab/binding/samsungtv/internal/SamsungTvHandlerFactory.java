@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.jupnp.UpnpService;
 import org.openhab.binding.samsungtv.internal.handler.SamsungTvHandler;
@@ -48,6 +49,9 @@ public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
     private @NonNullByDefault({}) DiscoveryServiceRegistry discoveryServiceRegistry;
     private @NonNullByDefault({}) UpnpService upnpService;
 
+    @Reference
+    private @NonNullByDefault({}) WebSocketFactory webSocketFactory;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -58,7 +62,7 @@ public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(SAMSUNG_TV_THING_TYPE)) {
-            return new SamsungTvHandler(thing, upnpIOService, discoveryServiceRegistry, upnpService);
+            return new SamsungTvHandler(thing, upnpIOService, discoveryServiceRegistry, upnpService, webSocketFactory);
         }
 
         return null;

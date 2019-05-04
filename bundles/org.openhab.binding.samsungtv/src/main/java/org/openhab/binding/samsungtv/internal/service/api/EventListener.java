@@ -15,6 +15,7 @@ package org.openhab.binding.samsungtv.internal.service.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 
 /**
  * Interface for receiving data from Samsung TV services.
@@ -56,4 +57,11 @@ public interface EventListener {
      * @return value of key
      */
     Object getConfig(String key);
+
+    /**
+     * Get WebSocket Factory
+     *
+     * @return WebSocket Factory
+     */
+    WebSocketFactory getWebSocketFactory();
 }

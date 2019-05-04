@@ -26,8 +26,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.component.LifeCycle.Listener;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 import org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,18 +106,23 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
      * @param appName                 Application name used to send key codes.
      * @param uniqueId                Unique Id used to send key codes.
      * @param remoteControllerService
+     * @throws RemoteControllerException
      */
     public RemoteControllerWebSocket(String host, int port, String appName, String uniqueId,
-            RemoteControllerWebsocketCallback remoteControllerWebsocketCallback) {
+            RemoteControllerWebsocketCallback remoteControllerWebsocketCallback) throws RemoteControllerException {
         super(host, port, appName, uniqueId);
 
-        SslContextFactory sslContextFactory = new SslContextFactory();
-        sslContextFactory.setTrustAll(true); // The magic
-
-        client = new WebSocketClient(sslContextFactory);
-        client.addLifeCycleListener(this);
-
         this.callback = remoteControllerWebsocketCallback;
+
+        WebSocketFactory webSocketFactory = remoteControllerWebsocketCallback.getWebSocketFactory();
+        if (webSocketFactory == null) {
+            throw new RemoteControllerException("No WebSocketFactory available");
+        }
+
+        client = webSocketFactory.createWebSocketClient("samtungtv");
+        client.getSslContextFactory().setTrustAll(true);
+
+        client.addLifeCycleListener(this);
 
         webSocketRemote = new WebSocketRemote(this);
         webSocketArt = new WebSocketArt(this);

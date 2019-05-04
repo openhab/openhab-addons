@@ -37,6 +37,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.jupnp.UpnpService;
 import org.jupnp.model.meta.Device;
@@ -63,12 +64,14 @@ import org.slf4j.LoggerFactory;
 public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListener, EventListener {
 
     private static final int WOL_PACKET_RETRY_COUNT = 10;
+    private static final int WOL_SERVICE_CHECK_COUNT = 30;
 
     private Logger logger = LoggerFactory.getLogger(SamsungTvHandler.class);
 
     private UpnpIOService upnpIOService;
     private DiscoveryServiceRegistry discoveryServiceRegistry;
     private UpnpService upnpService;
+    private WebSocketFactory webSocketFactory;
 
     private @Nullable ThingUID upnpThingUID = null;
 
@@ -82,7 +85,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     boolean artModeIsSupported = false;
 
     public SamsungTvHandler(Thing thing, UpnpIOService upnpIOService, DiscoveryServiceRegistry discoveryServiceRegistry,
-            UpnpService upnpService) {
+            UpnpService upnpService, WebSocketFactory webSocketFactory) {
         super(thing);
 
         logger.debug("Create a Samsung TV Handler for thing '{}'", getThing().getUID());
@@ -90,6 +93,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
         this.upnpIOService = upnpIOService;
         this.upnpService = upnpService;
         this.discoveryServiceRegistry = discoveryServiceRegistry;
+        this.webSocketFactory = webSocketFactory;
     }
 
     @Override
@@ -368,7 +372,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
                 @Override
                 public void run() {
                     count++;
-                    if (count < 30) {
+                    if (count < WOL_SERVICE_CHECK_COUNT) {
                         RemoteControllerService service = (RemoteControllerService) findServiceInstance(
                                 RemoteControllerService.SERVICE_NAME);
                         if (service != null) {
@@ -395,5 +399,10 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     @Override
     public Object getConfig(@Nullable String key) {
         return getConfig().get(key);
+    }
+
+    @Override
+    public WebSocketFactory getWebSocketFactory() {
+        return webSocketFactory;
     }
 }

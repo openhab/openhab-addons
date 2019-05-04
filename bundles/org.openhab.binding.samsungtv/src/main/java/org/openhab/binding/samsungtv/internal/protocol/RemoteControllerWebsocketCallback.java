@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 
 /**
  * Callback from the websocket remote controller
@@ -37,4 +38,7 @@ public interface RemoteControllerWebsocketCallback {
 
     @Nullable
     Object getConfig(String token);
+
+    @Nullable
+    WebSocketFactory getWebSocketFactory();
 }

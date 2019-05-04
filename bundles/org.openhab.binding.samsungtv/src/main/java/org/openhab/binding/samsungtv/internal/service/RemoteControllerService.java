@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 import org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration;
 import org.openhab.binding.samsungtv.internal.protocol.KeyCode;
 import org.openhab.binding.samsungtv.internal.protocol.RemoteController;
@@ -214,7 +215,11 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
         } else if (SamsungTvConfiguration.PROTOCOL_LEGACY.equals(protocol)) {
             remoteController = new RemoteControllerLegacy(host, port, "openHAB", "openHAB");
         } else {
-            remoteController = new RemoteControllerWebSocket(host, port, "openHAB", "openHAB", this);
+            try {
+                remoteController = new RemoteControllerWebSocket(host, port, "openHAB", "openHAB", this);
+            } catch (RemoteControllerException e) {
+                reportError("Cannot connect to remote control service", e);
+            }
         }
 
         if (remoteController != null) {
@@ -503,6 +508,14 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
     public @Nullable Object getConfig(String key) {
         for (EventListener listener : listeners) {
             return listener.getConfig(key);
+        }
+        return null;
+    }
+
+    @Override
+    public @Nullable WebSocketFactory getWebSocketFactory() {
+        for (EventListener listener : listeners) {
+            return listener.getWebSocketFactory();
         }
         return null;
     }
