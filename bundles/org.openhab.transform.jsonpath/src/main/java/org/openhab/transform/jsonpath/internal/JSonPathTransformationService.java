@@ -87,7 +87,7 @@ public class JSonPathTransformationService implements TransformationService {
                 return createStringList(list);
             }
             logger.warn(
-                    "JsonPath expressions with more than one result is only supported for Boolean, Number and String data types, please adapt your selector. Result: {}",
+                    "JsonPath expressions with more than one result are only supported for Boolean, Number and String data types, please adapt your selector. Result: {}",
                     list);
         }
         return UnDefType.NULL.toFullString();
