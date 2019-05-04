@@ -29,9 +29,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.free.smsapi.Account;
 import fr.free.smsapi.Sender;
-import fr.free.smsapi.RawAccount;
 
 /**
  * The {@link FreeMobileSmsHandler} is responsible for handling commands, which are
@@ -48,8 +46,6 @@ public class FreeMobileSmsHandler extends BaseThingHandler {
 
     private final Sender sender = new Sender();
 
-    private Account account;
-
     public FreeMobileSmsHandler(Thing thing) {
         super(thing);
     }
@@ -57,7 +53,7 @@ public class FreeMobileSmsHandler extends BaseThingHandler {
     protected void sendMessage(String message) {
       logger.debug("Message to send: {}", message);
       try {
-        sender.send(account, message);
+        sender.send(config, message);
       } catch (IOException e) {
         logger.error("Failed to send message: {}", e.getMessage());
       }
@@ -96,7 +92,6 @@ public class FreeMobileSmsHandler extends BaseThingHandler {
         scheduler.execute(() -> {
             // Check configuration
             if (config != null && config.user != null && config.password != null) {
-              account = new RawAccount(config.user, config.password);
               updateStatus(ThingStatus.ONLINE);
             } else {
               updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

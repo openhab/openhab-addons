@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.freemobilesms.internal;
 
+import fr.free.smsapi.Account;
+
 /**
  * The {@link FreeMobileSmsConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Guilhem Bonnefille - Initial contribution
  */
-public class FreeMobileSmsConfiguration {
+public class FreeMobileSmsConfiguration implements Account {
 
     /**
      * User configuration parameter.
@@ -28,4 +30,14 @@ public class FreeMobileSmsConfiguration {
      * Password configuration parameter.
      */
     public String password;
+
+    @Override
+    public String getUser() {
+        return user;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
 }
