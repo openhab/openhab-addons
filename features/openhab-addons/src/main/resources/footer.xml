@@ -1,2 +1,11 @@
+    <feature name="openhab-misc-ruleengine" description="Rule Engine (Experimental)" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-core-automation</feature>
+        <feature>openhab-core-automation-module-media</feature>
+        <feature>openhab-core-automation-module-script</feature>
+        <feature>openhab-core-automation-module-script-rulesupport</feature>
+        <feature>openhab-core-automation-rest</feature>
+        <feature>openhab-io-javasound</feature>
+    </feature>
 
 </features>

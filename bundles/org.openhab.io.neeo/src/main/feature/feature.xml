@@ -1,9 +1,6 @@
-    <feature name="openhab-misc-ruleengine" description="Rule Engine (Experimental)" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab-core-automation</feature>
-        <feature>openhab-core-automation-module-media</feature>
-        <feature>openhab-core-automation-module-script</feature>
-        <feature>openhab-core-automation-module-script-rulesupport</feature>
-        <feature>openhab-core-automation-rest</feature>
-        <feature>openhab-io-javasound</feature>
-    </feature>
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.io.neeo-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+
+</features>

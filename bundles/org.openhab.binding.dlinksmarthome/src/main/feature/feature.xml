@@ -1,3 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.binding.dlinksmarthome-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
     <feature name="openhab-binding-dlinksmarthome" description="D-Link Smart Home Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
@@ -13,3 +17,4 @@
         <bundle dependency="true">mvn:com.sun.xml.messaging.saaj/saaj-impl/1.5.1</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.dlinksmarthome/${project.version}</bundle>
     </feature>
+</features>

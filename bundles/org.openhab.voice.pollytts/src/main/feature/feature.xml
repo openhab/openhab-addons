@@ -1,3 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.voice.pollytts-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
     <feature name="openhab-voice-pollytts" description="Polly Text-to-Speech" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.9</bundle>
@@ -11,3 +15,4 @@
         <bundle dependency="true">mvn:joda-time/joda-time/2.8.1</bundle> 
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.voice.pollytts/${project.version}</bundle>
     </feature>
+</features>

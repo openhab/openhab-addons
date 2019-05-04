@@ -42,9 +42,14 @@
             <configuration>
               <target>
                 <concat destfile="src/main/feature/feature.xml"> 
-                  <header file="src/main/resources/header.xml" />
+                  <header file="src/main/resources/header.xml" filtering="no"/>
                   <fileset dir="${basedirRoot}/bundles" includes="*/src/main/feature/feature.xml"/>
-                  <footer file="src/main/resources/footer.xml" />
+                  <filterchain>
+                    <linecontainsRegExp>
+                      <regexp pattern="(feature>)|(feature\s)|(bundle\s)"/>
+                    </linecontainsRegExp>
+                  </filterchain>
+                  <footer file="src/main/resources/footer.xml" filtering="no"/>
                 </concat>
               </target>
             </configuration>
@@ -54,6 +59,16 @@
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>karaf-feature-verification</id>
+              <configuration>
+                <features>
+                  <feature>openhab-misc-ruleengine</feature>
+                </features>
+              </configuration>
+            </execution>
+          </executions>
       </plugin>
     </plugins>
   </build>
