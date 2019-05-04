@@ -10,10 +10,6 @@ This binding supports the following thing types:
 |---------------|------------|---------------------------------------------------------|
 | account       | Thing      | One callable account.                                   |
 
-## Discovery
-
-Accounts should be created manually.
-
 ## Binding Configuration
 
 The binding does not have settings.
