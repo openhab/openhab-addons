@@ -19,7 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * The {@link FreeMobileSmsBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Guilhem Bonnefille <guilhem.bonnefille@gmail.com> - Initial contribution
+ * @author Guilhem Bonnefille - Initial contribution
  */
 @NonNullByDefault
 public class FreeMobileSmsBindingConstants {

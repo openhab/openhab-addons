@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 /**
  * An helper class to compute and send request.
  *
- * @author Guilhem Bonnefille <guilhem.bonnefille@gmail.com> - Initial contribution
+ * @author Guilhem Bonnefille - Initial contribution
  */
 @NonNullByDefault
 public class Sender {

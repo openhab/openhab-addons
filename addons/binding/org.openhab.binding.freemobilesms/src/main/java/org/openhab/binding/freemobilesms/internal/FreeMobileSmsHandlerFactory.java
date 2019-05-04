@@ -31,7 +31,7 @@ import org.osgi.service.component.annotations.Component;
  * The {@link FreeMobileSmsHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Guilhem Bonnefille <guilhem.bonnefille@gmail.com> - Initial contribution
+ * @author Guilhem Bonnefille - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.freemobilesms", service = ThingHandlerFactory.class)

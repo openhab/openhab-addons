@@ -15,7 +15,7 @@ package org.openhab.binding.freemobilesms.internal;
 /**
  * The {@link FreeMobileSmsConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Guilhem Bonnefille <guilhem.bonnefille@gmail.com> - Initial contribution
+ * @author Guilhem Bonnefille - Initial contribution
  */
 public class FreeMobileSmsConfiguration {
 

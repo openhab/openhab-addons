@@ -38,7 +38,7 @@ import fr.free.smsapi.RawAccount;
  * The {@link FreeMobileSmsHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Guilhem Bonnefille <guilhem.bonnefille@gmail.com> - Initial contribution
+ * @author Guilhem Bonnefille - Initial contribution
  */
 @NonNullByDefault
 public class FreeMobileSmsHandler extends BaseThingHandler {
