@@ -41,14 +41,14 @@
                   <copy file="${basedirRoot}/../../bundles/pom.xml" tofile="${basedirRoot}/../../bom/openhab-addons/pom.xml" overwrite="true"/>
                   <!-- rewrite footer -->
                   <replaceregexp file="${basedirRoot}/../../bom/openhab-addons/pom.xml" match="/modules[\s\S]*dependencies>" replace="/dependencies>" />
-                  <!-- reqrite header header -->
+                  <!-- rewrite header -->
                   <replaceregexp file="${basedirRoot}/../../bom/openhab-addons/pom.xml" match="\S*parent[\s\S]*modules>\S*" replace="header" />
                   <replace file="{basedirRoot}/../../bom/openhab-addons/pom.xml">
                     <replacetoken>header</replacetoken>
                     <replacevalue><![CDATA[<parent>
     <groupId>org.openhab.addons.bom</groupId>
     <artifactId>org.openhab.addons.reactor.bom</artifactId>
-    <version>2.5.0-SNAPSHOT</version>
+    <version>${project.version}</version>
   </parent>
 
   <artifactId>org.openhab.addons.bom.openhab-addons</artifactId>
@@ -58,7 +58,7 @@
   
   <dependencies>]]></replacevalue>
                   </replace>
-                  <!-- rewrite modules to dependencies -->
+                  <!-- rewrite content -->
                   <replace file="{basedirRoot}/../../bom/openhab-addons/pom.xml">
                     <replacetoken><![CDATA[<module>]]></replacetoken>
                     <replacevalue><![CDATA[<dependency>
