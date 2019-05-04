@@ -10,11 +10,6 @@ This binding supports the following thing types:
 |---------------|------------|---------------------------------------------------------|
 | account       | Thing      | One callable account.                                   |
 
-## Binding Configuration
-
-The binding does not have settings.
-Future releases can ad the possibility to change the base URL, to let the user follow possible changes in the API.
-
 ## Thing Configuration
 
 ### Account
