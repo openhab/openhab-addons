@@ -12,7 +12,7 @@
   <artifactId>org.openhab.binding.boschindego</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Bosch Indego Binding</name>
- 
+
   <dependencies>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -32,7 +32,7 @@
       <version>2.9.8</version>
       <scope>provided</scope>
     </dependency>
-    <dependency> 
+    <dependency>
       <groupId>de.zazaz.iot.bosch.indego</groupId>
       <artifactId>bosch-indego-controller-lib</artifactId>
       <version>0.8</version>

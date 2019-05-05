@@ -12,7 +12,7 @@
   <artifactId>org.openhab.binding.xmltv</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: XMLTV Binding</name>
-  
+
   <dependencies>
     <dependency>
       <groupId>javax.xml.bind</groupId>
