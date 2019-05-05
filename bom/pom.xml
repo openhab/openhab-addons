@@ -68,8 +68,12 @@
                 <replace file="{basedirRoot}/../../bom/openhab-addons/pom.xml">
                   <replacetoken><![CDATA[</module>]]></replacetoken>
                   <replacevalue><![CDATA[</artifactId>
-      <version>${project.version}</version>
+      <version>@dollar{project.version}</version>
     </dependency>]]></replacevalue>
+                  </replace>
+                  <replace file="{basedirRoot}/../../bom/openhab-addons/pom.xml">
+                    <replacetoken>@dollar</replacetoken>
+                    <replacevalue>$</replacevalue>
                   </replace>
                 </target>
               </configuration>
