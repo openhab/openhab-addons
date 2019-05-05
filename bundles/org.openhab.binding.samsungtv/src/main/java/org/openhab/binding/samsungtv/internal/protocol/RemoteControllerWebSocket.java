@@ -69,9 +69,13 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     @Nullable
     String currentSourceApp = null;
 
-    // last app in the apps list: used to detect when status information is complete. Also used by Websocket handlers.
+    // last app in the apps list: used to detect when status information is complete in WebSocketV2.
     @Nullable
     String lastApp = null;
+
+    // timeout for status information search
+    private static final long UPDATE_CURRENT_APP_TIMEOUT = 5000;
+    private long previousUpdateCurrentApp = 0;
 
     // UUID used for data exchange via websockets
     final UUID uuid = UUID.randomUUID();
@@ -215,8 +219,15 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
             return;
         }
 
-        currentSourceApp = null;
+        // update still running and not timed out
+        if (lastApp != null && System.currentTimeMillis() < previousUpdateCurrentApp + UPDATE_CURRENT_APP_TIMEOUT) {
+            return;
+        }
+
         lastApp = null;
+        previousUpdateCurrentApp = System.currentTimeMillis();
+
+        currentSourceApp = null;
 
         // retrieve last app (don't merge with next loop as this might run asynchronously
         for (App app : apps.values()) {

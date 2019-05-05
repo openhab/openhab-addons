@@ -28,6 +28,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -189,6 +190,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
         updateStatus(ThingStatus.OFFLINE);
         updateState(ART_MODE, OnOffType.OFF);
         updateState(POWER, OnOffType.OFF);
+        updateState(SOURCE_APP, new StringType(""));
     }
 
     @Override

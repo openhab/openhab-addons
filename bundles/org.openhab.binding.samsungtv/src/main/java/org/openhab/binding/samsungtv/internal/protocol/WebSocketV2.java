@@ -120,6 +120,7 @@ class WebSocketV2 extends WebSocketBase {
             if (StringUtils.isBlank(remoteControllerWebSocket.currentSourceApp)) {
                 remoteControllerWebSocket.callback.currentAppUpdated("");
             }
+            remoteControllerWebSocket.lastApp = null;
         }
     }
 

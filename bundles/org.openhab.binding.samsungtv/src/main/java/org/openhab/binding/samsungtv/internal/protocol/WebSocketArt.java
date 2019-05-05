@@ -106,6 +106,7 @@ class WebSocketArt extends WebSocketBase {
                     } else {
                         remoteControllerWebSocket.callback.powerUpdated(true, false);
                     }
+                    remoteControllerWebSocket.updateCurrentApp();
                     break;
                 case "artmode_status":
                     logger.debug("artmode_status: {}", data.value);
@@ -114,6 +115,7 @@ class WebSocketArt extends WebSocketBase {
                     } else {
                         remoteControllerWebSocket.callback.powerUpdated(true, false);
                     }
+                    remoteControllerWebSocket.updateCurrentApp();
                     break;
                 case "go_to_standby":
                     logger.debug("go_to_standby");
