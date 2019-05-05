@@ -212,8 +212,8 @@ Supplying a model is not required, as there is only one model.
 
 To support the contact closure inputs, CCI channels named *cci[n]* are created with item type Contact and category Switch.
 They are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
-They accept ON/OFF commands and present ON/OFF states the same as a keypad button.
-Note that the `autorelease` option also applies to CCI channels.
+They present OPEN/CLOSED states but do not accept commands as Contact items are read-only in OpenHAB.
+Note that the `autorelease` option **does not** apply to CCI channels.
 
 Example:
 
@@ -351,23 +351,23 @@ Appropriate channels will be created automatically by the keypad, ttkeypad, and 
 
 ### Commands supported by channels
 
-| Thing     | Channel       |Native Type | Accepts                                               |
-|-----------|---------------|------------|-------------------------------------------------------|
-|dimmer     |lightlevel     |PercentType |OnOffType, PercentType                                 |
-|switch     |switchstatus   |OnOffType   |OnOffType                                              |
-|occ. sensor|occupancystatus|OnOffType   |(*readonly*)                                           |
-|cco        |switchstatus   |OnOffType   |OnOffType, RefreshType                                 |
-|keypads    |button*        |OnOffType   |OnOffType                                              |
-|           |led*           |OnOffType   |OnOffType, RefreshType                                 |
-|           |cci*           |OnOffType   |OnOffType                                              |
-|shade      |shadelevel     |PercentType |PercentType, UpDownType, StopMoveType.STOP, RefreshType|
-|greenmode  |step           |DecimalType |DecimalType, OnOffType (ON=2,OFF=1), RefreshType       |
-|timeclock  |clockmode      |DecimalType |DecimalType, RefreshType                               |
-|           |sunrise        |DateTimeType|RefreshType (*readonly*)                               |
-|           |sunset         |DateTimeType|RefreshType (*readonly*)                               |
-|           |execevent      |DecimalType |DecimalType                                            |
-|           |enableevent    |DecimalType |DecimalType                                            |
-|           |disableevent   |DecimalType |DecimalType                                            |
+| Thing     | Channel       | Native Type  | Accepts                                               |
+|-----------|---------------|--------------|-------------------------------------------------------|
+|dimmer     |lightlevel     |PercentType   |OnOffType, PercentType                                 |
+|switch     |switchstatus   |OnOffType     |OnOffType                                              |
+|occ. sensor|occupancystatus|OnOffType     |(*readonly*)                                           |
+|cco        |switchstatus   |OnOffType     |OnOffType, RefreshType                                 |
+|keypads    |button*        |OnOffType     |OnOffType                                              |
+|           |led*           |OnOffType     |OnOffType, RefreshType                                 |
+|           |cci*           |OpenClosedType|(*readonly*)                                           |
+|shade      |shadelevel     |PercentType   |PercentType, UpDownType, StopMoveType.STOP, RefreshType|
+|greenmode  |step           |DecimalType   |DecimalType, OnOffType (ON=2,OFF=1), RefreshType       |
+|timeclock  |clockmode      |DecimalType   |DecimalType, RefreshType                               |
+|           |sunrise        |DateTimeType  |RefreshType (*readonly*)                               |
+|           |sunset         |DateTimeType  |RefreshType (*readonly*)                               |
+|           |execevent      |DecimalType   |DecimalType                                            |
+|           |enableevent    |DecimalType   |DecimalType                                            |
+|           |disableevent   |DecimalType   |DecimalType                                            |
 
 Most channels receive immediate notifications of device state changes from the Lutron control system.
 The only exceptions are **greenmode** *step*, which is periodically polled and accepts REFRESH commands to initiate immediate polling, and **timeclock** *sunrise* and *sunset*, which must be polled daily using REFRESH commands to retrieve current values.
