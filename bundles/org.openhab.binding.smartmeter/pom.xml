@@ -13,27 +13,9 @@
 
   <name>openHAB Add-ons :: Bundles :: Smartmeter Binding</name>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>src/3rdparty</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+  <properties>
+    <bnd.exportpackage>org.openmuc.jrxtx;version="1.1.2"</bnd.exportpackage>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -44,15 +26,15 @@
     </dependency>
     <dependency>
       <groupId>org.reactivestreams</groupId>
-        <artifactId>reactive-streams</artifactId>
-        <version>1.0.2</version>
+      <artifactId>reactive-streams</artifactId>
+      <version>1.0.2</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.openmuc</groupId>
       <artifactId>jsml</artifactId>
       <version>1.1.2</version>
-      <scope>provided</scope>   
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.openmuc</groupId>
@@ -62,7 +44,25 @@
     </dependency>
   </dependencies>
 
-  <properties>
-    <bnd.exportpackage>org.openmuc.jrxtx;version="1.1.2"</bnd.exportpackage>
-  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <sources>
+                <source>src/3rdparty</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

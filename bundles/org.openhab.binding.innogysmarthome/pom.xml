@@ -32,22 +32,22 @@
       <version>20.0</version>
       <scope>provided</scope>
     </dependency>
-    <dependency> 
-      <groupId>com.google.http-client</groupId> 
-      <artifactId>google-http-client-gson</artifactId> 
-      <version>1.27.0</version> 
+    <dependency>
+      <groupId>com.google.http-client</groupId>
+      <artifactId>google-http-client-gson</artifactId>
+      <version>1.27.0</version>
       <scope>provided</scope>
     </dependency>
-    <dependency> 
-      <groupId>com.google.http-client</groupId> 
-      <artifactId>google-http-client</artifactId> 
-      <version>1.27.0</version> 
+    <dependency>
+      <groupId>com.google.http-client</groupId>
+      <artifactId>google-http-client</artifactId>
+      <version>1.27.0</version>
       <scope>provided</scope>
     </dependency>
-    <dependency> 
-      <groupId>com.google.oauth-client</groupId> 
-      <artifactId>google-oauth-client</artifactId> 
-      <version>1.27.0</version> 
+    <dependency>
+      <groupId>com.google.oauth-client</groupId>
+      <artifactId>google-oauth-client</artifactId>
+      <version>1.27.0</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

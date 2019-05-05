@@ -13,7 +13,7 @@
 
   <name>openHAB Add-ons :: Bundles :: IO :: MQTT Broker Moquette</name>
 
-   <dependencies>
+  <dependencies>
     <dependency>
       <groupId>io.moquette</groupId>
       <artifactId>moquette-broker</artifactId>
@@ -36,10 +36,10 @@
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.h2database/h2-mvstore -->
     <dependency>
-        <groupId>com.h2database</groupId>
-        <artifactId>h2-mvstore</artifactId>
-        <version>1.4.199</version>
-        <scope>test</scope>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2-mvstore</artifactId>
+      <version>1.4.199</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
