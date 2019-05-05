@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.cbus;
 
+import java.util.Arrays;
 import java.util.Set;
+import java.util.HashSet;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * The {@link CBusBinding} class defines common constants, which are
@@ -52,10 +52,10 @@ public class CBusBindingConstants {
     public static final String CHANNEL_TEMP = "temp";
     public static final String CHANNEL_VALUE = "value";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(BRIDGE_TYPE_CGATE,
-            BRIDGE_TYPE_NETWORK, THING_TYPE_GROUP, THING_TYPE_LIGHT, THING_TYPE_TEMPERATURE, THING_TYPE_TRIGGER,
-            THING_TYPE_DALI);
-    public static final Set<ThingTypeUID> NETWORK_DISCOVERY_THING_TYPES_UIDS = ImmutableSet.of(BRIDGE_TYPE_NETWORK);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(Arrays.asList(BRIDGE_TYPE_CGATE, BRIDGE_TYPE_NETWORK, THING_TYPE_GROUP,
+													       THING_TYPE_LIGHT, THING_TYPE_TEMPERATURE, THING_TYPE_TRIGGER,
+													       THING_TYPE_DALI));
+    public static final Set<ThingTypeUID> NETWORK_DISCOVERY_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(Arrays.asList(BRIDGE_TYPE_NETWORK));
 
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_NAME = "name";
