@@ -23,8 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.TlsTrustManagerProvider;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provides a TrustManager to allow secure websocket connections to any TV (=server)
@@ -34,9 +32,6 @@ import org.slf4j.LoggerFactory;
 @Component
 @NonNullByDefault
 public class SamsungTvTlsTrustManagerProvider implements TlsTrustManagerProvider {
-
-    private final Logger logger = LoggerFactory.getLogger(SamsungTvTlsTrustManagerProvider.class);
-
     @Override
     public String getHostName() {
         return "SmartViewSDK";
