@@ -37,9 +37,9 @@
 			<channel id="display" typeId="display" />
 			<channel id="authreq" typeId="switch" />
 			<channel id="authon" typeId="switch" />
-            <channel id="sessionRFIDtag" typeId="sessionRFIDtag" />
-            <channel id="sessionRFIDclass" typeId="sessionRFIDclass" />
-            <channel id="sessionID" typeId="sessionID" />
+			<channel id="sessionRFIDtag" typeId="sessionRFIDtag" />
+			<channel id="sessionRFIDclass" typeId="sessionRFIDclass" />
+			<channel id="sessionID" typeId="sessionID" />
 		</channels>
 
 		<config-description>
