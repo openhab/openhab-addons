@@ -83,12 +83,15 @@ Bridge tankerkoenig:webservice:WebserviceName "MyWebserviceName" [ apikey="xxxxx
 tankerkoenig.items:
 
 ```
+Switch Station_Holidays "Today is holiday: [%s]" { channel="tankerkoenig:webservice:WebserviceName:holiday"}
 Number E10_1 "E10 [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName1:e10" }
 Number E5_1 "E5 [%.3f €]"  { channel="tankerkoenig:station:WebserviceName:StationName1:e5" }
 Number Diesel_1 "Diesel [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName1:diesel"}
+Contact Station_Open_1 "Station is [%s]" { channel="tankerkoenig:station:WebserviceName:StationName1:station_open"}
 Number E10_2 "E10 [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName2:e10"}
 Number E5_2 "E5 [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName2:e5"}
 Number Diesel_2 "Diesel [%.3f €]" { channel="tankerkoenig:station:WebserviceName:StationName2:diesel"}
+Contact Station_Open_2 "Station is [%s]" { channel="tankerkoenig:station:WebserviceName:StationName2:station_open"}
 ```
 
 ## FAQ
