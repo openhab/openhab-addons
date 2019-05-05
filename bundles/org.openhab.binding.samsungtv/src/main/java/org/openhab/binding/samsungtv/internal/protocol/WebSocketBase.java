@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
-import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +53,7 @@ class WebSocketBase extends WebSocketAdapter {
 
     @Override
     public void onWebSocketError(@Nullable Throwable error) {
-        logger.debug("{} connection error: {}", this.getClass().getSimpleName(),
-                error != null ? error.getMessage() : error);
+        logger.debug("{} connection error: {}", this.getClass().getSimpleName(), error);
         super.onWebSocketError(error);
         isConnecting = false;
     }
@@ -70,8 +68,8 @@ class WebSocketBase extends WebSocketAdapter {
         isConnecting = true;
 
         try {
-            remoteControllerWebSocket.client.connect(this, uri, new ClientUpgradeRequest());
-        } catch (IOException e) {
+            remoteControllerWebSocket.client.connect(this, uri);
+        } catch (IOException | IllegalStateException e) {
             throw new RemoteControllerException(e);
         }
     }

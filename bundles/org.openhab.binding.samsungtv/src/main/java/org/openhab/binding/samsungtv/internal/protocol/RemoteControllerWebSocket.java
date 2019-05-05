@@ -120,7 +120,6 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         }
 
         client = webSocketFactory.createWebSocketClient("samtungtv");
-        client.getSslContextFactory().setTrustAll(true);
 
         client.addLifeCycleListener(this);
 
@@ -352,7 +351,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
 
     @Override
     public void lifeCycleFailure(@Nullable LifeCycle arg0, @Nullable Throwable throwable) {
-        logger.warn("WebSocketClient failure", throwable);
+        logger.warn("WebSocketClient failure: {}", throwable != null ? throwable.toString() : null);
     }
 
     @Override

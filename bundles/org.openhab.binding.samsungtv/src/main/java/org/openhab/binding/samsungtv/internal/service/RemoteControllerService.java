@@ -487,7 +487,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
                 remoteController.close();
             }
         } catch (RemoteControllerException e) {
-            logger.warn("Error in connection close: {}", e.getMessage());
+            logger.debug("Error in connection close: {}", e.getMessage());
         }
         remoteController = null;
     }
