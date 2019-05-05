@@ -49,7 +49,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusPollerThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusPollerThingHandlerImpl;
@@ -81,13 +80,17 @@ public class ModbusPollerThingHandlerTest {
     private ThingHandlerCallback thingCallback;
 
     public static BridgeBuilder createTcpThingBuilder(String id) {
-        return BridgeBuilder.create(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_TCP,
-                new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_TCP, id)).withLabel("label for " + id);
+        return BridgeBuilder
+                .create(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_TCP,
+                        new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_TCP, id))
+                .withLabel("label for " + id);
     }
 
     public static BridgeBuilder createPollerThingBuilder(String id) {
-        return BridgeBuilder.create(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER,
-                new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER, id)).withLabel("label for " + id);
+        return BridgeBuilder
+                .create(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER,
+                        new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER, id))
+                .withLabel("label for " + id);
     }
 
     private void registerThingToMockRegistry(Thing thing) {

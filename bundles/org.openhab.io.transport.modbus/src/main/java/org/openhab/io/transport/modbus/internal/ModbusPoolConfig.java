@@ -34,7 +34,7 @@ import net.wimpi.modbus.net.ModbusSlaveConnection;
 @NonNullByDefault
 public class ModbusPoolConfig extends GenericKeyedObjectPoolConfig {
 
-    private EvictionPolicy<ModbusSlaveConnection> evictionPolicy = new DefaultEvictionPolicy<ModbusSlaveConnection>();
+    private EvictionPolicy<ModbusSlaveConnection> evictionPolicy = new DefaultEvictionPolicy<>();
 
     public ModbusPoolConfig() {
         // When the pool is exhausted, multiple calling threads may be simultaneously blocked waiting for instances

@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.onewire.internal.config;
 
-import java.math.BigDecimal;
-
 /**
  * The {@link BaseHandlerConfiguration} is a helper class for the base thing handler configuration
  *
@@ -21,5 +19,5 @@ import java.math.BigDecimal;
  */
 public class BaseHandlerConfiguration {
     public String id;
-    public BigDecimal refresh;
+    public int refresh = 300;
 }

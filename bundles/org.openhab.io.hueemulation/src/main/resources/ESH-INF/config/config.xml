@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="io:hueemulation">
+		<parameter name="pairingEnabled" type="boolean">
+			<label>Device Pairing</label>
+			<description>Pairing must be enabled to connect a new device. Pairing is automatically disabled after the configured pairing time (usually 60 seconds).</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="pairingTimeout" type="integer" required="false">
+			<label>Pairing timeout</label>
+			<description>Pairing is automatically disabled after the given time in seconds.</description>
+			<default>60</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="createNewUserOnEveryEndpoint" type="boolean">
+			<label>Pairing: Add unknown user-keys</label>
+			<description>Set this option to create new users on the fly during the next pairing mode period. This helps with Amazon Echo device discovery. This option is automatically switched off after the timeout.</description>
+			<default>false</default>
+		</parameter>
+        <parameter name="temporarilyEmulateV1bridge" type="boolean">
+            <label>Pairing: Temporarily emulate V1 Hue bridge</label>
+            <description>Some Amazon Echos only support V1 bridges (round hardware bridge). This option is only active during discovery and automatically switched off after the timeout.</description>
+            <default>false</default>
+        </parameter>
+        <parameter name="permanentV1bridge" type="boolean">
+            <label>Permanently emulate V1 Hue bridge</label>
+            <description>There is no obvious reason to not emulate the newer bridge all the time, but here is the option if you want the old (round Hue bridge) to be emulated.</description>
+            <default>false</default>
+        </parameter>
+		<parameter name="restrictToTagsSwitches" type="text" required="false">
+			<label>Switch item tags</label>
+			<description>The HUE emulation can either publish Switch items if this is set to an empty string or filter items by tags. Use commas to separate multiple entries.</description>
+			<default>Switchable</default>
+		</parameter>
+		<parameter name="restrictToTagsColorLights" type="text" required="false">
+			<label>Color item tags</label>
+			<description>The HUE emulation can either publish all Color items if this is set to an empty string or filter items by tags. Use commas to separate multiple entries.</description>
+			<default>ColorLighting</default>
+		</parameter>
+		<parameter name="restrictToTagsWhiteLights" type="text" required="false">
+			<label>White item tags</label>
+			<description>The HUE emulation can either publish all Dimmer items if this is set to an empty string or filter items by tags. Use commas to separate multiple entries.</description>
+			<default>Lighting</default>
+		</parameter>
+        <parameter name="ignoreItemsWithTags" type="text" required="false">
+            <label>Ignore items by tag</label>
+            <description>All items that are tagged with the given tags are ignore by the Hue Emulation Service. Use commas to separate multiple entries.</description>
+            <default>internal</default>
+        </parameter>
+		<parameter name="discoveryIp" type="text" required="false">
+			<label>Optional discovery address</label>
+			<description>If your host has multiple IP addresses you may specify the IP you would like to advertise in the UPNP discovery process. You may safely leave this empty on most systems.</description>
+		</parameter>
+		<parameter name="discoveryHttpPort" type="integer" required="false">
+			<label>Optional discovery web port</label>
+			<description>Some Hue applications require a different port (80) then what openHAB runs on by default (8080).  This option will only advertise a different port then what we are listening on.  Useful if you have an iptables rule redirect traffic from this port to the openHAB port. </description>
+			<advanced>true</advanced>
+		</parameter>
+        <parameter name="uuid" type="text" required="false">
+            <label>Unique Bridge ID</label>
+            <description>Each Hue bridge has a universal unique id (UUID) assigned. This is random generated if no value has been assigned. Note on Amazon Alexa Echo devices: It might help to change the UUID after you have changed item ids. The Echos will recognize this service as a new bridge.</description>
+            <advanced>true</advanced>
+        </parameter>
+	</config-description>
+</config-description:config-descriptions>

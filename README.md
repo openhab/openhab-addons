@@ -28,8 +28,6 @@ You find the following repository structure:
 
 ```
 .
-+-- addons/  Legacy addons that are currently ported to the new buildsystem
-|
 +-- bom      Maven buildsystem: Bill of materials
 |   +-- openhab-addons  Lists all extensions for other repos to reference them
 |   +-- ...             Other boms
@@ -39,7 +37,7 @@ You find the following repository structure:
 |   +-- org.openhab.binding.astro
 |   +-- ...
 |
-+-- features/karaf  An extension usually has dependencies (at least openHAB core).
++-- features/       An extension usually has dependencies (at least openHAB core).
 |            |      In those feature files are the dependencies for the OSGi container declared.
 |            +-- openhab-addons-external/src/main/feature/feature.xml
 |            +-- openhab-addons/src/main/feature/feature.xml
@@ -49,7 +47,6 @@ You find the following repository structure:
 |   +-- org.openhab.binding.avmfritz.tests
 |   +-- ...
 |
-+-- poms     Maven buildsystem files
 +-- src/etc  Auxilary buildsystem files: The license header for automatic checks for example
 +-- tools    Static code analyser instructions
 |
@@ -71,11 +68,14 @@ For integration tests you might need to run: `mvn clean install -DwithResolver -
 
 ### How to develop in the Eclipse IDE
 
-1. Install Bndtools in your Eclipse IDE. (Is automatically installed if you have used the Eclipse Installer for openHAB development as described here: https://www.openhab.org/docs/developer/development/ide.html)
-2. Checkout the bnd based openHAB demo application: `git clone --depth=1 https://github.com/maggu2810/openhab-demo`.
-3. Open the directory in Eclipse. Wait for the download and build to finish (about 3-5 minutes).
+This is a temporary guide until we came up with a new IDE setup.
+
+1. Install Bndtools in your Eclipse IDE.
+2. Checkout the openHAB demo application: `git clone --depth=1 https://github.com/maggu2810/openhab-demo`.
+3. Import the directory: In Eclipse File->Import->"Existing maven projects".
+   Wait for the download and build to finish (about 3-5 minutes).
 4. Checkout this repository: `git clone --depth=1 https://github.com/openhab/openhab2-addons`
-5. In Eclipse File->Import->"Existing maven projects": Add the binding that you want to develop on to the workspace.
+5. In Eclipse File->Import->"Existing maven projects": Add the binding you want to develop to the workspace. (Create a new binding by copying an existing one.)
 6. In Eclipse Package Explorer: Search for `pom.xml` in the demo-app project.
     ![Bildschirmfoto vom 2019-03-19 13-46-48](https://user-images.githubusercontent.com/66436/54607049-a9031700-4a4d-11e9-9b9d-64a620270d28.png)
     Add your addon as maven dependency like so (replace `astro`!):

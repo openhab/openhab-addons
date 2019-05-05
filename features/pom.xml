@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -6,17 +7,95 @@
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
     <version>2.5.0-SNAPSHOT</version>
-    <relativePath>../poms/bnd</relativePath>
   </parent>
 
-  <groupId>org.openhab.addons.features</groupId>
-  <artifactId>org.openhab.addons.reactor.features</artifactId>
+  <groupId>org.openhab.addons.features.karaf</groupId>
+  <artifactId>org.openhab.addons.reactor.features.karaf</artifactId>
   <packaging>pom</packaging>
 
-  <name>openHAB Add-ons :: Features</name>
+  <name>openHAB Add-ons :: Features :: Karaf</name>
 
   <modules>
-    <module>karaf</module>
+    <module>openhab-addons</module>
+    <module>openhab-addons-external</module>
   </modules>
+
+  <dependencies>
+    <!-- Distribution -->
+    <dependency>
+      <groupId>org.apache.karaf.features</groupId>
+      <artifactId>framework</artifactId>
+      <version>${karaf.version}</version>
+      <type>kar</type>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Repositories -->
+    <dependency>
+      <groupId>org.apache.karaf.features</groupId>
+      <artifactId>standard</artifactId>
+      <version>${karaf.version}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.karaf.tooling</groupId>
+          <artifactId>karaf-maven-plugin</artifactId>
+          <version>${karaf.version}</version>
+          <extensions>true</extensions>
+          <configuration>
+            <startLevel>80</startLevel>
+            <aggregateFeatures>true</aggregateFeatures>
+            <checkDependencyChange>true</checkDependencyChange>
+            <failOnDependencyChange>false</failOnDependencyChange>
+            <logDependencyChanges>true</logDependencyChanges>
+            <overwriteChangedDependencies>true</overwriteChangedDependencies>
+          </configuration>
+          <executions>
+            <execution>
+              <id>compile</id>
+              <goals>
+                <goal>features-generate-descriptor</goal>
+              </goals>
+              <phase>generate-resources</phase>
+            </execution>
+            <execution>
+              <id>karaf-feature-verification</id>
+              <goals>
+                <goal>verify</goal>
+              </goals>
+              <phase>process-resources</phase>
+              <configuration>
+                <descriptors combine.children="append">
+                  <!-- Apache Karaf -->
+                  <descriptor>mvn:org.apache.karaf.features/framework/${karaf.version}/xml/features</descriptor>
+                  <descriptor>mvn:org.apache.karaf.features/standard/${karaf.version}/xml/features</descriptor>
+                  <!-- Current feature under verification -->
+                  <descriptor>file:${project.build.directory}/feature/feature.xml</descriptor>
+                </descriptors>
+                <distribution>org.apache.karaf.features:framework</distribution>
+                <javase>1.8</javase>
+                <framework>
+                  <feature>framework</feature>
+                </framework>
+                <features>
+                  <feature>openhab-*</feature>
+                </features>
+                <verifyTransitive>false</verifyTransitive>
+                <ignoreMissingConditions>true</ignoreMissingConditions>
+                <fail>first</fail>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
 </project>

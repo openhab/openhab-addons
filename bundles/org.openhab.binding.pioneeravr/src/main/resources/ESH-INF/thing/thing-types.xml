@@ -70,7 +70,7 @@
 
 	<thing-type id="ipAvr2015">
 		<label>Pioneer AVR over IP 2015</label>
-		<description>Control a 2015 Pioneer AVR (SC-89, SC-LX88, SC-87, SC-LX78, SC-85, SC-LX58, SC-82, SC-2024, SC-81, VSX-80) over IP </description>
+		<description>Control a 2015 Pioneer AVR (SC-89, SC-LX88, SC-87, SC-LX78, SC-85, SC-LX58, SC-82, SC-2024, SC-81, VSX-80, VSX-830) over IP </description>
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation" />
@@ -198,6 +198,8 @@
 			<channel id="volumeDb" typeId="volumeChannelDb" />
 			<channel id="mute" typeId="muteChannel" />
 			<channel id="setInputSource" typeId="setInputSourceChannel" />
+			<channel id="listeningMode" typeId="listeningModeChannel" />
+			<channel id="playingListeningMode" typeId="playingListeningModeChannel" />
 		</channels>
 	</channel-group-type>
 
@@ -209,6 +211,8 @@
 			<channel id="volumeDb" typeId="volumeChannelDb" />
 			<channel id="mute" typeId="muteChannel" />
 			<channel id="setInputSource" typeId="setInputSourceChannel2014" />
+			<channel id="listeningMode" typeId="listeningModeChannel" />
+			<channel id="playingListeningMode" typeId="playingListeningModeChannel" />
 		</channels>
 	</channel-group-type>
 
@@ -220,6 +224,8 @@
 			<channel id="volumeDb" typeId="volumeChannelDb" />
 			<channel id="mute" typeId="muteChannel" />
 			<channel id="setInputSource" typeId="setInputSourceZoneChannel2014" />
+			<channel id="listeningMode" typeId="listeningModeChannel" />
+			<channel id="playingListeningMode" typeId="playingListeningModeChannel" />
 		</channels>
 	</channel-group-type>
 
@@ -231,6 +237,8 @@
 			<channel id="volumeDb" typeId="volumeChannelDb" />
 			<channel id="mute" typeId="muteChannel" />
 			<channel id="setInputSource" typeId="setInputSourceHDZoneChannel2014" />
+			<channel id="listeningMode" typeId="listeningModeChannel" />
+			<channel id="playingListeningMode" typeId="playingListeningModeChannel" />
 		</channels>
 	</channel-group-type>
 
@@ -242,6 +250,8 @@
 			<channel id="volumeDb" typeId="volumeChannelDb" />
 			<channel id="mute" typeId="muteChannel" />
 			<channel id="setInputSource" typeId="setInputSourceChannel2015" />
+			<channel id="listeningMode" typeId="listeningModeChannel" />
+			<channel id="playingListeningMode" typeId="playingListeningModeChannel" />
 		</channels>
 	</channel-group-type>
 
@@ -253,6 +263,8 @@
 			<channel id="volumeDb" typeId="volumeChannelDb" />
 			<channel id="mute" typeId="muteChannel" />
 			<channel id="setInputSource" typeId="setInputSourceZoneChannel2014" />
+			<channel id="listeningMode" typeId="listeningModeChannel" />
+			<channel id="playingListeningMode" typeId="playingListeningModeChannel" />
 		</channels>
 	</channel-group-type>
 
@@ -264,6 +276,8 @@
 			<channel id="volumeDb" typeId="volumeChannelDb" />
 			<channel id="mute" typeId="muteChannel" />
 			<channel id="setInputSource" typeId="setInputSourceHDZoneChannel2015" />
+			<channel id="listeningMode" typeId="listeningModeChannel" />
+			<channel id="playingListeningMode" typeId="playingListeningModeChannel" />
 		</channels>
 	</channel-group-type>
 
@@ -275,6 +289,8 @@
 			<channel id="volumeDb" typeId="volumeChannelDb" />
 			<channel id="mute" typeId="muteChannel" />
 			<channel id="setInputSource" typeId="setInputSourceChannel2016" />
+			<channel id="listeningMode" typeId="listeningModeChannel" />
+			<channel id="playingListeningMode" typeId="playingListeningModeChannel" />
 		</channels>
 	</channel-group-type>
 
@@ -286,6 +302,8 @@
 			<channel id="volumeDb" typeId="volumeChannelDb" />
 			<channel id="mute" typeId="muteChannel" />
 			<channel id="setInputSource" typeId="setInputSourceZoneChannel2016" />
+			<channel id="listeningMode" typeId="listeningModeChannel" />
+			<channel id="playingListeningMode" typeId="playingListeningModeChannel" />
 		</channels>
 	</channel-group-type>
 
@@ -297,6 +315,8 @@
 			<channel id="volumeDb" typeId="volumeChannelDb" />
 			<channel id="mute" typeId="muteChannel" />
 			<channel id="setInputSource" typeId="setInputSourceHDZoneChannel2016" />
+			<channel id="listeningMode" typeId="listeningModeChannel" />
+			<channel id="playingListeningMode" typeId="playingListeningModeChannel" />
 		</channels>
 	</channel-group-type>
 
@@ -623,6 +643,78 @@
 		<item-type>String</item-type>
 		<label>Display</label>
 		<description>Display the information displayed on the AVR front screen</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="listeningModeChannel">
+		<item-type>String</item-type>
+		<label>Listening Mode</label>
+		<description>Set the listening mode</description>
+		<state>
+			<options>
+				<option value="0001">STEREO (cyclic)</option>
+				<option value="0010">STANDARD (cyclic)</option>
+				<option value="0009">STEREO (direct set)</option>
+				<option value="0011">(2ch source)</option>
+				<option value="0013">PRO LOGIC2 MOVIE</option>
+				<option value="0018">PRO LOGIC2x MOVIE</option>
+				<option value="0014">PRO LOGIC2 MUSIC</option>
+				<option value="0019">PRO LOGIC2x MUSIC</option>
+				<option value="0015">PRO LOGIC2 GAME</option>
+				<option value="0020">PRO LOGIC2x GAME</option>
+				<option value="0031">PRO LOGIC2z HEIGHT</option>
+				<option value="0032">WIDE SURROUND MOVIE</option>
+				<option value="0033">WIDE SURROUND MUSIC</option>
+				<option value="0012">PRO LOGIC</option>
+				<option value="0016">Neo:6 CINEMA</option>
+				<option value="0017">Neo:6 MUSIC</option>
+				<option value="0037">Neo:X CINEMA</option>
+				<option value="0038">Neo:X MUSIC</option>
+				<option value="0039">Neo:X GAME</option>
+				<option value="0040">Dolby Surround</option>
+				<option value="0041">EXTENDED STEREO</option>
+				<option value="0021">(Multi ch source) Channel base straight decode</option>
+				<option value="0022">(Multi ch source)+DOLBY EX</option>
+				<option value="0023">(Multi ch source)+PRO LOGIC2x MOVIE</option>
+				<option value="0024">(Multi ch source)+PRO LOGIC2x MUSIC</option>
+				<option value="0034">(Multi-ch Source)+PRO LOGIC2z HEIGHT</option>
+				<option value="0035">(Multi-ch Source)+WIDE SURROUND MOVIE</option>
+				<option value="0036">(Multi-ch Source)+WIDE SURROUND MUSIC</option>
+				<option value="0025">(Multi ch source)DTS-ES Neo:6</option>
+				<option value="0026">(Multi ch source)DTS-ES matrix</option>
+				<option value="0027">(Multi ch source)DTS-ES discrete</option>
+				<option value="0030">(Multi ch source)DTS-ES 8ch discrete</option>
+				<option value="0043">(Multi ch source)+Neo:X CINEMA </option>
+				<option value="0044">(Multi ch source)+Neo:X MUSIC</option>
+				<option value="0045">(Multi ch source)+Neo:X GAME</option>
+				<option value="0050">(Multi ch source)+Dolby Surround</option>
+				<option value="0100">ADVANCED SURROUND (cyclic)</option>
+				<option value="0101">ACTION</option>
+				<option value="0103">DRAMA</option>
+				<option value="0118">ADVANCED GAME</option>
+				<option value="0117">SPORTS</option>
+				<option value="0107">CLASSICAL</option>
+				<option value="0110">ROCK/POP</option>
+				<option value="0003">Front Stage Surround Advance</option>
+				<option value="0200">ECO MODE (cyclic)</option>
+				<option value="0212">ECO MODE 1</option>
+				<option value="0213">ECO MODE 2</option>
+				<option value="0153">RETRIEVER AIR</option>
+				<option value="0113">PHONES SURROUND</option>
+				<option value="0005">AUTO SURR/STREAM DIRECT (cyclic)</option>
+				<option value="0006">AUTO SURROUND</option>
+				<option value="0151">Auto Level Control (A.L.C.)</option>
+				<option value="0007">DIRECT</option>
+				<option value="0008">PURE DIRECT</option>
+				<option value="0152">OPTIMUM SURROUND</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="playingListeningModeChannel">
+		<item-type>String</item-type>
+		<label>Playing Listening Mode</label>
+		<description>Display the effective listening mode</description>
 		<state readOnly="true" />
 	</channel-type>
 

@@ -7,7 +7,6 @@
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
     <version>2.5.0-SNAPSHOT</version>
-    <relativePath>../poms/bnd</relativePath>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -34,6 +33,7 @@
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.bosesoundtouch</module>
+    <module>org.openhab.binding.buienradar</module>
     <module>org.openhab.binding.chromecast</module>
     <module>org.openhab.binding.cm11a</module>
     <module>org.openhab.binding.coolmasternet</module>
@@ -49,6 +49,7 @@
     <module>org.openhab.binding.dsmr</module>
     <module>org.openhab.binding.dwdunwetter</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
+    <module>org.openhab.binding.enocean</module>
     <module>org.openhab.binding.evohome</module>
     <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
@@ -89,6 +90,7 @@
     <module>org.openhab.binding.lifx</module>
     <module>org.openhab.binding.lirc</module>
     <module>org.openhab.binding.logreader</module>
+    <module>org.openhab.binding.loxone</module>
     <module>org.openhab.binding.lutron</module>
     <module>org.openhab.binding.mail</module>
     <module>org.openhab.binding.max</module>
@@ -181,6 +183,8 @@
     <module>org.openhab.extensionservice.marketplace</module>
     <module>org.openhab.extensionservice.marketplace.automation</module>
     <module>org.openhab.io.azureiothub</module>
+    <module>org.openhab.io.homekit</module>
+    <module>org.openhab.io.hueemulation</module>
     <module>org.openhab.io.imperihome</module>
     <module>org.openhab.io.javasound</module>
     <module>org.openhab.io.neeo</module>

@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Antoine Besnard - Initial contribution
  * @author Rainer Ostendorf - Initial contribution
+ * @author Leroy Foerster - Listening Mode, Playing Listening Mode
  */
 public abstract class StreamAvrConnection implements AvrConnection {
 
@@ -190,6 +191,11 @@ public abstract class StreamAvrConnection implements AvrConnection {
     }
 
     @Override
+    public boolean sendListeningModeQuery(int zone) {
+        return sendCommand(RequestResponseFactory.getIpControlCommand(SimpleCommandType.LISTENING_MODE_QUERY, zone));
+    }
+
+    @Override
     public boolean sendPowerCommand(Command command, int zone) throws CommandTypeNotSupportedException {
         AvrCommand commandToSend = null;
 
@@ -260,6 +266,23 @@ public abstract class StreamAvrConnection implements AvrConnection {
             String inputSourceValue = ((StringType) command).toString();
             commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.INPUT_CHANNEL_SET, zone)
                     .setParameter(inputSourceValue);
+        } else {
+            throw new CommandTypeNotSupportedException("Command type not supported.");
+        }
+
+        return sendCommand(commandToSend);
+    }
+
+    @Override
+    public boolean sendListeningModeCommand(Command command, int zone) throws CommandTypeNotSupportedException {
+        AvrCommand commandToSend = null;
+
+        if (command == IncreaseDecreaseType.INCREASE) {
+            commandToSend = RequestResponseFactory.getIpControlCommand(SimpleCommandType.LISTENING_MODE_CHANGE_CYCLIC, zone);
+        } else if (command instanceof StringType) {
+            String listeningModeValue = ((StringType) command).toString();
+            commandToSend = RequestResponseFactory.getIpControlCommand(ParameterizedCommandType.LISTENING_MODE_SET, zone)
+                    .setParameter(listeningModeValue);
         } else {
             throw new CommandTypeNotSupportedException("Command type not supported.");
         }
