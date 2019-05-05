@@ -196,12 +196,19 @@
 	<channel-type id="fan">
 		<item-type>Number</item-type>
 		<label>Control Fan Level</label>
-		<state min="-1" max="99" step="1" readOnly="false">
+		<state min="-1" max="105" step="1" readOnly="false">
 			<options>
 				<option value="38">Silent</option>
 				<option value="60">Standard</option>
+				<option value="75">Turbo</option>
 				<option value="77">Power</option>
 				<option value="90">Full</option>
+				<option value="100">Max</option>
+				<option value="101">Quiet</option>
+				<option value="102">Balanced</option>
+				<option value="103">Turbov2</option>
+				<option value="104">Maxv2</option>
+				<option value="105">Mob</option>
 				<option value="-1">Custom</option>
 			</options>
 		</state>
