@@ -205,7 +205,7 @@
 				<option value="90">Full</option>
 				<option value="100">Max</option>
 				<option value="101">Quiet</option>
-				<option value="102">Full</option>
+				<option value="102">Balanced</option>
 				<option value="103">Turbov2</option>
 				<option value="104">Maxv2</option>
 				<option value="105">Mob</option>
