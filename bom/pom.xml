@@ -55,7 +55,7 @@
   <packaging>pom</packaging>
 
   <name>openHAB Add-ons :: BOM :: openHAB Add-ons</name>
-  
+
   <dependencies>]]></replacevalue>
                   </replace>
                   <!-- rewrite content -->

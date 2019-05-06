@@ -13,7 +13,7 @@
   <packaging>pom</packaging>
 
   <name>openHAB Add-ons :: BOM :: openHAB Add-ons</name>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
