@@ -46,6 +46,7 @@
                   <fileset dir="${basedirRoot}/bundles">
                     <include name="*/src/main/feature/feature.xml"/>
                     <exclude name="**/org.openhab.binding.bluetooth*/**/feature.xml"/>
+                    <exclude name="**/org.openhab.binding.mqtt*/**/feature.xml"/>
                   </fileset>
                   <filterchain>
                     <linecontainsRegExp>
@@ -68,6 +69,7 @@
               <configuration>
                 <features>
                   <feature>openhab-binding-bluetooth</feature>
+                  <feature>openhab-binding-mqtt</feature>
                   <feature>openhab-misc-ruleengine</feature>
                 </features>
               </configuration>
