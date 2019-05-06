@@ -24,6 +24,7 @@ public class IPBridgeConfig {
     private String ipAddress;
     private String user;
     private String password;
+    private String discoveryFile;
     private int reconnect;
     private int heartbeat;
 
@@ -55,6 +56,14 @@ public class IPBridgeConfig {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getDiscoveryFile() {
+        return discoveryFile;
+    }
+
+    public void setDiscoveryFile(String discoveryFile) {
+        this.discoveryFile = discoveryFile;
     }
 
     public int getReconnect() {
