@@ -43,7 +43,10 @@
               <target>
                 <concat destfile="src/main/feature/feature.xml"> 
                   <header file="src/main/resources/header.xml" filtering="no"/>
-                  <fileset dir="${basedirRoot}/bundles" includes="*/src/main/feature/feature.xml"/>
+                  <fileset dir="${basedirRoot}/bundles">
+                    <include name="*/src/main/feature/feature.xml"/>
+                    <exclude name="**/org.openhab.binding.bluetooth*/**/feature.xml"/>
+                  </fileset>
                   <filterchain>
                     <linecontainsRegExp>
                       <regexp pattern="(feature>)|(feature\s)|(bundle\s)"/>
@@ -64,6 +67,7 @@
               <id>karaf-feature-verification</id>
               <configuration>
                 <features>
+                  <feature>openhab-binding-bluetooth</feature>
                   <feature>openhab-misc-ruleengine</feature>
                 </features>
               </configuration>
