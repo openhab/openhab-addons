@@ -111,7 +111,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Latency</label>
 		<description>States the latency time</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 	<channel-type id="lastseen">
 		<item-type>DateTime</item-type>
