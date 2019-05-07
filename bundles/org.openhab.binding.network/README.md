@@ -148,11 +148,11 @@ iptables -A OUTPUT -t nat -p udp -s 127.0.0.1/32 --dport 67 -j DNAT --to 127.0.0
 
 Things support the following channels:
 
-| Channel Type ID | Item Type | Description                                                                                |
-|-----------------|-----------|--------------------------------------------------------------------------------------------|
-| online          | Switch    | This channel indicates whether a device is online                                          |
-| lastseen        | DateTime  | The last seen date/time of the device in question. May be 1. Jan 1970 if no time is known  |
-| latency         | Number    | This channel indicates the ping latency in milliseconds. May be 0 if no time is known      |
+| Channel Type ID | Item Type   | Description                                                                               |
+|-----------------|-------------|-------------------------------------------------------------------------------------------|
+| online          | Switch      | This channel indicates whether a device is online                                         |
+| lastseen        | DateTime    | The last seen date/time of the device in question. May be 1. Jan 1970 if no time is known |
+| latency         | Number:Time | This channel indicates the ping latency. May be 0 if no time is known                     |
 
 ## Examples
 
@@ -166,7 +166,7 @@ demo.items:
 
 ```xtend
 Switch MyDevice { channel="network:pingdevice:devicename:online" }
-Number MyDeviceResponseTime { channel="network:pingdevice:devicename:latency" }
+Number:Time MyDeviceResponseTime { channel="network:pingdevice:devicename:latency" }
 ```
 
 demo.sitemap:
