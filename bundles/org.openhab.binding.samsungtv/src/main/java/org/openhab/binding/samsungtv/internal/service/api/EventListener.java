@@ -29,7 +29,7 @@ public interface EventListener {
      * Invoked when value is received from the TV.
      *
      * @param variable Name of the variable.
-     * @param value    Value of the variable value.
+     * @param value Value of the variable value.
      */
     void valueReceived(String variable, State value);
 
@@ -37,15 +37,15 @@ public interface EventListener {
      * Report an error to this event listener
      *
      * @param statusDetail hint about the actual underlying problem
-     * @param message      of the error
-     * @param e            exception that might have occurred
+     * @param message of the error
+     * @param e exception that might have occurred
      */
     void reportError(ThingStatusDetail statusDetail, String message, Throwable e);
 
     /**
      * Get configuration item
      *
-     * @param key   key of configuration item
+     * @param key key of configuration item
      * @param value value of key
      */
     void putConfig(String key, Object value);

@@ -105,10 +105,10 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     /**
      * Create and initialize remote controller instance.
      *
-     * @param host                    Host name of the Samsung TV.
-     * @param port                    TCP port of the remote controller protocol.
-     * @param appName                 Application name used to send key codes.
-     * @param uniqueId                Unique Id used to send key codes.
+     * @param host Host name of the Samsung TV.
+     * @param port TCP port of the remote controller protocol.
+     * @param appName Application name used to send key codes.
+     * @param uniqueId Unique Id used to send key codes.
      * @param remoteControllerService
      * @throws RemoteControllerException
      */
@@ -288,7 +288,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     /**
      * Send sequence of key codes to Samsung TV.
      *
-     * @param keys      List of key codes to send.
+     * @param keys List of key codes to send.
      * @param sleepInMs Sleep between key code sending in milliseconds.
      * @throws RemoteControllerException
      */

@@ -44,7 +44,7 @@ public interface SamsungTvService {
      * Procedure for register event listener.
      *
      * @param listener
-     *                     Event listener instance to handle events.
+     *            Event listener instance to handle events.
      */
     void addEventListener(EventListener listener);
 
@@ -52,7 +52,7 @@ public interface SamsungTvService {
      * Procedure for remove event listener.
      *
      * @param listener
-     *                     Event listener instance to remove.
+     *            Event listener instance to remove.
      */
     void removeEventListener(EventListener listener);
 
