@@ -701,7 +701,7 @@ Import-Package: \\
         </file>
       </activation>
       <properties>
-        <bnd.includeresource>${.}/../../lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+        <bnd.includeresource>${.}/lib/; filter:=*.jar; lib:=true</bnd.includeresource>
       </properties>
     </profile>
 
