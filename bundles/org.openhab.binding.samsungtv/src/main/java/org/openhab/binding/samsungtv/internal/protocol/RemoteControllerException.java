@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.samsungtv.internal.protocol;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception for Samsung TV communication
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class RemoteControllerException extends Exception {
 
     private static final long serialVersionUID = -5292218577704635666L;

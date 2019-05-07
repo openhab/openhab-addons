@@ -14,6 +14,7 @@ package org.openhab.binding.samsungtv.internal.service.api;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.types.Command;
 
 /**
@@ -21,6 +22,7 @@ import org.eclipse.smarthome.core.types.Command;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public interface SamsungTvService {
 
     /**
