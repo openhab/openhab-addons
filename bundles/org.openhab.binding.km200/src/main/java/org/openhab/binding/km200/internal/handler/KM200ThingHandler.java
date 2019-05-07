@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -324,7 +325,7 @@ public class KM200ThingHandler extends BaseThingHandler {
             switch (subKeyType) {
                 case "stringValue":
                     /* Creating an new channel type with capabilities from service */
-                    List<StateOption> options = null;
+                    List<@NonNull StateOption> options = null;
                     if (serObj.serviceTreeMap.get(subKey).getValueParameter() != null) {
                         options = new ArrayList<StateOption>();
                         // The type is definitely correct here
