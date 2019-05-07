@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.binding.mcp23017-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+    <feature name="openhab-binding-mcp23017" description="MCP23017 Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature prerequisite="true">wrap</feature>
+        <bundle dependency="true">mvn:com.pi4j/pi4j-core/1.2</bundle>
+        <bundle dependency="true">wrap:mvn:com.pi4j/pi4j-gpio-extension/1.2$Bundle-Name=Pi4J%20::%20Java%20Library%20(Extension)&amp;Bundle-SymbolicName=com.pi4j.pi4j-gpio-extension&amp;Bundle-Version=1.2</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.mcp23017/${project.version}</bundle>
+    </feature>
+</features>

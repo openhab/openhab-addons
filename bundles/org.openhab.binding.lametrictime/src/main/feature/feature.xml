@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.binding.lametrictime-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+    <feature name="openhab-binding-lametrictime" description="LaMetric Time Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-upnp</feature>
+        <bundle dependency="true">mvn:com.eclipsesource.jaxrs/provider-gson/2.3</bundle>
+        <bundle dependency="true">mvn:org.syphr/lametrictime-api/0.1.0</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.lametrictime/${project.version}</bundle>
+    </feature>
+</features>

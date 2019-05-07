@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.binding.globalcache-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>file:${basedirRoot}/bundles/org.openhab.transform.map/target/feature/feature.xml</repository>
+
+    <feature name="openhab-binding-globalcache" description="GlobalCache Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transformation-map</feature>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.globalcache/${project.version}</bundle>
+    </feature>
+</features>
