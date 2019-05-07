@@ -20,12 +20,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
+import org.openhab.binding.samsungtv.internal.service.RemoteControllerService;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +38,9 @@ import org.slf4j.LoggerFactory;
  * results of searched UPnP devices
  *
  * @author Pauli Anttila - Initial contribution
+ * @author Arjan Mels - Changed to upnp.UpnpDiscoveryParticipant
  */
+@NonNullByDefault
 @Component(immediate = true)
 public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(SamsungTvDiscoveryParticipant.class);
@@ -46,20 +51,20 @@ public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
     }
 
     @Override
-    public DiscoveryResult createResult(RemoteDevice device) {
+    public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         ThingUID uid = getThingUID(device);
         if (uid != null) {
             Map<String, Object> properties = new HashMap<>();
             properties.put(HOST_NAME, device.getIdentity().getDescriptorURL().getHost());
 
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid)
-                    .withProperties(properties)
-                    .withLabel(getLabel(device))
-                    .build();
+            properties.putAll(RemoteControllerService.discover(device.getIdentity().getDescriptorURL().getHost()));
 
-            logger.debug("Created a DiscoveryResult for device '{}' with UDN '{}'",
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                    .withLabel(getLabel(device)).build();
+
+            logger.debug("Created a DiscoveryResult for device '{}' with UDN '{}' and properties: {}",
                     device.getDetails().getModelDetails().getModelName(),
-                    device.getIdentity().getUdn().getIdentifierString());
+                    device.getIdentity().getUdn().getIdentifierString(), properties);
             return result;
         } else {
             return null;
@@ -77,30 +82,27 @@ public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
     }
 
     @Override
-    public ThingUID getThingUID(RemoteDevice device) {
-        if (device != null) {
-
+    public @Nullable ThingUID getThingUID(RemoteDevice device) {
+        if (device.getDetails() != null && device.getDetails().getManufacturerDetails() != null) {
             String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
-            String modelName = device.getDetails().getModelDetails().getModelName();
-            String friendlyName = device.getDetails().getFriendlyName();
 
-            if (manufacturer != null && modelName != null) {
+            if (manufacturer != null && manufacturer.toUpperCase().contains("SAMSUNG ELECTRONICS")) {
+                // One Samsung TV contains several UPnP devices.
+                // Create unique Samsung TV thing for every MediaRenderer
+                // device and ignore rest of the UPnP devices.
 
-                if (manufacturer.toUpperCase().contains("SAMSUNG ELECTRONICS")) {
-
+                if (device.getType() != null && "MediaRenderer".equals(device.getType().getType())) {
                     // UDN shouldn't contain '-' characters.
                     String udn = device.getIdentity().getUdn().getIdentifierString().replace("-", "_");
 
-                    // One Samsung TV contains several UPnP devices.
-                    // Create unique Samsung TV thing for every MediaRenderer
-                    // device and ignore rest of the UPnP devices.
-
-                    if (device.getType().getType().equals("MediaRenderer")) {
+                    if (logger.isDebugEnabled()) {
+                        String modelName = device.getDetails().getModelDetails().getModelName();
+                        String friendlyName = device.getDetails().getFriendlyName();
                         logger.debug("Discovered a Samsung TV '{}' model '{}' thing with UDN '{}'", friendlyName,
                                 modelName, udn);
-
-                        return new ThingUID(SAMSUNG_TV_THING_TYPE, udn);
                     }
+
+                    return new ThingUID(SAMSUNG_TV_THING_TYPE, udn);
                 }
             }
         }
