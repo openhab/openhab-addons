@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="samsungtv"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="tv">
@@ -23,6 +24,8 @@
 			<channel id="stopBrowser" typeId="stopbrowser" />
 			<channel id="keyCode" typeId="keycode" />
 			<channel id="power" typeId="power" />
+			<channel id="artMode" typeId="artmode" />
+			<channel id="sourceApp" typeId="sourceapp" />
 		</channels>
 
 		<config-description-ref uri="thing-type:samsungtv:tv" />
