@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.transform.bin2json-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+    <feature name="openhab-transformation-bin2json" description="Binary To JSON Transformation" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature prerequisite="true">wrap</feature>
+        <bundle dependency="true">wrap:mvn:com.igormaznitsa/jbbp/1.4.1$Bundle-Name=Java%20Binary%20Block%20Parser&amp;Bundle-SymbolicName=com.igormaznitsa.jbbp&amp;Bundle-Version=1.4.1</bundle>
+        <bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.bin2json/${project.version}</bundle>
+    </feature>
+</features>

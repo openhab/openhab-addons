@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.io.transport.modbus-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+    <feature name="openhab-transport-modbus" description="Modbus Transport" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <feature prerequisite="true">wrap</feature>
+        <bundle dependency="true">wrap:mvn:net.wimpi/jamod/1.2.3.OH$Bundle-Name=JAVA%20Modbus&amp;Bundle-SymbolicName=net.wimpi.jamod&amp;Bundle-Version=1.2.3.OH</bundle>
+        <bundle dependency="true">mvn:org.apache.commons/commons-pool2/2.4.3</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.io.transport.modbus/${project.version}</bundle>
+    </feature>
+</features>

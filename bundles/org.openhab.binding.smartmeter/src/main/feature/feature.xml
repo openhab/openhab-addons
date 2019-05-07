@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.binding.smartmeter-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+    <feature name="openhab-binding-smartmeter" description="Smartmeter Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-serial</feature>
+        <bundle dependency="true">mvn:io.reactivex.rxjava2/rxjava/2.2.3</bundle>
+        <bundle dependency="true">mvn:org.reactivestreams/reactive-streams/1.0.2</bundle>
+        <bundle dependency="true">mvn:org.openmuc/jsml/1.1.2</bundle>
+        <bundle dependency="true">mvn:org.openmuc/j62056/2.1.0</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.smartmeter/${project.version}</bundle>
+    </feature>
+</features>

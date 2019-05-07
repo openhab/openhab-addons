@@ -28,8 +28,53 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <id>create-karaf-features</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <concat destfile="src/main/feature/feature.xml"> 
+                  <header file="src/main/resources/header.xml" filtering="no"/>
+                  <fileset dir="${basedirRoot}/bundles">
+                    <include name="*/src/main/feature/feature.xml"/>
+                    <exclude name="**/org.openhab.binding.bluetooth*/**/feature.xml"/>
+                    <exclude name="**/org.openhab.binding.mqtt*/**/feature.xml"/>
+                  </fileset>
+                  <filterchain>
+                    <linecontainsRegExp>
+                      <regexp pattern="(feature>)|(feature\s)|(bundle\s)"/>
+                    </linecontainsRegExp>
+                  </filterchain>
+                  <footer file="src/main/resources/footer.xml" filtering="no"/>
+                </concat>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>karaf-feature-verification</id>
+              <configuration>
+                <features>
+                  <feature>openhab-binding-bluetooth</feature>
+                  <feature>openhab-binding-mqtt</feature>
+                  <feature>openhab-misc-ruleengine</feature>
+                </features>
+              </configuration>
+            </execution>
+          </executions>
       </plugin>
     </plugins>
   </build>
