@@ -19,12 +19,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -46,33 +49,30 @@ import org.w3c.dom.NodeList;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class MainTVServerService implements UpnpIOParticipant, SamsungTvService {
 
     public static final String SERVICE_NAME = "MainTVServer2";
-    private static final List<String> supportedCommands = Arrays.asList(SOURCE_NAME, BROWSER_URL, STOP_BROWSER);
+    private static final List<String> SUPPORTEDCOMMANDS = Arrays.asList(SOURCE_NAME, BROWSER_URL, STOP_BROWSER);
 
     private Logger logger = LoggerFactory.getLogger(MainTVServerService.class);
 
     private UpnpIOService service;
 
     private ScheduledExecutorService scheduler;
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     private String udn;
     private int pollingInterval;
 
     private Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<String, String>());
 
-    private List<EventListener> listeners = new CopyOnWriteArrayList<>();
+    private Set<EventListener> listeners = new CopyOnWriteArraySet<>();
 
     public MainTVServerService(UpnpIOService upnpIOService, String udn, int pollingInterval) {
-        logger.debug("Create a Samsung TV MainTVServer service");
+        logger.debug("Creating a Samsung TV MainTVServer service");
 
-        if (upnpIOService != null) {
-            service = upnpIOService;
-        } else {
-            logger.debug("upnpIOService not set.");
-        }
+        service = upnpIOService;
 
         this.udn = udn;
         this.pollingInterval = pollingInterval;
@@ -82,7 +82,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
 
     @Override
     public List<String> getSupportedChannelNames() {
-        return supportedCommands;
+        return SUPPORTEDCOMMANDS;
     }
 
     @Override
@@ -123,17 +123,10 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
 
     private Runnable pollingRunnable = () -> {
         if (isRegistered()) {
-            try {
-                updateResourceState("MainTVAgent2", "GetCurrentMainTVChannel", null);
-
-                updateResourceState("MainTVAgent2", "GetCurrentExternalSource", null);
-
-                updateResourceState("MainTVAgent2", "GetCurrentContentRecognition", null);
-
-                updateResourceState("MainTVAgent2", "GetCurrentBrowserURL", null);
-            } catch (Exception e) {
-                reportError("Error occurred during poll", e);
-            }
+            updateResourceState("MainTVAgent2", "GetCurrentMainTVChannel", null);
+            updateResourceState("MainTVAgent2", "GetCurrentExternalSource", null);
+            updateResourceState("MainTVAgent2", "GetCurrentContentRecognition", null);
+            updateResourceState("MainTVAgent2", "GetCurrentBrowserURL", null);
         }
     };
 
@@ -170,11 +163,14 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     }
 
     @Override
-    public void onServiceSubscribed(String service, boolean succeeded) {
+    public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
     }
 
     @Override
-    public void onValueReceived(String variable, String value, String service) {
+    public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
+        if (variable == null) {
+            return;
+        }
 
         String oldValue = stateMap.get(variable);
         if ((value == null && oldValue == null) || (value != null && value.equals(oldValue))) {
@@ -182,7 +178,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
             return;
         }
 
-        stateMap.put(variable, value);
+        stateMap.put(variable, (value != null) ? value : "");
 
         for (EventListener listener : listeners) {
 
@@ -190,25 +186,20 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
                 case "ProgramTitle":
                     listener.valueReceived(PROGRAM_TITLE, (value != null) ? new StringType(value) : UnDefType.UNDEF);
                     break;
-
                 case "ChannelName":
                     listener.valueReceived(CHANNEL_NAME, (value != null) ? new StringType(value) : UnDefType.UNDEF);
                     break;
-
                 case "CurrentExternalSource":
                     listener.valueReceived(SOURCE_NAME, (value != null) ? new StringType(value) : UnDefType.UNDEF);
                     break;
-
                 case "CurrentChannel":
-                    String currentChannel = parseCurrentChannel(value);
+                    String currentChannel = (value != null) ? parseCurrentChannel(value) : null;
                     listener.valueReceived(CHANNEL,
-                            (value != null) ? new DecimalType(currentChannel) : UnDefType.UNDEF);
+                            currentChannel != null ? new DecimalType(currentChannel) : UnDefType.UNDEF);
                     break;
-
                 case "ID":
                     listener.valueReceived(SOURCE_ID, (value != null) ? new DecimalType(value) : UnDefType.UNDEF);
                     break;
-
                 case "BrowserURL":
                     listener.valueReceived(BROWSER_URL, (value != null) ? new StringType(value) : UnDefType.UNDEF);
                     break;
@@ -216,8 +207,8 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         }
     }
 
-    protected Map<String, String> updateResourceState(String serviceId, String actionId, Map<String, String> inputs) {
-
+    protected Map<String, String> updateResourceState(String serviceId, String actionId,
+            @Nullable Map<String, String> inputs) {
         Map<String, String> result = service.invokeAction(this, serviceId, actionId, inputs);
 
         for (String variable : result.keySet()) {
@@ -228,7 +219,6 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     }
 
     private void setSourceName(Command command) {
-
         Map<String, String> result = updateResourceState("MainTVAgent2", "GetSourceList", null);
 
         String source = command.toString();
@@ -242,7 +232,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
                 id = list.get(source);
             }
         } else {
-            logger.error("Source list query failed, result='{}'", result.get("Result"));
+            logger.warn("Source list query failed, result='{}'", result.get("Result"));
         }
 
         if (source != null && id != null) {
@@ -252,44 +242,41 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
             if (result.get("Result").equals("OK")) {
                 logger.debug("Command successfully executed");
             } else {
-                logger.error("Command execution failed, result='{}'", result.get("Result"));
+                logger.warn("Command execution failed, result='{}'", result.get("Result"));
             }
         } else {
-            logger.error("Source id for '{}' couldn't be found", command.toString());
+            logger.warn("Source id for '{}' couldn't be found", command.toString());
         }
     }
 
     private void setBrowserUrl(Command command) {
-
         Map<String, String> result = updateResourceState("MainTVAgent2", "RunBrowser",
                 SamsungTvUtils.buildHashMap("BrowserURL", command.toString()));
 
         if (result.get("Result").equals("OK")) {
             logger.debug("Command successfully executed");
         } else {
-            logger.error("Command execution failed, result='{}'", result.get("Result"));
+            logger.warn("Command execution failed, result='{}'", result.get("Result"));
         }
     }
 
     private void stopBrowser(Command command) {
-
         Map<String, String> result = updateResourceState("MainTVAgent2", "StopBrowser", null);
 
         if (result.get("Result").equals("OK")) {
             logger.debug("Command successfully executed");
         } else {
-            logger.error("Command execution failed, result='{}'", result.get("Result"));
+            logger.warn("Command execution failed, result='{}'", result.get("Result"));
         }
     }
 
-    private String parseCurrentChannel(String xml) {
+    private @Nullable String parseCurrentChannel(@Nullable String xml) {
         String majorCh = null;
 
         if (xml != null) {
             Document dom = SamsungTvUtils.loadXMLFromString(xml);
 
             if (dom != null) {
-
                 NodeList nodeList = dom.getDocumentElement().getElementsByTagName("MajorCh");
 
                 if (nodeList != null) {
@@ -304,32 +291,29 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     private Map<String, String> parseSourceList(String xml) {
         Map<String, String> list = new HashMap<String, String>();
 
-        if (xml != null) {
-            Document dom = SamsungTvUtils.loadXMLFromString(xml);
+        Document dom = SamsungTvUtils.loadXMLFromString(xml);
 
-            if (dom != null) {
+        if (dom != null) {
+            NodeList nodeList = dom.getDocumentElement().getElementsByTagName("Source");
 
-                NodeList nodeList = dom.getDocumentElement().getElementsByTagName("Source");
+            if (nodeList != null) {
+                for (int i = 0; i < nodeList.getLength(); i++) {
 
-                if (nodeList != null) {
-                    for (int i = 0; i < nodeList.getLength(); i++) {
+                    String sourceType = null;
+                    String id = null;
 
-                        String sourceType = null;
-                        String id = null;
+                    Element element = (Element) nodeList.item(i);
+                    NodeList l = element.getElementsByTagName("SourceType");
+                    if (l != null && l.getLength() > 0) {
+                        sourceType = l.item(0).getFirstChild().getNodeValue();
+                    }
+                    l = element.getElementsByTagName("ID");
+                    if (l != null && l.getLength() > 0) {
+                        id = l.item(0).getFirstChild().getNodeValue();
+                    }
 
-                        Element element = (Element) nodeList.item(i);
-                        NodeList l = element.getElementsByTagName("SourceType");
-                        if (l != null && l.getLength() > 0) {
-                            sourceType = l.item(0).getFirstChild().getNodeValue();
-                        }
-                        l = element.getElementsByTagName("ID");
-                        if (l != null && l.getLength() > 0) {
-                            id = l.item(0).getFirstChild().getNodeValue();
-                        }
-
-                        if (sourceType != null && id != null) {
-                            list.put(sourceType, id);
-                        }
+                    if (sourceType != null && id != null) {
+                        list.put(sourceType, id);
                     }
                 }
             }
