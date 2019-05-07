@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.binding.zoneminder-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+    <feature name="openhab-binding-zoneminder" description="ZoneMinder Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle dependency="true">mvn:org.jsoup/jsoup/1.10.1</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.zoneminder/${project.version}</bundle>
+    </feature>
+</features>
