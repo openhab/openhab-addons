@@ -209,7 +209,7 @@ spotify.sitemap:
 sitemap spotify label="Spotify Sitemap" {
 
   Frame label="Spotify Player Info" {
-    Selection item=spotifyDevices       label="Active device [%]"
+    Selection item=spotifyDevices       label="Active device [%s]"
     Default   item=spotifyTrackPlayer   label="Player"
     Switch    item=spotifyDeviceShuffle label="Shuffle mode:"
     Text      item=spotifyTrackRepeat   label="Repeat mode: [%s]"
