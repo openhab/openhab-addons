@@ -12,16 +12,11 @@
  */
 package org.openhab.binding.samsungtv.internal;
 
-import java.net.Socket;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-
-import javax.net.ssl.SSLEngine;
 import javax.net.ssl.X509ExtendedTrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.TlsTrustManagerProvider;
+import org.eclipse.smarthome.io.net.http.TrustAllTrustMananger;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -37,46 +32,8 @@ public class SamsungTvTlsTrustManagerProvider implements TlsTrustManagerProvider
         return "SmartViewSDK";
     }
 
-    private final X509ExtendedTrustManager trustAllCerts = new X509ExtendedTrustManager() {
-
-        @Override
-        public void checkClientTrusted(X509Certificate @Nullable [] x509Certificates, @Nullable String s)
-                throws CertificateException {
-        }
-
-        @Override
-        public void checkServerTrusted(X509Certificate @Nullable [] x509Certificates, @Nullable String s)
-                throws CertificateException {
-        }
-
-        @Override
-        public X509Certificate @Nullable [] getAcceptedIssuers() {
-            return null;
-        }
-
-        @Override
-        public void checkClientTrusted(X509Certificate @Nullable [] x509Certificates, @Nullable String s,
-                @Nullable Socket socket) throws CertificateException {
-        }
-
-        @Override
-        public void checkServerTrusted(X509Certificate @Nullable [] x509Certificates, @Nullable String s,
-                @Nullable Socket socket) throws CertificateException {
-        }
-
-        @Override
-        public void checkClientTrusted(X509Certificate @Nullable [] x509Certificates, @Nullable String s,
-                @Nullable SSLEngine sslEngine) throws CertificateException {
-        }
-
-        @Override
-        public void checkServerTrusted(X509Certificate @Nullable [] x509Certificates, @Nullable String s,
-                @Nullable SSLEngine sslEngine) throws CertificateException {
-        }
-    };
-
     @Override
     public X509ExtendedTrustManager getTrustManager() {
-        return trustAllCerts;
+        return TrustAllTrustMananger.getInstance();
     }
 }
