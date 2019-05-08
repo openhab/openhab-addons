@@ -44,8 +44,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     protected HashMap<String, String> stateNames = new HashMap<>();
 
     //cache
-    @Nullable
-    private ExpiringCache<List<SomfyTahomaState>> thingStates;
+    private @Nullable ExpiringCache<List<SomfyTahomaState>> thingStates;
 
     public SomfyTahomaBaseThingHandler(Thing thing) {
         super(thing);
@@ -57,10 +56,9 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        thingStates = new ExpiringCache<>(CACHE_EXPIRY, () -> getThingStates());
 
         if (ThingStatus.ONLINE.equals(getBridge().getStatus())) {
-            thingStates = new ExpiringCache<>(CACHE_EXPIRY, () -> getThingStates());
-
             SomfyTahomaState state = getCachedThingState(STATUS_STATE);
             updateThingStatus(state);
         } else {

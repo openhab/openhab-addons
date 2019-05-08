@@ -62,15 +62,15 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     /**
      * Future to poll for updates
      */
-    @Nullable
-    private ScheduledFuture<?> pollFuture;
+    private @Nullable ScheduledFuture<?> pollFuture;
 
     /**
      * Future to poll for status
      */
-    @Nullable
-    private ScheduledFuture<?> statusFuture;
+    private @Nullable ScheduledFuture<?> statusFuture;
 
+    // Too many request flag
+    private boolean tooManyRequests = false;
 
     /**
      * Our configuration
@@ -125,6 +125,10 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             return;
         }
 
+        if (tooManyRequests || ThingStatus.ONLINE.equals(thing.getStatus())) {
+            return;
+        }
+
         try {
             if (httpClient.isStarted()) {
                 httpClient.stop();
@@ -144,8 +148,13 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
                 logger.debug("SomfyTahoma version: {}", data.getVersion());
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                logger.debug("Login response: {}", response.getContentAsString());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error logging in" + data.getError());
+                logger.trace("Login response: {}", response.getContentAsString());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error logging in: " + data.getError());
+                if (data.getError().startsWith(TOO_MANY_REQUESTS)) {
+                    logger.debug("Too many requests error, suspending activity for {} seconds", SUSPEND_TIME);
+                    tooManyRequests = true;
+                    scheduler.schedule(this::enableLogin, SUSPEND_TIME, TimeUnit.SECONDS);
+                }
             }
         } catch (JsonSyntaxException e) {
             logger.debug("Received invalid data", e);
@@ -158,6 +167,10 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot start http client");
         }
 
+    }
+
+    private void enableLogin() {
+        tooManyRequests = false;
     }
 
     private ArrayList<SomfyTahomaEvent> getEvents() {
@@ -314,12 +327,12 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             sb.append(',');
             sb.append("{\"name\": \"").append(name).append("\"}");
         }
-        logger.debug("Formatted parameters: {}", sb.toString());
+        logger.trace("Formatted parameters: {}", sb.toString());
         return sb.toString();
     }
 
 
-    public @Nullable List<SomfyTahomaState> getAllStates(Collection<String> stateNames, String deviceUrl) {
+    public @Nullable synchronized List<SomfyTahomaState> getAllStates(Collection<String> stateNames, String deviceUrl) {
         String url;
         String line = "";
 
@@ -359,9 +372,8 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private void getTahomaUpdates() {
         logger.debug("Getting Tahoma Updates...");
-        if (ThingStatus.OFFLINE.equals(thing.getStatus())) {
-            logger.debug("Doing relogin");
-            login();
+        if (ThingStatus.OFFLINE.equals(thing.getStatus()) && !reLogin()) {
+            return;
         }
 
         ArrayList<SomfyTahomaEvent> events = getEvents();
@@ -429,9 +441,8 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
 
     private void refreshTahomaStates() {
         logger.debug("Refreshing Tahoma states...");
-        if (ThingStatus.OFFLINE.equals(thing.getStatus())) {
-            logger.debug("Doing relogin");
-            login();
+        if (ThingStatus.OFFLINE.equals(thing.getStatus()) && !reLogin()) {
+            return;
         }
 
         //force Tahoma to ask for actual states
@@ -509,6 +520,10 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     public void sendCommand(String io, String command, String params) {
+        if (ThingStatus.OFFLINE.equals(thing.getStatus()) && !reLogin()) {
+            return;
+        }
+
         Boolean result = sendCommandInternal(io, command, params);
         if (result != null && !result) {
             sendCommandInternal(io, command, params);
@@ -684,10 +699,19 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     public void executeActionGroup(String id) {
+        if (ThingStatus.OFFLINE.equals(thing.getStatus()) && !reLogin()) {
+            return;
+        }
         String execId = executeActionGroupInternal(id);
         if (UNAUTHORIZED.equals(execId)) {
             executeActionGroupInternal(id);
         }
+    }
+
+    private boolean reLogin() {
+        logger.debug("Doing relogin");
+        login();
+        return !ThingStatus.OFFLINE.equals(thing.getStatus());
     }
 
     public @Nullable String executeActionGroupInternal(String id) {
