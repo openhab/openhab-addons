@@ -42,6 +42,12 @@
       <version>${smack.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.minidns</groupId>
+      <artifactId>minidns-core</artifactId>
+      <version>0.3.3</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
 </project>
