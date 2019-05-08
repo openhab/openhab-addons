@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enocean"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- RepeaterMode channel -->
+	<channel-type id="repeaterMode" advanced="true">
+		<item-type>String</item-type>
+		<label>Repeater Mode</label>
+		<description>Repeater mode of EnOcean gateway/device</description>
+		<state>
+			<options>
+				<option value="OFF">Repeater off</option>
+				<option value="LEVEL1">Level-1</option>
+				<option value="LEVEL2">Level-2</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setBaseId" advanced="true">
+		<item-type>String</item-type>
+		<label>Set Base Id</label>
+		<description>Set base id of EnOcean gateway. Use this with care! Must be between 0xFF800000 and 0xFFFFFF80</description>
+	</channel-type>
+
+	<!-- General Switch Channel -->
+	<channel-type id="generalSwitch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>The switch channel allows to switch something on and off.</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<!-- General Switch Channel -->
+	<channel-type id="generalSwitchA">
+		<item-type>Switch</item-type>
+		<label>Switch Channel A</label>
+		<description>The switch channel allows to switch channel A on and off.</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<!-- General Switch Channel -->
+	<channel-type id="generalSwitchB">
+		<item-type>Switch</item-type>
+		<label>Switch Channel B</label>
+		<description>The switch channel allows to switch channel B on and off.</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<!-- Rollershutter Channel -->
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter</label>
+		<description>Rollershutter</description>
+		<category>Blinds</category>
+		<config-description>
+			<parameter name="shutTime" type="integer">
+				<label>Shut time</label>
+				<description>Time (in seconds) to completely close the rollershutter</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<!-- Dimmer Channel -->
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<description>Dimmer</description>
+		<category>DimmableLight</category>
+		<config-description>
+			<parameter name="rampingTime" type="integer">
+				<label>Ramping time</label>
+				<description>A5-38-08: Ramping Time (in seconds), 0 = no ramping, 1..255 = seconds to 100%; D2-01-01: 0 = switch, 1-3 = timer 1-3, 4 = stop</description>
+			</parameter>
+			<parameter name="eltakoDimmer" type="boolean">
+				<label>Eltako Dimmer</label>
+				<description>True for Eltako dimmer, false otherwise. Defaults to true for compatibility purpose.</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="storeValue" type="boolean">
+				<label>Store value</label>
+				<description>Store final value</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature in degree Celsius</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>Relative humidity level in percentages</description>
+		<category>Humidity</category>
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="setPoint">
+		<item-type>Number</item-type>
+		<label>Set point</label>
+		<description>linear set point</description>
+		<state readOnly="true" min="0" max="255" />
+	</channel-type>
+
+	<channel-type id="fanSpeedStage">
+		<item-type>String</item-type>
+		<label>Fan Speed</label>
+		<state readOnly="true">
+			<options>
+				<option value="-1">Auto</option>
+				<option value="0">Stage 0</option>
+				<option value="1">Stage 1</option>
+				<option value="2">Stage 2</option>
+				<option value="3">Stage 3</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="occupancy">
+		<item-type>Switch</item-type>
+		<label>Occupancy</label>
+		<description>Occupancy button pressed or released.</description>
+		<category>Switch</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+		<description>Contact channel</description>
+	</channel-type>
+
+	<channel-type id="windowHandleState">
+		<item-type>String</item-type>
+		<label>Window Handle State</label>
+		<description>Describes the window handle state</description>
+		<state readOnly="true">
+			<options>
+				<option value="OPEN">Open</option>
+				<option value="TILTED">Tilted</option>
+				<option value="CLOSED">Closed</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="instantpower">
+		<item-type>Number:Power</item-type>
+		<label>Instant Power</label>
+		<description>Instant power consumption in Watts</description>
+		<state pattern="%d %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="totalusage">
+		<item-type>Number:Energy</item-type>
+		<label>Total Usage</label>
+		<description>Used energy in Kilowatt hours</description>
+		<state pattern="%d %unit%" readOnly="true" />
+		<config-description>
+			<parameter name="validateValue" type="boolean">
+				<label>Validate value</label>
+				<description>Filter out increases more than 10.0 kWh and decreases less than 1.0 kWh</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="batteryVoltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<description>Voltage of the battery</description>
+		<state pattern="%f %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="energyStorage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Energy Storage</label>
+		<description>?</description>
+		<state pattern="%f %unit%" readOnly="true" />
+	</channel-type>
+
+	<!-- Teach in Channel -->
+	<channel-type id="teachInCMD" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Teach In</label>
+		<description>The teach in channel allows to send a teach in msg.</description>
+		<category>Switch</category>
+		<config-description>
+			<!-- <parameter name="teachInType" type="text"> <label>Teach in type</label> <description>Type of 4BS teach in message</description> 
+				<options> <option value="uniWoEEP">unidirectional without EEP</option> <option value="uniWEEP">unidirectional with EEP</option> 
+				<option value="biWEEP">bidirectional with EEP</option> </options> <limitToOptions>true</limitToOptions> </parameter> -->
+			<parameter name="manufacturerId" type="text">
+				<label>Manufacturer Id</label>
+				<description>Id is used for 4BS teach in with EEP</description>
+			</parameter>
+			<parameter name="teachInMSG" type="text">
+				<label>Teach in message</label>
+				<description>Use this message if teach in type and/or manufacturer id are unknown</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="rssi" advanced="true">
+		<item-type>Number</item-type>
+		<label>RSSI</label>
+		<description>Received Signal Strength Indication</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="repeatCount" advanced="true">
+		<item-type>Number</item-type>
+		<label>RepeatCount</label>
+		<description>Number of repeaters involved in the transmission of the telegram</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="lastReceived" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>LastReceived</label>
+		<description>Date and time the last telegram was received</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="motionDetection">
+		<item-type>Switch</item-type>
+		<label>Motion Detected</label>
+		<description>Motion detection sensor state.</description>
+		<category>Switch</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="illumination">
+		<item-type>Number:Illuminance</item-type>
+		<label>Lux</label>
+		<description>Illumination in lux</description>
+		<state pattern="%d %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="autoOFF" advanced="true">
+		<item-type>Number:Duration</item-type>
+		<label>Auto Off</label>
+		<description>Automatically switch to off</description>
+		<state pattern="%d %unit%" />
+	</channel-type>
+
+	<channel-type id="delayRadioOFF" advanced="true">
+		<item-type>Number:Duration</item-type>
+		<label>Delay Radio Off</label>
+		<description>Delay switch off by radio for given seconds</description>
+		<state pattern="%d %unit%" />
+	</channel-type>
+
+	<channel-type id="externalInterfaceMode" advanced="true">
+		<item-type>String</item-type>
+		<label>External Interface Mode</label>
+		<description>This option is to selected the type of the wired switch</description>
+		<state>
+			<options>
+				<option value="EXTERNALSWITCH">Switch</option>
+				<option value="EXTERNALBUTTON">Push button</option>
+				<option value="EXTERNALAUTO">Auto detect</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="twoStateSwitch" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Switching State</label>
+		<description>Switch state according to specific on/off positions (otherwise toggle)</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="ecoMode">
+		<item-type>Switch</item-type>
+		<label>Eco Mode</label>
+		<description>Activates eco mode (disables certain messages)</description>
+	</channel-type>
+
+	<!-- Angle Channel -->
+	<channel-type id="angle">
+		<item-type>Number:Angle</item-type>
+		<label>Angle</label>
+		<description>Blind angle</description>
+		<category>Blinds</category>
+		<state pattern="%d %unit%" />
+	</channel-type>
+
+	<!-- Litre Channel -->
+	<channel-type id="amrLitre">
+		<item-type>Number:Litre</item-type>
+		<label>Litre per second</label>
+		<state pattern="%d %unit%" readOnly="true" />
+	</channel-type>
+
+	<!-- Litre Channel -->
+	<channel-type id="amrCubicMetre">
+		<item-type>Number:Litre</item-type>
+		<label>Cubic metre</label>
+		<state pattern="%d %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="counter">
+		<item-type>Number</item-type>
+		<label>Counter</label>
+		<description>Counter</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="currentNumber">
+		<item-type>Number</item-type>
+		<label>Current</label>
+		<description>Current</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="valvePosition">
+		<item-type>Number</item-type>
+		<label>Valve position</label>
+		<description>Indicates the actual percent position of the valve.</description>
+		<category>thermostat</category>
+		<state min="0" max="100" step="1" pattern="%d %%" />
+	</channel-type>
+
+	<channel-type id="buttonLock">
+		<item-type>Switch</item-type>
+		<label>Button lock</label>
+		<description>Enables or disables buttons on the device.</description>
+		<category>thermostat</category>
+	</channel-type>
+
+	<channel-type id="measurementControl" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Measurement control</label>
+		<description>Enables or disables temperature measurement on the device.</description>
+		<category>thermostat</category>
+	</channel-type>
+
+	<channel-type id="displayOrientation" advanced="true">
+		<item-type>Number</item-type>
+		<label>Display orientation</label>
+		<description>Orientation of the display.</description>
+		<category>thermostat</category>
+		<state>
+			<options>
+				<option value="0">0</option>
+				<option value="90">90</option>
+				<option value="180">180</option>
+				<option value="270">270</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="temperatureSetPoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Set point</label>
+		<description>Desired temperature</description>
+		<state min="10" max="30" />
+	</channel-type>
+
+	<channel-type id="feedTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Feed temperature</label>
+		<description>Water temperature in the radiator input</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="failureCode">
+		<item-type>Number</item-type>
+		<label>Failure code</label>
+		<description>Failure code</description>
+		<category>thermostat</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="wakeUpCycle">
+		<item-type>Number</item-type>
+		<label>Wakeup cycle</label>
+		<description>Defines the cyclic wake-up time. The time corresponding to the number has to be looked up.</description>
+		<category>thermostat</category>
+		<state min="0" max="63" />
+	</channel-type>
+
+	<channel-type id="serviceCommand" advanced="true">
+		<item-type>Number</item-type>
+		<label>Service command</label>
+		<description>Command to be sent to actuator</description>
+		<category>thermostat</category>
+		<state>
+			<options>
+				<option value="0">no change</option>
+				<option value="1">open valve</option>
+				<option value="2">run initialisation</option>
+				<option value="3">close valve</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="statusRequestEvent">
+		<kind>trigger</kind>
+		<label>Status Request Event</label>
+		<description>Is triggered when the actuator wakes up from sleep and asks for the current status.</description>
+		<event />
+	</channel-type>
+
+	<channel-type id="sendCommand">
+		<item-type>Switch</item-type>
+		<label>Send command</label>
+		<description>You can send telegrams to the device by switching this channel on</description>
+		<category>thermostat</category>
+	</channel-type>
+
+</thing:thing-descriptions>

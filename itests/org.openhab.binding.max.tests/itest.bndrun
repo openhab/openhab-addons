@@ -1,0 +1,59 @@
+-include: ../itest-common.bndrun
+
+Bundle-SymbolicName: ${project.artifactId}
+Fragment-Host: org.openhab.binding.max
+
+-runrequires: \
+    bnd.identity;id='org.openhab.binding.max.tests',\
+    bnd.identity;id='org.openhab.core.binding.xml',\
+    bnd.identity;id='org.openhab.core.thing.xml'
+
+# We would like to use the "volatile" storage only
+-runblacklist: \
+    bnd.identity;id='org.openhab.core.storage.json',\
+    bnd.identity;id='org.openhab.core.storage.mapdb'
+
+#
+# done
+#
+-runbundles: \
+	ch.qos.logback.classic;version='[1.2.3,1.2.4)',\
+	ch.qos.logback.core;version='[1.2.3,1.2.4)',\
+	com.google.gson;version='[2.8.2,2.8.3)',\
+	javax.measure.unit-api;version='[1.0.0,1.0.1)',\
+	org.apache.commons.collections;version='[3.2.1,3.2.2)',\
+	org.apache.commons.io;version='[2.2.0,2.2.1)',\
+	org.apache.commons.lang;version='[2.6.0,2.6.1)',\
+	org.apache.commons.net;version='[3.3.0,3.3.1)',\
+	org.apache.felix.configadmin;version='[1.9.8,1.9.9)',\
+	org.apache.felix.http.servlet-api;version='[1.1.2,1.1.3)',\
+	org.apache.felix.scr;version='[2.1.10,2.1.11)',\
+	org.eclipse.equinox.event;version='[1.4.300,1.4.301)',\
+	org.eclipse.jetty.http;version='[9.4.11,9.4.12)',\
+	org.eclipse.jetty.io;version='[9.4.11,9.4.12)',\
+	org.eclipse.jetty.security;version='[9.4.11,9.4.12)',\
+	org.eclipse.jetty.server;version='[9.4.11,9.4.12)',\
+	org.eclipse.jetty.servlet;version='[9.4.11,9.4.12)',\
+	org.eclipse.jetty.util;version='[9.4.11,9.4.12)',\
+	org.openhab.binding.max;version='[2.5.0,2.5.1)',\
+	org.openhab.binding.max.tests;version='[2.5.0,2.5.1)',\
+	org.openhab.core;version='[2.5.0,2.5.1)',\
+	org.openhab.core.config.core;version='[2.5.0,2.5.1)',\
+	org.openhab.core.config.discovery;version='[2.5.0,2.5.1)',\
+	org.openhab.core.io.console;version='[2.5.0,2.5.1)',\
+	org.openhab.core.test;version='[2.5.0,2.5.1)',\
+	org.openhab.core.thing;version='[2.5.0,2.5.1)',\
+	org.osgi.service.event;version='[1.4.0,1.4.1)',\
+	osgi.enroute.hamcrest.wrapper;version='[1.3.0,1.3.1)',\
+	osgi.enroute.junit.wrapper;version='[4.12.0,4.12.1)',\
+	slf4j.api;version='[1.7.25,1.7.26)',\
+	tec.uom.lib.uom-lib-common;version='[1.0.2,1.0.3)',\
+	tec.uom.se;version='[1.0.8,1.0.9)',\
+	org.apache.servicemix.bundles.xstream;version='[1.4.7,1.4.8)',\
+	org.openhab.core.binding.xml;version='[2.5.0,2.5.1)',\
+	org.openhab.core.config.xml;version='[2.5.0,2.5.1)',\
+	org.openhab.core.thing.xml;version='[2.5.0,2.5.1)',\
+	org.apache.servicemix.specs.activation-api-1.1;version='[2.9.0,2.9.1)',\
+	org.apache.servicemix.specs.annotation-api-1.3;version='[1.3.0,1.3.1)',\
+	org.apache.servicemix.specs.jaxb-api-2.2;version='[2.9.0,2.9.1)',\
+	org.apache.servicemix.specs.stax-api-1.2;version='[2.9.0,2.9.1)'

@@ -1,19 +1,19 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.openhab</groupId>
-    <artifactId>features</artifactId>
+    <groupId>org.openhab.addons.features.karaf</groupId>
+    <artifactId>org.openhab.addons.reactor.features.karaf</artifactId>
     <version>2.5.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.openhab.addons</groupId>
-  <artifactId>openhab2-addons-external</artifactId>
+  <artifactId>org.openhab.addons.features.karaf.openhab-addons-external</artifactId>
   <packaging>pom</packaging>
 
-  <name>openHAB Feature Addons External</name>
-  <description>openHAB 2 Addons External</description>
+  <name>openHAB Add-ons :: Features :: Karaf :: Add-ons External</name>
+  <description>openHAB Add-ons External</description>
 
   <build>
     <plugins>

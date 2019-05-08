@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="buienradar"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="rain_forecast">
+		<label>Rain forecast</label>
+		<description>Does a simple rain forecast at the specified longitude/latitude of
+		two hours, in 5 minute increments using the buienradar.nl webservice. </description>
+
+		<channels>
+			<channel id="forecast_0" typeId="forecast_0" />
+			<channel id="forecast_5" typeId="forecast_5" />
+			<channel id="forecast_10" typeId="forecast_10" />
+			<channel id="forecast_15" typeId="forecast_15" />
+			<channel id="forecast_20" typeId="forecast_20" />
+			<channel id="forecast_25" typeId="forecast_25" />
+			<channel id="forecast_30" typeId="forecast_30" />
+			<channel id="forecast_35" typeId="forecast_35" />
+			<channel id="forecast_40" typeId="forecast_40" />
+			<channel id="forecast_45" typeId="forecast_45" />
+			<channel id="forecast_50" typeId="forecast_50" />
+			<channel id="forecast_55" typeId="forecast_55" />
+			<channel id="forecast_60" typeId="forecast_60" />
+			<channel id="forecast_65" typeId="forecast_65" />
+			<channel id="forecast_70" typeId="forecast_70" />
+			<channel id="forecast_75" typeId="forecast_75" />
+			<channel id="forecast_80" typeId="forecast_80" />
+			<channel id="forecast_85" typeId="forecast_85" />
+			<channel id="forecast_90" typeId="forecast_90" />
+			<channel id="forecast_95" typeId="forecast_95" />
+			<channel id="forecast_100" typeId="forecast_100" />
+			<channel id="forecast_105" typeId="forecast_105" />
+			<channel id="forecast_110" typeId="forecast_110" />
+			<channel id="forecast_115" typeId="forecast_115" />
+		</channels>
+
+		<config-description>
+
+			<parameter name="location" type="text" required="true">
+				<context>location</context>
+				<label>Location of Weather</label>
+				<description>Location of weather in geographical coordinates (latitude/longitude/altitude).</description>
+			</parameter>
+
+			<parameter name="refreshIntervalMinutes" type="integer" required="true" min="5" unit="min">
+				<label>Refresh interval</label>
+				<description>Refresh interval in minutes</description>
+				<default>5</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="forecast_0">
+		<item-type>Number:Speed</item-type>
+		<label>Current rainfall</label>
+		<description>Current rainfall</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_5">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 5 min</label>
+		<description>Rainfall in 5 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_10">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 10 min</label>
+		<description>Rainfall in 10 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_15">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 15 min</label>
+		<description>Rainfall in 15 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_20">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 20 min</label>
+		<description>Rainfall in 20 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_25">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 25 min</label>
+		<description>Rainfall in 25 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_30">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 30 min</label>
+		<description>Rainfall in 30 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_35">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 35 min</label>
+		<description>Rainfall in 35 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_40">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 40 min</label>
+		<description>Rainfall in 40 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_45">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 45 min</label>
+		<description>Rainfall in 45 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_50">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 50 min</label>
+		<description>Rainfall in 50 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_55">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 55 min</label>
+		<description>Rainfall in 55 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_60">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 60 min</label>
+		<description>Rainfall in 60 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_65">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 65 min</label>
+		<description>Rainfall in 65 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_70">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 70 min</label>
+		<description>Rainfall in 70 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_75">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 75 min</label>
+		<description>Rainfall in 75 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_80">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 80 min</label>
+		<description>Rainfall in 80 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_85">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 85 min</label>
+		<description>Rainfall in 85 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_90">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 90 min</label>
+		<description>Rainfall in 90 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_95">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 95 min</label>
+		<description>Rainfall in 95 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_100">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 100 min</label>
+		<description>Rainfall in 100 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_105">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 105 min</label>
+		<description>Rainfall in 105 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_110">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 110 min</label>
+		<description>Rainfall in 110 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+	<channel-type id="forecast_115">
+		<item-type>Number:Speed</item-type>
+		<label>Rainfall in 115 min</label>
+		<description>Rainfall in 115 minutes</description>
+		<state readOnly="true" pattern="%.10f %unit%" />
+	</channel-type>
+
+
+</thing:thing-descriptions>

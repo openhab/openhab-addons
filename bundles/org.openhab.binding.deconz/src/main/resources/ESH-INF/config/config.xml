@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:deconz:bridge">
+		<parameter name="host" type="text" required="true">
+			<label>Host Address</label>
+			<context>network-address</context>
+			<description>IP address or host name and port</description>
+		</parameter>
+		<parameter name="apikey" type="text" required="false">
+			<label>API Key</label>
+			<description>If no API Key is provided, a new one will be requested. You need to authorize the access on the deCONZ
+				web interface.</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:deconz:sensor">
+		<parameter name="id" type="text" required="true">
+			<label>Sensor ID</label>
+			<description>The deCONZ bridge assigns an integer number ID to each sensor.</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

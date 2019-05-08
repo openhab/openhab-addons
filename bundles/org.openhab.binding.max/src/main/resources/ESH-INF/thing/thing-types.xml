@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="max" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="thermostat">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>MAX! HeatingThermostat</label>
+		<description>This is a MAX! HeatingThermostat</description>
+
+		<channels>
+			<channel id="valve" typeId="valve" />
+			<channel id="battery_low" typeId="system.low-battery" />
+			<channel id="mode" typeId="mode" />
+			<channel id="actual_temp" typeId="actual_temp" />
+			<channel id="set_temp" typeId="set_temp" />
+			<channel id="locked" typeId="locked" />
+		</channels>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter-group name="identification">
+				<label>Identification</label>
+				<description>Hardware &amp; location identification</description>
+			</parameter-group>
+			<parameter-group name="device">
+				<label>Device Settings</label>
+				<description>Device parameter settings</description>
+				<advanced>true</advanced>
+			</parameter-group>
+			<parameter-group name="binding">
+				<label>Binding Settings</label>
+				<description>Binding settings for this device</description>
+			</parameter-group>
+			<!-- Trigger actions from habmin -->
+			<parameter-group name="actions">
+				<label>Actions</label>
+				<description>Action Buttons</description>
+			</parameter-group>
+			<!-- Experimental - Enable when also removing rooms is implemented <parameter
+				name="roomId" type="integer" required="false" groupName="device"> <label>Room Id</label>
+				<description>The room name Id.</description> <advanced>true</advanced> </parameter> -->
+			<parameter name="room" type="text" required="false" groupName="device">
+				<label>Room</label>
+				<description>The room name.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="name" type="text" required="false" groupName="device">
+				<label>Device Name</label>
+				<description>The device description.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="comfortTemp" type="decimal" min="4.5" max="30.5" step="0.5" required="false"
+				groupName="device">
+				<label>Comfort Temperature</label>
+				<description>Set the Comfort Temperature.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ecoTemp" type="decimal" min="4.5" max="30.5" step="0.5" required="false"
+				groupName="device">
+				<label>Eco Temperature</label>
+				<description>Set the Eco Temperature.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="offsetTemp" type="decimal" min="-3.5" max="3.5" step="0.5" required="false"
+				groupName="device">
+				<label>OffSet Temperature</label>
+				<description>Set the Thermostat offset.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="maxTempSetpoint" type="decimal" min="4.5" max="30.5" step="0.5" required="false"
+				groupName="device">
+				<label>Max Temperature</label>
+				<description>Set the Thermostat maximum temperature.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="minTempSetpoint" type="decimal" min="4.5" max="30.5" step="0.5" required="false"
+				groupName="device">
+				<label>Min Temperature</label>
+				<description>Set the Thermostat minimum temperature.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="windowOpenTemp" type="decimal" min="4.5" max="30.5" step="0.5" required="false"
+				groupName="device">
+				<label>Window Open Temp</label>
+				<description>Set the Window Open Temperature.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="windowOpenDuration" type="integer" min="0" max="60" step="5" required="false"
+				groupName="device">
+				<label>Window Open Duration</label>
+				<description>Set the Thermostat Window Open Duration.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="serialNumber" type="text" required="true" groupName="identification">
+				<label>Serial Number</label>
+				<description>The Serial Number identifies one specific device.</description>
+			</parameter>
+			<parameter name="rfAddress" type="text" required="false" groupName="identification">
+				<label>RF Address</label>
+				<description>The RF Address used for communication between the devices.</description>
+			</parameter>
+			<parameter name="refreshActualRate" type="integer" required="false" groupName="binding">
+				<label>Actual Temperature Refresh Rate</label>
+				<description>Experimental feature! Rate of the actual refresh in minutes.
+					0-9=refresh disabled. Minimum refresh rate once/10 minutes, recommended
+					60min. The settings of the heating thermostats are changed to trigger an
+					update of temperature, as the actual temperature only is updated when the
+					valves changes.</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<!-- Trigger reset action from habmin menu -->
+			<parameter name="action-deviceDelete" type="integer" groupName="actions">
+				<label>Delete Device from Cube</label>
+				<description>Deletes the device from the MAX! Cube. Device will need to be
+					included again!</description>
+				<options>
+					<option value="1234">Delete</option>
+					<option value="-1">No Action</option>
+				</options>
+				<default>-1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+
+	<thing-type id="thermostatplus">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>MAX! HeatingThermostat+</label>
+		<description>This is a MAX! HeatingThermostat+</description>
+
+		<channels>
+			<channel id="valve" typeId="valve" />
+			<channel id="battery_low" typeId="system.low-battery" />
+			<channel id="mode" typeId="mode" />
+			<channel id="actual_temp" typeId="actual_temp" />
+			<channel id="set_temp" typeId="set_temp" />
+			<channel id="locked" typeId="locked" />
+		</channels>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter-group name="identification">
+				<label>Identification</label>
+				<description>Hardware &amp; location identification</description>
+			</parameter-group>
+			<parameter-group name="device">
+				<label>Device Settings</label>
+				<description>Device parameter settings</description>
+				<advanced>true</advanced>
+			</parameter-group>
+			<parameter-group name="binding">
+				<label>Binding Settings</label>
+				<description>Binding settings for this device</description>
+			</parameter-group>
+			<!-- Trigger actions from habmin -->
+			<parameter-group name="actions">
+				<context></context>
+				<label>Actions</label>
+				<description>Action Buttons</description>
+			</parameter-group>
+			<!-- Experimental - Enable when also removing rooms is implemented <parameter
+				name="roomId" type="integer" required="false" groupName="device"> <label>Room Id</label>
+				<description>The room name Id.</description> <advanced>true</advanced> </parameter> -->
+			<parameter name="room" type="text" required="false" groupName="device">
+				<label>Room</label>
+				<description>The room name.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="name" type="text" required="false" groupName="device">
+				<label>Device Name</label>
+				<description>The device description.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="comfortTemp" type="decimal" min="4.5" max="30.5" step="0.5" required="false"
+				groupName="device">
+				<label>Comfort Temperature</label>
+				<description>Set the Comfort Temperature.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="ecoTemp" type="decimal" min="4.5" max="30.5" step="0.5" required="false"
+				groupName="device">
+				<label>Eco Temperature</label>
+				<description>Set the Eco Temperature.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="offsetTemp" type="decimal" min="-3.5" max="3.5" step="0.5" required="false"
+				groupName="device">
+				<label>OffSet Temperature</label>
+				<description>Set the Thermostat offset.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="maxTempSetpoint" type="decimal" min="4.5" max="30.5" step="0.5" required="false"
+				groupName="device">
+				<label>Max Temperature</label>
+				<description>Set the Thermostat maximum temperature.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="minTempSetpoint" type="decimal" min="4.5" max="30.5" step="0.5" required="false"
+				groupName="device">
+				<label>Min Temperature</label>
+				<description>Set the Thermostat minimum temperature.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="windowOpenTemp" type="decimal" min="4.5" max="30.5" step="0.5" required="false"
+				groupName="device">
+				<label>Window Open Temp</label>
+				<description>Set the Window Open Temperature.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="windowOpenDuration" type="integer" min="0" max="60" step="5" required="false"
+				groupName="device">
+				<label>Window Open Duration</label>
+				<description>Set the Thermostat Window Open Duration.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="serialNumber" type="text" required="true" groupName="identification">
+				<label>Serial Number</label>
+				<description>The Serial Number identifies one specific device.</description>
+			</parameter>
+			<parameter name="rfAddress" type="text" required="false" groupName="identification">
+				<label>RF Address</label>
+				<description>The RF Address used for communication between the devices.</description>
+			</parameter>
+			<parameter name="refreshActualRate" type="integer" required="false" groupName="binding">
+				<label>Actual Temperature Refresh Rate</label>
+				<description>Experimental feature! Rate of the actual refresh in minutes.
+					0-9=refresh disabled. Minimum refresh rate once/10 minutes, recommended
+					60min. The settings of the heating thermostats are changed to trigger an
+					update of temperature, as the actual temperature only is updated when the
+					valves changes.</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<!-- Trigger reset action from habmin menu -->
+			<parameter name="action-deviceDelete" type="integer" groupName="actions">
+				<label>Delete Device from Cube</label>
+				<description>Deletes the device from the MAX! Cube. Device will need to be
+					included again!</description>
+				<options>
+					<option value="1234">Delete</option>
+					<option value="-1">No Action</option>
+				</options>
+				<default>-1</default>
+				<advanced>true</advanced>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+
+	<thing-type id="wallthermostat">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>MAX! WallThermostat+</label>
+		<description>This is a MAX! WallThermostat+</description>
+
+		<channels>
+			<channel id="valve" typeId="valve" />
+			<channel id="battery_low" typeId="system.low-battery" />
+			<channel id="mode" typeId="mode" />
+			<channel id="actual_temp" typeId="actual_temp" />
+			<channel id="set_temp" typeId="set_temp" />
+			<channel id="locked" typeId="locked" />
+		</channels>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter-group name="identification">
+				<label>Identification</label>
+				<description>Hardware &amp; location identification</description>
+			</parameter-group>
+			<parameter-group name="device">
+				<label>Device Settings</label>
+				<description>Device parameter settings</description>
+			</parameter-group>
+			<!-- Trigger actions from habmin -->
+			<parameter-group name="actions">
+				<label>Actions</label>
+				<description>Action Buttons</description>
+			</parameter-group>
+
+			<parameter name="room" type="text" required="false" groupName="device">
+				<label>Room</label>
+				<description>The room name.</description>
+			</parameter>
+			<parameter name="name" type="text" required="false" groupName="device">
+				<label>Device Name</label>
+				<description>The device description.</description>
+			</parameter>
+			<parameter name="serialNumber" type="text" required="true" groupName="identification">
+				<label>Serial Number</label>
+				<description>The Serial Number identifies one specific device.</description>
+			</parameter>
+			<parameter name="rfAddress" type="text" required="false" groupName="identification">
+				<label>RF Address</label>
+				<description>The RF Address used for communication between the devices.</description>
+			</parameter>
+			<!-- Trigger reset action from habmin menu -->
+			<parameter name="action-deviceDelete" type="integer" groupName="actions">
+				<label>Delete Device from Cube</label>
+				<description>Deletes the device from the MAX! Cube. Device will need to be
+					included again!</description>
+				<options>
+					<option value="1234">Delete</option>
+					<option value="-1">No Action</option>
+				</options>
+				<default>-1</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="ecoswitch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>MAX! Ecoswitch</label>
+		<description>This is a MAX! EcoSwitch</description>
+
+		<channels>
+			<channel id="battery_low" typeId="system.low-battery" />
+		</channels>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter-group name="identification">
+				<label>Identification</label>
+				<description>Hardware &amp; location identification</description>
+			</parameter-group>
+			<parameter-group name="device">
+				<label>Device Settings</label>
+				<description>Device parameter settings</description>
+			</parameter-group>
+
+			<parameter name="room" type="text" required="false" groupName="device">
+				<label>Room</label>
+				<description>The room name.</description>
+			</parameter>
+			<parameter name="name" type="text" required="false" groupName="device">
+				<label>Device Name</label>
+				<description>The device description.</description>
+			</parameter>
+			<parameter name="serialNumber" type="text" required="true" groupName="identification">
+				<label>Serial Number</label>
+				<description>The Serial Number identifies one specific device.</description>
+			</parameter>
+			<parameter name="rfAddress" type="text" required="false" groupName="identification">
+				<label>RF Address</label>
+				<description>The RF Address used for communication between the devices.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="shuttercontact">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>MAX! Shutter Contact</label>
+		<description>This is a MAX! Shutter Contact</description>
+
+		<channels>
+			<channel id="contact_state" typeId="contact_state" />
+			<channel id="battery_low" typeId="system.low-battery" />
+		</channels>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter-group name="identification">
+				<label>Identification</label>
+				<description>Hardware &amp; location identification</description>
+			</parameter-group>
+			<parameter-group name="device">
+				<label>Device Settings</label>
+				<description>Device parameter settings</description>
+			</parameter-group>
+			<!-- Trigger actions from habmin -->
+			<parameter-group name="actions">
+				<label>Actions</label>
+				<description>Action Buttons</description>
+			</parameter-group>
+
+			<parameter name="room" type="text" required="false" groupName="device">
+				<label>Room</label>
+				<description>The room name.</description>
+			</parameter>
+			<parameter name="name" type="text" required="false" groupName="device">
+				<label>Device Name</label>
+				<description>The device description.</description>
+			</parameter>
+			<parameter name="serialNumber" type="text" required="true" groupName="identification">
+				<label>Serial Number</label>
+				<description>The Serial Number identifies one specific device.</description>
+			</parameter>
+			<parameter name="rfAddress" type="text" required="false" groupName="identification">
+				<label>RF Address</label>
+				<description>The RF Address used for communication between the devices.</description>
+			</parameter>
+			<!-- Trigger reset action from habmin menu -->
+			<parameter name="action-deviceDelete" type="integer" groupName="actions">
+				<label>Delete Device from Cube</label>
+				<description>Deletes the device from the MAX! Cube. Device will need to be
+					included again!</description>
+				<options>
+					<option value="1234">Delete</option>
+					<option value="-1">No Action</option>
+				</options>
+				<default>-1</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="valve" advanced="true">
+		<item-type>Number</item-type>
+		<label>Valve Position</label>
+		<description>Thermostat Valve Position</description>
+		<state pattern="%d %%" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Thermostat Mode Setting</description>
+		<tags>
+			<tag>heating</tag>
+		</tags>
+		<state pattern="%s" readOnly="false">
+			<options>
+				<option value="AUTOMATIC">AUTOMATIC</option>
+				<option value="MANUAL">MANUAL</option>
+				<option value="BOOST">BOOST</option>
+				<option value="VACATION">VACATION</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="actual_temp">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Temperature</label>
+		<description>Current measured room temperature</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>heating</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="set_temp">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint Temperature</label>
+		<description>Thermostat Setpoint temperature</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>heating</tag>
+		</tags>
+		<state pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="locked" advanced="true">
+		<item-type>Contact</item-type>
+		<label>Thermostat Locked</label>
+		<description>Thermostat is locked for adjustments</description>
+		<category>Lock</category>
+		<state pattern="%s" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="contact_state">
+		<item-type>Contact</item-type>
+		<label>Contact State</label>
+		<description>Contact state information</description>
+		<category>Contact</category>
+		<state pattern="%s" readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>
