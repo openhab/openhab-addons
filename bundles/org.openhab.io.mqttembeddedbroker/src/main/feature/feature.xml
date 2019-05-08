@@ -15,6 +15,6 @@
         <bundle dependency="true">wrap:mvn:io.netty/netty-handler/4.1.34.Final$Bundle-Name=Netty%20Handler&amp;Bundle-SymbolicName=io.netty.netty-handler&amp;Bundle-Version=4.1.34</bundle>
         <bundle dependency="true">mvn:com.h2database/h2-mvstore/1.4.199</bundle>
         <bundle dependency="true">wrap:mvn:io.moquette/moquette-broker/0.12.1$Bundle-Name=Moquette%20MQTT%20Broker&amp;Bundle-SymbolicName=io.moquette.moquette-broker&amp;Bundle-Version=0.12.1</bundle>
-        <bundle>mvn:org.openhab.addons.bundles/org.openhab.io.mqttembeddedbroker/${project.version}</bundle>
+        <bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.io.mqttembeddedbroker/${project.version}</bundle>
     </feature>
 </features>
