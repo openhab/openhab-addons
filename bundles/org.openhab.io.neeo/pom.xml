@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.io.neeo</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: NEEO Integration</name>
+  <name>openHAB Add-ons :: Bundles :: IO :: NEEO Integration</name>
 
 </project>

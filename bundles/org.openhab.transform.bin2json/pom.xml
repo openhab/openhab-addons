@@ -11,7 +11,7 @@
 
   <artifactId>org.openhab.transform.bin2json</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Binary To JSON Transformation Service</name>
+  <name>openHAB Add-ons :: Bundles :: Transformation Service :: Binary To JSON</name>
 
   <dependencies>
     <dependency>

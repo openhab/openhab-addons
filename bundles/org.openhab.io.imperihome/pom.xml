@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.io.imperihome</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: ImperiHome Integration Service</name>
+  <name>openHAB Add-ons :: Bundles :: IO :: ImperiHome Integration Service</name>
 
 </project>

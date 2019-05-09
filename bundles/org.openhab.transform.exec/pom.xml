@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.transform.exec</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Exec Transformation Service</name>
+  <name>openHAB Add-ons :: Bundles :: Transformation Service :: Exec</name>
 
 </project>
