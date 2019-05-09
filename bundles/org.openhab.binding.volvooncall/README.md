@@ -107,12 +107,15 @@ Example
  ```
  
  ### closeCarCommand()
+ 
 Sends the command to close the car.
 
  ### openCarCommand()
+ 
 Sends the command to open the car.
 
  ### engineStartCommand(runtime)
+ 
 Sends the command to start the engine for a given runtime. Default 5 minutes.
 
  Parameters:
@@ -121,12 +124,15 @@ Sends the command to start the engine for a given runtime. Default 5 minutes.
 | runtime | Integer - Time for the engine to stay on      |
  
  ### heaterStartCommand()
+ 
 Sends the command to start the car heater.
 
  ### heaterStopCommand()
+ 
 Sends the command to stop the car heater.
  
  ### honkBlinkCommand(honk, blink)
+ 
 Activates lights and/or the horn of the car
 
  Parameters:
