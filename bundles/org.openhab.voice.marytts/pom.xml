@@ -11,7 +11,7 @@
 
   <artifactId>org.openhab.voice.marytts</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Mary Text-to-Speech</name>
+  <name>openHAB Add-ons :: Bundles :: Voice :: Mary Text-to-Speech</name>
 
   <properties>
     <bnd.importpackage>com.ibm.uvm.tools;resolution:=optional,com.mysql.jdbc;resolution:=optional,com.sun.jdmk.comm;resolution:=optional,gnu.trove;resolution:=optional,javax.jms;resolution:=optional,javax.speech*;resolution:=optional,Lgov.noaa.pmel.util;resolution:=optional,net.didion.jwnl*;resolution:=optional,org.apache.http*;resolution:=optional,org.apache.xerces.impl*;resolution:=optional,org.hsqldb;resolution:=optional,org.jdesktop.layout*;resolution:=optional,org.postgresql;resolution:=optional</bnd.importpackage>

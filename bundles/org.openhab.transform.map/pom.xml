@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.transform.map</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Map Transformation Service</name>
+  <name>openHAB Add-ons :: Bundles :: Transformation Service :: Map</name>
 
 </project>

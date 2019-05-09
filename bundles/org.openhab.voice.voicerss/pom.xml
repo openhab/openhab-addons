@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.voice.voicerss</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: VoiceRSS Text-to-Speech</name>
+  <name>openHAB Add-ons :: Bundles :: Voice :: VoiceRSS Text-to-Speech</name>
 
 </project>
