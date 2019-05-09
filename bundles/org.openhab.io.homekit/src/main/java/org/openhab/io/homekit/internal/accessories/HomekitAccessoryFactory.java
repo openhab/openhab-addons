@@ -15,6 +15,7 @@ package org.openhab.io.homekit.internal.accessories;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
@@ -29,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.beowulfe.hap.HomekitAccessory;
-import com.google.common.collect.ImmutableMap;
 
 /**
  * Creates a HomekitAccessory for a given HomekitTaggedItem.
@@ -158,15 +158,11 @@ public class HomekitAccessoryFactory {
 
     private static Map<HomekitCharacteristicType, Item> getCharacteristicItems(HomekitTaggedItem taggedItem) {
         if (taggedItem.isGroup()) {
-            ImmutableMap.Builder<HomekitCharacteristicType, Item> builder = new ImmutableMap.Builder<>();
             GroupItem groupItem = (GroupItem) taggedItem.getItem();
-            groupItem.getMembers().stream().forEach(item -> {
-                HomekitCharacteristicType itemType = HomekitTaggedItem.findCharacteristicType(item);
-                if (itemType != null) {
-                    builder.put(itemType, item);
-                }
-            });
-            return builder.build();
+            Map<HomekitCharacteristicType, Item> characteristicItems = groupItem.getMembers().stream()
+                    .collect(Collectors.toMap(item -> HomekitTaggedItem.findCharacteristicType(item), item -> item));
+            characteristicItems.entrySet().removeIf(e -> e.getKey() == null);
+            return Collections.unmodifiableMap(characteristicItems);
         } else {
             // do nothing; only accessory groups have characteristic items
             return Collections.emptyMap();
