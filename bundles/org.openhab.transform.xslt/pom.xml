@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.transform.xslt</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Xslt Transformation Service</name>
+  <name>openHAB Add-ons :: Bundles :: Transformation Service :: Xslt</name>
 
 </project>

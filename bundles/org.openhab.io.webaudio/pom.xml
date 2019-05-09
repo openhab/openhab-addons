@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.io.webaudio</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Web Audio Support</name>
+  <name>openHAB Add-ons :: Bundles :: IO :: Web Audio Support</name>
 
 </project>

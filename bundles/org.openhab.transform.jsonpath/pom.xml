@@ -11,7 +11,7 @@
 
   <artifactId>org.openhab.transform.jsonpath</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: JSonPath Transformation Service</name>
+  <name>openHAB Add-ons :: Bundles :: Transformation Service :: JSonPath</name>
 
   <dependencies>
     <dependency>

@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.voice.picotts</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Pico Text-to-Speech</name>
+  <name>openHAB Add-ons :: Bundles :: Voice :: Pico Text-to-Speech</name>
 
 </project>

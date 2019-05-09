@@ -11,7 +11,7 @@
 
   <artifactId>org.openhab.extensionservice.marketplace.automation</artifactId>
 
-  <name>openHAB Add-ons :: Extension Service :: Eclipse IoT Marketplace (Automation)</name>
+  <name>openHAB Add-ons :: Bundles :: Extension Service :: Eclipse IoT Marketplace (Automation)</name>
 
   <dependencies>
     <dependency>

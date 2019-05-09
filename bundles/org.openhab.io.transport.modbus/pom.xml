@@ -11,7 +11,7 @@
 
   <artifactId>org.openhab.io.transport.modbus</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Modbus Transport</name>
+  <name>openHAB Add-ons :: Bundles :: IO :: Modbus Transport</name>
 
   <dependencies>
     <dependency>

@@ -11,7 +11,7 @@
 
   <artifactId>org.openhab.transform.jinja</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Jinja Transformation Service</name>
+  <name>openHAB Add-ons :: Bundles :: Transformation Service :: Jinja</name>
 
   <dependencies>
     <dependency>

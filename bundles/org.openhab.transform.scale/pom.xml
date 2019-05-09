@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.transform.scale</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Scale Transformation Service</name>
+  <name>openHAB Add-ons :: Bundles :: Transformation Service :: Scale</name>
 
 </project>
