@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.transform.javascript</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: JavaScript Transformation Service</name>
+  <name>openHAB Add-ons :: Bundles :: Transformation Service :: JavaScript</name>
 
 </project>

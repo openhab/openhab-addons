@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.transform.regex</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: RegEx Transformation Service</name>
+  <name>openHAB Add-ons :: Bundles :: Transformation Service :: RegEx</name>
 
 </project>
