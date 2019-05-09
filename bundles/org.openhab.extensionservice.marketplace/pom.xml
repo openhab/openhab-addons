@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.extensionservice.marketplace</artifactId>
 
-  <name>openHAB Add-ons :: Extension Service :: Eclipse IoT Marketplace</name>
+  <name>openHAB Add-ons :: Bundles :: Extension Service :: Eclipse IoT Marketplace</name>
 
 </project>

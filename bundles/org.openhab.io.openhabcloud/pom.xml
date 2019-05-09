@@ -11,7 +11,7 @@
 
   <artifactId>org.openhab.io.openhabcloud</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: openHAB Cloud Connector</name>
+  <name>openHAB Add-ons :: Bundles :: IO :: openHAB Cloud Connector</name>
 
   <dependencies>
     <dependency>
