@@ -15,6 +15,7 @@ package org.openhab.io.homekit.internal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Dictionary;
+import java.util.Optional;
 
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -38,10 +39,13 @@ public class HomekitSettings {
     private boolean useFahrenheitTemperature = false;
     private double minimumTemperature = -100;
     private double maximumTemperature = 100;
-    private String thermostatHeatMode = "HeatOn";
-    private String thermostatCoolMode = "CoolOn";
-    private String thermostatAutoMode = "Auto";
-    private String thermostatOffMode = "Off";
+    private String thermostatTargetModeHeat = "HeatOn";
+    private String thermostatTargetModeCool = "CoolOn";
+    private String thermostatTargetModeAuto = "Auto";
+    private String thermostatTargetModeOff = "Off";
+    private String thermostatCurrentModeHeating = "Heating";
+    private String thermostatCurrentModeCooling = "Cooling";
+    private String thermostatCurrentModeOff = "Off";
     private InetAddress networkInterface;
 
     private final Logger logger = LoggerFactory.getLogger(HomekitSettings.class);
@@ -78,10 +82,21 @@ public class HomekitSettings {
         if (maximumTemperature != null) {
             this.maximumTemperature = Double.parseDouble(maximumTemperature.toString());
         }
-        this.thermostatHeatMode = (String) properties.get("thermostatHeatMode");
-        this.thermostatCoolMode = (String) properties.get("thermostatCoolMode");
-        this.thermostatAutoMode = (String) properties.get("thermostatAutoMode");
-        this.thermostatOffMode = (String) properties.get("thermostatOffMode");
+        this.thermostatTargetModeHeat = Optional.ofNullable((String) properties.get("thermostatTargetModeHeat"))
+                .orElseGet(() -> (String) properties.get("thermostatHeatMode" /* legacy setting */));
+        this.thermostatTargetModeCool = Optional.ofNullable((String) properties.get("thermostatTargetModeCool"))
+                .orElseGet(() -> (String) properties.get("thermostatCoolMode" /* legacy setting */));
+        this.thermostatTargetModeAuto = Optional.ofNullable((String) properties.get("thermostatTargetModeAuto"))
+                .orElseGet(() -> (String) properties.get("thermostatAutoMode" /* legacy setting */));
+        this.thermostatTargetModeOff = Optional.ofNullable((String) properties.get("thermostatTargetModeOff"))
+                .orElseGet(() -> (String) properties.get("thermostatOffMode" /* legacy setting */));
+
+        Optional.ofNullable((String) properties.get("thermostatCurrentModeCooling"))
+                .ifPresent(value -> this.thermostatCurrentModeCooling = value);
+        Optional.ofNullable((String) properties.get("thermostatCurrentModeHeating"))
+                .ifPresent(value -> this.thermostatCurrentModeHeating = value);
+        Optional.ofNullable((String) properties.get("thermostatCurrentModeOff"))
+                .ifPresent(value -> this.thermostatCurrentModeOff = value);
 
         String networkInterface = (String) properties.get("networkInterface");
         if (networkInterface == null) {
@@ -136,20 +151,32 @@ public class HomekitSettings {
         return minimumTemperature;
     }
 
-    public String getThermostatHeatMode() {
-        return thermostatHeatMode;
+    public String getThermostatTargetModeHeat() {
+        return thermostatTargetModeHeat;
     }
 
-    public String getThermostatCoolMode() {
-        return thermostatCoolMode;
+    public String getThermostatTargetModeCool() {
+        return thermostatTargetModeCool;
     }
 
-    public String getThermostatAutoMode() {
-        return thermostatAutoMode;
+    public String getThermostatTargetModeAuto() {
+        return thermostatTargetModeAuto;
     }
 
-    public String getThermostatOffMode() {
-        return thermostatOffMode;
+    public String getThermostatTargetModeOff() {
+        return thermostatTargetModeOff;
+    }
+
+    public String getThermostatCurrentModeHeating() {
+        return thermostatCurrentModeHeating;
+    }
+
+    public String getThermostatCurrentModeCooling() {
+        return thermostatCurrentModeCooling;
+    }
+
+    public String getCurrentModeOff() {
+        return thermostatCurrentModeOff;
     }
 
     @Override
@@ -163,10 +190,10 @@ public class HomekitSettings {
         result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + ((pin == null) ? 0 : pin.hashCode());
         result = prime * result + port;
-        result = prime * result + ((thermostatAutoMode == null) ? 0 : thermostatAutoMode.hashCode());
-        result = prime * result + ((thermostatCoolMode == null) ? 0 : thermostatCoolMode.hashCode());
-        result = prime * result + ((thermostatHeatMode == null) ? 0 : thermostatHeatMode.hashCode());
-        result = prime * result + ((thermostatOffMode == null) ? 0 : thermostatOffMode.hashCode());
+        result = prime * result + ((thermostatTargetModeAuto == null) ? 0 : thermostatTargetModeAuto.hashCode());
+        result = prime * result + ((thermostatTargetModeCool == null) ? 0 : thermostatTargetModeCool.hashCode());
+        result = prime * result + ((thermostatTargetModeHeat == null) ? 0 : thermostatTargetModeHeat.hashCode());
+        result = prime * result + ((thermostatTargetModeOff == null) ? 0 : thermostatTargetModeOff.hashCode());
         result = prime * result + (useFahrenheitTemperature ? 1231 : 1237);
         return result;
     }
@@ -199,32 +226,32 @@ public class HomekitSettings {
         if (port != other.port) {
             return false;
         }
-        if (thermostatAutoMode == null) {
-            if (other.thermostatAutoMode != null) {
+        if (thermostatTargetModeAuto == null) {
+            if (other.thermostatTargetModeAuto != null) {
                 return false;
             }
-        } else if (!thermostatAutoMode.equals(other.thermostatAutoMode)) {
+        } else if (!thermostatTargetModeAuto.equals(other.thermostatTargetModeAuto)) {
             return false;
         }
-        if (thermostatCoolMode == null) {
-            if (other.thermostatCoolMode != null) {
+        if (thermostatTargetModeCool == null) {
+            if (other.thermostatTargetModeCool != null) {
                 return false;
             }
-        } else if (!thermostatCoolMode.equals(other.thermostatCoolMode)) {
+        } else if (!thermostatTargetModeCool.equals(other.thermostatTargetModeCool)) {
             return false;
         }
-        if (thermostatHeatMode == null) {
-            if (other.thermostatHeatMode != null) {
+        if (thermostatTargetModeHeat == null) {
+            if (other.thermostatTargetModeHeat != null) {
                 return false;
             }
-        } else if (!thermostatHeatMode.equals(other.thermostatHeatMode)) {
+        } else if (!thermostatTargetModeHeat.equals(other.thermostatTargetModeHeat)) {
             return false;
         }
-        if (thermostatOffMode == null) {
-            if (other.thermostatOffMode != null) {
+        if (thermostatTargetModeOff == null) {
+            if (other.thermostatTargetModeOff != null) {
                 return false;
             }
-        } else if (!thermostatOffMode.equals(other.thermostatOffMode)) {
+        } else if (!thermostatTargetModeOff.equals(other.thermostatTargetModeOff)) {
             return false;
         }
         if (useFahrenheitTemperature != other.useFahrenheitTemperature) {
