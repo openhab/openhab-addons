@@ -2,6 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.openhab</groupId>
+    <artifactId>openhab-super-pom</artifactId>
+    <version>[1.0, 2.0)</version>
+  </parent>
+
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
   <version>2.5.0-SNAPSHOT</version>
@@ -44,7 +50,7 @@
   <distributionManagement>
     <repository>
       <id>bintray</id>
-      <url>https://api.bintray.com/maven/openhab/mvn/openhab2-addons/;publish=1</url>
+      <url>${repo.distBaseUrl}/openhab2-addons/;publish=1</url>
     </repository>
     <snapshotRepository>
       <id>jfrog</id>
@@ -120,9 +126,9 @@
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
-      <id>jcenter</id>
-      <name>JCenter Repository</name>
-      <url>https://jcenter.bintray.com</url>
+      <id>openhab-dist</id>
+      <name>openHAB Distribution Repository</name>
+      <url>${repo.distBaseUrl}</url>
     </repository>
 
     <repository>
@@ -133,7 +139,7 @@
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
-      <id>openhab-artifactory-release</id>
+      <id>openhab-release</id>
       <name>JFrog Artifactory Repository</name>
       <url>https://openhab.jfrog.io/openhab/libs-release</url>
     </repository>
