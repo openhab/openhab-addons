@@ -214,6 +214,7 @@
     <module>org.openhab.voice.picotts</module>
     <module>org.openhab.voice.pollytts</module>
     <module>org.openhab.voice.voicerss</module>
+    <module>org.openhab.binding.snmp</module>
   </modules>
 
   <dependencies>
