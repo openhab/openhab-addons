@@ -340,14 +340,22 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
     }
 
     public void addPacketListener(ESP3PacketListener listener) {
+        addPacketListener(listener, listener.getSenderIdToListenTo());
+    }
+
+    public void addPacketListener(ESP3PacketListener listener, long senderIdToListenTo) {
         if (transceiver != null) {
-            transceiver.addPacketListener(listener);
+            transceiver.addPacketListener(listener, senderIdToListenTo);
         }
     }
 
     public void removePacketListener(ESP3PacketListener listener) {
+        removePacketListener(listener, listener.getSenderIdToListenTo());
+    }
+
+    public void removePacketListener(ESP3PacketListener listener, long senderIdToListenTo) {
         if (transceiver != null) {
-            transceiver.removePacketListener(listener);
+            transceiver.removePacketListener(listener, senderIdToListenTo);
         }
     }
 

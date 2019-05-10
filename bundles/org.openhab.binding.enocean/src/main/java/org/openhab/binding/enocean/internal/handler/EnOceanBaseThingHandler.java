@@ -13,14 +13,15 @@
 package org.openhab.binding.enocean.internal.handler;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
+import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -32,6 +33,7 @@ import org.eclipse.smarthome.core.thing.binding.ConfigStatusThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.State;
@@ -53,15 +55,17 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
 
     protected String configurationErrorDescription;
 
-    private HashSet<Channel> linkedChannels = null;
-
-    protected Hashtable<String, State> channelState = null;
-    protected Hashtable<String, String> lastEvents = null;
+    // There is no data structure which holds the last triggered event, so we have to implement it by ourself
+    // This is especially needed for press and release events
+    protected Hashtable<String, String> lastEvents = new Hashtable<>();;
 
     protected EnOceanBaseConfig config = null;
 
-    public EnOceanBaseThingHandler(Thing thing) {
+    private ItemChannelLinkRegistry itemChannelLinkRegistry;
+
+    public EnOceanBaseThingHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing);
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
     }
 
     @SuppressWarnings("null")
@@ -151,6 +155,10 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
 
             channelList.add(channel);
             channelListChanged = true;
+
+            if (!cd.isStateChannel) {
+                lastEvents.putIfAbsent(channelId, "");
+            }
         }
 
         if (channelListChanged) {
@@ -160,79 +168,30 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
         }
     }
 
-    protected HashSet<Channel> getLinkedChannels() {
-        if (linkedChannels != null) {
-            return linkedChannels;
-        }
-
-        linkedChannels = new HashSet<>();
-        if (channelState == null) {
-            channelState = new Hashtable<>();
-            lastEvents = new Hashtable<>();
-        }
-
-        for (Channel c : this.getThing().getChannels()) {
-            String id = c.getUID().getId();
-
-            if (isLinked(id)) {
-                {
-                    linkedChannels.add(c);
-                    channelState.putIfAbsent(id, UnDefType.UNDEF);
-                }
-            } else if (c.getKind() == ChannelKind.TRIGGER) {
-                linkedChannels.add(c);
-                lastEvents.putIfAbsent(id, "");
-            }
-        }
-
-        return linkedChannels;
-    }
-
-    @Override
-    public void channelLinked(ChannelUID channelUID) {
-        super.channelLinked(channelUID);
-
-        String id = channelUID.getId();
-        if (linkedChannels == null) {
-            return;
-        }
-
-        linkedChannels.add(thing.getChannel(id));
-        channelState.putIfAbsent(id, UnDefType.UNDEF);
-        lastEvents.putIfAbsent(id, "");
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        super.channelUnlinked(channelUID);
-
-        String id = channelUID.getId();
-        if (linkedChannels == null) {
-            return;
-        }
-
-        if (!isLinked(id)) {
-            linkedChannels.remove(thing.getChannel(id));
-            channelState.remove(id);
-            lastEvents.remove(id);
-        }
-    }
-
     @Override
     public void thingUpdated(Thing thing) {
         super.thingUpdated(thing);
-        // reset linkedChannels to get current config of channels
-        linkedChannels = null;
+    }
+
+    protected State getCurrentState(Channel channel) {
+        if(channel != null) {
+        	Set<Item> items = itemChannelLinkRegistry.getLinkedItems(channel.getUID());
+        	for (Item item : items) {
+        		State state = item.getState();
+        		if (state != null && state != UnDefType.NULL && state != UnDefType.UNDEF) {
+        			return state;
+        		}
+        	}
+        }
+
+        return UnDefType.UNDEF;
     }
 
     protected State getCurrentState(String channelId) {
-        return channelState.get(channelId);
+    	return getCurrentState(getThing().getChannel(channelId));
     }
 
-    protected void setCurrentState(String channelId, State state) {
-        channelState.put(channelId, state);
-    }
-
+    
     protected synchronized EnOceanBridgeHandler getBridgeHandler() {
         if (this.gateway == null) {
             Bridge bridge = getBridge();

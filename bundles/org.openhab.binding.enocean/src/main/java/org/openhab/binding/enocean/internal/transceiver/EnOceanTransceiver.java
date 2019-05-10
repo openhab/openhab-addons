@@ -427,20 +427,20 @@ public abstract class EnOceanTransceiver {
         }
     }
 
-    public void addPacketListener(ESP3PacketListener listener) {
+    public void addPacketListener(ESP3PacketListener listener, long senderIdToListenTo) {
 
-        if (listeners.computeIfAbsent(listener.getSenderIdToListenTo(), k -> new HashSet<ESP3PacketListener>())
+        if (listeners.computeIfAbsent(senderIdToListenTo, k -> new HashSet<ESP3PacketListener>())
                 .add(listener)) {
-            logger.debug("Listener added: {}", listener.getSenderIdToListenTo());
+            logger.debug("Listener added: {}", senderIdToListenTo);
         }
     }
 
-    public void removePacketListener(ESP3PacketListener listener) {
-        HashSet<ESP3PacketListener> pl = listeners.get(listener.getSenderIdToListenTo());
+    public void removePacketListener(ESP3PacketListener listener, long senderIdToListenTo) {
+        HashSet<ESP3PacketListener> pl = listeners.get(senderIdToListenTo);
         if (pl != null) {
             pl.remove(listener);
             if (pl.isEmpty()) {
-                listeners.remove(listener.getSenderIdToListenTo());
+                listeners.remove(senderIdToListenTo);
             }
         }
     }

@@ -26,9 +26,11 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.enocean.internal.config.EnOceanActuatorConfig;
 import org.openhab.binding.enocean.internal.eep.EEP;
@@ -56,8 +58,8 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     private ScheduledFuture<?> refreshJob; // used for polling current status of thing
 
-    public EnOceanBaseActuatorHandler(Thing thing) {
-        super(thing);
+    public EnOceanBaseActuatorHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry) {
+        super(thing, itemChannelLinkRegistry);
     }
 
     /**
@@ -173,7 +175,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
         logger.debug("polling channels");
         if (thing.getStatus().equals(ThingStatus.ONLINE)) {
-            for (Channel channel : getLinkedChannels()) {
+            for (Channel channel : this.getThing().getChannels()) {
                 handleCommand(channel.getUID(), RefreshType.REFRESH);
             }
         }
@@ -187,9 +189,10 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             return;
         }
 
+        // check if the channel is linked otherwise do nothing
         String channelId = channelUID.getId();
         Channel channel = getThing().getChannel(channelId);
-        if (channel == null) {
+        if (channel == null || !isLinked(channelId)) {
             return;
         }
 
@@ -211,20 +214,17 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             }
         }
 
-        // check if the channel is linked otherwise do nothing
-        if (!getLinkedChannels().contains(channel)) {
-            return;
-        }
-
+        
         try {
             Configuration channelConfig = channel.getConfiguration();
 
             EEP eep = EEPFactory.createEEP(sendingEEPType);
-            eep.convertFromCommand(channelId, channelTypeId, command, channelState, channelConfig);
-
-            if (eep.hasData()) {
-                ESP3Packet msg = eep.setSenderId(senderId).setDestinationId(destinationId)
-                        .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
+            if (eep.setSenderId(senderId)
+            		.setDestinationId(destinationId)
+            		.setSuppressRepeating(getConfiguration().suppressRepeating)
+            		.convertFromCommand(channelId, channelTypeId, command, id -> getCurrentState(id), channelConfig)            		
+            		.hasData()) {
+                ESP3Packet msg = eep.getERP1Message();
 
                 getBridgeHandler().sendMessage(msg, null);
             }

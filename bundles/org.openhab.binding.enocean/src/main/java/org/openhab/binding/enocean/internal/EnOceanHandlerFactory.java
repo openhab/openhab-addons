@@ -15,6 +15,7 @@ package org.openhab.binding.enocean.internal;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.enocean.internal.discovery.EnOceanDeviceDiscoveryService;
 import org.openhab.binding.enocean.internal.handler.EnOceanBaseActuatorHandler;
@@ -55,6 +57,7 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private SerialPortManager serialPortManager;
+    private ItemChannelLinkRegistry itemChannelLinkRegistry;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -75,11 +78,11 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (EnOceanBaseActuatorHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new EnOceanBaseActuatorHandler(thing);
+            return new EnOceanBaseActuatorHandler(thing, itemChannelLinkRegistry);
         } else if (EnOceanBaseSensorHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new EnOceanBaseSensorHandler(thing);
+            return new EnOceanBaseSensorHandler(thing, itemChannelLinkRegistry);
         } else if (EnOceanClassicDeviceHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new EnOceanClassicDeviceHandler(thing);
+            return new EnOceanClassicDeviceHandler(thing, itemChannelLinkRegistry);
         }
 
         return null;
@@ -110,5 +113,25 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
 
     protected void unsetSerialPortManager(SerialPortManager serialPortManager) {
         this.serialPortManager = null;
+    }
+
+    /**
+     * Sets the item channel link registry.
+     *
+     * @param itemChannelLinkRegistry the non-null item channel link registry
+     */
+    @Reference
+    public void setItemChannelLinkRegistry(ItemChannelLinkRegistry itemChannelLinkRegistry) {
+        Objects.requireNonNull(itemChannelLinkRegistry, "itemChannelLinkRegistry cannot be null");
+        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
+    }
+
+    /**
+     * Unset item channel link registry.
+     *
+     * @param itemChannelLinkRegistry the item channel link registry (ignored)
+     */
+    public void unsetItemChannelLinkRegistry(ItemChannelLinkRegistry itemChannelLinkRegistry) {
+        this.itemChannelLinkRegistry = null;
     }
 }
