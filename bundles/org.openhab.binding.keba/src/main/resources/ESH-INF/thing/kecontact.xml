@@ -37,6 +37,9 @@
 			<channel id="display" typeId="display" />
 			<channel id="authreq" typeId="switch" />
 			<channel id="authon" typeId="switch" />
+			<channel id="sessionRFIDtag" typeId="sessionRFIDtag" />
+			<channel id="sessionRFIDclass" typeId="sessionRFIDclass" />
+			<channel id="sessionID" typeId="sessionID" />
 		</channels>
 
 		<config-description>
@@ -169,5 +172,22 @@
 		<description>Authentication enabled</description>
 		<state readOnly="true"></state>
 	</channel-type>
-
+    <channel-type id="sessionRFIDtag">
+		<item-type>String</item-type>
+		<label>RFID Tag</label>
+		<description>RFID Tag used for the last charging session</description>
+		<state readOnly="true"></state>
+	</channel-type>
+    <channel-type id="sessionRFIDclass">
+		<item-type>String</item-type>
+		<label>RFID Tag class</label>
+		<description>RFID Tag class used for the last charging session</description>
+		<state readOnly="true"></state>
+	</channel-type>
+    <channel-type id="sessionID">
+		<item-type>Number</item-type>
+		<label>Session ID</label>
+		<description>Session ID of the last charging session</description>
+		<state readOnly="true"></state>
+	</channel-type>
 </thing:thing-descriptions>
