@@ -70,6 +70,7 @@ public class KeContactHandler extends BaseThingHandler {
     private static final String CACHE_REPORT_1 = "REPORT_1";
     private static final String CACHE_REPORT_2 = "REPORT_2";
     private static final String CACHE_REPORT_3 = "REPORT_3";
+    private static final String CACHE_REPORT_100 = "REPORT_100";
 
     private final Logger logger = LoggerFactory.getLogger(KeContactHandler.class);
 
@@ -83,7 +84,9 @@ public class KeContactHandler extends BaseThingHandler {
     private int maxSystemCurrent = 63000;
     private KebaType type;
     private KebaSeries series;
-
+    private int lastState = -1; //trigger a report100 at startup
+    private boolean isReport100needed = true;
+    
     public KeContactHandler(Thing thing) {
         super(thing);
     }
@@ -99,6 +102,7 @@ public class KeContactHandler extends BaseThingHandler {
             cache.put(CACHE_REPORT_1, () -> transceiver.send("report 1", getHandler()));
             cache.put(CACHE_REPORT_2, () -> transceiver.send("report 2", getHandler()));
             cache.put(CACHE_REPORT_3, () -> transceiver.send("report 3", getHandler()));
+            cache.put(CACHE_REPORT_100, () -> transceiver.send("report 100", getHandler()));
 
             if (pollingJob == null || pollingJob.isCancelled()) {
                 try {
@@ -169,6 +173,17 @@ public class KeContactHandler extends BaseThingHandler {
                     if (response != null) {
                         onData(response);
                     }
+                    
+                    if (isReport100needed){
+                        Thread.sleep(REPORT_INTERVAL);
+
+                        response = cache.get(CACHE_REPORT_100);
+                        if (response != null) {
+                            onData(response);
+                        }
+                        isReport100needed = false;
+                    }
+                    
                 }
             }
         } catch (NumberFormatException | IOException e) {
@@ -258,8 +273,14 @@ public class KeContactHandler extends BaseThingHandler {
                         break;
                     }
                     case "State": {
-                        State newState = new DecimalType(entry.getValue().getAsInt());
+                        int state = entry.getValue().getAsInt();
+                        State newState = new DecimalType(state);
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_STATE), newState);
+                        if (lastState != state){
+                            // the state is different from the last one, so we will trigger a report100
+                            isReport100needed = true;
+                            lastState = state;
+                        }
                         break;
                     }
                     case "Enable sys": {
@@ -429,6 +450,24 @@ public class KeContactHandler extends BaseThingHandler {
                         int state = entry.getValue().getAsInt();
                         State newState = new DecimalType(state);
                         updateState(new ChannelUID(getThing().getUID(), CHANNEL_AUTHREQ), newState);
+                        break;
+                    }
+                    case "RFID tag": {
+                        String state = entry.getValue().getAsString().trim();
+                        State newState = new StringType(state);
+                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_SESSION_RFID_TAG), newState);
+                        break;
+                    }
+                    case "RFID class": {
+                        String state = entry.getValue().getAsString().trim();
+                        State newState = new StringType(state);
+                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_SESSION_RFID_CLASS), newState);
+                        break;
+                    }
+                    case "Session ID": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new DecimalType(state);
+                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_SESSION_SESSION_ID), newState);
                         break;
                     }
                 }
