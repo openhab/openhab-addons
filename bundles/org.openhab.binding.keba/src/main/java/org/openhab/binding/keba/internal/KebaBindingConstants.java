@@ -66,7 +66,10 @@ public class KebaBindingConstants {
     public static final String CHANNEL_DISPLAY = "display";
     public static final String CHANNEL_AUTHON = "authon";
     public static final String CHANNEL_AUTHREQ = "authreq";
-
+    public static final String CHANNEL_SESSION_RFID_TAG = "sessionRFIDtag";
+    public static final String CHANNEL_SESSION_RFID_CLASS = "sessionRFIDclass";
+    public static final String CHANNEL_SESSION_SESSION_ID = "sessionID";
+    
     public enum KebaType {
         P20,
         P30
