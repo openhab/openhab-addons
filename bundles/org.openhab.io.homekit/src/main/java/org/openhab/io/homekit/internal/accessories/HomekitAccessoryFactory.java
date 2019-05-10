@@ -37,7 +37,7 @@ import com.beowulfe.hap.HomekitAccessory;
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitAccessoryFactory {
-    static Logger logger = LoggerFactory.getLogger(HomekitTaggedItem.class);
+    private final static Logger logger = LoggerFactory.getLogger(HomekitAccessoryFactory.class);
 
     public static HomekitAccessory create(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws Exception {
@@ -143,7 +143,7 @@ public class HomekitAccessoryFactory {
      */
     private static Optional<HomekitTaggedItem> getPrimaryAccessory(HomekitTaggedItem taggedItem,
             HomekitAccessoryType accessoryType, ItemRegistry itemRegistry) {
-        logger.info("{} isGroup? {}", taggedItem.getName(), taggedItem.isGroup(),
+        logger.info("{}: isGroup? {}, isMember? {}", taggedItem.getName(), taggedItem.isGroup(),
                 taggedItem.isMemberOfAccessoryGroup());
         if (taggedItem.isGroup()) {
             GroupItem groupItem = (GroupItem) taggedItem.getItem();

@@ -49,7 +49,7 @@ class Debouncer {
     private final AtomicInteger calls = new AtomicInteger(0);
     private final String name;
 
-    private static Logger logger = LoggerFactory.getLogger(Debouncer.class);
+    private final Logger logger = LoggerFactory.getLogger(Debouncer.class);
 
     private volatile Long lastCallAttempt;
 
@@ -88,7 +88,7 @@ class Debouncer {
                 try {
                     action.run();
                 } catch (Throwable ex) {
-                    logger.error("Debouncer " + name + " action resulted in error", ex);
+                    logger.error("Debouncer {} action resulted in error: {}", name, ex.getMessage());
                 }
             } else {
                 logger.error("Invalid state in debouncer. Should not have reached here!");

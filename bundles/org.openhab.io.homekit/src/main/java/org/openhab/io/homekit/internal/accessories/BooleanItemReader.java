@@ -32,7 +32,7 @@ public class BooleanItemReader {
     private final OnOffType trueOnOffValue;
     private final OpenClosedType trueOpenClosedValue;
 
-    private static Logger logger = LoggerFactory.getLogger(BooleanItemReader.class);
+    private final Logger logger = LoggerFactory.getLogger(BooleanItemReader.class);
 
     /**
      *
