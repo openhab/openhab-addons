@@ -21,10 +21,8 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import org.openhab.binding.chamberlainmyq.internal.json.Attribute;
+import org.openhab.binding.chamberlainmyq.internal.json.Device;
 
 /**
  * The {@link ChamberlainMyQDeviceConfig} class represents the common configuration
@@ -34,44 +32,40 @@ import com.google.gson.JsonObject;
  *
  */
 public class ChamberlainMyQDeviceConfig {
-    private String deviceId;
+    private int deviceId;
     private String deviceType;
     private int deviceTypeId;
     private int state;
     private String description;
     private String serialNumber;
-    private String parentId;
+    private int parentId;
     private boolean online;
 
     public ChamberlainMyQDeviceConfig(Map<String, String> properties) {
-        this.deviceId = properties.get(MYQ_ID).toString();
+        this.deviceId = (int) Double.parseDouble(properties.get(MYQ_ID).toString());
         this.deviceType = properties.get(MYQ_TYPE).toString();
         this.deviceTypeId = (int) Double.parseDouble(properties.get(MYQ_TYPEID).toString());
         this.state = (int) Double.parseDouble(properties.get(MYQ_STATE).toString());
         this.description = properties.get(MYQ_DESC).toString();
         this.serialNumber = properties.get(MYQ_SERIAL).toString();
-        this.parentId = properties.get(MYQ_PARENT).toString();
+        this.parentId = (int) Double.parseDouble(properties.get(MYQ_PARENT).toString());
         this.online = Boolean.valueOf(properties.get(MYQ_ONLINE).toString());
     }
 
-    public ChamberlainMyQDeviceConfig(JsonObject jsonConfig) {
-        this.deviceId = jsonConfig.get(MYQ_ID).toString().replaceAll("\"", "");
-        readConfigFromJson(jsonConfig);
+    public ChamberlainMyQDeviceConfig(Device myQDevice) {
+        this.deviceId = myQDevice.getMyQDeviceId();
+        readConfig(myQDevice);
     }
 
-    public void readConfigFromJson(JsonObject jsonConfig) {
-        this.deviceType = jsonConfig.get(MYQ_TYPE).toString().replaceAll("\"", "");
-        this.serialNumber = jsonConfig.get(MYQ_SERIAL).toString().replaceAll("\"", "");
-        this.deviceTypeId = (int) Double.parseDouble(jsonConfig.get(MYQ_TYPEID).toString().replaceAll("\"", ""));
-        if (jsonConfig.has(MYQ_PARENT)) {
-            this.parentId = jsonConfig.get(MYQ_PARENT).toString().replaceAll("\"", "");
-        }
+    public void readConfig(Device myQDevice) {
+        this.deviceType = myQDevice.getMyQDeviceTypeName();
+        this.serialNumber = myQDevice.getSerialNumber();
+        this.deviceTypeId = myQDevice.getMyQDeviceTypeId();
+        this.parentId = myQDevice.getParentMyQDeviceId();
 
-        JsonArray attributes = jsonConfig.get("Attributes").getAsJsonArray();
-        for (JsonElement myqatt : attributes) {
-            JsonObject attributeObj = myqatt.getAsJsonObject();
-            String attributeName = attributeObj.get("AttributeDisplayName").getAsString();
-            String attributeValue = attributeObj.get("Value").getAsString();
+        for (Attribute attr : myQDevice.getAttributes()) {
+            String attributeName = attr.getAttributeDisplayName();
+            String attributeValue = attr.getValue();
             if (attributeName.compareTo(MYQ_DESC) == 0) {
                 description = attributeValue;
             }
@@ -85,6 +79,7 @@ public class ChamberlainMyQDeviceConfig {
                 this.online = Boolean.valueOf(attributeValue);
             }
         }
+
         if (description.isEmpty()) {
             this.description = this.serialNumber;
         }
@@ -97,7 +92,7 @@ public class ChamberlainMyQDeviceConfig {
     }
 
     public boolean validateConfig() {
-        if (this.deviceId == null) {
+        if (this.deviceId == 0) {
             return false;
         }
         return true;
@@ -177,8 +172,12 @@ public class ChamberlainMyQDeviceConfig {
         return false;
     }
 
-    public String getDeviceId() {
+    public int getDeviceId() {
         return deviceId;
+    }
+
+    public String getDeviceIdString() {
+        return Integer.toString(deviceId);
     }
 
     public String getSerialNumber() {
@@ -197,7 +196,7 @@ public class ChamberlainMyQDeviceConfig {
         return deviceTypeId;
     }
 
-    public String getParentId() {
+    public int getParentId() {
         return parentId;
     }
 

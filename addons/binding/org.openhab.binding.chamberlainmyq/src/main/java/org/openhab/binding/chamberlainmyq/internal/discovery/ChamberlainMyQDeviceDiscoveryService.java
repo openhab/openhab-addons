@@ -15,7 +15,6 @@ package org.openhab.binding.chamberlainmyq.internal.discovery;
 import static org.openhab.binding.chamberlainmyq.ChamberlainMyQBindingConstants.*;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -29,11 +28,10 @@ import org.openhab.binding.chamberlainmyq.config.ChamberlainMyQDeviceConfig;
 import org.openhab.binding.chamberlainmyq.handler.ChamberlainMyQGatewayHandler;
 import org.openhab.binding.chamberlainmyq.handler.ChamberlainMyQGatewayHandler.RequestCallback;
 import org.openhab.binding.chamberlainmyq.internal.ChamberlainMyQHandlerFactory;
+import org.openhab.binding.chamberlainmyq.internal.json.Device;
+import org.openhab.binding.chamberlainmyq.internal.json.MyqJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  * Send DiscoveryService Callbacks
@@ -78,7 +76,7 @@ public class ChamberlainMyQDeviceDiscoveryService extends AbstractDiscoveryServi
         logger.debug("New Device {}", config.toString());
 
         ThingUID hubUID = this.hubHandler.getThing().getUID();
-        ThingUID uid = new ThingUID(thinkType, hubUID, config.getDeviceId());
+        ThingUID uid = new ThingUID(thinkType, hubUID, config.getDeviceIdString());
 
         Map<String, Object> properties = config.getProperties();
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(config.getDescription())
@@ -89,31 +87,21 @@ public class ChamberlainMyQDeviceDiscoveryService extends AbstractDiscoveryServi
         logger.debug("Discovered {}", uid);
     }
 
-    protected void enumerateDevices(JsonObject gatewayResponse) {
-        JsonElement deviceData = gatewayResponse.get("Devices");
-        if (deviceData == null) {
-            logger.error("Empty Device Data");
-            return;
-        }
+    protected void enumerateDevices(MyqJson gatewayResponse) {
         logger.debug("Chamberlain MyQ Devices:");
-        Iterator<JsonElement> deviceDataIter = deviceData.getAsJsonArray().iterator();
-        while (deviceDataIter.hasNext()) {
-            JsonElement element = deviceDataIter.next();
-            if (!element.isJsonObject()) {
-                continue;
-            }
-            if (element.getAsJsonObject().get(MYQ_TYPEID) != null) {
-                ChamberlainMyQDeviceConfig config = new ChamberlainMyQDeviceConfig(element.getAsJsonObject());
 
-                int iDeviceTypeID = config.getDeviceTypeId();
-                logger.debug("New Device {}", config.getDeviceTypeId());
-                if (iDeviceTypeID == 2 || iDeviceTypeID == 5 || iDeviceTypeID == 7 || iDeviceTypeID == 17) {
-                    addMyQDevice(THING_TYPE_DOOR_OPENER, config);
-                } else if (iDeviceTypeID == 3) {
-                    addMyQDevice(THING_TYPE_LIGHT, config);
-                }
+        for (Device myqdevice : gatewayResponse.getDevices()) {
+            ChamberlainMyQDeviceConfig config = new ChamberlainMyQDeviceConfig(myqdevice);
+            int iDeviceTypeID = myqdevice.getMyQDeviceTypeId();
+
+            logger.debug("New Device {}", config.getDeviceTypeId());
+            if (iDeviceTypeID == 2 || iDeviceTypeID == 5 || iDeviceTypeID == 7 || iDeviceTypeID == 17) {
+                addMyQDevice(THING_TYPE_DOOR_OPENER, config);
+            } else if (iDeviceTypeID == 3) {
+                addMyQDevice(THING_TYPE_LIGHT, config);
             }
         }
+
     }
 
     private class ListDevicesCallback implements RequestCallback {
@@ -124,7 +112,7 @@ public class ChamberlainMyQDeviceDiscoveryService extends AbstractDiscoveryServi
         }
 
         @Override
-        public void parseRequestResult(JsonObject jsonResult) {
+        public void parseRequestResult(MyqJson jsonResult) {
             discoveryService.enumerateDevices(jsonResult);
         }
 
@@ -135,11 +123,6 @@ public class ChamberlainMyQDeviceDiscoveryService extends AbstractDiscoveryServi
     }
 
     private void readDeviceDatabase() throws IOException {
-        try {
-            hubHandler.sendRequestToServer(new ListDevicesCallback(this));
-        } catch (IOException e) {
-            logger.error("Error while querying the hub for the devices. ", e);
-        }
+        hubHandler.sendRequestToServer(new ListDevicesCallback(this));
     }
-
 }

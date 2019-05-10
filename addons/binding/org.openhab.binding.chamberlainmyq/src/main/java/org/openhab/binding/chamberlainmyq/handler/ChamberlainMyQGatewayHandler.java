@@ -17,7 +17,6 @@ import static org.openhab.binding.chamberlainmyq.ChamberlainMyQBindingConstants.
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
@@ -40,10 +39,12 @@ import org.openhab.binding.chamberlainmyq.internal.ChamberlainMyQResponseCode;
 import org.openhab.binding.chamberlainmyq.internal.HttpUtil;
 import org.openhab.binding.chamberlainmyq.internal.InvalidLoginException;
 import org.openhab.binding.chamberlainmyq.internal.discovery.ChamberlainMyQDeviceDiscoveryService;
+import org.openhab.binding.chamberlainmyq.internal.json.Device;
+import org.openhab.binding.chamberlainmyq.internal.json.MyqJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonElement;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -84,13 +85,15 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
     private static int MAX_RAPID_REFRESH = 30 * 1000;
     // private Properties header;
 
+    private final Gson gson = new Gson();
+
     public ChamberlainMyQGatewayHandler(Bridge bridge) {
         super(bridge);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.error("The gateway doesn't support any command!");
+        logger.warn("The myQ gateway doesn't support any command!");
     }
 
     @Override
@@ -169,12 +172,11 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
 
         String message = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", this.config.username,
                 this.config.password);
-        // Result result = http.post(url, message);
-        // logger.debug(result.getBody());
+
         JsonObject data = request("POST", url, message, "application/json", true, true, "");
 
         if (data.isJsonNull()) {
-            logger.error("getting myq securityToken failed");
+            logger.warn("getting myq securityToken failed");
             return false;
         }
 
@@ -183,7 +185,7 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
             logger.debug("myq securityToken: {}", securityToken);
             return true;
         }
-        logger.error("getting myq securityToken failed");
+        logger.warn("Retrieving myQ securityToken Failed");
         return false;
     }
 
@@ -192,15 +194,14 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
      * fails or user login fails
      *
      */
-    public JsonObject getMyqData() throws InvalidLoginException, IOException {
+    public MyqJson getMyqData() throws InvalidLoginException, IOException {
         logger.debug("Retrieving door data");
         String tempToken = getSecurityToken();
         String url = String.format("%s/api/v4/UserDeviceDetails/Get?appId=%s&SecurityToken=%s", WEBSITE, enc(APP_ID),
                 enc(tempToken));
 
         JsonObject data = request("GET", url, null, null, true, false, enc(tempToken));
-
-        return data;
+        return gson.fromJson(data, MyqJson.class);
     }
 
     /**
@@ -233,7 +234,7 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
     }
 
     public interface RequestCallback {
-        public void parseRequestResult(JsonObject resultJson);
+        public void parseRequestResult(MyqJson resultJson);
 
         public void onError(String error);
     }
@@ -245,20 +246,13 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
             this.callback = callback;
         }
 
-        protected String checkForFailure(JsonObject jsonResult) {
-            if (jsonResult.get("data").isJsonNull()) {
-                return jsonResult.get("errors").getAsString();
-            }
-            return null;
-        }
-
         @Override
         public void run() {
             try {
-                JsonObject resultJson = getMyqData();
+                MyqJson resultJson = getMyqData();
                 callback.parseRequestResult(resultJson);
             } catch (Exception e) {
-                logger.error("An exception occurred while executing a request to the Gateway: '{}'", e.getMessage());
+                logger.warn("An exception occurred while executing a request to the MyQ Gateway: '{}'", e.getMessage());
             }
         }
     }
@@ -280,34 +274,24 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
 
     private synchronized void refreshDeviceState() {
         try {
-            JsonObject resultJson = getMyqData();
+            MyqJson myqDevices = getMyqData();
             Bridge bridge = getThing();
 
             List<Thing> things = bridge.getThings();
-            if (!resultJson.get("Devices").isJsonNull()) {
-                JsonElement deviceData = resultJson.get("Devices");
-                Iterator<JsonElement> deviceDataIter = deviceData.getAsJsonArray().iterator();
-                while (deviceDataIter.hasNext()) {
-                    JsonElement element = deviceDataIter.next();
-                    if (!element.isJsonObject()) {
-                        continue;
-                    }
-                    if (element.getAsJsonObject().get(MYQ_ID) != null) {
-                        String findDeviceId = element.getAsJsonObject().get(MYQ_ID).toString();
-                        for (Thing thing : things) {
-                            if (thing.getUID().getId().compareTo(findDeviceId) == 0) {
-                                ChamberlainMyQHandler test = (ChamberlainMyQHandler) thing.getHandler();
-                                if (test != null) {
-                                    test.updateState(element.getAsJsonObject());
-                                }
-                            }
+            for (Device myqdevice : myqDevices.getDevices()) {
+                String findDeviceId = myqdevice.getMyQDeviceId().toString();
+                for (Thing thing : things) {
+                    if (thing.getUID().getId().compareTo(findDeviceId) == 0) {
+                        ChamberlainMyQHandler test = (ChamberlainMyQHandler) thing.getHandler();
+                        if (test != null) {
+                            test.updateState(myqdevice);
                         }
                     }
-
                 }
             }
+
         } catch (Exception e) {
-            logger.error("An exception occurred while executing a request to the Gateway: '{}'", e.getMessage());
+            logger.warn("An exception occurred while executing a request to the Gateway: '{}'", e.getMessage());
         }
     }
 
@@ -369,7 +353,7 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
             logger.debug("Received MyQ JSON: {}", dataString);
 
             if (dataString == null) {
-                logger.error("Null response from MyQ server");
+                logger.warn("Null response from MyQ server");
                 throw new IOException("Null response from MyQ server");
             }
         } catch (Exception e) {
@@ -396,7 +380,7 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
                     // these are bad, we do not want to continue to log in and
                     // lock an account
                     // throw new InvalidLoginException(rc.getDesc());
-                    logger.error("Your MyQ Acount is invalid: {}", rc.getDesc());
+                    logger.warn("Your MyQ Acount is invalid: {}", rc.getDesc());
                     return new JsonObject();
                 case LOGIN_ERROR:
                     // Our session key has expired, request a new one
@@ -406,12 +390,12 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
                     }
                     // fall through to default
                 default:
-                    logger.error("Request Failed: {}", rc.getDesc());
+                    logger.warn("Request Failed: {}", rc.getDesc());
                     return new JsonObject();
             }
 
         } catch (Exception e) {
-            logger.error("Could not parse response", e);
+            logger.warn("Could not parse response", e);
             return new JsonObject();
         }
     }
@@ -477,7 +461,6 @@ public class ChamberlainMyQGatewayHandler extends BaseBridgeHandler {
         pollFuture = pollService.schedule(new Runnable() {
             @Override
             public void run() {
-                logger.trace("do schedule poll");
                 try {
                     refreshDeviceState();
                 } catch (Exception e) {

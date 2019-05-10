@@ -26,10 +26,9 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.chamberlainmyq.internal.InvalidLoginException;
+import org.openhab.binding.chamberlainmyq.internal.json.Device;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonObject;
 
 /**
  * The {@link ChamberlainMyQDoorOpenerHandler} is responsible for handling commands, which are
@@ -73,7 +72,6 @@ public class ChamberlainMyQDoorOpenerHandler extends ChamberlainMyQHandler {
             } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)) {
                 setDoorState(false);
             } else if (command instanceof RefreshType) {
-                // logger.debug("Refreshing state");
                 readDeviceState();
             }
         }
@@ -88,15 +86,15 @@ public class ChamberlainMyQDoorOpenerHandler extends ChamberlainMyQHandler {
                 getGatewayHandler().executeMyQCommand(deviceID, "desireddoorstate", 0, true);
             }
         } catch (InvalidLoginException e) {
-            logger.error("Error Setting Door State: {}", e.getMessage());
+            logger.warn("Could Not Set Door State: {}", e.getMessage());
         } catch (IOException e) {
-            logger.error("Error Setting Door State: {}", e.getMessage());
+            logger.warn("Could Not Set Door State: {}", e.getMessage());
         }
     }
 
     @Override
-    public void updateState(JsonObject jsonDataBlob) {
-        deviceConfig.readConfigFromJson(jsonDataBlob);
+    public void updateState(Device myQDevice) {
+        deviceConfig.readConfig(myQDevice);
         updateState(CHANNEL_DOOR_STATE, deviceConfig.getDoorStatusOnOff());
         updateState(CHANNEL_DOOR_STATUS, new StringType(deviceConfig.getDeviceStatusStr()));
         updateState(CHANNEL_ROLLER_STATE, deviceConfig.getDeviceStatusPercent());

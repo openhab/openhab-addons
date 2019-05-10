@@ -25,10 +25,9 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.chamberlainmyq.internal.InvalidLoginException;
+import org.openhab.binding.chamberlainmyq.internal.json.Device;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonObject;
 
 /**
  * The {@link ChamberlainMyQLightHandler} is responsible for handling commands, which are
@@ -70,7 +69,6 @@ public class ChamberlainMyQLightHandler extends ChamberlainMyQHandler {
             } else if (command.equals(OnOffType.OFF)) {
                 setLightState(false);
             } else if (command instanceof RefreshType) {
-                // logger.debug("Refreshing state");
                 readDeviceState();
             }
         }
@@ -85,15 +83,15 @@ public class ChamberlainMyQLightHandler extends ChamberlainMyQHandler {
                 getGatewayHandler().executeMyQCommand(deviceID, "desiredlightstate", 0, false);
             }
         } catch (InvalidLoginException e) {
-            logger.error("Error Setting Light State: {}", e.getMessage());
+            logger.warn("Could Not Set Light State: {}", e.getMessage());
         } catch (IOException e) {
-            logger.error("Error Setting Light State: {}", e.getMessage());
+            logger.warn("Could Not Set Light State: {}", e.getMessage());
         }
     }
 
     @Override
-    public void updateState(JsonObject jsonDataBlob) {
-        deviceConfig.readConfigFromJson(jsonDataBlob);
+    public void updateState(Device myQDevice) {
+        deviceConfig.readConfig(myQDevice);
         updateState(CHANNEL_LIGHT_STATE, deviceConfig.getLightStatusOnOff());
         updateState(CHANNEL_ROLLER_STATE, deviceConfig.getDeviceStatusPercent());
         updateState(CHANNEL_DESCRIPTION, StringType.valueOf(deviceConfig.getDescription()));
