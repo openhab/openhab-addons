@@ -295,6 +295,9 @@
                 <goal>features-generate-descriptor</goal>
               </goals>
               <phase>generate-resources</phase>
+              <configuration>
+                <inputFile>${feature.directory}</inputFile>
+              </configuration>
             </execution>
             <execution>
               <id>karaf-feature-verification</id>
