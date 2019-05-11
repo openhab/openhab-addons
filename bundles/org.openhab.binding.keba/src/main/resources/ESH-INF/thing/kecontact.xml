@@ -9,12 +9,12 @@
 		<description>A KeContact EV Charging Station</description>
 
 		<channels>
-            <channel id="enabled" typeId="enabled" />
+			<channel id="enabled" typeId="enabled" />
 			<channel id="state" typeId="state" />
-            <channel id="maxpresetcurrent" typeId="current_settable" />
-            <channel id="maxpresetcurrentrange" typeId="range" />
-            <channel id="power" typeId="power" />
-            <channel id="powerfactor" typeId="powerfactor" />
+			<channel id="maxpresetcurrent" typeId="current_settable" />
+			<channel id="maxpresetcurrentrange" typeId="range" />
+			<channel id="power" typeId="power" />
+			<channel id="powerfactor" typeId="powerfactor" />
 			<channel id="error1" typeId="error1" />
 			<channel id="error2" typeId="error2" />
 			<channel id="wallbox" typeId="plugwallbox" />
@@ -101,12 +101,12 @@
 		<description>State of the wallbox plug, e.g. ON if plugged in, OFF if unplugged</description>
 		<state readOnly="true"></state>
 	</channel-type>
-    <channel-type id="plugvehicle">
-        <item-type>Switch</item-type>
-        <label>Vehicle Plugged</label>
-        <description>State of the vehicle plug, e.g. ON if plugged in, OFF if unplugged</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="plugvehicle">
+		<item-type>Switch</item-type>
+		<label>Vehicle Plugged</label>
+		<description>State of the vehicle plug, e.g. ON if plugged in, OFF if unplugged</description>
+		<state readOnly="true"></state>
+	</channel-type>
 	<channel-type id="locked" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Plug Lock</label>
@@ -143,30 +143,30 @@
 		<description>Current in mA</description>
 		<state pattern="%d mA" readOnly="true"></state>
 	</channel-type>
-    <channel-type id="maxcurrent" advanced="true">
-        <item-type>Number</item-type>
-        <label>Max. System Current</label>
-        <description>Maximal System Current in mA</description>
-        <state pattern="%d mA" readOnly="true"></state>
-    </channel-type>
-    <channel-type id="failsafecurrent" advanced="true">
-        <item-type>Number</item-type>
-        <label>Failsafe Current</label>
-        <description>Failsafe Current in mA (if network is lost)</description>
-        <state pattern="%d mA" readOnly="true"></state>
-    </channel-type>
+	<channel-type id="maxcurrent" advanced="true">
+		<item-type>Number</item-type>
+		<label>Max. System Current</label>
+		<description>Maximal System Current in mA</description>
+		<state pattern="%d mA" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="failsafecurrent" advanced="true">
+		<item-type>Number</item-type>
+		<label>Failsafe Current</label>
+		<description>Failsafe Current in mA (if network is lost)</description>
+		<state pattern="%d mA" readOnly="true"></state>
+	</channel-type>
 	<channel-type id="range" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Rel. Current</label>
 		<description>Current in % of the 6000-63000 mA range accepted by the wallbox</description>
 		<state pattern="%d %%" readOnly="false"></state>
 	</channel-type>
-    <channel-type id="pilotcurrent" advanced="true">
-        <item-type>Number</item-type>
-        <label>Pilot Current</label>
-        <description>Current preset value via Control pilot in mA</description>
-        <state pattern="%d mA" readOnly="true"></state>
-    </channel-type>
+	<channel-type id="pilotcurrent" advanced="true">
+		<item-type>Number</item-type>
+		<label>Pilot Current</label>
+		<description>Current preset value via Control pilot in mA</description>
+		<state pattern="%d mA" readOnly="true"></state>
+	</channel-type>
 	<channel-type id="pilotrange" advanced="true">
 		<item-type>Number</item-type>
 		<label>Pilot Range</label>
@@ -203,12 +203,12 @@
 		<description>Power consumption in Wh.</description>
 		<state pattern="%d Wh" readOnly="true"></state>
 	</channel-type>
-    <channel-type id="totalenergy" advanced="true">
-        <item-type>Number</item-type>
-        <label>Energy</label>
-        <description>Total energy consumption is added up after each completed charging session</description>
-        <state pattern="%d Wh" readOnly="true"></state>
-    </channel-type>
+	<channel-type id="totalenergy" advanced="true">
+		<item-type>Number</item-type>
+		<label>Energy</label>
+		<description>Total energy consumption is added up after each completed charging session</description>
+		<state pattern="%d Wh" readOnly="true"></state>
+	</channel-type>
 	<channel-type id="display" advanced="true">
 		<item-type>String</item-type>
 		<label>Display</label>
