@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bindingId="amazonechocontrol"
-	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	bindingId="amazonechocontrol"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="account">
 		<label>Amazon Account</label>
 		<description>Amazon Account where the amazon echo devices are registered.</description>
@@ -27,14 +28,17 @@
 			<channel id="title" typeId="title" />
 			<channel id="subtitle1" typeId="subtitle1" />
 			<channel id="subtitle2" typeId="subtitle2" />
-			<channel id="providerDisplayName" typeId="providerDisplayName" />
+			<channel id="providerDisplayName"
+				typeId="providerDisplayName" />
 			<channel id="musicProviderId" typeId="musicProviderId" />
-			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
+			<channel id="playMusicVoiceCommand"
+				typeId="playMusicVoiceCommand" />
 			<channel id="startCommand" typeId="startCommand" />
 			<channel id="radioStationId" typeId="radioStationId" />
 			<channel id="radio" typeId="radio" />
 			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
-			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
+			<channel id="amazonMusicPlayListId"
+				typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
@@ -47,7 +51,8 @@
 			<channel id="startRoutine" typeId="startRoutine" />
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
-			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
+			<channel id="bluetoothDeviceName"
+				typeId="bluetoothDeviceName" />
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
 			<channel id="notificationVolume" typeId="notificationVolume" />
 			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
@@ -80,15 +85,19 @@
 			<channel id="title" typeId="title" />
 			<channel id="subtitle1" typeId="subtitle1" />
 			<channel id="subtitle2" typeId="subtitle2" />
-			<channel id="providerDisplayName" typeId="providerDisplayName" />
+			<channel id="providerDisplayName"
+				typeId="providerDisplayName" />
 			<channel id="musicProviderId" typeId="musicProviderId" />
-			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
+			<channel id="playMusicVoiceCommand"
+				typeId="playMusicVoiceCommand" />
 			<channel id="startCommand" typeId="startCommand" />
 			<channel id="radioStationId" typeId="radioStationId" />
 			<channel id="radio" typeId="radio" />
 			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
-			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
+			<channel id="amazonMusicPlayListId"
+				typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
+			<channel id="announcement" typeId="announcement" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
@@ -100,7 +109,8 @@
 			<channel id="startRoutine" typeId="startRoutine" />
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
-			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
+			<channel id="bluetoothDeviceName"
+				typeId="bluetoothDeviceName" />
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
 			<channel id="notificationVolume" typeId="notificationVolume" />
 			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
@@ -133,15 +143,19 @@
 			<channel id="title" typeId="title" />
 			<channel id="subtitle1" typeId="subtitle1" />
 			<channel id="subtitle2" typeId="subtitle2" />
-			<channel id="providerDisplayName" typeId="providerDisplayName" />
+			<channel id="providerDisplayName"
+				typeId="providerDisplayName" />
 			<channel id="musicProviderId" typeId="musicProviderId" />
-			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
+			<channel id="playMusicVoiceCommand"
+				typeId="playMusicVoiceCommand" />
 			<channel id="startCommand" typeId="startCommand" />
 			<channel id="radioStationId" typeId="radioStationId" />
 			<channel id="radio" typeId="radio" />
 			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
-			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
+			<channel id="amazonMusicPlayListId"
+				typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
+			<channel id="announcement" typeId="announcement" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
@@ -153,7 +167,8 @@
 			<channel id="startRoutine" typeId="startRoutine" />
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
-			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
+			<channel id="bluetoothDeviceName"
+				typeId="bluetoothDeviceName" />
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
 			<channel id="notificationVolume" typeId="notificationVolume" />
 			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
@@ -182,11 +197,13 @@
 			<channel id="title" typeId="title" />
 			<channel id="subtitle1" typeId="subtitle1" />
 			<channel id="subtitle2" typeId="subtitle2" />
-			<channel id="providerDisplayName" typeId="providerDisplayName" />
+			<channel id="providerDisplayName"
+				typeId="providerDisplayName" />
 			<channel id="radioStationId" typeId="radioStationId" />
 			<channel id="radio" typeId="radio" />
 			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
-			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
+			<channel id="amazonMusicPlayListId"
+				typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
 		</channels>
 		<representation-property>serialNumber</representation-property>
@@ -267,7 +284,8 @@
 		<label>Amazon Music Play List Id</label>
 		<description>Amazon Music play list id (Write only, no current state)</description>
 	</channel-type>
-	<channel-type id="amazonMusicPlayListIdLastUsed" advanced="true">
+	<channel-type id="amazonMusicPlayListIdLastUsed"
+		advanced="true">
 		<item-type>String</item-type>
 		<label>Amazon Music Last Selected Playlist Id</label>
 		<description>Id of the playlist which was started with openHAB</description>
@@ -364,6 +382,11 @@
 		<item-type>String</item-type>
 		<label>Music Voice Command</label>
 		<description>Voice command as text. E.g. 'Yesterday from the Beatles' (Write only)</description>
+	</channel-type>
+	<channel-type id="announcement" advanced="true">
+		<item-type>String</item-type>
+		<label>Announcement</label>
+		<description>Display the announcement message on the display (Write only). See in the tutorial section of the binding description to learn how it's possible to set the title and turn off the sound.</description>
 	</channel-type>
 	<channel-type id="textToSpeech" advanced="true">
 		<item-type>String</item-type>

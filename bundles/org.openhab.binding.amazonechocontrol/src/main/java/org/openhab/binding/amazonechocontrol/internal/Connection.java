@@ -58,6 +58,8 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Payload;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Trigger;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBootstrapResult;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBootstrapResult.Authentication;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState.DeviceNotificationState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices;
@@ -128,6 +130,7 @@ public class Connection {
     private long renewTime = 0;
     private @Nullable String deviceName;
     private @Nullable String accountCustomerId;
+    private @Nullable String customerName;
 
     private final Gson gson = new Gson();
     private final Gson gsonWithNullSerialization;
@@ -234,13 +237,29 @@ public class Connection {
         return deviceName;
     }
 
+    public String getCustomerId() {
+        String customerId = this.accountCustomerId;
+        if (customerId == null) {
+            return "Unknown";
+        }
+        return customerId;
+    }
+
+    public String getCustomerName() {
+        String customerName = this.customerName;
+        if (customerName == null) {
+            return "Unknown";
+        }
+        return customerName;
+    }
+
     public String serializeLoginData() {
         Date loginTime = this.loginTime;
         if (refreshToken == null || loginTime == null) {
             return "";
         }
         StringBuilder builder = new StringBuilder();
-        builder.append("6\n"); // version
+        builder.append("7\n"); // version
         builder.append(frc);
         builder.append("\n");
         builder.append(serial);
@@ -322,7 +341,7 @@ public class Connection {
         Scanner scanner = new Scanner(data);
         String version = scanner.nextLine();
         // check if serialize version
-        if (!version.equals("5") && !version.equals("6")) {
+        if (!version.equals("5") && !version.equals("6") && !version.equals("7")) {
             scanner.close();
             return null;
         }
@@ -344,8 +363,10 @@ public class Connection {
 
         if (intVersion > 5) {
             String accountCustomerId = scanner.nextLine();
-            if (!StringUtils.equals(accountCustomerId, "null")) {
-                this.accountCustomerId = accountCustomerId;
+            if (intVersion > 6) {
+                if (!StringUtils.equals(accountCustomerId, "null")) {
+                    this.accountCustomerId = accountCustomerId;
+                }
             }
         }
 
@@ -402,6 +423,24 @@ public class Connection {
         return loginTime;
     }
 
+    private @Nullable Authentication tryGetBootstrap() throws IOException, URISyntaxException {
+        String bootstrapResultJson = makeRequestAndReturnString(alexaServer + "/api/bootstrap");
+        boolean authenticated = bootstrapResultJson.contains("\"authenticated\":true");
+        if (authenticated) {
+            JsonBootstrapResult result = parseJson(bootstrapResultJson, JsonBootstrapResult.class);
+
+            Authentication authentication = result.authentication;
+            if (authentication != null) {
+                this.customerName = authentication.customerName;
+                if (this.accountCustomerId == null) {
+                    this.accountCustomerId = authentication.customerId;
+                }
+            }
+            return authentication;
+        }
+        return null;
+    }
+
     public String convertStream(HttpsURLConnection connection) throws IOException {
         InputStream input = connection.getInputStream();
         if (input == null) {
@@ -442,15 +481,19 @@ public class Connection {
 
     public String makeRequestAndReturnString(String verb, String url, @Nullable String postData, boolean json,
             @Nullable Map<String, String> customHeaders) throws IOException, URISyntaxException {
-        HttpsURLConnection connection = makeRequest(verb, url, postData, json, true, customHeaders);
+        HttpsURLConnection connection = makeRequest(verb, url, postData, json, true, customHeaders, false);
         return convertStream(connection);
     }
 
     public HttpsURLConnection makeRequest(String verb, String url, @Nullable String postData, boolean json,
-            boolean autoredirect, @Nullable Map<String, String> customHeaders) throws IOException, URISyntaxException {
+            boolean autoredirect, @Nullable Map<String, String> customHeaders, boolean repeatBadRequest)
+            throws IOException, URISyntaxException {
         String currentUrl = url;
-        for (int i = 0; i < 30; i++) // loop for handling redirect, using automatic redirect is not possible, because
-                                     // all response headers must be catched
+        int badRequestCounter = 0;
+        int redirectCounter = 0;
+        while (true) // loop for handling redirect and bad request, using automatic redirect is not possible,
+                     // because
+                     // all response headers must be catched
         {
             int code;
             HttpsURLConnection connection = null;
@@ -558,18 +601,35 @@ public class Connection {
                         }
                     }
                 }
+                if (code == 400 && repeatBadRequest) {
+                    badRequestCounter++;
+                    if (badRequestCounter < 3) {
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                        }
+                        continue; // repeat call
+                    }
+                    badRequestCounter += 0;
+                }
                 if (code == 200) {
                     logger.debug("Call to {} succeeded", url);
                     return connection;
                 }
                 if (code == 302 && location != null) {
                     logger.debug("Redirected to {}", location);
+                    redirectCounter++;
+                    if (redirectCounter > 30) {
+                        throw new ConnectionException("Too many redirects");
+                    }
                     currentUrl = location;
                     if (autoredirect) {
-                        continue;
+                        continue; // repeat with new location
                     }
                     return connection;
                 }
+                throw new HttpException(code, verb + " url '" + url + "' failed: " + connection.getResponseMessage());
+
             } catch (IOException e) {
 
                 if (connection != null) {
@@ -583,11 +643,7 @@ public class Connection {
                 }
                 throw e;
             }
-            if (code != 200) {
-                throw new HttpException(code, verb + " url '" + url + "' failed: " + connection.getResponseMessage());
-            }
         }
-        throw new ConnectionException("Too many redirects");
     }
 
     public String registerConnectionAsApp(String oAutRedirectUrl)
@@ -656,6 +712,7 @@ public class Connection {
         setAmazonSite(host);
         try {
             exhangeToken();
+            tryGetBootstrap();
         } catch (Exception e) {
             logout();
             throw e;
@@ -769,15 +826,15 @@ public class Connection {
         if (this.refreshToken == null) {
             return false;
         }
-        String response = makeRequestAndReturnString(alexaServer + "/api/bootstrap?version=0");
-        Boolean result = response.contains("\"authenticated\":true");
-        if (result) {
+        Authentication authentication = tryGetBootstrap();
+        if (authentication != null && authentication.authenticated) {
             verifyTime = new Date();
             if (loginTime == null) {
                 loginTime = verifyTime;
             }
+            return true;
         }
-        return result;
+        return false;
     }
 
     public List<HttpCookie> getSessionCookies() {
@@ -902,7 +959,7 @@ public class Connection {
     public void command(Device device, String command) throws IOException, URISyntaxException {
         String url = alexaServer + "/api/np/command?deviceSerialNumber=" + device.serialNumber + "&deviceType="
                 + device.deviceType;
-        makeRequest("POST", url, command, true, true, null);
+        makeRequest("POST", url, command, true, true, null, false);
     }
 
     public void notificationVolume(Device device, int volume) throws IOException, URISyntaxException {
@@ -910,7 +967,7 @@ public class Connection {
                 + "/" + device.serialNumber;
         String command = "{\"deviceSerialNumber\":\"" + device.serialNumber + "\",\"deviceType\":\"" + device.deviceType
                 + "\",\"softwareVersion\":\"" + device.softwareVersion + "\",\"volumeLevel\":" + volume + "}";
-        makeRequest("PUT", url, command, true, true, null);
+        makeRequest("PUT", url, command, true, true, null, false);
     }
 
     public void ascendingAlarm(Device device, boolean ascendingAlarm) throws IOException, URISyntaxException {
@@ -918,7 +975,7 @@ public class Connection {
         String command = "{\"ascendingAlarmEnabled\":" + (ascendingAlarm ? "true" : "false")
                 + ",\"deviceSerialNumber\":\"" + device.serialNumber + "\",\"deviceType\":\"" + device.deviceType
                 + "\",\"deviceAccountId\":null}";
-        makeRequest("PUT", url, command, true, true, null);
+        makeRequest("PUT", url, command, true, true, null, false);
     }
 
     public DeviceNotificationState[] getDeviceNotificationStates() {
@@ -956,11 +1013,11 @@ public class Connection {
             // disconnect
             makeRequest("POST",
                     alexaServer + "/api/bluetooth/disconnect-sink/" + device.deviceType + "/" + device.serialNumber, "",
-                    true, true, null);
+                    true, true, null, false);
         } else {
             makeRequest("POST",
                     alexaServer + "/api/bluetooth/pair-sink/" + device.deviceType + "/" + device.serialNumber,
-                    "{\"bluetoothDeviceAddress\":\"" + address + "\"}", true, true, null);
+                    "{\"bluetoothDeviceAddress\":\"" + address + "\"}", true, true, null, false);
         }
     }
 
@@ -974,7 +1031,7 @@ public class Connection {
                             + "&contentType=station&callSign=&mediaOwnerCustomerId="
                             + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
                                     : this.accountCustomerId),
-                    "", true, true, null);
+                    "", true, true, null, false);
         }
     }
 
@@ -989,7 +1046,7 @@ public class Connection {
                             + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
                                     : this.accountCustomerId)
                             + "&shuffle=false",
-                    command, true, true, null);
+                    command, true, true, null, false);
         }
     }
 
@@ -1005,7 +1062,7 @@ public class Connection {
                             + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
                                     : this.accountCustomerId)
                             + "&shuffle=false",
-                    command, true, true, null);
+                    command, true, true, null, false);
         }
     }
 
@@ -1023,8 +1080,8 @@ public class Connection {
         executeSequenceCommand(null, "Alexa.Notifications.SendMobilePush", parameters);
     }
 
-    public void sendAnnouncement(Device device, String text, @Nullable String title, int ttsVolume, int standardVolume)
-            throws IOException, URISyntaxException {
+    public void sendAnnouncement(Device device, String text, @Nullable String bodyText, @Nullable String title,
+            int ttsVolume, int standardVolume) throws IOException, URISyntaxException {
         Map<String, Object> parameters = new Hashtable<String, Object>();
         parameters.put("expireAfter", "PT5S");
         JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
@@ -1069,7 +1126,7 @@ public class Connection {
 
     public void textToSpeech(Device device, String text, int ttsVolume, int standardVolume)
             throws IOException, URISyntaxException {
-        Map<String, Object> parameters = new Hashtable<>();
+        Map<String, Object> parameters = new Hashtable<String, Object>();
         parameters.put("textToSpeak", text);
         executeSequenceCommandWithVolume(device, "Alexa.Speak", parameters, ttsVolume, standardVolume);
     }
@@ -1081,7 +1138,7 @@ public class Connection {
 
             JsonArray nodesToExecute = new JsonArray();
 
-            Map<String, Object> volumeParameters = new Hashtable<>();
+            Map<String, Object> volumeParameters = new Hashtable<String, Object>();
             // add tts volume
             volumeParameters.clear();
             volumeParameters.put("value", ttsVolume);
@@ -1122,7 +1179,7 @@ public class Connection {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Routines-Version", "1.1.218665");
 
-        makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null);
+        makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null, true);
     }
 
     private void executeSequenceNodes(JsonArray nodesToExecute) throws IOException, URISyntaxException {
@@ -1230,7 +1287,7 @@ public class Connection {
             request.sequenceJson = sequenceJson;
 
             String requestJson = gson.toJson(request);
-            makeRequest("POST", alexaServer + "/api/behaviors/preview", requestJson, true, true, null);
+            makeRequest("POST", alexaServer + "/api/behaviors/preview", requestJson, true, true, null, true);
         } else {
             logger.warn("Routine {} not found", utterance);
         }
@@ -1256,7 +1313,7 @@ public class Connection {
         JsonEnabledFeeds enabled = new JsonEnabledFeeds();
         enabled.enabledFeeds = enabledFlashBriefing;
         String json = gsonWithNullSerialization.toJson(enabled);
-        makeRequest("POST", alexaServer + "/api/content-skills/enabled-feeds", json, true, true, null);
+        makeRequest("POST", alexaServer + "/api/content-skills/enabled-feeds", json, true, true, null, false);
     }
 
     public JsonNotificationSound[] getNotificationSounds(Device device) throws IOException, URISyntaxException {
@@ -1386,7 +1443,7 @@ public class Connection {
         startRoutineRequest.status = null;
 
         String postData = gson.toJson(startRoutineRequest);
-        makeRequest("POST", alexaServer + "/api/behaviors/preview", postData, true, true, null);
+        makeRequest("POST", alexaServer + "/api/behaviors/preview", postData, true, true, null, true);
     }
 
     public JsonEqualizer getEqualizer(Device device) throws IOException, URISyntaxException {
@@ -1398,6 +1455,6 @@ public class Connection {
     public void SetEqualizer(Device device, JsonEqualizer settings) throws IOException, URISyntaxException {
         String postData = gson.toJson(settings);
         makeRequest("POST", alexaServer + "/api/equalizer/" + device.serialNumber + "/" + device.deviceType, postData,
-                true, true, null);
+                true, true, null, false);
     }
 }
