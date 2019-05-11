@@ -1051,7 +1051,7 @@ public class Connection {
         JsonAnnouncementTarget target = new JsonAnnouncementTarget();
         target.customerId = device.deviceOwnerCustomerId;
         TargetDevice[] devices = new TargetDevice[1];
-        TargetDevice deviceTarget = target.new TargetDevice();
+        TargetDevice deviceTarget = new TargetDevice();
         deviceTarget.deviceSerialNumber = device.serialNumber;
         deviceTarget.deviceTypeId = device.deviceType;
         devices[0] = deviceTarget;
