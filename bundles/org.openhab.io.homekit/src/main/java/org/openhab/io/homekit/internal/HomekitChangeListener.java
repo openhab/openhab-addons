@@ -63,7 +63,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     HomekitChangeListener() {
         this.applyUpdatesDebouncer = new Debouncer("update-homekit-devices", scheduler, Duration.ofMillis(1000),
-                Clock.systemUTC(), () -> this.applyUpdates());
+                Clock.systemUTC(), this::applyUpdates);
     }
 
     @Override

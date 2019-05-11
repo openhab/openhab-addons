@@ -27,17 +27,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tim Harper - Initial contribution
  *
- *         Note: Debounced calls are filtered synchronously, in the caller thread, without the need for locks, context
- *         switches, or heap allocations. We use AtomicBoolean to resolve concurrent races; the probability of
- *         contending on an AtomicBoolean transition is very low.
- *
- * @param name The name of this debouncer
- * @param scheduler The scheduler implementation to use
- * @param delay The time after which to invoke action; each time [[Debouncer.call]] is invoked, this delay is
- *            reset
- * @param Clock The source from which we get the current time. This input should use the same source. Specified
- *            for testing purposes
- * @param action The action to invoke
  */
 class Debouncer {
 
@@ -53,6 +42,21 @@ class Debouncer {
 
     private volatile Long lastCallAttempt;
 
+    /**
+     * Highly performant generic debouncer
+     *
+     * Note: Debounced calls are filtered synchronously, in the caller thread, without the need for locks, context
+     * switches, or heap allocations. We use AtomicBoolean to resolve concurrent races; the probability of
+     * contending on an AtomicBoolean transition is very low.
+     *
+     * @param name The name of this debouncer
+     * @param scheduler The scheduler implementation to use
+     * @param delay The time after which to invoke action; each time [[Debouncer.call]] is invoked, this delay is
+     *            reset
+     * @param Clock The source from which we get the current time. This input should use the same source. Specified
+     *            for testing purposes
+     * @param action The action to invoke
+     */
     Debouncer(String name, ScheduledExecutorService scheduler, Duration delay, Clock clock, Runnable action) {
         this.name = name;
         this.scheduler = scheduler;
@@ -70,9 +74,7 @@ class Debouncer {
         lastCallAttempt = clock.millis();
         calls.incrementAndGet();
         if (pending.compareAndSet(false, true)) {
-            scheduler.schedule(() -> {
-                tryActionOrPostpone();
-            }, delayMs, TimeUnit.MILLISECONDS);
+            scheduler.schedule(this::tryActionOrPostpone, delayMs, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -87,18 +89,18 @@ class Debouncer {
                 logger.debug("Debouncer action {} invoked after delay {}  ({} calls)", name, delayMs, foldedCalls);
                 try {
                     action.run();
-                } catch (Throwable ex) {
-                    logger.error("Debouncer {} action resulted in error: {}", name, ex.getMessage());
+                } catch (Exception e) {
+                    logger.warn("Debouncer {} action resulted in error: {}", name, e.getMessage());
                 }
             } else {
-                logger.error("Invalid state in debouncer. Should not have reached here!");
+                logger.warn("Invalid state in debouncer. Should not have reached here!");
             }
         } else {
             // reschedule at origLastInvocation + delayMs
             // Note: we use Math.max as there's a _very_ small chance lastCallAttempt could advance in another thread,
             // and result in a negative calculation
             long delay = Math.max(1, lastCallAttempt - now + delayMs);
-            scheduler.schedule(() -> tryActionOrPostpone(), delay, TimeUnit.MILLISECONDS);
+            scheduler.schedule(this::tryActionOrPostpone, delay, TimeUnit.MILLISECONDS);
         }
     }
 }

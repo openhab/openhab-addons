@@ -82,6 +82,7 @@ public class HomekitSettings {
         if (maximumTemperature != null) {
             this.maximumTemperature = Double.parseDouble(maximumTemperature.toString());
         }
+
         this.thermostatTargetModeHeat = Optional.ofNullable((String) properties.get("thermostatTargetModeHeat"))
                 .orElseGet(() -> (String) properties.get("thermostatHeatMode" /* legacy setting */));
         this.thermostatTargetModeCool = Optional.ofNullable((String) properties.get("thermostatTargetModeCool"))
@@ -91,12 +92,15 @@ public class HomekitSettings {
         this.thermostatTargetModeOff = Optional.ofNullable((String) properties.get("thermostatTargetModeOff"))
                 .orElseGet(() -> (String) properties.get("thermostatOffMode" /* legacy setting */));
 
-        Optional.ofNullable((String) properties.get("thermostatCurrentModeCooling"))
-                .ifPresent(value -> this.thermostatCurrentModeCooling = value);
-        Optional.ofNullable((String) properties.get("thermostatCurrentModeHeating"))
-                .ifPresent(value -> this.thermostatCurrentModeHeating = value);
-        Optional.ofNullable((String) properties.get("thermostatCurrentModeOff"))
-                .ifPresent(value -> this.thermostatCurrentModeOff = value);
+        if (properties.get("thermostatCurrentModeCooling") != null) {
+            this.thermostatCurrentModeCooling = (String) properties.get("thermostatCurrentModeCooling");
+        }
+        if (properties.get("thermostatCurrentModeHeating") != null) {
+            this.thermostatCurrentModeHeating = (String) properties.get("thermostatCurrentModeHeating");
+        }
+        if (properties.get("thermostatCurrentModeOff") != null) {
+            this.thermostatCurrentModeOff = (String) properties.get("thermostatCurrentModeOff");
+        }
 
         String networkInterface = (String) properties.get("networkInterface");
         if (networkInterface == null) {

@@ -15,6 +15,7 @@ package org.openhab.io.homekit.internal;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -33,7 +34,7 @@ import com.beowulfe.hap.HomekitRoot;
 class HomekitAccessoryRegistry {
 
     private HomekitRoot bridge;
-    private final HashMap<String, HomekitAccessory> createdAccessories = new HashMap<>();
+    private final Map<String, HomekitAccessory> createdAccessories = new HashMap<>();
     private final Set<Integer> createdIds = new HashSet<>();
 
     private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryRegistry.class);
