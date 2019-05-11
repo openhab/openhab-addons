@@ -84,9 +84,9 @@ public class KeContactHandler extends BaseThingHandler {
     private int maxSystemCurrent = 63000;
     private KebaType type;
     private KebaSeries series;
-    private int lastState = -1; //trigger a report100 at startup
+    private int lastState = -1; // trigger a report100 at startup
     private boolean isReport100needed = true;
-    
+
     public KeContactHandler(Thing thing) {
         super(thing);
     }
@@ -173,8 +173,8 @@ public class KeContactHandler extends BaseThingHandler {
                     if (response != null) {
                         onData(response);
                     }
-                    
-                    if (isReport100needed){
+
+                    if (isReport100needed) {
                         Thread.sleep(REPORT_INTERVAL);
 
                         response = cache.get(CACHE_REPORT_100);
@@ -183,7 +183,7 @@ public class KeContactHandler extends BaseThingHandler {
                         }
                         isReport100needed = false;
                     }
-                    
+
                 }
             }
         } catch (NumberFormatException | IOException e) {
@@ -240,33 +240,33 @@ public class KeContactHandler extends BaseThingHandler {
                         int state = entry.getValue().getAsInt();
                         switch (state) {
                             case 0: {
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_WALLBOX), OnOffType.OFF);
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_VEHICLE), OnOffType.OFF);
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLUG_LOCKED), OnOffType.OFF);
+                                updateState(CHANNEL_WALLBOX, OnOffType.OFF);
+                                updateState(CHANNEL_VEHICLE, OnOffType.OFF);
+                                updateState(CHANNEL_PLUG_LOCKED, OnOffType.OFF);
                                 break;
                             }
                             case 1: {
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_WALLBOX), OnOffType.ON);
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_VEHICLE), OnOffType.OFF);
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLUG_LOCKED), OnOffType.OFF);
+                                updateState(CHANNEL_WALLBOX, OnOffType.ON);
+                                updateState(CHANNEL_VEHICLE, OnOffType.OFF);
+                                updateState(CHANNEL_PLUG_LOCKED, OnOffType.OFF);
                                 break;
                             }
                             case 3: {
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_WALLBOX), OnOffType.ON);
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_VEHICLE), OnOffType.OFF);
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLUG_LOCKED), OnOffType.ON);
+                                updateState(CHANNEL_WALLBOX, OnOffType.ON);
+                                updateState(CHANNEL_VEHICLE, OnOffType.OFF);
+                                updateState(CHANNEL_PLUG_LOCKED, OnOffType.ON);
                                 break;
                             }
                             case 5: {
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_WALLBOX), OnOffType.ON);
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_VEHICLE), OnOffType.ON);
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLUG_LOCKED), OnOffType.OFF);
+                                updateState(CHANNEL_WALLBOX, OnOffType.ON);
+                                updateState(CHANNEL_VEHICLE, OnOffType.ON);
+                                updateState(CHANNEL_PLUG_LOCKED, OnOffType.OFF);
                                 break;
                             }
                             case 7: {
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_WALLBOX), OnOffType.ON);
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_VEHICLE), OnOffType.ON);
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLUG_LOCKED), OnOffType.ON);
+                                updateState(CHANNEL_WALLBOX, OnOffType.ON);
+                                updateState(CHANNEL_VEHICLE, OnOffType.ON);
+                                updateState(CHANNEL_PLUG_LOCKED, OnOffType.ON);
                                 break;
                             }
                         }
@@ -275,8 +275,8 @@ public class KeContactHandler extends BaseThingHandler {
                     case "State": {
                         int state = entry.getValue().getAsInt();
                         State newState = new DecimalType(state);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_STATE), newState);
-                        if (lastState != state){
+                        updateState(CHANNEL_STATE, newState);
+                        if (lastState != state) {
                             // the state is different from the last one, so we will trigger a report100
                             isReport100needed = true;
                             lastState = state;
@@ -287,11 +287,11 @@ public class KeContactHandler extends BaseThingHandler {
                         int state = entry.getValue().getAsInt();
                         switch (state) {
                             case 1: {
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_ENABLED), OnOffType.ON);
+                                updateState(CHANNEL_ENABLED, OnOffType.ON);
                                 break;
                             }
                             default: {
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_ENABLED), OnOffType.OFF);
+                                updateState(CHANNEL_ENABLED, OnOffType.OFF);
                                 break;
                             }
                         }
@@ -301,13 +301,12 @@ public class KeContactHandler extends BaseThingHandler {
                         int state = entry.getValue().getAsInt();
                         maxSystemCurrent = state;
                         State newState = new DecimalType(state);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_SYSTEM_CURRENT), newState);
+                        updateState(CHANNEL_MAX_SYSTEM_CURRENT, newState);
                         if (maxSystemCurrent != 0) {
                             if (maxSystemCurrent < maxPresetCurrent) {
                                 transceiver.send("curr " + String.valueOf(maxSystemCurrent), this);
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_PRESET_CURRENT),
-                                        new DecimalType(maxSystemCurrent));
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_PRESET_CURRENT_RANGE),
+                                updateState(CHANNEL_MAX_PRESET_CURRENT, new DecimalType(maxSystemCurrent));
+                                updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE,
                                         new PercentType((maxSystemCurrent - 6000) * 100 / (maxSystemCurrent - 6000)));
                             }
                         } else {
@@ -318,10 +317,9 @@ public class KeContactHandler extends BaseThingHandler {
                     case "Curr user": {
                         int state = entry.getValue().getAsInt();
                         maxPresetCurrent = state;
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_PRESET_CURRENT),
-                                new DecimalType(state));
+                        updateState(CHANNEL_MAX_PRESET_CURRENT, new DecimalType(state));
                         if (maxSystemCurrent != 0) {
-                            updateState(new ChannelUID(getThing().getUID(), CHANNEL_MAX_PRESET_CURRENT_RANGE),
+                            updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE,
                                     new PercentType(Math.min(100, (state - 6000) * 100 / (maxSystemCurrent - 6000))));
                         }
                         break;
@@ -329,25 +327,25 @@ public class KeContactHandler extends BaseThingHandler {
                     case "Curr FS": {
                         int state = entry.getValue().getAsInt();
                         State newState = new DecimalType(state);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_FAILSAFE_CURRENT), newState);
+                        updateState(CHANNEL_FAILSAFE_CURRENT, newState);
                         break;
                     }
                     case "Max curr": {
                         int state = entry.getValue().getAsInt();
                         maxPresetCurrent = state;
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PILOT_CURRENT), new DecimalType(state));
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PILOT_PWM), new DecimalType(state));
+                        updateState(CHANNEL_PILOT_CURRENT, new DecimalType(state));
+                        updateState(CHANNEL_PILOT_PWM, new DecimalType(state));
                         break;
                     }
                     case "Output": {
                         int state = entry.getValue().getAsInt();
                         switch (state) {
                             case 1: {
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_OUTPUT), OnOffType.ON);
+                                updateState(CHANNEL_OUTPUT, OnOffType.ON);
                                 break;
                             }
                             default: {
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_OUTPUT), OnOffType.OFF);
+                                updateState(CHANNEL_OUTPUT, OnOffType.OFF);
                                 break;
                             }
                         }
@@ -357,11 +355,11 @@ public class KeContactHandler extends BaseThingHandler {
                         int state = entry.getValue().getAsInt();
                         switch (state) {
                             case 1: {
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_INPUT), OnOffType.ON);
+                                updateState(CHANNEL_INPUT, OnOffType.ON);
                                 break;
                             }
                             default: {
-                                updateState(new ChannelUID(getThing().getUID(), CHANNEL_INPUT), OnOffType.OFF);
+                                updateState(CHANNEL_INPUT, OnOffType.OFF);
                                 break;
                             }
                         }
@@ -376,98 +374,97 @@ public class KeContactHandler extends BaseThingHandler {
                         SimpleDateFormat pFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                         pFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_UPTIME),
-                                new DateTimeType(pFormatter.format(uptime.getTime())));
+                        updateState(CHANNEL_UPTIME, new DateTimeType(pFormatter.format(uptime.getTime())));
                         break;
                     }
                     case "U1": {
                         int state = entry.getValue().getAsInt();
                         State newState = new DecimalType(state);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_U1), newState);
+                        updateState(CHANNEL_U1, newState);
                         break;
                     }
                     case "U2": {
                         int state = entry.getValue().getAsInt();
                         State newState = new DecimalType(state);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_U2), newState);
+                        updateState(CHANNEL_U2, newState);
                         break;
                     }
                     case "U3": {
                         int state = entry.getValue().getAsInt();
                         State newState = new DecimalType(state);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_U3), newState);
+                        updateState(CHANNEL_U3, newState);
                         break;
                     }
                     case "I1": {
                         int state = entry.getValue().getAsInt();
                         State newState = new DecimalType(state);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_I1), newState);
+                        updateState(CHANNEL_I1, newState);
                         break;
                     }
                     case "I2": {
                         int state = entry.getValue().getAsInt();
                         State newState = new DecimalType(state);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_I2), newState);
+                        updateState(CHANNEL_I2, newState);
                         break;
                     }
                     case "I3": {
                         int state = entry.getValue().getAsInt();
                         State newState = new DecimalType(state);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_I3), newState);
+                        updateState(CHANNEL_I3, newState);
                         break;
                     }
                     case "P": {
                         long state = entry.getValue().getAsLong();
                         State newState = new DecimalType(state / 1000);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_POWER), newState);
+                        updateState(CHANNEL_POWER, newState);
                         break;
                     }
                     case "PF": {
                         int state = entry.getValue().getAsInt();
                         State newState = new PercentType(state / 10);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_POWER_FACTOR), newState);
+                        updateState(CHANNEL_POWER_FACTOR, newState);
                         break;
                     }
                     case "E pres": {
                         long state = entry.getValue().getAsLong();
                         State newState = new DecimalType(state / 10);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_SESSION_CONSUMPTION), newState);
+                        updateState(CHANNEL_SESSION_CONSUMPTION, newState);
                         break;
                     }
                     case "E total": {
                         long state = entry.getValue().getAsLong();
                         State newState = new DecimalType(state / 10);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_TOTAL_CONSUMPTION), newState);
+                        updateState(CHANNEL_TOTAL_CONSUMPTION, newState);
                         break;
                     }
                     case "AuthON": {
                         int state = entry.getValue().getAsInt();
                         State newState = new DecimalType(state);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_AUTHON), newState);
+                        updateState(CHANNEL_AUTHON, newState);
                         break;
                     }
                     case "Authreq": {
                         int state = entry.getValue().getAsInt();
                         State newState = new DecimalType(state);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_AUTHREQ), newState);
+                        updateState(CHANNEL_AUTHREQ, newState);
                         break;
                     }
                     case "RFID tag": {
                         String state = entry.getValue().getAsString().trim();
                         State newState = new StringType(state);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_SESSION_RFID_TAG), newState);
+                        updateState(CHANNEL_SESSION_RFID_TAG, newState);
                         break;
                     }
                     case "RFID class": {
                         String state = entry.getValue().getAsString().trim();
                         State newState = new StringType(state);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_SESSION_RFID_CLASS), newState);
+                        updateState(CHANNEL_SESSION_RFID_CLASS, newState);
                         break;
                     }
                     case "Session ID": {
                         int state = entry.getValue().getAsInt();
                         State newState = new DecimalType(state);
-                        updateState(new ChannelUID(getThing().getUID(), CHANNEL_SESSION_SESSION_ID), newState);
+                        updateState(CHANNEL_SESSION_SESSION_ID, newState);
                         break;
                     }
                 }

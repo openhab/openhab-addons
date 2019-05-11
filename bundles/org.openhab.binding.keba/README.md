@@ -4,36 +4,45 @@ This binding integrates the [Keba KeContact EV Charging Stations](http://www.keb
 
 ## Supported Things
 
-Currently the Keba KeContact P20 and P30 stations are supported by this binding.
+The Keba KeContact P20 and P30 stations are supported by this binding, the thing type id is `kecontact`.
 
-## Binding Configuration
-
-The binding uses the default UDP port number to connect to the Keba Charging Station.
-So, no special configuration of the binding itself is required.
 
 ## Thing Configuration
 
-The Keba KeContact P20/30 requires the ip address as a configuration value in order for the binding to know where to access it. Optionally, a refresh interval (in seconds) can be defined that steers the polling of the actual state of the charging station
+The Keba KeContact P20/30 requires the ip address as the configuration parameter `ipAddress`. Optionally, a refresh interval (in seconds) can be defined as parameter `refreshInterval` that defines the polling of values from the charging station.
 
-In the thing file, this looks e.g. like
-
-```
-Thing keba:kecontact:1 [ ipAddress="192.168.0.64", refreshInterval=30 ]
-```
-
-the refreshInterval can optionally be used in combination with ```autoupdate="false"``` in the .items file so that the Items are updated with the latest actual value sent by the charging station.
 
 ## Channels
 
-All devices support the following channels (non exhaustive):
+All devices support the following channels:
 
-| Channel Type ID  | Item Type | Description                                                                                       |   |   |
-|------------------|-----------|---------------------------------------------------------------------------------------------------|---|---|
-| state            | Number    | This channel indicates the current operational state of the wallbox                               |   |   |
-| maxpresetcurrent | Number    | This channel supports adjusting the maximum current the charging station should deliver to the EV |   |   |
-| power            | Number    | This channel indicates the active power delivered by the charging station                         |   |   |
-| I1/2/3           | Number    | This channel indicates the current for the given phase                                            |   |   |
-| U1/2/3           | Number    | This channel indicates the voltage for the given phase                                            |   |   |
+| Channel ID         | Item Type | Read-only | Description                                                            |
+|--------------------|-----------|-----------|------------------------------------------------------------------------|
+| state              | Number    | yes       | current operational state of the wallbox                               |
+| enabled            | Switch    | no        | activation state of the wallbox                                        |
+| maxpresetcurrent   | Number    | no        | maximum current the charging station should deliver to the EV          |
+| power              | Number    | yes       | active power delivered by the charging station                         |
+| wallbox            | Switch    | yes       | plug state of wallbox                                                  |
+| vehicle            | Switch    | yes       | plug state of vehicle                                                  |
+| locked             | Switch    | yes       | lock state of plug at vehicle                                          |
+| I1/2/3             | Number    | yes       | current for the given phase                                            |
+| U1/2/3             | Number    | yes       | voltage for the given phase                                            |
+| output             | Switch    | no        | state of the X1 relais                                                 |
+| input              | Switch    | yes       | state of the X2 contact                                                |
+| display            | String    | yes       | display text on wallbox                                                |
+| error1             | String    | yes       | error code state 1, if in error (see the KeContact FAQ)                |
+| error2             | String    | yes       | error code state 2, if in error (see the KeContact FAQ)                |
+| maxsystemcurrent   | Number    | yes       | maximum current the wallbox can deliver                                |
+| failsafecurrent    | Number    | yes       | maximum current the wallbox can deliver, if network is lost            |
+| uptime             | DateTime  | yes       | system uptime since the last reset of the wallbox                      |
+| sessionconsumption | Number    | yes       | energy delivered in current session                                    |
+| totalconsumption   | Number    | yes       | total energy delivered since the last reset of the wallbox             |
+| authreq            | Switch    | yes       | authentication required                                                |
+| authon             | Switch    | yes       | authentication enabled                                                 |
+| sessionrfidtag     | String    | yes       | RFID tag used for the last charging session                            |
+| sessionrfidclass   | String    | yes       | RFID tag class used for the last charging session                      |
+| sessionid          | Number    | yes       | session ID of the last charging session                                |
+
 
 ## Example
 
@@ -46,12 +55,12 @@ Thing keba:kecontact:1 [ipAddress="192.168.0.64", refreshInterval=30]
 demo.items:
 
 ```
-Dimmer KebaCurrentRange  {channel="keba:kecontact:1:maxpresetcurrentrange", autoupdate="false"} 
-Number KebaCurrent  {channel="keba:kecontact:1:maxpresetcurrent", autoupdate="false"}
+Dimmer KebaCurrentRange  {channel="keba:kecontact:1:maxpresetcurrentrange"} 
+Number KebaCurrent  {channel="keba:kecontact:1:maxpresetcurrent"}
 Number KebaSystemCurrent  {channel="keba:kecontact:1:maxsystemcurrent"} 
 Number KebaFailSafeCurrent  {channel="keba:kecontact:1:failsafecurrent"} 
 String KebaState  {channel="keba:kecontact:1:state"}
-Switch KebaSwitch  {channel="keba:kecontact:1:enabled", autoupdate="false"}
+Switch KebaSwitch  {channel="keba:kecontact:1:enabled"}
 Switch KebaWallboxPlugged  {channel="keba:kecontact:1:wallbox"}
 Switch KebaVehiclePlugged  {channel="keba:kecontact:1:vehicle"}
 Switch KebaPlugLocked  {channel="keba:kecontact:1:locked"}
@@ -63,7 +72,7 @@ Number KebaU1  {channel="keba:kecontact:1:U1"}
 Number KebaU2  {channel="keba:kecontact:1:U2"}
 Number KebaU3  {channel="keba:kecontact:1:U3"}
 Number KebaPower  {channel="keba:kecontact:1:power"}
-Number KebaSessionEnergy  {channel="keba:kecontact:1:sessionconsumptio"}
+Number KebaSessionEnergy  {channel="keba:kecontact:1:sessionconsumption"}
 Number KebaTotalEnergy  {channel="keba:kecontact:1:totalconsumption"}
 Switch KebaInputSwitch  {channel="keba:kecontact:1:input"}
 Switch KebaOutputSwitch  {channel="keba:kecontact:1:output"}
