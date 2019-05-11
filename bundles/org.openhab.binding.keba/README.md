@@ -33,7 +33,7 @@ All devices support the following channels (non exhaustive):
 | error1             | String    | yes       | error code state 1, if in error (see the KeContact FAQ)                |   |   |
 | error2             | String    | yes       | error code state 2, if in error (see the KeContact FAQ)                |   |   |
 | maxsystemcurrent   | Number    | yes       | maximum current the wallbox can deliver                                |   |   |
-| failsafecurrent    | Number    | yes       | maximum current the wallbox can delivers, if network is lost           |   |   |
+| failsafecurrent    | Number    | yes       | maximum current the wallbox can deliver, if network is lost            |   |   |
 | uptime             | DateTime  | yes       | system uptime since the last reset of the wallbox                      |   |   |
 | sessionconsumption | Number    | yes       | energy delivered in current session                                    |   |   |
 | totalconsumption   | Number    | yes       | total energy delivered since the last reset of the wallbox             |   |   |
