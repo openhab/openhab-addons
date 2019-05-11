@@ -14,34 +14,34 @@ The Keba KeContact P20/30 requires the ip address as the configuration parameter
 
 ## Channels
 
-All devices support the following channels (non exhaustive):
+All devices support the following channels:
 
-| Channel ID         | Item Type | Read-only | Description                                                            |   |   |
-|--------------------|-----------|-----------|------------------------------------------------------------------------|---|---|
-| state              | Number    | yes       | current operational state of the wallbox                               |   |   |
-| enabled            | Switch    | no        | activation state of the wallbox                                        |   |   |
-| maxpresetcurrent   | Number    | no        | maximum current the charging station should deliver to the EV          |   |   |
-| power              | Number    | yes       | active power delivered by the charging station                         |   |   |
-| wallbox            | Switch    | yes       | plug state of wallbox                                                  |   |   |
-| vehicle            | Switch    | yes       | plug state of vehicle                                                  |   |   |
-| locked             | Switch    | yes       | lock state of plug at vehicle                                          |   |   |
-| I1/2/3             | Number    | yes       | current for the given phase                                            |   |   |
-| U1/2/3             | Number    | yes       | voltage for the given phase                                            |   |   |
-| output             | Switch    | no        | state of the X1 relais                                                 |   |   |
-| input              | Switch    | yes       | state of the X2 contact                                                |   |   |
-| display            | String    | yes       | display text on wallbox                                                |   |   |
-| error1             | String    | yes       | error code state 1, if in error (see the KeContact FAQ)                |   |   |
-| error2             | String    | yes       | error code state 2, if in error (see the KeContact FAQ)                |   |   |
-| maxsystemcurrent   | Number    | yes       | maximum current the wallbox can deliver                                |   |   |
-| failsafecurrent    | Number    | yes       | maximum current the wallbox can deliver, if network is lost            |   |   |
-| uptime             | DateTime  | yes       | system uptime since the last reset of the wallbox                      |   |   |
-| sessionconsumption | Number    | yes       | energy delivered in current session                                    |   |   |
-| totalconsumption   | Number    | yes       | total energy delivered since the last reset of the wallbox             |   |   |
-| authreq            | Switch    | yes       | authentication required                                                |   |   |
-| authon             | Switch    | yes       | authentication enabled                                                 |   |   |
-| sessionrfidtag     | String    | yes       | RFID tag used for the last charging session                            |   |   |
-| sessionrfidclass   | String    | yes       | RFID tag class used for the last charging session                      |   |   |
-| sessionid          | Number    | yes       | session ID of the last charging session                                |   |   |
+| Channel ID         | Item Type | Read-only | Description                                                            |
+|--------------------|-----------|-----------|------------------------------------------------------------------------|
+| state              | Number    | yes       | current operational state of the wallbox                               |
+| enabled            | Switch    | no        | activation state of the wallbox                                        |
+| maxpresetcurrent   | Number    | no        | maximum current the charging station should deliver to the EV          |
+| power              | Number    | yes       | active power delivered by the charging station                         |
+| wallbox            | Switch    | yes       | plug state of wallbox                                                  |
+| vehicle            | Switch    | yes       | plug state of vehicle                                                  |
+| locked             | Switch    | yes       | lock state of plug at vehicle                                          |
+| I1/2/3             | Number    | yes       | current for the given phase                                            |
+| U1/2/3             | Number    | yes       | voltage for the given phase                                            |
+| output             | Switch    | no        | state of the X1 relais                                                 |
+| input              | Switch    | yes       | state of the X2 contact                                                |
+| display            | String    | yes       | display text on wallbox                                                |
+| error1             | String    | yes       | error code state 1, if in error (see the KeContact FAQ)                |
+| error2             | String    | yes       | error code state 2, if in error (see the KeContact FAQ)                |
+| maxsystemcurrent   | Number    | yes       | maximum current the wallbox can deliver                                |
+| failsafecurrent    | Number    | yes       | maximum current the wallbox can deliver, if network is lost            |
+| uptime             | DateTime  | yes       | system uptime since the last reset of the wallbox                      |
+| sessionconsumption | Number    | yes       | energy delivered in current session                                    |
+| totalconsumption   | Number    | yes       | total energy delivered since the last reset of the wallbox             |
+| authreq            | Switch    | yes       | authentication required                                                |
+| authon             | Switch    | yes       | authentication enabled                                                 |
+| sessionrfidtag     | String    | yes       | RFID tag used for the last charging session                            |
+| sessionrfidclass   | String    | yes       | RFID tag class used for the last charging session                      |
+| sessionid          | Number    | yes       | session ID of the last charging session                                |
 
 
 ## Example
