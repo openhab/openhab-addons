@@ -17,7 +17,7 @@ The Keba KeContact P20/30 requires the ip address as the configuration parameter
 All devices support the following channels (non exhaustive):
 
 | Channel ID         | Item Type | Read-only | Description                                                            |   |   |
-|--------------------|-----------|------------------------------------------------------------------------------------|---|---|
+|--------------------|-----------|-----------|------------------------------------------------------------------------|---|---|
 | state              | Number    | yes       | current operational state of the wallbox                               |   |   |
 | enabled            | Switch    | no        | activation state of the wallbox                                        |   |   |
 | maxpresetcurrent   | Number    | no        | maximum current the charging station should deliver to the EV          |   |   |
