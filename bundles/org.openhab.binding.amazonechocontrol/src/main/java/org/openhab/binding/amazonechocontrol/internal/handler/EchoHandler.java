@@ -874,6 +874,13 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
                             if (StringUtils.startsWith(musicProviderId, "TUNEIN")) {
                                 musicProviderId = "TUNEIN";
                             }
+                            if (StringUtils.startsWithIgnoreCase(musicProviderId, "iHeartRadio")) {
+                                musicProviderId = "I_HEART_RADIO";
+                            }
+                            if (StringUtils.containsIgnoreCase(musicProviderId, "Apple")
+                                    && StringUtils.containsIgnoreCase(musicProviderId, "Music")) {
+                                musicProviderId = "APPLE_MUSIC";
+                            } 
                         }
                     }
                     progress = playerInfo.progress;
