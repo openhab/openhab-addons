@@ -80,6 +80,11 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
     private void initializeThing(ThingStatus bridgeStatus) {
         logger.debug("initializeThing thing {} bridge status {}", getThing().getUID(), bridgeStatus);
 
+        if(this.itemChannelLinkRegistry == null) {
+        	updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "ItemChannelLinkRegistry could not be found");
+        	return;
+        }
+        
         if (getBridgeHandler() != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
                 initializeConfig();

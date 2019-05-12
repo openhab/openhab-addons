@@ -164,6 +164,11 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
     public void initialize() {
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "trying to connect to gateway...");
+        if(this.serialPortManager == null) {
+        	updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "SerialPortManager could not be found");
+        	return;
+        }
+        
         Object devId = getConfig().get(NEXTSENDERID);
         if (devId != null) {
             nextSenderId = ((BigDecimal) devId).intValue();

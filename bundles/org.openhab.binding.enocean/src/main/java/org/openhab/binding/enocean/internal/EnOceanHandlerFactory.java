@@ -15,7 +15,6 @@ package org.openhab.binding.enocean.internal;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,8 +55,11 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    private SerialPortManager serialPortManager;
-    private ItemChannelLinkRegistry itemChannelLinkRegistry;
+    @Reference
+    SerialPortManager serialPortManager;
+    
+    @Reference
+    ItemChannelLinkRegistry itemChannelLinkRegistry;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -70,10 +72,6 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (EnOceanBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            if (serialPortManager == null) {
-                return null;
-            }
-
             EnOceanBridgeHandler bridgeHandler = new EnOceanBridgeHandler((Bridge) thing, serialPortManager);
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
@@ -104,34 +102,5 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
         discoveryService.activate();
         this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
-    }
-
-    @Reference
-    protected void setSerialPortManager(SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
-    }
-
-    /**
-     * Sets the item channel link registry.
-     *
-     * @param itemChannelLinkRegistry the non-null item channel link registry
-     */
-    @Reference
-    public void setItemChannelLinkRegistry(ItemChannelLinkRegistry itemChannelLinkRegistry) {
-        Objects.requireNonNull(itemChannelLinkRegistry, "itemChannelLinkRegistry cannot be null");
-        this.itemChannelLinkRegistry = itemChannelLinkRegistry;
-    }
-
-    /**
-     * Unset item channel link registry.
-     *
-     * @param itemChannelLinkRegistry the item channel link registry (ignored)
-     */
-    public void unsetItemChannelLinkRegistry(ItemChannelLinkRegistry itemChannelLinkRegistry) {
-        this.itemChannelLinkRegistry = null;
     }
 }
