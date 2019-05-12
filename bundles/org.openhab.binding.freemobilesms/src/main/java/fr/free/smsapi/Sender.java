@@ -66,7 +66,6 @@ public class Sender {
     }
 
     public void send(URL url) throws IOException {
-        InputStream stream = null;
         HttpsURLConnection connection = null;
         try {
             connection = (HttpsURLConnection) url.openConnection();
@@ -86,15 +85,13 @@ public class Sender {
                 throw new IOException("HTTP error code: " + responseCode);
             }
             // Retrieve the response body as an InputStream.
-            stream = connection.getInputStream();
-            if (stream != null) {
-                // FIXME read stream
+            try (InputStream stream = connection.getInputStream()) {
+                if (stream != null) {
+                    // FIXME read stream
+                }
             }
         } finally {
-            // Close Stream and disconnect HTTPS connection.
-            if (stream != null) {
-                stream.close();
-            }
+            // Disconnect HTTPS connection.
             if (connection != null) {
                 connection.disconnect();
             }
