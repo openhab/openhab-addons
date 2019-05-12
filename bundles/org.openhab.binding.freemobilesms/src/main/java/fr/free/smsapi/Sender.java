@@ -33,8 +33,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Sender {
 
-    static public String DEFAULT_URL = "https://smsapi.free-mobile.fr/sendmsg";
-    static String charset = "UTF-8";
+    static public final String DEFAULT_URL = "https://smsapi.free-mobile.fr/sendmsg";
+
+    static final String charset = "UTF-8";
 
     private final Logger logger = LoggerFactory.getLogger(Sender.class);
 
