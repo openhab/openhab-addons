@@ -49,7 +49,7 @@ public class Sender {
         this.url = DEFAULT_URL;
     }
 
-    public String getQuerry(Account account, String message) throws UnsupportedEncodingException {
+    public String getQuery(Account account, String message) throws UnsupportedEncodingException {
         String query = String.format("%s?user=%s&pass=%s&msg=%s",
                 this.url,
                 URLEncoder.encode(account.getUser(), charset),
@@ -59,7 +59,7 @@ public class Sender {
     }
 
     public void send(Account account, String message) throws IOException {
-        String urlString = getQuerry(account, message);
+        String urlString = getQuery(account, message);
         logger.debug("Computed request: {}", urlString);
         URL url = new URL(urlString);
         send(url);
