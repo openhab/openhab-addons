@@ -17,7 +17,6 @@ import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstan
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.Properties;
@@ -54,7 +53,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
-    private static final int REQUEST_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(30);
+    private static final int REQUEST_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(20);
     private final Logger logger = LoggerFactory.getLogger(VolvoOnCallBridgeHandler.class);
     private final Properties httpHeader = new Properties();
     private final Gson gson;
@@ -88,23 +87,18 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
         logger.debug("Initializing VolvoOnCall API bridge handler.");
         VolvoOnCallBridgeConfiguration configuration = getConfigAs(VolvoOnCallBridgeConfiguration.class);
 
+        httpHeader.setProperty("Authorization", configuration.getAuthorization());
         try {
-            httpHeader.setProperty("Authorization", configuration.getAuthorization());
-            try {
-                customerAccount = getURL(SERVICE_URL + "customeraccounts/", CustomerAccounts.class);
-                if (customerAccount.username != null) {
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Incorrect username or password");
-                }
-            } catch (IOException | JsonSyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            customerAccount = getURL(SERVICE_URL + "customeraccounts/", CustomerAccounts.class);
+            if (customerAccount.username != null) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Incorrect username or password");
             }
-        } catch (UnsupportedEncodingException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        } catch (IOException | JsonSyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-
     }
 
     @Override
@@ -144,7 +138,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Success !");
                 return true;
             } else {
-                logger.debug("Loop finished with status {}", postResponse.status.toString());
+                logger.debug("Loop finished with status {}", postResponse.status);
             }
         } else {
             logger.warn(postResponse.errorDescription);

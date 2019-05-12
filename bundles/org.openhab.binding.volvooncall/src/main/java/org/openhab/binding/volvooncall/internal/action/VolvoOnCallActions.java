@@ -54,7 +54,6 @@ public abstract class VolvoOnCallActions implements ThingActions {
             handler.actionClose();
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
-            return;
         }
     }
 
@@ -73,7 +72,6 @@ public abstract class VolvoOnCallActions implements ThingActions {
             handler.actionOpen();
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
-            return;
         }
     }
 
@@ -92,7 +90,6 @@ public abstract class VolvoOnCallActions implements ThingActions {
             handler.actionStart(runtime != null ? runtime : 5);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
-            return;
         }
     }
 
@@ -111,7 +108,6 @@ public abstract class VolvoOnCallActions implements ThingActions {
             handler.actionHeater(true);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
-            return;
         }
     }
 
@@ -130,7 +126,6 @@ public abstract class VolvoOnCallActions implements ThingActions {
             handler.actionHeater(false);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
-            return;
         }
     }
 
@@ -150,7 +145,6 @@ public abstract class VolvoOnCallActions implements ThingActions {
             handler.actionHonkBlink(honk, blink);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
-            return;
         }
     }
 

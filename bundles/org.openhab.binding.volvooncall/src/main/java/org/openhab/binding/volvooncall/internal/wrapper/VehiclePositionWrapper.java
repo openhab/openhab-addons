@@ -35,7 +35,6 @@ public class VehiclePositionWrapper {
     private final Position vehicle;
 
     public VehiclePositionWrapper(Position vehicle) {
-        super();
         this.vehicle = vehicle;
     }
 

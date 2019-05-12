@@ -34,9 +34,9 @@ public class TripDetail {
     public @Nullable Integer fuelConsumption;
     public @Nullable Integer electricalConsumption;
     public @Nullable Integer electricalRegeneration;
-    public @NonNullByDefault({}) Integer distance;
-    public @NonNullByDefault({}) Integer startOdometer;
-    public @NonNullByDefault({}) Integer endOdometer;
+    public int distance;
+    public int startOdometer;
+    public int endOdometer;
     private @Nullable ZonedDateTime endTime;
     private @Nullable ZonedDateTime startTime;
     private @NonNullByDefault({}) PositionData startPosition;

@@ -11,7 +11,6 @@
 		</supported-bridge-type-refs>
 
 		<label>Volvo Vehicle</label>
-		<!-- description>Thing for a Volvo Car</description-->
 
 		<channel-groups>
 			<channel-group typeId="doors" id="doors" />
@@ -32,7 +31,7 @@
 			</parameter>
 
 			<parameter name="refresh" type="integer" min="5" required="false">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in minutes.</description>
 				<default>5</default>
 			</parameter>
@@ -87,7 +86,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="doors">
-		<label>Doors opening status</label>
+		<label>Doors Opening Status</label>
 		<channels>
 			<channel id="tailgate" typeId="door" >
 				<label>Tailgate</label>
@@ -112,10 +111,10 @@
 	</channel-group-type>
 
 	<channel-group-type id="windows">
-		<label>Windows opening status</label>
+		<label>Windows Opening Status</label>
 		<channels>
 			<channel id="rearRightWnd" typeId="window">
-				<label>Rear right</label>
+				<label>Rear Right</label>
 			</channel>
 			<channel id="rearLeftWnd" typeId="window" >
 				<label>Rear Left</label>
@@ -130,7 +129,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="odometer">
-		<label>Trip meters</label>
+		<label>Trip Meters</label>
 		<channels>
 			<channel id="odometer" typeId="odometer" />
 			<channel id="tripmeter1" typeId="odometer">
@@ -160,7 +159,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="position">
-		<label>Location info</label>
+		<label>Location Info</label>
 		<channels>
 			<channel id="location" typeId="location">
 				 <label>Location</label>
@@ -185,13 +184,13 @@
 	<channel-type id="tripDuration">
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
-		<description>Trip duration</description>
+		<description>Trip Duration</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="window">
 		<item-type>Contact</item-type>
-		<label>Window status</label>
+		<label>Window Status</label>
 		<description>Indicates if the window is opened</description>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -219,7 +218,7 @@
 	<channel-type id="fuelConsumption" advanced="true">
 		<item-type>Number</item-type>
 		<label>Average Consumption</label>
-		<description>Indicates the average fuel consumption</description>
+		<description>Indicates the average fuel consumption in L/100km</description>
 		<state pattern="%.1f L/100km" readOnly="true"></state>
 	</channel-type>
 
@@ -296,7 +295,7 @@
     
     <channel-type id="fuelAlert">
         <item-type>Switch</item-type>
-        <label>Fuel alarm</label>
+        <label>Fuel Alarm</label>
         <description>set to 'ON' when the tank level is low</description>
         <state readOnly="true" />
     </channel-type>	

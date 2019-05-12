@@ -145,10 +145,8 @@ public class VehicleHandler extends BaseThingHandler {
      */
     private void startAutomaticRefresh(int refresh) {
         if (refreshJob == null || (refreshJob != null && refreshJob.isCancelled())) {
-            Runnable runnable = () -> {
-                queryApiAndUpdateChannels();
-            };
-            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 10, refresh, TimeUnit.MINUTES);
+            refreshJob = scheduler.scheduleWithFixedDelay(this::queryApiAndUpdateChannels, 10, refresh,
+                    TimeUnit.MINUTES);
         }
     }
 
@@ -169,7 +167,7 @@ public class VehicleHandler extends BaseThingHandler {
                         });
                 updateTrips(bridgeHandler, configuration.vin);
             } catch (JsonSyntaxException | IOException e) {
-                logger.error("Exception occurred during execution: {}", e.getMessage(), e);
+                logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 refreshJob = null;
                 startAutomaticRefresh(configuration.refresh);
@@ -339,7 +337,7 @@ public class VehicleHandler extends BaseThingHandler {
             try {
                 bridgeHandler.postURL(url.toString(), vehiclePosition.getPositionAsJSon());
             } catch (JsonSyntaxException | IOException | InterruptedException e) {
-                logger.error("Exception occurred during execution: {}", e.getMessage(), e);
+                logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -356,7 +354,7 @@ public class VehicleHandler extends BaseThingHandler {
                             queryApiAndUpdateChannels();
                         }
                     } catch (JsonSyntaxException | IOException | InterruptedException e) {
-                        logger.error("Exception occurred during execution: {}", e.getMessage(), e);
+                        logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     }
                 } else {
@@ -380,7 +378,7 @@ public class VehicleHandler extends BaseThingHandler {
                         queryApiAndUpdateChannels();
                     }
                 } catch (JsonSyntaxException | IOException | InterruptedException e) {
-                    logger.error("Exception occurred during execution: {}", e.getMessage(), e);
+                    logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             } else {
@@ -411,7 +409,7 @@ public class VehicleHandler extends BaseThingHandler {
                 try {
                     bridgeHandler.postURL(url, json);
                 } catch (JsonSyntaxException | IOException | InterruptedException e) {
-                    logger.error("Exception occurred during execution: {}", e.getMessage(), e);
+                    logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             } else {

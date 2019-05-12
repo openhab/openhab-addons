@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.volvooncall.internal.config;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 /**
@@ -25,8 +25,8 @@ public class VolvoOnCallBridgeConfiguration {
     public String username;
     public String password;
 
-    public String getAuthorization() throws UnsupportedEncodingException {
+    public String getAuthorization() {
         byte[] authorization = Base64.getEncoder().encode((username + ":" + password).getBytes());
-        return "Basic " + new String(authorization, "UTF-8");
+        return "Basic " + new String(authorization, StandardCharsets.UTF_8);
     }
 }
