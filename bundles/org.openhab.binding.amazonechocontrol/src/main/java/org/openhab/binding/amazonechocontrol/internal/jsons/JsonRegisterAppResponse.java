@@ -29,19 +29,21 @@ public class JsonRegisterAppResponse {
     @Nullable
     public String request_id;
 
-    public class Response {
+    public static class Response {
         @Nullable
         public Success success;
     }
 
-    public class Success {
+    public static class Success {
         @Nullable
         public Extensions extensions;
         @Nullable
         public Tokens tokens;
+        @Nullable
+        public String customer_id;
     }
 
-    public class Extensions {
+    public static class Extensions {
         @Nullable
         public DeviceInfo device_info;
         @Nullable
@@ -50,7 +52,7 @@ public class JsonRegisterAppResponse {
         public String customer_id;
     }
 
-    public class DeviceInfo {
+    public static class DeviceInfo {
         @Nullable
         public String device_name;
         @Nullable
@@ -60,7 +62,7 @@ public class JsonRegisterAppResponse {
 
     }
 
-    public class CustomerInfo {
+    public static class CustomerInfo {
         @Nullable
         public String account_pool;
         @Nullable
@@ -73,7 +75,7 @@ public class JsonRegisterAppResponse {
         public String given_name;
     }
 
-    public class Tokens {
+    public static class Tokens {
         @Nullable
         public Object website_cookies;
         @Nullable
@@ -82,14 +84,14 @@ public class JsonRegisterAppResponse {
         public Bearer bearer;
     }
 
-    public class MacDms {
+    public static class MacDms {
         @Nullable
         public String device_private_key;
         @Nullable
         public String adp_token;
     }
 
-    public class Bearer {
+    public static class Bearer {
         @Nullable
         public String access_token;
         @Nullable
