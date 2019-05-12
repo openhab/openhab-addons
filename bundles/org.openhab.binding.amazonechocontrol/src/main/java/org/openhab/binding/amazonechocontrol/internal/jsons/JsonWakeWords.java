@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class JsonWakeWords {
     public @Nullable WakeWord @Nullable [] wakeWords;
 
-    public class WakeWord {
+    public static class WakeWord {
         public @Nullable Boolean active;
         public @Nullable String deviceSerialNumber;
         public @Nullable String deviceType;

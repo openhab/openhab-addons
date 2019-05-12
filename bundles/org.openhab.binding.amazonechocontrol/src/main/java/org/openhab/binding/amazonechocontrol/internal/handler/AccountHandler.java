@@ -185,7 +185,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             flashBriefingProfileHandlers.add(flashBriefingProfileHandler);
         }
         Connection connection = this.connection;
-        if (connection != null) {
+        if (connection != null && connection.getIsLoggedIn()) {
             if (currentFlashBriefingJson.isEmpty()) {
                 updateFlashBriefingProfiles(connection);
             }
