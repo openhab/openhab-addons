@@ -29,7 +29,7 @@ public class JsonActivities {
 
     public @Nullable Activity @Nullable [] activities;
 
-    public class Activity {
+    public static class Activity {
         public @Nullable String activityStatus;
         public @Nullable Long creationTimestamp;
         public @Nullable String description;
@@ -45,14 +45,14 @@ public class JsonActivities {
         public @Nullable String utteranceId;
         public @Nullable Long version;
 
-        public class SourceDeviceId {
+        public static class SourceDeviceId {
             public @Nullable String deviceAccountId;
             public @Nullable String deviceType;
             public @Nullable String serialNumber;
 
         }
 
-        public class Description {
+        public static class Description {
 
             public @Nullable String summary;
             public @Nullable String firstUtteranceId;
