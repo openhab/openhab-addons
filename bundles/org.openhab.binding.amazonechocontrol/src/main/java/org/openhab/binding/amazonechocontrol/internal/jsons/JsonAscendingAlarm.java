@@ -25,7 +25,7 @@ public class JsonAscendingAlarm {
 
     public @Nullable AscendingAlarmModel @Nullable [] ascendingAlarmModelList;
 
-    public class AscendingAlarmModel {
+    public static class AscendingAlarmModel {
         public @Nullable Boolean ascendingAlarmEnabled;
         public @Nullable String deviceSerialNumber;
         public @Nullable String deviceType;
