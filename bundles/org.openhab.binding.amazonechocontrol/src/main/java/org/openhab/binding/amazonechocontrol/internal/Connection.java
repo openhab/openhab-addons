@@ -483,7 +483,9 @@ public class Connection {
     public String makeRequestAndReturnString(String verb, String url, @Nullable String postData, boolean json,
             @Nullable Map<String, String> customHeaders) throws IOException, URISyntaxException {
         HttpsURLConnection connection = makeRequest(verb, url, postData, json, true, customHeaders, false);
-        return convertStream(connection);
+        String result = convertStream(connection);
+        this.logger.debug("Result of {} {}:{}", verb, url, result);
+        return result;
     }
 
     public HttpsURLConnection makeRequest(String verb, String url, @Nullable String postData, boolean json,
