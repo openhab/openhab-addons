@@ -866,7 +866,7 @@ public class Connection {
     private <T> T parseJson(String json, Class<T> type) throws JsonSyntaxException {
         try {
             return gson.fromJson(json, type);
-        } catch (JsonSyntaxException e) {
+        } catch (JsonSyntaxException | JsonParseException | IllegalStateException e) {
             logger.warn("Parsing json failed {}", e);
             logger.warn("Illegal json: {}", json);
             throw e;
