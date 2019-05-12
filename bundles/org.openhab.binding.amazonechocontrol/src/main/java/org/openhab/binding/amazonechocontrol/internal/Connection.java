@@ -99,6 +99,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -809,7 +810,7 @@ public class Connection {
     private <T> T parseJson(String json, Class<T> type) throws JsonSyntaxException {
         try {
             return gson.fromJson(json, type);
-        } catch (JsonSyntaxException e) {
+        } catch (JsonParseException | IllegalStateException e) {
             logger.warn("Parsing json failed {}", e);
             logger.warn("Illegal json: {}", json);
             throw e;
@@ -1051,7 +1052,7 @@ public class Connection {
         JsonAnnouncementTarget target = new JsonAnnouncementTarget();
         target.customerId = device.deviceOwnerCustomerId;
         TargetDevice[] devices = new TargetDevice[1];
-        TargetDevice deviceTarget = target.new TargetDevice();
+        TargetDevice deviceTarget = new TargetDevice();
         deviceTarget.deviceSerialNumber = device.serialNumber;
         deviceTarget.deviceTypeId = device.deviceType;
         devices[0] = deviceTarget;

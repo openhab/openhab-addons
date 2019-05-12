@@ -25,7 +25,7 @@ public class JsonCommandPayloadPushDevice {
 
     public @Nullable DopplerId dopplerId;
 
-    public class DopplerId {
+    public static class DopplerId {
         public @Nullable String deviceSerialNumber;
         public @Nullable String deviceType;
     }
