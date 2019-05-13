@@ -600,7 +600,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
 
         message.method = "devices.control";
         ArrayList<NhcMessageParam> params = new ArrayList<>();
-        NhcMessageParam param = message.new NhcMessageParam();
+        NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
         ArrayList<NhcDevice2> devices = new ArrayList<>();
@@ -609,7 +609,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         param.devices = devices;
         device.uuid = actionId;
         device.properties = new ArrayList<>();
-        NhcProperty property = device.new NhcProperty();
+        NhcProperty property = new NhcProperty();
         device.properties.add(property);
 
         NhcAction2 action = (NhcAction2) actions.get(actionId);
@@ -662,7 +662,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
 
         message.method = "devices.control";
         ArrayList<NhcMessageParam> params = new ArrayList<>();
-        NhcMessageParam param = message.new NhcMessageParam();
+        NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
         ArrayList<NhcDevice2> devices = new ArrayList<>();
@@ -672,11 +672,11 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         device.uuid = thermostatId;
         device.properties = new ArrayList<>();
 
-        NhcProperty overruleActiveProp = device.new NhcProperty();
+        NhcProperty overruleActiveProp = new NhcProperty();
         device.properties.add(overruleActiveProp);
         overruleActiveProp.overruleActive = "False";
 
-        NhcProperty program = device.new NhcProperty();
+        NhcProperty program = new NhcProperty();
         device.properties.add(program);
         program.program = mode;
 
@@ -691,7 +691,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
 
         message.method = "devices.control";
         ArrayList<NhcMessageParam> params = new ArrayList<>();
-        NhcMessageParam param = message.new NhcMessageParam();
+        NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
         ArrayList<NhcDevice2> devices = new ArrayList<>();
@@ -702,19 +702,19 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         device.properties = new ArrayList<>();
 
         if (overruleTime > 0) {
-            NhcProperty overruleActiveProp = device.new NhcProperty();
+            NhcProperty overruleActiveProp = new NhcProperty();
             overruleActiveProp.overruleActive = "True";
             device.properties.add(overruleActiveProp);
 
-            NhcProperty overruleSetpointProp = device.new NhcProperty();
+            NhcProperty overruleSetpointProp = new NhcProperty();
             overruleSetpointProp.overruleSetpoint = String.valueOf(overruleTemp);
             device.properties.add(overruleSetpointProp);
 
-            NhcProperty overruleTimeProp = device.new NhcProperty();
+            NhcProperty overruleTimeProp = new NhcProperty();
             overruleTimeProp.overruleTime = String.valueOf(overruleTime);
             device.properties.add(overruleTimeProp);
         } else {
-            NhcProperty overruleActiveProp = device.new NhcProperty();
+            NhcProperty overruleActiveProp = new NhcProperty();
             overruleActiveProp.overruleActive = "False";
             device.properties.add(overruleActiveProp);
         }
