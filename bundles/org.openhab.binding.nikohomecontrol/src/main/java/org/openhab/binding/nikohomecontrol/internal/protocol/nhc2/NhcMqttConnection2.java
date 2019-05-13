@@ -76,8 +76,6 @@ public class NhcMqttConnection2 implements MqttActionCallback {
 
     NhcMqttConnection2(String clientId, String persistencePath) throws CertificateException {
         persistenceBasePath = Paths.get(persistencePath).resolve("nikohomecontrol");
-        // to be removed after testing
-        logger.debug("Niko Home Control: base persistence path set to {}", persistenceBasePath);
         sslContextProvider = getSSLContext();
         this.clientId = clientId;
     }
@@ -220,8 +218,6 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     private MqttBrokerConnection createMqttConnection(MqttMessageSubscriber subscriber, @Nullable String username,
             @Nullable String password, @Nullable String clientId) throws MqttException {
         Path persistencePath = persistenceBasePath.resolve(clientId);
-        // to remove after testing
-        logger.debug("Niko Home Control: persistence path set to {}", persistencePath);
         MqttBrokerConnection connection = new MqttBrokerConnection(cocoAddress, port, true, clientId);
         connection.setPersistencePath(persistencePath);
         connection.setSSLContextProvider(sslContextProvider);
