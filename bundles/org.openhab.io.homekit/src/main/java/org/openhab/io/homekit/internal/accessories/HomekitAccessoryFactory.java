@@ -37,11 +37,11 @@ import com.beowulfe.hap.HomekitAccessory;
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitAccessoryFactory {
-    private final static Logger logger = LoggerFactory.getLogger(HomekitAccessoryFactory.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(HomekitAccessoryFactory.class);
 
     public static HomekitAccessory create(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws Exception {
-        logger.debug("Constructing {} of accessoryType {}", taggedItem.getName(), taggedItem.getAccessoryType());
+        LOGGER.debug("Constructing {} of accessoryType {}", taggedItem.getName(), taggedItem.getAccessoryType());
 
         Map<HomekitCharacteristicType, Item> characteristicItems = getCharacteristicItems(taggedItem);
 
@@ -143,7 +143,7 @@ public class HomekitAccessoryFactory {
      */
     private static Optional<HomekitTaggedItem> getPrimaryAccessory(HomekitTaggedItem taggedItem,
             HomekitAccessoryType accessoryType, ItemRegistry itemRegistry) {
-        logger.info("{}: isGroup? {}, isMember? {}", taggedItem.getName(), taggedItem.isGroup(),
+        LOGGER.debug("{}: isGroup? {}, isMember? {}", taggedItem.getName(), taggedItem.isGroup(),
                 taggedItem.isMemberOfAccessoryGroup());
         if (taggedItem.isGroup()) {
             GroupItem groupItem = (GroupItem) taggedItem.getItem();

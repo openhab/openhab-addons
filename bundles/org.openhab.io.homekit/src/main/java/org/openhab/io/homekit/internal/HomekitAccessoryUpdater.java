@@ -42,18 +42,17 @@ public class HomekitAccessoryUpdater {
     }
 
     public void subscribe(GenericItem item, String key, HomekitCharacteristicChangeCallback callback) {
+        logger.debug("Received subscription request for {} / {}: {}", item, key, callback);
         if (item == null) {
             return;
         }
         ItemKey itemKey = new ItemKey(item, key);
-        if (subscriptionsByName.containsKey(itemKey)) {
-            logger.error("Received duplicate subscription on {}", item.getName());
-        }
         subscriptionsByName.compute(itemKey, (k, v) -> {
             if (v != null) {
-                logger.error("Received duplicate subscription on {}", item.getName());
+                logger.debug("Received duplicate subscription for {} / {}", item, key);
                 unsubscribe(item, key);
             }
+            logger.debug("Adding subscription for {} / {}: {}", item, key, callback);
             Subscription subscription = (changedItem, oldState, newState) -> callback.changed();
             item.addStateChangeListener(subscription);
             return subscription;
@@ -134,5 +133,4 @@ public class HomekitAccessoryUpdater {
             return true;
         }
     }
-
 }
