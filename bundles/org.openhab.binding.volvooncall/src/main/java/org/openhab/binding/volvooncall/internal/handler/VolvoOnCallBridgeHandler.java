@@ -19,7 +19,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Properties;
+import java.util.Stack;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,6 +58,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
     private static final int REQUEST_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(20);
     private final Logger logger = LoggerFactory.getLogger(VolvoOnCallBridgeHandler.class);
     private final Properties httpHeader = new Properties();
+    private final List<ScheduledFuture<?>> pendingActions = new Stack<>();
     private final Gson gson;
 
     private @NonNullByDefault({}) CustomerAccounts customerAccount;
@@ -157,9 +161,17 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
         String jsonString = HttpUtil.executeUrl("POST", URL, httpHeader, inputStream, null, REQUEST_TIMEOUT);
         PostResponse postResponse = gson.fromJson(jsonString, PostResponse.class);
         if (postResponse.errorLabel == null) {
-            scheduler.schedule(new ActionResultControler(postResponse), 1000, TimeUnit.MILLISECONDS);
+            pendingActions
+                    .add(scheduler.schedule(new ActionResultControler(postResponse), 1000, TimeUnit.MILLISECONDS));
         } else {
             logger.warn(postResponse.errorDescription);
         }
+        pendingActions.removeIf(ScheduledFuture<?>::isDone);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        pendingActions.stream().filter(f -> !f.isCancelled()).forEach(f -> f.cancel(true));
     }
 }
