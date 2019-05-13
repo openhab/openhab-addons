@@ -81,6 +81,7 @@ public class VehicleHandler extends BaseThingHandler {
     private Vehicles vehicle = new Vehicles();
     private VehiclePositionWrapper vehiclePosition = new VehiclePositionWrapper(new Position());
     private Status vehicleStatus = new Status();
+    private @NonNullByDefault({}) VehicleConfiguration configuration;
     private Integer lastTripId = 0;
 
     public VehicleHandler(Thing thing, VehicleStateDescriptionProvider stateDescriptionProvider) {
@@ -114,7 +115,7 @@ public class VehicleHandler extends BaseThingHandler {
 
         VolvoOnCallBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
-            VehicleConfiguration configuration = getConfigAs(VehicleConfiguration.class);
+            configuration = getConfigAs(VehicleConfiguration.class);
             try {
                 vehicle = bridgeHandler.getURL(SERVICE_URL + "vehicles/" + configuration.vin, Vehicles.class);
 
@@ -150,10 +151,9 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void queryApiAndUpdateChannels() {
+    public void queryApiAndUpdateChannels() {
         VolvoOnCallBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
-            VehicleConfiguration configuration = getConfigAs(VehicleConfiguration.class);
             try {
                 vehicleStatus = bridgeHandler.getURL(Status.class, configuration.vin);
                 vehiclePosition = new VehiclePositionWrapper(bridgeHandler.getURL(Position.class, configuration.vin));
@@ -165,7 +165,7 @@ public class VehicleHandler extends BaseThingHandler {
 
                             updateState(channelUID, state);
                         });
-                updateTrips(bridgeHandler, configuration.vin);
+                updateTrips(bridgeHandler);
             } catch (JsonSyntaxException | IOException e) {
                 logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -175,10 +175,9 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void updateTrips(VolvoOnCallBridgeHandler bridgeHandler, String vin)
-            throws JsonSyntaxException, IOException {
+    private void updateTrips(VolvoOnCallBridgeHandler bridgeHandler) throws JsonSyntaxException, IOException {
         // This seems to rewind 100 days by default, did not find any way to filter it
-        Trips carTrips = bridgeHandler.getURL(Trips.class, vin);
+        Trips carTrips = bridgeHandler.getURL(Trips.class, configuration.vin);
         List<Trip> tripList = carTrips.trips;
 
         if (tripList != null) {
@@ -239,7 +238,7 @@ public class VehicleHandler extends BaseThingHandler {
                     return UnDefType.UNDEF;
                 }
             case TRIP_DISTANCE:
-                return new QuantityType<Length>(tripDetails.distance.floatValue() / 1000, KILO(SIUnits.METRE));
+                return new QuantityType<Length>(tripDetails.distance / 1000, KILO(SIUnits.METRE));
             case TRIP_START_TIME:
                 return tripDetails.getStartTime();
             case TRIP_END_TIME:
@@ -247,9 +246,9 @@ public class VehicleHandler extends BaseThingHandler {
             case TRIP_DURATION:
                 return new QuantityType<Time>(tripDetails.getDurationInMinutes(), SmartHomeUnits.MINUTE);
             case TRIP_START_ODOMETER:
-                return new QuantityType<Length>(tripDetails.startOdometer.floatValue() / 1000, KILO(SIUnits.METRE));
+                return new QuantityType<Length>(tripDetails.startOdometer / 1000, KILO(SIUnits.METRE));
             case TRIP_STOP_ODOMETER:
-                return new QuantityType<Length>(tripDetails.endOdometer.floatValue() / 1000, KILO(SIUnits.METRE));
+                return new QuantityType<Length>(tripDetails.endOdometer / 1000, KILO(SIUnits.METRE));
             case TRIP_START_POSITION:
                 return tripDetails.getStartPosition();
             case TRIP_END_POSITION:
@@ -336,7 +335,7 @@ public class VehicleHandler extends BaseThingHandler {
 
             try {
                 bridgeHandler.postURL(url.toString(), vehiclePosition.getPositionAsJSon());
-            } catch (JsonSyntaxException | IOException | InterruptedException e) {
+            } catch (JsonSyntaxException | IOException e) {
                 logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
@@ -346,14 +345,11 @@ public class VehicleHandler extends BaseThingHandler {
     private void actionOpenClose(String action, OnOffType controlState) {
         VolvoOnCallBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
-            VehicleConfiguration configuration = getConfigAs(VehicleConfiguration.class);
             if (activeOptions.containsKey(action)) {
                 if (vehicleStatus.carLocked != controlState) {
                     try {
-                        if (bridgeHandler.postURL(SERVICE_URL + "vehicles/" + configuration.vin + "/" + action, null)) {
-                            queryApiAndUpdateChannels();
-                        }
-                    } catch (JsonSyntaxException | IOException | InterruptedException e) {
+                        bridgeHandler.postURL(SERVICE_URL + "vehicles/" + configuration.vin + "/" + action, null);
+                    } catch (JsonSyntaxException | IOException e) {
                         logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     }
@@ -369,15 +365,11 @@ public class VehicleHandler extends BaseThingHandler {
     private void actionHeater(String action, Boolean start) {
         VolvoOnCallBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
-            VehicleConfiguration configuration = getConfigAs(VehicleConfiguration.class);
             if (activeOptions.containsKey(action)) {
                 try {
                     String command = start ? "start" : "stop";
-                    if (bridgeHandler.postURL(SERVICE_URL + "vehicles/" + configuration.vin + "/heater/" + command,
-                            null)) {
-                        queryApiAndUpdateChannels();
-                    }
-                } catch (JsonSyntaxException | IOException | InterruptedException e) {
+                    bridgeHandler.postURL(SERVICE_URL + "vehicles/" + configuration.vin + "/heater/" + command, null);
+                } catch (JsonSyntaxException | IOException e) {
                     logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
@@ -408,13 +400,24 @@ public class VehicleHandler extends BaseThingHandler {
 
                 try {
                     bridgeHandler.postURL(url, json);
-                } catch (JsonSyntaxException | IOException | InterruptedException e) {
+                } catch (JsonSyntaxException | IOException e) {
                     logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             } else {
                 logger.warn("The car {} does not support remote engine starting", vehicle.vehicleId);
             }
+        }
+    }
+
+    /*
+     * Called by Bridge when it has to notify this of a potential state
+     * update
+     *
+     */
+    public void updateIfMatches(String vin) {
+        if (vin.equalsIgnoreCase(configuration.vin)) {
+            queryApiAndUpdateChannels();
         }
     }
 

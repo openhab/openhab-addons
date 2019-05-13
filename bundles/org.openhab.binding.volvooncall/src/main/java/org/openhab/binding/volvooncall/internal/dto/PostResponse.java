@@ -37,32 +37,32 @@ public class PostResponse {
         SUCCESSFULL
     }
 
+    public static enum ServiceType {
+        RHBLF, // Remote Honk and Blink Lights ?
+        RDU, // Remote door unlock
+        ERS, // Remote engine start
+        TN // Theft notification
+    }
+
     public @NonNullByDefault({}) Status status;
     public @Nullable String errorLabel;
     public @NonNullByDefault({}) String errorDescription;
-
+    public @NonNullByDefault({}) String vehicleId;
     @SerializedName("service")
     public @NonNullByDefault({}) String serviceURL;
+    public @NonNullByDefault({}) ServiceType serviceType;
 
     /*
      * Currently unused in the binding, maybe interesting in the future
-     * public static enum ServiceType {
-     * RHBLF, // Remote Honk and Blink Lights ?
-     * RDU, // Remote door unlock
-     * ERS, // Remote engine start
-     * TN // Theft notification
-     * }
      *
      * public static enum FailureReason {
-     * 
+     *
      * @SerializedName("TimeframePassed")
      * TIME_FRAME_PASSED
      * }
      *
      * private ZonedDateTime statusTimestamp;
-     * private String vehicleId;
      * private ZonedDateTime startTime;
-     * private ServiceType serviceType;
      * private FailureReason failureReason;
      *
      * private Integer customerServiceId;

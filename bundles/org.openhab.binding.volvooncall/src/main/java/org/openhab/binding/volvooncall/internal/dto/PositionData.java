@@ -33,7 +33,7 @@ public class PositionData {
     private @Nullable String heading;
 
     public Boolean isHeading() {
-        return heading != null ? heading.equalsIgnoreCase("true") : Boolean.FALSE;
+        return "true".equalsIgnoreCase(heading);
     }
 
     /*

@@ -81,12 +81,11 @@ public class VehiclePositionWrapper {
     }
 
     public State getTimestamp() {
-        if (vehicle.position.timestamp != null) {
-            return new DateTimeType(vehicle.position.timestamp.withZoneSameInstant(ZoneId.systemDefault()));
-        } else if (vehicle.calculatedPosition.timestamp != null) {
-            return new DateTimeType(vehicle.calculatedPosition.timestamp.withZoneSameInstant(ZoneId.systemDefault()));
-        } else {
-            return UnDefType.NULL;
-        }
+        return vehicle.position.timestamp != null
+                ? new DateTimeType(vehicle.position.timestamp.withZoneSameInstant(ZoneId.systemDefault()))
+                : vehicle.calculatedPosition.timestamp != null
+                        ? new DateTimeType(
+                                vehicle.calculatedPosition.timestamp.withZoneSameInstant(ZoneId.systemDefault()))
+                        : UnDefType.NULL;
     }
 }

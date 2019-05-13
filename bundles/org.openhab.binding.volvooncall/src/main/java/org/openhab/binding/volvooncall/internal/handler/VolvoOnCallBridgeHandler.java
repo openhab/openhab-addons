@@ -36,7 +36,6 @@ import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.volvooncall.internal.config.VolvoOnCallBridgeConfiguration;
 import org.openhab.binding.volvooncall.internal.dto.CustomerAccounts;
 import org.openhab.binding.volvooncall.internal.dto.PostResponse;
-import org.openhab.binding.volvooncall.internal.dto.PostResponse.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,25 +123,43 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
         return gson.fromJson(jsonResponse, objectClass);
     }
 
-    public boolean postURL(String URL, @Nullable String body)
-            throws IOException, InterruptedException, JsonSyntaxException {
+    public class ActionResultControler implements Runnable {
+        PostResponse postResponse;
+
+        public ActionResultControler(PostResponse postResponse) {
+            this.postResponse = postResponse;
+        }
+
+        @Override
+        public void run() {
+            switch (postResponse.status) {
+                case SUCCESSFULL:
+                case FAILED:
+                    logger.debug("Action status : {} for vehicle : {}.", postResponse.status.toString(),
+                            postResponse.vehicleId);
+                    getThing().getThings().stream().filter(VehicleHandler.class::isInstance)
+                            .map(VehicleHandler.class::cast)
+                            .forEach(handler -> handler.updateIfMatches(postResponse.vehicleId));
+                    break;
+                default:
+                    try {
+                        postResponse = getURL(postResponse.serviceURL, PostResponse.class);
+                        scheduler.schedule(new ActionResultControler(postResponse), 1000, TimeUnit.MILLISECONDS);
+                    } catch (JsonSyntaxException | IOException e) {
+                        logger.warn("Error calling : {} : {}", postResponse.serviceURL, e.getMessage());
+                    }
+            }
+        }
+    }
+
+    public void postURL(String URL, @Nullable String body) throws IOException, JsonSyntaxException {
         InputStream inputStream = body != null ? new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8)) : null;
         String jsonString = HttpUtil.executeUrl("POST", URL, httpHeader, inputStream, null, REQUEST_TIMEOUT);
         PostResponse postResponse = gson.fromJson(jsonString, PostResponse.class);
         if (postResponse.errorLabel == null) {
-            while (postResponse.status == Status.STARTED || postResponse.status == Status.DELIVERED) {
-                Thread.sleep(1000);
-                postResponse = getURL(postResponse.serviceURL, PostResponse.class);
-            }
-            if (postResponse.status == Status.SUCCESSFULL) {
-                logger.debug("Success !");
-                return true;
-            } else {
-                logger.debug("Loop finished with status {}", postResponse.status);
-            }
+            scheduler.schedule(new ActionResultControler(postResponse), 1000, TimeUnit.MILLISECONDS);
         } else {
             logger.warn(postResponse.errorDescription);
         }
-        return false;
     }
 }
