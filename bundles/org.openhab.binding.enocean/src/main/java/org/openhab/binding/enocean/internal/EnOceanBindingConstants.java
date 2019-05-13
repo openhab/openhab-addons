@@ -62,7 +62,7 @@ public class EnOceanBindingConstants {
     public final static ThingTypeUID THING_TYPE_GENERICTHING = new ThingTypeUID(BINDING_ID, "genericThing");
     public final static ThingTypeUID THING_TYPE_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "rollershutter");
 
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_PUSHBUTTON, THING_TYPE_ROCKERSWITCH, THING_TYPE_CLASSICDEVICE,
                     THING_TYPE_CENTRALCOMMAND, THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE,
                     THING_TYPE_CONTACT, THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_TEMPERATURESENSOR,

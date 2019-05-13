@@ -107,12 +107,12 @@ public class F6_02_02 extends _RPSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         // this method is used by the classic device listener channels to convert an rocker switch message into an
         // appropriate item update
-    	State currentState = getCurrentStateFunc.apply(channelId);
-    	
+        State currentState = getCurrentStateFunc.apply(channelId);
+
         if (!isValid()) {
             return UnDefType.UNDEF;
         }

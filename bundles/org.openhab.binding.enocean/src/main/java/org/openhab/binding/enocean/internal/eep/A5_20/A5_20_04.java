@@ -14,7 +14,6 @@ package org.openhab.binding.enocean.internal.eep.A5_20;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
-import java.util.Map;
 import java.util.function.Function;
 
 import javax.measure.quantity.Temperature;

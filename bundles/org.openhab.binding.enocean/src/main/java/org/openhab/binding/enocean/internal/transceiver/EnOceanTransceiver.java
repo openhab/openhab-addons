@@ -145,7 +145,7 @@ public abstract class EnOceanTransceiver {
     public EnOceanTransceiver(TransceiverErrorListener errorListener, ScheduledExecutorService scheduler) {
 
         requestQueue = new RequestQueue(scheduler);
-        listeners = new HashMap<Long, HashSet<ESP3PacketListener>>();
+        listeners = new HashMap<>();
         teachInListener = null;
         this.errorListener = errorListener;
     }
@@ -429,8 +429,7 @@ public abstract class EnOceanTransceiver {
 
     public void addPacketListener(ESP3PacketListener listener, long senderIdToListenTo) {
 
-        if (listeners.computeIfAbsent(senderIdToListenTo, k -> new HashSet<ESP3PacketListener>())
-                .add(listener)) {
+        if (listeners.computeIfAbsent(senderIdToListenTo, k -> new HashSet<>()).add(listener)) {
             logger.debug("Listener added: {}", senderIdToListenTo);
         }
     }

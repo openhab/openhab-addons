@@ -80,25 +80,25 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
     private void initializeThing(ThingStatus bridgeStatus) {
         logger.debug("initializeThing thing {} bridge status {}", getThing().getUID(), bridgeStatus);
 
-        if(this.itemChannelLinkRegistry == null) {
-        	updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "ItemChannelLinkRegistry could not be found");
-        	return;
-        }
-        
-        if (getBridgeHandler() != null) {
-            if (bridgeStatus == ThingStatus.ONLINE) {
-                initializeConfig();
-                if (validateConfig()) {
-                    updateStatus(ThingStatus.ONLINE);
+        if (this.itemChannelLinkRegistry == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "ItemChannelLinkRegistry could not be found");
+        } else {
+            if (getBridgeHandler() != null) {
+                if (bridgeStatus == ThingStatus.ONLINE) {
+                    initializeConfig();
+                    if (validateConfig()) {
+                        updateStatus(ThingStatus.ONLINE);
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                configurationErrorDescription);
+                    }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            configurationErrorDescription);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "A bridge is required");
             }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "A bridge is required");
         }
     }
 
@@ -126,7 +126,7 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
     protected void updateChannels(EEPType eep, boolean removeUnsupportedChannels) {
 
         @NonNull
-        List<@NonNull Channel> channelList = new LinkedList<@NonNull Channel>(this.getThing().getChannels());
+        List<@NonNull Channel> channelList = new LinkedList<>(this.getThing().getChannels());
         boolean channelListChanged = false;
 
         if (removeUnsupportedChannels) {
@@ -179,24 +179,23 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
     }
 
     protected State getCurrentState(Channel channel) {
-        if(channel != null) {
-        	Set<Item> items = itemChannelLinkRegistry.getLinkedItems(channel.getUID());
-        	for (Item item : items) {
-        		State state = item.getState();
-        		if (state != null && state != UnDefType.NULL && state != UnDefType.UNDEF) {
-        			return state;
-        		}
-        	}
+        if (channel != null) {
+            Set<Item> items = itemChannelLinkRegistry.getLinkedItems(channel.getUID());
+            for (Item item : items) {
+                State state = item.getState();
+                if (state != UnDefType.NULL && state != UnDefType.UNDEF) {
+                    return state;
+                }
+            }
         }
 
         return UnDefType.UNDEF;
     }
 
     protected State getCurrentState(String channelId) {
-    	return getCurrentState(getThing().getChannel(channelId));
+        return getCurrentState(getThing().getChannel(channelId));
     }
 
-    
     protected synchronized EnOceanBridgeHandler getBridgeHandler() {
         if (this.gateway == null) {
             Bridge bridge = getBridge();
@@ -240,7 +239,7 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
          * return configStatusMessages;
          */
 
-        return new LinkedList<ConfigStatusMessage>();
+        return new LinkedList<>();
     }
 
     @Override

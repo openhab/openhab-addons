@@ -91,10 +91,10 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
-    	State currentState = getCurrentStateFunc.apply(channelId);
-    	
+    protected State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, State> getCurrentStateFunc, Configuration config) {
+        State currentState = getCurrentStateFunc.apply(channelId);
+
         if (currentState != null) {
             int direction = getDB_1() == MoveUp ? -1 : 1;
             int duration = ((getDB_3Value() << 8) + getDB_2Value()) / 10; // => Time in DB3 and DB2 is given

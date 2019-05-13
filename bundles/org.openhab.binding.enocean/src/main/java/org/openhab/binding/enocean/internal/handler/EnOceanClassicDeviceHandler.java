@@ -56,12 +56,12 @@ import org.openhab.binding.enocean.internal.messages.ESP3Packet;
 public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
     // List of thing types which support sending of eep messages
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_CLASSICDEVICE));
 
     private StringType lastTriggerEvent = StringType.valueOf(CommonTriggerEvents.DIR1_PRESSED);
     ScheduledFuture<?> releaseFuture = null;
-    
+
     public EnOceanClassicDeviceHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing, itemChannelLinkRegistry);
     }
@@ -157,15 +157,15 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
     @Override
     protected Predicate<Channel> channelFilter(EEPType eepType, byte[] senderId) {
         return c -> {
-        	ChannelTypeUID channelTypeUID = c.getChannelTypeUID();
+            ChannelTypeUID channelTypeUID = c.getChannelTypeUID();
             String id = channelTypeUID == null ? "" : channelTypeUID.getId();
-        	
-        	return id.startsWith(CHANNEL_ROCKERSWITCHLISTENER_START)        
-                && c.getConfiguration().as(EnOceanChannelRockerSwitchListenerConfig.class).enoceanId
-                        .equalsIgnoreCase(HexUtils.bytesToHex(senderId));
+
+            return id.startsWith(CHANNEL_ROCKERSWITCHLISTENER_START)
+                    && c.getConfiguration().as(EnOceanChannelRockerSwitchListenerConfig.class).enoceanId
+                            .equalsIgnoreCase(HexUtils.bytesToHex(senderId));
         };
     }
-    
+
     @SuppressWarnings("unlikely-arg-type")
     private StringType convertToReleasedCommand(StringType command) {
         return command.equals(CommonTriggerEvents.DIR1_PRESSED) ? StringType.valueOf(CommonTriggerEvents.DIR1_RELEASED)
@@ -230,41 +230,39 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
         EnOceanChannelVirtualRockerSwitchConfig channelConfig = channel.getConfiguration()
                 .as(EnOceanChannelVirtualRockerSwitchConfig.class);
-            
+
         StringType result = convertToPressedCommand(command, channelConfig.getSwitchMode());
 
         if (result != null) {
             lastTriggerEvent = result;
 
             EEP eep = EEPFactory.createEEP(sendingEEPType);
-            if (eep.setSenderId(senderId)
-            		.setDestinationId(destinationId)
-            		.convertFromCommand(channelId, channelTypeId, result, id -> this.getCurrentState(id), channel.getConfiguration())
-            		.hasData()) {
+            if (eep.setSenderId(senderId).setDestinationId(destinationId).convertFromCommand(channelId, channelTypeId,
+                    result, id -> this.getCurrentState(id), channel.getConfiguration()).hasData()) {
                 ESP3Packet press = eep.setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
 
                 getBridgeHandler().sendMessage(press, null);
 
                 if (channelConfig.duration > 0) {
-                	releaseFuture = scheduler.schedule(() -> {                        
-                		if(eep.convertFromCommand(channelId, channelTypeId, convertToReleasedCommand(lastTriggerEvent), id -> this.getCurrentState(id), channel.getConfiguration())
-                				.hasData()) {
-                			ESP3Packet release = eep.getERP1Message();
-                			getBridgeHandler().sendMessage(release, null);
-                		}
+                    releaseFuture = scheduler.schedule(() -> {
+                        if (eep.convertFromCommand(channelId, channelTypeId, convertToReleasedCommand(lastTriggerEvent),
+                                id -> this.getCurrentState(id), channel.getConfiguration()).hasData()) {
+                            ESP3Packet release = eep.getERP1Message();
+                            getBridgeHandler().sendMessage(release, null);
+                        }
                     }, channelConfig.duration, TimeUnit.MILLISECONDS);
                 }
             }
         }
     }
-    
+
     @Override
     public void handleRemoval() {
-    	if(releaseFuture != null && !releaseFuture.isDone()) {
-    		releaseFuture.cancel(true);
-    	}
-    	
-    	releaseFuture = null;
-    	super.handleRemoval();
+        if (releaseFuture != null && !releaseFuture.isDone()) {
+            releaseFuture.cancel(true);
+        }
+
+        releaseFuture = null;
+        super.handleRemoval();
     };
 }

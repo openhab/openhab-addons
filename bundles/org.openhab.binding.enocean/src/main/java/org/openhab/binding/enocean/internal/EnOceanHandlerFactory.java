@@ -57,7 +57,7 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
 
     @Reference
     SerialPortManager serialPortManager;
-    
+
     @Reference
     ItemChannelLinkRegistry itemChannelLinkRegistry;
 

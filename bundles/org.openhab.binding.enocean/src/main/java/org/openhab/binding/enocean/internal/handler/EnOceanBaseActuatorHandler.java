@@ -30,7 +30,6 @@ import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.enocean.internal.config.EnOceanActuatorConfig;
 import org.openhab.binding.enocean.internal.eep.EEP;
@@ -47,9 +46,8 @@ import org.openhab.binding.enocean.internal.messages.ESP3Packet;
 public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     // List of thing types which support sending of eep messages
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
-            Arrays.asList(THING_TYPE_CENTRALCOMMAND, THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_GENERICTHING,
-                    THING_TYPE_ROLLERSHUTTER, THING_TYPE_THERMOSTAT));
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_CENTRALCOMMAND,
+            THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER, THING_TYPE_THERMOSTAT));
 
     protected byte[] senderId; // base id of bridge + senderIdOffset, used for sending msg
     protected byte[] destinationId; // in case of broadcast FFFFFFFF otherwise the enocean id of the device
@@ -214,16 +212,14 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             }
         }
 
-        
         try {
             Configuration channelConfig = channel.getConfiguration();
 
             EEP eep = EEPFactory.createEEP(sendingEEPType);
-            if (eep.setSenderId(senderId)
-            		.setDestinationId(destinationId)
-            		.setSuppressRepeating(getConfiguration().suppressRepeating)
-            		.convertFromCommand(channelId, channelTypeId, command, id -> getCurrentState(id), channelConfig)            		
-            		.hasData()) {
+            if (eep.setSenderId(senderId).setDestinationId(destinationId)
+                    .setSuppressRepeating(getConfiguration().suppressRepeating)
+                    .convertFromCommand(channelId, channelTypeId, command, id -> getCurrentState(id), channelConfig)
+                    .hasData()) {
                 ESP3Packet msg = eep.getERP1Message();
 
                 getBridgeHandler().sendMessage(msg, null);
