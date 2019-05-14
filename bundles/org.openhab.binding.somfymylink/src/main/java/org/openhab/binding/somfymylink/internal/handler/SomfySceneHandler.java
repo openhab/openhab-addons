@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.somfymylink.internal;
+package org.openhab.binding.somfymylink.internal.handler;
 
 import static org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants.CHANNEL_SCENECONTROL;
 
@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,8 +76,8 @@ public class SomfySceneHandler extends BaseThingHandler {
         // }
     }
 
-    protected SomfyMyLinkHandler getBridgeHandler() {
-        return this.getBridge() != null ? (SomfyMyLinkHandler) this.getBridge().getHandler() : null;
+    protected SomfyMyLinkBridgeHandler getBridgeHandler() {
+        return this.getBridge() != null ? (SomfyMyLinkBridgeHandler) this.getBridge().getHandler() : null;
     }
 
 }

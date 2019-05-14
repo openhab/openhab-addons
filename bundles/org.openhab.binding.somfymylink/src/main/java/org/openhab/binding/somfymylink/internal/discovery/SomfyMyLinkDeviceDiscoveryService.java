@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.somfymylink.internal;
+package org.openhab.binding.somfymylink.internal.discovery;
 
 import static org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants.*;
 
@@ -27,6 +27,12 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
+import org.openhab.binding.somfymylink.internal.SomfyMyLinkHandlerFactory;
+import org.openhab.binding.somfymylink.internal.handler.SomfyMyLinkBridgeHandler;
+import org.openhab.binding.somfymylink.internal.handler.SomfyMyLinkException;
+import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkScene;
+import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkShade;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
@@ -46,12 +52,12 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
     private final Logger logger = LoggerFactory.getLogger(SomfyMyLinkDeviceDiscoveryService.class);
 
     private ScheduledFuture<?> scanTask;
-    private SomfyMyLinkHandler mylinkHandler;
+    private SomfyMyLinkBridgeHandler mylinkHandler;
 
     @Nullable
     private ScheduledFuture<?> discoveryJob;
 
-    public SomfyMyLinkDeviceDiscoveryService(SomfyMyLinkHandler mylinkHandler) throws IllegalArgumentException {
+    public SomfyMyLinkDeviceDiscoveryService(SomfyMyLinkBridgeHandler mylinkHandler) throws IllegalArgumentException {
         super(SomfyMyLinkHandlerFactory.DISCOVERABLE_DEVICE_TYPES_UIDS, 10);
 
         this.mylinkHandler = mylinkHandler;

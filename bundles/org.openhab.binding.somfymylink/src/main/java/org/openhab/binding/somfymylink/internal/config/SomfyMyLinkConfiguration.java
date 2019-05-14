@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.somfymylink.internal;
+package org.openhab.binding.somfymylink.internal.config;
 
 /**
  * The {@link SomfyMyLinkConfiguration} class contains fields mapping thing configuration parameters.

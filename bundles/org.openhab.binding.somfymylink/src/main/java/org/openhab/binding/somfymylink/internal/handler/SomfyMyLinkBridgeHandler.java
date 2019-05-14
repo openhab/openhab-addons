@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.somfymylink.internal;
+package org.openhab.binding.somfymylink.internal.handler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,6 +34,13 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.somfymylink.internal.config.SomfyMyLinkConfiguration;
+import org.openhab.binding.somfymylink.internal.discovery.SomfyMyLinkDeviceDiscoveryService;
+import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkResponseBase;
+import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkScene;
+import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkScenesResponse;
+import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkShade;
+import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkShadesResponse;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,14 +49,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link SomfyMyLinkHandler} is responsible for handling commands, which are
+ * The {@link SomfyMyLinkBridgeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Chris Johnson - Initial contribution
  */
-public class SomfyMyLinkHandler extends BaseBridgeHandler {
+public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyMyLinkHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SomfyMyLinkBridgeHandler.class);
 
     private SomfyMyLinkConfiguration config;
 
@@ -61,7 +68,7 @@ public class SomfyMyLinkHandler extends BaseBridgeHandler {
     // Gson & parser
     private final Gson gson = new Gson();
 
-    public SomfyMyLinkHandler(Bridge bridge) {
+    public SomfyMyLinkBridgeHandler(Bridge bridge) {
         super(bridge);
     }
 

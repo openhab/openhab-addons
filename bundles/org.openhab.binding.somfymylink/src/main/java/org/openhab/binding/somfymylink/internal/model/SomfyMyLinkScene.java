@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.somfymylink.internal;
+package org.openhab.binding.somfymylink.internal.model;
+
+import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
 
 /**
  * The {@link SomfyMyLinkBindingConstants} class defines common constants, which are
@@ -18,21 +20,16 @@ package org.openhab.binding.somfymylink.internal;
  *
  * @author Chris Johnson - Initial contribution
  */
-public class SomfyMyLinkException extends Exception {
+public class SomfyMyLinkScene {
 
-    public SomfyMyLinkException() {
-        super();
+    private String sceneID;
+    private String name;
+
+    public String getTargetID() {
+        return sceneID;
     }
 
-    public SomfyMyLinkException(String message) {
-        super(message);
-    }
-
-    public SomfyMyLinkException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public SomfyMyLinkException(Throwable cause) {
-        super(cause);
+    public String getName() {
+        return name;
     }
 }

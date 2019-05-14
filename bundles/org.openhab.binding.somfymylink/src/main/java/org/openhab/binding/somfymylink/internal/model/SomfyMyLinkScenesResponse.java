@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.somfymylink.internal;
+package org.openhab.binding.somfymylink.internal.model;
+
+import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
 
 /**
  * The {@link SomfyMyLinkBindingConstants} class defines common constants, which are
@@ -18,11 +20,11 @@ package org.openhab.binding.somfymylink.internal;
  *
  * @author Chris Johnson - Initial contribution
  */
-public class SomfyMyLinkShadesResponse extends SomfyMyLinkResponseBase {
+public class SomfyMyLinkScenesResponse extends SomfyMyLinkResponseBase {
 
-    public SomfyMyLinkShade[] result;
+    public SomfyMyLinkScene[] result;
 
-    public SomfyMyLinkShade[] getResult() {
+    public SomfyMyLinkScene[] getResult() {
         return result;
     }
 }
