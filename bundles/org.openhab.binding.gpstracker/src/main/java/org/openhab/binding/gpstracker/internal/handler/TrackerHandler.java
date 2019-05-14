@@ -307,7 +307,7 @@ public class TrackerHandler extends BaseThingHandler {
 
         if (accuracyThreshold >= accuracy || accuracyThreshold.intValue() == 0) {
             if (accuracyThreshold > 0) {
-                logger.debug("Location accuracy is below required threshold: {}<{}", accuracy, accuracyThreshold);
+                logger.debug("Location accuracy is below required threshold: {}<={}", accuracy, accuracyThreshold);
             } else {
                 logger.debug("Location accuracy threshold check is disabled.");
             }
@@ -333,7 +333,7 @@ public class TrackerHandler extends BaseThingHandler {
                 }
             }
         } else {
-            logger.debug("Skip update as location accuracy is above required threshold: {}>={}", accuracy,
+            logger.debug("Skip update as location accuracy is above required threshold: {}>{}", accuracy,
                     accuracyThreshold);
         }
     }
