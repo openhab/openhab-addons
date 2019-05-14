@@ -78,7 +78,6 @@ public class HomekitTaggedItem {
         this.item = item;
 
         try {
-
             homekitAccessoryType = findAccessoryType(item);
             homekitCharacteristicType = findCharacteristicType(item);
             if (homekitAccessoryType != null && homekitCharacteristicType != null) {
@@ -89,7 +88,6 @@ public class HomekitTaggedItem {
 
             switch (matchingGroupItems.size()) {
                 case 0: // Does not belong to a accessory group
-
                     if (homekitCharacteristicType != null) {
                         throw new BadItemConfigurationException(
                                 "Item is tagged as a characteristic, but does not belong to a root accessory group");

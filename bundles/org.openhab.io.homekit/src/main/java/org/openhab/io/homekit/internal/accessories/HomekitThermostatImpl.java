@@ -97,7 +97,6 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
 
     private Optional<Item> getItemWithDeprecation(HashMap<HomekitCharacteristicType, Item> characteristicItems,
             HomekitCharacteristicType currentTag, HomekitCharacteristicType deprecatedTag) {
-
         Optional<Item> targetTempItem = Optional.ofNullable(characteristicItems.remove(currentTag));
         if (!targetTempItem.isPresent()) {
             targetTempItem = Optional.ofNullable(characteristicItems.remove(deprecatedTag));

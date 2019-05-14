@@ -45,12 +45,11 @@ public class HomekitContactSensorImpl extends AbstractHomekitAccessoryImpl<Gener
 
     @Override
     public CompletableFuture<ContactState> getCurrentState() {
-        ContactState result;
         Boolean contactDetected = contactSensedReader.getValue();
         if (contactDetected == null) {
             // BUG - HAP-java does not currently handle null well here, so we'll default to not detected.
             return CompletableFuture.completedFuture(ContactState.NOT_DETECTED);
-        } else if (contactDetected == true) {
+        } else if (contactDetected) {
             return CompletableFuture.completedFuture(ContactState.DETECTED);
         } else {
             return CompletableFuture.completedFuture(ContactState.NOT_DETECTED);

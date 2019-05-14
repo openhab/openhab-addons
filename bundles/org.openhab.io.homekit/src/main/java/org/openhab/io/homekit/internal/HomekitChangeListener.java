@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.items.ItemRegistryChangeListener;
 import org.openhab.io.homekit.internal.accessories.HomekitAccessoryFactory;
+import org.openhab.io.homekit.internal.accessories.IncompleteAccessoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,7 +183,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             accessoryRegistry.addRootAccessory(taggedItem.getName(),
                     HomekitAccessoryFactory.create(taggedItem, itemRegistry, updater, settings));
             logger.debug("Added homekit device {}", taggedItem.getItem().getName());
-        } catch (Exception e) {
+        } catch (HomekitException | IncompleteAccessoryException e) {
             logger.error("Could not add device: {}", e.getMessage(), e);
         }
     }

@@ -53,9 +53,9 @@ public class BooleanItemReader {
     Boolean getValue() {
         State state = item.getState();
         if (state instanceof OnOffType) {
-            return state == trueOnOffValue;
+            return state.equals(trueOnOffValue);
         } else if (state instanceof OpenClosedType) {
-            return state == trueOpenClosedValue;
+            return state.equals(trueOpenClosedValue);
         } else {
             return null;
         }

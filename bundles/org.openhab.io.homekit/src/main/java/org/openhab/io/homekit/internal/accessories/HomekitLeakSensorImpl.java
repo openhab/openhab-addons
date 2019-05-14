@@ -79,9 +79,7 @@ public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl<GenericI
 
     static HomekitLeakSensorImpl createForTaggedItem(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
             HomekitAccessoryUpdater updater) {
-
         if (taggedItem.isMemberOfAccessoryGroup()) {
-
         }
         return null;
     }

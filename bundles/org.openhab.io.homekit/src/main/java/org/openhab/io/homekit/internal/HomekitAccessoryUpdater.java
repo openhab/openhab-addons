@@ -42,7 +42,7 @@ public class HomekitAccessoryUpdater {
     }
 
     public void subscribe(GenericItem item, String key, HomekitCharacteristicChangeCallback callback) {
-        logger.debug("Received subscription request for {} / {}: {}", item, key, callback);
+        logger.trace("Received subscription request for {} / {}", item, key);
         if (item == null) {
             return;
         }
@@ -52,7 +52,7 @@ public class HomekitAccessoryUpdater {
                 logger.debug("Received duplicate subscription for {} / {}", item, key);
                 unsubscribe(item, key);
             }
-            logger.debug("Adding subscription for {} / {}: {}", item, key, callback);
+            logger.debug("Adding subscription for {} / {}", item, key);
             Subscription subscription = (changedItem, oldState, newState) -> callback.changed();
             item.addStateChangeListener(subscription);
             return subscription;

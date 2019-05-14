@@ -86,9 +86,7 @@ public class HomekitCarbonMonoxideSensorImpl extends AbstractHomekitAccessoryImp
 
     static HomekitLeakSensorImpl createForTaggedItem(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
             HomekitAccessoryUpdater updater) {
-
         if (taggedItem.isMemberOfAccessoryGroup()) {
-
         }
         return null;
     }
