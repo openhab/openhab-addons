@@ -114,7 +114,7 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
      */
     private List<? extends LocationMessage> processMessage(LocationMessage message) {
         String trackerId = message.getTrackerId();
-        if ("".equals(trackerId)) {
+        if (!trackerId.isEmpty()) {
             TrackerHandler recorder = getHandlerById(trackerId);
             if (recorder != null) {
                 if (message instanceof TransitionMessage) {
