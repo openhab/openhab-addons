@@ -536,20 +536,15 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             double val = (double) value.getValue() / (double) variableInfo.factor;
             logger.debug("{} = {}", coilAddress + ":" + variableInfo.variable, val);
 
-            CacheObject oldValue = stateMap.get(coilAddress);
             stateMap.put(coilAddress, new CacheObject(System.currentTimeMillis(), val));
 
-            if (oldValue != null && val == oldValue.value) {
-                logger.trace("Value did not change, ignoring update");
-            } else {
-                final String channelPrefix = (variableInfo.type == Type.SETTING ? "setting#" : "sensor#");
-                final String channelId = channelPrefix + String.valueOf(coilAddress);
-                final String acceptedItemType = thing.getChannel(channelId).getAcceptedItemType();
+            final String channelPrefix = (variableInfo.type == Type.SETTING ? "setting#" : "sensor#");
+            final String channelId = channelPrefix + String.valueOf(coilAddress);
+            final String acceptedItemType = thing.getChannel(channelId).getAcceptedItemType();
 
-                logger.trace("AcceptedItemType for channel {} = {}", channelId, acceptedItemType);
-                State state = convertNibeValueToState(variableInfo.dataType, val, acceptedItemType);
-                updateState(new ChannelUID(getThing().getUID(), channelId), state);
-            }
+            logger.trace("AcceptedItemType for channel {} = {}", channelId, acceptedItemType);
+            State state = convertNibeValueToState(variableInfo.dataType, val, acceptedItemType);
+            updateState(new ChannelUID(getThing().getUID(), channelId), state);
         } else {
             logger.debug("Unknown register {}", coilAddress);
         }
