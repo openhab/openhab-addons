@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
+import org.openhab.binding.somfymylink.internal.config.SomfyMyLinkConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,10 +54,8 @@ public class SomfyShadeHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         try {
             if (CHANNEL_SHADELEVEL.equals(channelUID.getId())) {
-
                 String targetId = channelUID.getThingUID().getId();
 
                 if (command instanceof RefreshType) {
@@ -84,5 +83,4 @@ public class SomfyShadeHandler extends BaseThingHandler {
     protected SomfyMyLinkBridgeHandler getBridgeHandler() {
         return this.getBridge() != null ? (SomfyMyLinkBridgeHandler) this.getBridge().getHandler() : null;
     }
-
 }
