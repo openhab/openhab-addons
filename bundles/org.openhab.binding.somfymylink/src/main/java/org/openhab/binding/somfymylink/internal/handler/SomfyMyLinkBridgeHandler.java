@@ -78,7 +78,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        this.config = getThing().getConfiguration().as(SomfyMyLinkConfiguration.class);
+        config = getThing().getConfiguration().as(SomfyMyLinkConfiguration.class);
 
         if (validConfiguration(this.config)) {
             SomfyMyLinkDeviceDiscoveryService discovery = new SomfyMyLinkDeviceDiscoveryService(this);
@@ -103,7 +103,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         // return false;
         // }
 
-        if (StringUtils.isEmpty(this.config.getIpAddress())) {
+        if (StringUtils.isEmpty(config.ipAddress)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "mylink address not specified");
 
             return false;
@@ -117,7 +117,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         // return;
         // }
 
-        logger.debug("Connecting to mylink at {}", config.getIpAddress());
+        logger.debug("Connecting to mylink at {}", config.ipAddress);
 
         /*
          * try {
@@ -167,7 +167,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
          *
          */
 
-        logger.debug("Connected to mylink at {}", config.getIpAddress());
+        logger.debug("Connected to mylink at {}", config.ipAddress);
 
         updateStatus(ThingStatus.ONLINE);
 
@@ -352,7 +352,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private Socket getConnection(int timeout) throws UnknownHostException, IOException {
-        String myLinkAddress = config.getIpAddress();
+        String myLinkAddress = config.ipAddress;
         Socket socket = new Socket(myLinkAddress, MYLINK_PORT);
         socket.setSoTimeout(timeout);
         return socket;
@@ -362,10 +362,10 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         int randomNum = ThreadLocalRandom.current().nextInt(1, 1000);
 
         // fix '-' back to '.'
-        targetId = targetId.replace('-', '.');
+        String tId = targetId.replace('-', '.');
 
         String myLinkCommand = "{\"id\": " + randomNum + ", \"method\": \"" + command
-                + "\",\"params\": {\"targetID\": \"" + targetId + "\",\"auth\": \"" + config.getSystemId() + "\"}}";
+                + "\",\"params\": {\"targetID\": \"" + tId + "\",\"auth\": \"" + config.systemId + "\"}}";
 
         return myLinkCommand;
     }

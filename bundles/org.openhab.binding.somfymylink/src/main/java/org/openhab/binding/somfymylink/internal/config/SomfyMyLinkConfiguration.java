@@ -18,8 +18,10 @@ package org.openhab.binding.somfymylink.internal.config;
  * @author Chris Johnson - Initial contribution
  */
 public class SomfyMyLinkConfiguration {
-    private String ipAddress;
-    private String systemId;
+
+    public String ipAddress;
+
+    public String systemId;
 
     /*
      * public boolean sameConnectionParameters(IPBridgeConfig config) {
@@ -28,20 +30,4 @@ public class SomfyMyLinkConfiguration {
      * && (heartbeat == config.heartbeat);
      * }
      */
-
-    public String getIpAddress() {
-        return this.ipAddress;
-    }
-
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
-    public String getSystemId() {
-        return this.systemId;
-    }
-
-    public void setSystemId(String systemId) {
-        this.systemId = systemId;
-    }
 }
