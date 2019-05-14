@@ -21,8 +21,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
-import org.openhab.binding.cbus.internal.cgate.CGateException;
-import org.openhab.binding.cbus.internal.cgate.Group;
+import com.daveoxley.cbus.CGateException;
+import com.daveoxley.cbus.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +103,6 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
             bridgeHandler = (CBusNetworkHandler) handler;
         } else {
             logger.debug("No available bridge handler found for bridge: {} .", bridge.getUID());
-            bridgeHandler = null;
         }
         return bridgeHandler;
     }

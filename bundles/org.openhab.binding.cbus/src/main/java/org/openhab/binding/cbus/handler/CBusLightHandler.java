@@ -19,10 +19,11 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
-import org.openhab.binding.cbus.internal.cgate.Application;
-import org.openhab.binding.cbus.internal.cgate.CGateException;
-import org.openhab.binding.cbus.internal.cgate.Group;
-import org.openhab.binding.cbus.internal.cgate.Network;
+
+import com.daveoxley.cbus.Application;
+import com.daveoxley.cbus.CGateException;
+import com.daveoxley.cbus.Group;
+import com.daveoxley.cbus.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
