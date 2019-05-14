@@ -48,7 +48,7 @@ public class SomfyShadeHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        this.config = getThing().getConfiguration().as(SomfyMyLinkConfiguration.class);
+        config = getThing().getConfiguration().as(SomfyMyLinkConfiguration.class);
         updateStatus(ThingStatus.ONLINE);
     }
 
