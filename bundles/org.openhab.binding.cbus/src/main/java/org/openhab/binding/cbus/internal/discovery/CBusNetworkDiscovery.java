@@ -23,8 +23,8 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.cbus.CBusBindingConstants;
 import org.openhab.binding.cbus.handler.CBusCGateHandler;
-import org.openhab.binding.cbus.internal.cgate.CGateException;
-import org.openhab.binding.cbus.internal.cgate.Network;
+import com.daveoxley.cbus.CGateException;
+import com.daveoxley.cbus.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
