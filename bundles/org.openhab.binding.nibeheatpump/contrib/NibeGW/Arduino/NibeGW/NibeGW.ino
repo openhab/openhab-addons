@@ -48,6 +48,9 @@
 // Delay before initialize ethernet on startup in seconds
 #define ETH_INIT_DELAY          10
 
+// Enable if ENC28J60 LAN module is used
+//#define TRANSPORT_ETH_ENC28J60
+
 // Used serial port and direction change pin for RS-485 port
 #ifdef PRODINO_BOARD
 #define RS485_PORT              Serial1
@@ -66,15 +69,21 @@
 
 // ######### INCLUDES #######################
 
+#ifdef TRANSPORT_ETH_ENC28J60
+#include <UIPEthernet.h>
+#else
 #include <SPI.h>
 #include <Ethernet.h>
+#endif
 
 #ifdef PRODINO_BOARD
 #include "KmpDinoEthernet.h"
 #include "KMPCommon.h"
 #endif
 
+#ifndef TRANSPORT_ETH_ENC28J60
 #include <EthernetUdp.h>
+#endif
 #include <avr/wdt.h>
 
 #include "NibeGw.h"
@@ -98,11 +107,10 @@ boolean ethernetInitialized = false;
 // Target IP address and port where Nibe UDP packets are send
 IPAddress targetIp(TARGET_IP);
 EthernetUDP udp;
+EthernetUDP udp4readCmnds;
 EthernetUDP udp4writeCmnds;
 
 NibeGw nibegw(&RS485_PORT, RS485_DIRECTION_PIN);
-
-EthernetClient ethClient;
 
 // ######### DEBUG #######################
 
@@ -182,6 +190,9 @@ void loop()
     do
     {
       nibegw.loop();
+#ifdef TRANSPORT_ETH_ENC28J60
+      Ethernet.maintain();
+#endif
     } while (nibegw.messageStillOnProgress());
   }
 
@@ -219,7 +230,7 @@ void initializeEthernet()
 {
   Ethernet.begin(mac, ip, gw, mask);
   ethernetInitialized = true;
-  udp.begin(INCOMING_PORT_READCMDS);
+  udp4readCmnds.begin(INCOMING_PORT_READCMDS);
   udp4writeCmnds.begin(INCOMING_PORT_WRITECMDS);
 }
 
@@ -234,24 +245,37 @@ void nibeCallbackMsgReceived(const byte* const data, int len)
 
 int nibeCallbackTokenReceived(eTokenType token, byte* data)
 {
+  int len = 0;
   if (ethernetInitialized)
   {
     if (token == READ_TOKEN)
     {
       DEBUG_PRINT(2, "Read token received\n");
-      int packetSize = udp.parsePacket();
-      if (packetSize)
-        return udp.read(data, packetSize);
+      int packetSize = udp4readCmnds.parsePacket();
+      if (packetSize) {
+        len = udp4readCmnds.read(data, packetSize);
+        udp4readCmnds.flush();
+#ifdef TRANSPORT_ETH_ENC28J60
+        udp4readCmnds.stop();
+        udp4readCmnds.begin(INCOMING_PORT_READCMDS);
+#endif
+      }
     }
     else if (token == WRITE_TOKEN)
     {
       DEBUG_PRINT(2, "Write token received\n");
       int packetSize = udp4writeCmnds.parsePacket();
-      if (packetSize)
-        return udp4writeCmnds.read(data, packetSize);
+      if (packetSize) {
+        len = udp4writeCmnds.read(data, packetSize);
+        udp4writeCmnds.flush();
+#ifdef TRANSPORT_ETH_ENC28J60
+        udp4writeCmnds.stop();
+        udp4writeCmnds.begin(INCOMING_PORT_WRITECMDS);
+#endif
+      }
     }
   }
-  return 0;
+  return len;
 }
 
 void nibeDebugCallback(byte verbose, char* data)
@@ -269,4 +293,3 @@ void sendUdpPacket(const byte * const data, int len)
   udp.write(data, len);
   udp.endPacket();
 }
-
