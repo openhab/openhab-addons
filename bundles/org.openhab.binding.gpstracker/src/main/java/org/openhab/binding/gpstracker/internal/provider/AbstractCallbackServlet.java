@@ -12,6 +12,14 @@
  */
 package org.openhab.binding.gpstracker.internal.provider;
 
+import java.io.BufferedReader;
+import java.util.Collections;
+import java.util.List;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
 import org.openhab.binding.gpstracker.internal.handler.TrackerHandler;
 import org.openhab.binding.gpstracker.internal.message.LocationMessage;
@@ -19,13 +27,6 @@ import org.openhab.binding.gpstracker.internal.message.MessageUtil;
 import org.openhab.binding.gpstracker.internal.message.TransitionMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Abstract callback servlet used by the trackers.
@@ -113,7 +114,7 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
      */
     private List<? extends LocationMessage> processMessage(LocationMessage message) {
         String trackerId = message.getTrackerId();
-        if (trackerId != null) {
+        if (!trackerId.isEmpty()) {
             TrackerHandler recorder = getHandlerById(trackerId);
             if (recorder != null) {
                 if (message instanceof TransitionMessage) {
