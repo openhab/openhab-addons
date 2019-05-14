@@ -15,7 +15,6 @@ package org.openhab.binding.gpstracker.internal.handler;
 import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.*;
 import static org.openhab.binding.gpstracker.internal.config.ConfigHelper.CONFIG_REGION_CENTER_LOCATION;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,8 +30,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.i18n.UnitProvider;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
@@ -48,6 +45,8 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.gpstracker.internal.config.ConfigHelper;
 import org.openhab.binding.gpstracker.internal.message.LocationMessage;
 import org.openhab.binding.gpstracker.internal.message.NotificationBroker;
@@ -303,19 +302,22 @@ public class TrackerHandler extends BaseThingHandler {
         Configuration currentConfig = c.getConfiguration();
         // convert into meters which is the unit of the threshold
         Double accuracyThreshold = convertToMeters(ConfigHelper.getAccuracyThreshold(currentConfig));
-        if (accuracyThreshold > message.getGpsAccuracy().doubleValue() || accuracyThreshold.intValue() == 0) {
+        State messageAccuracy = message.getGpsAccuracy();
+        Double accuracy = messageAccuracy != UnDefType.UNDEF ? ((QuantityType<?>) messageAccuracy).doubleValue()
+                : accuracyThreshold;
+
+        if (accuracyThreshold >= accuracy || accuracyThreshold.intValue() == 0) {
             if (accuracyThreshold > 0) {
-                logger.debug("Location accuracy is below required threshold: {}<{}", message.getGpsAccuracy(),
-                        accuracyThreshold);
+                logger.debug("Location accuracy is below required threshold: {}<={}", accuracy, accuracyThreshold);
             } else {
                 logger.debug("Location accuracy threshold check is disabled.");
             }
 
             String regionName = ConfigHelper.getRegionName(currentConfig);
             PointType center = ConfigHelper.getRegionCenterLocation(currentConfig);
-            PointType newLocation = message.getTrackerLocation();
-            if (center != null) {
-                double newDistance = newLocation.distanceFrom(center).doubleValue();
+            State newLocation = message.getTrackerLocation();
+            if (center != null && newLocation != UnDefType.UNDEF) {
+                double newDistance = center.distanceFrom((PointType) newLocation).doubleValue();
                 updateState(c.getUID(), new QuantityType<>(newDistance / 1000, MetricPrefix.KILO(SIUnits.METRE)));
                 logger.trace("Region {} center distance from tracker location {} is {}m", regionName, newLocation,
                         newDistance);
@@ -332,8 +334,8 @@ public class TrackerHandler extends BaseThingHandler {
                 }
             }
         } else {
-            logger.debug("Skip update as location accuracy is above required threshold: {}>={}",
-                    message.getGpsAccuracy(), accuracyThreshold);
+            logger.debug("Skip update as location accuracy is above required threshold: {}>{}", accuracy,
+                    accuracyThreshold);
         }
     }
 
@@ -365,32 +367,24 @@ public class TrackerHandler extends BaseThingHandler {
         for (String channel : channels) {
             switch (channel) {
                 case CHANNEL_LAST_REPORT:
-                    DateTimeType timestamp = message.getTimestamp();
-                    if (timestamp != null) {
-                        updateState(CHANNEL_LAST_REPORT, timestamp);
-                        logger.trace("{} -> {}", CHANNEL_LAST_REPORT, timestamp);
-                    }
+                    State timestamp = message.getTimestamp();
+                    updateState(CHANNEL_LAST_REPORT, timestamp);
+                    logger.trace("{} -> {}", CHANNEL_LAST_REPORT, timestamp);
                     break;
                 case CHANNEL_LAST_LOCATION:
-                    PointType newLocation = message.getTrackerLocation();
-                    if (newLocation != null) {
-                        updateState(CHANNEL_LAST_LOCATION, newLocation);
-                        logger.trace("{} -> {}", CHANNEL_LAST_LOCATION, newLocation);
-                    }
+                    State newLocation = message.getTrackerLocation();
+                    updateState(CHANNEL_LAST_LOCATION, newLocation);
+                    logger.trace("{} -> {}", CHANNEL_LAST_LOCATION, newLocation);
                     break;
                 case CHANNEL_BATTERY_LEVEL:
-                    DecimalType batteryLevel = message.getBatteryLevel();
-                    if (batteryLevel != null) {
-                        updateState(CHANNEL_BATTERY_LEVEL, batteryLevel);
-                        logger.trace("{} -> {}", CHANNEL_BATTERY_LEVEL, batteryLevel);
-                    }
+                    State batteryLevel = message.getBatteryLevel();
+                    updateState(CHANNEL_BATTERY_LEVEL, batteryLevel);
+                    logger.trace("{} -> {}", CHANNEL_BATTERY_LEVEL, batteryLevel);
                     break;
                 case CHANNEL_GPS_ACCURACY:
-                    BigDecimal accuracy = message.getGpsAccuracy();
-                    if (accuracy != null) {
-                        updateState(CHANNEL_GPS_ACCURACY, new QuantityType<>(accuracy.intValue(), SIUnits.METRE));
-                        logger.trace("{} -> {}", CHANNEL_GPS_ACCURACY, accuracy);
-                    }
+                    State accuracy = message.getGpsAccuracy();
+                    updateState(CHANNEL_GPS_ACCURACY, accuracy);
+                    logger.trace("{} -> {}", CHANNEL_GPS_ACCURACY, accuracy);
                     break;
             }
         }
