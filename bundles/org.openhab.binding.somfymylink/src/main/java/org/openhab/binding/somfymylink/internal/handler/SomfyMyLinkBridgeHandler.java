@@ -98,7 +98,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private boolean validConfiguration(SomfyMyLinkConfiguration config) {
-
         // if (this.config == null) {
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "mylink configuration missing");
         // return false;
@@ -232,12 +231,10 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         if (response != null) {
             return response.getResult();
         }
-
         return null;
     }
 
     public void commandShadeUp(String targetId) throws SomfyMyLinkException {
-
         try {
             sendCommand("mylink.move.up", targetId);
         } catch (Exception e) {
@@ -247,7 +244,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     public void commandShadeDown(String targetId) throws SomfyMyLinkException {
-
         try {
             sendCommand("mylink.move.down", targetId);
         } catch (Exception e) {
@@ -257,7 +253,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     public void commandShadeStop(String targetId) throws SomfyMyLinkException {
-
         try {
             sendCommand("mylink.move.stop", targetId);
         } catch (Exception e) {
@@ -269,7 +264,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     private void sendCommand(String command, String targetId) throws SomfyMyLinkException {
         String myLinkCommand = buildCommand(command, targetId);
         try {
-
             Socket socket = getConnection();
             OutputStream out = socket.getOutputStream();
 
@@ -289,7 +283,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         } catch (SocketTimeoutException e) {
             logger.error("Timeout getting Somfy MyLink shade list " + e.getMessage());
             throw new SomfyMyLinkException("Connection issue discovering Somfy devices", e);
-
         } catch (Exception e) {
             logger.error("Error getting Somfy MyLink shade list " + e.getMessage());
             throw new SomfyMyLinkException("Error discovering Somfy devices", e);
@@ -298,7 +291,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     private SomfyMyLinkResponseBase sendCommandWithResponse(String command, String targetId, Type responseType)
             throws SomfyMyLinkException {
-
         String myLinkCommand = buildCommand(command, targetId);
 
         try {
@@ -321,9 +313,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 while (((readCount = in.read(readBuff)) != -1)) {
                     logger.debug("Got response. Len: " + readCount);
                     message += new String(readBuff, 0, readCount);
-
                     try {
-
                         SomfyMyLinkResponseBase data = gson.fromJson(message, responseType);
 
                         // check if there was an error
@@ -331,9 +321,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                             logger.error("Error communicating with mylink: " + data.getError());
                             throw new SomfyMyLinkException("Error communicating with mylink:" + data.getError());
                         }
-
                         return data;
-
                     } catch (JsonSyntaxException e) {
                         // it wasn't a full message?
                         logger.debug("Partial message recieved.");
@@ -349,13 +337,10 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 } catch (IOException e) {
                 }
             }
-
             return null;
-
         } catch (SocketTimeoutException e) {
             logger.error("Timeout getting Somfy MyLink shade list " + e.getMessage());
             throw new SomfyMyLinkException("Connection issue discovering Somfy devices", e);
-
         } catch (Exception e) {
             logger.error("Error getting Somfy MyLink shade list " + e.getMessage());
             throw new SomfyMyLinkException("Error discovering Somfy devices", e);

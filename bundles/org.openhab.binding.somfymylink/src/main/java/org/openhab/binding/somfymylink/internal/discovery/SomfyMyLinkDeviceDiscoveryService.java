@@ -83,7 +83,6 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
             discoveryJob = scheduler.scheduleWithFixedDelay(this::runDiscovery, 10, DISCOVERY_REFRESH_SEC,
                     TimeUnit.SECONDS);
         }
-
     }
 
     @Override
@@ -144,7 +143,6 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
                 notifySceneDiscovery(THING_TYPE_SCENE, id, label);
             }
         }
-
     }
 
     private void notifyShadeDiscovery(ThingTypeUID thingTypeUID, String targetId, String label) {

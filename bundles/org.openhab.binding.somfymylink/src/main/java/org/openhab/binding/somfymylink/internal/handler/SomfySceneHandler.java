@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
  * @author Chris Johnson - Initial contribution
  */
 public class SomfySceneHandler extends BaseThingHandler {
-
     private final Logger logger = LoggerFactory.getLogger(SomfySceneHandler.class);
 
     public SomfySceneHandler(Thing thing) {
@@ -45,10 +44,8 @@ public class SomfySceneHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         // try {
         if (CHANNEL_SCENECONTROL.equals(channelUID.getId())) {
-
             String targetId = channelUID.getThingUID().getId();
 
             if (command instanceof RefreshType) {
@@ -79,5 +76,4 @@ public class SomfySceneHandler extends BaseThingHandler {
     protected SomfyMyLinkBridgeHandler getBridgeHandler() {
         return this.getBridge() != null ? (SomfyMyLinkBridgeHandler) this.getBridge().getHandler() : null;
     }
-
 }
