@@ -303,10 +303,11 @@ public class TrackerHandler extends BaseThingHandler {
         Configuration currentConfig = c.getConfiguration();
         // convert into meters which is the unit of the threshold
         Double accuracyThreshold = convertToMeters(ConfigHelper.getAccuracyThreshold(currentConfig));
-        if (accuracyThreshold > message.getGpsAccuracy().doubleValue() || accuracyThreshold.intValue() == 0) {
+        Double accuracy = message.getGpsAccuracy() != null ? message.getGpsAccuracy().doubleValue() : accuracyThreshold;
+
+        if (accuracyThreshold >= accuracy || accuracyThreshold.intValue() == 0) {
             if (accuracyThreshold > 0) {
-                logger.debug("Location accuracy is below required threshold: {}<{}", message.getGpsAccuracy(),
-                        accuracyThreshold);
+                logger.debug("Location accuracy is below required threshold: {}<{}", accuracy, accuracyThreshold);
             } else {
                 logger.debug("Location accuracy threshold check is disabled.");
             }
@@ -332,8 +333,8 @@ public class TrackerHandler extends BaseThingHandler {
                 }
             }
         } else {
-            logger.debug("Skip update as location accuracy is above required threshold: {}>={}",
-                    message.getGpsAccuracy(), accuracyThreshold);
+            logger.debug("Skip update as location accuracy is above required threshold: {}>={}", accuracy,
+                    accuracyThreshold);
         }
     }
 
