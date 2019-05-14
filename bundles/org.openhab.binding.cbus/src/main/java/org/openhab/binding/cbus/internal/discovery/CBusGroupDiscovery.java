@@ -24,9 +24,10 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.cbus.CBusBindingConstants;
 import org.openhab.binding.cbus.handler.CBusNetworkHandler;
-import org.openhab.binding.cbus.internal.cgate.Application;
-import org.openhab.binding.cbus.internal.cgate.CGateException;
-import org.openhab.binding.cbus.internal.cgate.Group;
+import com.daveoxley.cbus.Application;
+import com.daveoxley.cbus.CGateException;
+import com.daveoxley.cbus.Group;
+import com.daveoxley.cbus.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,8 +60,11 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
                 applications.put(CBusBindingConstants.CBUS_APPLICATION_TRIGGER,
                         CBusBindingConstants.THING_TYPE_TRIGGER);
 
+                Network network = cbusNetworkHandler.getNetwork();
+                if (network == null)
+                    return;
                 for (Map.Entry<String, ThingTypeUID> applicationItem : applications.entrySet()) {
-                    Application application = cbusNetworkHandler.getNetwork()
+                    Application application = network
                             .getApplication(Integer.parseInt(applicationItem.getKey()));
                     if (application == null) {
                         continue;
