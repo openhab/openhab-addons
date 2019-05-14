@@ -17,14 +17,13 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -33,12 +32,19 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.cbus.CBusBindingConstants;
-import org.openhab.binding.cbus.internal.cgate.CGateConnectException;
-import org.openhab.binding.cbus.internal.cgate.CGateException;
-import org.openhab.binding.cbus.internal.cgate.CGateInterface;
-import org.openhab.binding.cbus.internal.cgate.CGateSession;
-import org.openhab.binding.cbus.internal.cgate.EventCallback;
-import org.openhab.binding.cbus.internal.cgate.StatusChangeCallback;
+
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
+
+import com.daveoxley.cbus.CGateConnectException;
+import com.daveoxley.cbus.CGateException;
+import com.daveoxley.cbus.CGateInterface;
+import com.daveoxley.cbus.CGateSession;
+import com.daveoxley.cbus.CGateThreadPool;
+import com.daveoxley.cbus.CGateThreadPoolExecutor;
+import com.daveoxley.cbus.events.EventCallback;
+import com.daveoxley.cbus.status.StatusChangeCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,9 +60,9 @@ public class CBusCGateHandler extends BaseBridgeHandler {
 
     private InetAddress ipAddress;
 
-    private CGateSession cGateSession;
+    public CGateSession cGateSession;
 
-    private Thread keepAlive;
+    private Future<?> keepAliveFuture;
 
     private final ExecutorService threadPool = ThreadPoolManager.getPool("CBusCGateHandler-Helper");
 
@@ -71,7 +77,6 @@ public class CBusCGateHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        super.initialize();
         updateStatus(ThingStatus.OFFLINE);
         logger.debug("Initializing CGate Bridge handler.");
         Configuration config = getThing().getConfiguration();
@@ -91,53 +96,64 @@ public class CBusCGateHandler extends BaseBridgeHandler {
 
         logger.debug("CGate IP         {}.", this.ipAddress.getHostAddress());
 
-        threadPool.execute(new KeepAlive());
-        // scheduler.scheduleAtFixedRate(new KeepAlive(), 0, 10, TimeUnit.SECONDS);
+	keepAliveFuture = threadPool.submit(new KeepAlive());
     }
 
     private class KeepAlive extends Thread {
 
         @Override
         public void run() {
-            while (!isInterrupted()) {
-                try {
-                    if (cGateSession == null || !cGateSession.isConnected()) {
-                        if (!getThing().getStatus().equals(ThingStatus.ONLINE))
-                            connect();
-                        else {
-                            updateStatus();
-                        }
-                    } 
-                } catch (Exception e) {
-                }
-                try {
-                    sleep(10000l);
-                } catch (InterruptedException e) {
-                }
-            }
-        }
-    }
-
-    private class NoopCheck implements Runnable {
-        private final CountDownLatch doneSignal;
-
-        protected NoopCheck(CountDownLatch doneSignal) {
-            this.doneSignal = doneSignal;
-        }
-
-        @Override
-        public void run() {
             try {
-                CGateInterface.noop(cGateSession);
-                doneSignal.countDown();
-            } catch (Exception e) {
-            }
+		while (!isInterrupted()) {
+                    try {
+                        if (cGateSession == null || !cGateSession.isConnected()) {
+			    if (!getThing().getStatus().equals(ThingStatus.ONLINE))
+                                connect();
+			    else {
+                                updateStatus();
+			    }
+			} 
+		    } catch (Exception e) {
+		    }
+
+                    sleep(10000l);
+		}
+            } catch (InterruptedException e) {
+	    }
+
         }
     }
+
+    private class CBusThreadPool extends CGateThreadPool
+    {
+	public class CBusThreadPoolExecutor extends CGateThreadPoolExecutor
+        {
+
+	    private final ThreadPoolExecutor thread_pool;
+            public CBusThreadPoolExecutor(String poolName)
+	    {
+		    thread_pool = (ThreadPoolExecutor) ThreadPoolManager.getPool(poolName);
+	    }
+
+	    protected void execute(Runnable runnable)
+	    {
+		    thread_pool.execute(runnable);
+	    }
+	}
+	public CBusThreadPool()
+	{}
+	protected  CGateThreadPoolExecutor CreateExecutor(String name)
+	{
+
+		logger.debug("CreateExecutor for {}",name);
+	    return new CBusThreadPoolExecutor(name);
+	}
+    }
+
 
     private void connect() {
         if (cGateSession == null) {
-            cGateSession = CGateInterface.connect(this.ipAddress, 20023, 20024, 20025);
+	    cGateSession = CGateInterface.connect(this.ipAddress, 20023, 20024, 20025, new CBusThreadPool());
             cGateSession.registerEventCallback(new EventMonitor());
             cGateSession.registerStatusChangeCallback(new StatusChangeMonitor());
         }
@@ -297,7 +313,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             // Arrays.asList(event.trim().split("\\s+"))));
             if (eventCode == 701) {
                 String address = tokenizer.poll();
-                String oid = tokenizer.poll();
+                // String oid = tokenizer.poll();
                 String value = tokenizer.poll();
                 if (value.startsWith("level=")) {
                     String level = value.replace("level=", "");
@@ -319,74 +335,100 @@ public class CBusCGateHandler extends BaseBridgeHandler {
             // Is this networkThing from the network we are looking for...
             if (networkThing.getThingTypeUID().equals(CBusBindingConstants.BRIDGE_TYPE_NETWORK) && networkThing
                     .getConfiguration().get(CBusBindingConstants.PROPERTY_ID).toString().equals(network)) {
-                if (networkThing.getHandler() == null) {
+                ThingHandler thingHandler = networkThing.getHandler();
+                if (thingHandler == null) {
                     continue;
                 }
                 // Loop through all the things on this network and see if they match the application / group
-                for (Thing thing : ((CBusNetworkHandler) networkThing.getHandler()).getThing().getThings()) {
+                for (Thing thing : ((CBusNetworkHandler) thingHandler).getThing().getThings()) {
                     // Handle Lighting Application messages
                     if (application.equals(CBusBindingConstants.CBUS_APPLICATION_LIGHTING)
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_LIGHT)
                             && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
                                     .equals(group)) {
-                        ChannelUID channelUID = thing.getChannel(CBusBindingConstants.CHANNEL_STATE).getUID();
-                        ChannelUID channelLevelUID = thing.getChannel(CBusBindingConstants.CHANNEL_LEVEL).getUID();
+                        Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_STATE);
+                        Channel channelLevel = thing.getChannel(CBusBindingConstants.CHANNEL_LEVEL);
+                        if (channel != null && channelLevel != null)
+                        {
+                            ChannelUID channelUID = channel.getUID();
+                            ChannelUID channelLevelUID = channelLevel.getUID();
 
-                        if ("on".equalsIgnoreCase(value) || "255".equalsIgnoreCase(value)) {
-                            updateState(channelUID, OnOffType.ON);
-                            updateState(channelLevelUID, new PercentType(100));
-                        } else if ("off".equalsIgnoreCase(value) || "0".equalsIgnoreCase(value)) {
-                            updateState(channelUID, OnOffType.OFF);
-                            updateState(channelLevelUID, new PercentType(0));
-                        } else {
-                            try {
-                                int v = Integer.parseInt(value);
-                                updateState(channelUID, v > 0 ? OnOffType.ON : OnOffType.OFF);
-                                updateState(channelLevelUID, new PercentType((int) (v * 100 / 255.0)));
-                            } catch (NumberFormatException e) {
-                                logger.error("Invalid value presented to channel {}. Received {}, expected On/Off",
-                                        channelUID, value);
+                            if ("on".equalsIgnoreCase(value) || "255".equalsIgnoreCase(value)) {
+                                updateState(channelUID, OnOffType.ON);
+                                updateState(channelLevelUID, new PercentType(100));
+                            } else if ("off".equalsIgnoreCase(value) || "0".equalsIgnoreCase(value)) {
+                                updateState(channelUID, OnOffType.OFF);
+                                updateState(channelLevelUID, new PercentType(0));
+                            } else {
+                                try {
+                                    int v = Integer.parseInt(value);
+                                    updateState(channelUID, v > 0 ? OnOffType.ON : OnOffType.OFF);
+                                    updateState(channelLevelUID, new PercentType((int) (v * 100 / 255.0)));
+                                } catch (NumberFormatException e) {
+                                    logger.error("Invalid value presented to channel {}. Received {}, expected On/Off",
+                                                 channelUID, value);
+                                }
                             }
+                            logger.debug("Updating CBus Lighting Group {} with value {}", thing.getUID(), value);
+                        } else
+                        {
+                            logger.debug("Failed to Update CBus Lighting Group {} with value {}: No Channel", thing.getUID(), value);
                         }
+                                
                         handled = true;
-                        logger.debug("Updating CBus Lighting Group {} with value {}", thing.getUID(), value);
                     }
                     // DALI Application
                     else if (application.equals(CBusBindingConstants.CBUS_APPLICATION_DALI)
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_DALI)
                             && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
                                     .equals(group)) {
-                        ChannelUID channelUID = thing.getChannel(CBusBindingConstants.CHANNEL_LEVEL).getUID();
+                        Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_LEVEL);
+                        if (channel != null)
+                        {
+                            ChannelUID channelUID = channel.getUID();                        
 
-                        if ("on".equalsIgnoreCase(value) || "255".equalsIgnoreCase(value)) {
-                            updateState(channelUID, OnOffType.ON);
-                            updateState(channelUID, new PercentType(100));
-                        } else if ("off".equalsIgnoreCase(value) || "0".equalsIgnoreCase(value)) {
-                            updateState(channelUID, OnOffType.OFF);
-                            updateState(channelUID, new PercentType(0));
-                        } else {
-                            try {
-                                int v = Integer.parseInt(value);
-                                PercentType perc = new PercentType(Math.round(v * 100 / 255));
-                                updateState(channelUID, perc);
-                            } catch (NumberFormatException e) {
-                                logger.error(
+                            if ("on".equalsIgnoreCase(value) || "255".equalsIgnoreCase(value)) {
+                                updateState(channelUID, OnOffType.ON);
+                                updateState(channelUID, new PercentType(100));
+                            } else if ("off".equalsIgnoreCase(value) || "0".equalsIgnoreCase(value)) {
+                                updateState(channelUID, OnOffType.OFF);
+                                updateState(channelUID, new PercentType(0));
+                            } else {
+                                try {
+                                    int v = Integer.parseInt(value);
+                                    PercentType perc = new PercentType(Math.round(v * 100 / 255));
+                                    updateState(channelUID, perc);
+                                } catch (NumberFormatException e) {
+                                    logger.error(
                                         "Invalid value presented to channel {}. Received {}, expected On/Off or decimal value",
                                         channelUID, value);
+                                }
                             }
+                            logger.debug("Updating CBus Lighting Group {} with value {}", thing.getUID(), value);
+                        } else
+                        {
+                            logger.debug("Failed to Updat CBus Lighting Group {} with value {}: No Channel", thing.getUID(), value);
                         }
                         handled = true;
-                        logger.debug("Updating CBus Lighting Group {} with value {}", thing.getUID(), value);
+
                     }
                     // Temperature Application
                     else if (application.equals(CBusBindingConstants.CBUS_APPLICATION_TEMPERATURE)
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_TEMPERATURE)
                             && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
                                     .equals(group)) {
-                        ChannelUID channelUID = thing.getChannel(CBusBindingConstants.CHANNEL_TEMP).getUID();
-                        DecimalType temp = new DecimalType(value);
-                        updateState(channelUID, temp);
-                        logger.trace("Updating CBus Temperature Group {} with value {}", thing.getUID(), value);
+                        Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_TEMP);
+
+                        if (channel != null)
+                        {
+                            ChannelUID channelUID = channel.getUID();
+                            DecimalType temp = new DecimalType(value);
+                            updateState(channelUID, temp);
+                            logger.trace("Updating CBus Temperature Group {} with value {}", thing.getUID(), value);
+                        } else
+                        {
+                            logger.trace("Failed to Updat CBus Temperature Group {} with value {}: No Channel", thing.getUID(), value);
+                        }
                         handled = true;
                     }
                     // Trigger Application
@@ -394,9 +436,9 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_TRIGGER)
                             && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
                                     .equals(group)) {
-                        ChannelUID channelUID = thing.getChannel(CBusBindingConstants.CHANNEL_VALUE).getUID();
-                        DecimalType val = new DecimalType(value);
-                        // updateState(channelUID, val);
+                        //JH ChannelUID channelUID = thing.getChannel(CBusBindingConstants.CHANNEL_VALUE).getUID();
+                        //JH DecimalType val = new DecimalType(value);
+                        //JH updateState(channelUID, val);
                         logger.trace("Updating CBus Trigger Group {} with value {}", thing.getUID(), value);
                         handled = true;
                     }
@@ -418,14 +460,16 @@ public class CBusCGateHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
-        keepAlive.interrupt();
+
+	keepAliveFuture.cancel(true);
         if (cGateSession != null && cGateSession.isConnected()) {
             try {
                 cGateSession.close();
             } catch (CGateException e) {
                 logger.error("Cannot close CGate session", e);
             }
-        }
+        } else
+	    logger.debug("no session or it is disconnected");
     }
 
 }
