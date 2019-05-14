@@ -31,9 +31,15 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "volvooncall")
 @NonNullByDefault
-public abstract class VolvoOnCallActions implements ThingActions {
+public class VolvoOnCallActions implements ThingActions {
+
     private final static Logger logger = LoggerFactory.getLogger(VolvoOnCallActions.class);
+
     private @Nullable VehicleHandler handler;
+
+    public VolvoOnCallActions() {
+        logger.info("Volvo On Call actions service instanciated");
+    }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
