@@ -17,9 +17,15 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -28,49 +34,50 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Gabor Bicskei - Initial contribution
  */
+@NonNullByDefault
 public class LocationMessage {
 
     /**
      * Message type
      */
     @SerializedName("_type")
-    private String type;
+    private String type = "";
 
     /**
      * Tracker ID used to display the initials of a user (iOS,Android/string/optional) required for http mode
      */
     @SerializedName("tid")
-    private String trackerId;
+    private String trackerId = "";
 
     /**
      * Latitude (iOS, Android/float/meters/required)
      */
     @SerializedName("lat")
-    private BigDecimal latitude;
+    private BigDecimal latitude = BigDecimal.ZERO;
 
     /**
      * Longitude (iOS,Android/float/meters/required)
      */
     @SerializedName("lon")
-    private BigDecimal longitude;
+    private BigDecimal longitude = BigDecimal.ZERO;
 
     /**
      * GPS accuracy
      */
     @SerializedName("acc")
-    private BigDecimal gpsAccuracy;
+    private @Nullable BigDecimal gpsAccuracy;
 
     /**
      * Battery level (iOS,Android/integer/percent/optional)
      */
     @SerializedName("batt")
-    private Integer batteryLevel;
+    private Integer batteryLevel = Integer.MIN_VALUE;
 
     /**
      * Timestamp at which the event occurred (iOS,Android/integer/epoch/required)
      */
     @SerializedName("tst")
-    private Long timestampMillis;
+    private Long timestampMillis = Long.MIN_VALUE;
 
     public String getTrackerId() {
         return trackerId.replaceAll("[^a-zA-Z0-9_]", "");
@@ -81,13 +88,13 @@ public class LocationMessage {
      *
      * @return Conversion result
      */
-    public DateTimeType getTimestamp() {
-        if (timestampMillis != null) {
+    public State getTimestamp() {
+        if (timestampMillis != Long.MIN_VALUE) {
             ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(new Date(timestampMillis * 1000).toInstant(),
                     ZoneId.systemDefault());
             return new DateTimeType(zonedDateTime);
         }
-        return null;
+        return UnDefType.UNDEF;
     }
 
     /**
@@ -95,11 +102,11 @@ public class LocationMessage {
      *
      * @return Conversion result
      */
-    public PointType getTrackerLocation() {
-        if (latitude != null && longitude != null) {
+    public State getTrackerLocation() {
+        if (latitude != BigDecimal.ZERO && longitude != BigDecimal.ZERO) {
             return new PointType(new DecimalType(latitude), new DecimalType(longitude));
         }
-        return null;
+        return UnDefType.UNDEF;
     }
 
     /**
@@ -107,25 +114,25 @@ public class LocationMessage {
      *
      * @return Conversion result
      */
-    public DecimalType getBatteryLevel() {
-        if (batteryLevel != null) {
+    public State getBatteryLevel() {
+        if (batteryLevel != Integer.MIN_VALUE) {
             return new DecimalType(batteryLevel);
         }
-        return null;
+        return UnDefType.UNDEF;
     }
 
-    public BigDecimal getGpsAccuracy() {
-        return gpsAccuracy;
+    public State getGpsAccuracy() {
+        if (gpsAccuracy != null) {
+            return new QuantityType<>(gpsAccuracy.intValue(), SIUnits.METRE);
+        }
+        return UnDefType.UNDEF;
     }
 
     @Override
     public String toString() {
-        return "LocationMessage [" + (type != null ? "type=" + type + ", " : "")
-                + (trackerId != null ? "trackerId=" + trackerId + ", " : "")
-                + (latitude != null ? "latitude=" + latitude + ", " : "")
-                + (longitude != null ? "longitude=" + longitude + ", " : "")
+        return "LocationMessage [" + ("type=" + type + ", ") + ("trackerId=" + trackerId + ", ")
+                + ("latitude=" + latitude + ", ") + ("longitude=" + longitude + ", ")
                 + (gpsAccuracy != null ? "gpsAccuracy=" + gpsAccuracy + ", " : "")
-                + (batteryLevel != null ? "batteryLevel=" + batteryLevel + ", " : "")
-                + (timestampMillis != null ? "timestampMillis=" + timestampMillis : "") + "]";
+                + ("batteryLevel=" + batteryLevel + ", ") + ("timestampMillis=" + timestampMillis) + "]";
     }
 }
