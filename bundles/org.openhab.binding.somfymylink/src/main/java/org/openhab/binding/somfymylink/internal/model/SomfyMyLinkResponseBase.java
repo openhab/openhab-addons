@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.somfymylink.internal;
+package org.openhab.binding.somfymylink.internal.model;
+
+import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
 
 /**
  * The {@link SomfyMyLinkBindingConstants} class defines common constants, which are

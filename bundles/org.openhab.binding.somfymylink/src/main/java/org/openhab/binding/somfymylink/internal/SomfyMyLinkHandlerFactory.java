@@ -26,6 +26,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.somfymylink.internal.handler.SomfyMyLinkBridgeHandler;
+import org.openhab.binding.somfymylink.internal.handler.SomfySceneHandler;
+import org.openhab.binding.somfymylink.internal.handler.SomfyShadeHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -54,7 +57,7 @@ public class SomfyMyLinkHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_MYLINK)) {
-            SomfyMyLinkHandler handler = new SomfyMyLinkHandler((Bridge) thing);
+            SomfyMyLinkBridgeHandler handler = new SomfyMyLinkBridgeHandler((Bridge) thing);
             // registerItemDiscoveryService(handler);
             return handler;
         }
