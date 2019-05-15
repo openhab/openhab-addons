@@ -5,8 +5,8 @@
     <feature name="openhab-binding-telegram" description="Telegram Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature prerequisite="true">wrap</feature>
-        <bundle dependency="true">wrap:mvn:org.telegram/telegrambots/4.2</bundle>
-        <bundle dependency="true">wrap:mvn:org.telegram/telegrambots-meta/4.2</bundle>
+        <bundle dependency="true">wrap:mvn:org.telegram/telegrambots/4.2$Bundle-Name=Telegram%20Bot%20Library&amp;Bundle-SymbolicName=org.telegram.telegrambots&amp;Bundle-Version=4.2</bundle>
+        <bundle dependency="true">wrap:mvn:org.telegram/telegrambots-meta/4.2$Bundle-Name=Telegram%20Bot%20Meta%20Library&amp;Bundle-SymbolicName=org.telegram.telegrambots-meta&amp;Bundle-Version=4.2</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.telegram/${project.version}</bundle>
     </feature>
 </features>
