@@ -659,8 +659,13 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 logger.warn("Couldn't close connection to IHC controller", e);
             }
         }
+        clearLastUpdateTimeCache();
     }
 
+    private void clearLastUpdateTimeCache() {
+        lastUpdate.clear();
+    }
+    
     @Override
     public void errorOccured(IhcExecption e) {
         logger.warn("Error occurred on communication to IHC controller: {}", e.getMessage(), e);
