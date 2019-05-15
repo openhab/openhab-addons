@@ -62,5 +62,4 @@ public class HomekitSwitchImpl extends AbstractHomekitAccessoryImpl<SwitchItem> 
     public void unsubscribeSwitchState() {
         getUpdater().unsubscribe(getItem());
     }
-
 }

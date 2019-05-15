@@ -14,6 +14,7 @@ package org.openhab.io.homekit.internal.accessories;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -24,45 +25,47 @@ import org.openhab.io.homekit.internal.battery.BatteryStatus;
 
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
 import com.beowulfe.hap.accessories.BatteryStatusAccessory;
-import com.beowulfe.hap.accessories.ContactSensor;
-import com.beowulfe.hap.accessories.properties.ContactState;
+import com.beowulfe.hap.accessories.CarbonMonoxideSensor;
+import com.beowulfe.hap.accessories.properties.CarbonMonoxideDetectedState;
 
 /**
  *
- * @author Philipp Arndt - Initial contribution; Tim Harper - support for battery status
+ * @author Cody Cutrer - Initial contribution
  */
-public class HomekitContactSensorImpl extends AbstractHomekitAccessoryImpl<GenericItem>
-        implements ContactSensor, BatteryStatusAccessory {
-    private BatteryStatus batteryStatus;
-    private BooleanItemReader contactSensedReader;
+public class HomekitCarbonMonoxideSensorImpl extends AbstractHomekitAccessoryImpl<GenericItem>
+        implements CarbonMonoxideSensor, BatteryStatusAccessory {
 
-    public HomekitContactSensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
+    @NonNull
+    private BatteryStatus batteryStatus;
+
+    private BooleanItemReader carbonMonoxideDetectedReader;
+
+    public HomekitCarbonMonoxideSensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
             HomekitAccessoryUpdater updater, BatteryStatus batteryStatus) {
         super(taggedItem, itemRegistry, updater, GenericItem.class);
-        this.contactSensedReader = new BooleanItemReader(taggedItem.getItem(), OnOffType.OFF, OpenClosedType.CLOSED);
+
+        this.carbonMonoxideDetectedReader = new BooleanItemReader(taggedItem.getItem(), OnOffType.ON,
+                OpenClosedType.OPEN);
         this.batteryStatus = batteryStatus;
     }
 
     @Override
-    public CompletableFuture<ContactState> getCurrentState() {
-        Boolean contactDetected = contactSensedReader.getValue();
-        if (contactDetected == null) {
-            // BUG - HAP-java does not currently handle null well here, so we'll default to not detected.
-            return CompletableFuture.completedFuture(ContactState.NOT_DETECTED);
-        } else if (contactDetected) {
-            return CompletableFuture.completedFuture(ContactState.DETECTED);
-        } else {
-            return CompletableFuture.completedFuture(ContactState.NOT_DETECTED);
+    public CompletableFuture<CarbonMonoxideDetectedState> getCarbonMonoxideDetectedState() {
+        Boolean state = this.carbonMonoxideDetectedReader.getValue();
+        if (state == null) {
+            return CompletableFuture.completedFuture(null);
         }
+        return CompletableFuture
+                .completedFuture(state ? CarbonMonoxideDetectedState.ABNORMAL : CarbonMonoxideDetectedState.NORMAL);
     }
 
     @Override
-    public void subscribeContactState(HomekitCharacteristicChangeCallback callback) {
+    public void subscribeCarbonMonoxideDetectedState(HomekitCharacteristicChangeCallback callback) {
         getUpdater().subscribe(getItem(), callback);
     }
 
     @Override
-    public void unsubscribeContactState() {
+    public void unsubscribeCarbonMonoxideDetectedState() {
         getUpdater().unsubscribe(getItem());
     }
 
