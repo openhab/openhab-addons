@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.voice.pollytts-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+    <feature name="openhab-voice-pollytts" description="Polly Text-to-Speech" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature prerequisite="true">wrap</feature>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.9</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.5</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.8</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.8</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.8</bundle>
+        <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-core/1.11.490$Bundle-Name=AWS%20SDK%20for%20Java%20-%20Core&amp;Bundle-SymbolicName=com.amazonaws.aws-java-sdk-core&amp;Bundle-Version=1.11.490</bundle>
+        <bundle dependency="true">wrap:mvn:com.amazonaws/aws-java-sdk-polly/1.11.490$Bundle-Name=AWS%20Java%20SDK%20for%20Amazon%20Polly&amp;Bundle-SymbolicName=com.amazonaws.aws-java-sdk-polly&amp;Bundle-Version=1.11.490</bundle>
+        <bundle dependency="true">mvn:commons-logging/commons-logging/1.2</bundle>
+        <bundle dependency="true">mvn:joda-time/joda-time/2.8.1</bundle> 
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.voice.pollytts/${project.version}</bundle>
+    </feature>
+</features>

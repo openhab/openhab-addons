@@ -32,13 +32,13 @@ public class JsonAutomation {
     public long creationTimeEpochMillis;
     public long lastUpdatedTimeEpochMillis;
 
-    public class Trigger {
+    public static class Trigger {
         public @Nullable Payload payload;
         public @Nullable String id;
         public @Nullable String type;
     }
 
-    public class Payload {
+    public static class Payload {
         public @Nullable String customerId;
         public @Nullable String utterance;
         public @Nullable String locale;

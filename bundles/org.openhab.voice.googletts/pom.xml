@@ -11,7 +11,7 @@
 
   <artifactId>org.openhab.voice.googletts</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Google Cloud Text-to-Speech</name>
+  <name>openHAB Add-ons :: Bundles :: Voice :: Google Cloud Text-to-Speech</name>
 
   <dependencies>
     <dependency>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.binding.ftpupload-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+    <feature name="openhab-binding-ftpupload" description="FTP Upload Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <bundle dependency="true">mvn:org.apache.ftpserver/ftplet-api/1.1.0</bundle>
+        <bundle dependency="true">mvn:org.apache.ftpserver/ftpserver-core/1.1.0</bundle>
+        <bundle dependency="true">mvn:org.apache.mina/mina-core/2.0.16</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.ftpupload/${project.version}</bundle>
+    </feature>
+</features>

@@ -11,7 +11,7 @@
 
   <artifactId>org.openhab.io.homekit</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Homekit</name>
+  <name>openHAB Add-ons :: Bundles :: IO :: Homekit</name>
 
   <dependencies>
     <dependency>

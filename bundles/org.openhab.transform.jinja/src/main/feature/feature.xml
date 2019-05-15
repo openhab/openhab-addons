@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.transform.jinja-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+    <feature name="openhab-transformation-jinja" description="Jinja Transformation" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature prerequisite="true">wrap</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.8</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.8</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.8</bundle>
+        <bundle dependency="true">mvn:com.google.guava/guava/21.0</bundle>
+        <bundle dependency="true">mvn:ch.obermuhlner/big-math/2.1.0</bundle>
+        <bundle dependency="true">mvn:org.jsoup/jsoup/1.8.3</bundle>
+        <bundle dependency="true">wrap:mvn:com.google.re2j/re2j/1.2$Bundle-Name=re2j&amp;Bundle-SymbolicName=com.google.re2j.re2j&amp;Bundle-Version=1.2</bundle>
+        <bundle dependency="true">wrap:mvn:de.odysseus.juel/juel-api/2.2.7$Bundle-Name=juel&amp;Bundle-SymbolicName=de.odysseus.juel.juel-api&amp;Bundle-Version=2.2.7</bundle>
+        <bundle dependency="true">wrap:mvn:de.odysseus.juel/juel-impl/2.2.7$Bundle-Name=juel&amp;Bundle-SymbolicName=de.odysseus.juel.juel-impl&amp;Bundle-Version=2.2.7</bundle>
+        <bundle dependency="true">wrap:mvn:com.hubspot.jinjava/jinjava/2.5.0$Bundle-Name=jinjava&amp;Bundle-SymbolicName=com.hubspot.jinjava.jinjava&amp;Bundle-Version=2.5.0</bundle>
+        <bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.jinja/${project.version}</bundle>
+    </feature>
+</features>

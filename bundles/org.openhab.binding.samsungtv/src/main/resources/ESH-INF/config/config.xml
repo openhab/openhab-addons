@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config-description:config-descriptions
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:samsungtv:tv">
@@ -13,6 +14,10 @@
 			<label>TCP Port</label>
 			<description>TCP port of the Samsung TV.</description>
 			<default>55000</default>
+		</parameter>
+		<parameter name="macAddress" type="text">
+			<label>MAC Address</label>
+			<description>MAC  Address of the Samsung TV.</description>
 		</parameter>
 		<parameter name="refreshInterval" type="integer" unit="ms">
 			<label>Refresh Interval</label>

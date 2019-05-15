@@ -11,7 +11,7 @@
 
   <artifactId>org.openhab.io.hueemulation</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Hue Emulation Service</name>
+  <name>openHAB Add-ons :: Bundles :: IO :: Hue Emulation Service</name>
 
   <properties>
     <bnd.importpackage>org.glassfish.jersey.*;resolution:="optional"</bnd.importpackage>

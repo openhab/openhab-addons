@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.binding.boschindego-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+    <feature name="openhab-binding-boschindego" description="Bosch Indego Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature prerequisite="true">wrap</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.8</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.8</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.8</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.9</bundle>
+        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.5</bundle>
+        <bundle dependency="true">wrap:mvn:de.zazaz.iot.bosch.indego/bosch-indego-controller-lib/0.8$Bundle-Name=Bosch%20Indego;Bundle-SymbolicName=de.zazaz.iot.bosch.indego.bosch-indego-controller-lib&amp;Bundle-Version=0.8</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.boschindego/${project.version}</bundle>
+    </feature>
+</features>

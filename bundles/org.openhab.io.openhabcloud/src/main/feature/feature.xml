@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.io.openhabcloud-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+    <feature name="openhab-misc-openhabcloud" description="openHAB Cloud Connector" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature prerequisite="true">wrap</feature>
+        <bundle dependency="true">mvn:org.json/json/20180813</bundle>
+        <bundle dependency="true">wrap:mvn:com.squareup.okhttp3/okhttp/3.12.1$Bundle-Name=OkHttp&amp;Bundle-SymbolicName=com.squareup.okhttp&amp;Bundle-Version=3.12.1</bundle>
+        <bundle dependency="true">wrap:mvn:com.squareup.okio/okio/1.15.0$Bundle-Name=Okio&amp;Bundle-SymbolicName=com.squareup.okio&amp;Bundle-Version=1.15.0</bundle>   
+        <bundle dependency="true">wrap:mvn:io.socket/socket.io-client/1.0.0$Bundle-Name=Socket.IO%20Client&amp;Bundle-SymbolicName=io.socket.socket.io-client&amp;Bundle-Version=1.0.0</bundle>
+        <bundle dependency="true">wrap:mvn:io.socket/engine.io-client/1.0.0$Bundle-Name=Engine.IO%20Client&amp;Bundle-SymbolicName=io.socket.engine.io-client&amp;Bundle-Version=1.0.0</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.io.openhabcloud/${project.version}</bundle>
+    </feature>
+</features>

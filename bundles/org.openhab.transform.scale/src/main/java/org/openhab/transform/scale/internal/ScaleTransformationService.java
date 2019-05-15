@@ -49,6 +49,14 @@ public class ScaleTransformationService extends AbstractFileTransformationServic
     /** RegEx to extract a scale definition */
     private static final Pattern LIMITS_PATTERN = Pattern.compile("(\\[|\\])(.*)\\.\\.(.*)(\\[|\\])");
 
+    private static final String NON_NUMBER = "NaN";
+    private static final String FORMAT = "format";
+    private static final String FORMAT_VALUE = "%value%";
+    private static final String FORMAT_LABEL = "%label%";
+
+    /** Inaccessible range used to store presentation format ]0..0[ */
+    private static final Range FORMAT_RANGE = Range.range(BigDecimal.ZERO, false, BigDecimal.ZERO, false);
+
     /**
      * The implementation of {@link OrderedProperties} that let access
      * properties in the same order than presented in the source file
@@ -94,16 +102,29 @@ public class ScaleTransformationService extends AbstractFileTransformationServic
         try {
             final BigDecimal value = new BigDecimal(source);
 
-            return getScaleResult(data, source, value);
+            return formatResult(data, source, value);
         } catch (NumberFormatException e) {
             // Scale can only be used with numeric inputs, so lets try to see if ever its a valid quantity type
             try {
                 final QuantityType<?> quantity = new QuantityType<>(source);
-                return getScaleResult(data, source, quantity.toBigDecimal());
+                return formatResult(data, source, quantity.toBigDecimal());
             } catch (NumberFormatException e2) {
-                throw new TransformationException("Scale can only be used with numeric inputs or valid quantity types");
+                String nonNumeric = data.get(null);
+                if (nonNumeric != null) {
+                    return nonNumeric;
+                } else {
+                    throw new TransformationException(
+                            "Scale must be used with numeric inputs, valid quantity types or a 'NaN' entry.");
+                }
             }
         }
+    }
+
+    private String formatResult(Map<Range, String> data, String source, final BigDecimal value)
+            throws TransformationException {
+        String format = data.get(FORMAT_RANGE);
+        String result = getScaleResult(data, source, value);
+        return format.replaceAll(FORMAT_VALUE, source).replaceAll(FORMAT_LABEL, result);
     }
 
     private String getScaleResult(Map<Range, String> data, String source, final BigDecimal value)
@@ -117,6 +138,7 @@ public class ScaleTransformationService extends AbstractFileTransformationServic
     protected Map<Range, String> internalLoadTransform(String filename) throws TransformationException {
         try (FileReader reader = new FileReader(filename)) {
             final Map<Range, String> data = new LinkedHashMap<>();
+            data.put(FORMAT_RANGE, FORMAT_LABEL);
             final OrderedProperties properties = new OrderedProperties();
             properties.load(reader);
 
@@ -125,8 +147,8 @@ public class ScaleTransformationService extends AbstractFileTransformationServic
                 final String value = properties.getProperty(entry);
                 final Matcher matcher = LIMITS_PATTERN.matcher(entry);
                 if (matcher.matches() && (matcher.groupCount() == 4)) {
-                    final boolean lowerInclusive = matcher.group(1).equals("]") ? false : true;
-                    final boolean upperInclusive = matcher.group(4).equals("[") ? false : true;
+                    final boolean lowerInclusive = matcher.group(1).equals("[");
+                    final boolean upperInclusive = matcher.group(4).equals("]");
 
                     final String lowLimit = matcher.group(2);
                     final String highLimit = matcher.group(3);
@@ -141,8 +163,14 @@ public class ScaleTransformationService extends AbstractFileTransformationServic
                         throw new TransformationException("Error parsing bounds: " + lowLimit + ".." + highLimit);
                     }
                 } else {
-                    logger.warn("Scale transform file '{}' does not comply with syntax for entry : '{}', '{}'",
-                            filename, entry, value);
+                    if (NON_NUMBER.equals(entry)) {
+                        data.put(null, value);
+                    } else if (FORMAT.equals(entry)) {
+                        data.put(FORMAT_RANGE, value);
+                    } else {
+                        logger.warn("Scale transform file '{}' does not comply with syntax for entry : '{}', '{}'",
+                                filename, entry, value);
+                    }
                 }
             }
 

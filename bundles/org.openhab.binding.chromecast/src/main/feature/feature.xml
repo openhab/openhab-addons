@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.binding.chromecast-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+    <feature name="openhab-binding-chromecast" description="Chromecast Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-mdns</feature>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.8</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.8</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.8</bundle>
+        <bundle dependency="true">mvn:com.google.protobuf/protobuf-java/2.6.0</bundle>
+        <bundle dependency="true">mvn:su.litvak.chromecast/api-v2/0.11.0</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.chromecast/${project.version}</bundle>
+    </feature>
+</features>

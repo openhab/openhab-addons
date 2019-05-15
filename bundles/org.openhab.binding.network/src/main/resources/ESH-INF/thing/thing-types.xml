@@ -108,10 +108,10 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="latency">
-		<item-type>Number</item-type>
-		<label>Latency (ms)</label>
-		<description>States the latency time in milliseconds</description>
-		<state readOnly="true"></state>
+		<item-type>Number:Time</item-type>
+		<label>Latency</label>
+		<description>States the latency time</description>
+		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 	<channel-type id="lastseen">
 		<item-type>DateTime</item-type>

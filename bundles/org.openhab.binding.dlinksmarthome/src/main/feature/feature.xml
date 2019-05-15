@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.binding.dlinksmarthome-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+    <feature name="openhab-binding-dlinksmarthome" description="D-Link Smart Home Binding" version="${project.version}">
+        <feature>openhab-runtime-base</feature>
+        <feature>openhab-transport-mdns</feature>
+        <feature prerequisite="true">wrap</feature>
+        <!-- JAXB bundles -->
+        <bundle dependency="true">wrap:mvn:javax.activation/activation/1.1.1$Bundle-Name=Javax%20Activation&amp;Bundle-SymbolicName=javax.activation.activation&amp;Bundle-Version=1.1.1</bundle>
+        <bundle dependency="true">mvn:javax.xml.bind/jaxb-api/2.2.12</bundle>
+        <bundle dependency="true">mvn:com.sun.xml.bind/jaxb-impl/2.2.11</bundle>
+        <bundle dependency="true">mvn:com.sun.xml.bind/jaxb-core/2.2.11</bundle>
+        <!-- JAX-WS (SOAP) bundles -->
+        <bundle dependency="true">mvn:javax.xml.soap/javax.xml.soap-api/1.4.0</bundle>
+        <bundle dependency="true">wrap:mvn:com.sun.xml.ws/jaxws-rt/2.2.10$Bundle-Name=JAX%20WS%20RI%20Runtime%20Bundle&amp;Bundle-SymbolicName=com.sun.xml.ws.jaxws-rt&amp;Bundle-Version=2.3.2</bundle>
+        <bundle dependency="true">mvn:com.sun.xml.messaging.saaj/saaj-impl/1.5.1</bundle>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.dlinksmarthome/${project.version}</bundle>
+    </feature>
+</features>
