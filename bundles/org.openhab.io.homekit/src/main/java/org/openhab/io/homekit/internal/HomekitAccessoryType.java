@@ -21,7 +21,7 @@ import java.util.Map;
  *
  * @author Andy Lintner - Initial contribution
  */
-public enum HomekitDeviceType {
+public enum HomekitAccessoryType {
     DIMMABLE_LIGHTBULB("DimmableLighting"),
     HUMIDITY_SENSOR("CurrentHumidity"),
     LIGHTBULB("Lighting"),
@@ -29,23 +29,36 @@ public enum HomekitDeviceType {
     TEMPERATURE_SENSOR("CurrentTemperature"),
     THERMOSTAT("Thermostat"),
     COLORFUL_LIGHTBULB("ColorfulLighting"),
-    CONTACT_SENSOR("ContactSensor");
+    CONTACT_SENSOR("ContactSensor"),
+    VALVE("Valve"),
+    LEAK_SENSOR("LeakSensor"),
+    MOTION_SENSOR("MotionSensor"),
+    OCCUPANCY_SENSOR("OccupancySensor"),
+    WINDOW_COVERING("WindowCovering"),
+    SMOKE_SENSOR("SmokeSensor"),
+    CARBON_MONOXIDE_SENSOR("CarbonMonoxideSensor"),
+    @Deprecated()
+    BLINDS("Blinds");
 
-    private static final Map<String, HomekitDeviceType> TAG_MAP = new HashMap<>();
+    private static final Map<String, HomekitAccessoryType> TAG_MAP = new HashMap<>();
 
     static {
-        for (HomekitDeviceType type : HomekitDeviceType.values()) {
+        for (HomekitAccessoryType type : HomekitAccessoryType.values()) {
             TAG_MAP.put(type.tag, type);
         }
     }
 
     private final String tag;
 
-    private HomekitDeviceType(String tag) {
+    private HomekitAccessoryType(String tag) {
         this.tag = tag;
     }
 
-    public static HomekitDeviceType valueOfTag(String tag) {
+    public String getTag() {
+        return tag;
+    }
+
+    public static HomekitAccessoryType valueOfTag(String tag) {
         return TAG_MAP.get(tag);
     }
 }

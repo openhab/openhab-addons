@@ -12,10 +12,15 @@
  */
 package org.openhab.io.homekit.internal;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.library.items.ColorItem;
@@ -29,46 +34,87 @@ import org.slf4j.LoggerFactory;
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitTaggedItem {
+    class BadItemConfigurationException extends Exception {
+        private static final long serialVersionUID = 2199765638404197193L;
+
+        public BadItemConfigurationException(String reason) {
+            super(reason);
+        }
+    }
 
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
 
-    private HomekitDeviceType homekitDeviceType;
+    /**
+     * The type of HomekitDevice we've decided this was. If the item is question is the member of a group which is a
+     * HomekitDevice, then this is null.
+     */
+    private HomekitAccessoryType homekitAccessoryType;
     private HomekitCharacteristicType homekitCharacteristicType;
     private final Item item;
     private Logger logger = LoggerFactory.getLogger(HomekitTaggedItem.class);
     private final int id;
+    private GroupItem parentGroupItem;
+
+    private static Stream<String> getPrefixedTags(Item item) {
+        Stream<String> prefixedTags = item.getTags().stream();
+        if (item instanceof ColorItem) {
+            prefixedTags = prefixedTags.map(tag -> "Colorful" + tag);
+        } else if (item instanceof DimmerItem) {
+            prefixedTags = prefixedTags.map(tag -> "Dimmable" + tag);
+        }
+        return prefixedTags;
+    }
+
+    public static HomekitAccessoryType findAccessoryType(Item item) {
+        return getPrefixedTags(item).map(tag -> HomekitAccessoryType.valueOfTag(tag)).filter(Objects::nonNull)
+                .findFirst().orElseGet(() -> null);
+    }
+
+    public static HomekitCharacteristicType findCharacteristicType(Item item) {
+        return getPrefixedTags(item).map(tag -> HomekitCharacteristicType.valueOfTag(tag)).filter(Objects::nonNull)
+                .findFirst().orElseGet(() -> null);
+    }
 
     public HomekitTaggedItem(Item item, ItemRegistry itemRegistry) {
         this.item = item;
-        for (String tag : item.getTags()) {
 
-            if (item instanceof ColorItem) {
-                tag = "Colorful" + tag;
-            } else if (item instanceof DimmerItem) {
-                tag = "Dimmable" + tag;
+        try {
+            homekitAccessoryType = findAccessoryType(item);
+            homekitCharacteristicType = findCharacteristicType(item);
+            if (homekitAccessoryType != null && homekitCharacteristicType != null) {
+                throw new BadItemConfigurationException(
+                        "Items cannot be tagged as both a characteristic and an accessory type");
+            }
+            List<GroupItem> matchingGroupItems = findMyAccessoryGroups(item, itemRegistry);
+
+            switch (matchingGroupItems.size()) {
+                case 0: // Does not belong to a accessory group
+                    if (homekitCharacteristicType != null) {
+                        throw new BadItemConfigurationException(
+                                "Item is tagged as a characteristic, but does not belong to a root accessory group");
+                    }
+
+                    parentGroupItem = null;
+                    break;
+                case 1: // Belongs to exactly one accessory group
+                    if (item instanceof GroupItem) {
+                        throw new BadItemConfigurationException("Nested Accessory Groups are not supported");
+                    }
+
+                    parentGroupItem = matchingGroupItems.get(0);
+                    break;
+                default: // Belongs to more than one accessory group
+                    throw new BadItemConfigurationException(
+                            "Item belongs to multiple Groups which are tagged as Homekit devices.");
             }
 
-            /*
-             * Is the item part of a tagged group AND does it have a matching CharacteristicType ?
-             * This matches items with tags that require a parent group like the "TargetTemperature" in
-             * thermostats
-             */
-            if (isMemberOfRootGroup(item, itemRegistry)) {
-                homekitCharacteristicType = HomekitCharacteristicType.valueOfTag(tag);
-            }
-
-            /*
-             * If its not a characteristic type for a group item, see if we have a matching device type.
-             */
-            if (homekitCharacteristicType == null) {
-                homekitDeviceType = HomekitDeviceType.valueOfTag(tag);
-            }
-
-            if (homekitDeviceType != null || homekitCharacteristicType != null) {
-                break;
-            }
+        } catch (BadItemConfigurationException e) {
+            logger.warn("Item {} was misconfigured: {}. Excluding item from homekit.", item.getName(), e.getMessage());
+            homekitAccessoryType = null;
+            homekitCharacteristicType = null;
+            parentGroupItem = null;
         }
-        if (homekitDeviceType != null) {
+        if (homekitAccessoryType != null) {
             this.id = calculateId(item);
         } else {
             this.id = 0;
@@ -76,21 +122,35 @@ public class HomekitTaggedItem {
     }
 
     public boolean isTagged() {
-        return (homekitDeviceType != null && id != 0) || homekitCharacteristicType != null;
+        return (homekitAccessoryType != null && id != 0) || homekitCharacteristicType != null;
     }
 
-    public HomekitDeviceType getDeviceType() {
-        return homekitDeviceType;
+    public boolean isGroup() {
+        return (isAccessory() && (this.item instanceof GroupItem));
+    }
+
+    public HomekitAccessoryType getAccessoryType() {
+        return homekitAccessoryType;
     }
 
     public HomekitCharacteristicType getCharacteristicType() {
         return homekitCharacteristicType;
     }
 
-    public boolean isRootDevice() {
-        return homekitDeviceType != null;
+    /**
+     * Returns whether or not this item refers to an item that fully specifies a Homekit accessory. Mutually
+     * exclusive
+     * to isCharacteristic(). Primary devices must belong to a root accessory group.
+     */
+    public boolean isAccessory() {
+        return homekitAccessoryType != null;
     }
 
+    /**
+     * Returns whether or not this item is in a group that specifies a Homekit accessory. It is not possible to be a
+     * characteristic and an accessory. Further, all characteristics belong to a
+     * root deviceGroup.
+     */
     public boolean isCharacteristic() {
         return homekitCharacteristicType != null;
     }
@@ -103,6 +163,27 @@ public class HomekitTaggedItem {
         return id;
     }
 
+    public String getName() {
+        return item.getName();
+    }
+
+    /**
+     * Returns the RootDevice GroupItem to which this item belongs.
+     * Returns null if not in a group.
+     */
+    public GroupItem getRootDeviceGroupItem() {
+        return parentGroupItem;
+    }
+
+    /**
+     * Returns whether or not this item belongs to a Homekit accessory group.
+     *
+     * Characteristic devices must belong to a Homekit accessory group.
+     */
+    public boolean isMemberOfAccessoryGroup() {
+        return parentGroupItem != null;
+    }
+
     private int calculateId(Item item) {
         int id = new HashCodeBuilder().append(item.getName()).hashCode();
         if (id < 0) {
@@ -113,7 +194,7 @@ public class HomekitTaggedItem {
         }
         if (CREATED_ACCESSORY_IDS.containsKey(id)) {
             if (!CREATED_ACCESSORY_IDS.get(id).equals(item.getName())) {
-                logger.error(
+                logger.warn(
                         "Could not create homekit accessory {} because its hash conflicts with {}. This is a 1:1,000,000 chance occurrence. Change one of the names and consider playing the lottery. See https://github.com/openhab/openhab2-addons/issues/257#issuecomment-125886562",
                         item.getName(), CREATED_ACCESSORY_IDS.get(id));
                 return 0;
@@ -124,17 +205,16 @@ public class HomekitTaggedItem {
         return id;
     }
 
-    private boolean isMemberOfRootGroup(Item item, ItemRegistry itemRegistry) {
-        for (String groupName : item.getGroupNames()) {
-            Item groupItem = itemRegistry.get(groupName);
-            if (groupItem != null) {
-                for (String groupTag : groupItem.getTags()) {
-                    if (HomekitDeviceType.valueOfTag(groupTag) != null) {
-                        return true;
-                    }
-                }
+    static List<GroupItem> findMyAccessoryGroups(Item item, ItemRegistry itemRegistry) {
+        return item.getGroupNames().stream().flatMap(name -> {
+            Item groupItem = itemRegistry.get(name);
+            if ((groupItem != null) && (groupItem instanceof GroupItem)) {
+                return Stream.of((GroupItem) groupItem);
+            } else {
+                return Stream.empty();
             }
-        }
-        return false;
+        }).filter(groupItem -> {
+            return groupItem.getTags().stream().filter(gt -> HomekitAccessoryType.valueOfTag(gt) != null).count() > 0;
+        }).collect(Collectors.toList());
     }
 }

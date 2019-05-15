@@ -24,45 +24,36 @@ import org.openhab.io.homekit.internal.battery.BatteryStatus;
 
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
 import com.beowulfe.hap.accessories.BatteryStatusAccessory;
-import com.beowulfe.hap.accessories.ContactSensor;
-import com.beowulfe.hap.accessories.properties.ContactState;
+import com.beowulfe.hap.accessories.OccupancySensor;
 
 /**
  *
- * @author Philipp Arndt - Initial contribution; Tim Harper - support for battery status
+ * @author Tim Harper - Initial contribution
  */
-public class HomekitContactSensorImpl extends AbstractHomekitAccessoryImpl<GenericItem>
-        implements ContactSensor, BatteryStatusAccessory {
+public class HomekitOccupancySensorImpl extends AbstractHomekitAccessoryImpl<GenericItem>
+        implements OccupancySensor, BatteryStatusAccessory {
     private BatteryStatus batteryStatus;
-    private BooleanItemReader contactSensedReader;
+    private BooleanItemReader occupancySensedReader;
 
-    public HomekitContactSensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
+    public HomekitOccupancySensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
             HomekitAccessoryUpdater updater, BatteryStatus batteryStatus) {
         super(taggedItem, itemRegistry, updater, GenericItem.class);
-        this.contactSensedReader = new BooleanItemReader(taggedItem.getItem(), OnOffType.OFF, OpenClosedType.CLOSED);
+        this.occupancySensedReader = new BooleanItemReader(taggedItem.getItem(), OnOffType.ON, OpenClosedType.OPEN);
         this.batteryStatus = batteryStatus;
     }
 
     @Override
-    public CompletableFuture<ContactState> getCurrentState() {
-        Boolean contactDetected = contactSensedReader.getValue();
-        if (contactDetected == null) {
-            // BUG - HAP-java does not currently handle null well here, so we'll default to not detected.
-            return CompletableFuture.completedFuture(ContactState.NOT_DETECTED);
-        } else if (contactDetected) {
-            return CompletableFuture.completedFuture(ContactState.DETECTED);
-        } else {
-            return CompletableFuture.completedFuture(ContactState.NOT_DETECTED);
-        }
+    public CompletableFuture<Boolean> getOccupancyDetected() {
+        return CompletableFuture.completedFuture(occupancySensedReader.getValue());
     }
 
     @Override
-    public void subscribeContactState(HomekitCharacteristicChangeCallback callback) {
+    public void subscribeOccupancyDetected(HomekitCharacteristicChangeCallback callback) {
         getUpdater().subscribe(getItem(), callback);
     }
 
     @Override
-    public void unsubscribeContactState() {
+    public void unsubscribeOccupancyDetected() {
         getUpdater().unsubscribe(getItem());
     }
 
