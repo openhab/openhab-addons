@@ -14,6 +14,7 @@ package org.openhab.io.homekit.internal.accessories;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -24,45 +25,40 @@ import org.openhab.io.homekit.internal.battery.BatteryStatus;
 
 import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
 import com.beowulfe.hap.accessories.BatteryStatusAccessory;
-import com.beowulfe.hap.accessories.ContactSensor;
-import com.beowulfe.hap.accessories.properties.ContactState;
+import com.beowulfe.hap.accessories.LeakSensor;
 
 /**
  *
- * @author Philipp Arndt - Initial contribution; Tim Harper - support for battery status
+ * @author Tim Harper - Initial contribution
  */
-public class HomekitContactSensorImpl extends AbstractHomekitAccessoryImpl<GenericItem>
-        implements ContactSensor, BatteryStatusAccessory {
-    private BatteryStatus batteryStatus;
-    private BooleanItemReader contactSensedReader;
+public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl<GenericItem>
+        implements LeakSensor, BatteryStatusAccessory {
 
-    public HomekitContactSensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
+    @NonNull
+    private BatteryStatus batteryStatus;
+
+    private BooleanItemReader leakDetectedReader;
+
+    public HomekitLeakSensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
             HomekitAccessoryUpdater updater, BatteryStatus batteryStatus) {
         super(taggedItem, itemRegistry, updater, GenericItem.class);
-        this.contactSensedReader = new BooleanItemReader(taggedItem.getItem(), OnOffType.OFF, OpenClosedType.CLOSED);
+
+        this.leakDetectedReader = new BooleanItemReader(taggedItem.getItem(), OnOffType.ON, OpenClosedType.OPEN);
         this.batteryStatus = batteryStatus;
     }
 
     @Override
-    public CompletableFuture<ContactState> getCurrentState() {
-        Boolean contactDetected = contactSensedReader.getValue();
-        if (contactDetected == null) {
-            // BUG - HAP-java does not currently handle null well here, so we'll default to not detected.
-            return CompletableFuture.completedFuture(ContactState.NOT_DETECTED);
-        } else if (contactDetected) {
-            return CompletableFuture.completedFuture(ContactState.DETECTED);
-        } else {
-            return CompletableFuture.completedFuture(ContactState.NOT_DETECTED);
-        }
+    public CompletableFuture<Boolean> getLeakDetected() {
+        return CompletableFuture.completedFuture(this.leakDetectedReader.getValue());
     }
 
     @Override
-    public void subscribeContactState(HomekitCharacteristicChangeCallback callback) {
+    public void subscribeLeakDetected(HomekitCharacteristicChangeCallback callback) {
         getUpdater().subscribe(getItem(), callback);
     }
 
     @Override
-    public void unsubscribeContactState() {
+    public void unsubscribeLeakDetected() {
         getUpdater().unsubscribe(getItem());
     }
 
