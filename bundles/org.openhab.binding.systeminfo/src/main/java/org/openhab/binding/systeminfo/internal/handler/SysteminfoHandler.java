@@ -494,7 +494,7 @@ public class SysteminfoHandler extends BaseThingHandler {
         try {
             Configuration channelProperties = this.thing.getChannel(channelUID.getId()).getConfiguration();
             BigDecimal pidValue = (BigDecimal) channelProperties.get(PID_PARAM);
-            if (pidValue.intValue() < 0) {
+            if (pidValue == null || pidValue.intValue() < 0) {
                 throw new IllegalArgumentException("Invalid value for Process Identifier.");
             } else {
                 pid = pidValue.intValue();
@@ -548,8 +548,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             Channel oldChannel = this.thing.getChannel(channelUID.getId());
 
             if (oldChannel == null) {
-                logger.warn("Channel with UID {} cannot be updated, as it cannot be found !",
-                        channelUID);
+                logger.warn("Channel with UID {} cannot be updated, as it cannot be found !", channelUID);
                 continue;
             }
             Configuration currentChannelConfig = oldChannel.getConfiguration();
