@@ -28,5 +28,4 @@ class HomekitLightbulbImpl extends AbstractHomekitLightbulbImpl<SwitchItem> {
             HomekitAccessoryUpdater updater) {
         super(taggedItem, itemRegistry, updater, SwitchItem.class);
     }
-
 }

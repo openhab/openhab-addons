@@ -33,7 +33,6 @@ import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitAccessoryUpdater {
-
     private Logger logger = LoggerFactory.getLogger(HomekitAccessoryUpdater.class);
     private final ConcurrentMap<ItemKey, Subscription> subscriptionsByName = new ConcurrentHashMap<>();
 
@@ -42,21 +41,19 @@ public class HomekitAccessoryUpdater {
     }
 
     public void subscribe(GenericItem item, String key, HomekitCharacteristicChangeCallback callback) {
+        logger.trace("Received subscription request for {} / {}", item, key);
         if (item == null) {
             return;
         }
         ItemKey itemKey = new ItemKey(item, key);
-        if (subscriptionsByName.containsKey(itemKey)) {
-            logger.debug("Received duplicate subscription on item {} for key {}", item.getName(), key);
-        }
         subscriptionsByName.compute(itemKey, (k, v) -> {
             if (v != null) {
-                logger.debug("Compute: received duplicate subscription on item {} for key {}. Will unsubscribe.", item.getName(), key);
+                logger.debug("Received duplicate subscription for {} / {}", item, key);
                 unsubscribe(item, key);
             }
+            logger.debug("Adding subscription for {} / {}", item, key);
             Subscription subscription = (changedItem, oldState, newState) -> callback.changed();
             item.addStateChangeListener(subscription);
-            logger.debug("Successfully added subscription for item '{}' using key '{}'", item.getName(), key);
             return subscription;
         });
     }
@@ -70,6 +67,7 @@ public class HomekitAccessoryUpdater {
             return;
         }
         subscriptionsByName.computeIfPresent(new ItemKey(item, key), (k, v) -> {
+            logger.debug("Removing existing subscription for {} / {}", item, key);
             item.removeStateChangeListener(v);
             return null;
         });
