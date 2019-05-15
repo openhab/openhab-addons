@@ -60,10 +60,8 @@
 
 	<channel-type id="shadeControl">
 		<item-type>Rollershutter</item-type>
-		<label>Shade Level</label>
-		<description>Raise/lower the shade level</description>
-		<category>Rollershutter</category>
-		<state min="0" max="100" pattern="%d %%" readOnly="true" />
+		<label>Control</label>
+		<description>Device control (UP, DOWN, MY/STOP, closure 0-100%)</description>		
 	</channel-type>
 
 	<channel-type id="button">
