@@ -15,8 +15,10 @@ package org.openhab.binding.cbus.handler;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -130,6 +132,7 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         {
 
 	    private final ThreadPoolExecutor thread_pool;
+
             public CBusThreadPoolExecutor(String poolName)
 	    {
 		    thread_pool = (ThreadPoolExecutor) ThreadPoolManager.getPool(poolName);
@@ -142,11 +145,19 @@ public class CBusCGateHandler extends BaseBridgeHandler {
 	}
 	public CBusThreadPool()
 	{}
+	private Map<String, CGateThreadPoolExecutor> m_executorMap= new HashMap<String, CGateThreadPoolExecutor>();
 	protected  CGateThreadPoolExecutor CreateExecutor(String name)
 	{
 
-		logger.debug("CreateExecutor for {}",name);
-	    return new CBusThreadPoolExecutor(name);
+	    logger.debug("CreateExecutor for {}",name);
+	    CGateThreadPoolExecutor executor = m_executorMap.get(name);
+	    if (executor != null)
+	    {
+		    return executor;
+	    }
+	    executor =  new CBusThreadPoolExecutor(name);
+	    m_executorMap.put(name, executor);
+	    return executor;
 	}
     }
 
