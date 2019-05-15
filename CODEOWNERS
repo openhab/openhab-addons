@@ -158,6 +158,7 @@
 /bundles/org.openhab.binding.valloxmv/ @bjoernbrings
 /bundles/org.openhab.binding.velbus/ @cedricboon
 /bundles/org.openhab.binding.vitotronic/ @steand
+/bundles/org.openhab.binding.volvooncall/ @clinique
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo
 /bundles/org.openhab.binding.wemo/ @hmerk
 /bundles/org.openhab.binding.wifiled/ @rvt @xylo

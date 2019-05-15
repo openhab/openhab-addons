@@ -69,5 +69,4 @@ class HomekitDimmableLightbulbImpl extends AbstractHomekitLightbulbImpl<DimmerIt
     public void unsubscribeBrightness() {
         getUpdater().unsubscribe(getItem(), "brightness");
     }
-
 }
