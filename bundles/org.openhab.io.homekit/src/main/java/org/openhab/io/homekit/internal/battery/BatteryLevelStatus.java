@@ -26,7 +26,6 @@ import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
  */
 @NonNullByDefault
 public class BatteryLevelStatus implements BatteryStatus {
-
     private NumberItem batteryLevelItem;
 
     BatteryLevelStatus(NumberItem batteryLevelItem) {

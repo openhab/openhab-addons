@@ -34,8 +34,9 @@ import org.slf4j.LoggerFactory;
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitTaggedItem {
-
     class BadItemConfigurationException extends Exception {
+        private static final long serialVersionUID = 2199765638404197193L;
+
         public BadItemConfigurationException(String reason) {
             super(reason);
         }
@@ -108,7 +109,7 @@ public class HomekitTaggedItem {
             }
 
         } catch (BadItemConfigurationException e) {
-            logger.error("Item {} was misconfigured: {}. Excluding item from homekit.", item.getName(), e.getMessage());
+            logger.warn("Item {} was misconfigured: {}. Excluding item from homekit.", item.getName(), e.getMessage());
             homekitAccessoryType = null;
             homekitCharacteristicType = null;
             parentGroupItem = null;
@@ -193,7 +194,7 @@ public class HomekitTaggedItem {
         }
         if (CREATED_ACCESSORY_IDS.containsKey(id)) {
             if (!CREATED_ACCESSORY_IDS.get(id).equals(item.getName())) {
-                logger.error(
+                logger.warn(
                         "Could not create homekit accessory {} because its hash conflicts with {}. This is a 1:1,000,000 chance occurrence. Change one of the names and consider playing the lottery. See https://github.com/openhab/openhab2-addons/issues/257#issuecomment-125886562",
                         item.getName(), CREATED_ACCESSORY_IDS.get(id));
                 return 0;

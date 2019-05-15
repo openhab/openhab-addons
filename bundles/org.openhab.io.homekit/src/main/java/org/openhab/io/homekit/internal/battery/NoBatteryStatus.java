@@ -23,7 +23,6 @@ import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
  * @author Tim Harper - Initial contribution
  */
 public class NoBatteryStatus implements BatteryStatus {
-
     @Override
     public @Nullable Boolean isLow() {
         return false;

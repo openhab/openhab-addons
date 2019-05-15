@@ -76,11 +76,4 @@ public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl<GenericI
     public void unsubscribeLowBatteryState() {
         batteryStatus.unsubscribe(getUpdater());
     }
-
-    static HomekitLeakSensorImpl createForTaggedItem(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater) {
-        if (taggedItem.isMemberOfAccessoryGroup()) {
-        }
-        return null;
-    }
 }

@@ -15,7 +15,6 @@ package org.openhab.io.homekit.internal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Dictionary;
-import java.util.Optional;
 
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -27,7 +26,6 @@ import org.slf4j.LoggerFactory;
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitSettings {
-
     private static final String NAME = "openHAB";
     private static final String MANUFACTURER = "openHAB";
     private static final String SERIAL_NUMBER = "none";
@@ -83,14 +81,26 @@ public class HomekitSettings {
             this.maximumTemperature = Double.parseDouble(maximumTemperature.toString());
         }
 
-        this.thermostatTargetModeHeat = Optional.ofNullable((String) properties.get("thermostatTargetModeHeat"))
-                .orElseGet(() -> (String) properties.get("thermostatHeatMode" /* legacy setting */));
-        this.thermostatTargetModeCool = Optional.ofNullable((String) properties.get("thermostatTargetModeCool"))
-                .orElseGet(() -> (String) properties.get("thermostatCoolMode" /* legacy setting */));
-        this.thermostatTargetModeAuto = Optional.ofNullable((String) properties.get("thermostatTargetModeAuto"))
-                .orElseGet(() -> (String) properties.get("thermostatAutoMode" /* legacy setting */));
-        this.thermostatTargetModeOff = Optional.ofNullable((String) properties.get("thermostatTargetModeOff"))
-                .orElseGet(() -> (String) properties.get("thermostatOffMode" /* legacy setting */));
+        if (properties.get("thermostatTargetModeHeat") != null) {
+            this.thermostatTargetModeHeat = (String) properties.get("thermostatTargetModeHeat");
+        } else if (properties.get("thermostatHeatMode" /* legacy setting */) != null) {
+            this.thermostatTargetModeHeat = (String) properties.get("thermostatHeatMode");
+        }
+        if (properties.get("thermostatTargetModeCool") != null) {
+            this.thermostatTargetModeCool = (String) properties.get("thermostatTargetModeCool");
+        } else if (properties.get("thermostatCoolMode" /* legacy setting */) != null) {
+            this.thermostatTargetModeCool = (String) properties.get("thermostatCoolMode");
+        }
+        if (properties.get("thermostatTargetModeAuto") != null) {
+            this.thermostatTargetModeAuto = (String) properties.get("thermostatTargetModeAuto");
+        } else if (properties.get("thermostatAutoMode" /* legacy setting */) != null) {
+            this.thermostatTargetModeAuto = (String) properties.get("thermostatAutoMode");
+        }
+        if (properties.get("thermostatTargetModeOff") != null) {
+            this.thermostatTargetModeOff = (String) properties.get("thermostatTargetModeOff");
+        } else if (properties.get("thermostatOffMode" /* legacy setting */) != null) {
+            this.thermostatTargetModeOff = (String) properties.get("thermostatOffMode");
+        }
 
         if (properties.get("thermostatCurrentModeCooling") != null) {
             this.thermostatCurrentModeCooling = (String) properties.get("thermostatCurrentModeCooling");

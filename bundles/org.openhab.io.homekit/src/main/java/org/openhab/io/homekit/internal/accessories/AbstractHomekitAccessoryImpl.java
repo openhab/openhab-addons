@@ -39,6 +39,7 @@ abstract class AbstractHomekitAccessoryImpl<T extends GenericItem> implements Ho
 
     protected Logger logger = LoggerFactory.getLogger(AbstractHomekitAccessoryImpl.class);
 
+    @SuppressWarnings("null")
     public AbstractHomekitAccessoryImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
             HomekitAccessoryUpdater updater, Class<T> expectedItemClass) {
         this.accessoryId = taggedItem.getId();
@@ -52,7 +53,7 @@ abstract class AbstractHomekitAccessoryImpl<T extends GenericItem> implements Ho
         }
         if (expectedItemClass != taggedItem.getItem().getClass()
                 && !expectedItemClass.isAssignableFrom(baseItem.getClass())) {
-            logger.error("Item {} is of type {} instead of the expected {}", taggedItem.getItem().getName(),
+            logger.warn("Item {} is of type {} instead of the expected {}", taggedItem.getItem().getName(),
                     baseItem.getClass().getName(), expectedItemClass.getName());
         }
     }

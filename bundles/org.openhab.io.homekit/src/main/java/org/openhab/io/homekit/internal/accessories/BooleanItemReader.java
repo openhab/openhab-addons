@@ -45,7 +45,7 @@ public class BooleanItemReader {
         this.trueOnOffValue = trueOnOffValue;
         this.trueOpenClosedValue = trueOpenClosedValue;
         if (!(item instanceof SwitchItem) && !(item instanceof ContactItem)) {
-            logger.error("Item {} is a {} instead of the expected SwitchItem or ContactItem", item.getName(),
+            logger.warn("Item {} is a {} instead of the expected SwitchItem or ContactItem", item.getName(),
                     item.getClass().getName());
         }
     }

@@ -33,7 +33,6 @@ import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitAccessoryUpdater {
-
     private Logger logger = LoggerFactory.getLogger(HomekitAccessoryUpdater.class);
     private final ConcurrentMap<ItemKey, Subscription> subscriptionsByName = new ConcurrentHashMap<>();
 

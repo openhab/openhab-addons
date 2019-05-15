@@ -66,6 +66,7 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
 
     private Logger logger = LoggerFactory.getLogger(HomekitThermostatImpl.class);
 
+    @SuppressWarnings("deprecation")
     public HomekitThermostatImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
             HomekitAccessoryUpdater updater, HomekitSettings settings, Item currentTemperatureItem,
             Map<HomekitCharacteristicType, Item> origCharacteristicItems) throws IncompleteAccessoryException {
@@ -90,7 +91,7 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
                 .map(m -> (StringItem) m);
 
         characteristicItems.entrySet().stream().forEach(entry -> {
-            logger.error("Item {} has unrecognized thermostat characteristic: {}", entry.getValue().getName(),
+            logger.warn("Item {} has unrecognized thermostat characteristic: {}", entry.getValue().getName(),
                     entry.getKey().getTag());
         });
     }
@@ -129,7 +130,6 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
                     settings.getCurrentModeOff());
             mode = ThermostatMode.OFF;
         }
-        logger.info("stringValue = {}, mode={}", stringValue, mode);
         return CompletableFuture.completedFuture(mode);
     }
 
@@ -160,7 +160,7 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
             logger.debug("Heating cooling target mode not available. Relaying value of OFF to Homekit");
             mode = ThermostatMode.OFF;
         } else {
-            logger.error("Unrecognized heating cooling target mode: {}. Expected {}, {}, {}, or {} strings in value.",
+            logger.warn("Unrecognized heating cooling target mode: {}. Expected {}, {}, {}, or {} strings in value.",
                     stringValue, settings.getThermostatTargetModeCool(), settings.getThermostatTargetModeHeat(),
                     settings.getThermostatTargetModeAuto(), settings.getThermostatTargetModeOff());
             mode = ThermostatMode.OFF;

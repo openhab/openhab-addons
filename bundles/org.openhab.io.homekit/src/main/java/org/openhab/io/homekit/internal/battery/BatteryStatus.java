@@ -30,7 +30,6 @@ import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
  */
 @NonNullByDefault
 public interface BatteryStatus {
-
     @Nullable
     Boolean isLow();
 

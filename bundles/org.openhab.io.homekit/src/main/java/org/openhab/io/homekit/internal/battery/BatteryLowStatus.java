@@ -26,7 +26,6 @@ import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
  */
 @NonNullByDefault
 public class BatteryLowStatus implements BatteryStatus {
-
     private SwitchItem batterySwitchItem;
 
     BatteryLowStatus(SwitchItem batterySwitchItem) {

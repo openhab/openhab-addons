@@ -19,6 +19,7 @@ import org.openhab.io.homekit.internal.HomekitCharacteristicType;
  * @author Tim Harper - Initial contribution
  */
 public class IncompleteAccessoryException extends Exception {
+    private static final long serialVersionUID = 8595808359805444177L;
     final HomekitCharacteristicType missingType;
 
     public IncompleteAccessoryException(HomekitCharacteristicType missingType) {

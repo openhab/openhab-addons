@@ -40,7 +40,6 @@ import com.beowulfe.hap.HomekitRoot;
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitChangeListener implements ItemRegistryChangeListener {
-
     private ItemRegistry itemRegistry;
     private HomekitAccessoryUpdater updater = new HomekitAccessoryUpdater();
     private Logger logger = LoggerFactory.getLogger(HomekitChangeListener.class);
@@ -176,15 +175,16 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     private void createRootAccessory(HomekitTaggedItem taggedItem) {
         try {
             if (taggedItem.isMemberOfAccessoryGroup()) {
-                throw new RuntimeException(
-                        "Bug! Cannot add as a root accessory if it is a member of a group! " + taggedItem.getName());
+                logger.warn("Bug! Cannot add {} as a root accessory if it is a member of a group! ",
+                        taggedItem.getName());
+                return;
             }
             logger.debug("Adding homekit device {}", taggedItem.getItem().getName());
             accessoryRegistry.addRootAccessory(taggedItem.getName(),
                     HomekitAccessoryFactory.create(taggedItem, itemRegistry, updater, settings));
             logger.debug("Added homekit device {}", taggedItem.getItem().getName());
         } catch (HomekitException | IncompleteAccessoryException e) {
-            logger.error("Could not add device: {}", e.getMessage(), e);
+            logger.warn("Could not add device: {}", e.getMessage(), e);
         }
     }
 }
