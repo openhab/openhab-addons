@@ -4,6 +4,7 @@
 
     <feature name="openhab-misc-openhabcloud" description="openHAB Cloud Connector" version="${project.version}">
         <feature>openhab-runtime-base</feature>
+        <feature prerequisite="true">wrap</feature>
         <bundle dependency="true">mvn:org.json/json/20180813</bundle>
         <bundle dependency="true">wrap:mvn:com.squareup.okhttp3/okhttp/3.12.1$Bundle-Name=OkHttp&amp;Bundle-SymbolicName=com.squareup.okhttp&amp;Bundle-Version=3.12.1</bundle>
         <bundle dependency="true">wrap:mvn:com.squareup.okio/okio/1.15.0$Bundle-Name=Okio&amp;Bundle-SymbolicName=com.squareup.okio&amp;Bundle-Version=1.15.0</bundle>   

@@ -44,7 +44,6 @@ import com.beowulfe.hap.HomekitServer;
         ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=io",
         ConfigurableService.SERVICE_PROPERTY_LABEL + "=HomeKit Integration", "port:Integer=9123" })
 public class HomekitImpl implements Homekit {
-
     private final HomekitSettings settings = new HomekitSettings();
     private HomekitServer homekit;
     private HomekitRoot bridge;
@@ -87,8 +86,8 @@ public class HomekitImpl implements Homekit {
         }
         try {
             start();
-        } catch (Exception e) {
-            logger.error("Could not initialize homekit: {}", e.getMessage(), e);
+        } catch (IOException | InvalidAlgorithmParameterException e) {
+            logger.warn("Could not initialize homekit: {}", e.getMessage(), e);
         }
     }
 
