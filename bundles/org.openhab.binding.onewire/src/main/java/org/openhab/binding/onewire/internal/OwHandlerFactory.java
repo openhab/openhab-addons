@@ -64,7 +64,6 @@ public class OwHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        logger.error("factory {} creating thing {}", this, thing);
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (OwserverBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
