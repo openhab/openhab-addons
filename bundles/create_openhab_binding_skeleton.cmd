@@ -19,7 +19,7 @@ SET GithubUser=%~3
 
 call :LoCase BindingIdInLowerCase
 
-call mvn -s archetype-settings.xml archetype:generate -N -DarchetypeGroupId=org.openhab.core -DarchetypeArtifactId=org.openhab.core.tools.archetypes.binding -DarchetypeVersion=%OpenhabVersion% -DgroupId=org.openhab.binding -DartifactId=org.openhab.binding.%BindingIdInLowerCase% -Dpackage=org.openhab.binding.%BindingIdInLowerCase% -Dversion=%OpenhabVersion% -DbindingId=%BindingIdInLowerCase% -DbindingIdCamelCase=%BindingIdInCamelCase% -DvendorName=openHAB -Dnamespace=org.openhab -Dauthor="%Author%" -DgithubUser="%GithubUser%"
+call mvn -s archetype-settings.xml archetype:generate -N -DarchetypeGroupId=org.openhab.core.tools.archetypes -DarchetypeArtifactId=org.openhab.core.tools.archetypes.binding -DarchetypeVersion=%OpenhabVersion% -DgroupId=org.openhab.binding -DartifactId=org.openhab.binding.%BindingIdInLowerCase% -Dpackage=org.openhab.binding.%BindingIdInLowerCase% -Dversion=%OpenhabVersion% -DbindingId=%BindingIdInLowerCase% -DbindingIdCamelCase=%BindingIdInCamelCase% -DvendorName=openHAB -Dnamespace=org.openhab -Dauthor="%Author%" -DgithubUser="%GithubUser%"
 
 COPY ..\src\etc\NOTICE org.openhab.binding.%BindingIdInLowerCase%\
 
