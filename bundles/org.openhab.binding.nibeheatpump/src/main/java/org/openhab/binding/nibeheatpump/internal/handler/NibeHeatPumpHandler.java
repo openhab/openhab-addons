@@ -95,7 +95,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         final long lastUpdateTime;
 
         /** Cache value */
-        final Double value;
+        final int value;
 
         /**
          * Initialize cache object.
@@ -106,7 +106,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
          * @param value
          *                           Cache value.
          */
-        CacheObject(long lastUpdateTime, Double value) {
+        CacheObject(long lastUpdateTime, int value) {
             this.lastUpdateTime = lastUpdateTime;
             this.value = value;
         }
@@ -411,7 +411,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         logger.debug("Enabled registers for write commands: {}", itemsToEnableWrite);
     }
 
-    private State convertNibeValueToState(NibeDataType dataType, double value, String acceptedItemType) {
+    private State convertNibeValueToState(VariableInformation variableInfo, int value, String acceptedItemType) {
         State state = UnDefType.UNDEF;
 
         if ("String".equalsIgnoreCase(acceptedItemType)) {
@@ -421,19 +421,28 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             state = value == 0 ? OnOffType.OFF : OnOffType.ON;
 
         } else if ("Number".equalsIgnoreCase(acceptedItemType)) {
+            NibeDataType dataType = variableInfo.dataType;
             switch (dataType) {
                 case U8:
+                    value = (byte)value;
+                    break;
                 case U16:
+                    value = (short)value;
+                    break;
                 case U32:
-                    state = new DecimalType(value);
                     break;
                 case S8:
+                    value = ((byte)value << 1) >> 1;
+                    break;
                 case S16:
+                    value = ((short)value << 1) >> 1;
+                    break;
                 case S32:
-                    BigDecimal bd = new BigDecimal(value).setScale(2, RoundingMode.HALF_EVEN);
-                    state = new DecimalType(bd);
+                    value = (value << 1) >> 1;
                     break;
             }
+            int decimals = (int)Math.log10(variableInfo.factor);
+            state = new DecimalType(new BigDecimal(value).movePointLeft(decimals).setScale(decimals, RoundingMode.HALF_EVEN));
         }
 
         return state;
@@ -533,11 +542,10 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         if (variableInfo != null) {
             logger.trace("Using variable information to register {}: {}", coilAddress, variableInfo);
 
-            double val = (double) value.getValue() / (double) variableInfo.factor;
-            logger.debug("{} = {}", coilAddress + ":" + variableInfo.variable, val);
+            int val = value.getValue();
+            logger.debug("{} = {}", coilAddress + ":" + variableInfo.variable + "/" + variableInfo.factor, val);
 
             CacheObject oldValue = stateMap.get(coilAddress);
-            stateMap.put(coilAddress, new CacheObject(System.currentTimeMillis(), val));
 
             if (oldValue != null && val == oldValue.value && (oldValue.lastUpdateTime + refreshIntervalMillis()) >= System.currentTimeMillis()) {
                 logger.trace("Value did not change, ignoring update");
@@ -547,7 +555,8 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
                 final String acceptedItemType = thing.getChannel(channelId).getAcceptedItemType();
 
                 logger.trace("AcceptedItemType for channel {} = {}", channelId, acceptedItemType);
-                State state = convertNibeValueToState(variableInfo.dataType, val, acceptedItemType);
+                State state = convertNibeValueToState(variableInfo, val, acceptedItemType);
+                stateMap.put(coilAddress, new CacheObject(System.currentTimeMillis(), val));
                 updateState(new ChannelUID(getThing().getUID(), channelId), state);
             }
         } else {
