@@ -14,6 +14,7 @@ package org.openhab.binding.nibeheatpump.internal.handler;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -423,22 +424,48 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         } else if ("Number".equalsIgnoreCase(acceptedItemType)) {
             NibeDataType dataType = variableInfo.dataType;
             int decimals = (int)Math.log10(variableInfo.factor);
+            byte[] bytes;
+            int x;
             switch (dataType) {
                 case U8:
-                    value = (byte)value;
+                    bytes = ByteBuffer.allocate(1).put((byte)value).array();
+                    value = bytes[0];
                     break;
                 case U16:
+                    bytes = ByteBuffer.allocate(2).putChar((char) value).array();
+                    value = ((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff);
                     break;
                 case U32:
+                    bytes = ByteBuffer.allocate(4).putInt(value).array();
+                    value = ((bytes[0] & 0xff)<<24) | ((bytes[1] & 0xff)<<16) | ( (bytes[2]&0xff)<<8) | (bytes[3] & 0xff);
                     return new DecimalType(new BigDecimal(Integer.toUnsignedLong(value)).movePointLeft(decimals).setScale(decimals, RoundingMode.HALF_EVEN));
                 case S8:
-                    value = ((byte)value << 1) >> 1;
+                    bytes = ByteBuffer.allocate(1).put((byte)value).array();
+                    x = bytes[0];
+                    if ((bytes[0]>>>7&1)==1){
+                        x = ((x^0x7f)&0x7f)+1; //2's complement 8 bit
+                        x *= -1;
+                    }
+                    value = x;
                     break;
                 case S16:
-                    value = ((short)value << 1) >> 1;
+                    bytes = ByteBuffer.allocate(2).putChar((char) value).array();
+                    x = (bytes[0] << 8) | (bytes[1] & 0xff);
+                    if ((x>>>15&1)==1){
+                        x = ((x^0x7fff)&0x7fff)+1; //2's complement 16 bit
+                        x *= -1;
+                    }
+                    value = x;
                     break;
                 case S32:
-                    value = (value << 1) >> 1;
+                    bytes = ByteBuffer.allocate(4).putInt(value).array();
+                    x = (bytes[0]<<24) | (bytes[1]<<16) | (bytes[2]<<8) | (bytes[3]);
+                    if ((x>>>31&1)==1){
+                        x = ((x^0x7fffffff)&0x7fffffff)+1; //2's complement 32 bit
+                        x *= -1;
+                    }
+
+                    value = x;
                     break;
             }
             state = new DecimalType(new BigDecimal(value).movePointLeft(decimals).setScale(decimals, RoundingMode.HALF_EVEN));

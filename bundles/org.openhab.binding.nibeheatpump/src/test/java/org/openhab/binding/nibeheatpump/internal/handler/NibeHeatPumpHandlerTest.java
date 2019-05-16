@@ -3,6 +3,7 @@ package org.openhab.binding.nibeheatpump.internal.handler;
 import static org.junit.Assert.*;
 
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.nibeheatpump.internal.models.PumpModel;
@@ -34,9 +35,10 @@ public class NibeHeatPumpHandlerTest {
     @Test
     public void convertNibeValueToStateS8Test() throws InvocationTargetException, IllegalAccessException {
         VariableInformation varInfo = VariableInformation.getVariableInfo(PumpModel.F1X45, 47028);
+        final byte[] msg = HexUtils.hexToBytes("FF00");
 
         parameters[0] = varInfo;
-        parameters[1] = (int)0xFF;
+        parameters[1] = (short) ((msg[1] & 0xFF) << 8 | (msg[0] & 0xFF));
         parameters[2] = "Number";
         State state = (State) m.invoke(product, parameters);
 
@@ -46,9 +48,10 @@ public class NibeHeatPumpHandlerTest {
     @Test
     public void convertNibeValueToStateS16Factor10Test() throws InvocationTargetException, IllegalAccessException {
         VariableInformation varInfo = VariableInformation.getVariableInfo(PumpModel.F1X45, 43009);
+        final byte[] msg = HexUtils.hexToBytes("1F01");
 
         parameters[0] = varInfo;
-        parameters[1] = (int)0x011F;
+        parameters[1] = (short) ((msg[1] & 0xFF) << 8 | (msg[0] & 0xFF));
         parameters[2] = "Number";
         State state = (State) m.invoke(product, parameters);
 
@@ -58,9 +61,10 @@ public class NibeHeatPumpHandlerTest {
     @Test
     public void convertNibeValueToStateS16Factor10NegativeTest() throws InvocationTargetException, IllegalAccessException {
         VariableInformation varInfo = VariableInformation.getVariableInfo(PumpModel.F1X45, 40004);
+        final byte[] msg = HexUtils.hexToBytes("FFFF");
 
         parameters[0] = varInfo;
-        parameters[1] = (int)0xFFFF;
+        parameters[1] = (short) ((msg[1] & 0xFF) << 8 | (msg[0] & 0xFF));
         parameters[2] = "Number";
         State state = (State) m.invoke(product, parameters);
 
@@ -94,9 +98,10 @@ public class NibeHeatPumpHandlerTest {
     @Test
     public void convertNibeValueToStateU8Test() throws InvocationTargetException, IllegalAccessException {
         VariableInformation varInfo = VariableInformation.getVariableInfo(PumpModel.F1X45, 47418);
+        final byte[] msg = HexUtils.hexToBytes("4B00");
 
         parameters[0] = varInfo;
-        parameters[1] = (int)0x004B;
+        parameters[1] = (short) ((msg[1] & 0xFF) << 8 | (msg[0] & 0xFF));
         parameters[2] = "Number";
         State state = (State) m.invoke(product, parameters);
 
@@ -106,9 +111,10 @@ public class NibeHeatPumpHandlerTest {
     @Test
     public void convertNibeValueToStateU8PositiveTest() throws InvocationTargetException, IllegalAccessException {
         VariableInformation varInfo = VariableInformation.getVariableInfo(PumpModel.F1X45, 43514);
+        final byte[] msg = HexUtils.hexToBytes("0700");
 
         parameters[0] = varInfo;
-        parameters[1] = (int)0x0007;
+        parameters[1] = (short) ((msg[1] & 0xFF) << 8 | (msg[0] & 0xFF));
         parameters[2] = "Number";
         State state = (State) m.invoke(product, parameters);
 
@@ -118,9 +124,10 @@ public class NibeHeatPumpHandlerTest {
     @Test
     public void convertNibeValueToStateU16Test() throws InvocationTargetException, IllegalAccessException {
         VariableInformation varInfo = VariableInformation.getVariableInfo(PumpModel.F1X45, 47291);
+        final byte[] msg = HexUtils.hexToBytes("FFFF");
 
         parameters[0] = varInfo;
-        parameters[1] = (int)0xFFFF;
+        parameters[1] = (short) ((msg[1] & 0xFF) << 8 | (msg[0] & 0xFF));
         parameters[2] = "Number";
         State state = (State) m.invoke(product, parameters);
 
@@ -128,7 +135,7 @@ public class NibeHeatPumpHandlerTest {
     }
 
     @Test
-    public void convertNibeValueToStateU32Test() throws InvocationTargetException, IllegalAccessException {
+    public void convertNibeValueToStateU32Factor10Test() throws InvocationTargetException, IllegalAccessException {
         VariableInformation varInfo = VariableInformation.getVariableInfo(PumpModel.F1X45, 43230);
 
         parameters[0] = varInfo;
@@ -137,5 +144,17 @@ public class NibeHeatPumpHandlerTest {
         State state = (State) m.invoke(product, parameters);
 
         assertEquals("429496729.5", state.format("%.1f"));
+    }
+
+    @Test
+    public void convertNibeValueToStateU32Test() throws InvocationTargetException, IllegalAccessException {
+        VariableInformation varInfo = VariableInformation.getVariableInfo(PumpModel.F1X45, 43614);
+
+        parameters[0] = varInfo;
+        parameters[1] = (int)0xFFFFFFFF;
+        parameters[2] = "Number";
+        State state = (State) m.invoke(product, parameters);
+
+        assertEquals("4294967295", state.format("%d"));
     }
 }
