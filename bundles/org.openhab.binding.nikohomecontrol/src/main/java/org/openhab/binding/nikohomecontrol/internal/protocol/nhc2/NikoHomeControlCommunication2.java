@@ -32,6 +32,8 @@ import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionObserver;
+import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionState;
 import org.eclipse.smarthome.io.transport.mqtt.MqttException;
 import org.eclipse.smarthome.io.transport.mqtt.MqttMessageSubscriber;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcControllerEvent;
@@ -61,7 +63,7 @@ import com.google.gson.reflect.TypeToken;
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication implements MqttMessageSubscriber {
+public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication implements MqttMessageSubscriber, MqttConnectionObserver {
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlCommunication2.class);
 
@@ -807,5 +809,15 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
      */
     public String getServices() {
         return services.stream().map(NhcService2::name).collect(Collectors.joining(", "));
+    }
+    
+    @Override
+    public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
+        if (error != null) {
+            logger.debug("Connection error: {}", state, error);
+            connectionLost();
+        } else {
+            logger.trace("Connection state: {}", state);
+        }
     }
 }

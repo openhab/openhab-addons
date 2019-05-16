@@ -37,6 +37,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.mqtt.MqttActionCallback;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
+import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionObserver;
 import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionState;
 import org.eclipse.smarthome.io.transport.mqtt.MqttException;
 import org.eclipse.smarthome.io.transport.mqtt.MqttMessageSubscriber;
@@ -66,6 +67,9 @@ public class NhcMqttConnection2 implements MqttActionCallback {
 
     private volatile @Nullable CompletableFuture<Boolean> publicStoppedFuture;
     private volatile @Nullable CompletableFuture<Boolean> profileStoppedFuture;
+
+    private volatile @Nullable MqttConnectionObserver publicConnectionObserver;
+    private volatile @Nullable MqttConnectionObserver profileConnectionObserver;
 
     private Path persistenceBasePath;
     private SSLContextProvider sslContextProvider;
@@ -140,6 +144,8 @@ public class NhcMqttConnection2 implements MqttActionCallback {
         this.port = port;
         String clientId = this.clientId + "-public";
         MqttBrokerConnection connection = createMqttConnection(subscriber, null, null, clientId);
+        publicConnectionObserver = (MqttConnectionObserver) subscriber;
+        connection.addConnectionObserver(publicConnectionObserver);
         mqttPublicConnection = connection;
         try {
             if (connection.start().get(5000, TimeUnit.MILLISECONDS)) {
@@ -193,6 +199,8 @@ public class NhcMqttConnection2 implements MqttActionCallback {
         logger.debug("Niko Home Control: starting profile connection...");
         String clientId = this.clientId + "-profile";
         MqttBrokerConnection connection = createMqttConnection(subscriber, username, password, clientId);
+        profileConnectionObserver = (MqttConnectionObserver) subscriber;
+        connection.addConnectionObserver(profileConnectionObserver);
         mqttProfileConnection = connection;
         try {
             if (connection.start().get(5000, TimeUnit.MILLISECONDS)) {
@@ -231,6 +239,9 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      */
     void stopPublicConnection() {
         logger.debug("Niko Home Control: stopping public connection...");
+        if ((mqttPublicConnection != null) && (publicConnectionObserver != null)) {
+            mqttPublicConnection.removeConnectionObserver(publicConnectionObserver);
+        }
         publicStoppedFuture = stopConnection(mqttPublicConnection);
         mqttPublicConnection = null;
 
@@ -245,6 +256,9 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      */
     void stopProfileConnection() {
         logger.debug("Niko Home Control: stopping profile connection...");
+        if ((mqttProfileConnection != null) && (profileConnectionObserver != null)) {
+            mqttProfileConnection.removeConnectionObserver(profileConnectionObserver);
+        }
         profileStoppedFuture = stopConnection(mqttProfileConnection);
         mqttProfileConnection = null;
 

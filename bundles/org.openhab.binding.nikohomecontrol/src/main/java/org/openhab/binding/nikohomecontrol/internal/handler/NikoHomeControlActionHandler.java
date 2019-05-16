@@ -41,8 +41,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link NikoHomeControlActionHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link NikoHomeControlActionHandler} is responsible for handling
+ * commands, which are sent to one of the channels.
  *
  * @author Mark Herwege - Initial Contribution
  */
@@ -76,26 +76,21 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         }
         NikoHomeControlCommunication nhcComm = nhcBridgeHandler.getCommunication();
 
-        if (nhcComm == null || !nhcComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "Niko Home Control: bridge communication not initialized when trying to execute action "
-                            + actionId);
-            return;
-        }
+        // This can be expensive, therefore do it in a job.
+        scheduler.submit(() -> {
+            if (nhcComm == null || !nhcComm.communicationActive()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                        "Niko Home Control: bridge communication not initialized when trying to execute action "
+                                + actionId);
+                return;
+            }
 
-        if (nhcAction == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Niko Home Control: actionId " + actionId + " does not match an action in the controller");
-            return;
-        }
-
-        if (nhcComm.communicationActive()) {
-            handleCommandSelection(channelUID, command);
-        } else {
-            // We lost connection but the connection object is there, so was correctly started.
-            // Try to restart communication.
-            // This can be expensive, therefore do it in a job.
-            scheduler.submit(() -> {
+            if (nhcComm.communicationActive()) {
+                handleCommandSelection(channelUID, command);
+            } else {
+                // We lost connection but the connection object is there, so was correctly
+                // started.
+                // Try to restart communication.
                 nhcComm.restartCommunication();
                 // If still not active, take thing offline and return.
                 if (!nhcComm.communicationActive()) {
@@ -108,8 +103,8 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
                 // And finally handle the command
                 handleCommandSelection(channelUID, command);
-            });
-        }
+            }
+        });
     }
 
     private void handleCommandSelection(ChannelUID channelUID, Command command) {
@@ -231,7 +226,8 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         }
         NikoHomeControlCommunication nhcComm = nhcBridgeHandler.getCommunication();
 
-        // We need to do this in a separate thread because we may have to wait for the communication to become active
+        // We need to do this in a separate thread because we may have to wait for the
+        // communication to become active
         scheduler.submit(() -> {
             if (nhcComm == null || !nhcComm.communicationActive()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
