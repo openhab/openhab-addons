@@ -22,6 +22,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -36,6 +37,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.somfymylink.internal.config.SomfyMyLinkConfiguration;
 import org.openhab.binding.somfymylink.internal.discovery.SomfyMyLinkDeviceDiscoveryService;
+import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkPingResponse;
 import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkResponseBase;
 import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkScene;
 import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkScenesResponse;
@@ -60,8 +62,15 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     private SomfyMyLinkConfiguration config;
 
+    private static final int RECONNECT_MINUTES = 2;
+    private static final int HEARTBEAT_MINUTES = 1;
     private static final int MYLINK_PORT = 44100;
     public static final int MYLINK_DEFAULT_TIMEOUT = 10000;
+    //private Socket connection = null;
+
+    private ScheduledFuture<?> connectRetryJob;
+    private ScheduledFuture<?> keepAlive;
+    private ScheduledFuture<?> keepAliveReconnect;
 
     private ServiceRegistration<DiscoveryService> discoveryServiceRegistration;
 
@@ -98,113 +107,124 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private boolean validConfiguration(SomfyMyLinkConfiguration config) {
-        // if (this.config == null) {
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "mylink configuration missing");
-        // return false;
-        // }
+        if (this.config == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "mylink configuration missing");
+            return false;
+        }
 
         if (StringUtils.isEmpty(config.ipAddress)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "mylink address not specified");
-
             return false;
         }
 
         return true;
     }
 
+    private void scheduleConnectRetry(long waitMinutes) {
+        logger.debug("Scheduling connection retry in {} minutes", waitMinutes);
+        connectRetryJob = scheduler.schedule(this::connect, waitMinutes, TimeUnit.MINUTES);
+    }
+
     private synchronized void connect() {
-        // if (this.session.isConnected()) {
-        // return;
-        // }
+        try {
+            if (StringUtils.isEmpty(config.ipAddress) || StringUtils.isEmpty(config.systemId)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "mylink config not specified");
+                return;
+            }
 
-        logger.debug("Connecting to mylink at {}", config.ipAddress);
+            /*if (this.connection != null) {
+                if (this.connection.isConnected() && !this.connection.isClosed()) {
+                    logger.debug("mylink already connected");
+                    return;
+                } else {
+                    logger.debug("mylink connection is not connected");
 
-        /*
-         * try {
-         * if (!login(config)) {
-         * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "invalid username/password");
-         *
-         * return;
-         * }
-         *
-         * // Disable prompts
-         * sendCommand(new LutronCommand(LutronOperation.EXECUTE, LutronCommandType.MONITORING, -1, MONITOR_PROMPT,
-         * MONITOR_DISABLE));
-         *
-         * // Check the time device database was last updated. On the initial connect, this will trigger
-         * // a scan for paired devices.
-         * sendCommand(
-         * new LutronCommand(LutronOperation.QUERY, LutronCommandType.SYSTEM, -1, SYSTEM_DBEXPORTDATETIME));
-         * } catch (LutronSafemodeException e) {
-         * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "main repeater is in safe mode");
-         * disconnect();
-         * scheduleConnectRetry(reconnectInterval); // Possibly a temporary problem. Try again later.
-         *
-         * return;
-         * } catch (IOException e) {
-         * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-         * disconnect();
-         * scheduleConnectRetry(reconnectInterval); // Possibly a temporary problem. Try again later.
-         *
-         * return;
-         * } catch (InterruptedException e) {
-         * Thread.currentThread().interrupt();
-         *
-         * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "login interrupted");
-         * disconnect();
-         *
-         * return;
-         * }
-         *
-         *
-         * this.messageSender = this.scheduler.schedule(new Runnable() {
-         *
-         * @Override
-         * public void run() {
-         * sendCommands();
-         * }
-         * }, 0, TimeUnit.SECONDS);
-         *
-         */
+                    // retry ?
 
-        logger.debug("Connected to mylink at {}", config.ipAddress);
+                }
+            } else {
+                logger.debug("Connecting to mylink at {}", config.ipAddress);
+                this.connection = getConnection();
+            }*/
+            
+            logger.debug("Connecting to mylink at {}", config.ipAddress);
+            
+            // send a ping
+            String[] shadeList = this.sendPing();
 
-        updateStatus(ThingStatus.ONLINE);
+            logger.debug("Connected to mylink at {}", config.ipAddress);
 
-        // keepAlive = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, heartbeatInterval, heartbeatInterval,
-        // TimeUnit.MINUTES);
+            updateStatus(ThingStatus.ONLINE);
+
+            keepAlive = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, HEARTBEAT_MINUTES, HEARTBEAT_MINUTES,
+                    TimeUnit.MINUTES);
+
+        } catch (SomfyMyLinkException e) {
+            logger.debug("problem connecting to mylink");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            disconnect();
+            scheduleConnectRetry(RECONNECT_MINUTES); // Possibly a temporary problem. Try again later.
+        }
     }
 
     private synchronized void disconnect() {
         logger.debug("Disconnecting from mylink");
 
-        /*
-         * if (connectRetryJob != null) {
-         * connectRetryJob.cancel(true);
-         * }
-         *
-         * if (this.keepAlive != null) {
-         * this.keepAlive.cancel(true);
-         * }
-         *
-         * if (this.keepAliveReconnect != null) {
-         * // This method can be called from the keepAliveReconnect thread. Make sure
-         * // we don't interrupt ourselves, as that may prevent the reconnection attempt.
-         * this.keepAliveReconnect.cancel(false);
-         * }
-         *
-         * if (this.messageSender != null) {
-         * this.messageSender.cancel(true);
-         * }
-         *
-         *
-         * try {
-         * this.session.close();
-         * } catch (IOException e) {
-         * logger.error("Error disconnecting", e);
-         * }
-         *
-         */
+        if (connectRetryJob != null) {
+            connectRetryJob.cancel(true);
+        }
+
+        if (this.keepAlive != null) {
+            this.keepAlive.cancel(true);
+        }
+
+        if (this.keepAliveReconnect != null) {
+            this.keepAliveReconnect.cancel(false);
+        }
+
+        /*try {
+            this.connection.close();
+            this.connection = null;
+        } catch (IOException e) {
+            logger.error("Error disconnecting", e);
+        }*/
+    }
+
+    private void sendKeepAlive() {
+        // Reconnect if no response is received within 30 seconds.
+        this.keepAliveReconnect = this.scheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                reconnect();
+            }
+        }, 30, TimeUnit.SECONDS);
+
+        try {
+
+        	logger.debug("Keep alive triggered");
+        	
+            // send a ping
+            String[] shadeList = this.sendPing();
+
+            // System is alive, cancel reconnect task.
+            if (this.keepAliveReconnect != null) {
+                this.keepAliveReconnect.cancel(true);
+            }
+            
+            logger.debug("Keep alive succeeded");
+
+        } catch (SomfyMyLinkException e) {
+            logger.debug("Problem pinging mylink during keepalive");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    private synchronized void reconnect() {
+        logger.debug("Keepalive timeout, attempting to reconnect to the bridge");
+
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE);
+        disconnect();
+        connect();
     }
 
     public SomfyMyLinkShade[] getShadeList() throws SomfyMyLinkException {
@@ -213,6 +233,20 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
         SomfyMyLinkShadesResponse response = (SomfyMyLinkShadesResponse) sendCommandWithResponse(command, targetId,
                 SomfyMyLinkShadesResponse.class);
+
+        if (response != null) {
+            return response.getResult();
+        }
+
+        return null;
+    }
+
+    public String[] sendPing() throws SomfyMyLinkException {
+        String targetId = "*.*";
+        String command = "mylink.status.ping";
+
+        SomfyMyLinkPingResponse response = (SomfyMyLinkPingResponse) sendCommandWithResponse(command, targetId,
+        		SomfyMyLinkPingResponse.class);
 
         if (response != null) {
             return response.getResult();
@@ -264,7 +298,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     private void sendCommand(String command, String targetId) throws SomfyMyLinkException {
         String myLinkCommand = buildCommand(command, targetId);
         try {
-            Socket socket = getConnection();
+        	logger.debug("Sending: " + command + " Target: " + targetId);
+        	Socket socket = getConnection();
             OutputStream out = socket.getOutputStream();
 
             try {
@@ -281,20 +316,21 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 }
             }
         } catch (SocketTimeoutException e) {
-            logger.error("Timeout getting Somfy MyLink shade list " + e.getMessage());
-            throw new SomfyMyLinkException("Connection issue discovering Somfy devices", e);
+        	logger.error("Timeout sending command to mylink: " + command + "Message: " + e.getMessage());
+            throw new SomfyMyLinkException("Timeout sending command to mylink", e);
         } catch (Exception e) {
-            logger.error("Error getting Somfy MyLink shade list " + e.getMessage());
-            throw new SomfyMyLinkException("Error discovering Somfy devices", e);
+        	logger.error("Error sending command to mylink " + e.getMessage());
+            throw new SomfyMyLinkException("Error sending command to mylink", e);
         }
     }
-
+    
     private SomfyMyLinkResponseBase sendCommandWithResponse(String command, String targetId, Type responseType)
             throws SomfyMyLinkException {
         String myLinkCommand = buildCommand(command, targetId);
 
         try {
-            Socket socket = getConnection();
+        	logger.debug("Sending: " + command + " Target: " + targetId);
+        	Socket socket = getConnection();
             OutputStream out = socket.getOutputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -314,6 +350,9 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                     logger.debug("Got response. Len: " + readCount);
                     message += new String(readBuff, 0, readCount);
                     try {
+                    	
+                    	logger.debug("got message: " + message);
+                    	
                         SomfyMyLinkResponseBase data = gson.fromJson(message, responseType);
 
                         // check if there was an error
@@ -324,7 +363,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                         return data;
                     } catch (JsonSyntaxException e) {
                         // it wasn't a full message?
-                        logger.debug("Partial message recieved.");
+                        logger.debug("Trouble parsing message recieved. Message:" + e.getMessage());
                     }
                 }
             } finally {
@@ -339,10 +378,10 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             }
             return null;
         } catch (SocketTimeoutException e) {
-            logger.error("Timeout getting Somfy MyLink shade list " + e.getMessage());
+            logger.error("Timeout sending command to mylink: " + command + "Message: " + e.getMessage());
             throw new SomfyMyLinkException("Connection issue discovering Somfy devices", e);
         } catch (Exception e) {
-            logger.error("Error getting Somfy MyLink shade list " + e.getMessage());
+            logger.error("Error sending command to mylink " + e.getMessage());
             throw new SomfyMyLinkException("Error discovering Somfy devices", e);
         }
     }
@@ -352,6 +391,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private Socket getConnection(int timeout) throws UnknownHostException, IOException {
+        logger.debug("Getting connection to mylink on:" + config.ipAddress + " Post: " + MYLINK_PORT);
         String myLinkAddress = config.ipAddress;
         Socket socket = new Socket(myLinkAddress, MYLINK_PORT);
         socket.setSoTimeout(timeout);
