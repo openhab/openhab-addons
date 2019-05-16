@@ -254,8 +254,8 @@ int nibeCallbackTokenReceived(eTokenType token, byte* data)
       int packetSize = udp4readCmnds.parsePacket();
       if (packetSize) {
         len = udp4readCmnds.read(data, packetSize);
-        udp4readCmnds.flush();
 #ifdef TRANSPORT_ETH_ENC28J60
+        udp4readCmnds.flush();
         udp4readCmnds.stop();
         udp4readCmnds.begin(INCOMING_PORT_READCMDS);
 #endif
@@ -267,8 +267,8 @@ int nibeCallbackTokenReceived(eTokenType token, byte* data)
       int packetSize = udp4writeCmnds.parsePacket();
       if (packetSize) {
         len = udp4writeCmnds.read(data, packetSize);
-        udp4writeCmnds.flush();
 #ifdef TRANSPORT_ETH_ENC28J60
+        udp4writeCmnds.flush();
         udp4writeCmnds.stop();
         udp4writeCmnds.begin(INCOMING_PORT_WRITECMDS);
 #endif
