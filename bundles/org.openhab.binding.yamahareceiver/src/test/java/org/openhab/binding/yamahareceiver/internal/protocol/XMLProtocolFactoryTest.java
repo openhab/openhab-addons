@@ -12,20 +12,23 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol;
 
-import org.junit.Test;
-import org.mockito.Mock;
-import org.openhab.binding.yamahareceiver.internal.config.YamahaZoneConfig;
-import org.openhab.binding.yamahareceiver.internal.protocol.xml.*;
-import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
-import org.openhab.binding.yamahareceiver.internal.state.ZoneControlStateListener;
-
-import java.io.IOException;
-
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.Zone_2;
+
+import java.io.IOException;
+
+import org.junit.Test;
+import org.mockito.Mock;
+import org.openhab.binding.yamahareceiver.internal.config.YamahaZoneConfig;
+import org.openhab.binding.yamahareceiver.internal.protocol.xml.AbstractXMLProtocolTest;
+import org.openhab.binding.yamahareceiver.internal.protocol.xml.DeviceInformationXML;
+import org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLProtocolFactory;
+import org.openhab.binding.yamahareceiver.internal.protocol.xml.ZoneBControlXML;
+import org.openhab.binding.yamahareceiver.internal.protocol.xml.ZoneControlXML;
+import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
+import org.openhab.binding.yamahareceiver.internal.state.ZoneControlStateListener;
 
 /**
  * Unit test for {@link ProtocolFactory}.
@@ -55,7 +58,8 @@ public class XMLProtocolFactoryTest extends AbstractXMLProtocolTest {
     }
 
     @Test
-    public void given_HTR4069_with_ZONEB_then_Zone2_control_is_ZoneBControlXML() throws IOException, ReceivedMessageParseException {
+    public void given_HTR4069_with_ZONEB_then_Zone2_control_is_ZoneBControlXML()
+            throws IOException, ReceivedMessageParseException {
 
         // arrange
         ctx.prepareForModel("HTR-4069");
@@ -71,7 +75,8 @@ public class XMLProtocolFactoryTest extends AbstractXMLProtocolTest {
     }
 
     @Test
-    public void given_RXS601D_without_ZONEB_then_Zone2_control_is_ZoneControlXML() throws IOException, ReceivedMessageParseException {
+    public void given_RXS601D_without_ZONEB_then_Zone2_control_is_ZoneControlXML()
+            throws IOException, ReceivedMessageParseException {
 
         // arrange
         ctx.prepareForModel("RX-S601D");
