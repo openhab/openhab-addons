@@ -148,12 +148,12 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             logger.debug("Using variable information for register {}: {}", coilAddress, variableInfo);
 
             if (variableInfo != null && variableInfo.type == VariableInformation.Type.SETTING) {
-                int value = convertCommandToNibeValue(variableInfo, command);
-
-                ModbusWriteRequestMessage msg = new ModbusWriteRequestMessage.MessageBuilder().coilAddress(coilAddress)
-                        .value(value).build();
-
                 try {
+                    int value = convertCommandToNibeValue(variableInfo, command);
+
+                    ModbusWriteRequestMessage msg = new ModbusWriteRequestMessage.MessageBuilder().coilAddress(coilAddress)
+                            .value(value).build();
+
                     writeResult = sendMessageToNibe(msg);
                     ModbusWriteResponseMessage result = (ModbusWriteResponseMessage) writeResult.get(TIMEOUT,
                             TimeUnit.MILLISECONDS);
@@ -175,6 +175,8 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
                 } catch (NibeHeatPumpException e) {
                     logger.debug("Message sending to heat pump failed, exception {}", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                } catch (CommandTypeNotSupportedException e) {
+                    logger.warn("Unsupported command type received for channel {}, coil address {}.", channelUID.getId(), coilAddress);
                 } finally {
                     writeResult = null;
                 }
@@ -375,17 +377,19 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         return configuration.refreshInterval * 1000;
     }
 
-    private int convertCommandToNibeValue(VariableInformation variableInfo, Command command) {
+    private int convertCommandToNibeValue(VariableInformation variableInfo, Command command) throws CommandTypeNotSupportedException {
         int value;
 
-        if (command instanceof OnOffType) {
-            value = command == OnOffType.ON ? 1 : 0;
-        } else if (command instanceof DecimalType) {
+        if (command instanceof DecimalType) {
             BigDecimal v = ((DecimalType) command).toBigDecimal();
             int decimals = (int)Math.log10(variableInfo.factor);
             value = v.movePointRight(decimals).intValue();
-        } else {
+        } else if (command instanceof OnOffType && variableInfo.factor == 1) {
+            value = command == OnOffType.ON ? 1 : 0;
+        } else if (command instanceof StringType && variableInfo.factor == 1) {
             value = Integer.parseInt(command.toString());
+        } else {
+            throw new CommandTypeNotSupportedException();
         }
 
         return value;

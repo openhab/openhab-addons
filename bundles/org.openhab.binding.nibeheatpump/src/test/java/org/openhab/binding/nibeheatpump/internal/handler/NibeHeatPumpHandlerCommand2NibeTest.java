@@ -1,6 +1,20 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.nibeheatpump.internal.handler;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +30,11 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * Tests cases for {@link NibeHeatPumpHandler}.
+ *
+ * @author Jevgeni Kiski
+ */
 @RunWith(Parameterized.class)
 public class NibeHeatPumpHandlerCommand2NibeTest {
     private NibeHeatPumpHandler product; // the class under test
@@ -41,6 +60,9 @@ public class NibeHeatPumpHandlerCommand2NibeTest {
                 { 47291, new DecimalType("65535"), 0xFFFF },
                 { 43230, new DecimalType("429496729.5"), 0xFFFFFFFF },
                 { 43614, new DecimalType("4294967295"), 0xFFFFFFFF },
+                { 47041, new StringType("1"), 0x1 },
+                { 47371, OnOffType.from(true), 0x1 },
+                { 47371, OnOffType.from(false), 0x0 },
         });
     }
 
