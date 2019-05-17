@@ -59,12 +59,16 @@ public class NibeHeatPumpHandlerNibe2StateTest {
                 { 43009, 0x011F, "%.1f", "Number", "28.7" },
                 { 40004, 0xFFFF, "%.1f", "Number", "-0.1" },
                 { 40004, (short)0xFFFF, "%.1f", "Number", "-0.1" },
-                { 43416, 0xFFFFFFFF, "%d", "Number", "-1" },
+                { 43416, 0xFFFFFFFF, "%d", "Number", "4294967295" },
                 { 47418, 0x004B, "%d", "Number", "75" },
                 { 43514, 0x0007, "%d", "Number", "7" },
                 { 47291, 0xFFFF, "%d", "Number", "65535" },
                 { 42437, 0xFFFFFFFF, "%.1f", "Number", "429496729.5" },
-                { 42504, 0xFFFFFFFF, "%d", "Number", "4294967295" }
+                { 42504, 0xFFFFFFFF, "%d", "Number", "4294967295" },
+                { 43081, 196, "%.1f", "Number", "19.6"},
+                { 43424, 1685, "%d", "Number", "1685"},
+                { 43416, 4857, "%d", "Number", "4857"},
+                { 43420, 9487, "%d", "Number", "9487"},
         });
     }
 
