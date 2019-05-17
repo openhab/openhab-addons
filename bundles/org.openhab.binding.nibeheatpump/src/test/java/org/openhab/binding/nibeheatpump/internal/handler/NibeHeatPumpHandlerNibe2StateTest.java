@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Tests cases for {@link NibeHeatPumpHandler}.
  *
- * @author Jevgeni Kiski
+ * @author Jevgeni Kiski - Initial contribution
  */
 @RunWith(Parameterized.class)
 public class NibeHeatPumpHandlerNibe2StateTest {
@@ -46,35 +46,39 @@ public class NibeHeatPumpHandlerNibe2StateTest {
 
     private String fFormat;
 
+    private String fType;
+
     private String fExpected;
 
-    @Parameterized.Parameters(name = "{index}: f({0}, {1})={3}")
+    @Parameterized.Parameters(name = "{index}: f({0}, {1}, {3})={4}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-                { 47028, 0xFF, "%d", "-1" },
-                { 47028, (byte)0xFF, "%d", "-1" },
-                { 43009, 0x011F, "%.1f", "28.7" },
-                { 40004, 0xFFFF, "%.1f", "-0.1" },
-                { 40004, (short)0xFFFF, "%.1f", "-0.1" },
-                { 43416, 0xFFFFFFFF, "%d", "-1" },
-                { 47418, 0x004B, "%d", "75" },
-                { 43514, 0x0007, "%d", "7" },
-                { 47291, 0xFFFF, "%d", "65535" },
-                { 43230, 0xFFFFFFFF, "%.1f", "429496729.5" },
-                { 43614, 0xFFFFFFFF, "%d", "4294967295" }
+                { 47028, 0xFF, "%d", "Number", "-1" },
+                { 48132, 1966080, "%s", "String", "0" },
+                { 47028, (byte)0xFF, "%d", "Number", "-1" },
+                { 43009, 0x011F, "%.1f", "Number", "28.7" },
+                { 40004, 0xFFFF, "%.1f", "Number", "-0.1" },
+                { 40004, (short)0xFFFF, "%.1f", "Number", "-0.1" },
+                { 43416, 0xFFFFFFFF, "%d", "Number", "-1" },
+                { 47418, 0x004B, "%d", "Number", "75" },
+                { 43514, 0x0007, "%d", "Number", "7" },
+                { 47291, 0xFFFF, "%d", "Number", "65535" },
+                { 42437, 0xFFFFFFFF, "%.1f", "Number", "429496729.5" },
+                { 42504, 0xFFFFFFFF, "%d", "Number", "4294967295" }
         });
     }
 
-    public NibeHeatPumpHandlerNibe2StateTest(final int coilAddress, final int value, final String format, final String expected) {
+    public NibeHeatPumpHandlerNibe2StateTest(final int coilAddress, final int value, final String format, final String type, final String expected) {
         this.fCoilAddress = coilAddress;
         this.fValue = value;
         this.fFormat = format;
+        this.fType = type;
         this.fExpected = expected;
     }
 
     @Before
     public void setUp() throws Exception {
-        product = new NibeHeatPumpHandler(null, PumpModel.F1X45);
+        product = new NibeHeatPumpHandler(null, PumpModel.F1X55);
         parameterTypes = new Class[3];
         parameterTypes[0] = VariableInformation.class;
         parameterTypes[1] = int.class;
@@ -86,10 +90,10 @@ public class NibeHeatPumpHandlerNibe2StateTest {
 
     @Test
     public void convertNibeValueToStateTest() throws InvocationTargetException, IllegalAccessException {
-        VariableInformation varInfo = VariableInformation.getVariableInfo(PumpModel.F1X45, fCoilAddress);
+        VariableInformation varInfo = VariableInformation.getVariableInfo(PumpModel.F1X55, fCoilAddress);
         parameters[0] = varInfo;
         parameters[1] = fValue;
-        parameters[2] = "Number";
+        parameters[2] = fType;
         State state = (State) m.invoke(product, parameters);
 
         assertEquals(fExpected, state.format(fFormat));

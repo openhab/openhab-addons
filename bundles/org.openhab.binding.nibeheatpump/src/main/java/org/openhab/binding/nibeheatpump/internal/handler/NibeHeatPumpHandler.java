@@ -25,9 +25,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.*;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -176,7 +174,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
                     logger.debug("Message sending to heat pump failed, exception {}", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 } catch (CommandTypeNotSupportedException e) {
-                    logger.warn("Unsupported command type received for channel {}, coil address {}.", channelUID.getId(), coilAddress);
+                    logger.warn("Unsupported command type {} received for channel {}, coil address {}.", command.getClass().getName(), channelUID.getId(), coilAddress);
                 } finally {
                     writeResult = null;
                 }
@@ -380,14 +378,19 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
     private int convertCommandToNibeValue(VariableInformation variableInfo, Command command) throws CommandTypeNotSupportedException {
         int value;
 
-        if (command instanceof DecimalType) {
-            BigDecimal v = ((DecimalType) command).toBigDecimal();
-            int decimals = (int)Math.log10(variableInfo.factor);
+        if (command instanceof DecimalType || command instanceof QuantityType || command instanceof StringType) {
+            BigDecimal v;
+            if (command instanceof DecimalType) {
+                v = ((DecimalType) command).toBigDecimal();
+            } else if (command instanceof QuantityType) {
+                v = ((QuantityType) command).toBigDecimal();
+            } else {
+                v = new BigDecimal(command.toString());
+            }
+            int decimals = (int) Math.log10(variableInfo.factor);
             value = v.movePointRight(decimals).intValue();
-        } else if (command instanceof OnOffType && variableInfo.factor == 1) {
-            value = command == OnOffType.ON ? 1 : 0;
-        } else if (command instanceof StringType && variableInfo.factor == 1) {
-            value = Integer.parseInt(command.toString());
+        } else if ((command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) && variableInfo.factor == 1) {
+            value = (command.equals(OnOffType.ON) || command.equals(UpDownType.UP) || command.equals(OpenClosedType.OPEN)) ? 1 : 0;
         } else {
             throw new CommandTypeNotSupportedException();
         }
@@ -422,60 +425,64 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
     private State convertNibeValueToState(VariableInformation variableInfo, int value, String acceptedItemType) {
         State state = UnDefType.UNDEF;
 
+        NibeDataType dataType = variableInfo.dataType;
+        int decimals = (int)Math.log10(variableInfo.factor);
+        byte[] bytes;
+        int x;
+        switch (dataType) {
+            case U8:
+                bytes = ByteBuffer.allocate(1).put((byte)value).array();
+                value = bytes[0];
+                break;
+            case U16:
+                bytes = ByteBuffer.allocate(2).putChar((char) value).array();
+                value = ((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff);
+                break;
+            case U32:
+                bytes = ByteBuffer.allocate(4).putInt(value).array();
+                value = ((bytes[0] & 0xff)<<24) | ((bytes[1] & 0xff)<<16) | ( (bytes[2]&0xff)<<8) | (bytes[3] & 0xff);
+                return new DecimalType(new BigDecimal(Integer.toUnsignedLong(value)).movePointLeft(decimals).setScale(decimals, RoundingMode.HALF_EVEN));
+            case S8:
+                bytes = ByteBuffer.allocate(1).put((byte)value).array();
+                x = bytes[0];
+                if ((bytes[0]>>>7&1)==1){
+                    x = ((x^0x7f)&0x7f)+1; //2's complement 8 bit
+                    x *= -1;
+                }
+                value = x;
+                break;
+            case S16:
+                bytes = ByteBuffer.allocate(2).putChar((char) value).array();
+                x = (bytes[0] << 8) | (bytes[1] & 0xff);
+                if ((x>>>15&1)==1){
+                    x = ((x^0x7fff)&0x7fff)+1; //2's complement 16 bit
+                    x *= -1;
+                }
+                value = x;
+                break;
+            case S32:
+                bytes = ByteBuffer.allocate(4).putInt(value).array();
+                x = (bytes[0]<<24) | (bytes[1]<<16) | (bytes[2]<<8) | (bytes[3]);
+                if ((x>>>31&1)==1){
+                    x = ((x^0x7fffffff)&0x7fffffff)+1; //2's complement 32 bit
+                    x *= -1;
+                }
+
+                value = x;
+                break;
+            default:
+                return state;
+        }
+        BigDecimal converted = new BigDecimal(value).movePointLeft(decimals).setScale(decimals, RoundingMode.HALF_EVEN);
+
         if ("String".equalsIgnoreCase(acceptedItemType)) {
-            state = new StringType(String.valueOf((int) value));
+            state = new StringType(converted.toString());
 
         } else if ("Switch".equalsIgnoreCase(acceptedItemType)) {
-            state = value == 0 ? OnOffType.OFF : OnOffType.ON;
+            state = converted.intValue() == 0 ? OnOffType.OFF : OnOffType.ON;
 
         } else if ("Number".equalsIgnoreCase(acceptedItemType)) {
-            NibeDataType dataType = variableInfo.dataType;
-            int decimals = (int)Math.log10(variableInfo.factor);
-            byte[] bytes;
-            int x;
-            switch (dataType) {
-                case U8:
-                    bytes = ByteBuffer.allocate(1).put((byte)value).array();
-                    value = bytes[0];
-                    break;
-                case U16:
-                    bytes = ByteBuffer.allocate(2).putChar((char) value).array();
-                    value = ((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff);
-                    break;
-                case U32:
-                    bytes = ByteBuffer.allocate(4).putInt(value).array();
-                    value = ((bytes[0] & 0xff)<<24) | ((bytes[1] & 0xff)<<16) | ( (bytes[2]&0xff)<<8) | (bytes[3] & 0xff);
-                    return new DecimalType(new BigDecimal(Integer.toUnsignedLong(value)).movePointLeft(decimals).setScale(decimals, RoundingMode.HALF_EVEN));
-                case S8:
-                    bytes = ByteBuffer.allocate(1).put((byte)value).array();
-                    x = bytes[0];
-                    if ((bytes[0]>>>7&1)==1){
-                        x = ((x^0x7f)&0x7f)+1; //2's complement 8 bit
-                        x *= -1;
-                    }
-                    value = x;
-                    break;
-                case S16:
-                    bytes = ByteBuffer.allocate(2).putChar((char) value).array();
-                    x = (bytes[0] << 8) | (bytes[1] & 0xff);
-                    if ((x>>>15&1)==1){
-                        x = ((x^0x7fff)&0x7fff)+1; //2's complement 16 bit
-                        x *= -1;
-                    }
-                    value = x;
-                    break;
-                case S32:
-                    bytes = ByteBuffer.allocate(4).putInt(value).array();
-                    x = (bytes[0]<<24) | (bytes[1]<<16) | (bytes[2]<<8) | (bytes[3]);
-                    if ((x>>>31&1)==1){
-                        x = ((x^0x7fffffff)&0x7fffffff)+1; //2's complement 32 bit
-                        x *= -1;
-                    }
-
-                    value = x;
-                    break;
-            }
-            state = new DecimalType(new BigDecimal(value).movePointLeft(decimals).setScale(decimals, RoundingMode.HALF_EVEN));
+            state = new DecimalType(converted);
         }
 
         return state;
@@ -580,7 +587,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
             CacheObject oldValue = stateMap.get(coilAddress);
 
-            if (oldValue != null && val == oldValue.value && (oldValue.lastUpdateTime + refreshIntervalMillis()) >= System.currentTimeMillis()) {
+            if (oldValue != null && val == oldValue.value && (oldValue.lastUpdateTime + refreshIntervalMillis() / 2) >= System.currentTimeMillis()) {
                 logger.trace("Value did not change, ignoring update");
             } else {
                 final String channelPrefix = (variableInfo.type == Type.SETTING ? "setting#" : "sensor#");
@@ -589,6 +596,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
                 logger.trace("AcceptedItemType for channel {} = {}", channelId, acceptedItemType);
                 State state = convertNibeValueToState(variableInfo, val, acceptedItemType);
+                logger.debug("Setting state {} = {}", coilAddress + ":" + variableInfo.variable, state);
                 stateMap.put(coilAddress, new CacheObject(System.currentTimeMillis(), val));
                 updateState(new ChannelUID(getThing().getUID(), channelId), state);
             }
