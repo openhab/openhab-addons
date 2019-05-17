@@ -106,7 +106,7 @@ public class CloudClient {
     /*
      * This variable holds instance of Jetty HTTP client to make requests to local openHAB
      */
-    private HttpClient jettyClient;
+    private final HttpClient jettyClient;
 
     /*
      * This hashmap holds HTTP requests to local openHAB which are currently running
@@ -149,10 +149,9 @@ public class CloudClient {
      * @param secret openHAB's Secret to connect to the openHAB Cloud
      * @param remoteAccessEnabled Allow the openHAB Cloud to be used as a remote proxy
      * @param exposedItems Items that are made available to apps connected to the openHAB Cloud
-     *
      */
-    public CloudClient(String uuid, String secret, String baseURL, String localBaseUrl, boolean remoteAccessEnabled,
-            Set<String> exposedItems) {
+    public CloudClient(HttpClient httpClient, String uuid, String secret, String baseURL, String localBaseUrl,
+            boolean remoteAccessEnabled, Set<String> exposedItems) {
         this.uuid = uuid;
         this.secret = secret;
         this.baseURL = baseURL;
@@ -160,9 +159,9 @@ public class CloudClient {
         this.remoteAccessEnabled = remoteAccessEnabled;
         this.exposedItems = exposedItems;
         runningRequests = new HashMap<Integer, Request>();
-        jettyClient = new HttpClient();
-        jettyClient.setMaxConnectionsPerDestination(HTTP_CLIENT_MAX_CONNECTIONS_PER_DEST);
-        jettyClient.setConnectTimeout(HTTP_CLIENT_TIMEOUT);
+        this.jettyClient = httpClient;
+        this.jettyClient.setMaxConnectionsPerDestination(HTTP_CLIENT_MAX_CONNECTIONS_PER_DEST);
+        this.jettyClient.setConnectTimeout(HTTP_CLIENT_TIMEOUT);
     }
 
     /**
@@ -245,14 +244,6 @@ public class CloudClient {
     public void onConnect() {
         logger.info("Connected to the openHAB Cloud service (UUID = {}, base URL = {})", this.uuid, this.localBaseUrl);
         isConnected = true;
-        // On connect start jetty client to process local requests to openHAB
-        if (jettyClient != null) {
-            try {
-                jettyClient.start();
-            } catch (Exception e) {
-                logger.error("Could not start Jetty client: {}", e.getMessage());
-            }
-        }
     }
 
     /**
@@ -263,14 +254,6 @@ public class CloudClient {
         logger.info("Disconnected from the openHAB Cloud service (UUID = {}, base URL = {})", this.uuid,
                 this.localBaseUrl);
         isConnected = false;
-        // On disconnect stop jetty client to shutdown all ongoing requests if there were any
-        if (jettyClient != null) {
-            try {
-                jettyClient.stop();
-            } catch (Exception e) {
-                logger.error("Could not stop Jetty client: {}", e.getMessage());
-            }
-        }
         // And clean up the list of running requests
         if (runningRequests != null) {
             runningRequests.clear();
@@ -533,11 +516,6 @@ public class CloudClient {
      */
     public void shutdown() {
         logger.info("Shutting down openHAB Cloud service connection");
-        try {
-            jettyClient.stop();
-        } catch (Exception e) {
-            logger.error("Could not stop Jetty client: {}", e.getMessage());
-        }
         socket.disconnect();
     }
 

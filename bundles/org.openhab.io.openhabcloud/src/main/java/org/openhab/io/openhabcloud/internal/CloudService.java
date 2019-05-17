@@ -29,6 +29,7 @@ import java.util.Set;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.config.core.ConfigurableService;
 import org.eclipse.smarthome.core.events.Event;
@@ -48,6 +49,7 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.TypeParser;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.eclipse.smarthome.model.script.engine.action.ActionService;
 import org.openhab.core.OpenHAB;
 import org.openhab.io.openhabcloud.NotificationAction;
@@ -88,6 +90,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     public static String clientVersion = null;
     private CloudClient cloudClient;
     private String cloudBaseUrl = null;
+    private HttpClient httpClient;
     protected ItemRegistry itemRegistry = null;
     protected EventPublisher eventPublisher = null;
 
@@ -214,8 +217,8 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         }
 
         String localBaseUrl = "http://localhost:" + localPort;
-        cloudClient = new CloudClient(InstanceUUID.get(), getSecret(), cloudBaseUrl, localBaseUrl, remoteAccessEnabled,
-                exposedItems);
+        cloudClient = new CloudClient(httpClient, InstanceUUID.get(), getSecret(), cloudBaseUrl, localBaseUrl,
+                remoteAccessEnabled, exposedItems);
         cloudClient.setOpenHABVersion(OpenHAB.getVersion());
         cloudClient.connect();
         cloudClient.setListener(this);
@@ -325,6 +328,15 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         } catch (ItemNotFoundException e) {
             logger.warn("Received command for a non-existent item '{}'", itemName);
         }
+    }
+
+    @Reference
+    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
+    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = null;
     }
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.DYNAMIC)
