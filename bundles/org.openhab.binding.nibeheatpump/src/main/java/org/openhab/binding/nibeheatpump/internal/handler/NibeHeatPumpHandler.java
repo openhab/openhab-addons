@@ -148,8 +148,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             logger.debug("Using variable information for register {}: {}", coilAddress, variableInfo);
 
             if (variableInfo != null && variableInfo.type == VariableInformation.Type.SETTING) {
-                int value = convertStateToNibeValue(command);
-                value = value * variableInfo.factor;
+                int value = convertCommandToNibeValue(variableInfo, command);
 
                 ModbusWriteRequestMessage msg = new ModbusWriteRequestMessage.MessageBuilder().coilAddress(coilAddress)
                         .value(value).build();
@@ -376,11 +375,15 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         return configuration.refreshInterval * 1000;
     }
 
-    private int convertStateToNibeValue(Command command) {
+    private int convertCommandToNibeValue(VariableInformation variableInfo, Command command) {
         int value;
 
         if (command instanceof OnOffType) {
             value = command == OnOffType.ON ? 1 : 0;
+        } else if (command instanceof DecimalType) {
+            BigDecimal v = ((DecimalType) command).toBigDecimal();
+            int decimals = (int)Math.log10(variableInfo.factor);
+            value = v.movePointRight(decimals).intValue();
         } else {
             value = Integer.parseInt(command.toString());
         }
