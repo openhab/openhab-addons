@@ -63,7 +63,8 @@ import com.google.gson.reflect.TypeToken;
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication implements MqttMessageSubscriber, MqttConnectionObserver {
+public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
+        implements MqttMessageSubscriber, MqttConnectionObserver {
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlCommunication2.class);
 
@@ -93,7 +94,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
     public NikoHomeControlCommunication2(NhcControllerEvent handler, String clientId, String persistencePath)
             throws CertificateException {
         super(handler);
-        mqttConnection = new NhcMqttConnection2(clientId, persistencePath);
+        mqttConnection = new NhcMqttConnection2(clientId, persistencePath, this, this);
     }
 
     @Override
@@ -120,7 +121,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         logger.debug("Niko Home Control: initializing for mqtt connection to CoCo on {}:{}", addrString, port);
 
         try {
-            mqttConnection.startPublicConnection(this, addrString, port);
+            mqttConnection.startPublicConnection(addrString, port);
             initializePublic();
         } catch (MqttException e) {
             logger.debug("Niko Home Control: error in mqtt communication");
@@ -158,7 +159,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
 
         mqttConnection.stopPublicConnection();
         try {
-            mqttConnection.startProfileConnection(this, profileUuid, password);
+            mqttConnection.startProfileConnection(profileUuid, password);
             initializeProfile();
         } catch (MqttException e) {
             logger.warn("Niko Home Control: error in mqtt communication");
@@ -810,7 +811,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
     public String getServices() {
         return services.stream().map(NhcService2::name).collect(Collectors.joining(", "));
     }
-    
+
     @Override
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
         if (error != null) {

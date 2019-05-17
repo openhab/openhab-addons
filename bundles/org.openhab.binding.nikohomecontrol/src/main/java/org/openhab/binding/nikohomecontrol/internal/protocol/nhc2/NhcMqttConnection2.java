@@ -68,8 +68,8 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     private volatile @Nullable CompletableFuture<Boolean> publicStoppedFuture;
     private volatile @Nullable CompletableFuture<Boolean> profileStoppedFuture;
 
-    private volatile @Nullable MqttConnectionObserver publicConnectionObserver;
-    private volatile @Nullable MqttConnectionObserver profileConnectionObserver;
+    private MqttMessageSubscriber messageSubscriber;
+    private MqttConnectionObserver connectionObserver;
 
     private Path persistenceBasePath;
     private SSLContextProvider sslContextProvider;
@@ -78,10 +78,13 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     private volatile String cocoAddress = "";
     private volatile int port;
 
-    NhcMqttConnection2(String clientId, String persistencePath) throws CertificateException {
+    NhcMqttConnection2(String clientId, String persistencePath, MqttMessageSubscriber messageSubscriber,
+            MqttConnectionObserver connectionObserver) throws CertificateException {
         persistenceBasePath = Paths.get(persistencePath).resolve("nikohomecontrol");
         sslContextProvider = getSSLContext();
         this.clientId = clientId;
+        this.messageSubscriber = messageSubscriber;
+        this.connectionObserver = connectionObserver;
     }
 
     private SSLContextProvider getSSLContext() throws CertificateException {
@@ -127,8 +130,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      * @param port        Port for MQTT communication with the Niko Connected Controller
      * @throws MqttException
      */
-    synchronized void startPublicConnection(MqttMessageSubscriber subscriber, String cocoAddress, int port)
-            throws MqttException {
+    synchronized void startPublicConnection(String cocoAddress, int port) throws MqttException {
         if (publicStoppedFuture != null) {
             try {
                 publicStoppedFuture.get(5000, TimeUnit.MILLISECONDS);
@@ -143,14 +145,13 @@ public class NhcMqttConnection2 implements MqttActionCallback {
         this.cocoAddress = cocoAddress;
         this.port = port;
         String clientId = this.clientId + "-public";
-        MqttBrokerConnection connection = createMqttConnection(subscriber, null, null, clientId);
-        publicConnectionObserver = (MqttConnectionObserver) subscriber;
-        connection.addConnectionObserver(publicConnectionObserver);
+        MqttBrokerConnection connection = createMqttConnection(null, null, clientId);
+        connection.addConnectionObserver(connectionObserver);
         mqttPublicConnection = connection;
         try {
             if (connection.start().get(5000, TimeUnit.MILLISECONDS)) {
                 if (publicSubscribedFuture == null) {
-                    publicSubscribedFuture = connection.subscribe("#", subscriber);
+                    publicSubscribedFuture = connection.subscribe("#", messageSubscriber);
                 }
             } else {
                 logger.debug("Niko Home Control: error connecting");
@@ -179,8 +180,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      * @param password   Password for the touch profile
      * @throws MqttException
      */
-    synchronized void startProfileConnection(MqttMessageSubscriber subscriber, String username, String password)
-            throws MqttException {
+    synchronized void startProfileConnection(String username, String password) throws MqttException {
         if (profileStoppedFuture != null) {
             try {
                 profileStoppedFuture.get(5000, TimeUnit.MILLISECONDS);
@@ -198,14 +198,13 @@ public class NhcMqttConnection2 implements MqttActionCallback {
 
         logger.debug("Niko Home Control: starting profile connection...");
         String clientId = this.clientId + "-profile";
-        MqttBrokerConnection connection = createMqttConnection(subscriber, username, password, clientId);
-        profileConnectionObserver = (MqttConnectionObserver) subscriber;
-        connection.addConnectionObserver(profileConnectionObserver);
+        MqttBrokerConnection connection = createMqttConnection(username, password, clientId);
+        connection.addConnectionObserver(connectionObserver);
         mqttProfileConnection = connection;
         try {
             if (connection.start().get(5000, TimeUnit.MILLISECONDS)) {
                 if (profileSubscribedFuture == null) {
-                    profileSubscribedFuture = connection.subscribe("#", subscriber);
+                    profileSubscribedFuture = connection.subscribe("#", messageSubscriber);
                 }
             } else {
                 logger.warn("Niko Home Control: error with profile password");
@@ -223,8 +222,8 @@ public class NhcMqttConnection2 implements MqttActionCallback {
         }
     }
 
-    private MqttBrokerConnection createMqttConnection(MqttMessageSubscriber subscriber, @Nullable String username,
-            @Nullable String password, @Nullable String clientId) throws MqttException {
+    private MqttBrokerConnection createMqttConnection(@Nullable String username, @Nullable String password,
+            @Nullable String clientId) throws MqttException {
         Path persistencePath = persistenceBasePath.resolve(clientId);
         MqttBrokerConnection connection = new MqttBrokerConnection(cocoAddress, port, true, clientId);
         connection.setPersistencePath(persistencePath);
@@ -239,8 +238,8 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      */
     void stopPublicConnection() {
         logger.debug("Niko Home Control: stopping public connection...");
-        if ((mqttPublicConnection != null) && (publicConnectionObserver != null)) {
-            mqttPublicConnection.removeConnectionObserver(publicConnectionObserver);
+        if (mqttPublicConnection != null) {
+            mqttPublicConnection.removeConnectionObserver(connectionObserver);
         }
         publicStoppedFuture = stopConnection(mqttPublicConnection);
         mqttPublicConnection = null;
@@ -256,8 +255,8 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      */
     void stopProfileConnection() {
         logger.debug("Niko Home Control: stopping profile connection...");
-        if ((mqttProfileConnection != null) && (profileConnectionObserver != null)) {
-            mqttProfileConnection.removeConnectionObserver(profileConnectionObserver);
+        if (mqttProfileConnection != null) {
+            mqttProfileConnection.removeConnectionObserver(connectionObserver);
         }
         profileStoppedFuture = stopConnection(mqttProfileConnection);
         mqttProfileConnection = null;
