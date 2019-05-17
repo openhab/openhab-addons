@@ -14,7 +14,6 @@ package org.openhab.binding.mqtt.generic;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -231,7 +230,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
     public @Nullable MqttBrokerConnection getConnection() {
         return connection;
     }
-    
+
     /**
      * This is for tests only to inject a broker connection.
      *
