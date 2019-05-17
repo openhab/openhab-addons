@@ -9,7 +9,6 @@
     <version>2.5.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.openhab.addons.bundles</groupId>
   <artifactId>org.openhab.binding.digitalstrom</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: DigitalSTROM Binding</name>
