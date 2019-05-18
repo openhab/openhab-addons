@@ -429,6 +429,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         int decimals = (int)Math.log10(variableInfo.factor);
         byte[] bytes;
         int x;
+        // Value convert methods are taken from https://github.com/ronniebasak/JStruct/blob/master/Struct.java
         switch (dataType) {
             case U8:
                 bytes = ByteBuffer.allocate(1).put((byte)value).array();
