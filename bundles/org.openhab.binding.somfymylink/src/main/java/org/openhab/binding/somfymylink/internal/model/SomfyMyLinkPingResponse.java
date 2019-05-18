@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.somfymylink.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
 
 /**
@@ -20,9 +22,10 @@ import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
  *
  * @author Chris Johnson - Initial contribution
  */
-
+@NonNullByDefault
 public class SomfyMyLinkPingResponse extends SomfyMyLinkResponseBase {
-    public String[] result;
+
+    public String[] result = new String[0];
 
     public String[] getResult() {
         return result;

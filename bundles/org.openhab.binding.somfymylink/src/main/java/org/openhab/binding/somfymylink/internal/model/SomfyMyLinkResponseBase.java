@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.somfymylink.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
 
 /**
@@ -20,20 +22,29 @@ import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
  *
  * @author Chris Johnson - Initial contribution
  */
+@NonNullByDefault
 public class SomfyMyLinkResponseBase {
 
+    @Nullable
     public String jsonrpc;
+
+    @Nullable
     public String error;
+
+    @Nullable
     public String id;
 
+    @Nullable
     public String getId() {
         return id;
     }
 
+    @Nullable
     public String getError() {
         return error;
     }
 
+    @Nullable
     public String getJsonRpc() {
         return jsonrpc;
     }

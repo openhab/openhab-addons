@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.somfymylink.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
 
 /**
@@ -20,9 +22,10 @@ import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
  *
  * @author Chris Johnson - Initial contribution
  */
+@NonNullByDefault
 public class SomfyMyLinkShadesResponse extends SomfyMyLinkResponseBase {
 
-    public SomfyMyLinkShade[] result;
+    public SomfyMyLinkShade[] result = new SomfyMyLinkShade[0];
 
     public SomfyMyLinkShade[] getResult() {
         return result;

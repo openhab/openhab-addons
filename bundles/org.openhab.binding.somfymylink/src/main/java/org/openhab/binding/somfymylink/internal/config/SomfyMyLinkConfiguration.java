@@ -12,15 +12,21 @@
  */
 package org.openhab.binding.somfymylink.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link SomfyMyLinkConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Chris Johnson - Initial contribution
  */
+@NonNullByDefault
 public class SomfyMyLinkConfiguration {
 
+    @Nullable
     public String ipAddress;
 
+    @Nullable
     public String systemId;
 
     /*

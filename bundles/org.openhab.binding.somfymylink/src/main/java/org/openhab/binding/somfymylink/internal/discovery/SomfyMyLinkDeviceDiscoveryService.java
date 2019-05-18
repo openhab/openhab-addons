@@ -14,12 +14,12 @@ package org.openhab.binding.somfymylink.internal.discovery;
 
 import static org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants.*;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -44,14 +44,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Johnson - Initial contribution
  */
+@NonNullByDefault
 public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService {
 
-    private static final int DISCOVERY_TIMEOUT_SEC = 10;
     private static final int DISCOVERY_REFRESH_SEC = 1800;
 
     private final Logger logger = LoggerFactory.getLogger(SomfyMyLinkDeviceDiscoveryService.class);
 
+    @Nullable
     private ScheduledFuture<?> scanTask;
+
+    @Nullable
     private SomfyMyLinkBridgeHandler mylinkHandler;
 
     @Nullable
@@ -108,8 +111,8 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
                 public void run() {
                     try {
                         discoverDevices();
-                    } catch (Exception e) {
-                        logger.error("Error scanning for devices", e);
+                    } catch (SomfyMyLinkException e) {
+                        logger.error("Error scanning for devices: " + e.getMessage(), e);
 
                         if (scanListener != null) {
                             scanListener.onErrorOccurred(e);
@@ -120,7 +123,7 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
         }
     }
 
-    private void discoverDevices() throws IOException, SomfyMyLinkException {
+    private void discoverDevices() throws SomfyMyLinkException {
         // get the shade list
         SomfyMyLinkShade[] shades = this.mylinkHandler.getShadeList();
 

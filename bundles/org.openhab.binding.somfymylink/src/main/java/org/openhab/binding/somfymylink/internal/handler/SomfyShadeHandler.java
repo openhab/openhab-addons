@@ -14,6 +14,7 @@ package org.openhab.binding.somfymylink.internal.handler;
 
 import static org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants.CHANNEL_SHADELEVEL;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Johnson - Initial contribution
  */
+@NonNullByDefault
 public class SomfyShadeHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyShadeHandler.class);
@@ -75,11 +77,10 @@ public class SomfyShadeHandler extends BaseThingHandler {
             }
         } catch (SomfyMyLinkException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
+    @Nullable
     protected SomfyMyLinkBridgeHandler getBridgeHandler() {
         return this.getBridge() != null ? (SomfyMyLinkBridgeHandler) this.getBridge().getHandler() : null;
     }
