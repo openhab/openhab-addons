@@ -13,7 +13,6 @@
 package org.openhab.binding.somfymylink.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link SomfyMyLinkConfiguration} class contains fields mapping thing configuration parameters.
@@ -22,18 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class SomfyMyLinkConfiguration {
+    public String ipAddress = "";
 
-    @Nullable
-    public String ipAddress;
-
-    @Nullable
-    public String systemId;
-
-    /*
-     * public boolean sameConnectionParameters(IPBridgeConfig config) {
-     * return StringUtils.equals(ipAddress, config.ipAddress) && StringUtils.equals(user, config.user)
-     * && StringUtils.equals(password, config.password) && (reconnect == config.reconnect)
-     * && (heartbeat == config.heartbeat);
-     * }
-     */
+    public String systemId = "";
 }

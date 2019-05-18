@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.somfymylink.internal.handler;
 
-import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -24,6 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SomfyMyLinkException extends RuntimeException {
 
+    private static final long serialVersionUID = 1L;
+    
     public SomfyMyLinkException() {
         super();
     }

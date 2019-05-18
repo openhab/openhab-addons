@@ -99,7 +99,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         config = getThing().getConfiguration().as(SomfyMyLinkConfiguration.class);
 
-        if (validConfiguration(this.config)) {
+        if (validConfiguration(config)) {
             SomfyMyLinkDeviceDiscoveryService discovery = new SomfyMyLinkDeviceDiscoveryService(this);
 
             this.discoveryServiceRegistration = this.bundleContext.registerService(DiscoveryService.class, discovery,
@@ -117,7 +117,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private boolean validConfiguration(@Nullable SomfyMyLinkConfiguration config) {
-        if (this.config == null) {
+        if (config == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "mylink configuration missing");
             return false;
         }
@@ -137,6 +137,11 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     private synchronized void connect() {
         try {
+
+            if(config == null) {
+                throw new SomfyMyLinkException("Config not setup correctly");
+            }
+
             if (StringUtils.isEmpty(config.ipAddress) || StringUtils.isEmpty(config.systemId)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "mylink config not specified");
                 return;
@@ -145,7 +150,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             logger.debug("Connecting to mylink at {}", config.ipAddress);
             
             // send a ping
-            this.sendPing();
+            sendPing();
 
             logger.debug("Connected to mylink at {}", config.ipAddress);
 
@@ -169,18 +174,18 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             connectRetryJob.cancel(true);
         }
 
-        if (this.keepAlive != null) {
-            this.keepAlive.cancel(true);
+        if (keepAlive != null) {
+            keepAlive.cancel(true);
         }
 
-        if (this.keepAliveReconnect != null) {
-            this.keepAliveReconnect.cancel(false);
+        if (keepAliveReconnect != null) {
+            keepAliveReconnect.cancel(false);
         }
     }
 
     private void sendKeepAlive() {
         // Reconnect if no response is received within 30 seconds.
-        this.keepAliveReconnect = this.scheduler.schedule(new Runnable() {
+        keepAliveReconnect = scheduler.schedule(new Runnable() {
             @Override
             public void run() {
                 reconnect();
@@ -192,11 +197,11 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             logger.debug("Keep alive triggered");
             
             // send a ping
-            this.sendPing();
+            sendPing();
 
             // System is alive, cancel reconnect task.
-            if (this.keepAliveReconnect != null) {
-                this.keepAliveReconnect.cancel(true);
+            if (keepAliveReconnect != null) {
+                keepAliveReconnect.cancel(true);
             }
             
             logger.debug("Keep alive succeeded");
@@ -356,7 +361,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                         return data;
                     } catch (JsonSyntaxException e) {
                         // it wasn't a full message?
-                        logger.debug("Trouble parsing message recieved. Message:" + e.getMessage());
+                        logger.debug("Trouble parsing message received. Message:" + e.getMessage());
                     }
                 }
             } finally {
@@ -387,6 +392,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private Socket getConnection(int timeout) throws UnknownHostException, IOException {
+        if(config == null) throw new SomfyMyLinkException("Config not setup correctly");
+
         logger.debug("Getting connection to mylink on:" + config.ipAddress + " Post: " + MYLINK_PORT);
         String myLinkAddress = config.ipAddress;
         Socket socket = new Socket(myLinkAddress, MYLINK_PORT);
@@ -395,6 +402,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private String buildCommand(String command, String targetId) {
+        if(config == null && StringUtils.isEmpty(config.systemId)) throw new SomfyMyLinkException("Config not setup correctly");
+
         int randomNum = ThreadLocalRandom.current().nextInt(1, 1000);
 
         // fix '-' back to '.'
@@ -418,7 +427,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         }
 
         this.thing = thing;
-        this.config = newConfig;
+        config = newConfig;
 
         if (needsReconnect) {
             initialize();
@@ -429,9 +438,9 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         disconnect();
 
-        if (this.discoveryServiceRegistration != null) {
-            this.discoveryServiceRegistration.unregister();
-            this.discoveryServiceRegistration = null;
+        if (discoveryServiceRegistration != null) {
+            discoveryServiceRegistration.unregister();
+            discoveryServiceRegistration = null;
         }
     }
 }

@@ -20,6 +20,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -27,7 +28,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
 import org.openhab.binding.somfymylink.internal.SomfyMyLinkHandlerFactory;
 import org.openhab.binding.somfymylink.internal.handler.SomfyMyLinkBridgeHandler;
 import org.openhab.binding.somfymylink.internal.handler.SomfyMyLinkException;
@@ -54,7 +54,6 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
     @Nullable
     private ScheduledFuture<?> scanTask;
 
-    @Nullable
     private SomfyMyLinkBridgeHandler mylinkHandler;
 
     @Nullable
@@ -127,10 +126,11 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
         // get the shade list
         SomfyMyLinkShade[] shades = this.mylinkHandler.getShadeList();
 
-        if (shades != null) {
-            for (SomfyMyLinkShade shade : shades) {
-                String id = shade.getTargetID();
-                String label = "Somfy Shade " + shade.getName();
+        for (SomfyMyLinkShade shade : shades) {
+            String id = shade.getTargetID();
+            String label = "Somfy Shade " + shade.getName();
+
+            if(id != null) {
                 logger.info("Adding device {}", id);
                 notifyShadeDiscovery(THING_TYPE_SHADE, id, label);
             }
@@ -138,10 +138,11 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
 
         SomfyMyLinkScene[] scenes = this.mylinkHandler.getSceneList();
 
-        if (scenes != null) {
-            for (SomfyMyLinkScene scene : scenes) {
-                String id = scene.getTargetID();
-                String label = "Somfy Scene " + scene.getName();
+        for (SomfyMyLinkScene scene : scenes) {
+            String id = scene.getTargetID();
+            String label = "Somfy Scene " + scene.getName();
+
+            if(id != null) {
                 logger.info("Adding device {}", id);
                 notifySceneDiscovery(THING_TYPE_SCENE, id, label);
             }
@@ -149,7 +150,7 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
     }
 
     private void notifyShadeDiscovery(ThingTypeUID thingTypeUID, String targetId, String label) {
-        if (targetId == null) {
+        if (StringUtils.isEmpty(targetId)) {
             logger.info("Discovered {} with no integration ID", label);
             return;
         }
@@ -170,7 +171,7 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
     }
 
     private void notifySceneDiscovery(ThingTypeUID thingTypeUID, String sceneId, String label) {
-        if (sceneId == null) {
+        if (StringUtils.isEmpty(sceneId)) {
             logger.info("Discovered {} with no scene ID", label);
             return;
         }
