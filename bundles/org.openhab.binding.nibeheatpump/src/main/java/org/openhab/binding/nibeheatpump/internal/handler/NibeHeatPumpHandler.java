@@ -12,19 +12,6 @@
  */
 package org.openhab.binding.nibeheatpump.internal.handler;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
-
 import org.eclipse.smarthome.core.library.types.*;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -41,19 +28,21 @@ import org.openhab.binding.nibeheatpump.internal.config.NibeHeatPumpConfiguratio
 import org.openhab.binding.nibeheatpump.internal.connection.ConnectorFactory;
 import org.openhab.binding.nibeheatpump.internal.connection.NibeHeatPumpConnector;
 import org.openhab.binding.nibeheatpump.internal.connection.NibeHeatPumpEventListener;
-import org.openhab.binding.nibeheatpump.internal.message.ModbusDataReadOutMessage;
-import org.openhab.binding.nibeheatpump.internal.message.ModbusReadRequestMessage;
-import org.openhab.binding.nibeheatpump.internal.message.ModbusReadResponseMessage;
-import org.openhab.binding.nibeheatpump.internal.message.ModbusValue;
-import org.openhab.binding.nibeheatpump.internal.message.ModbusWriteRequestMessage;
-import org.openhab.binding.nibeheatpump.internal.message.ModbusWriteResponseMessage;
-import org.openhab.binding.nibeheatpump.internal.message.NibeHeatPumpMessage;
+import org.openhab.binding.nibeheatpump.internal.message.*;
 import org.openhab.binding.nibeheatpump.internal.models.PumpModel;
 import org.openhab.binding.nibeheatpump.internal.models.VariableInformation;
 import org.openhab.binding.nibeheatpump.internal.models.VariableInformation.NibeDataType;
 import org.openhab.binding.nibeheatpump.internal.models.VariableInformation.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.*;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 /**
  * The {@link NibeHeatPumpHandler} is responsible for handling commands, which
@@ -63,53 +52,76 @@ import org.slf4j.LoggerFactory;
  */
 public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPumpEventListener {
 
-    private final Logger logger = LoggerFactory.getLogger(NibeHeatPumpHandler.class);
-
     private static final int TIMEOUT = 4500;
-
+    private final Logger logger = LoggerFactory.getLogger(NibeHeatPumpHandler.class);
     private final PumpModel pumpModel;
+    private final List<Integer> itemsToPoll = Collections.synchronizedList(new ArrayList<>());
+    private final List<Integer> itemsToEnableWrite = new ArrayList<>();
+    private final Map<Integer, CacheObject> stateMap = Collections.synchronizedMap(new HashMap<Integer, CacheObject>());
     private NibeHeatPumpConfiguration configuration;
-
     private NibeHeatPumpConnector connector;
-
     private boolean reconnectionRequest;
-
     private NibeHeatPumpCommandResult writeResult;
     private NibeHeatPumpCommandResult readResult;
+    private final Runnable pollingRunnable = new Runnable() {
+        @Override
+        public void run() {
 
+            if (!configuration.enableReadCommands) {
+                logger.trace("All read commands denied, skip polling!");
+                return;
+            }
+
+            List<Integer> items;
+            synchronized (itemsToPoll) {
+                items = new ArrayList<>(itemsToPoll);
+            }
+
+            for (int item : items) {
+                if (connector != null && connector.isConnected()
+                        && getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
+
+                    CacheObject oldValue = stateMap.get(item);
+                    if (oldValue == null
+                            || (oldValue.lastUpdateTime + refreshIntervalMillis()) < System.currentTimeMillis()) {
+
+                        // it's time to refresh data
+                        logger.debug("Time to refresh variable '{}' data", item);
+
+                        ModbusReadRequestMessage request = new ModbusReadRequestMessage.MessageBuilder()
+                                .coilAddress(item).build();
+
+                        try {
+                            readResult = sendMessageToNibe(request);
+                            ModbusReadResponseMessage result = (ModbusReadResponseMessage) readResult.get(TIMEOUT,
+                                    TimeUnit.MILLISECONDS);
+                            if (result != null) {
+                                if (request.getCoilAddress() != result.getCoilAddress()) {
+                                    logger.debug("Data from wrong register '{}' received, expected '{}'",
+                                            result.getCoilAddress(), request.getCoilAddress());
+                                }
+                                // update variable anyway
+                                handleVariableUpdate(pumpModel, result.getValueAsModbusValue());
+                            }
+                        } catch (TimeoutException e) {
+                            logger.debug("Message sending to heat pump failed, no response");
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        } catch (InterruptedException e) {
+                            logger.debug("Message sending to heat pump failed, sending interrupted");
+                        } catch (NibeHeatPumpException e) {
+                            logger.debug("Message sending to heat pump failed, exception {}", e.getMessage());
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        } finally {
+                            readResult = null;
+                        }
+                    }
+                }
+            }
+        }
+    };
     private ScheduledFuture<?> connectorTask;
     private ScheduledFuture<?> pollingJob;
-
-    private final List<Integer> itemsToPoll = Collections.synchronizedList(new ArrayList<>());
-
-    private final List<Integer> itemsToEnableWrite = new ArrayList<>();
-
-    private final Map<Integer, CacheObject> stateMap = Collections.synchronizedMap(new HashMap<Integer, CacheObject>());
-
     private long lastUpdateTime = 0;
-
-    protected class CacheObject {
-
-        /** Time when cache object updated in milliseconds */
-        final long lastUpdateTime;
-
-        /** Cache value */
-        final int value;
-
-        /**
-         * Initialize cache object.
-         *
-         * @param lastUpdateTime
-         *                           Time in milliseconds.
-         *
-         * @param value
-         *                           Cache value.
-         */
-        CacheObject(long lastUpdateTime, int value) {
-            this.lastUpdateTime = lastUpdateTime;
-            this.value = value;
-        }
-    }
 
     public NibeHeatPumpHandler(Thing thing, PumpModel pumpModel) {
         super(thing);
@@ -314,63 +326,6 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         }
     }
 
-    private final Runnable pollingRunnable = new Runnable() {
-        @Override
-        public void run() {
-
-            if (!configuration.enableReadCommands) {
-                logger.trace("All read commands denied, skip polling!");
-                return;
-            }
-
-            List<Integer> items;
-            synchronized (itemsToPoll) {
-                items = new ArrayList<>(itemsToPoll);
-            }
-
-            for (int item : items) {
-                if (connector != null && connector.isConnected()
-                        && getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
-
-                    CacheObject oldValue = stateMap.get(item);
-                    if (oldValue == null
-                            || (oldValue.lastUpdateTime + refreshIntervalMillis()) < System.currentTimeMillis()) {
-
-                        // it's time to refresh data
-                        logger.debug("Time to refresh variable '{}' data", item);
-
-                        ModbusReadRequestMessage request = new ModbusReadRequestMessage.MessageBuilder()
-                                .coilAddress(item).build();
-
-                        try {
-                            readResult = sendMessageToNibe(request);
-                            ModbusReadResponseMessage result = (ModbusReadResponseMessage) readResult.get(TIMEOUT,
-                                    TimeUnit.MILLISECONDS);
-                            if (result != null) {
-                                if (request.getCoilAddress() != result.getCoilAddress()) {
-                                    logger.debug("Data from wrong register '{}' received, expected '{}'",
-                                            result.getCoilAddress(), request.getCoilAddress());
-                                }
-                                // update variable anyway
-                                handleVariableUpdate(pumpModel, result.getValueAsModbusValue());
-                            }
-                        } catch (TimeoutException e) {
-                            logger.debug("Message sending to heat pump failed, no response");
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                        } catch (InterruptedException e) {
-                            logger.debug("Message sending to heat pump failed, sending interrupted");
-                        } catch (NibeHeatPumpException e) {
-                            logger.debug("Message sending to heat pump failed, exception {}", e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                        } finally {
-                            readResult = null;
-                        }
-                    }
-                }
-            }
-        }
-    };
-
     private long refreshIntervalMillis() {
         return configuration.refreshInterval * 1000;
     }
@@ -424,57 +379,33 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
     private State convertNibeValueToState(VariableInformation variableInfo, int value, String acceptedItemType) {
         State state = UnDefType.UNDEF;
+        long x;
 
         NibeDataType dataType = variableInfo.dataType;
-        int decimals = (int)Math.log10(variableInfo.factor);
-        byte[] bytes;
-        int x;
-        // Value convert methods are taken from https://github.com/ronniebasak/JStruct/blob/master/Struct.java
+        int decimals = (int) Math.log10(variableInfo.factor);
         switch (dataType) {
             case U8:
-                bytes = ByteBuffer.allocate(1).put((byte)value).array();
-                value = bytes[0];
+                x = Byte.toUnsignedLong((byte) (value & 0xFF));
                 break;
             case U16:
-                bytes = ByteBuffer.allocate(2).putChar((char) value).array();
-                value = ((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff);
+                x = Short.toUnsignedLong((short) (value & 0xFFFF));
                 break;
             case U32:
-                bytes = ByteBuffer.allocate(4).putInt(value).array();
-                value = ((bytes[0] & 0xff)<<24) | ((bytes[1] & 0xff)<<16) | ( (bytes[2]&0xff)<<8) | (bytes[3] & 0xff);
-                return new DecimalType(new BigDecimal(Integer.toUnsignedLong(value)).movePointLeft(decimals).setScale(decimals, RoundingMode.HALF_EVEN));
+                x = Integer.toUnsignedLong(value);
+                break;
             case S8:
-                bytes = ByteBuffer.allocate(1).put((byte)value).array();
-                x = bytes[0];
-                if ((bytes[0]>>>7&1)==1){
-                    x = ((x^0x7f)&0x7f)+1; //2's complement 8 bit
-                    x *= -1;
-                }
-                value = x;
+                x = (byte) (value & 0xFF);
                 break;
             case S16:
-                bytes = ByteBuffer.allocate(2).putChar((char) value).array();
-                x = (bytes[0] << 8) | (bytes[1] & 0xff);
-                if ((x>>>15&1)==1){
-                    x = ((x^0x7fff)&0x7fff)+1; //2's complement 16 bit
-                    x *= -1;
-                }
-                value = x;
+                x = (short) (value & 0xFFFF);
                 break;
             case S32:
-                bytes = ByteBuffer.allocate(4).putInt(value).array();
-                x = (bytes[0]<<24) | (bytes[1]<<16) | (bytes[2]<<8) | (bytes[3]);
-                if ((x>>>31&1)==1){
-                    x = ((x^0x7fffffff)&0x7fffffff)+1; //2's complement 32 bit
-                    x *= -1;
-                }
-
-                value = x;
+                x = value;
                 break;
             default:
                 return state;
         }
-        BigDecimal converted = new BigDecimal(value).movePointLeft(decimals).setScale(decimals, RoundingMode.HALF_EVEN);
+        BigDecimal converted = new BigDecimal(x).movePointLeft(decimals).setScale(decimals, RoundingMode.HALF_EVEN);
 
         if ("String".equalsIgnoreCase(acceptedItemType)) {
             state = new StringType(converted.toString());
@@ -603,6 +534,29 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             }
         } else {
             logger.debug("Unknown register {}", coilAddress);
+        }
+    }
+
+    protected class CacheObject {
+
+        /** Time when cache object updated in milliseconds */
+        final long lastUpdateTime;
+
+        /** Cache value */
+        final int value;
+
+        /**
+         * Initialize cache object.
+         *
+         * @param lastUpdateTime
+         *                           Time in milliseconds.
+         *
+         * @param value
+         *                           Cache value.
+         */
+        CacheObject(long lastUpdateTime, int value) {
+            this.lastUpdateTime = lastUpdateTime;
+            this.value = value;
         }
     }
 }
