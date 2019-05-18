@@ -15,16 +15,14 @@ package org.openhab.binding.somfymylink.internal.handler;
 import static org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants.CHANNEL_SCENECONTROL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SomfyMyLinkBindingConstants} class defines common constants, which are
@@ -34,7 +32,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SomfySceneHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(SomfySceneHandler.class);
 
     public SomfySceneHandler(Thing thing) {
         super(thing);
@@ -49,7 +46,7 @@ public class SomfySceneHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         // try {
         if (CHANNEL_SCENECONTROL.equals(channelUID.getId())) {
-            String targetId = channelUID.getThingUID().getId();
+            //String targetId = channelUID.getThingUID().getId();
 
             if (command instanceof RefreshType) {
                 // TODO: handle data refresh
@@ -76,8 +73,13 @@ public class SomfySceneHandler extends BaseThingHandler {
         // }
     }
 
-    @Nullable
     protected SomfyMyLinkBridgeHandler getBridgeHandler() {
-        return this.getBridge() != null ? (SomfyMyLinkBridgeHandler) this.getBridge().getHandler() : null;
+        Bridge bridge = this.getBridge();
+        if(bridge == null) throw new SomfyMyLinkException("No bridge was found");
+
+        BridgeHandler handler = bridge.getHandler();
+        if(handler == null) throw new SomfyMyLinkException("No handler was found");
+        
+        return (SomfyMyLinkBridgeHandler) handler;
     }
 }
