@@ -108,7 +108,7 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
         }
 
         characteristicItems.entrySet().stream().forEach(entry -> {
-            logger.warn("Item {} has unrecognized thermostat characteristic: {}", entry.getValue().getName(),
+            logger.warn("Item {} has unrecognized thermostat characteristic: {}", entry.getValue().getUID(),
                     entry.getKey().getTag());
         });
     }
@@ -120,7 +120,7 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
             targetTempItem = Optional.ofNullable(characteristicItems.remove(deprecatedTag));
             targetTempItem.ifPresent(item -> {
                 logger.warn("The tag {} has been renamed to {}; please update your things, accordingly",
-                        currentTag.getTag(), deprecatedTag.getTag());
+                        deprecatedTag.getTag(), currentTag.getTag());
             });
         }
         return targetTempItem;
