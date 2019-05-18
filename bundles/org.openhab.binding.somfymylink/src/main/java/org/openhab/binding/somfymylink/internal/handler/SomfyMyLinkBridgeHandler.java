@@ -141,21 +141,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "mylink config not specified");
                 return;
             }
-
-            /*if (this.connection != null) {
-                if (this.connection.isConnected() && !this.connection.isClosed()) {
-                    logger.debug("mylink already connected");
-                    return;
-                } else {
-                    logger.debug("mylink connection is not connected");
-
-                    // retry ?
-
-                }
-            } else {
-                logger.debug("Connecting to mylink at {}", config.ipAddress);
-                this.connection = getConnection();
-            }*/
             
             logger.debug("Connecting to mylink at {}", config.ipAddress);
             
@@ -191,13 +176,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         if (this.keepAliveReconnect != null) {
             this.keepAliveReconnect.cancel(false);
         }
-
-        /*try {
-            this.connection.close();
-            this.connection = null;
-        } catch (IOException e) {
-            logger.error("Error disconnecting", e);
-        }*/
     }
 
     private void sendKeepAlive() {
@@ -211,8 +189,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
         try {
 
-        	logger.debug("Keep alive triggered");
-        	
+            logger.debug("Keep alive triggered");
+            
             // send a ping
             this.sendPing();
 
@@ -256,7 +234,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         String command = "mylink.status.ping";
 
         SomfyMyLinkPingResponse response = (SomfyMyLinkPingResponse) sendCommandWithResponse(command, targetId,
-        		SomfyMyLinkPingResponse.class);
+                SomfyMyLinkPingResponse.class);
 
         if (response != null) {
             return response.getResult();
@@ -309,8 +287,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     private void sendCommand(String command, String targetId) throws SomfyMyLinkException {
         String myLinkCommand = buildCommand(command, targetId);
         try {
-        	logger.debug("Sending: " + command + " Target: " + targetId);
-        	Socket socket = getConnection();
+            logger.debug("Sending: " + command + " Target: " + targetId);
+            Socket socket = getConnection();
             OutputStream out = socket.getOutputStream();
 
             try {
@@ -327,7 +305,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 }
             }
         } catch (SocketTimeoutException e) {
-        	logger.error("Timeout sending command to mylink: " + command + "Message: " + e.getMessage());
+            logger.error("Timeout sending command to mylink: " + command + "Message: " + e.getMessage());
             throw new SomfyMyLinkException("Timeout sending command to mylink", e);
         } catch (SocketException e) {
             logger.error("Problem sending command to mylink: " + command + "Message: " + e.getMessage());
@@ -344,8 +322,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         String myLinkCommand = buildCommand(command, targetId);
 
         try {
-        	logger.debug("Sending: " + command + " Target: " + targetId);
-        	Socket socket = getConnection();
+            logger.debug("Sending: " + command + " Target: " + targetId);
+            Socket socket = getConnection();
             OutputStream out = socket.getOutputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -365,9 +343,9 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                     logger.debug("Got response. Len: " + readCount);
                     message += new String(readBuff, 0, readCount);
                     try {
-                    	
-                    	logger.debug("got message: " + message);
-                    	
+                        
+                        logger.debug("got message: " + message);
+                        
                         SomfyMyLinkResponseBase data = gson.fromJson(message, responseType);
 
                         // check if there was an error
@@ -393,7 +371,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             }
             return null;
         } catch (SocketTimeoutException e) {
-        	logger.error("Timeout sending command to mylink: " + command + "Message: " + e.getMessage());
+            logger.error("Timeout sending command to mylink: " + command + "Message: " + e.getMessage());
             throw new SomfyMyLinkException("Timeout sending command to mylink", e);
         } catch (SocketException e) {
             logger.error("Problem sending command to mylink: " + command + "Message: " + e.getMessage());
