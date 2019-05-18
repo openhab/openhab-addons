@@ -13,6 +13,7 @@
 package org.openhab.binding.somfymylink.internal.handler;
 
 import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link SomfyMyLinkBindingConstants} class defines common constants, which are
@@ -20,7 +21,8 @@ import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
  *
  * @author Chris Johnson - Initial contribution
  */
-public class SomfyMyLinkException extends Exception {
+@NonNullByDefault
+public class SomfyMyLinkException extends RuntimeException {
 
     public SomfyMyLinkException() {
         super();

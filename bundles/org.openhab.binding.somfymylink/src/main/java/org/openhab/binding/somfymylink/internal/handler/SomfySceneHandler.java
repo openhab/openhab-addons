@@ -14,6 +14,8 @@ package org.openhab.binding.somfymylink.internal.handler;
 
 import static org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants.CHANNEL_SCENECONTROL;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -30,6 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Johnson - Initial contribution
  */
+@NonNullByDefault
 public class SomfySceneHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SomfySceneHandler.class);
 
@@ -73,6 +76,7 @@ public class SomfySceneHandler extends BaseThingHandler {
         // }
     }
 
+    @Nullable
     protected SomfyMyLinkBridgeHandler getBridgeHandler() {
         return this.getBridge() != null ? (SomfyMyLinkBridgeHandler) this.getBridge().getHandler() : null;
     }
