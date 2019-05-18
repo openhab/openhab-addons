@@ -28,6 +28,8 @@
 
 // Enable if you use ProDiNo board
 //#define PRODINO_BOARD
+// Enable if ENC28J60 LAN module is used
+//#define TRANSPORT_ETH_ENC28J60
 
 // Enable debug printouts, listen printouts e.g. via netcat (nc -l -u 50000)
 //#define ENABLE_DEBUG
@@ -47,9 +49,6 @@
 
 // Delay before initialize ethernet on startup in seconds
 #define ETH_INIT_DELAY          10
-
-// Enable if ENC28J60 LAN module is used
-//#define TRANSPORT_ETH_ENC28J60
 
 // Used serial port and direction change pin for RS-485 port
 #ifdef PRODINO_BOARD
