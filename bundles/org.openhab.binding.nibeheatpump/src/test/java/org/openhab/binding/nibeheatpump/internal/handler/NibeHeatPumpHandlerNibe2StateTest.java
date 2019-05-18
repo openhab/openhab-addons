@@ -69,6 +69,11 @@ public class NibeHeatPumpHandlerNibe2StateTest {
                 { 43424, 1685, "%d", "Number", "1685"},
                 { 43416, 4857, "%d", "Number", "4857"},
                 { 43420, 9487, "%d", "Number", "9487"},
+                { 40940, (byte)0xFF, "%.1f", "Number", "-0.1"}, // these tests pass, but is it good?
+                { 40940, (int)((short)0xFFFF), "%.1f", "Number", "-0.1"}, // these tests pass, but is it good?
+                { 40940, (short)0xFFFF, "%.1f", "Number", "-0.1"}, // these tests pass, but is it good?
+                { 40940, (byte)0xFFFF, "%.1f", "Number", "-0.1"}, // these tests pass, but is it good?
+                { 40940, (int)(0xFFFF), "%.1f", "Number", "6553.5"}, // these tests pass, but is it good?
         });
     }
 
