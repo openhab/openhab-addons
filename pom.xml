@@ -50,11 +50,11 @@
   <distributionManagement>
     <repository>
       <id>bintray</id>
-      <url>${repo.distBaseUrl}/openhab2-addons/;publish=1</url>
+      <url>${oh.repo.distBaseUrl}/openhab2-addons/;publish=1</url>
     </repository>
     <snapshotRepository>
       <id>jfrog</id>
-      <url>${repo.snapshotBaseUrl}/libs-snapshot-local</url>
+      <url>${oh.repo.distBaseUrl}/libs-snapshot-local</url>
     </snapshotRepository>
   </distributionManagement>
 
