@@ -14,7 +14,6 @@ package org.openhab.io.homekit.internal;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,8 +22,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemRegistry;
-import org.eclipse.smarthome.core.library.items.ColorItem;
-import org.eclipse.smarthome.core.library.items.DimmerItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,32 +52,12 @@ public class HomekitTaggedItem {
     private final int id;
     private GroupItem parentGroupItem;
 
-    private static Stream<String> getPrefixedTags(Item item) {
-        Stream<String> prefixedTags = item.getTags().stream();
-        if (item instanceof ColorItem) {
-            prefixedTags = prefixedTags.map(tag -> "Colorful" + tag);
-        } else if (item instanceof DimmerItem) {
-            prefixedTags = prefixedTags.map(tag -> "Dimmable" + tag);
-        }
-        return prefixedTags;
-    }
-
-    public static HomekitAccessoryType findAccessoryType(Item item) {
-        return getPrefixedTags(item).map(tag -> HomekitAccessoryType.valueOfTag(tag)).filter(Objects::nonNull)
-                .findFirst().orElseGet(() -> null);
-    }
-
-    public static HomekitCharacteristicType findCharacteristicType(Item item) {
-        return getPrefixedTags(item).map(tag -> HomekitCharacteristicType.valueOfTag(tag)).filter(Objects::nonNull)
-                .findFirst().orElseGet(() -> null);
-    }
-
     public HomekitTaggedItem(Item item, ItemRegistry itemRegistry) {
         this.item = item;
 
         try {
-            homekitAccessoryType = findAccessoryType(item);
-            homekitCharacteristicType = findCharacteristicType(item);
+            homekitAccessoryType = HomekitAccessoryType.fromItem(item);
+            homekitCharacteristicType = HomekitCharacteristicType.fromItem(item);
             if (homekitAccessoryType != null && homekitCharacteristicType != null) {
                 throw new BadItemConfigurationException(
                         "Items cannot be tagged as both a characteristic and an accessory type");
@@ -205,7 +182,7 @@ public class HomekitTaggedItem {
         return id;
     }
 
-    static List<GroupItem> findMyAccessoryGroups(Item item, ItemRegistry itemRegistry) {
+    public static List<GroupItem> findMyAccessoryGroups(Item item, ItemRegistry itemRegistry) {
         return item.getGroupNames().stream().flatMap(name -> {
             Item groupItem = itemRegistry.get(name);
             if ((groupItem != null) && (groupItem instanceof GroupItem)) {
