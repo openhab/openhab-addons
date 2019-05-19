@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.somfymylink.internal.SomfyMyLinkHandlerFactory;
@@ -123,6 +124,11 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
     }
 
     private void discoverDevices() throws SomfyMyLinkException {
+        if(this.mylinkHandler.getThing().getStatus() != ThingStatus.ONLINE) {
+            logger.info("Skipping device discover as bridge is {}", this.mylinkHandler.getThing().getStatus());
+            return;
+        }
+
         // get the shade list
         SomfyMyLinkShade[] shades = this.mylinkHandler.getShadeList();
 
