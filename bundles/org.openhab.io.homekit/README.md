@@ -7,6 +7,8 @@ In order to do so, you will need to make some configuration changes.
 HomeKit organizes your home into "accessories" that are made up of a number of "characteristics".
 Some accessory types require a specific set of characteristics.
 
+**Attention: Some tags have been renamed. Old style may not be supported in future versions. See below for details.**
+
 ## Global Configuration
 
 Your first step will be to create the `homekit.cfg` in your `$OPENHAB_CONF/services` folder.
@@ -76,6 +78,8 @@ A full list of supported accessory types can be found in the table below.
 |                       | homekit:TargetHeatingCoolingMode  | String                    | Indicates the desired mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"   |
 |                       | homekit:CurrentHeatingCoolingMode | String                    | Indicates the current mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"   |
 |                       | homekit:TargetTemperature         | Number                    | A target temperature that will engage the thermostat's heating and cooling actions as necessary, depending on the heatingCoolingMode. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"             |
+
+**Please note:** `TargetTemperature` has been renamed to `homekit:TagretTemperature` and `homekit:HeatingCoolingMode` has been renamed to `homekit:TargetHeatingCoolingMode`.
 
 See the sample below for example items:
 
