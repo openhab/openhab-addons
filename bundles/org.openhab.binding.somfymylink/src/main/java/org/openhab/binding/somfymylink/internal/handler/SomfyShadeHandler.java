@@ -22,10 +22,13 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SomfyMyLinkBindingConstants} class defines common constants, which are
@@ -36,13 +39,43 @@ import org.eclipse.smarthome.core.types.RefreshType;
 @NonNullByDefault
 public class SomfyShadeHandler extends BaseThingHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(SomfyShadeHandler.class);
+
     public SomfyShadeHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
+        initDeviceState();
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("Bridge status changed to {} updating {}", bridgeStatusInfo.getStatus(), getThing().getLabel());
+
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
+            initDeviceState();
+
+        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    }
+
+    public void initDeviceState() {
+        
+        Bridge bridge = getBridge();
+        
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            logger.debug("Initialized device state for shade {} {}", ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        } else if (bridge.getStatus() == ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+            logger.debug("Initialized device state for shade {}", ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            logger.debug("Initialized device state for shade {} {}", ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
     }
 
     @Override
