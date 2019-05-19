@@ -14,6 +14,12 @@ package org.openhab.io.homekit.internal;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
+import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.library.items.ColorItem;
+import org.eclipse.smarthome.core.library.items.DimmerItem;
 
 /**
  * Enum of the possible device types. The defined tag string can be used
@@ -58,7 +64,32 @@ public enum HomekitAccessoryType {
         return tag;
     }
 
+    /**
+     * get accessoryType from String
+     *
+     * @param tag the tag string
+     * @return accessoryType or null if not found
+     */
     public static HomekitAccessoryType valueOfTag(String tag) {
         return TAG_MAP.get(tag);
+    }
+
+    /**
+     * get accessoryType for a given Item
+     *
+     * @param item the item
+     * @return accessoryType or null if not found
+     */
+    public static HomekitAccessoryType fromItem(Item item) {
+        Set<String> tags = item.getTags();
+        HomekitAccessoryType accessoryType = tags.stream().map(tag -> TAG_MAP.get(tag)).filter(Objects::nonNull)
+                .findFirst().orElse(null);
+        if (item instanceof ColorItem && accessoryType == LIGHTBULB) {
+            return COLORFUL_LIGHTBULB;
+        } else if (item instanceof DimmerItem && accessoryType == LIGHTBULB) {
+            return DIMMABLE_LIGHTBULB;
+        } else {
+            return accessoryType;
+        }
     }
 }
