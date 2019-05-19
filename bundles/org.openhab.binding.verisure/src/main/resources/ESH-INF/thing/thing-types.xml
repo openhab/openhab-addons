@@ -36,11 +36,6 @@
 				<description>The username's pin code to arm/lock alarm/door.</description>
 				<context>password</context>
 			</parameter>
-			<parameter name="numberOfInstallations" type="integer">
-				<label>Number of Verisure Installations</label>
-				<description>Number of Verisure installations to monitor.</description>
-				<default>1</default>
-			</parameter>
 		</config-description>
 
 	</bridge-type>

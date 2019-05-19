@@ -24,19 +24,9 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class VerisureSmartPlugJSON extends VerisureBaseThingJSON {
 
-    private String statusText;
-    private Boolean hazardous;
+    private @Nullable String statusText;
+    private @Nullable Boolean hazardous;
     private @Nullable String deviceLabel;
-
-    public VerisureSmartPlugJSON(String deviceId, String location, String status, String statusText,
-            Boolean hazardous) {
-        super();
-        this.location = location;
-        this.status = status;
-        this.statusText = statusText;
-        this.hazardous = hazardous;
-        this.deviceLabel = deviceId;
-    }
 
     /*
      * (non-Javadoc)
@@ -106,7 +96,7 @@ public class VerisureSmartPlugJSON extends VerisureBaseThingJSON {
         this.deviceLabel = deviceId;
     }
 
-    public Boolean getHazardous() {
+    public @Nullable Boolean getHazardous() {
         return hazardous;
     }
 
@@ -114,7 +104,7 @@ public class VerisureSmartPlugJSON extends VerisureBaseThingJSON {
         this.hazardous = hazardous;
     }
 
-    public String getStatusText() {
+    public @Nullable String getStatusText() {
         return statusText;
     }
 

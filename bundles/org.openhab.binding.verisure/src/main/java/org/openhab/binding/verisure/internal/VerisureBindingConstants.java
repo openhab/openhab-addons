@@ -80,9 +80,21 @@ public class VerisureBindingConstants {
     public static final String ALARM_COMMAND = BASEURL + "/remotecontrol/armstatechange.cmd";
     public static final String SMARTLOCK_LOCK_COMMAND = BASEURL + "/remotecontrol/lockunlock.cmd";
     public static final String SMARTLOCK_SET_COMMAND = BASEURL + "/overview/setdoorlock.cmd";
+    public static final String SMARTLOCK_AUTORELOCK_COMMAND = BASEURL + "/settings/setautorelock.cmd";
+    public static final String SMARTLOCK_VOLUME_COMMAND = BASEURL + "/settings/setvolume.cmd";
+    
     public static final String SMARTPLUG_COMMAND = BASEURL + "/settings/smartplug/onoffplug.cmd";
     public static final String START_REDIRECT = "/uk/start.html";
     public static final String START_SUF = BASEURL + START_REDIRECT;
+    
+    // GraphQL constants
+    public static final String STATUS = BASEURL + "/uk/status";
+    public static final String SETTINGS = BASEURL + "/uk/settings.html?giid=";
+    public static final String SET_INSTALLATION = BASEURL + "/setinstallation?giid=";
+    public static final String BASEURL_API = "https://m-api01.verisure.com";
+    public static final String START_GRAPHQL = BASEURL_API + "/graphql";
+    public static final String AUTH_TOKEN = BASEURL_API + "/auth/token";
+    public static final String AUTH_LOGIN = BASEURL_API + "/auth/login";
 
     public static final String ALARMSTATUS_PATH = "/remotecontrol";
     public static final String SMARTLOCK_PATH = "/overview/doorlock/";

@@ -30,5 +30,4 @@ public class VerisureBridgeConfiguration {
     public @Nullable String password;
     public @Nullable BigDecimal refresh;
     public @Nullable BigDecimal pin;
-    public @Nullable BigDecimal numberOfInstallations;
 }

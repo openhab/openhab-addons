@@ -67,26 +67,31 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
             VerisureAlarmJSON alarm = (VerisureAlarmJSON) session
                     .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
             if (alarm != null) {
-                BigDecimal pinCode = session.getPinCode();
-                String csrf = session.getCsrf();
-                String siteName = alarm.getSiteName();
-                if (pinCode != null && csrf != null && siteName != null) {
-                    String data = null;
-                    String url = ALARM_COMMAND;
+            	BigDecimal pinCode = session.getPinCode();
+            	BigDecimal installationId = alarm.getSiteId();
+            	String deviceId = config.deviceId;
+            	if (deviceId != null && pinCode != null && installationId != null) {
+            		StringBuilder sb = new StringBuilder(deviceId);
+            		sb.insert(4, " ");
+            		String url = START_GRAPHQL;
+            		String queryQLAlarmSetState;
                     if (command.toString().equals("0")) {
-                        data = "code=" + pinCode + "&state=DISARMED&_csrf=" + csrf;
-                        logger.debug("Trying to set alarm state to DISARMED with URL {} and data {}", url, data);
+                    	queryQLAlarmSetState = "[{\"operationName\":\"disarm\",\"variables\":{\"giid\":\"" + installationId + "\",\"code\":\"" + pinCode + "\"},\"query\":\"mutation disarm($giid: String!, $code: String!) {\\n  armStateDisarm(giid: $giid, code: $code)\\n}\\n\"}]\n" + 
+                    			"";
+                        logger.debug("Trying to set alarm state to DISARMED with URL {} and data {}", url, queryQLAlarmSetState);
                     } else if (command.toString().equals("1")) {
-                        data = "code=" + pinCode + "&state=ARMED_HOME&_csrf=" + csrf;
-                        logger.debug("Trying to set alarm state to ARMED_HOME with URL {} and data {}", url, data);
+                    	queryQLAlarmSetState = "[{\"operationName\":\"armHome\",\"variables\":{\"giid\":\"" + installationId + "\",\"code\":\"" + pinCode + "\"},\"query\":\"mutation armHome($giid: String!, $code: String!) {\\n  armStateArmHome(giid: $giid, code: $code)\\n}\\n\"}]\n" + 
+                    			"";
+                        logger.debug("Trying to set alarm state to ARMED_HOME with URL {} and data {}", url, queryQLAlarmSetState);
                     } else if (command.toString().equals("2")) {
-                        data = "code=" + pinCode + "&state=ARMED_AWAY&_csrf=" + csrf;
-                        logger.debug("Trying to set alarm state to ARMED_AWAY with URL {} and data {}", url, data);
+                    	queryQLAlarmSetState = "[{\"operationName\":\"armAway\",\"variables\":{\"giid\":\"" + installationId + "\",\"code\":\"" + pinCode + "\"},\"query\":\"mutation armAway($giid: String!, $code: String!) {\\n  armStateArmAway(giid: $giid, code: $code)\\n}\\n\"}]\n" + 
+                        		"";
+                        logger.debug("Trying to set alarm state to ARMED_AWAY with URL {} and data {}", url, queryQLAlarmSetState);
                     } else {
                         logger.debug("Unknown command! {}", command);
                         return;
                     }
-                    session.sendCommand(siteName, url, data);
+                    session.sendCommand2(url, queryQLAlarmSetState);
                     ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_STATUS);
                     updateState(cuid, new StringType("pending"));
                 } else if (pinCode == null) {

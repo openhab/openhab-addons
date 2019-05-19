@@ -63,33 +63,42 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
         }
     }
 
-    private void handleSmartPlugState(Command command) {
-        if (session != null && config.deviceId != null) {
-            VerisureSmartPlugJSON smartPlug = (VerisureSmartPlugJSON) session
-                    .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
-            if (smartPlug != null) {
-                String siteName = smartPlug.getSiteName();
-                if (siteName != null) {
-                    String smartPlugUrl = config.deviceId.replaceAll("_", "+");
-                    String url = SMARTPLUG_COMMAND;
-                    String data = null;
-                    if (command == OnOffType.OFF) {
-                        data = "targetDeviceLabel=" + smartPlugUrl + "&targetOn=off";
-                        logger.debug("Trying to set SmartPlug state to off with URL {} and data {}", url, data);
-                    } else if (command == OnOffType.ON) {
-                        data = "targetDeviceLabel=" + smartPlugUrl + "&targetOn=on";
-                        logger.debug("Trying to set SmartPlug state to on with URL {} and data {}", url, data);
-                    } else {
-                        logger.debug("Unknown command! {}", command);
-                        return;
-                    }
-                    session.sendCommand(siteName, url, data);
-                    ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_STATUS);
-                    updateState(cuid, new StringType("pending"));
-                }
-            }
-        }
-    }
+	private void handleSmartPlugState(Command command) {
+		if (session != null && config.deviceId != null) {
+			VerisureSmartPlugJSON smartPlug = (VerisureSmartPlugJSON) session
+					.getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
+			if (smartPlug != null) {
+				BigDecimal installationId = smartPlug.getSiteId();
+				String deviceId = config.deviceId;
+				if (deviceId != null) {
+					StringBuilder sb = new StringBuilder(deviceId);
+					sb.insert(4, " ");
+					String url = START_GRAPHQL;
+					String queryQLSmartPlugSetState;
+
+					if (command == OnOffType.OFF) {
+						queryQLSmartPlugSetState = "[{\"operationName\":\"UpdateState\",\"variables\":{\"giid\":\""
+								+ installationId + "\",\"deviceLabel\":\"" + sb.toString()
+								+ "\",\"state\":false},\"query\":\"mutation UpdateState($giid: String!, $deviceLabel: String!, $state: Boolean!) {\\n  SmartPlugSetState(giid: $giid, input: [{deviceLabel: $deviceLabel, state: $state}])\\n}\\n\"}]";
+						logger.debug("Trying to set SmartPlug state to off with URL {} and data {}", url,
+								queryQLSmartPlugSetState);
+					} else if (command == OnOffType.ON) {
+						queryQLSmartPlugSetState = "[{\"operationName\":\"UpdateState\",\"variables\":{\"giid\":\""
+								+ installationId + "\",\"deviceLabel\":\"" + sb.toString()
+								+ "\",\"state\":true},\"query\":\"mutation UpdateState($giid: String!, $deviceLabel: String!, $state: Boolean!) {\\n  SmartPlugSetState(giid: $giid, input: [{deviceLabel: $deviceLabel, state: $state}])\\n}\\n\"}]";
+						logger.debug("Trying to set SmartPlug state to on with URL {} and data {}", url,
+								queryQLSmartPlugSetState);
+					} else {
+						logger.debug("Unknown command! {}", command);
+						return;
+					}
+					session.sendCommand2(START_GRAPHQL, queryQLSmartPlugSetState);
+					ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_STATUS);
+					updateState(cuid, new StringType("pending"));
+				}
+			}
+		}
+	}
 
     @Override
     public synchronized void update(@Nullable VerisureThingJSON thing) {

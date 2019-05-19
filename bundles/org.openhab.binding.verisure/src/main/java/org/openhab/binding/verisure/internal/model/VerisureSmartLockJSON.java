@@ -69,7 +69,7 @@ public class VerisureSmartLockJSON extends VerisureAlarmJSON {
     }
 
     @NonNullByDefault
-    public class DoorLockVolumeSettings {
+    public static class DoorLockVolumeSettings {
         @SerializedName("volume")
         private @Nullable String volume;
 
@@ -130,7 +130,6 @@ public class VerisureSmartLockJSON extends VerisureAlarmJSON {
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + getOuterType().hashCode();
             result = prime * result + ((active == null) ? 0 : active.hashCode());
             result = prime * result + ((availableVoiceLevels == null) ? 0 : availableVoiceLevels.hashCode());
             result = prime * result + ((availableVolumes == null) ? 0 : availableVolumes.hashCode());
@@ -156,9 +155,6 @@ public class VerisureSmartLockJSON extends VerisureAlarmJSON {
                 return false;
             }
             DoorLockVolumeSettings other = (DoorLockVolumeSettings) obj;
-            if (!getOuterType().equals(other.getOuterType())) {
-                return false;
-            }
             if (active == null) {
                 if (other.active != null) {
                     return false;
@@ -207,11 +203,6 @@ public class VerisureSmartLockJSON extends VerisureAlarmJSON {
             return "DoorLockVolumeSettings [volume=" + volume + ", voiceLevel=" + voiceLevel + ", active=" + active
                     + ", availableVolumes=" + availableVolumes + ", availableVoiceLevels=" + availableVoiceLevels + "]";
         }
-
-        private VerisureSmartLockJSON getOuterType() {
-            return VerisureSmartLockJSON.this;
-        }
-
     }
 
     @SuppressWarnings("null")

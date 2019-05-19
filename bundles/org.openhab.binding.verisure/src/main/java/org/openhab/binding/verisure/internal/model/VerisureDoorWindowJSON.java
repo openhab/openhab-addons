@@ -28,13 +28,6 @@ public class VerisureDoorWindowJSON extends VerisureBaseThingJSON {
     private @Nullable String state;
     private @Nullable String deviceLabel;
 
-    public VerisureDoorWindowJSON(String deviceId, String state, String location) {
-        super();
-        this.area = location;
-        this.state = state;
-        this.deviceLabel = deviceId;
-    }
-
     public @Nullable String getState() {
         return state;
     }

@@ -12,5 +12,15 @@
   <artifactId>org.openhab.binding.verisure</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Verisure Binding</name>
-
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.11.3</version>
+      <scope>provided</scope>
+    </dependency>
+   </dependencies>
+   
+  
 </project>

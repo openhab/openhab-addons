@@ -74,7 +74,6 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable String authstring;
     private @Nullable BigDecimal pinCode;
-    private @Nullable BigDecimal numberOfInstallations;
     private @Nullable BigDecimal refresh = new BigDecimal(600);
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> immediateRefreshJob;
@@ -114,7 +113,6 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
         VerisureBridgeConfiguration config = getConfigAs(VerisureBridgeConfiguration.class);
         this.refresh = config.refresh;
         this.pinCode = config.pin;
-        this.numberOfInstallations = config.numberOfInstallations;
         if (config.username == null || config.password == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Configuration of username and password is mandatory");
@@ -126,7 +124,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
                     // Configuration change
                     session = new VerisureSession(this.httpClient);
                 }
-                session.initialize(authstring, pinCode, numberOfInstallations);
+                session.initialize(authstring, pinCode);
                 startAutomaticRefresh();
             } catch (RuntimeException e) {
                 logger.warn("Failed to initialize! Exception caught: {}", e.getMessage(), e);

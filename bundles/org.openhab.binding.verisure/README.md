@@ -5,8 +5,6 @@ This is an OpenHAB binding for Versiure Alarm system, by Securitas Direct.
 This binding uses the rest API behind the Verisure My Pages: 
 https://mypages.verisure.com/login.html.
 
-The binding supports several installation sites via the configuration parameter numberOfInstallations that defaults to 1.
-
 Be aware that Verisure don't approve if you update to often, I have gotten no complaints running with a 10 minutes update interval, but officially you should use 30 minutes.
 
 ## Supported Things
@@ -31,8 +29,6 @@ This binding supports the following thing types:
 You will have to configure the bridge with username and password, these must be the same credentials as used when logging into https://mypages.verisure.com. 
 You can also configure your pin-code to be able to lock/unlock the SmartLock and arm/unarm the Alarm. 
 **NOTE:** To be able to have full control over all SmartLock functionality, the user has to have Administrator rights.
-It is also possible to configure the number of Verisure installations/sites you have, default is 1. You have to configure a user with the same
-username, password and pin on the other installation/site.
 
 ## Discovery
 
@@ -57,8 +53,6 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 *   pin - The username's pin code to arm/lock alarm/door
 
-*   numberOfInstallations - Number of Verisure Installations to monitor
-
 #### Channels
 
 ([bridge]) supports the following channel:
@@ -73,7 +67,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 #### Configuration Options
 
 *   deviceId - Device Id
-    *   Since Alarm lacks a Verisure ID, the following naming convention is used for alarm on first site: 'alarm1'
+    *   Since Alarm lacks a Verisure ID, the following naming convention is used for alarm on site id 123456789: 'alarm123456789'
 
 #### Channels
 
@@ -242,7 +236,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 #### Configuration Options
 
 *   deviceId - Device Id
-    *   Since User presence lacks a Verisure ID, it is constructed from the user's email address, where the '@' sign is removed, and the site numbering where first site is 1. The following naming convention is used for User presence on first site for a user with email address test@gmail.com: 'userpresencetestgmailcom1'
+    *   Since User presence lacks a Verisure ID, it is constructed from the user's email address, where the '@' sign is removed, and the site id. The following naming convention is used for User presence on site id 123456789 for a user with email address test@gmail.com: 'userpresencetestgmailcom123456789'
 
 #### Channels
 
@@ -262,7 +256,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 #### Configuration Options
 
 *   deviceId - Device Id
-    *   Since Broadband connection lacks a Verisure ID, the following naming convention is used for Broadband connection on first site: 'broadband1'
+    *   Since Broadband connection lacks a Verisure ID, the following naming convention is used for Broadband connection on site id 123456789: 'broadband123456789'
 
 #### Channels
 
@@ -282,13 +276,13 @@ Only the bridge require manual configuration. The devices and sensors can be add
 
 ````
 // Bridge configuration
-Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", password="1234", refresh="600", pin="111111", numberOfInstallations="1"] {
+Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", password="1234", refresh="600", pin="111111"] {
 
-     Thing alarm         JannesAlarm         "Verisure Alarm"                  [ deviceId="alarm2" ]
+     Thing alarm         JannesAlarm         "Verisure Alarm"                  [ deviceId="alarm123456789" ]
      Thing smartLock     JannesSmartLock     "Verisure Entrance Yale Doorman"  [ deviceId="3C446NPO" ]
      Thing smartPlug     JannesSmartPlug     "Verisure SmartPlug"              [ deviceId="3D7GMANV" ]
      Thing waterDetector JannesWaterDetector "Verisure Water Detector"         [ deviceId="3WETQRH5" ] 
-     Thing userPresence  JannesUserPresence  "Verisure User Presence"          [ deviceId="userpresencetestgmailcom2" ]
+     Thing userPresence  JannesUserPresence  "Verisure User Presence"          [ deviceId="userpresencetestgmailcom123456789" ]
 }
 ````
 
@@ -297,28 +291,27 @@ Bridge verisure:bridge:myverisure "Verisure Bridge" [username="x@y.com", passwor
 ````
 // SmartLock and Alarm
 Switch   SmartLock                     "Verisure SmartLock"  <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:JannesSmartLock:setSmartLockStatus"}
-Number   AlarmHome                     "Alarm Home"          <alarm>                    {channel="verisure:alarm:myverisure:alarm2:setAlarmStatus"}
+Number   AlarmHome                     "Alarm Home"          <alarm>                    {channel="verisure:alarm:myverisure:JannesAlarm:setAlarmStatus"}
 Switch   AlarmHomeVirtual              "Verisure Alarm"      <alarm>  [ "Switchable" ] 
-String   AlarmStatus                   "Verisure Alarm Status"                          {channel="verisure:alarm:myverisure:alarm2:status"}
-Number   AlarmNumericStatus            "Verisure Alarm Numeric Status"                  {channel="verisure:alarm:myverisure:alarm2:numericStatus"}
-String   AlarmAlarmStatus              "Verisure Alarm Status"                          {channel="verisure:alarm:myverisure:alarm2:alarmStatus"}
-String   AlarmTimeStamp                "Verisure Alarm Time Stamp"                      {channel="verisure:alarm:myverisure:alarm2:timestamp"}
-String   AlarmChangedByUser            "Verisure Alarm Changed By User"                 {channel="verisure:alarm:myverisure:alarm2:changedByUser"}
+String   AlarmStatus                   "Verisure Alarm Status"                          {channel="verisure:alarm:myverisure:JannesAlarm:status"}
+Number   AlarmNumericStatus            "Verisure Alarm Numeric Status"                  {channel="verisure:alarm:myverisure:JannesAlarm:numericStatus"}
+String   AlarmAlarmStatus              "Verisure Alarm Status"                          {channel="verisure:alarm:myverisure:JannesAlarm:alarmStatus"}
+String   AlarmTimeStamp                "Verisure Alarm Time Stamp"                      {channel="verisure:alarm:myverisure:JannesAlarm:timestamp"}
+String   AlarmChangedByUser            "Verisure Alarm Changed By User"                 {channel="verisure:alarm:myverisure:JannesAlarm:changedByUser"}
 Switch   AutoLock                      "AutoLock"            <lock>   [ "Switchable" ]  {channel="verisure:smartLock:myverisure:JannesSmartLock:setAutoRelock"}
 String   SmartLockStatus               "SmartLock Status"                               {channel="verisure:smartLock:myverisure:JannesSmartLock:smartLockStatus"}
 String   SmartLockCurrentStatus        "SmartLock Current Status"                       {channel="verisure:smartLock:myverisure:JannesSmartLock:status"}
 Number   SmartLockNumericStatus        "SmartLock Numeric Status"                       {channel="verisure:smartLock:myverisure:JannesSmartLock:numericStatus"}
 String   SmartLockVolume               "SmartLock Volym"     <lock>                     {channel="verisure:smartLock:myverisure:JannesSmartLock:setSmartLockVolume"}
 String   SmartLockVolumes              "SmartLock Volumes"                              {channel="verisure:smartLock:myverisure:JannesSmartLock:smartLockVolume"}
-String   AlarmHomeInstallationName     "Alarm Home Installation Name"                   {channel="verisure:alarm:myverisure:alarm_2:siteName"}    
 
 // SmartPlugs         
-Switch   SmartPlugLamp                 "SmartPlug"               <lock>   [ "Switchable" ]  {channel="verisure:smartPlug:myverisure:JannesSmartPlug:setSmartPlugStatus"}
+Switch   SmartPlugLamp                 "SmartPlug"               <lock>   [ "Switchable" ]  {channel="verisure:smartPlug:myverisure:4ED5ZXYC:setSmartPlugStatus"}
 Switch   SmartPlugGlavaRouter          "SmartPlug Glava Router"  <lock>   [ "Switchable" ]  {channel="verisure:smartPlug:myverisure:JannesSmartPlug:setSmartPlugStatus"}
 
 // DoorWindow
-String DoorWindowLocation              "Door Window Location"    {channel="verisure:doorWindowSensor:myverisure:1SG5_GHGT:location"}
-String DoorWindowStatus                "Door Window Status"      {channel="verisure:doorWindowSensor:myverisure:1SG5_GHGT:state"}
+String DoorWindowLocation              "Door Window Location"    {channel="verisure:doorWindowSensor:myverisure:1SG5GHGT:location"}
+String DoorWindowStatus                "Door Window Status"      {channel="verisure:doorWindowSensor:myverisure:1SG5GHGT:state"}
 
 // UserLocation
 String UserName                        "User Name"               {channel="verisure:userPresence:myverisure:JannesUserPresence:userName"}
@@ -326,10 +319,14 @@ String UserLocationEmail               "User Location Email"     {channel="veris
 String UserLocationStatus              "User Location Status"    {channel="verisure:userPresence:myverisure:JannesUserPresence:userLocationStatus"}
 String UserLocationName                "User Location Name"      {channel="verisure:userPresence:myverisure:JannesUserPresence:userLocationName"}
 
-String UserNameGlava                   "User Name Glava"               {channel="verisure:userPresence:myverisure:userpresence_test_gmail_com_1:userName"}
-String UserLocationEmailGlava          "User Location Email Glava"     {channel="verisure:userPresence:myverisure:userpresence_test_gmail_com_1:webAccount"}
-String UserLocationStatusGlava         "User Location Status Glava"    {channel="verisure:userPresence:myverisure:userpresence_test_gmail_com_1:userLocationStatus"}
-String UserLocationNameGlava           "User Location Name Glava"      {channel="verisure:userPresence:myverisure:userpresence_test_gmail_com_1:userLocationName"}
+String UserNameGlava                   "User Name Glava"               {channel="verisure:userPresence:myverisure:userpresencetestgmailcom123456789:userName"}
+String UserLocationEmailGlava          "User Location Email Glava"     {channel="verisure:userPresence:myverisure:userpresencetestgmailcom123456789:webAccount"}
+String UserLocationStatusGlava         "User Location Status Glava"    {channel="verisure:userPresence:myverisure:userpresencetestgmailcom123456789:userLocationStatus"}
+String UserLocationNameGlava           "User Location Name Glava"      {channel="verisure:userPresence:myverisure:userpresencetestgmailcom1123456789:userLocationName"}
+
+// Broadband Connection
+String CurrentBBStatus                 "Broadband Connection Status"       {channel="verisure:broadbandConnection:1:broadband123456789:status"}
+
 ````
 
 ### Sitemap
@@ -371,5 +368,25 @@ String UserLocationNameGlava           "User Location Name Glava"      {channel=
                 Switch item=SmartPlugLamp label="Verisure SmartPlug Lamp" icon="smartheater.png"
             }
         }
-    }
+    }	
+    
+    Frame label="User Presence" {
+		Text label="User Presence" icon="attic" {
+			Frame label="User Presence Champinjonvägen" {
+				Text item=UserName label="User Name [%s]"
+				Text item=UserLocationEmail label="User Email [%s]"
+                  Text item=UserLocationName label="User Location Name [%s]"
+				Text item=UserLocationStatus label="Location Status [%s]"
+			}
+		}
+	}
+
+	Frame label="Broadband Connection" {
+		Text label="Broadband Connection" icon="attic" {
+			Frame label="Broadband Connection Champinjonvägen" {
+				Text item=CurrentBBStatus label="Broadband Connection Status [%s]"
+			}
+		}
+	}
+    
 ````

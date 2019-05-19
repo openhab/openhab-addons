@@ -28,17 +28,6 @@ public class VerisureUserPresenceJSON extends VerisureBaseThingJSON {
     private @Nullable String userTrackingLocationStatus;
     private @Nullable String currentLocationName;
 
-    /*
-     * public VerisureUserPresenceJSON(String id, String webAccount, String userLocationStatus, String userLocationName)
-     * {
-     * super();
-     * this.name = id;
-     * this.webAccount = webAccount;
-     * this.userTrackingLocationStatus = userLocationStatus;
-     * this.currentLocationName = userLocationName;
-     * }
-     */
-
     @Override
     public @Nullable String getDeviceId() {
         return "userpresence" + id;

@@ -89,13 +89,15 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler {
         String temperature = status.getTemperature();
         if (temperature != null && temperature.length() > 1) {
             // Verisure temperature string contains HTML entity #176; for degree sign
-            value = new BigDecimal(temperature.replace("&#176;", ""));
+        	temperature = temperature.replace("&#176;", "");
+            value = new BigDecimal(temperature.replace(",", "."));
             updateState(cuid, new QuantityType<Temperature>(value, SIUnits.CELSIUS));
         }
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_HUMIDITY);
         String humidity = status.getHumidity();
         if (humidity != null && humidity.length() > 1) {
-            value = new BigDecimal(humidity.replace("%", ""));
+        	humidity = humidity.replace("%", "");
+            value = new BigDecimal(humidity.replace(",", "."));
             updateState(cuid, new DecimalType(value));
         }
         cuid = new ChannelUID(getThing().getUID(), CHANNEL_LASTUPDATE);

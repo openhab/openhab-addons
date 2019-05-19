@@ -82,37 +82,36 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
         if (session != null && config.deviceId != null) {
             VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session
                     .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
-            if (smartLock != null) {
-                BigDecimal pinCode = session.getPinCode();
-                String csrf = session.getCsrf();
-                String siteName = smartLock.getSiteName();
-                if (pinCode != null && csrf != null && siteName != null) {
-                    String smartLockUrl = config.deviceId.replaceAll("_", "");
-                    String url = SMARTLOCK_LOCK_COMMAND;
-                    if (command == OnOffType.OFF) {
-                        logger.debug("Attempting to unlock!");
-                        String data = "code=" + pinCode + "&state=UNLOCKED&deviceLabel=" + smartLockUrl + "&_csrf="
-                                + csrf;
-                        logger.debug("Trying to set SmartLock state UNLOCKED with URL {} and data {} ", url, data);
-                        session.sendCommand(siteName, url, data);
-                        ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_STATUS);
-                        updateState(cuid, new StringType("pending"));
-                    } else if (command == OnOffType.ON) {
-                        logger.debug("Attempting to lock");
-                        String data = "code=" + pinCode + "&state=LOCKED&deviceLabel=" + smartLockUrl + "&_csrf="
-                                + csrf;
-                        logger.debug("Trying to set SmartLock state LOCKED with URL {} and data {} ", url, data);
-                        session.sendCommand(siteName, url, data);
-                        ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_STATUS);
-                        updateState(cuid, new StringType("pending"));
-                    } else {
-                        logger.debug("Unknown command! {}", command);
-                    }
-                } else if (pinCode == null) {
-                    logger.warn("PIN code is not configured! Mandatory to control SmartLock!");
+			if (smartLock != null) {
+				BigDecimal pinCode = session.getPinCode();
+				BigDecimal installationId = smartLock.getSiteId();
+				String deviceId = config.deviceId;
+				if (deviceId != null && pinCode != null && installationId != null) {
+					StringBuilder sb = new StringBuilder(deviceId);
+					sb.insert(4, " ");
+					String url = START_GRAPHQL;
+					String queryQLSmartLockSetState;
+
+					if (command == OnOffType.OFF) {
+						queryQLSmartLockSetState = "[{\"operationName\":\"DoorUnlock\",\"variables\":{\"giid\":\"" + installationId + "\",\"deviceLabel\":\"" + deviceId + "\",\"input\":{\"code\":\"" + pinCode + "\"}},\"query\":\"mutation DoorUnlock($giid: String!, $deviceLabel: String!, $input: LockDoorInput!) {\\n  DoorUnlock(giid: $giid, deviceLabel: $deviceLabel, input: $input)\\n}\\n\"}]";
+						logger.debug("Trying to set SmartLock state to unlocked with URL {} and data {}", url,
+								queryQLSmartLockSetState);
+					} else if (command == OnOffType.ON) {
+						queryQLSmartLockSetState = "[{\"operationName\":\"DoorLock\",\"variables\":{\"giid\":\"" + installationId + "\",\"deviceLabel\":\"" + deviceId + "\",\"input\":{\"code\":\"" + pinCode + "\"}},\"query\":\"mutation DoorLock($giid: String!, $deviceLabel: String!, $input: LockDoorInput!) {\\n  DoorLock(giid: $giid, deviceLabel: $deviceLabel, input: $input)\\n}\\n\"}]";
+						logger.debug("Trying to set SmartLock state to locked with URL {} and data {}", url,
+								queryQLSmartLockSetState);
+					} else {
+						logger.debug("Unknown command! {}", command);
+						return;
+					}
+					session.sendCommand2(START_GRAPHQL, queryQLSmartLockSetState);
+					ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_STATUS);
+					updateState(cuid, new StringType("pending"));
+				}  else if (pinCode == null) {
+                    logger.warn("PIN code is not configured! It is andatory to control SmartLock!");
                 }
-            }
-        }
+			}
+		}      
     }
 
     private void handleAutoRelock(Command command) {
@@ -120,38 +119,25 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
             VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session
                     .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
             if (smartLock != null) {
-                BigDecimal pinCode = session.getPinCode();
-                String csrf = session.getCsrf();
-                String siteName = smartLock.getSiteName();
-                if (pinCode != null && csrf != null && siteName != null) {
-                    String deviceLabelUrl = config.deviceId.replaceAll("_", "+");
-                    String locationUTF8;
-                    try {
-                        locationUTF8 = URLEncoder.encode(smartLock.getLocation(), "utf-8");
-                    } catch (UnsupportedEncodingException e) {
-                        logger.warn("Exception caught in handleAutoRelock", e);
-                        return;
-                    }
-                    String url = SMARTLOCK_SET_COMMAND;
+            	BigDecimal installationId = smartLock.getSiteId();
+                String deviceId = config.deviceId;
+                if (installationId != null && deviceId != null) {
+                	String csrf = session.getCsrfToken(installationId);
+                	StringBuilder sb = new StringBuilder(deviceId);
+					sb.insert(4, "+");
+                    String data;
+                    String url = SMARTLOCK_AUTORELOCK_COMMAND;
                     if (command == OnOffType.ON) {
-                        String data = "location=" + locationUTF8 + "&autoRelockEnabled=true&_autoRelockEnabled=on"
-                                + "&deviceLabel=" + deviceLabelUrl + "&doorLockVolumeSettings.volume="
-                                + smartLock.getDoorLockVolumeSettings().getVolume()
-                                + "&doorLockVolumeSettings.voiceLevel="
-                                + smartLock.getDoorLockVolumeSettings().getVoiceLevel() + "&_csrf=" + csrf;
+                    	data = "enabledDoorLocks=" + sb.toString() + "&doorLockDevices%5B0%5D.autoRelockEnabled=true&_doorLockDevices%5B0%5D.autoRelockEnabled=on&_csrf=" + csrf;
                         logger.debug("Trying to set Auto Relock ON with URL {} and data {}", url, data);
-                        session.sendCommand(siteName, url, data);
+                        session.sendCommand2(url, data);
                         ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_AUTO_RELOCK_ENABLED);
                         updateState(cuid, new StringType("true"));
                         smartLock.setAutoRelockEnabled(true);
                     } else if (command == OnOffType.OFF) {
-                        String data = "location=" + locationUTF8 + "&_autoRelockEnabled=on" + "&deviceLabel="
-                                + deviceLabelUrl + "&doorLockVolumeSettings.volume="
-                                + smartLock.getDoorLockVolumeSettings().getVolume()
-                                + "&doorLockVolumeSettings.voiceLevel="
-                                + smartLock.getDoorLockVolumeSettings().getVoiceLevel() + "&_csrf=" + csrf;
+                    	data = "enabledDoorLocks=&doorLockDevices%5B0%5D.autoRelockEnabled=true&_doorLockDevices%5B0%5D.autoRelockEnabled=on&_csrf=" + csrf;
                         logger.debug("Trying to set Auto Relock OFF with URL {} and data {}", url, data);
-                        session.sendCommand(siteName, url, data);
+                        session.sendCommand2(url, data);
                         ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_AUTO_RELOCK_ENABLED);
                         updateState(cuid, new StringType("false"));
                         smartLock.setAutoRelockEnabled(false);
@@ -169,9 +155,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                     .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
             if (smartLock != null) {
                 DoorLockVolumeSettings settings = smartLock.getDoorLockVolumeSettings();
-                String csrf = session.getCsrf();
-                String siteName = smartLock.getSiteName();
-                if (settings != null && csrf != null && siteName != null) {
+                if (settings != null) {
                     List<String> volumeSettings = settings.getAvailableVolumes();
                     if (volumeSettings != null) {
                         Boolean isVolumeSettingAllowed = Boolean.FALSE;
@@ -181,22 +165,17 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
                                 break;
                             }
                         }
-                        if (isVolumeSettingAllowed) {
-                            String autoRelockStatus;
-                            Boolean autoRelockEnabled = smartLock.getAutoRelockEnabled();
-                            if (autoRelockEnabled != null && autoRelockEnabled) {
-                                autoRelockStatus = "&autoRelockEnabled=true&_autoRelockEnabled=on";
-                            } else {
-                                autoRelockStatus = "&_autoRelockEnabled=on";
-                            }
-                            String deviceLabelUrl = config.deviceId.replaceAll("_", "+");
-                            String url = SMARTLOCK_SET_COMMAND;
-                            String data = "location=" + smartLock.getLocation() + autoRelockStatus + "&deviceLabel="
-                                    + deviceLabelUrl + "&doorLockVolumeSettings.volume=" + command.toString()
-                                    + "&doorLockVolumeSettings.voiceLevel="
-                                    + smartLock.getDoorLockVolumeSettings().getVoiceLevel() + "&_csrf=" + csrf;
+                        BigDecimal installationId = smartLock.getSiteId();
+                        String csrf = session.getCsrfToken(installationId);
+                        if (isVolumeSettingAllowed && installationId != null && csrf != null) {
+                            String url = SMARTLOCK_VOLUME_COMMAND;
+							String data = "keypad.volume=MEDIUM&keypad.beepOnKeypress=true&_keypad.beepOnKeypress=on&siren.volume=MEDIUM&voiceDevice.volume=MEDIUM&doorLock.volume="
+									+ command.toString() + "&doorLock.voiceLevel="
+									+ smartLock.getDoorLockVolumeSettings().getVoiceLevel()
+									+ "&_devices%5B0%5D.on=on&devices%5B1%5D.on=true&_devices%5B1%5D.on=on&devices%5B2%5D.on=true&_devices%5B2%5D.on=on&_devices%5B3%5D.on=on&_keypad.keypadsPlayChime=on&_siren.sirensPlayChime=on&_csrf="
+									+ csrf;
                             logger.debug("Trying to set SmartLock volume with URL {} and data {}", url, data);
-                            session.sendCommand(siteName, url, data);
+                            session.sendCommand2(url, data);
                             ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_SMARTLOCK_VOLUME);
                             updateState(cuid, new StringType(command.toString()));
                             settings.setVolume(command.toString());
@@ -209,52 +188,44 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler {
         }
     }
 
-    private void handleSmartLockVoiceLevel(Command command) {
-        if (session != null && config.deviceId != null) {
-            VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session
-                    .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
-            if (smartLock != null) {
-                DoorLockVolumeSettings settings = smartLock.getDoorLockVolumeSettings();
-                String csrf = session.getCsrf();
-                String siteName = smartLock.getSiteName();
-                if (settings != null && csrf != null && siteName != null) {
-                    List<String> voiceLevelSettings = settings.getAvailableVoiceLevels();
-                    if (voiceLevelSettings != null) {
-                        // Check if voice level setting in command is valid
-                        Boolean isVoiceLevelSettingAllowed = Boolean.FALSE;
-                        for (String voiceLevel : voiceLevelSettings) {
-                            if (voiceLevel.equals(command.toString())) {
-                                isVoiceLevelSettingAllowed = Boolean.TRUE;
-                                break;
-                            }
-                        }
-                        if (isVoiceLevelSettingAllowed) {
-                            String autoRelockStatus;
-                            Boolean autoRelockEnabled = smartLock.getAutoRelockEnabled();
-                            if (autoRelockEnabled != null && autoRelockEnabled) {
-                                autoRelockStatus = "&autoRelockEnabled=true&_autoRelockEnabled=on";
-                            } else {
-                                autoRelockStatus = "&_autoRelockEnabled=on";
-                            }
-                            String deviceLabelUrl = config.deviceId.replaceAll("_", "+");
-                            String url = SMARTLOCK_SET_COMMAND;
-                            String data = "location=" + smartLock.getLocation() + autoRelockStatus + "&deviceLabel="
-                                    + deviceLabelUrl + "&doorLockVolumeSettings.volume="
-                                    + smartLock.getDoorLockVolumeSettings().getVolume()
-                                    + "&doorLockVolumeSettings.voiceLevel=" + command.toString() + "&_csrf=" + csrf;
-                            logger.debug("Trying to set SmartLock voice level with URL {} and data {}", url, data);
-                            session.sendCommand(siteName, url, data);
-                            ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_SMARTLOCK_VOICE_LEVEL);
-                            updateState(cuid, new StringType(command.toString()));
-                            settings.setVoiceLevel(command.toString());
-                        } else {
-                            logger.debug("Unknown command! {}", command);
-                        }
-                    }
-                }
-            }
-        }
-    }
+	private void handleSmartLockVoiceLevel(Command command) {
+		if (session != null && config.deviceId != null) {
+			VerisureSmartLockJSON smartLock = (VerisureSmartLockJSON) session
+					.getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
+			if (smartLock != null) {
+				DoorLockVolumeSettings settings = smartLock.getDoorLockVolumeSettings();
+				if (settings != null) {
+					List<String> volumeSettings = settings.getAvailableVolumes();
+					if (volumeSettings != null) {
+						Boolean isVolumeSettingAllowed = Boolean.FALSE;
+						for (String volume : volumeSettings) {
+							if (volume.equals(command.toString())) {
+								isVolumeSettingAllowed = Boolean.TRUE;
+								break;
+							}
+						}
+						BigDecimal installationId = smartLock.getSiteId();
+						String csrf = session.getCsrfToken(installationId);
+						if (isVolumeSettingAllowed && installationId != null && csrf != null) {
+							String url = SMARTLOCK_VOLUME_COMMAND;
+							String data = "keypad.volume=MEDIUM&keypad.beepOnKeypress=true&_keypad.beepOnKeypress=on&siren.volume=MEDIUM&voiceDevice.volume=MEDIUM&doorLock.volume="
+									+ smartLock.getDoorLockVolumeSettings().getVolume() + "&doorLock.voiceLevel="
+									+ command.toString()
+									+ "&_devices%5B0%5D.on=on&devices%5B1%5D.on=true&_devices%5B1%5D.on=on&devices%5B2%5D.on=true&_devices%5B2%5D.on=on&_devices%5B3%5D.on=on&_keypad.keypadsPlayChime=on&_siren.sirensPlayChime=on&_csrf="
+									+ csrf;
+							logger.debug("Trying to set SmartLock voice level with URL {} and data {}", url, data);
+							session.sendCommand2(url, data);
+							ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_SMARTLOCK_VOICE_LEVEL);
+							updateState(cuid, new StringType(command.toString()));
+							settings.setVoiceLevel(command.toString());
+						} else {
+							logger.debug("Unknown command! {}", command);
+						}
+					}
+				}
+			}
+		}
+	}
 
     @Override
     public synchronized void update(@Nullable VerisureThingJSON thing) {
