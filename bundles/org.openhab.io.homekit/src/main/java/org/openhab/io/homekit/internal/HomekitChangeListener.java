@@ -176,15 +176,15 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         try {
             if (taggedItem.isMemberOfAccessoryGroup()) {
                 logger.warn("Bug! Cannot add {} as a root accessory if it is a member of a group! ",
-                        taggedItem.getName());
+                        taggedItem.getItem().getUID());
                 return;
             }
-            logger.debug("Adding homekit device {}", taggedItem.getItem().getName());
+            logger.debug("Adding homekit device {}", taggedItem.getItem().getUID());
             accessoryRegistry.addRootAccessory(taggedItem.getName(),
                     HomekitAccessoryFactory.create(taggedItem, itemRegistry, updater, settings));
-            logger.debug("Added homekit device {}", taggedItem.getItem().getName());
+            logger.debug("Added homekit device {}", taggedItem.getItem().getUID());
         } catch (HomekitException | IncompleteAccessoryException e) {
-            logger.warn("Could not add device: {}", e.getMessage(), e);
+            logger.warn("Could not add device {}: {}", taggedItem.getItem().getUID(), e.getMessage());
         }
     }
 }
