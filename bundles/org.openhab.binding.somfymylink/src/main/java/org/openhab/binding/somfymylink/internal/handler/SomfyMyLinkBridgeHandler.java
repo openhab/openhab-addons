@@ -70,7 +70,9 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     private static final int RECONNECT_MINUTES = 2;
     private static final int HEARTBEAT_MINUTES = 1;
     private static final int MYLINK_PORT = 44100;
-    public static final int MYLINK_DEFAULT_TIMEOUT = 10000;
+    private static final int MYLINK_DEFAULT_TIMEOUT = 10000;
+    private static final Object CONNECTION_LOCK = new Object();
+    private static final int CONNECTION_DELAY = 1000;
 
     @Nullable
     private ScheduledFuture<?> connectRetryJob;
@@ -291,33 +293,42 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     private void sendCommand(String command, String targetId) throws SomfyMyLinkException {
         String myLinkCommand = buildCommand(command, targetId);
-        try {
-            logger.debug("Sending: " + command + " Target: " + targetId);
-            Socket socket = getConnection();
-            OutputStream out = socket.getOutputStream();
 
+        synchronized(CONNECTION_LOCK) {
             try {
-                byte[] sendBuffer = myLinkCommand.getBytes(StandardCharsets.US_ASCII);
-                // send the command
-                out.write(sendBuffer, 0, sendBuffer.length);
-            } finally {
-                // cleanup
+                logger.debug("Sending: " + command + " Target: " + targetId);
+                Socket socket = getConnection();
+                OutputStream out = socket.getOutputStream();
+
                 try {
-                    out.close();
-                    socket.close();
-                } catch (SocketException e) {
-                } catch (IOException e) {
+                    byte[] sendBuffer = myLinkCommand.getBytes(StandardCharsets.US_ASCII);
+                    // send the command
+                    out.write(sendBuffer, 0, sendBuffer.length);
+                } finally {
+                    // cleanup
+                    try {
+                        out.close();
+                        socket.close();
+                    } catch (SocketException e) {
+                    } catch (IOException e) {
+                    }
                 }
+
+                // give time for mylink to process
+                Thread.sleep(CONNECTION_DELAY);
+
+            } catch (SocketTimeoutException e) {
+                logger.error("Timeout sending command to mylink: " + command + "Message: " + e.getMessage());
+                throw new SomfyMyLinkException("Timeout sending command to mylink", e);
+            } catch (SocketException e) {
+                logger.error("Problem sending command to mylink: " + command + "Message: " + e.getMessage());
+                throw new SomfyMyLinkException("Problem sending command to mylink", e);
+            } catch (IOException e) {
+                logger.error("Problem sending command to mylink: " + command + "Message: " + e.getMessage());
+                throw new SomfyMyLinkException("Problem sending command to mylink", e);
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while waiting after sending command to mylink: " + command + "Message: " + e.getMessage());
             }
-        } catch (SocketTimeoutException e) {
-            logger.error("Timeout sending command to mylink: " + command + "Message: " + e.getMessage());
-            throw new SomfyMyLinkException("Timeout sending command to mylink", e);
-        } catch (SocketException e) {
-            logger.error("Problem sending command to mylink: " + command + "Message: " + e.getMessage());
-            throw new SomfyMyLinkException("Problem sending command to mylink", e);
-        } catch (IOException e) {
-            logger.error("Problem sending command to mylink: " + command + "Message: " + e.getMessage());
-            throw new SomfyMyLinkException("Problem sending command to mylink", e);
         }
     }
     
@@ -326,64 +337,73 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             throws SomfyMyLinkException {
         String myLinkCommand = buildCommand(command, targetId);
 
-        try {
-            logger.debug("Sending: " + command + " Target: " + targetId);
-            Socket socket = getConnection();
-            OutputStream out = socket.getOutputStream();
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
+        synchronized(CONNECTION_LOCK) {
             try {
-                byte[] sendBuffer = myLinkCommand.getBytes(StandardCharsets.US_ASCII);
+                logger.debug("Sending: " + command + " Target: " + targetId);
+                Socket socket = getConnection();
+                OutputStream out = socket.getOutputStream();
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-                // send the command
-                out.write(sendBuffer, 0, sendBuffer.length);
+                try {
+                    byte[] sendBuffer = myLinkCommand.getBytes(StandardCharsets.US_ASCII);
 
-                // now read the reply
-                char[] readBuff = new char[1024];
-                int readCount;
-                String message = "";
+                    // send the command
+                    out.write(sendBuffer, 0, sendBuffer.length);
 
-                // while we are getting data ...
-                while (((readCount = in.read(readBuff)) != -1)) {
-                    logger.debug("Got response. Len: " + readCount);
-                    message += new String(readBuff, 0, readCount);
-                    try {
-                        
-                        logger.debug("got message: " + message);
-                        
-                        SomfyMyLinkResponseBase data = gson.fromJson(message, responseType);
+                    // now read the reply
+                    char[] readBuff = new char[1024];
+                    int readCount;
+                    String message = "";
 
-                        // check if there was an error
-                        if (data.getError() != null) {
-                            logger.error("Error communicating with mylink: " + data.getError());
-                            throw new SomfyMyLinkException("Error communicating with mylink:" + data.getError());
+                    // while we are getting data ...
+                    while (((readCount = in.read(readBuff)) != -1)) {
+                        logger.debug("Got response. Len: " + readCount);
+                        message += new String(readBuff, 0, readCount);
+                        try {
+                            
+                            logger.debug("got message: " + message);
+                            
+                            SomfyMyLinkResponseBase data = gson.fromJson(message, responseType);
+
+                            // check if there was an error
+                            if (data.getError() != null) {
+                                logger.error("Error communicating with mylink: " + data.getError());
+                                throw new SomfyMyLinkException("Error communicating with mylink:" + data.getError());
+                            }
+                            return data;
+                        } catch (JsonSyntaxException e) {
+                            // it wasn't a full message?
+                            logger.debug("Trouble parsing message received. Message:" + e.getMessage());
                         }
-                        return data;
-                    } catch (JsonSyntaxException e) {
-                        // it wasn't a full message?
-                        logger.debug("Trouble parsing message received. Message:" + e.getMessage());
+                    }
+                } finally {
+                    // cleanup
+                    try {
+                        out.close();
+                        in.close();
+                        socket.close();
+                    } catch (SocketException e) {
+                    } catch (IOException e) {
                     }
                 }
-            } finally {
-                // cleanup
-                try {
-                    out.close();
-                    in.close();
-                    socket.close();
-                } catch (SocketException e) {
-                } catch (IOException e) {
-                }
+
+                // only if we didn't already get a response give time for mylink to process
+                Thread.sleep(CONNECTION_DELAY);
+
+                return null;
+            } catch (SocketTimeoutException e) {
+                logger.error("Timeout sending command to mylink: " + command + "Message: " + e.getMessage());
+                throw new SomfyMyLinkException("Timeout sending command to mylink", e);
+            } catch (SocketException e) {
+                logger.error("Problem sending command to mylink: " + command + "Message: " + e.getMessage());
+                throw new SomfyMyLinkException("Problem sending command to mylink", e);
+            } catch (IOException e) {
+                logger.error("Problem sending command to mylink: " + command + "Message: " + e.getMessage());
+                throw new SomfyMyLinkException("Problem sending command to mylink", e);
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while waiting after sending command to mylink: " + command + "Message: " + e.getMessage());
+                return null;
             }
-            return null;
-        } catch (SocketTimeoutException e) {
-            logger.error("Timeout sending command to mylink: " + command + "Message: " + e.getMessage());
-            throw new SomfyMyLinkException("Timeout sending command to mylink", e);
-        } catch (SocketException e) {
-            logger.error("Problem sending command to mylink: " + command + "Message: " + e.getMessage());
-            throw new SomfyMyLinkException("Problem sending command to mylink", e);
-        } catch (IOException e) {
-            logger.error("Problem sending command to mylink: " + command + "Message: " + e.getMessage());
-            throw new SomfyMyLinkException("Problem sending command to mylink", e);
         }
     }
 
