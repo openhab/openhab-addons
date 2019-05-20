@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.meteoblue.internal.handler;
 
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,6 +22,7 @@ import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
 import javax.imageio.ImageIO;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Pressure;
@@ -27,11 +30,6 @@ import javax.measure.quantity.Speed;
 import javax.measure.quantity.Temperature;
 
 import org.apache.commons.lang.StringUtils;
-
-import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
-import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MILLI;
-import static org.openhab.binding.meteoblue.internal.MeteoBlueBindingConstants.*;
-
 import org.eclipse.smarthome.core.library.items.ImageItem;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -48,7 +46,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.meteoblue.internal.Forecast;
 import org.openhab.binding.meteoblue.internal.MeteoBlueConfiguration;

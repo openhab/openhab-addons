@@ -13,9 +13,9 @@
 package org.openhab.io.homekit.internal.accessories;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
@@ -143,9 +143,19 @@ public class HomekitAccessoryFactory {
     private static Map<HomekitCharacteristicType, Item> getCharacteristicItems(HomekitTaggedItem taggedItem) {
         if (taggedItem.isGroup()) {
             GroupItem groupItem = (GroupItem) taggedItem.getItem();
-            Map<HomekitCharacteristicType, Item> characteristicItems = groupItem.getMembers().stream()
-                    .collect(Collectors.toMap(item -> HomekitTaggedItem.findCharacteristicType(item), item -> item));
-            characteristicItems.entrySet().removeIf(e -> e.getKey() == null);
+            Map<HomekitCharacteristicType, Item> characteristicItems = new HashMap<>();
+            groupItem.getMembers().forEach(item -> {
+                HomekitCharacteristicType type = HomekitCharacteristicType.fromItem(item);
+                if (type != null) {
+                    if (characteristicItems.containsKey(type)) {
+                        LOGGER.warn("incorrect configuration for {} detected: {} and {} are tagged as {}, skipping {}",
+                                taggedItem.getItem().getUID(), characteristicItems.get(type).getUID(), item.getUID(),
+                                type, item.getUID());
+                    } else {
+                        characteristicItems.put(type, item);
+                    }
+                }
+            });
             return Collections.unmodifiableMap(characteristicItems);
         } else {
             // do nothing; only accessory groups have characteristic items

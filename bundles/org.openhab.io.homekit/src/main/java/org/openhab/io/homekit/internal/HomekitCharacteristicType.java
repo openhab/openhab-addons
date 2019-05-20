@@ -14,6 +14,9 @@ package org.openhab.io.homekit.internal;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
+import org.eclipse.smarthome.core.items.Item;
 
 /**
  * Characteristics are used by complex accessories that can't be represented by
@@ -53,7 +56,23 @@ public enum HomekitCharacteristicType {
         return tag;
     }
 
+    /**
+     * get characteristicType from String
+     *
+     * @param tag the tag string
+     * @return characteristicType or null if not found
+     */
     public static HomekitCharacteristicType valueOfTag(String tag) {
         return TAG_MAP.get(tag);
+    }
+
+    /**
+     * get characteristicType for a given Item
+     *
+     * @param item the item
+     * @return characteristicType or null if not found
+     */
+    public static HomekitCharacteristicType fromItem(Item item) {
+        return item.getTags().stream().map(tag -> TAG_MAP.get(tag)).filter(Objects::nonNull).findFirst().orElse(null);
     }
 }
