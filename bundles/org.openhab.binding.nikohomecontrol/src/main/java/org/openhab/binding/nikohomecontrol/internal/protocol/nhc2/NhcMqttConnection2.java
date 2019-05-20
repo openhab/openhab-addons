@@ -131,9 +131,10 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      * @throws MqttException
      */
     synchronized void startPublicConnection(String cocoAddress, int port) throws MqttException {
-        if (publicStoppedFuture != null) {
+        CompletableFuture<Boolean> future = publicStoppedFuture;
+        if (future != null) {
             try {
-                publicStoppedFuture.get(5000, TimeUnit.MILLISECONDS);
+                future.get(5000, TimeUnit.MILLISECONDS);
                 logger.debug("Niko Home Control: finished stopping public connection");
             } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
                 logger.debug("Niko Home Control: error stopping public connection");
@@ -181,9 +182,10 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      * @throws MqttException
      */
     synchronized void startProfileConnection(String username, String password) throws MqttException {
-        if (profileStoppedFuture != null) {
+        CompletableFuture<Boolean> future = profileStoppedFuture;
+        if (future != null) {
             try {
-                profileStoppedFuture.get(5000, TimeUnit.MILLISECONDS);
+                future.get(5000, TimeUnit.MILLISECONDS);
                 logger.debug("Niko Home Control: finished stopping profile connection");
             } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
                 logger.debug("Niko Home Control: error stopping profile connection");
@@ -238,14 +240,16 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      */
     void stopPublicConnection() {
         logger.debug("Niko Home Control: stopping public connection...");
-        if (mqttPublicConnection != null) {
-            mqttPublicConnection.removeConnectionObserver(connectionObserver);
+        MqttBrokerConnection connection = mqttPublicConnection;
+        if (connection != null) {
+            connection.removeConnectionObserver(connectionObserver);
         }
-        publicStoppedFuture = stopConnection(mqttPublicConnection);
+        publicStoppedFuture = stopConnection(connection);
         mqttPublicConnection = null;
 
-        if (publicSubscribedFuture != null) {
-            publicSubscribedFuture.complete(false);
+        CompletableFuture<Boolean> future = publicSubscribedFuture;
+        if (future != null) {
+            future.complete(false);
             publicSubscribedFuture = null;
         }
     }
@@ -255,14 +259,16 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      */
     void stopProfileConnection() {
         logger.debug("Niko Home Control: stopping profile connection...");
-        if (mqttProfileConnection != null) {
-            mqttProfileConnection.removeConnectionObserver(connectionObserver);
+        MqttBrokerConnection connection = mqttProfileConnection;
+        if (connection != null) {
+            connection.removeConnectionObserver(connectionObserver);
         }
         profileStoppedFuture = stopConnection(mqttProfileConnection);
         mqttProfileConnection = null;
 
-        if (profileSubscribedFuture != null) {
-            profileSubscribedFuture.complete(false);
+        CompletableFuture<Boolean> future = profileSubscribedFuture;
+        if (future != null) {
+            future.complete(false);
             profileSubscribedFuture = null;
         }
     }

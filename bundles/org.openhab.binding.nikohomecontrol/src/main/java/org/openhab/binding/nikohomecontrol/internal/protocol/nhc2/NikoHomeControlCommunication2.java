@@ -16,7 +16,6 @@ import static org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeCont
 
 import java.lang.reflect.Type;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,7 +115,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             return;
         }
         String addrString = addr.getHostAddress();
-        @SuppressWarnings("null") // default provided, so cannot be null
         int port = handler.getPort();
         logger.debug("Niko Home Control: initializing for mqtt connection to CoCo on {}:{}", addrString, port);
 
@@ -169,8 +167,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
     @Override
     public synchronized void stopCommunication() {
-        if (communicationStarted != null) {
-            communicationStarted.complete(false);
+        CompletableFuture<Boolean> started = communicationStarted;
+        if (started != null) {
+            started.complete(false);
         }
         communicationStarted = null;
         mqttConnection.stopPublicConnection();
@@ -389,8 +388,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                     logger.debug("Niko Home Control: adding action device {}, {}", device.uuid, device.name);
 
                     NhcAction2 nhcAction = new NhcAction2(device.uuid, device.name, device.model, device.technology,
-                            actionType, location);
-                    nhcAction.setNhcComm(this);
+                            actionType, location, this);
                     actions.put(device.uuid, nhcAction);
                 }
 
@@ -399,8 +397,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 if (!thermostats.containsKey(device.uuid)) {
                     logger.debug("Niko Home Control: adding thermostatdevice {}, {}", device.uuid, device.name);
 
-                    NhcThermostat2 nhcThermostat = new NhcThermostat2(device.uuid, device.name, location);
-                    nhcThermostat.setNhcComm(this);
+                    NhcThermostat2 nhcThermostat = new NhcThermostat2(device.uuid, device.name, location, this);
                     thermostats.put(device.uuid, nhcThermostat);
                 }
 
@@ -414,8 +411,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         // Once a devices list response is received, we know the communication is fully started.
         logger.debug("Niko Home Control: Communication start complete.");
         handler.controllerOnline();
-        if (communicationStarted != null) {
-            communicationStarted.complete(true);
+        CompletableFuture<Boolean> future = communicationStarted;
+        if (future != null) {
+            future.complete(true);
         }
     }
 
