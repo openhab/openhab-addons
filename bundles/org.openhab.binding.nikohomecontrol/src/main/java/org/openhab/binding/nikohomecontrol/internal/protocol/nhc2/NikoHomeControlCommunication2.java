@@ -397,7 +397,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 if (!thermostats.containsKey(device.uuid)) {
                     logger.debug("Niko Home Control: adding thermostatdevice {}, {}", device.uuid, device.name);
 
-                    NhcThermostat2 nhcThermostat = new NhcThermostat2(device.uuid, device.name, location, this);
+                    NhcThermostat2 nhcThermostat = new NhcThermostat2(device.uuid, device.name, device.model,
+                            device.technology, location, this);
                     thermostats.put(device.uuid, nhcThermostat);
                 }
 

@@ -241,12 +241,11 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
                 return;
             }
 
-            String actionLocation = nhcAction.getLocation();
-
             nhcAction.setEventHandler(this);
 
             updateProperties();
 
+            String actionLocation = nhcAction.getLocation();
             if (thing.getLocation() == null) {
                 thing.setLocation(actionLocation);
             }

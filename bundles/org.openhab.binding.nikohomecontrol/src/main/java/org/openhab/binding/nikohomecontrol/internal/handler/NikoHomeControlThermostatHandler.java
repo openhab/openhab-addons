@@ -16,6 +16,8 @@ import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -35,6 +37,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostat;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostatEvent;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
+import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcThermostat2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -206,10 +209,11 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
                 return;
             }
 
-            String thermostatLocation = nhcThermostat.getLocation();
-
             nhcThermostat.setEventHandler(this);
 
+            updateProperties();
+
+            String thermostatLocation = nhcThermostat.getLocation();
             if (thing.getLocation() == null) {
                 thing.setLocation(thermostatLocation);
             }
@@ -219,6 +223,18 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
             logger.debug("Niko Home Control: thermostat intialized {}", thermostatId);
         });
+    }
+
+    private void updateProperties() {
+        Map<String, String> properties = new HashMap<>();
+
+        if (nhcThermostat instanceof NhcThermostat2) {
+            NhcThermostat2 thermostat = (NhcThermostat2) nhcThermostat;
+            properties.put("model", thermostat.getModel());
+            properties.put("technology", thermostat.getTechnology());
+        }
+
+        thing.setProperties(properties);
     }
 
     @Override
