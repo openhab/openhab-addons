@@ -66,5 +66,4 @@ public class EtherrainDiscoveryService extends AbstractDiscoveryService {
         }
 
     }
-
 }

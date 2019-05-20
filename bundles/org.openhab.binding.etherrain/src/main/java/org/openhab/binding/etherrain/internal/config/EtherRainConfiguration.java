@@ -31,12 +31,12 @@ public class EtherRainConfiguration {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(ETHERRAIN_THING_TYPE);
 
     /**
-     * Hostname of the OpenSprinkler API.
+     * Hostname of the EtherRain API.
      */
-    public String hostname = null;
+    public String host = null;
 
     /**
-     * The port the OpenSprinkler API is listening on.
+     * The port the EtherRain API is listening on.
      * Default: 80 per specification
      */
     public int port = 80;

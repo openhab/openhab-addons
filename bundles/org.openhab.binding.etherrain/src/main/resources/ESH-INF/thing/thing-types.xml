@@ -6,7 +6,7 @@
     <!-- The EtherRain Thing Type -->
     <thing-type id="etherrain">
         <label>EtherRain</label>
-        <description>This is the stand alone EtherRain device that allows sprinkler control</description>
+        <description>This is a stand alone EtherRain device that allows sprinkler control</description>
 
         <channels>
             <channel id="commandstatus" typeId="commandstatus" />
@@ -27,10 +27,10 @@
         </channels>
 
         <config-description>
-            <parameter name="hostname" type="text" required="true">
+            <parameter name="host" type="text" required="true">
                 <label>Host Name</label>
                 <description>The host name or IP address of the EtherRain Web API interface</description>
-                <default>192.168.1 204</default>
+                <context>network-address</context>
             </parameter>
             <parameter name="port" type="integer" required="true" min="1" max="65335">
                 <label>Port</label>
@@ -92,10 +92,8 @@
                 <label>Zone 8 Run Time</label>
                 <description>The amount of time, in minutes, that EtherRain will run zone 8 in program</description>
                 <default>0</default>
-            </parameter>
-            
+            </parameter>           
         </config-description>
-
     </thing-type>   
     
     <channel-type id="commandstatus">

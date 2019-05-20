@@ -30,7 +30,7 @@ The second is the initial delay and on-time for each zone when an exectute comma
 
 This is optional, it is recommended to let the binding discover and add Etherrain controllers.
 
-To manually configure a Etherrain controller you may specify it's host name or ip ("hostname"). You can also optionally specify the unit's password ("pw"), port it is communicating on ("port") or refresh rate ("refresh") 
+To manually configure a Etherrain controller you may specify it's host name or ip ("host"). You can also optionally specify the unit's password ("pw"), port it is communicating on ("port") or refresh rate ("refresh") 
 
 ```java
 Bridge etherrain:etherrain:BackyardSprinkler [ host="192.168.1.100"]
@@ -48,7 +48,7 @@ String SprinkerOperatingStatus     "Operating Status [%s]"  (gMain) { channel="e
 String SprinkerOperatingResult     "Operating Result [%s]"  (gMain) { channel="etherrain:etherrain:sprinkler0:operatingresult" }
             
 String SprinklerActiveZone         "Active Zone [%s]"  (gMain) { channel="etherrain:etherrain:sprinkler0:relayindex" }                  
-Switch  SprinklerRainSensor        (gMain) { channel="etherrain:etherrain:sprinkler0:rainsensor" }
+Switch SprinklerRainSensor        (gMain) { channel="etherrain:etherrain:sprinkler0:rainsensor" }
             
 Switch SprinklerExecute            (gMain) { channel="etherrain:etherrain:sprinkler0:execute" }
 Switch SprinklerClear              (gMain) { channel="etherrain:etherrain:sprinkler0:clear" }
