@@ -63,9 +63,9 @@ Subsequent calls can include the `-o` for offline as in: `mvn clean install -Dsk
 
 For integration tests you might need to run: `mvn clean install -DwithResolver -DskipChecks`.
 
-You find a generated `.jar` file per bundle directory in the respective `.target` directory.
+You find a generated `.jar` file per bundle in the respective bundle `.target` directory.
 
-### How to develop fvia an Integrated Development Environment (IDE)
+### How to develop via an Integrated Development Environment (IDE)
 
 We have assembled some step-by-step guides for different IDEs on our developer documentation website:
 
