@@ -20,6 +20,8 @@ import com.daveoxley.cbus.Application;
 import com.daveoxley.cbus.CGateException;
 import com.daveoxley.cbus.Group;
 import com.daveoxley.cbus.Network;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link CBusTemperatureHandler} is responsible for handling commands, which are
@@ -27,6 +29,7 @@ import com.daveoxley.cbus.Network;
  *
  * @author Scott Linton - Initial contribution
  */
+@NonNullByDefault
 public class CBusTemperatureHandler extends CBusGroupHandler {
 
     public CBusTemperatureHandler(Thing thing) {
@@ -39,8 +42,11 @@ public class CBusTemperatureHandler extends CBusGroupHandler {
     }
 
     @Override
-    protected Group getGroup(int groupID) throws CGateException {
-        Network network = cBusNetworkHandler.getNetwork();
+    protected @Nullable Group getGroup(int groupID) throws CGateException {
+	CBusNetworkHandler networkHandler = cBusNetworkHandler;
+	if (networkHandler == null)
+	    return null;
+        Network network = networkHandler.getNetwork();
         if (network == null)
             return null;
         Application lighting = network

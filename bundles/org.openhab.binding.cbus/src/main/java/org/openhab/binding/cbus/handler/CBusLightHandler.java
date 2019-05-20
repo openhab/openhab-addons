@@ -26,6 +26,8 @@ import com.daveoxley.cbus.Group;
 import com.daveoxley.cbus.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link CBusLightHandler} is responsible for handling commands, which are
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Scott Linton - Initial contribution
  */
+@NonNullByDefault
 public class CBusLightHandler extends CBusGroupHandler {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -48,6 +51,9 @@ public class CBusLightHandler extends CBusGroupHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+	Group group = this.group;
+	if (group == null)
+	    return;
         if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_STATE)) {
             logger.debug("Channel command {}: {}", channelUID.getAsString(), command.toString());
             if (command instanceof OnOffType) {
@@ -83,8 +89,11 @@ public class CBusLightHandler extends CBusGroupHandler {
     }
 
     @Override
-    protected Group getGroup(int groupID) throws CGateException {
-        Network network = cBusNetworkHandler.getNetwork();
+    protected @Nullable Group getGroup(int groupID) throws CGateException {
+	CBusNetworkHandler networkHandler = cBusNetworkHandler;
+	if (networkHandler == null)
+	    return null;
+        Network network = networkHandler.getNetwork();
         if (network != null)
         {
             Application lighting = network

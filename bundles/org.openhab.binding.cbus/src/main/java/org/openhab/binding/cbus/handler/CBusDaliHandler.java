@@ -25,6 +25,8 @@ import com.daveoxley.cbus.Group;
 import com.daveoxley.cbus.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link CBusDaliHandler} is responsible for handling commands, which are
@@ -32,6 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Scott Linton - Initial contribution
  */
+@NonNullByDefault
 public class CBusDaliHandler extends CBusGroupHandler {
 
     private Logger logger = LoggerFactory.getLogger(CBusDaliHandler.class);
@@ -42,6 +45,9 @@ public class CBusDaliHandler extends CBusGroupHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+	Group group = this.group;
+	if (group == null)
+	    return;
         if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_LEVEL)) {
             logger.debug("Channel command {}: {}", channelUID.getAsString(), command.toString());
             try {
@@ -58,14 +64,18 @@ public class CBusDaliHandler extends CBusGroupHandler {
                     logger.warn("Increase/Decrease not implemented for {}", channelUID.getAsString());
                 }
             } catch (CGateException e) {
+
                 logger.error("Cannot send command {} to {}", command.toString(), group.toString(), e);
             }
         }
     }
 
     @Override
-    protected Group getGroup(int groupID) throws CGateException {
-        Network network = cBusNetworkHandler.getNetwork();
+    protected @Nullable Group getGroup(int groupID) throws CGateException {
+	CBusNetworkHandler networkHandler = cBusNetworkHandler;
+	if (networkHandler == null)
+	    return null;
+        Network network = networkHandler.getNetwork();
         if (network == null)
             return null;
         Application lighting = network

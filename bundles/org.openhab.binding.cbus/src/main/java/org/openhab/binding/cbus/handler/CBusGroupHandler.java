@@ -25,6 +25,8 @@ import com.daveoxley.cbus.CGateException;
 import com.daveoxley.cbus.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link CBusGroupHandler} is responsible for handling commands, which are
@@ -32,13 +34,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Scott Linton - Initial contribution
  */
+
+@NonNullByDefault
 public abstract class CBusGroupHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-    protected CBusNetworkHandler cBusNetworkHandler = null;
+    protected @Nullable CBusNetworkHandler cBusNetworkHandler = null;
     // protected CBusCGateHandler cBusCGateHandler = null;
     // protected CGateCommandSet commandSet = null;
-    protected Group group = null;
+    protected @Nullable Group group = null;
 
     public CBusGroupHandler(Thing thing) {
         super(thing);
@@ -66,12 +70,15 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
 
     public void updateStatus() {
         try {
-            if (cBusNetworkHandler == null || !cBusNetworkHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+	    CBusNetworkHandler networkHandler = cBusNetworkHandler;
+            if (networkHandler == null || !networkHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             } else
             {
+		Group group = this.group;
                 if (group == null) {
                     this.group = getGroup(Integer.parseInt(getConfig().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()));
+		    group = this.group;
                 }
                 if (group == null) {
                     logger.debug("Set state to configuration error -no group");
@@ -89,9 +96,9 @@ public abstract class CBusGroupHandler extends BaseThingHandler {
         }
     }
 
-    protected abstract Group getGroup(int groupID) throws CGateException;
+    protected abstract @Nullable Group getGroup(int groupID) throws CGateException;
 
-    private synchronized CBusNetworkHandler getCBusNetworkHandler() {
+    private synchronized @Nullable CBusNetworkHandler getCBusNetworkHandler() {
         CBusNetworkHandler bridgeHandler = null;
         Bridge bridge = getBridge();
         if (bridge == null) {

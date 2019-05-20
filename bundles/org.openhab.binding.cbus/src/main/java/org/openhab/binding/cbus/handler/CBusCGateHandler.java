@@ -49,6 +49,8 @@ import com.daveoxley.cbus.events.EventCallback;
 import com.daveoxley.cbus.status.StatusChangeCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.eclipse.jdt.annotation.Nullable;
+
 
 /**
  * The {@link CBusCGateHandler} is responsible for handling commands, which are
@@ -56,77 +58,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Scott Linton - Initial contribution
  */
-public class CBusCGateHandler extends BaseBridgeHandler {
-
-    private Logger logger = LoggerFactory.getLogger(CBusCGateHandler.class);
-
-    private InetAddress ipAddress;
-
-    public CGateSession cGateSession;
-
-    private Future<?> keepAliveFuture;
-
-    private final ExecutorService threadPool = ThreadPoolManager.getPool("CBusCGateHandler-Helper");
-
-    public CBusCGateHandler(Bridge br) {
-        super(br);
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void initialize() {
-        updateStatus(ThingStatus.OFFLINE);
-        logger.debug("Initializing CGate Bridge handler.");
-        Configuration config = getThing().getConfiguration();
-        String ipAddress = (String) config.get(CBusBindingConstants.PROPERTY_IP_ADDRESS);
-
-        if ("127.0.0.1".equals(ipAddress) || "localhost".equals(ipAddress)) {
-            this.ipAddress = InetAddress.getLoopbackAddress();
-        } else {
-            try {
-                this.ipAddress = InetAddress.getByName(ipAddress);
-            } catch (UnknownHostException e1) {
-                updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                        "IP Address not resolvable");
-                return;
-            }
-        }
-
-        logger.debug("CGate IP         {}.", this.ipAddress.getHostAddress());
-
-        keepAliveFuture = threadPool.submit(new KeepAlive());
-    }
-
-    private class KeepAlive extends Thread {
-
-        @Override
-        public void run() {
-            try {
-                while (!isInterrupted()) {
-                    try {
-                        if (cGateSession == null || !cGateSession.isConnected()) {
-                            if (!getThing().getStatus().equals(ThingStatus.ONLINE))
-                                connect();
-                            else {
-                                updateStatus();
-                            }
-                        } 
-                    } catch (Exception e) {
-                    }
-
-                    sleep(10000l);
-                }
-            } catch (InterruptedException e) {
-            }
-
-        }
-    }
-
-    private class CBusThreadPool extends CGateThreadPool
+    final class CBusThreadPool extends CGateThreadPool
     {
         public class CBusThreadPoolExecutor extends CGateThreadPoolExecutor
         {
@@ -159,12 +91,87 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         }
     }
 
+public class CBusCGateHandler extends BaseBridgeHandler {
+
+    private Logger logger = LoggerFactory.getLogger(CBusCGateHandler.class);
+
+    private @Nullable InetAddress ipAddress = null;
+
+    public @Nullable CGateSession cGateSession = null;
+
+    private @Nullable Future<?> keepAliveFuture = null; 
+
+    private final ExecutorService threadPool = ThreadPoolManager.getPool("CBusCGateHandler-Helper");
+
+    public CBusCGateHandler(Bridge br) {
+        super(br);
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void initialize() {
+        updateStatus(ThingStatus.OFFLINE);
+        logger.debug("Initializing CGate Bridge handler.");
+        Configuration config = getThing().getConfiguration();
+        String ipAddress = (String) config.get(CBusBindingConstants.PROPERTY_IP_ADDRESS);
+
+        if ("127.0.0.1".equals(ipAddress) || "localhost".equals(ipAddress)) {
+            this.ipAddress = InetAddress.getLoopbackAddress();
+        } else {
+            try {
+                this.ipAddress = InetAddress.getByName(ipAddress);
+            } catch (UnknownHostException e1) {
+                updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                        "IP Address not resolvable");
+                return;
+            }
+        }
+	InetAddress address = this.ipAddress;
+	if (address != null)
+	    logger.debug("CGate IP         {}.", address.getHostAddress());
+
+        keepAliveFuture = threadPool.submit(new KeepAlive());
+    }
+
+    private class KeepAlive extends Thread {
+
+        @Override
+        public void run() {
+            try {
+                while (!isInterrupted()) {
+                    try {
+			CGateSession session = cGateSession;
+                        if (session == null || !session.isConnected()) {
+                            if (!getThing().getStatus().equals(ThingStatus.ONLINE))
+                                connect();
+                            else {
+                                updateStatus();
+                            }
+                        } 
+                    } catch (Exception e) {
+                    }
+
+                    sleep(10000l);
+                }
+            } catch (InterruptedException e) {
+            }
+
+        }
+    }
+
+
 
     private void connect() {
+	CGateSession cGateSession = this.cGateSession;
         if (cGateSession == null) {
             cGateSession = CGateInterface.connect(this.ipAddress, 20023, 20024, 20025, new CBusThreadPool());
             cGateSession.registerEventCallback(new EventMonitor());
             cGateSession.registerStatusChangeCallback(new StatusChangeMonitor());
+	    this.cGateSession = cGateSession;
         }
         if (cGateSession.isConnected()) {
             logger.debug("CGate session reports online");
@@ -193,6 +200,9 @@ public class CBusCGateHandler extends BaseBridgeHandler {
 
     public void updateStatus() {
         ThingStatus lastStatus = getThing().getStatus();
+	CGateSession cGateSession = this.cGateSession;
+	if (cGateSession == null)
+	    return;
         if (cGateSession.isConnected()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
@@ -244,7 +254,9 @@ public class CBusCGateHandler extends BaseBridgeHandler {
         }
 
         @Override
-        public void processStatusChange(CGateSession cGateSession, String status) {
+        public void processStatusChange(@Nullable CGateSession cGateSession, String status) {
+	    if (cGateSession == null)
+		return;
             if (status.startsWith("# "))
                 status = status.substring(2);
                               
@@ -457,10 +469,14 @@ public class CBusCGateHandler extends BaseBridgeHandler {
                             && thing.getThingTypeUID().equals(CBusBindingConstants.THING_TYPE_TRIGGER)
                             && thing.getConfiguration().get(CBusBindingConstants.CONFIG_GROUP_ID).toString()
                                     .equals(group)) {
-                        ChannelUID channelUID = thing.getChannel(CBusBindingConstants.CHANNEL_VALUE).getUID();
-                        DecimalType val = new DecimalType(value);
-                        updateState(channelUID, val);
-                        logger.trace("Updating CBus Trigger Group {} with value {}", thing.getUID(), value);
+			Channel channel = thing.getChannel(CBusBindingConstants.CHANNEL_VALUE);
+			if (channel != null)
+			{
+				ChannelUID channelUID = channel.getUID();
+				DecimalType val = new DecimalType(value);
+				updateState(channelUID, val);
+				logger.trace("Updating CBus Trigger Group {} with value {}", thing.getUID(), value);
+			}
                         handled = true;
                     }
                 }
@@ -481,8 +497,10 @@ public class CBusCGateHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
-
-        keepAliveFuture.cancel(true);
+	Future<?> keepAliveFuture = this.keepAliveFuture;
+	if (keepAliveFuture != null)
+		keepAliveFuture.cancel(true);
+	CGateSession cGateSession = this.cGateSession;
         if (cGateSession != null && cGateSession.isConnected()) {
             try {
                 cGateSession.close();

@@ -13,7 +13,6 @@
 package org.openhab.binding.cbus.handler;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -24,6 +23,8 @@ import com.daveoxley.cbus.Group;
 import com.daveoxley.cbus.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link CBusTriggerHandler} is responsible for handling commands, which are
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Scott Linton - Initial contribution
  */
+@NonNullByDefault
 public class CBusTriggerHandler extends CBusGroupHandler {
 
     private Logger logger = LoggerFactory.getLogger(CBusTriggerHandler.class);
@@ -41,6 +43,9 @@ public class CBusTriggerHandler extends CBusGroupHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+	Group group = this.group;
+	if (group == null)
+	    return;
         if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_VALUE)) {
             logger.debug("Channel command {}: {}", channelUID.getAsString(), command.toString());
             try {
@@ -54,15 +59,15 @@ public class CBusTriggerHandler extends CBusGroupHandler {
     }
 
     @Override
-    protected Group getGroup(int groupID) throws CGateException {
-        if (cBusNetworkHandler != null) {
-            Network network = cBusNetworkHandler.getNetwork();
-            if (network == null)
+    protected @Nullable Group getGroup(int groupID) throws CGateException {
+	CBusNetworkHandler networkHandler = cBusNetworkHandler;
+	if (networkHandler == null)
+	    return null;
+	Network network = networkHandler.getNetwork();
+	if (network == null)
                 return null;
-            Application application = network
-                    .getApplication(Integer.parseInt(CBusBindingConstants.CBUS_APPLICATION_TRIGGER));
-            return application.getGroup(groupID);
-        }
-        return null;
+	Application application = network
+		.getApplication(Integer.parseInt(CBusBindingConstants.CBUS_APPLICATION_TRIGGER));
+	return application.getGroup(groupID);
     }
 }
