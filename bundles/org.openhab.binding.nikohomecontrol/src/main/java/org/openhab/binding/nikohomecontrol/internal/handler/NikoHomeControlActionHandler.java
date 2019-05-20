@@ -41,8 +41,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link NikoHomeControlActionHandler} is responsible for handling
- * commands, which are sent to one of the channels.
+ * The {@link NikoHomeControlActionHandler} is responsible for handling commands, which are
+ * sent to one of the channels.
  *
  * @author Mark Herwege - Initial Contribution
  */
@@ -88,8 +88,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
             if (nhcComm.communicationActive()) {
                 handleCommandSelection(channelUID, command);
             } else {
-                // We lost connection but the connection object is there, so was correctly
-                // started.
+                // We lost connection but the connection object is there, so was correctly started.
                 // Try to restart communication.
                 nhcComm.restartCommunication();
                 // If still not active, take thing offline and return.
@@ -226,8 +225,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         }
         NikoHomeControlCommunication nhcComm = nhcBridgeHandler.getCommunication();
 
-        // We need to do this in a separate thread because we may have to wait for the
-        // communication to become active
+        // We need to do this in a separate thread because we may have to wait for the communication to become active
         scheduler.submit(() -> {
             if (nhcComm == null || !nhcComm.communicationActive()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,

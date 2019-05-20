@@ -39,8 +39,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link NikoHomeControlThermostatHandler} is responsible for handling
- * commands, which are sent to one of the channels.
+ * The {@link NikoHomeControlThermostatHandler} is responsible for handling commands, which are
+ * sent to one of the channels.
  *
  * @author Mark Herwege - Initial Contribution
  */
@@ -91,8 +91,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
             if (nhcComm.communicationActive()) {
                 handleCommandSelection(channelUID, command);
             } else {
-                // We lost connection but the connection object is there, so was correctly
-                // started.
+                // We lost connection but the connection object is there, so was correctly started.
                 // Try to restart communication.
                 nhcComm.restartCommunication();
                 // If still not active, take thing offline and return.
@@ -137,8 +136,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
                 if (command instanceof QuantityType) {
                     setpoint = ((QuantityType<Temperature>) command).toUnit(CELSIUS);
                     // Always set the new setpoint temperature as an overrule
-                    // If no overrule time is given yet, set the overrule time to the configuration
-                    // parameter
+                    // If no overrule time is given yet, set the overrule time to the configuration parameter
                     int time = nhcThermostat.getOverruletime();
                     if (time <= 0) {
                         time = overruleTime;
@@ -232,8 +230,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         // refresh the remaining time every minute
         scheduleRefreshOverruletime(nhcThermostat);
 
-        // If there is an overrule temperature set, use this in the setpoint channel,
-        // otherwise use the original
+        // If there is an overrule temperature set, use this in the setpoint channel, otherwise use the original
         // setpoint temperature
         if (overruletime == 0) {
             updateState(CHANNEL_SETPOINT, new QuantityType<Temperature>(setpoint / 10.0, CELSIUS));
@@ -249,8 +246,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     }
 
     /**
-     * Method to update state of overruletime channel every minute with remaining
-     * time.
+     * Method to update state of overruletime channel every minute with remaining time.
      *
      * @param NhcThermostat object
      *
