@@ -31,7 +31,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -1080,7 +1079,7 @@ public class Connection {
 
     public void sendNotificationToMobileApp(String customerId, String text, @Nullable String title)
             throws IOException, URISyntaxException {
-        Map<String, Object> parameters = new Hashtable<>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("notificationMessage", text);
         parameters.put("alexaUrl", "#v2/behaviors");
         if (title != null && !StringUtils.isEmpty(title)) {
@@ -1094,7 +1093,7 @@ public class Connection {
 
     public void sendAnnouncement(Device device, String text, @Nullable String bodyText, @Nullable String title,
             int ttsVolume, int standardVolume) throws IOException, URISyntaxException {
-        Map<String, Object> parameters = new Hashtable<>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("expireAfter", "PT5S");
         JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
         JsonAnnouncementContent content = new JsonAnnouncementContent();
@@ -1138,7 +1137,7 @@ public class Connection {
 
     public void textToSpeech(Device device, String text, int ttsVolume, int standardVolume)
             throws IOException, URISyntaxException {
-        Map<String, Object> parameters = new Hashtable<>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("textToSpeak", text);
         executeSequenceCommandWithVolume(device, "Alexa.Speak", parameters, ttsVolume, standardVolume);
     }
@@ -1150,7 +1149,7 @@ public class Connection {
 
             JsonArray nodesToExecute = new JsonArray();
 
-            Map<String, Object> volumeParameters = new Hashtable<>();
+            Map<String, Object> volumeParameters = new HashMap<>();
             // add tts volume
             volumeParameters.clear();
             volumeParameters.put("value", ttsVolume);

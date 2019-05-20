@@ -124,7 +124,7 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
         AmazonEchoDiscovery discoveryService = new AmazonEchoDiscovery(bridgeHandler);
         discoveryService.activate();
         this.discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     @Override
