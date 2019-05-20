@@ -558,7 +558,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
         Connection currentConnection = connection;
         if (currentConnection == null) {
-            return new ArrayList<Device>();
+            return new ArrayList<>();
         }
 
         List<Device> devices = null;
@@ -600,7 +600,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         if (devices != null) {
             return devices;
         }
-        return new ArrayList<Device>();
+        return new ArrayList<>();
     }
 
     public void setEnabledFlashBriefingsJson(String flashBriefingJson) {

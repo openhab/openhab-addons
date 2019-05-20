@@ -49,7 +49,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService implements Ext
 
     AccountHandler accountHandler;
     private final Logger logger = LoggerFactory.getLogger(AmazonEchoDiscovery.class);
-    private final HashSet<String> discoverdFlashBriefings = new HashSet<String>();
+    private final HashSet<String> discoverdFlashBriefings = new HashSet<>();
 
     @Nullable
     ScheduledFuture<?> startScanStateJob;
@@ -68,7 +68,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService implements Ext
     }
 
     public void activate() {
-        activate(new Hashtable<String, @Nullable Object>());
+        activate(new Hashtable<>());
     }
 
     @Override

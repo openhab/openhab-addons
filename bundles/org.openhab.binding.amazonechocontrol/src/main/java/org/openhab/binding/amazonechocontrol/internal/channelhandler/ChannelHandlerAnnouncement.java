@@ -77,5 +77,4 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
         public @Nullable String title;
         public @Nullable String body;
     }
-
 }
