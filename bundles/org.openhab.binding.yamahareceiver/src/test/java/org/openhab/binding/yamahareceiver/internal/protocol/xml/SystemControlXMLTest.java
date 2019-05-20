@@ -12,24 +12,17 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.openhab.binding.yamahareceiver.internal.TestModels;
-import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
 import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
 import org.openhab.binding.yamahareceiver.internal.state.SystemControlState;
 import org.openhab.binding.yamahareceiver.internal.state.SystemControlStateListener;
-
-import java.io.IOException;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.verify;
 
 /**
  * Unit test for {@link SystemControlXML}.
@@ -47,8 +40,10 @@ public class SystemControlXMLTest extends AbstractXMLProtocolTest {
 
     protected void setupFor(String model) throws Exception {
         ctx.prepareForModel(model);
-        ctx.respondWith("<System><Power_Control><Power>GetParam</Power></Power_Control></System>", "System_Power_Control_Power.xml");
-        ctx.respondWith("<System><Party_Mode><Mode>GetParam</Mode></Party_Mode></System>", "System_Party_Mode_Mode.xml");
+        ctx.respondWith("<System><Power_Control><Power>GetParam</Power></Power_Control></System>",
+                "System_Power_Control_Power.xml");
+        ctx.respondWith("<System><Party_Mode><Mode>GetParam</Mode></Party_Mode></System>",
+                "System_Party_Mode_Mode.xml");
 
         deviceInformationState = new DeviceInformationState();
         DeviceInformationXML deviceInformation = new DeviceInformationXML(con, deviceInformationState);

@@ -192,6 +192,7 @@
     <module>org.openhab.binding.valloxmv</module>
     <module>org.openhab.binding.velbus</module>
     <module>org.openhab.binding.vitotronic</module>
+    <module>org.openhab.binding.volvooncall</module>
     <module>org.openhab.binding.weatherunderground</module>
     <module>org.openhab.binding.wemo</module>
     <module>org.openhab.binding.wifiled</module>
@@ -294,6 +295,9 @@
                 <goal>features-generate-descriptor</goal>
               </goals>
               <phase>generate-resources</phase>
+              <configuration>
+                <inputFile>${feature.directory}</inputFile>
+              </configuration>
             </execution>
             <execution>
               <id>karaf-feature-verification</id>

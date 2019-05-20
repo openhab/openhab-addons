@@ -1221,6 +1221,9 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
     }
 
     public void handlePushActivity(Activity pushActivity) {
+        if ("DISCARDED_NON_DEVICE_DIRECTED_INTENT".equals(pushActivity.activityStatus)) {
+            return;
+        }
         Description description = pushActivity.ParseDescription();
         if (StringUtils.isEmpty(description.firstUtteranceId)
                 || StringUtils.startsWithIgnoreCase(description.firstUtteranceId, "TextClient:")) {

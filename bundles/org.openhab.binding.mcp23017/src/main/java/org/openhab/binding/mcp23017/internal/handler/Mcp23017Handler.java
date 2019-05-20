@@ -19,7 +19,6 @@ import java.io.IOException;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -116,7 +115,8 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
             // invertLogic is null if not configured
             boolean activeLowFlag = ACTIVE_LOW_ENABLED.equalsIgnoreCase(configuration.get(ACTIVE_LOW).toString());
             PinState pinState = command == OnOffType.ON ^ activeLowFlag ? PinState.HIGH : PinState.LOW;
-            logger.debug("got output pin {} for channel {} and command {} [active_low={}, new_state={}]", outputPin, channelUID, command, activeLowFlag, pinState);            
+            logger.debug("got output pin {} for channel {} and command {} [active_low={}, new_state={}]", outputPin,
+                    channelUID, command, activeLowFlag, pinState);
             GPIODataHolder.GPIO.setState(pinState, outputPin);
         }
     }
