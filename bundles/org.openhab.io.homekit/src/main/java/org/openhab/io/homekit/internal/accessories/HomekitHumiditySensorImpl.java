@@ -52,5 +52,4 @@ public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl<Numb
     public void unsubscribeCurrentRelativeHumidity() {
         getUpdater().unsubscribe(getItem());
     }
-
 }

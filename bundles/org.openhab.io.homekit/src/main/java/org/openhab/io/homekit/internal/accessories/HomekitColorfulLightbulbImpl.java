@@ -75,13 +75,11 @@ class HomekitColorfulLightbulbImpl extends AbstractHomekitLightbulbImpl<ColorIte
 
     @Override
     public CompletableFuture<Void> setHue(Double value) throws Exception {
-        if (value == null) {
-            value = 0.0;
-        }
+        final double hue = value == null ? 0.0 : value;
         State state = getItem().getStateAs(HSBType.class);
         if (state instanceof HSBType) {
             HSBType hsb = (HSBType) state;
-            HSBType newState = new HSBType(new DecimalType(value), hsb.getSaturation(), hsb.getBrightness());
+            HSBType newState = new HSBType(new DecimalType(hue), hsb.getSaturation(), hsb.getBrightness());
             ((ColorItem) getItem()).send(newState);
             return CompletableFuture.completedFuture(null);
         } else {
@@ -92,13 +90,11 @@ class HomekitColorfulLightbulbImpl extends AbstractHomekitLightbulbImpl<ColorIte
 
     @Override
     public CompletableFuture<Void> setSaturation(Double value) throws Exception {
-        if (value == null) {
-            value = 0.0;
-        }
+        final int saturation = value == null ? 0 : value.intValue();
         State state = getItem().getStateAs(HSBType.class);
         if (state instanceof HSBType) {
             HSBType hsb = (HSBType) state;
-            HSBType newState = new HSBType(hsb.getHue(), new PercentType(value.intValue()), hsb.getBrightness());
+            HSBType newState = new HSBType(hsb.getHue(), new PercentType(saturation), hsb.getBrightness());
             ((ColorItem) getItem()).send(newState);
             return CompletableFuture.completedFuture(null);
         } else {
@@ -109,13 +105,11 @@ class HomekitColorfulLightbulbImpl extends AbstractHomekitLightbulbImpl<ColorIte
 
     @Override
     public CompletableFuture<Void> setBrightness(Integer value) throws Exception {
-        if (value == null) {
-            value = 0;
-        }
+        final int brightness = value == null ? 0 : value;
         State state = getItem().getStateAs(HSBType.class);
         if (state instanceof HSBType) {
             HSBType hsb = (HSBType) state;
-            HSBType newState = new HSBType(hsb.getHue(), hsb.getSaturation(), new PercentType(value));
+            HSBType newState = new HSBType(hsb.getHue(), hsb.getSaturation(), new PercentType(brightness));
             ((ColorItem) getItem()).send(newState);
             return CompletableFuture.completedFuture(null);
         } else {
@@ -153,5 +147,4 @@ class HomekitColorfulLightbulbImpl extends AbstractHomekitLightbulbImpl<ColorIte
     public void unsubscribeBrightness() {
         getUpdater().unsubscribe(getItem(), "brightness");
     }
-
 }
