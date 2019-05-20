@@ -79,11 +79,15 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     @Nullable
     private ServiceRegistration<DiscoveryService> discoveryServiceRegistration;
 
+    private SomfyMyLinkDeviceDiscoveryService discovery;
+
     // Gson & parser
     private final Gson gson = new Gson();
 
     public SomfyMyLinkBridgeHandler(Bridge bridge) {
         super(bridge);
+
+        this.discovery = new SomfyMyLinkDeviceDiscoveryService(this);
     }
 
     @Override
@@ -96,10 +100,10 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         config = getThing().getConfiguration().as(SomfyMyLinkConfiguration.class);
 
         if (validConfiguration(config)) {
-            SomfyMyLinkDeviceDiscoveryService discovery = new SomfyMyLinkDeviceDiscoveryService(this);
+            //this.discovery = new SomfyMyLinkDeviceDiscoveryService(this);
 
-            this.discoveryServiceRegistration = this.bundleContext.registerService(DiscoveryService.class, discovery, null);
-            discovery.activate(null);
+            this.discoveryServiceRegistration = this.bundleContext.registerService(DiscoveryService.class, this.discovery, null);
+            this.discovery.activate(null);
 
             // kick off the bridge connection process
             this.scheduler.schedule(new Runnable() {
@@ -108,15 +112,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                     connect();
                 }
             }, 0, TimeUnit.SECONDS);
-
-            // // start discovery after 30 seconds to give the bridge time to come online
-            // this.scheduler.schedule(new Runnable() {
-            //     @Override
-            //     public void run() {
-            //         logger.debug("Activating discovery");
-            //         discovery.activate(null);
-            //     }
-            // }, 30, TimeUnit.SECONDS);
         }
     }
 
@@ -450,7 +445,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         disconnect();
 
         if (discoveryServiceRegistration != null) {
-            discoveryServiceRegistration.unregister();
+            this.discovery.deactivate();
+            this.discoveryServiceRegistration.unregister();
             discoveryServiceRegistration = null;
         }
 
