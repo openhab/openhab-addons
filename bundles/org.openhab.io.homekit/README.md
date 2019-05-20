@@ -7,6 +7,8 @@ In order to do so, you will need to make some configuration changes.
 HomeKit organizes your home into "accessories" that are made up of a number of "characteristics".
 Some accessory types require a specific set of characteristics.
 
+**Attention: Some tags have been renamed. Old style may not be supported in future versions. See below for details.**
+
 ## Global Configuration
 
 Your first step will be to create the `homekit.cfg` in your `$OPENHAB_CONF/services` folder.
@@ -64,17 +66,20 @@ Complex accessories require a tag on a Group indicating the accessory type, as w
 
 A full list of supported accessory types can be found in the table below.
 
-| Tag                   | Child tag                     | Supported items           | Description                                                                                                                                                                                                                                   |
-|--------------------   |----------------------------   |-----------------------    |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------  |
-| Lighting              |                               | Switch, Dimmer, Color     | A lightbulb, switchable, dimmable or rgb                                                                                                                                                                                                      |
-| Switchable            |                               | Switch, Dimmer, Color     | An accessory that can be turned off and on. While similar to a lightbulb, this will be presented differently in the Siri grammar and iOS apps                                                                                                 |
-| ContactSensor         |                               | Contact                   | An accessory with on/off state that can be viewed in HomeKit but not changed such as a contact sensor for a door or window                                                                                                                    |
-| CurrentTemperature    |                               | Number                    | An accessory that provides a single read-only temperature value. The units default to celsius but can be overridden globally using the useFahrenheitTemperature global property                                                               |
-| CurrentHumidity       |                               | Number                    | An accessory that provides a single read-only value indicating the relative humidity.                                                                                                                                                         |
-| Thermostat            |                               | Group                     | A thermostat requires all child tags defined below                                                                                                                                                                                            |
-|                       | CurrentTemperature            | Number                    | The current temperature, same as above                                                                                                                                                                                                        |
-|                       | homekit:HeatingCoolingMode    | String                    | Indicates the current mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"   |
-|                       | TargetTemperature             | Number                    | A target temperature that will engage the thermostat's heating and cooling actions as necessary, depending on the heatingCoolingMode                                                                                                          |
+| Tag                   | Child tag                         | Supported items           | Description                                                                                                                                                                                                                                   |
+|--------------------   |--------------------------------   |-----------------------    |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------  |
+| Lighting              |                                   | Switch, Dimmer, Color     | A lightbulb, switchable, dimmable or rgb                                                                                                                                                                                                      |
+| Switchable            |                                   | Switch, Dimmer, Color     | An accessory that can be turned off and on. While similar to a lightbulb, this will be presented differently in the Siri grammar and iOS apps                                                                                                 |
+| ContactSensor         |                                   | Contact                   | An accessory with on/off state that can be viewed in HomeKit but not changed such as a contact sensor for a door or window                                                                                                                    |
+| CurrentTemperature    |                                   | Number                    | An accessory that provides a single read-only temperature value. The units default to celsius but can be overridden globally using the useFahrenheitTemperature global property                                                               |
+| CurrentHumidity       |                                   | Number                    | An accessory that provides a single read-only value indicating the relative humidity.                                                                                                                                                         |
+| Thermostat            |                                   | Group                     | A thermostat requires all child tags defined below                                                                                                                                                                                            |
+|                       | CurrentTemperature                | Number                    | The current temperature, same as above                                                                                                                                                                                                        |
+|                       | homekit:TargetHeatingCoolingMode  | String                    | Indicates the desired mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"   |
+|                       | homekit:CurrentHeatingCoolingMode | String                    | Indicates the current mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"   |
+|                       | homekit:TargetTemperature         | Number                    | A target temperature that will engage the thermostat's heating and cooling actions as necessary, depending on the heatingCoolingMode. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"             |
+
+**Please note:** `TargetTemperature` has been renamed to `homekit:TagretTemperature` and `homekit:HeatingCoolingMode` has been renamed to `homekit:TargetHeatingCoolingMode`.
 
 See the sample below for example items:
 
@@ -85,7 +90,7 @@ Number BedroomTemperature "Bedroom Temperature" (gBedroom) [ "CurrentTemperature
 Group gDownstairsThermostat "Downstairs Thermostat" (gFF) [ "Thermostat" ]
 Number DownstairsThermostatCurrentTemp "Downstairs Thermostat Current Temperature" (gDownstairsThermostat) [ "CurrentTemperature" ]
 Number DownstairsThermostatTargetTemperature "Downstairs Thermostat Target Temperature" (gDownstairsThermostat) [ "TargetTemperature" ]
-String DownstairsThermostatHeatingCoolingMode "Downstairs Thermostat Heating/Cooling Mode" (gDownstairsThermostat) [ "homekit:HeatingCoolingMode" ]
+String DownstairsThermostatHeatingCoolingMode "Downstairs Thermostat Heating/Cooling Mode" (gDownstairsThermostat) [ "homekit:TargetHeatingCoolingMode" ]
 ```
 
 ## Common Problems
@@ -109,7 +114,7 @@ This unique identifier is hashed from the Item's name.
 For that reason, it is important that the name of your Items exposed to HomeKit remain consistent.
 
 HomeKit listens by default on port 9124.
-Java perfers the IPv6 network stack by default.
+Java prefers the IPv6 network stack by default.
 If you have connection or detection problems, you can configure Java to prefer the IPv4 network stack instead.
 To prefer the IPv4 network stack, adapt the Java command line arguments to include: `-Djava.net.preferIPv4Stack=true`
 Depending on the openHAB installation method, you should modify `start.sh`, `start_debug.sh`, `start.bat`, or `start_debug.bat` (standalone/manual installation) or `EXTRA_JAVA_OPTS` in `/etc/default/openhab2` (Debian installation).
