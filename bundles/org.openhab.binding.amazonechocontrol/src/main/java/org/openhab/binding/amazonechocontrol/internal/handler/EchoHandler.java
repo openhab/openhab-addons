@@ -104,7 +104,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
     private Gson gson = new Gson();
     private @Nullable Device device;
-    private Set<String> capabilities = new HashSet<String>();
+    private Set<String> capabilities = new HashSet<>();
     private @Nullable AccountHandler account;
     private @Nullable ScheduledFuture<?> updateStateJob;
     private @Nullable ScheduledFuture<?> ignoreVolumeChange;
@@ -133,7 +133,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
     private @Nullable JsonPlaylists playLists;
     private @Nullable JsonNotificationSound @Nullable [] alarmSounds;
     private @Nullable List<JsonMusicProvider> musicProviders;
-    private List<ChannelHandler> channelHandlers = new ArrayList<ChannelHandler>();
+    private List<ChannelHandler> channelHandlers = new ArrayList<>();
 
     private @Nullable JsonNotificationResponse currentNotification;
     private @Nullable ScheduledFuture<?> currentNotifcationUpdateTimer;
@@ -388,7 +388,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
                                 + ",\"contentFocusClientId\":\"Default\"}");
 
                     } else {
-                        Map<String, Object> parameters = new Hashtable<String, Object>();
+                        Map<String, Object> parameters = new Hashtable<>();
                         parameters.put("value", volume);
                         connection.executeSequenceCommand(device, "Alexa.DeviceControls.Volume", parameters);
                     }

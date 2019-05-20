@@ -56,5 +56,4 @@ public abstract class ChannelHandler {
         return gson.fromJson(json, type);
 
     }
-
 }

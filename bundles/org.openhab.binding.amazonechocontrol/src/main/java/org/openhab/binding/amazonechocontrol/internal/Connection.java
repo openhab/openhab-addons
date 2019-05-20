@@ -341,8 +341,8 @@ public class Connection {
         }
         Scanner scanner = new Scanner(data);
         String version = scanner.nextLine();
-        // check if serialize version
-        if (!version.equals("5") && !version.equals("6") && !version.equals("7")) {
+        // check if serialize version is supported
+        if (!"5".equals(version) && !"6".equals(version) && !"7".equals(version)) {
             scanner.close();
             return null;
         }
@@ -364,6 +364,8 @@ public class Connection {
 
         if (intVersion > 5) {
             String accountCustomerId = scanner.nextLine();
+            // Note: version 5 have wrong customer id serialized. 
+            // Only use it, if it at least version 6 of serialization 
             if (intVersion > 6) {
                 if (!StringUtils.equals(accountCustomerId, "null")) {
                     this.accountCustomerId = accountCustomerId;
@@ -425,19 +427,26 @@ public class Connection {
     }
 
     private @Nullable Authentication tryGetBootstrap() throws IOException, URISyntaxException {
-        String bootstrapResultJson = makeRequestAndReturnString(alexaServer + "/api/bootstrap");
-        boolean authenticated = bootstrapResultJson.contains("\"authenticated\":true");
-        if (authenticated) {
-            JsonBootstrapResult result = parseJson(bootstrapResultJson, JsonBootstrapResult.class);
-
-            Authentication authentication = result.authentication;
-            if (authentication != null) {
-                this.customerName = authentication.customerName;
-                if (this.accountCustomerId == null) {
-                    this.accountCustomerId = authentication.customerId;
-                }
-            }
-            return authentication;
+        String bootstrapResultJson = makeRequestAndReturnString(alexaServer + "/api/bootstrap").trim();
+        boolean authenticationResult = bootstrapResultJson.contains("authenticated") && bootstrapResultJson.startsWith("{") && bootstrapResultJson.endsWith("}");
+        if (authenticationResult) {
+        	try
+        	{
+	            JsonBootstrapResult result = parseJson(bootstrapResultJson, JsonBootstrapResult.class);
+	            Authentication authentication = result.authentication;
+	            if (authentication != null && authentication.authenticated) {
+	                this.customerName = authentication.customerName;
+	                if (this.accountCustomerId == null) {
+	                    this.accountCustomerId = authentication.customerId;
+	                }
+	                return authentication;
+	            }
+        	}
+        	catch (JsonSyntaxException | IllegalStateException e)
+        	{
+        		// We have not received a valid json
+        		return null;
+        	}
         }
         return null;
     }
@@ -653,7 +662,7 @@ public class Connection {
             throws ConnectionException, IOException, URISyntaxException {
         URI oAutRedirectUri = new URI(oAutRedirectUrl);
 
-        Map<String, String> queryParameters = new LinkedHashMap<String, String>();
+        Map<String, String> queryParameters = new LinkedHashMap<>();
         String query = oAutRedirectUri.getQuery();
         String[] pairs = query.split("&");
         for (String pair : pairs) {
@@ -663,9 +672,9 @@ public class Connection {
         }
         String accessToken = queryParameters.get("openid.oa2.access_token");
 
-        Map<String, String> cookieMap = new HashMap<String, String>();
+        Map<String, String> cookieMap = new HashMap<>();
 
-        List<JsonWebSiteCookie> webSiteCookies = new ArrayList<JsonWebSiteCookie>();
+        List<JsonWebSiteCookie> webSiteCookies = new ArrayList<>();
         for (HttpCookie cookie : getSessionCookies("https://www.amazon.com")) {
             cookieMap.put(cookie.getName(), cookie.getValue());
             webSiteCookies.add(new JsonWebSiteCookie(cookie.getName(), cookie.getValue()));
@@ -678,7 +687,7 @@ public class Connection {
                 webSiteCookiesArray);
         String registerAppRequestJson = gson.toJson(registerAppRequest);
 
-        HashMap<String, String> registerHeaders = new HashMap<String, String>();
+        HashMap<String, String> registerHeaders = new HashMap<>();
         registerHeaders.put("x-amzn-identity-auth-domain", "api.amazon.com");
 
         String registerAppResultJson = makeRequestAndReturnString("POST", "https://api.amazon.com/auth/register",
@@ -746,7 +755,7 @@ public class Connection {
                 + "&requested_token_type=auth_cookies&source_token_type=refresh_token&di.hw.version=iPhone&di.sdk.version=6.10.0&cookies="
                 + cookiesBase64 + "&app_name=Amazon%20Alexa&di.os.version=11.4.1";
 
-        HashMap<String, String> exchangeTokenHeader = new HashMap<String, String>();
+        HashMap<String, String> exchangeTokenHeader = new HashMap<>();
         exchangeTokenHeader.put("Cookie", "");
 
         String exchangeTokenJson = makeRequestAndReturnString("POST",
@@ -844,7 +853,7 @@ public class Connection {
         try {
             return cookieManager.getCookieStore().get(new URI(alexaServer));
         } catch (URISyntaxException e) {
-            return new ArrayList<HttpCookie>();
+            return new ArrayList<>();
         }
     }
 
@@ -852,7 +861,7 @@ public class Connection {
         try {
             return cookieManager.getCookieStore().get(new URI(server));
         } catch (URISyntaxException e) {
-            return new ArrayList<HttpCookie>();
+            return new ArrayList<>();
         }
     }
 
@@ -866,7 +875,7 @@ public class Connection {
     }
 
     // parser
-    private <T> T parseJson(String json, Class<T> type) throws JsonSyntaxException {
+    private <T> T parseJson(String json, Class<T> type) throws JsonSyntaxException, IllegalStateException {
         try {
             return gson.fromJson(json, type);
         } catch (JsonParseException | IllegalStateException e) {
@@ -1071,7 +1080,7 @@ public class Connection {
 
     public void sendNotificationToMobileApp(String customerId, String text, @Nullable String title)
             throws IOException, URISyntaxException {
-        Map<String, Object> parameters = new Hashtable<String, Object>();
+        Map<String, Object> parameters = new Hashtable<>();
         parameters.put("notificationMessage", text);
         parameters.put("alexaUrl", "#v2/behaviors");
         if (title != null && !StringUtils.isEmpty(title)) {
@@ -1085,7 +1094,7 @@ public class Connection {
 
     public void sendAnnouncement(Device device, String text, @Nullable String bodyText, @Nullable String title,
             int ttsVolume, int standardVolume) throws IOException, URISyntaxException {
-        Map<String, Object> parameters = new Hashtable<String, Object>();
+        Map<String, Object> parameters = new Hashtable<>();
         parameters.put("expireAfter", "PT5S");
         JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
         JsonAnnouncementContent content = new JsonAnnouncementContent();
@@ -1129,7 +1138,7 @@ public class Connection {
 
     public void textToSpeech(Device device, String text, int ttsVolume, int standardVolume)
             throws IOException, URISyntaxException {
-        Map<String, Object> parameters = new Hashtable<String, Object>();
+        Map<String, Object> parameters = new Hashtable<>();
         parameters.put("textToSpeak", text);
         executeSequenceCommandWithVolume(device, "Alexa.Speak", parameters, ttsVolume, standardVolume);
     }
@@ -1141,7 +1150,7 @@ public class Connection {
 
             JsonArray nodesToExecute = new JsonArray();
 
-            Map<String, Object> volumeParameters = new Hashtable<String, Object>();
+            Map<String, Object> volumeParameters = new Hashtable<>();
             // add tts volume
             volumeParameters.clear();
             volumeParameters.put("value", ttsVolume);
@@ -1179,7 +1188,7 @@ public class Connection {
         request.sequenceJson = gson.toJson(sequenceJson);
         String json = gson.toJson(request);
 
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("Routines-Version", "1.1.218665");
 
         makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null, true);
@@ -1384,7 +1393,7 @@ public class Connection {
     public List<JsonMusicProvider> getMusicProviders() {
         String response;
         try {
-            Map<String, String> headers = new HashMap<String, String>();
+            Map<String, String> headers = new HashMap<>();
             headers.put("Routines-Version", "1.1.218665");
             response = makeRequestAndReturnString("GET",
                     alexaServer + "/api/behaviors/entities?skillId=amzn1.ask.1p.music", null, true, headers);

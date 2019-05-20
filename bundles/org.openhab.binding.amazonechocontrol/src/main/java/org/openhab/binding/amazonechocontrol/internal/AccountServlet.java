@@ -329,7 +329,7 @@ public class AccountServlet extends HttpServlet {
     }
 
     public Map<String, String> getQueryMap(@Nullable String query) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         if (query != null) {
             String[] params = query.split("&");
             for (String param : params) {
@@ -625,7 +625,7 @@ public class AccountServlet extends HttpServlet {
         try {
             Map<String, String> headers = null;
             if (referer != null) {
-                headers = new HashMap<String, String>();
+                headers = new HashMap<>();
                 headers.put("Referer", referer);
             }
 
