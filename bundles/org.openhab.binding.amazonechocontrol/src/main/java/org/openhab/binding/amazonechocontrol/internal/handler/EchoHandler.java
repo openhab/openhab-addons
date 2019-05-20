@@ -22,7 +22,6 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -388,7 +387,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
                                 + ",\"contentFocusClientId\":\"Default\"}");
 
                     } else {
-                        Map<String, Object> parameters = new Hashtable<>();
+                        Map<String, Object> parameters = new HashMap<>();
                         parameters.put("value", volume);
                         connection.executeSequenceCommand(device, "Alexa.DeviceControls.Volume", parameters);
                     }
