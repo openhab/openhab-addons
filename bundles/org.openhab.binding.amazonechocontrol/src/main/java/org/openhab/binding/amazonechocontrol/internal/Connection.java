@@ -426,11 +426,12 @@ public class Connection {
     }
 
     private @Nullable Authentication tryGetBootstrap() throws IOException, URISyntaxException {
-        String bootstrapResultJson = makeRequestAndReturnString(alexaServer + "/api/bootstrap").trim();
-        boolean authenticationResult = bootstrapResultJson.contains("authenticated") && bootstrapResultJson.startsWith("{") && bootstrapResultJson.endsWith("}");
-        if (authenticationResult) {
+    	HttpsURLConnection connection = makeRequest("GET", alexaServer + "/api/bootstrap", null, false, false, null, false);
+    	String contentType = connection.getContentType();
+    	if (connection.getResponseCode() == 200 && StringUtils.startsWithIgnoreCase(contentType, "application/json")) {
         	try
         	{
+        		String bootstrapResultJson = convertStream(connection);
 	            JsonBootstrapResult result = parseJson(bootstrapResultJson, JsonBootstrapResult.class);
 	            Authentication authentication = result.authentication;
 	            if (authentication != null && authentication.authenticated) {
@@ -446,7 +447,7 @@ public class Connection {
         		// We have not received a valid json
         		return null;
         	}
-        }
+    	}
         return null;
     }
 
