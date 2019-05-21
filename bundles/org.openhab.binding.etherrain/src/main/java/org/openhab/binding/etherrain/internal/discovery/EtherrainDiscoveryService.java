@@ -59,7 +59,7 @@ public class EtherrainDiscoveryService extends AbstractDiscoveryService {
                     rdp.getAddress().replaceAll("[^A-Za-z0-9\\-_]", ""));
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid)
                     .withLabel("Etherrain " + rdp.getType() + " " + rdp.getUnqiueName())
-                    .withProperty("hostname", rdp.getAddress()).withProperty("port", rdp.getPort()).build();
+                    .withProperty("host", rdp.getAddress()).withProperty("port", rdp.getPort()).build();
             thingDiscovered(discoveryResult);
         } else {
             logger.debug("Nothing responded to request");
