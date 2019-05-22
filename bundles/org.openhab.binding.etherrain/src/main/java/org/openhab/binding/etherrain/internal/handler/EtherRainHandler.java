@@ -57,7 +57,6 @@ public class EtherRainHandler extends BaseThingHandler {
 
   @Override
   public void handleCommand(ChannelUID channelUID, Command command) {
-
     if (command.toString().equals("REFRESH")) {
       updateBridge();
       return;

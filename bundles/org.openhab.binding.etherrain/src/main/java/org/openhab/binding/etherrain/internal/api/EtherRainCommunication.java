@@ -36,14 +36,14 @@ import org.slf4j.LoggerFactory;
  */
 public class EtherRainCommunication {
 
-  private final static String BROADCAST_DISCOVERY_MESSAGE = "eviro_id_request1";
-  private final static int BROADCAST_DISCOVERY_PORT = 8089;
+  private static final String BROADCAST_DISCOVERY_MESSAGE = "eviro_id_request1";
+  private static final int BROADCAST_DISCOVERY_PORT = 8089;
 
-  private final static String ETHERRAIN_USERNAME = "admin";
+  private static final String ETHERRAIN_USERNAME = "admin";
 
-  private final static int HTTP_TIMEOUT = 1000;
+  private static final int HTTP_TIMEOUT = 1000;
 
-  private final static int BROADCAST_TIMEOUT = 80;
+  private static final int BROADCAST_TIMEOUT = 80;
 
   private String address;
   private int port;
@@ -52,7 +52,7 @@ public class EtherRainCommunication {
   private static final String RESPONSE_STATUS_PATTERN = "^\\s*(un|ma|ac|os|cs|rz|ri|rn):\\s*([a-zA-Z0-9\\.]*)(\\s*<br>)?";
   private static final String BROADCAST_RESPONSE_DISCOVER_PATTERN = "eviro t=(\\S*) n=(\\S*) p=(\\S*) a=(\\S*)";
 
-  private final String USER_AGENT = "Mozilla/5.0";
+  private static final String USER_AGENT = "Mozilla/5.0";
 
   private final Logger logger = LoggerFactory.getLogger(EtherRainCommunication.class);
 
@@ -91,7 +91,6 @@ public class EtherRainCommunication {
       String line = i.next();
 
       if (line.matches(RESPONSE_STATUS_PATTERN)) {
-
         String command = line.replaceFirst(RESPONSE_STATUS_PATTERN, "$1");
         String status = line.replaceFirst(RESPONSE_STATUS_PATTERN, "$2");
 
@@ -254,5 +253,4 @@ public class EtherRainCommunication {
       return null;
     }
   }
-
 }
