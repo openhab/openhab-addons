@@ -154,7 +154,7 @@ public class AmbientWeatherEventListener {
             options.transports = new String[] { "websocket" };
             socket = IO.socket(url, options);
         } catch (URISyntaxException e) {
-            logger.error("Listener: URISyntaxException getting IO socket: {}", e.getMessage());
+            logger.info("Listener: URISyntaxException getting IO socket: {}", e.getMessage());
             return;
         }
         socket.on(Socket.EVENT_CONNECT, onEventConnect);
