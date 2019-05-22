@@ -426,28 +426,28 @@ public class Connection {
     }
 
     private @Nullable Authentication tryGetBootstrap() throws IOException, URISyntaxException {
-    	HttpsURLConnection connection = makeRequest("GET", alexaServer + "/api/bootstrap", null, false, false, null, false);
-    	String contentType = connection.getContentType();
-    	if (connection.getResponseCode() == 200 && StringUtils.startsWithIgnoreCase(contentType, "application/json")) {
-        	try
-        	{
-        		String bootstrapResultJson = convertStream(connection);
-	            JsonBootstrapResult result = parseJson(bootstrapResultJson, JsonBootstrapResult.class);
-	            Authentication authentication = result.authentication;
-	            if (authentication != null && authentication.authenticated) {
-	                this.customerName = authentication.customerName;
-	                if (this.accountCustomerId == null) {
-	                    this.accountCustomerId = authentication.customerId;
-	                }
-	                return authentication;
-	            }
-        	}
-        	catch (JsonSyntaxException | IllegalStateException e)
-        	{
-        		// We have not received a valid json
-        		return null;
-        	}
-    	}
+        HttpsURLConnection connection = makeRequest("GET", alexaServer + "/api/bootstrap", null, false, false, null, false);
+        String contentType = connection.getContentType();
+        if (connection.getResponseCode() == 200 && StringUtils.startsWithIgnoreCase(contentType, "application/json")) {
+            try
+            {
+                String bootstrapResultJson = convertStream(connection);
+                JsonBootstrapResult result = parseJson(bootstrapResultJson, JsonBootstrapResult.class);
+                Authentication authentication = result.authentication;
+                if (authentication != null && authentication.authenticated) {
+                    this.customerName = authentication.customerName;
+                    if (this.accountCustomerId == null) {
+                        this.accountCustomerId = authentication.customerId;
+                    }
+                    return authentication;
+                }
+            }
+            catch (JsonSyntaxException | IllegalStateException e)
+            {
+                // We have not received a valid json
+                return null;
+            }
+        }
         return null;
     }
 
@@ -499,13 +499,13 @@ public class Connection {
 
     public HttpsURLConnection makeRequest(String verb, String url, @Nullable String postData, boolean json,
             boolean autoredirect, @Nullable Map<String, String> customHeaders, boolean repeatBadRequest)
-            throws IOException, URISyntaxException {
+                    throws IOException, URISyntaxException {
         String currentUrl = url;
         int badRequestCounter = 0;
         int redirectCounter = 0;
         while (true) // loop for handling redirect and bad request, using automatic redirect is not possible,
-                     // because
-                     // all response headers must be catched
+            // because
+            // all response headers must be catched
         {
             int code;
             HttpsURLConnection connection = null;
@@ -751,9 +751,9 @@ public class Connection {
         String cookiesBase64 = Base64.getEncoder().encodeToString(cookiesJson.getBytes());
 
         String exchangePostData = "di.os.name=iOS&app_version=2.2.223830.0&domain=." + getAmazonSite()
-                + "&source_token=" + URLEncoder.encode(this.refreshToken, "UTF8")
-                + "&requested_token_type=auth_cookies&source_token_type=refresh_token&di.hw.version=iPhone&di.sdk.version=6.10.0&cookies="
-                + cookiesBase64 + "&app_name=Amazon%20Alexa&di.os.version=11.4.1";
+        + "&source_token=" + URLEncoder.encode(this.refreshToken, "UTF8")
+        + "&requested_token_type=auth_cookies&source_token_type=refresh_token&di.hw.version=iPhone&di.sdk.version=6.10.0&cookies="
+        + cookiesBase64 + "&app_name=Amazon%20Alexa&di.os.version=11.4.1";
 
         HashMap<String, String> exchangeTokenHeader = new HashMap<>();
         exchangeTokenHeader.put("Cookie", "");
@@ -1039,10 +1039,10 @@ public class Connection {
         } else {
             makeRequest("POST",
                     alexaServer + "/api/tunein/queue-and-play?deviceSerialNumber=" + device.serialNumber
-                            + "&deviceType=" + device.deviceType + "&guideId=" + stationId
-                            + "&contentType=station&callSign=&mediaOwnerCustomerId="
-                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
-                                    : this.accountCustomerId),
+                    + "&deviceType=" + device.deviceType + "&guideId=" + stationId
+                    + "&contentType=station&callSign=&mediaOwnerCustomerId="
+                    + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                            : this.accountCustomerId),
                     "", true, true, null, false);
         }
     }
@@ -1054,10 +1054,10 @@ public class Connection {
             String command = "{\"trackId\":\"" + trackId + "\",\"playQueuePrime\":true}";
             makeRequest("POST",
                     alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
-                            + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
-                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
-                                    : this.accountCustomerId)
-                            + "&shuffle=false",
+                    + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
+                    + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                            : this.accountCustomerId)
+                    + "&shuffle=false",
                     command, true, true, null, false);
         }
     }
@@ -1070,10 +1070,10 @@ public class Connection {
             String command = "{\"playlistId\":\"" + playListId + "\",\"playQueuePrime\":true}";
             makeRequest("POST",
                     alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
-                            + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
-                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
-                                    : this.accountCustomerId)
-                            + "&shuffle=false",
+                    + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
+                    + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                            : this.accountCustomerId)
+                    + "&shuffle=false",
                     command, true, true, null, false);
         }
     }
@@ -1145,7 +1145,7 @@ public class Connection {
 
     private void executeSequenceCommandWithVolume(@Nullable Device device, String command,
             @Nullable Map<String, Object> parameters, int ttsVolume, int standardVolume)
-            throws IOException, URISyntaxException {
+                    throws IOException, URISyntaxException {
         if (ttsVolume != 0) {
 
             JsonArray nodesToExecute = new JsonArray();
@@ -1355,7 +1355,7 @@ public class Connection {
         Date date = new Date(new Date().getTime());
         long createdDate = date.getTime();
         Date alarm = new Date(createdDate + 5000); // add 5 seconds, because amazon does not except calls for times in
-                                                   // the past (compared with the server time)
+        // the past (compared with the server time)
         long alarmTime = alarm.getTime();
 
         JsonNotificationRequest request = new JsonNotificationRequest();
@@ -1468,5 +1468,5 @@ public class Connection {
         String postData = gson.toJson(settings);
         makeRequest("POST", alexaServer + "/api/equalizer/" + device.serialNumber + "/" + device.deviceType, postData,
                 true, true, null, false);
-    }
+    }   
 }
