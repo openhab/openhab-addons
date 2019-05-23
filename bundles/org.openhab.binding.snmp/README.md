@@ -8,7 +8,7 @@ Currently protocol version 1 and 2c are supported.
 
 Only one thing is supported: `target`.
 It represents a single network device. 
-Things can be extended with `number` and `string` channels.
+Things can be extended with `number`, `string` and `switch` channels.
 
 ## Binding Configuration
 
@@ -72,12 +72,12 @@ The default values are `timeout=1500` and `retries=2`.
 ## Channels
 
 The `target` thing has no fixed channels.
-It can be extended with channels of type `number` and `string`.
+It can be extended with channels of type `number`, `string`, `switch`.
 
 All channel-types have one mandatory parameter: `oid`.
 It defines the OID that should be linked to this channel in dotted format (e.g. .1.2.3.4.5.6.8).
 
-Both channel-types can be configured in four different modes via the `mode` parameter.
+Channels can be configured in four different modes via the `mode` parameter.
 Available options are `READ`, `WRITE`, `READ_WRITE` and `TRAP`.
 `READ` creates a read-only channel, i.e. data is requested from the target but cannot be written.
 `WRITE` creates a write-only channel, i.e. the status is never read from the target but changes to the item are written to the target.
@@ -92,11 +92,16 @@ Alternatively `INT32` (signed integer with 32 bit length) or `COUNTER64` (unsign
 For `string` channels the default `datatype` is `STRING` (i.e. the item's will be sent as a string).
 If it is set to `IPADDRESS`, an SNMP IP address object is constructed from the item's value.
 
+`switch`-type channels send a pre-defined value if they receive `ON` or `OFF` command in `WRITE` or `READ_WRITE` mode.
+In `READ`, `READ_WRITE` or `TRAP` mode they change to either `ON` or `OFF` on these values.
+The parameters used for defining the values are `onvalue` and `offvalue`.
+The `datatype` parameter is used to convert the configuration strings to the needed values.
+
 | type     | item   | description                     |
 |----------|--------|---------------------------------|
 | number   | Number | a channel with a numeric value  |
 | string   | String | a channel with a string value   |
-
+| switch   | Switch | a channel that has two states   |
 
 ## Full Example
 
@@ -108,6 +113,7 @@ Thing snmp:target:router [ hostname="192.168.0.1", protocol="1" ] {
       Type number : inBytes [ oid=".1.3.6.1.2.1.31.1.1.1.6.2", mode="READ" ]
       Type number : outBytes [ oid=".1.3.6.1.2.1.31.1.1.1.10.2", mode="READ" ]
       Type number : if4Status [ oid="1.3.6.1.2.1.2.2.1.7.4", mode="TRAP" ]
+      Type switch : if4Command [ oid="1.3.6.1.2.1.2.2.1.7.4", mode="READ_WRITE", datatype="UINT32", onvalue="2", offvalue="0" ]
 }
 ```
 
@@ -117,6 +123,7 @@ demo.items:
 Number inBytes "Router bytes in [%d]" { channel="snmp:target:router:inBytes" }
 Number outBytes "Router bytes out [%d]" { channel="snmp:target:router:outBytes" }
 Number if4Status "Router interface 4 status [%d]" { channel="snmp:target:router:if4Status" }
+Switch if4Command "Router interface 4 switch [%s]" { channel="snmp:target:router:if4Command" }
 ```
 
 demo.sitemap:
@@ -128,6 +135,7 @@ sitemap demo label="Main Menu"
         Text item=inBytes
         Text item=outBytes
         Text item=if4Status
+        Switch item=if4Command
     }
 }
 ```

@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -94,12 +95,22 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                         .findFirst().orElseThrow(() -> new IllegalArgumentException("no writable channel found"));
                 PDU pdu = new PDU(PDU.GET, Collections.singletonList(new VariableBinding(channel._oid)));
                 snmpService.send(pdu, target, null, this);
-            } else if (command instanceof DecimalType || command instanceof StringType) {
+            } else if (command instanceof DecimalType || command instanceof StringType
+                    || command instanceof OnOffType) {
                 SnmpChannelConfiguration channel = writeChannelSet.stream()
                         .filter(config -> channelUID.equals(config._channelUID)).findFirst()
                         .orElseThrow(() -> new IllegalArgumentException("no writable channel found"));
-                PDU pdu = new PDU(PDU.SET, Collections
-                        .singletonList(new VariableBinding(channel._oid, convertDatatype(command, channel.datatype))));
+                Variable variable;
+                if (command instanceof OnOffType) {
+                    variable = OnOffType.ON.equals(command) ? channel._onValue : channel._offValue;
+                    if (variable == null) {
+                        logger.debug("skipping {} to {}: no value defined", command, channelUID);
+                        return;
+                    }
+                } else {
+                    variable = convertDatatype(command, channel.datatype);
+                }
+                PDU pdu = new PDU(PDU.SET, Collections.singletonList(new VariableBinding(channel._oid, variable)));
                 snmpService.send(pdu, target, null, this);
             }
         } catch (IllegalArgumentException e) {
@@ -218,6 +229,21 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                                 && config.datatype != SnmpDatatype.STRING) {
                             return null;
                         }
+                    } else if (CHANNEL_TYPE_UID_SWITCH.equals(channel.getChannelTypeUID())) {
+                        if (config.datatype == null) {
+                            config.datatype = SnmpDatatype.UINT32;
+                        }
+                        try {
+                            if (config.onvalue != null) {
+                                config._onValue = convertDatatype(new StringType(config.onvalue), config.datatype);
+                            }
+                            if (config.offvalue != null) {
+                                config._offValue = convertDatatype(new StringType(config.offvalue), config.datatype);
+                            }
+                        } catch (IllegalArgumentException e) {
+                            logger.warn("illegal value configuration for channel {}", channel.getUID());
+                            return null;
+                        }
                     } else {
                         logger.warn("unknown channel type found for channel {}", channel.getUID());
                         return null;
@@ -255,6 +281,15 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                     }
                 } else if (CHANNEL_TYPE_UID_STRING.equals(channel.getChannelTypeUID())) {
                     state = new StringType(value.toString());
+                } else if (CHANNEL_TYPE_UID_SWITCH.equals(channel.getChannelTypeUID())) {
+                    if (value.equals(channelConfig._onValue)) {
+                        state = OnOffType.ON;
+                    } else if (value.equals(channelConfig._offValue)) {
+                        state = OnOffType.OFF;
+                    } else {
+                        logger.debug("channel {} received unmapped value {} ", channelUID, value);
+                        return;
+                    }
                 } else {
                     logger.warn("channel {} has unknown ChannelTypeUID", channelUID);
                     return;
@@ -267,26 +302,44 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
     }
 
     private Variable convertDatatype(Command command, SnmpDatatype datatype) {
-        try {
-            switch (datatype) {
-                case INT32:
+        switch (datatype) {
+            case INT32:
+                if (command instanceof DecimalType) {
                     return new Integer32(((DecimalType) command).intValue());
-                case UINT32:
+                } else if (command instanceof StringType) {
+                    return new Integer32((new DecimalType(((StringType) command).toString())).intValue());
+                }
+                break;
+            case UINT32:
+                if (command instanceof DecimalType) {
                     return new UnsignedInteger32(((DecimalType) command).intValue());
-                case COUNTER64:
+                } else if (command instanceof StringType) {
+                    return new UnsignedInteger32((new DecimalType(((StringType) command).toString())).intValue());
+                }
+                break;
+            case COUNTER64:
+                if (command instanceof DecimalType) {
                     return new Counter64(((DecimalType) command).longValue());
-                case STRING:
+                } else if (command instanceof StringType) {
+                    return new Counter64((new DecimalType(((StringType) command).toString())).longValue());
+                }
+                break;
+            case STRING:
+                if (command instanceof DecimalType) {
+                    return new OctetString(((DecimalType) command).toString());
+                } else if (command instanceof StringType) {
                     return new OctetString(((StringType) command).toString());
-                case IPADDRESS:
+                }
+                break;
+            case IPADDRESS:
+                if (command instanceof StringType) {
                     return new IpAddress(((StringType) command).toString());
-                default:
-                    throw new IllegalArgumentException(
-                            "illegal conversion of " + command.toString() + " to " + datatype.toString());
-            }
-        } catch (ClassCastException e) {
-            throw new IllegalArgumentException(
-                    "illegal conversion of " + command.toString() + " to " + datatype.toString());
+                }
+                break;
+            default:
         }
+        throw new IllegalArgumentException(
+                "illegal conversion of " + command.toString() + " to " + datatype.toString());
     }
 
     private boolean renewTargetAddress() {

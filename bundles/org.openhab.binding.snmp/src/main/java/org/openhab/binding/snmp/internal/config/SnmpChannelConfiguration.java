@@ -13,9 +13,10 @@
 package org.openhab.binding.snmp.internal.config;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.openhab.binding.snmp.internal.SnmpDatatype;
 import org.openhab.binding.snmp.internal.SnmpChannelMode;
+import org.openhab.binding.snmp.internal.SnmpDatatype;
 import org.snmp4j.smi.OID;
+import org.snmp4j.smi.Variable;
 
 /**
  * The {@link SnmpChannelConfiguration} class contains fields mapping channel configuration parameters.
@@ -27,6 +28,11 @@ public class SnmpChannelConfiguration {
     public SnmpChannelMode mode = SnmpChannelMode.READ;
     public SnmpDatatype datatype;
 
+    public String onvalue;
+    public String offvalue;
+
     public ChannelUID _channelUID;
     public OID _oid;
+    public Variable _onValue;
+    public Variable _offValue;
 }

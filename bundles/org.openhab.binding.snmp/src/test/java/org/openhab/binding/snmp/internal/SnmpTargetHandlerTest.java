@@ -25,6 +25,7 @@ import java.util.Vector;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -36,6 +37,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -49,6 +51,7 @@ import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.UnsignedInteger32;
+import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 
 /**
@@ -70,49 +73,52 @@ public class SnmpTargetHandlerTest extends JavaTest {
     private SnmpTargetHandler thingHandler;
 
     @Test
-    public void testInitializationWithoutChannelsEndsWithUnknown() {
-        setup(null, null);
-        waitForAssert(() -> assertEquals(ThingStatus.ONLINE, thingHandler.getThing().getStatusInfo().getStatus()));
-    }
-
-    @Test
     public void testChannelsProperlyRefreshing() throws IOException {
-        basetestChannelIsRefreshing(SnmpChannelMode.READ, true);
-        basetestChannelIsRefreshing(SnmpChannelMode.READ_WRITE, true);
-        basetestChannelIsRefreshing(SnmpChannelMode.WRITE, false);
-        basetestChannelIsRefreshing(SnmpChannelMode.TRAP, false);
+        refresh(SnmpChannelMode.READ, true);
+        refresh(SnmpChannelMode.READ_WRITE, true);
+        refresh(SnmpChannelMode.WRITE, false);
+        refresh(SnmpChannelMode.TRAP, false);
     }
 
     @Test
     public void testChannelsProperlyUpdate() throws IOException {
-        basetestCommandUpdatesChannel(SnmpChannelMode.READ, true);
-        basetestCommandUpdatesChannel(SnmpChannelMode.READ_WRITE, true);
-        basetestCommandUpdatesChannel(SnmpChannelMode.WRITE, false);
-        basetestCommandUpdatesChannel(SnmpChannelMode.TRAP, false);
+        onResponseNumberStringChannel(SnmpChannelMode.READ, true);
+        onResponseNumberStringChannel(SnmpChannelMode.READ_WRITE, true);
+        onResponseNumberStringChannel(SnmpChannelMode.WRITE, false);
+        onResponseNumberStringChannel(SnmpChannelMode.TRAP, false);
+        assertEquals(OnOffType.ON, onResponseSwitchChannel(SnmpChannelMode.READ, SnmpDatatype.STRING, "on", "off",
+                new OctetString("on"), true));
+        assertEquals(OnOffType.OFF, onResponseSwitchChannel(SnmpChannelMode.READ_WRITE, SnmpDatatype.INT32, "1", "2",
+                new Integer32(2), true));
+        assertNull(onResponseSwitchChannel(SnmpChannelMode.WRITE, SnmpDatatype.STRING, "on", "off",
+                new OctetString("on"), false));
+        assertNull(
+                onResponseSwitchChannel(SnmpChannelMode.TRAP, SnmpDatatype.INT32, "1", "2", new Integer32(2), false));
+
     }
 
     @Test
     public void testCommandsAreProperlyHandledByNumberChannel() throws IOException {
         VariableBinding variable;
-        variable = basetestHandleCommand(SnmpBindingConstants.CHANNEL_TYPE_UID_NUMBER, SnmpDatatype.INT32,
+        variable = handleCommandNumberStringChannel(SnmpBindingConstants.CHANNEL_TYPE_UID_NUMBER, SnmpDatatype.INT32,
                 new DecimalType(-5), true);
         assertEquals(new OID(TEST_OID), variable.getOid());
         assertTrue(variable.getVariable() instanceof Integer32);
         assertEquals(-5, ((Integer32) variable.getVariable()).toInt());
 
-        variable = basetestHandleCommand(SnmpBindingConstants.CHANNEL_TYPE_UID_NUMBER, SnmpDatatype.UINT32,
+        variable = handleCommandNumberStringChannel(SnmpBindingConstants.CHANNEL_TYPE_UID_NUMBER, SnmpDatatype.UINT32,
                 new DecimalType(10000), true);
         assertEquals(new OID(TEST_OID), variable.getOid());
         assertTrue(variable.getVariable() instanceof UnsignedInteger32);
         assertEquals(10000, ((UnsignedInteger32) variable.getVariable()).toInt());
 
-        variable = basetestHandleCommand(SnmpBindingConstants.CHANNEL_TYPE_UID_NUMBER, SnmpDatatype.COUNTER64,
-                new DecimalType(10000), true);
+        variable = handleCommandNumberStringChannel(SnmpBindingConstants.CHANNEL_TYPE_UID_NUMBER,
+                SnmpDatatype.COUNTER64, new DecimalType(10000), true);
         assertEquals(new OID(TEST_OID), variable.getOid());
         assertTrue(variable.getVariable() instanceof Counter64);
         assertEquals(10000, ((Counter64) variable.getVariable()).toInt());
 
-        variable = basetestHandleCommand(SnmpBindingConstants.CHANNEL_TYPE_UID_NUMBER, SnmpDatatype.INT32,
+        variable = handleCommandNumberStringChannel(SnmpBindingConstants.CHANNEL_TYPE_UID_NUMBER, SnmpDatatype.INT32,
                 new StringType(TEST_STRING), false);
         assertNull(variable);
     }
@@ -120,29 +126,93 @@ public class SnmpTargetHandlerTest extends JavaTest {
     @Test
     public void testCommandsAreProperlyHandledByStringChannel() throws IOException {
         VariableBinding variable;
-        variable = basetestHandleCommand(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING, SnmpDatatype.STRING,
-                new DecimalType(-5), false);
-        assertNull(variable);
 
-        variable = basetestHandleCommand(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING, SnmpDatatype.STRING,
+        variable = handleCommandNumberStringChannel(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING, SnmpDatatype.STRING,
                 new StringType(TEST_STRING), true);
         assertEquals(new OID(TEST_OID), variable.getOid());
         assertTrue(variable.getVariable() instanceof OctetString);
         assertEquals(TEST_STRING, ((OctetString) variable.getVariable()).toString());
 
-        variable = basetestHandleCommand(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING, SnmpDatatype.IPADDRESS,
-                new StringType(TEST_STRING), false);
+        variable = handleCommandNumberStringChannel(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING,
+                SnmpDatatype.IPADDRESS, new StringType(TEST_STRING), false);
         assertNull(variable);
 
-        variable = basetestHandleCommand(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING, SnmpDatatype.IPADDRESS,
-                new StringType(TEST_ADDRESS), true);
+        variable = handleCommandNumberStringChannel(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING,
+                SnmpDatatype.IPADDRESS, new DecimalType(-5), false);
+        assertNull(variable);
+
+        variable = handleCommandNumberStringChannel(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING,
+                SnmpDatatype.IPADDRESS, new StringType(TEST_ADDRESS), true);
         assertEquals(new OID(TEST_OID), variable.getOid());
         assertTrue(variable.getVariable() instanceof IpAddress);
         assertEquals(TEST_ADDRESS, ((IpAddress) variable.getVariable()).toString());
     }
 
-    private VariableBinding basetestHandleCommand(ChannelTypeUID channelTypeUID, SnmpDatatype datatype, Command command,
-            boolean refresh) throws IOException {
+    @Test
+    public void testCommandsAreProperlyHandledBySwitchChannel() throws IOException {
+        VariableBinding variable;
+
+        variable = handleCommandSwitchChannel(SnmpDatatype.STRING, OnOffType.ON, "on", "off", true);
+        assertEquals(new OID(TEST_OID), variable.getOid());
+        assertTrue(variable.getVariable() instanceof OctetString);
+        assertEquals("on", ((OctetString) variable.getVariable()).toString());
+
+        variable = handleCommandSwitchChannel(SnmpDatatype.STRING, OnOffType.OFF, "on", "off", true);
+        assertEquals(new OID(TEST_OID), variable.getOid());
+        assertTrue(variable.getVariable() instanceof OctetString);
+        assertEquals("off", ((OctetString) variable.getVariable()).toString());
+
+        variable = handleCommandSwitchChannel(SnmpDatatype.STRING, OnOffType.OFF, "on", null, false);
+        assertNull(variable);
+    }
+
+    @Test
+    public void testSwitchChannelsProperlyUpdatingOnValue() throws IOException {
+        setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, SnmpChannelMode.READ, SnmpDatatype.STRING, "on", "off");
+        PDU responsePDU = new PDU(PDU.RESPONSE,
+                Collections.singletonList(new VariableBinding(new OID(TEST_OID), new OctetString("on"))));
+        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        thingHandler.onResponse(event);
+        verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), eq(OnOffType.ON));
+    }
+
+    @Test
+    public void testSwitchChannelsProperlyUpdatingOffValue() throws IOException {
+        setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, SnmpChannelMode.READ, SnmpDatatype.INT32, "0", "3");
+        PDU responsePDU = new PDU(PDU.RESPONSE,
+                Collections.singletonList(new VariableBinding(new OID(TEST_OID), new Integer32(3))));
+        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        thingHandler.onResponse(event);
+        verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), eq(OnOffType.OFF));
+    }
+
+    @Test
+    public void testSwitchChannelsIgnoresArbitraryValue() throws IOException {
+        setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, SnmpChannelMode.READ, SnmpDatatype.COUNTER64, "0", "12223");
+        PDU responsePDU = new PDU(PDU.RESPONSE,
+                Collections.singletonList(new VariableBinding(new OID(TEST_OID), new Counter64(17))));
+        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        thingHandler.onResponse(event);
+        verify(thingHandlerCallback, never()).stateUpdated(eq(CHANNEL_UID), any());
+    }
+
+    private VariableBinding handleCommandSwitchChannel(SnmpDatatype datatype, Command command, String onValue,
+            String offValue, boolean refresh) throws IOException {
+        setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, SnmpChannelMode.WRITE, datatype, onValue, offValue);
+        thingHandler.handleCommand(CHANNEL_UID, command);
+
+        if (refresh) {
+            ArgumentCaptor<PDU> pduCaptor = ArgumentCaptor.forClass(PDU.class);
+            verify(snmpService, times(1)).send(pduCaptor.capture(), any(), eq(null), eq(thingHandler));
+            return pduCaptor.getValue().getVariableBindings().stream().findFirst().orElse(null);
+        } else {
+            verify(snmpService, never()).send(any(), any(), eq(null), eq(thingHandler));
+            return null;
+        }
+    }
+
+    private VariableBinding handleCommandNumberStringChannel(ChannelTypeUID channelTypeUID, SnmpDatatype datatype,
+            Command command, boolean refresh) throws IOException {
         setup(channelTypeUID, SnmpChannelMode.WRITE, datatype);
         thingHandler.handleCommand(CHANNEL_UID, command);
 
@@ -156,7 +226,7 @@ public class SnmpTargetHandlerTest extends JavaTest {
         }
     }
 
-    private void basetestCommandUpdatesChannel(SnmpChannelMode channelMode, boolean refresh) {
+    private void onResponseNumberStringChannel(SnmpChannelMode channelMode, boolean refresh) {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING, channelMode);
 
         PDU responsePDU = new PDU(PDU.RESPONSE,
@@ -172,7 +242,27 @@ public class SnmpTargetHandlerTest extends JavaTest {
         }
     }
 
-    private void basetestChannelIsRefreshing(SnmpChannelMode channelMode, boolean refresh) throws IOException {
+    private State onResponseSwitchChannel(SnmpChannelMode channelMode, SnmpDatatype datatype, String onValue,
+            String offValue, Variable value, boolean refresh) {
+        setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, channelMode, datatype, onValue, offValue);
+
+        PDU responsePDU = new PDU(PDU.RESPONSE,
+                Collections.singletonList(new VariableBinding(new OID(TEST_OID), value)));
+        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+
+        thingHandler.onResponse(event);
+
+        if (refresh) {
+            ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
+            verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), stateCaptor.capture());
+            return stateCaptor.getValue();
+        } else {
+            verify(thingHandlerCallback, never()).stateUpdated(any(), any());
+            return null;
+        }
+    }
+
+    private void refresh(SnmpChannelMode channelMode, boolean refresh) throws IOException {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING, channelMode);
 
         waitForAssert(() -> assertEquals(ThingStatus.ONLINE, thingHandler.getThing().getStatusInfo().getStatus()));
@@ -194,6 +284,11 @@ public class SnmpTargetHandlerTest extends JavaTest {
     }
 
     private void setup(ChannelTypeUID channelTypeUID, SnmpChannelMode channelMode, SnmpDatatype datatype) {
+        setup(channelTypeUID, channelMode, datatype, null, null);
+    }
+
+    private void setup(ChannelTypeUID channelTypeUID, SnmpChannelMode channelMode, SnmpDatatype datatype,
+            String onValue, String offValue) {
         Map<String, Object> channelConfig = new HashMap<>();
         Map<String, Object> thingConfig = new HashMap<>();
         MockitoAnnotations.initMocks(this);
@@ -209,6 +304,12 @@ public class SnmpTargetHandlerTest extends JavaTest {
             channelConfig.put("mode", channelMode.name());
             if (datatype != null) {
                 channelConfig.put("datatype", datatype.name());
+            }
+            if (onValue != null) {
+                channelConfig.put("onvalue", onValue);
+            }
+            if (offValue != null) {
+                channelConfig.put("offvalue", offValue);
             }
             Channel channel = ChannelBuilder.create(CHANNEL_UID, itemType).withType(channelTypeUID)
                     .withConfiguration(new Configuration(channelConfig)).build();
@@ -227,5 +328,7 @@ public class SnmpTargetHandlerTest extends JavaTest {
         }).when(thingHandlerCallback).statusUpdated(any(), any());
 
         thingHandler.initialize();
+
+        waitForAssert(() -> assertEquals(ThingStatus.ONLINE, thingHandler.getThing().getStatusInfo().getStatus()));
     }
 }
