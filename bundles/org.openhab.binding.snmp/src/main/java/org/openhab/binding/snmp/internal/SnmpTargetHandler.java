@@ -103,9 +103,9 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                 snmpService.send(pdu, target, null, this);
             }
         } catch (IllegalArgumentException e) {
-            logger.warn("can't process command to {}: ", channelUID, e.getMessage());
+            logger.warn("can't process command {} to {}: {}", command, channelUID, e.getMessage());
         } catch (IOException e) {
-            logger.warn("Could not send PDU while processing {} to {}", command, channelUID);
+            logger.warn("Could not send PDU while processing command {} to {}", command, channelUID);
         }
     }
 
@@ -215,7 +215,7 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                         if (config.datatype == null) {
                             config.datatype = SnmpDatatype.STRING;
                         } else if (config.datatype != SnmpDatatype.IPADDRESS
-                                || config.datatype != SnmpDatatype.STRING) {
+                                && config.datatype != SnmpDatatype.STRING) {
                             return null;
                         }
                     } else {
