@@ -81,7 +81,7 @@ public class CloudClient {
      * This constant defines HTTP request timeout. It should be kept at about
      * 30 seconds minimum to make it work for long polling requests
      */
-    private static final int HTTP_CLIENT_TIMEOUT = 30000;
+    private static final long HTTP_CLIENT_TIMEOUT = 30;
 
     /*
      * This variable holds base URL for the openHAB Cloud connections
@@ -160,8 +160,6 @@ public class CloudClient {
         this.exposedItems = exposedItems;
         runningRequests = new HashMap<Integer, Request>();
         this.jettyClient = httpClient;
-        this.jettyClient.setMaxConnectionsPerDestination(HTTP_CLIENT_MAX_CONNECTIONS_PER_DEST);
-        this.jettyClient.setConnectTimeout(HTTP_CLIENT_TIMEOUT);
     }
 
     /**
@@ -332,7 +330,7 @@ public class CloudClient {
             if (data.has("protocol")) {
                 proto = data.getString("protocol");
             }
-            request.header("X-Forwarded-Proto", proto);
+            request.timeout(HTTP_CLIENT_TIMEOUT, TimeUnit.SECONDS).header("X-Forwarded-Proto", proto);
 
             if (requestMethod.equals("GET")) {
                 request.method(HttpMethod.GET);
