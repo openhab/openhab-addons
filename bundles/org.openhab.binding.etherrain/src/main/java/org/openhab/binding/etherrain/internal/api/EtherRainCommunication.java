@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.openhab.binding.etherrain.internal.EtherRainException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,13 +67,13 @@ public class EtherRainCommunication {
     return updBroadcast();
   }
 
-  public EtherRainStatusResponse commandStatus() throws Exception {
+  public EtherRainStatusResponse commandStatus() throws EtherRainException, IOException {
     if (address == null || port == 0) {
-      throw new Exception("address and port not set");
+      throw new EtherRainException("address and port not set");
     }
 
     if (!commandLogin()) {
-      throw new Exception("could not login");
+      throw new EtherRainException("could not login");
     }
 
     List<String> responseList = null;
@@ -80,7 +81,7 @@ public class EtherRainCommunication {
     responseList = sendGet("result.cgi?xs");
 
     if (responseList == null) {
-      throw new Exception("Empty Response");
+      throw new EtherRainException("Empty Response");
     }
 
     Iterator<String> i = responseList.iterator();
@@ -154,7 +155,7 @@ public class EtherRainCommunication {
     return true;
   }
 
-  public boolean commandLogin() throws Exception {
+  public boolean commandLogin() throws IOException {
     return sendGet("/ergetcfg.cgi?lu=" + ETHERRAIN_USERNAME + "&lp=" + password) != null;
   }
 
@@ -170,7 +171,7 @@ public class EtherRainCommunication {
     return true;
   }
 
-  private List<String> sendGet(String command) throws Exception {
+  private List<String> sendGet(String command) throws IOException {
     String url = "http://" + address + ":" + port + "/" + command;
 
     List<String> rVal = null;

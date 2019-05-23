@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.etherrain.internal.handler;
 
+import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.etherrain.internal.EtherRainBindingConstants;
+import org.openhab.binding.etherrain.internal.EtherRainException;
 import org.openhab.binding.etherrain.internal.api.EtherRainCommunication;
 import org.openhab.binding.etherrain.internal.api.EtherRainStatusResponse;
 import org.openhab.binding.etherrain.internal.config.EtherRainConfiguration;
@@ -84,21 +86,19 @@ public class EtherRainHandler extends BaseThingHandler {
 
     device = new EtherRainCommunication(config.host, config.port, config.password);
 
+    EtherRainStatusResponse response;
     try {
-      EtherRainStatusResponse response = device.commandStatus();
-      if (response == null) {
-        logger.debug("Command Status returned null");
-        device = null;
-        updateStatus(ThingStatus.OFFLINE);
-        return false;
-      }
-    } catch (Exception e) {
-      // Using generate exception here as there are several possible reasons that we
-      // would
-      // not be able to connect, but they should all error out the same
+      response = device.commandStatus();
+    } catch (EtherRainException | IOException e) {
       updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
           "Could not create a connection to the EtherRain");
       logger.debug("Could not open API connection to the EtherRain device. Exception received: {}", e.toString());
+      device = null;
+      updateStatus(ThingStatus.OFFLINE);
+      return false;
+    }
+    if (response == null) {
+      logger.debug("Command Status returned null");
       device = null;
       updateStatus(ThingStatus.OFFLINE);
       return false;
@@ -143,7 +143,7 @@ public class EtherRainHandler extends BaseThingHandler {
 
     try {
       response = device.commandStatus();
-    } catch (Exception e) {
+    } catch (EtherRainException | IOException e) {
       updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
           "Could not create a connection to the EtherRain");
       logger.debug("Could not open API connection to the EtherRain device. Exception received: {}", e.toString());
