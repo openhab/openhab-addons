@@ -450,7 +450,7 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     state = getQuantityTypeState(forecastData.getClouds(), PERCENT);
                     break;
                 case CHANNEL_RAIN:
-                    state = getQuantityTypeState(forecastData.getRain() != null ? 0 : forecastData.getRain(),
+                    state = getQuantityTypeState(forecastData.getRain() == null ? 0 : forecastData.getRain(),
                             MILLI(METRE));
                     break;
                 case CHANNEL_SNOW:
