@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.upnpcontrol.internal.discovery;
 
-import static org.openhab.binding.upnpcontrol.UpnpControlBindingConstants.*;
+import static org.openhab.binding.upnpcontrol.internal.UpnpControlBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;

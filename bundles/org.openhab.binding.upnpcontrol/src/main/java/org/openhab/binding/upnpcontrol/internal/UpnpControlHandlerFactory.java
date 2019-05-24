@@ -8,7 +8,7 @@
  */
 package org.openhab.binding.upnpcontrol.internal;
 
-import static org.openhab.binding.upnpcontrol.UpnpControlBindingConstants.*;
+import static org.openhab.binding.upnpcontrol.internal.UpnpControlBindingConstants.*;
 
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,8 +26,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
-import org.openhab.binding.upnpcontrol.handler.UpnpRendererHandler;
-import org.openhab.binding.upnpcontrol.handler.UpnpServerHandler;
+import org.openhab.binding.upnpcontrol.internal.handler.UpnpRendererHandler;
+import org.openhab.binding.upnpcontrol.internal.handler.UpnpServerHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;

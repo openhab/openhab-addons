@@ -6,9 +6,9 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.upnpcontrol.handler;
+package org.openhab.binding.upnpcontrol.internal.handler;
 
-import static org.openhab.binding.upnpcontrol.UpnpControlBindingConstants.*;
+import static org.openhab.binding.upnpcontrol.internal.UpnpControlBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;

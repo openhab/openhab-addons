@@ -13,17 +13,21 @@
 
   <packaging>pom</packaging>
 
+<<<<<<< Upstream, based on origin/2.5.x
   <name>openHAB Add-ons</name>
+=======
+  <name>openHAB Add-ons :: Bundles :: openHAB 2 Add-ons</name>
+>>>>>>> 081f409 Migrate to bnd.
   <description>This project contains the official add-ons of openHAB</description>
 
   <organization>
-    <name>openHAB.org</name>
+    <name>openHAB Add-ons :: Bundles :: openHAB.org</name>
     <url>http://www.openhab.org</url>
   </organization>
 
   <licenses>
     <license>
-      <name>Eclipse Public License 2.0</name>
+      <name>openHAB Add-ons :: Bundles :: Eclipse Public License 2.0</name>
       <url>https://www.eclipse.org/legal/epl-2.0/</url>
     </license>
   </licenses>
@@ -120,6 +124,48 @@
     </dependencies>
   </dependencyManagement>
 
+<<<<<<< Upstream, based on origin/2.5.x
+=======
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>jcenter</id>
+      <name>openHAB Add-ons :: Bundles :: JCenter Repository</name>
+      <url>https://jcenter.bintray.com</url>
+    </repository>
+
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>openhab-artifactory-release</id>
+      <name>openHAB Add-ons :: Bundles :: JFrog Artifactory Repository</name>
+      <url>https://openhab.jfrog.io/openhab/libs-release</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>jcenter</id>
+      <url>https://jcenter.bintray.com</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>openhab-artifactory-release</id>
+      <url>https://openhab.jfrog.io/openhab/libs-release</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+>>>>>>> 081f409 Migrate to bnd.
   <build>
     <pluginManagement>
       <plugins>
@@ -674,7 +720,7 @@ Import-Package: \\
       <id>skip-check</id>
       <activation>
         <property>
-          <name>skipChecks</name>
+          <name>openHAB Add-ons :: Bundles :: skipChecks</name>
         </property>
       </activation>
       <build>
@@ -715,7 +761,7 @@ Import-Package: \\
       <id>add-libraries-cli</id>
       <activation>
         <property>
-          <name>!m2e.version</name>
+          <name>openHAB Add-ons :: Bundles :: !m2e.version</name>
         </property>
         <file>
           <exists>lib/</exists>
@@ -757,7 +803,7 @@ Import-Package: \\
       <id>add-libraries-eclipse</id>
       <activation>
         <property>
-          <name>m2e.version</name>
+          <name>openHAB Add-ons :: Bundles :: m2e.version</name>
         </property>
         <file>
           <exists>lib/</exists>
@@ -767,11 +813,26 @@ Import-Package: \\
         <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd, ${.}/lib/;filter:=*.jar;lib:=true</bnd.includeresource>
       </properties>
     </profile>
+<<<<<<< Upstream, based on origin/2.5.x
+=======
+
+    <profile>
+      <id>skip-itest</id>
+      <activation>
+        <property>
+          <name>openHAB Add-ons :: Bundles :: !skipTests</name>
+        </property>
+      </activation>
+      <modules>
+        <module>itests</module>
+      </modules>
+    </profile>
+>>>>>>> 081f409 Migrate to bnd.
     <profile>
       <id>with-bnd-resolver-resolve</id>
       <activation>
         <property>
-          <name>withResolver</name>
+          <name>openHAB Add-ons :: Bundles :: withResolver</name>
         </property>
       </activation>
       <build>
@@ -794,6 +855,31 @@ Import-Package: \\
         </pluginManagement>
       </build>
     </profile>
+<<<<<<< Upstream, based on origin/2.5.x
+=======
+    <profile>
+      <id>openhab-snapshot-repository</id>
+      <activation>
+        <property>
+          <name>openHAB Add-ons :: Bundles :: !noOhSnapRepo</name>
+        </property>
+      </activation>
+      <repositories>
+        <repository>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>daily</updatePolicy>
+          </snapshots>
+          <id>openhab-artifactory-snapshot</id>
+          <name>openHAB Add-ons :: Bundles :: JFrog Artifactory Repository</name>
+          <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
+        </repository>
+      </repositories>
+    </profile>
+>>>>>>> 081f409 Migrate to bnd.
   </profiles>
 
 </project>

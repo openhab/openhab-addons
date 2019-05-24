@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.upnpcontrol;
+package org.openhab.binding.upnpcontrol.internal;
 
 import java.util.Set;
 import java.util.stream.Collectors;
