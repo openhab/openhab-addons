@@ -59,45 +59,37 @@ public class HomekitImpl implements Homekit {
     @Activate
     public HomekitImpl(@Reference StorageService storageService, @Reference ItemRegistry itemRegistry,
             @Reference NetworkAddressService networkAddressService, Map<String, Object> config)
-            throws UnknownHostException {
+            throws IOException, InvalidAlgorithmParameterException {
         this.storageService = storageService;
         this.networkAddressService = networkAddressService;
-        settings = (new Configuration(config)).as(HomekitSettings.class);
+        this.settings = processConfig(config);
+        this.changeListener = new HomekitChangeListener(itemRegistry, settings);
+        start();
+    }
+
+    private HomekitSettings processConfig(Map<String, Object> config) throws UnknownHostException {
+        HomekitSettings settings = (new Configuration(config)).as(HomekitSettings.class);
         settings.process(networkAddressService.getPrimaryIpv4HostAddress());
-        changeListener = new HomekitChangeListener(itemRegistry, settings);
+        return settings;
     }
 
     @Modified
     protected synchronized void modified(Map<String, Object> config) {
         try {
-            HomekitSettings settings = (new Configuration(config)).as(HomekitSettings.class);
-            settings.process(networkAddressService.getPrimaryIpv4HostAddress());
-            this.settings = settings;
+            this.settings = processConfig(config);
             changeListener.updateSettings(this.settings);
-        } catch (UnknownHostException e) {
-            logger.debug("Could not initialize homekit: {}", e.getMessage());
-            return;
-        }
-        try {
+            stop();
             start();
         } catch (IOException | InvalidAlgorithmParameterException e) {
-            logger.warn("Could not initialize homekit: {}", e.getMessage());
+            logger.debug("Could not initialize homekit: {}", e.getMessage());
+            return;
         }
     }
 
     @Deactivate
     protected void deactivate() {
         changeListener.clearAccessories();
-        if (bridge != null) {
-            bridge.stop();
-            bridge = null;
-        }
-        if (homekit != null) {
-            homekit.stop();
-            homekit = null;
-        }
-
-        changeListener.setBridge(null);
+        stop();
         changeListener.stop();
     }
 
@@ -122,5 +114,18 @@ public class HomekitImpl implements Homekit {
                 HomekitSettings.SERIAL_NUMBER);
         bridge.start();
         changeListener.setBridge(bridge);
+    }
+
+    private void stop() {
+        changeListener.setBridge(null);
+
+        if (bridge != null) {
+            bridge.stop();
+            bridge = null;
+        }
+        if (homekit != null) {
+            homekit.stop();
+            homekit = null;
+        }
     }
 }
