@@ -16,7 +16,6 @@ import static org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeCont
 
 import java.lang.reflect.Type;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +31,8 @@ import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionObserver;
+import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionState;
 import org.eclipse.smarthome.io.transport.mqtt.MqttException;
 import org.eclipse.smarthome.io.transport.mqtt.MqttMessageSubscriber;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcControllerEvent;
@@ -61,7 +62,8 @@ import com.google.gson.reflect.TypeToken;
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication implements MqttMessageSubscriber {
+public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
+        implements MqttMessageSubscriber, MqttConnectionObserver {
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlCommunication2.class);
 
@@ -91,7 +93,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
     public NikoHomeControlCommunication2(NhcControllerEvent handler, String clientId, String persistencePath)
             throws CertificateException {
         super(handler);
-        mqttConnection = new NhcMqttConnection2(clientId, persistencePath);
+        mqttConnection = new NhcMqttConnection2(clientId, persistencePath, this, this);
     }
 
     @Override
@@ -113,12 +115,11 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
             return;
         }
         String addrString = addr.getHostAddress();
-        @SuppressWarnings("null") // default provided, so cannot be null
         int port = handler.getPort();
         logger.debug("Niko Home Control: initializing for mqtt connection to CoCo on {}:{}", addrString, port);
 
         try {
-            mqttConnection.startPublicConnection(this, addrString, port);
+            mqttConnection.startPublicConnection(addrString, port);
             initializePublic();
         } catch (MqttException e) {
             logger.debug("Niko Home Control: error in mqtt communication");
@@ -156,7 +157,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
 
         mqttConnection.stopPublicConnection();
         try {
-            mqttConnection.startProfileConnection(this, profileUuid, password);
+            mqttConnection.startProfileConnection(profileUuid, password);
             initializeProfile();
         } catch (MqttException e) {
             logger.warn("Niko Home Control: error in mqtt communication");
@@ -166,8 +167,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
 
     @Override
     public synchronized void stopCommunication() {
-        if (communicationStarted != null) {
-            communicationStarted.complete(false);
+        CompletableFuture<Boolean> started = communicationStarted;
+        if (started != null) {
+            started.complete(false);
         }
         communicationStarted = null;
         mqttConnection.stopPublicConnection();
@@ -386,8 +388,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
                     logger.debug("Niko Home Control: adding action device {}, {}", device.uuid, device.name);
 
                     NhcAction2 nhcAction = new NhcAction2(device.uuid, device.name, device.model, device.technology,
-                            actionType, location);
-                    nhcAction.setNhcComm(this);
+                            actionType, location, this);
                     actions.put(device.uuid, nhcAction);
                 }
 
@@ -396,8 +397,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
                 if (!thermostats.containsKey(device.uuid)) {
                     logger.debug("Niko Home Control: adding thermostatdevice {}, {}", device.uuid, device.name);
 
-                    NhcThermostat2 nhcThermostat = new NhcThermostat2(device.uuid, device.name, location);
-                    nhcThermostat.setNhcComm(this);
+                    NhcThermostat2 nhcThermostat = new NhcThermostat2(device.uuid, device.name, device.model,
+                            device.technology, location, this);
                     thermostats.put(device.uuid, nhcThermostat);
                 }
 
@@ -411,8 +412,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         // Once a devices list response is received, we know the communication is fully started.
         logger.debug("Niko Home Control: Communication start complete.");
         handler.controllerOnline();
-        if (communicationStarted != null) {
-            communicationStarted.complete(true);
+        CompletableFuture<Boolean> future = communicationStarted;
+        if (future != null) {
+            future.complete(true);
         }
     }
 
@@ -600,7 +602,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
 
         message.method = "devices.control";
         ArrayList<NhcMessageParam> params = new ArrayList<>();
-        NhcMessageParam param = message.new NhcMessageParam();
+        NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
         ArrayList<NhcDevice2> devices = new ArrayList<>();
@@ -609,7 +611,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         param.devices = devices;
         device.uuid = actionId;
         device.properties = new ArrayList<>();
-        NhcProperty property = device.new NhcProperty();
+        NhcProperty property = new NhcProperty();
         device.properties.add(property);
 
         NhcAction2 action = (NhcAction2) actions.get(actionId);
@@ -662,7 +664,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
 
         message.method = "devices.control";
         ArrayList<NhcMessageParam> params = new ArrayList<>();
-        NhcMessageParam param = message.new NhcMessageParam();
+        NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
         ArrayList<NhcDevice2> devices = new ArrayList<>();
@@ -672,11 +674,11 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         device.uuid = thermostatId;
         device.properties = new ArrayList<>();
 
-        NhcProperty overruleActiveProp = device.new NhcProperty();
+        NhcProperty overruleActiveProp = new NhcProperty();
         device.properties.add(overruleActiveProp);
         overruleActiveProp.overruleActive = "False";
 
-        NhcProperty program = device.new NhcProperty();
+        NhcProperty program = new NhcProperty();
         device.properties.add(program);
         program.program = mode;
 
@@ -691,7 +693,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
 
         message.method = "devices.control";
         ArrayList<NhcMessageParam> params = new ArrayList<>();
-        NhcMessageParam param = message.new NhcMessageParam();
+        NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
         ArrayList<NhcDevice2> devices = new ArrayList<>();
@@ -702,19 +704,19 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
         device.properties = new ArrayList<>();
 
         if (overruleTime > 0) {
-            NhcProperty overruleActiveProp = device.new NhcProperty();
+            NhcProperty overruleActiveProp = new NhcProperty();
             overruleActiveProp.overruleActive = "True";
             device.properties.add(overruleActiveProp);
 
-            NhcProperty overruleSetpointProp = device.new NhcProperty();
+            NhcProperty overruleSetpointProp = new NhcProperty();
             overruleSetpointProp.overruleSetpoint = String.valueOf(overruleTemp);
             device.properties.add(overruleSetpointProp);
 
-            NhcProperty overruleTimeProp = device.new NhcProperty();
+            NhcProperty overruleTimeProp = new NhcProperty();
             overruleTimeProp.overruleTime = String.valueOf(overruleTime);
             device.properties.add(overruleTimeProp);
         } else {
-            NhcProperty overruleActiveProp = device.new NhcProperty();
+            NhcProperty overruleActiveProp = new NhcProperty();
             overruleActiveProp.overruleActive = "False";
             device.properties.add(overruleActiveProp);
         }
@@ -807,5 +809,15 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication 
      */
     public String getServices() {
         return services.stream().map(NhcService2::name).collect(Collectors.joining(", "));
+    }
+
+    @Override
+    public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
+        if (error != null) {
+            logger.debug("Connection error: {}", state, error);
+            connectionLost();
+        } else {
+            logger.trace("Connection state: {}", state);
+        }
     }
 }

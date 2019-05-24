@@ -76,26 +76,20 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         }
         NikoHomeControlCommunication nhcComm = nhcBridgeHandler.getCommunication();
 
-        if (nhcComm == null || !nhcComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "Niko Home Control: bridge communication not initialized when trying to execute action "
-                            + actionId);
-            return;
-        }
+        // This can be expensive, therefore do it in a job.
+        scheduler.submit(() -> {
+            if (nhcComm == null || !nhcComm.communicationActive()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                        "Niko Home Control: bridge communication not initialized when trying to execute action "
+                                + actionId);
+                return;
+            }
 
-        if (nhcAction == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Niko Home Control: actionId " + actionId + " does not match an action in the controller");
-            return;
-        }
-
-        if (nhcComm.communicationActive()) {
-            handleCommandSelection(channelUID, command);
-        } else {
-            // We lost connection but the connection object is there, so was correctly started.
-            // Try to restart communication.
-            // This can be expensive, therefore do it in a job.
-            scheduler.submit(() -> {
+            if (nhcComm.communicationActive()) {
+                handleCommandSelection(channelUID, command);
+            } else {
+                // We lost connection but the connection object is there, so was correctly started.
+                // Try to restart communication.
                 nhcComm.restartCommunication();
                 // If still not active, take thing offline and return.
                 if (!nhcComm.communicationActive()) {
@@ -108,8 +102,8 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
                 // And finally handle the command
                 handleCommandSelection(channelUID, command);
-            });
-        }
+            }
+        });
     }
 
     private void handleCommandSelection(ChannelUID channelUID, Command command) {
@@ -247,12 +241,11 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
                 return;
             }
 
-            String actionLocation = nhcAction.getLocation();
-
             nhcAction.setEventHandler(this);
 
             updateProperties();
 
+            String actionLocation = nhcAction.getLocation();
             if (thing.getLocation() == null) {
                 thing.setLocation(actionLocation);
             }
