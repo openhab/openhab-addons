@@ -100,6 +100,80 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+	
+	<thing-type id="speedtest">
+		<label>SpeedTest</label>
+		<description>Provides information about bandwidth speed.</description>
+
+		<channels>
+			<channel id="isRunning" typeId="isRunning" />
+			<channel id="progress" typeId="progress" />
+			<channel id="rateUp" typeId="rateUp" />
+			<channel id="rateDown" typeId="rateDown" />
+			<channel id="testStart" typeId="Timestamp">
+				<label>Test Start</label>
+			</channel>
+			 <channel id="testEnd" typeId="Timestamp">
+				<label>Test End</label>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="refreshInterval" type="integer" min="2">
+				<label>Refresh time interval</label>
+				<description>Refresh time interval in minutes.</description>
+				<default>20</default>
+			</parameter>
+			<parameter name="uploadSize" type="integer" min="5000">
+				<label>Upload size</label>
+				<description>Size of the file to be uploaded (bytes).</description>
+				<default>1000000</default>
+			</parameter>
+			<parameter name="url" type="text" required="true">
+				<label>Test server URL</label>
+				<description>Url of the speed test server</description>
+			</parameter>
+			<parameter name="fileName" type="text" required="true">
+				<label>File Name</label>
+				<description>Name of the file to download from test server</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	
+	<channel-type id="isRunning">
+		<item-type>Switch</item-type>
+		<label>Test Running</label>
+		<description>Indicates if a test is currently ongoing</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	
+	<channel-type id="progress">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Progress</label>
+		<description>Current Test progression</description>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %unit%" />
+	</channel-type>
+	
+	<channel-type id="rateUp">
+		<item-type>Number</item-type>
+		<label>Upload Rate</label>
+		<description>Current upload rate in bit/s</description>
+		<state readOnly="true" pattern="%d b/s" />
+	</channel-type>
+
+	<channel-type id="rateDown">
+		<item-type>Number</item-type>
+		<label>Download Rate</label>
+		<description>Current download rate in bit/s</description>
+		<state readOnly="true" pattern="%d b/s" />
+	</channel-type>
+	
+	<channel-type id="Timestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>Status timestamp</description>
+		<state readOnly="true" />
+	</channel-type>
 
 	<channel-type id="online">
 		<item-type>Switch</item-type>
