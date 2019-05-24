@@ -98,11 +98,10 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
             }
 
             InetAddress addr = handler.getAddr();
-            @SuppressWarnings("null") // default value specified, so cannot be null
             int port = handler.getPort();
 
-            nhcSocket = new Socket(addr, port);
-            Socket socket = nhcSocket;
+            Socket socket = new Socket(addr, port);
+            nhcSocket = socket;
             nhcOut = new PrintWriter(socket.getOutputStream(), true);
             nhcIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             logger.debug("Niko Home Control: connected via local port {}", socket.getLocalPort());
@@ -129,9 +128,10 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
     public synchronized void stopCommunication() {
         listenerStopped = true;
 
-        if (nhcSocket != null) {
+        Socket socket = nhcSocket;
+        if (socket != null) {
             try {
-                nhcSocket.close();
+                socket.close();
             } catch (IOException ignore) {
                 // ignore IO Error when trying to close the socket if the intention is to close it anyway
             }
@@ -155,7 +155,6 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
      *
      */
     private void runNhcEvents() {
-        @Nullable
         String nhcMessage;
 
         logger.debug("Niko Home Control: listening for events");
@@ -382,11 +381,10 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                 if (!locationId.isEmpty()) {
                     location = locations.get(locationId).getName();
                 }
-                NhcAction nhcAction = new NhcAction1(id, name, actionType, location, scheduler);
+                NhcAction nhcAction = new NhcAction1(id, name, actionType, location, this, scheduler);
                 if (actionType == ActionType.ROLLERSHUTTER) {
                     nhcAction.setShutterTimes(openTime, closeTime);
                 }
-                nhcAction.setNhcComm(this);
                 nhcAction.setState(state);
                 actions.put(id, nhcAction);
             } else {
@@ -427,9 +425,8 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
                 if (!locationId.isEmpty()) {
                     location = locations.get(locationId).getName();
                 }
-                NhcThermostat nhcThermostat = new NhcThermostat1(id, name, location);
+                NhcThermostat nhcThermostat = new NhcThermostat1(id, name, location, this);
                 nhcThermostat.updateState(measured, setpoint, mode, overrule, overruletime, ecosave, demand);
-                nhcThermostat.setNhcComm(this);
                 thermostats.put(id, nhcThermostat);
             } else {
                 // Thermostat object already exists, so only update state.

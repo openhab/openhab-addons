@@ -21,7 +21,7 @@ import java.util.List;
  * @author Mark Herwege - Initial Contribution
  */
 class NhcDevice2 {
-    class NhcProperty {
+    static class NhcProperty {
         // fields for lights
         String status;
         String brightness;
@@ -42,11 +42,11 @@ class NhcDevice2 {
         String ambientTemperature;
     }
 
-    class NhcTrait {
+    static class NhcTrait {
 
     }
 
-    class NhcParameter {
+    static class NhcParameter {
         String locationId;
         String locationName;
         String locationIcon;
