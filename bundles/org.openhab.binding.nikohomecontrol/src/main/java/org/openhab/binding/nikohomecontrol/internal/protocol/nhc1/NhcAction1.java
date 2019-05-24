@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.ActionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,8 +55,9 @@ public class NhcAction1 extends NhcAction {
     private volatile boolean waitForEvent = false; // flag to wait for position update rollershutter before doing next
                                                    // move
 
-    NhcAction1(String id, String name, ActionType type, @Nullable String location, ScheduledExecutorService scheduler) {
-        super(id, name, type, location);
+    NhcAction1(String id, String name, ActionType type, @Nullable String location, NikoHomeControlCommunication nhcComm,
+            ScheduledExecutorService scheduler) {
+        super(id, name, type, location, nhcComm);
         this.scheduler = scheduler;
     }
 
@@ -113,6 +115,7 @@ public class NhcAction1 extends NhcAction {
                 } else {
                     value = "0";
                 }
+                nhcComm.executeAction(id, value);
                 break;
             case DIMMER:
                 if (command.equals(NHCON)) {
@@ -122,19 +125,11 @@ public class NhcAction1 extends NhcAction {
                 } else {
                     value = command;
                 }
+                nhcComm.executeAction(id, value);
                 break;
             case ROLLERSHUTTER:
-                // requires special treatment, so handled outside of this switch
+                executeRollershutter(command);
                 break;
-        }
-
-        if (nhcComm != null) {
-            nhcComm.executeAction(id, value);
-            return;
-        }
-
-        if (getType() == ActionType.ROLLERSHUTTER) {
-            executeRollershutter(command);
         }
     }
 
@@ -196,21 +191,15 @@ public class NhcAction1 extends NhcAction {
     }
 
     private void executeRollershutterStop() {
-        if (nhcComm != null) {
-            nhcComm.executeAction(id, "253");
-        }
+        nhcComm.executeAction(id, "253");
     }
 
     private void executeRollershutterDown() {
-        if (nhcComm != null) {
-            nhcComm.executeAction(id, "254");
-        }
+        nhcComm.executeAction(id, "254");
     }
 
     private void executeRollershutterUp() {
-        if (nhcComm != null) {
-            nhcComm.executeAction(id, "255");
-        }
+        nhcComm.executeAction(id, "255");
     }
 
     /**

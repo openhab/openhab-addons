@@ -34,7 +34,7 @@ public abstract class NhcThermostat {
 
     private final Logger logger = LoggerFactory.getLogger(NhcThermostat.class);
 
-    protected @Nullable NikoHomeControlCommunication nhcComm;
+    protected NikoHomeControlCommunication nhcComm;
 
     protected String id;
     protected String name;
@@ -51,10 +51,11 @@ public abstract class NhcThermostat {
 
     private @Nullable NhcThermostatEvent eventHandler;
 
-    protected NhcThermostat(String id, String name, @Nullable String location) {
+    protected NhcThermostat(String id, String name, @Nullable String location, NikoHomeControlCommunication nhcComm) {
         this.id = id;
         this.name = name;
         this.location = location;
+        this.nhcComm = nhcComm;
     }
 
     /**
@@ -127,17 +128,6 @@ public abstract class NhcThermostat {
      */
     public void setEventHandler(NhcThermostatEvent eventHandler) {
         this.eventHandler = eventHandler;
-    }
-
-    /**
-     * This method sets a pointer to the nhcComm object of class {@link NikoHomeControlCommuncation}.
-     * This is then used to be able to call back the sendCommand method in this class to send a command to the
-     * Niko Home Control IP-interface when..
-     *
-     * @param nhcComm
-     */
-    public void setNhcComm(NikoHomeControlCommunication nhcComm) {
-        this.nhcComm = nhcComm;
     }
 
     /**
