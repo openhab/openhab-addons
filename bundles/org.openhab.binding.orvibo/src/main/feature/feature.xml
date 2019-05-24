@@ -4,8 +4,7 @@
 
     <feature name="openhab-binding-orvibo" description="Orvibo Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <bundle dependency="true">mvn:org.slf4j/slf4j-api/${slf4j.version}</bundle>
-        <bundle dependency="true">mvn:org.slf4j/slf4j-simple/${slf4j.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.commons/commons-collections4/4.1</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.orvibo/${project.version}</bundle>
     </feature>
 </features>
