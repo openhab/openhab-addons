@@ -13,7 +13,6 @@
 package org.openhab.binding.somfymylink.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link SomfyMyLinkBindingConstants} class defines common constants, which are
@@ -21,22 +20,11 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Chris Johnson - Initial contribution
  */
+
 @NonNullByDefault
-public class SomfyMyLinkResponseBase {
+public class SomfyMyLinkError {
 
-    @Nullable
-    public String jsonrpc;
+    public String code = "";
 
-    @Nullable
-    public String id;
-
-    @Nullable
-    public String getId() {
-        return id;
-    }
-
-    @Nullable
-    public String getJsonRpc() {
-        return jsonrpc;
-    }
+    public String message = "";
 }
