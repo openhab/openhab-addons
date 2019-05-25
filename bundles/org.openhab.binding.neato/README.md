@@ -29,12 +29,14 @@ Discovery is used _after_ a bridge has been created and configured with your log
 In order to manually create a thing file and not use the discovery routine you will need to know the vacuums serial number as well as the secret used in web service calls. This is a bit difficult to get. The easiest way of getting this information is to use the third party python library that is available at https://github.com/stianaske/pybotvac.
 
 Neato Account Config
+
 | Config   | Description                         |
 |----------|------------------------------------ |
 | email    | Email address tied to Neato Account |
 | password | Password tied to Neato Account      |
 
 Vacuum Cleaner Config
+
 | Config   | Description                             |
 |----------|-----------------------------------------|
 | serial   | Serial Number of your Neato Robot       |
@@ -105,3 +107,4 @@ Frame label="Neato BotVac Connected" {
 ```
 neato:vacuumcleaner:fanndamm [ serial="vacuumcleaner-serial", secret="secret-string"]
 ```
+
