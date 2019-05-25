@@ -112,7 +112,7 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
                     try {
                         discoverDevices();
                     } catch (SomfyMyLinkException e) {
-                        logger.error("Error scanning for devices: " + e.getMessage(), e);
+                        logger.info("Error scanning for devices: " + e.getMessage(), e);
 
                         if (scanListener != null) {
                             scanListener.onErrorOccurred(e);
@@ -125,7 +125,7 @@ public class SomfyMyLinkDeviceDiscoveryService extends AbstractDiscoveryService 
 
     private void discoverDevices() throws SomfyMyLinkException {
         if(this.mylinkHandler.getThing().getStatus() != ThingStatus.ONLINE) {
-            logger.info("Skipping device discover as bridge is {}", this.mylinkHandler.getThing().getStatus());
+            logger.debug("Skipping device discover as bridge is {}", this.mylinkHandler.getThing().getStatus());
             return;
         }
 

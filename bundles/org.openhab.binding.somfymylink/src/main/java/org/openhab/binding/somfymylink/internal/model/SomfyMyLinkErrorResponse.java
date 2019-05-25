@@ -22,21 +22,13 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Chris Johnson - Initial contribution
  */
 @NonNullByDefault
-public class SomfyMyLinkResponseBase {
+public class SomfyMyLinkErrorResponse extends SomfyMyLinkResponseBase {
+
+    public SomfyMyLinkError error = new SomfyMyLinkError();
 
     @Nullable
-    public String jsonrpc;
-
-    @Nullable
-    public String id;
-
-    @Nullable
-    public String getId() {
-        return id;
-    }
-
-    @Nullable
-    public String getJsonRpc() {
-        return jsonrpc;
+    public SomfyMyLinkError getError() {
+        return error;
     }
 }
+

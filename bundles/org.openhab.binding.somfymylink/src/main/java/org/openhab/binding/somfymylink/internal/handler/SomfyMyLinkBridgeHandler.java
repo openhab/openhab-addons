@@ -40,6 +40,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.somfymylink.internal.config.SomfyMyLinkConfiguration;
 import org.openhab.binding.somfymylink.internal.discovery.SomfyMyLinkDeviceDiscoveryService;
+import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkErrorResponse;
 import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkPingResponse;
 import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkResponseBase;
 import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkScene;
@@ -51,6 +52,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -69,7 +73,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     private static final int HEARTBEAT_MINUTES = 2;
     private static final int MYLINK_PORT = 44100;
-    private static final int MYLINK_DEFAULT_TIMEOUT = 15000;
+    private static final int MYLINK_DEFAULT_TIMEOUT = 5000;
     private static final Object CONNECTION_LOCK = new Object();
     private static final int CONNECTION_DELAY = 1000;
     
@@ -220,7 +224,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         return new SomfyMyLinkShade[0];
     }
 
-    public String[] sendPing() throws SomfyMyLinkException {
+    public void sendPing() throws SomfyMyLinkException {
         String targetId = "*.*";
         String command = "mylink.status.ping";
 
@@ -228,10 +232,10 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                 SomfyMyLinkPingResponse.class);
 
         if (response != null) {
-            return response.getResult();
+            return;
         }
 
-        return new String[0];
+        return;
     }
 
     public SomfyMyLinkScene[] getSceneList() throws SomfyMyLinkException {
@@ -252,7 +256,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         try {
             sendCommand("mylink.move.up", targetId);
         } catch (SomfyMyLinkException e) {
-            logger.error("Error commanding shade up: " + e.getMessage());
+            logger.info("Error commanding shade up: " + e.getMessage());
             throw new SomfyMyLinkException("Error commanding shade up", e);
         }
     }
@@ -261,7 +265,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         try {
             sendCommand("mylink.move.down", targetId);
         } catch (SomfyMyLinkException e) {
-            logger.error("Error commanding shade down: " + e.getMessage());
+            logger.info("Error commanding shade down: " + e.getMessage());
             throw new SomfyMyLinkException("Error commanding shade down", e);
         }
     }
@@ -270,7 +274,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         try {
             sendCommand("mylink.move.stop", targetId);
         } catch (SomfyMyLinkException e) {
-            logger.error("Error commanding shade stop: " + e.getMessage());
+            logger.info("Error commanding shade stop: " + e.getMessage());
             throw new SomfyMyLinkException("Error commanding shade stop", e);
         }
     }
@@ -348,15 +352,21 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                         message += new String(readBuff, 0, readCount);
                         try {
                             
-                            logger.debug("got message: " + message);
+                            logger.debug("Got message: " + message);
+                            
+                            JsonParser parser = new JsonParser();
+                            JsonObject o = parser.parse(message).getAsJsonObject();
+
+                            if(o.has("error")) {
+
+                                SomfyMyLinkErrorResponse errorResponse = gson.fromJson(message, SomfyMyLinkErrorResponse.class);
+
+                                logger.info("Error communicating with mylink: {}", errorResponse.error.message);
+                                throw new SomfyMyLinkException("Error communicating with mylink: " + errorResponse.error.message);
+                            }
                             
                             SomfyMyLinkResponseBase data = gson.fromJson(message, responseType);
 
-                            // check if there was an error
-                            if (data.getError() != null) {
-                                logger.error("Error communicating with mylink: " + data.getError());
-                                throw new SomfyMyLinkException("Error communicating with mylink:" + data.getError());
-                            }
                             return data;
                         } catch (JsonSyntaxException e) {
                             // it wasn't a full message?
@@ -381,13 +391,13 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
                 return null;
             } catch (SocketTimeoutException e) {
-                logger.error("Timeout sending command to mylink: " + command + "Message: " + e.getMessage());
+                logger.info("Timeout sending command to mylink: " + command + "Message: " + e.getMessage());
                 throw new SomfyMyLinkException("Timeout sending command to mylink", e);
             } catch (SocketException e) {
-                logger.error("Problem sending command to mylink: " + command + "Message: " + e.getMessage());
+                logger.info("Problem sending command to mylink: " + command + "Message: " + e.getMessage());
                 throw new SomfyMyLinkException("Problem sending command to mylink", e);
             } catch (IOException e) {
-                logger.error("Problem sending command to mylink: " + command + "Message: " + e.getMessage());
+                logger.info("Problem sending command to mylink: " + command + "Message: " + e.getMessage());
                 throw new SomfyMyLinkException("Problem sending command to mylink", e);
             } catch (InterruptedException e) {
                 logger.debug("Interrupted while waiting after sending command to mylink: " + command + "Message: " + e.getMessage());
