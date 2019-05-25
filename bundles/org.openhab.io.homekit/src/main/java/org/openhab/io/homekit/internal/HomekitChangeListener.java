@@ -143,6 +143,10 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         accessoryRegistry.setBridge(bridge);
     }
 
+    public synchronized void unsetBridge() {
+        accessoryRegistry.unsetBridge();
+    }
+
     public void setUpdater(HomekitAccessoryUpdater updater) {
         this.updater = updater;
     }

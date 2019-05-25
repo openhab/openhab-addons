@@ -24,10 +24,10 @@ Other settings, such as using Fahrenheit temperatures, customizing the thermosta
 org.openhab.homekit:port=9124
 org.openhab.homekit:pin=031-45-154
 org.openhab.homekit:useFahrenheitTemperature=true
-org.openhab.homekit:thermostatCoolMode=CoolOn
-org.openhab.homekit:thermostatHeatMode=HeatOn
-org.openhab.homekit:thermostatAutoMode=Auto
-org.openhab.homekit:thermostatOffMode=Off
+org.openhab.homekit:thermostatTargetModeCool=CoolOn
+org.openhab.homekit:thermostatTargetModeHeat=HeatOn
+org.openhab.homekit:thermostatTargetModeAuto=Auto
+org.openhab.homekit:thermostatTargetModeOff=Off
 org.openhab.homekit:networkInterface=192.168.0.6
 ```
 
@@ -43,14 +43,14 @@ org.openhab.homekit:maximumTemperature=100
 
 | Setting                   | Description                                                                                                                                                                                                                               | Default value     |
 |-------------------------- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------  |---------------    |
-| networkInterface          | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the addon tries to determine the IP address from the local hostname.                                                                  | (none)            |
+| networkInterface          | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the addon uses the first network adapter address.                                                                  | (none)            |
 | port                      | Port under which the HomeKit bridge can be reached.                                                                                                                                                                                       | 9123              |
 | pin                       | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work.   | 031-45-154        |
 | useFahrenheitTemperature  | Set to true to use Fahrenheit degrees, or false to use Celsius degrees.                                                                                                                                                                   | false             |
-| thermostatCoolMode        | Word used for activating the cooling mode of the device (if applicable).                                                                                                                                                                  | CoolOn            |
-| thermostatHeatMode        | Word used for activating the heating mode of the device (if applicable).                                                                                                                                                                  | HeatOn            |
-| thermostatAutoMode        | Word used for activating the automatic mode of the device (if applicable).                                                                                                                                                                | Auto              |
-| thermostatOffMode         | Word used to set the thermostat mode of the device to off (if applicable).                                                                                                                                                                | Off               |
+| thermostatTargetModeCool  | Word used for activating the cooling mode of the device (if applicable).                                                                                                                                                                  | CoolOn            |
+| thermostatTargetModeHeat  | Word used for activating the heating mode of the device (if applicable).                                                                                                                                                                  | HeatOn            |
+| thermostatTargetModeAuto  | Word used for activating the automatic mode of the device (if applicable).                                                                                                                                                                | Auto              |
+| thermostatTargetModeOff   | Word used to set the thermostat mode of the device to off (if applicable).                                                                                                                                                                | Off               |
 | minimumTemperature        | Lower bound of possible temperatures, used in the user interface of the iOS device to display the allowed temperature range. Note that this setting applies to all devices in HomeKit.                                                    | -100              |
 | maximumTemperature        | Upper bound of possible temperatures, used in the user interface of the iOS device to display the allowed temperature range. Note that this setting applies to all devices in HomeKit.                                                    | 100               |
 | name                      | Name under which this HomeKit bridge is announced on the network. This is also the name displayed on the iOS device when searching for available bridges.                                                                                 | openHAB           |
@@ -78,8 +78,9 @@ A full list of supported accessory types can be found in the table below.
 |                       | homekit:TargetHeatingCoolingMode  | String                    | Indicates the desired mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"   |
 |                       | homekit:CurrentHeatingCoolingMode | String                    | Indicates the current mode of the device: OFF, AUTO, HEAT, COOL. The string's value must match those defined in the thermostat*Mode properties. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"   |
 |                       | homekit:TargetTemperature         | Number                    | A target temperature that will engage the thermostat's heating and cooling actions as necessary, depending on the heatingCoolingMode. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"             |
+| WindowCovering        |                                   | Rollershutter             | A window covering                                                                                                                                                                                                                             |
 
-**Please note:** `TargetTemperature` has been renamed to `homekit:TagretTemperature` and `homekit:HeatingCoolingMode` has been renamed to `homekit:TargetHeatingCoolingMode`.
+**Please note:** `TargetTemperature` has been renamed to `homekit:TargetTemperature` and `homekit:HeatingCoolingMode` has been renamed to `homekit:TargetHeatingCoolingMode`.
 
 See the sample below for example items:
 
