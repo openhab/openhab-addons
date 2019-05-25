@@ -15,13 +15,16 @@ package org.openhab.io.homekit.internal;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.security.InvalidAlgorithmParameterException;
+import java.util.Map;
 
 import org.eclipse.smarthome.config.core.ConfigurableService;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.storage.StorageService;
 import org.openhab.io.homekit.Homekit;
 import org.osgi.framework.Constants;
-import org.osgi.service.component.ComponentContext;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -44,66 +47,49 @@ import com.beowulfe.hap.HomekitServer;
         ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=io",
         ConfigurableService.SERVICE_PROPERTY_LABEL + "=HomeKit Integration", "port:Integer=9123" })
 public class HomekitImpl implements Homekit {
-    private final HomekitSettings settings = new HomekitSettings();
+    private final Logger logger = LoggerFactory.getLogger(HomekitImpl.class);
+    private final StorageService storageService;
+    private final NetworkAddressService networkAddressService;
+    private final HomekitChangeListener changeListener;
+
+    private HomekitSettings settings;
     private HomekitServer homekit;
     private HomekitRoot bridge;
-    private StorageService storageService;
-    private final HomekitChangeListener changeListener = new HomekitChangeListener();
-    private Logger logger = LoggerFactory.getLogger(HomekitImpl.class);
-
-    @Reference
-    public void setStorageService(StorageService storageService) {
-        this.storageService = storageService;
-    }
-
-    public void unsetStorageService(StorageService storageService) {
-        this.storageService = null;
-    }
-
-    @Reference
-    public void setItemRegistry(ItemRegistry itemRegistry) {
-        changeListener.setSettings(settings);
-        changeListener.setItemRegistry(itemRegistry);
-    }
-
-    public void unsetItemRegistry(ItemRegistry itemRegistry) {
-        changeListener.setItemRegistry(null);
-    }
 
     @Activate
-    protected synchronized void activate(ComponentContext componentContext) {
-        modified(componentContext);
+    public HomekitImpl(@Reference StorageService storageService, @Reference ItemRegistry itemRegistry,
+            @Reference NetworkAddressService networkAddressService, Map<String, Object> config)
+            throws IOException, InvalidAlgorithmParameterException {
+        this.storageService = storageService;
+        this.networkAddressService = networkAddressService;
+        this.settings = processConfig(config);
+        this.changeListener = new HomekitChangeListener(itemRegistry, settings);
+        start();
+    }
+
+    private HomekitSettings processConfig(Map<String, Object> config) throws UnknownHostException {
+        HomekitSettings settings = (new Configuration(config)).as(HomekitSettings.class);
+        settings.process(networkAddressService.getPrimaryIpv4HostAddress());
+        return settings;
     }
 
     @Modified
-    protected synchronized void modified(ComponentContext componentContext) {
+    protected synchronized void modified(Map<String, Object> config) {
         try {
-            settings.fill(componentContext.getProperties());
-            changeListener.setSettings(settings);
-        } catch (UnknownHostException e) {
-            logger.debug("Could not initialize homekit: {}", e.getMessage(), e);
-            return;
-        }
-        try {
+            this.settings = processConfig(config);
+            changeListener.updateSettings(this.settings);
+            stop();
             start();
         } catch (IOException | InvalidAlgorithmParameterException e) {
-            logger.warn("Could not initialize homekit: {}", e.getMessage(), e);
+            logger.debug("Could not initialize homekit: {}", e.getMessage());
+            return;
         }
     }
 
     @Deactivate
     protected void deactivate() {
         changeListener.clearAccessories();
-        if (bridge != null) {
-            bridge.stop();
-            bridge = null;
-        }
-        if (homekit != null) {
-            homekit.stop();
-            homekit = null;
-        }
-
-        changeListener.setBridge(null);
+        stop();
         changeListener.stop();
     }
 
@@ -122,10 +108,24 @@ public class HomekitImpl implements Homekit {
     }
 
     private void start() throws IOException, InvalidAlgorithmParameterException {
-        homekit = new HomekitServer(settings.getNetworkInterface(), settings.getPort());
-        bridge = homekit.createBridge(new HomekitAuthInfoImpl(storageService, settings.getPin()), settings.getName(),
-                settings.getManufacturer(), settings.getModel(), settings.getSerialNumber());
+        homekit = new HomekitServer(settings._networkInterface, settings.port);
+        bridge = homekit.createBridge(new HomekitAuthInfoImpl(storageService, settings.pin), settings.name,
+                HomekitSettings.MANUFACTURER, FrameworkUtil.getBundle(getClass()).getVersion().toString(),
+                HomekitSettings.SERIAL_NUMBER);
         bridge.start();
         changeListener.setBridge(bridge);
+    }
+
+    private void stop() {
+        changeListener.setBridge(null);
+
+        if (bridge != null) {
+            bridge.stop();
+            bridge = null;
+        }
+        if (homekit != null) {
+            homekit.stop();
+            homekit = null;
+        }
     }
 }
