@@ -12,9 +12,6 @@
  */
 package org.openhab.io.homekit.internal;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 /**
  * Provides the configured and static settings for the Homekit addon
  *
@@ -48,9 +45,7 @@ public class HomekitSettings {
     @Deprecated
     public String thermostatOffMode;
 
-    public InetAddress _networkInterface;
-
-    public void process(String primaryIpAddress) throws UnknownHostException {
+    public void process() {
         if (thermostatHeatMode /* legacy setting */ != null) {
             this.thermostatTargetModeHeat = thermostatHeatMode;
         }
@@ -63,11 +58,6 @@ public class HomekitSettings {
         if (thermostatOffMode /* legacy setting */ != null) {
             this.thermostatTargetModeOff = thermostatOffMode;
         }
-
-        if (networkInterface == null) {
-            this.networkInterface = primaryIpAddress;
-        }
-        this._networkInterface = InetAddress.getByName(networkInterface);
     }
 
     @Override

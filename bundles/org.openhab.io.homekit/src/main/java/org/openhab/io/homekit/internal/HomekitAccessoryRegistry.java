@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,7 @@ import com.beowulfe.hap.HomekitRoot;
  */
 class HomekitAccessoryRegistry {
 
-    private HomekitRoot bridge;
+    private @Nullable HomekitRoot bridge;
     private final Map<String, HomekitAccessory> createdAccessories = new HashMap<>();
     private final Set<Integer> createdIds = new HashSet<>();
 
@@ -43,7 +44,11 @@ class HomekitAccessoryRegistry {
         if (createdAccessories.containsKey(itemName)) {
             HomekitAccessory accessory = createdAccessories.remove(itemName);
             logger.debug("Removed accessory {} for taggedItem {}", accessory.getId(), itemName);
-            bridge.removeAccessory(accessory);
+            if (bridge != null) {
+                bridge.removeAccessory(accessory);
+            } else {
+                logger.warn("trying to remove {} but bridge is null", accessory);
+            }
         }
     }
 
@@ -51,7 +56,11 @@ class HomekitAccessoryRegistry {
         Iterator<Entry<String, HomekitAccessory>> iter = createdAccessories.entrySet().iterator();
         while (iter.hasNext()) {
             Entry<String, HomekitAccessory> entry = iter.next();
-            bridge.removeAccessory(entry.getValue());
+            if (bridge != null) {
+                bridge.removeAccessory(entry.getValue());
+            } else {
+                logger.warn("trying to clear {} but bridge is null", entry);
+            }
             iter.remove();
         }
         createdIds.clear();
@@ -60,6 +69,10 @@ class HomekitAccessoryRegistry {
     public synchronized void setBridge(HomekitRoot bridge) {
         this.bridge = bridge;
         createdAccessories.values().forEach(accessory -> bridge.addAccessory(accessory));
+    }
+
+    public synchronized void unsetBridge() {
+        this.bridge = null;
     }
 
     public synchronized void addRootAccessory(String itemName, HomekitAccessory accessory) {

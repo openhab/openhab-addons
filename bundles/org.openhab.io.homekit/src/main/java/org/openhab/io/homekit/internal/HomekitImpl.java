@@ -13,10 +13,13 @@
 package org.openhab.io.homekit.internal;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.InvalidAlgorithmParameterException;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigurableService;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.items.ItemRegistry;
@@ -46,6 +49,7 @@ import com.beowulfe.hap.HomekitServer;
         ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=io:homekit",
         ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=io",
         ConfigurableService.SERVICE_PROPERTY_LABEL + "=HomeKit Integration", "port:Integer=9123" })
+@NonNullByDefault
 public class HomekitImpl implements Homekit {
     private final Logger logger = LoggerFactory.getLogger(HomekitImpl.class);
     private final StorageService storageService;
@@ -53,8 +57,9 @@ public class HomekitImpl implements Homekit {
     private final HomekitChangeListener changeListener;
 
     private HomekitSettings settings;
-    private HomekitServer homekit;
-    private HomekitRoot bridge;
+    private @Nullable InetAddress networkInterface;
+    private @Nullable HomekitServer homekitServer;
+    private @Nullable HomekitRoot bridge;
 
     @Activate
     public HomekitImpl(@Reference StorageService storageService, @Reference ItemRegistry itemRegistry,
@@ -64,32 +69,87 @@ public class HomekitImpl implements Homekit {
         this.networkAddressService = networkAddressService;
         this.settings = processConfig(config);
         this.changeListener = new HomekitChangeListener(itemRegistry, settings);
-        start();
+        startHomekitServer();
     }
 
     private HomekitSettings processConfig(Map<String, Object> config) throws UnknownHostException {
         HomekitSettings settings = (new Configuration(config)).as(HomekitSettings.class);
-        settings.process(networkAddressService.getPrimaryIpv4HostAddress());
+        settings.process();
+        if (settings.networkInterface == null) {
+            settings.networkInterface = networkAddressService.getPrimaryIpv4HostAddress();
+        }
         return settings;
     }
 
     @Modified
     protected synchronized void modified(Map<String, Object> config) {
         try {
-            this.settings = processConfig(config);
-            changeListener.updateSettings(this.settings);
-            stop();
-            start();
+            HomekitSettings oldSettings = settings;
+            settings = processConfig(config);
+            changeListener.updateSettings(settings);
+            if (!oldSettings.networkInterface.equals(settings.networkInterface) || oldSettings.port != settings.port) {
+                // the homekit server settings changed. we do a complete re-init
+                stopHomekitServer();
+                startHomekitServer();
+            } else if (!oldSettings.name.equals(settings.name) || !oldSettings.pin.equals(settings.pin)) {
+                // we change the root bridge only
+                stopBridge();
+                startBridge();
+            }
         } catch (IOException | InvalidAlgorithmParameterException e) {
-            logger.debug("Could not initialize homekit: {}", e.getMessage());
+            logger.debug("Could not initialize homekit connector: {}", e.getMessage());
             return;
+        }
+    }
+
+    private void stopBridge() {
+        final HomekitRoot bridge = this.bridge;
+        if (bridge != null) {
+            changeListener.unsetBridge();
+            bridge.stop();
+            this.bridge = null;
+        }
+    }
+
+    private void startBridge() throws InvalidAlgorithmParameterException, IOException {
+        if (homekitServer != null && bridge == null) {
+            final HomekitRoot bridge = homekitServer.createBridge(new HomekitAuthInfoImpl(storageService, settings.pin),
+                    settings.name, HomekitSettings.MANUFACTURER,
+                    FrameworkUtil.getBundle(getClass()).getVersion().toString(), HomekitSettings.SERIAL_NUMBER);
+            changeListener.setBridge(bridge);
+            bridge.start();
+            this.bridge = bridge;
+        } else {
+            logger.warn(
+                    "trying to start bridge but homekit server is not initialized or bridge is already initialized");
+        }
+    }
+
+    private void startHomekitServer() throws InvalidAlgorithmParameterException, IOException {
+        if (homekitServer == null) {
+            networkInterface = InetAddress.getByName(settings.networkInterface);
+            homekitServer = new HomekitServer(networkInterface, settings.port);
+            startBridge();
+        } else {
+            logger.warn("trying to start homekit server but it is already initialized");
+        }
+    }
+
+    private void stopHomekitServer() {
+        final HomekitServer homekit = this.homekitServer;
+        if (homekit != null) {
+            if (bridge != null) {
+                stopBridge();
+            }
+            homekit.stop();
+            this.homekitServer = null;
         }
     }
 
     @Deactivate
     protected void deactivate() {
         changeListener.clearAccessories();
-        stop();
+        stopHomekitServer();
         changeListener.stop();
     }
 
@@ -104,28 +164,6 @@ public class HomekitImpl implements Homekit {
     public void allowUnauthenticatedRequests(boolean allow) {
         if (bridge != null) {
             bridge.allowUnauthenticatedRequests(allow);
-        }
-    }
-
-    private void start() throws IOException, InvalidAlgorithmParameterException {
-        homekit = new HomekitServer(settings._networkInterface, settings.port);
-        bridge = homekit.createBridge(new HomekitAuthInfoImpl(storageService, settings.pin), settings.name,
-                HomekitSettings.MANUFACTURER, FrameworkUtil.getBundle(getClass()).getVersion().toString(),
-                HomekitSettings.SERIAL_NUMBER);
-        bridge.start();
-        changeListener.setBridge(bridge);
-    }
-
-    private void stop() {
-        changeListener.setBridge(null);
-
-        if (bridge != null) {
-            bridge.stop();
-            bridge = null;
-        }
-        if (homekit != null) {
-            homekit.stop();
-            homekit = null;
         }
     }
 }
