@@ -80,7 +80,7 @@ A full list of supported accessory types can be found in the table below.
 |                       | homekit:TargetTemperature         | Number                    | A target temperature that will engage the thermostat's heating and cooling actions as necessary, depending on the heatingCoolingMode. This is a HomeKit-specific term and therefore the tags needs to be prefixed with "homekit:"             |
 | WindowCovering        |                                   | Rollershutter             | A window covering                                                                                                                                                                                                                             |
 
-**Please note:** `TargetTemperature` has been renamed to `homekit:TagretTemperature` and `homekit:HeatingCoolingMode` has been renamed to `homekit:TargetHeatingCoolingMode`.
+**Please note:** `TargetTemperature` has been renamed to `homekit:TargetTemperature` and `homekit:HeatingCoolingMode` has been renamed to `homekit:TargetHeatingCoolingMode`.
 
 See the sample below for example items:
 
