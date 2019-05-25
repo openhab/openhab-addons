@@ -22,9 +22,9 @@ Auto-discovery is not supported; things can be added manually.
 
 The thing has the following configuration parameter:
 
-| Parameter      | Parameter name |  Description                                                                                      |
-|----------------|--------------------------------------------------------------------------------------------------------------------|
-| Serial port    | port           | Specifies the name of the serial port used to communicate with the device. (String)               |
+| Parameter      | Parameter name | Description                                                  |
+| -------------- | -------------- | ------------------------------------------------------------ |
+| Serial port    | port           | Specifies the name of the serial port used to communicate with the device. (String) |
 | Maximum volume | maximum-volume | This is the value to send to the amplifier when the volume channel is set to 100 % (1). (Integer) |
 
 (1) The RA11's max. volume is 96, but it is still supported to use 100 as the maximum volume, only the volume will not increase when going beyond 96 %.
