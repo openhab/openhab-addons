@@ -34,13 +34,13 @@ In order for the Pentair EasyTouch controller to receive commands from this bind
 
 This binding supports the following thing types:
 
-| Thing           | Thing Type | Description                           
-| _______________ | :________: | _______________________________________
-| ip_bridge       | Bridge     | A TCP network RS-485 bridge device.
-| serial_bridge   | Bridge     | A USB or serial RS-485 device.
-| EasyTouch       | Thing      | Pentiar EasyTouch pool controller.
-| Intelliflo Pump | Thing      | Pentair Intelliflo variable speed pump.
-| Intellichlor    | Thing      | Pentair Intellichlor chlorinator.
+| Thing           | Thing Type | Description                             |
+| --------------- | :--------: | --------------------------------------- |
+| ip_bridge       |   Bridge   | A TCP network RS-485 bridge device.     |
+| serial_bridge   |   Bridge   | A USB or serial RS-485 device.          |
+| EasyTouch       |   Thing    | Pentiar EasyTouch pool controller.      |
+| Intelliflo Pump |   Thing    | Pentair Intelliflo variable speed pump. |
+| Intellichlor    |   Thing    | Pentair Intellichlor chlorinator.       |
 
 
 ## Binding Configuration
@@ -51,15 +51,15 @@ There are no overall binding configurations that need to be set up as all config
 
 Pentair things can be configured either through the online Paper UI configuration, or manually through a 'pentair.thing' configuration file.  The following table shows the available configuration parameters for each thing.
 
-| Thing         | Configuration Paramaters
-| _____________ | __________________________
-| ip_bridge     | address - IP address for the RS-485 adapter - Required.
-|               | port - TCP port for the RS-485 adapter - Not Required - default = 10000.
-|               | id - ID to use when communciating on Pentair control bus - devault = 34.
-| serial_bridge | serialPort - Serial port for the IT-100s bridge - Required.
-|               | baud - Baud rate of the IT-100 bridge - Not Required - default = 9600.
-|               | pollPeriod - Period of time in minutes between the poll command being sent to the IT-100 bridge - Not Required - default=1.
-|               | id - ID to use when communciating on Pentair control bus - devault = 34.
+| Thing         | Configuration Parameters                                     |
+| ------------- | ------------------------------------------------------------ |
+| ip_bridge     | address - IP address for the RS-485 adapter - Required.      |
+|               | port - TCP port for the RS-485 adapter - Not Required - default = 10000. |
+|               | id - ID to use when communicating on Pentair control bus - default = 34. |
+| serial_bridge | serialPort - Serial port for the IT-100s bridge - Required.  |
+|               | baud - Baud rate of the IT-100 bridge - Not Required - default = 9600. |
+|               | pollPeriod - Period of time in minutes between the poll command being sent to the IT-100 bridge - Not Required - default=1. |
+|               | id - ID to use when communciating on Pentair control bus - default = 34. |
 
 Currently automatic discovery is not supported and the binding requires configuration via the PaperUI or a file in the conf/things folder.  Here is an example of a thing configuration file called 'pentair.thing':
 
@@ -73,48 +73,48 @@ Currently automatic discovery is not supported and the binding requires configur
 
 Pentair things support a variety of channels as seen below in the following table:
 
-| Channel         | Item Type  | Description
-| _______________ | __________ | __________________
-| EasyTouch Controller | |
-| pooltemp        | Number     | Current pool temperature (readonly)
-| spatemp         | Number     | Current spa temperature (readonly)
-| airtemp         | Number     | Current air temperature (readonly)
-| solartemp       | Number     | Current solar temperature (readonly)
-| poolheatmode    | Number     | Current heat mode setting for pool (readonly): 0=Off, 1=Heater, 2=Solar Preferred, 3=Solar
-| poolheatmodestr | String     | Current heat mode setting for pool in string form (readonly)
-| spaheatmode     | Number     | Current heat mode setting for spa (readonly): 0=Off, 1=Heater, 2=Solar Preferred, 3=Solar
-| spaheatmodestr  | String     | Current heat mode setting for spa in string form (readonly)> 
-| poolsetpoint    | Number     | Current pool temperature set point
-| spasetpoint     | Number     | Current spa temperature set point
-| heatactive      | Number     | Heater mode is active
-| pool            | Switch     | Primary pool mode
-| spa             | Switch     | Spa mode
-| aux1            | Switch     | Aux1 mode
-| aux2            | Switch     | Aux2 mode
-| aux3            | Switch     | Aux3 mode
-| aux4            | Switch     | Aux4 mode
-| aux5            | Switch     | Aux5 mode
-| aux6            | Switch     | Aux6 mode
-| aux7            | Switch     | Aux7 mode
-| feature1        | Switch     | Feature1 mode
-| feature2        | Switch     | Feature2 mode
-| feature3        | Switch     | Feature3 mode
-| feature4        | Switch     | Feature4 mode
-| feature5        | Switch     | Feature5 mode
-| feature6        | Switch     | Feature6 mode
-| feature7        | Switch     | Feature7 mode
-| feature8        | Switch     | Feature8 mode
-| IntelliChlor    | |
-| saltoutput      | Number     | Current salt output % (readonly)
-| salinity        | Number     | Salinity (ppm) (readonly)
-| IntelliFlo Pump | |
-| run             | Number     | Pump running (readonly)
-| drivestate      | Number     | Pump drivestate (readonly)
-| mode            | Number     | Pump mode (readonly)
-| rpm             | Number     | Pump RPM (readonly)
-| power           | Number     | Pump power in Watts (readonly)
-| error           | Number     | Pump error (readonly)
-| ppc             | Number     | Pump PPC? (readonly)
+| Channel              | Item Type | Description                                                  |
+| -------------------- | --------- | ------------------------------------------------------------ |
+| EasyTouch Controller |           |                                                              |
+| pooltemp             | Number    | Current pool temperature (readonly)                          |
+| spatemp              | Number    | Current spa temperature (readonly)                           |
+| airtemp              | Number    | Current air temperature (readonly)                           |
+| solartemp            | Number    | Current solar temperature (readonly)                         |
+| poolheatmode         | Number    | Current heat mode setting for pool (readonly): 0=Off, 1=Heater, 2=Solar Preferred, 3=Solar |
+| poolheatmodestr      | String    | Current heat mode setting for pool in string form (readonly) |
+| spaheatmode          | Number    | Current heat mode setting for spa (readonly): 0=Off, 1=Heater, 2=Solar Preferred, 3=Solar |
+| spaheatmodestr       | String    | Current heat mode setting for spa in string form (readonly)> |
+| poolsetpoint         | Number    | Current pool temperature set point                           |
+| spasetpoint          | Number    | Current spa temperature set point                            |
+| heatactive           | Number    | Heater mode is active                                        |
+| pool                 | Switch    | Primary pool mode                                            |
+| spa                  | Switch    | Spa mode                                                     |
+| aux1                 | Switch    | Aux1 mode                                                    |
+| aux2                 | Switch    | Aux2 mode                                                    |
+| aux3                 | Switch    | Aux3 mode                                                    |
+| aux4                 | Switch    | Aux4 mode                                                    |
+| aux5                 | Switch    | Aux5 mode                                                    |
+| aux6                 | Switch    | Aux6 mode                                                    |
+| aux7                 | Switch    | Aux7 mode                                                    |
+| feature1             | Switch    | Feature1 mode                                                |
+| feature2             | Switch    | Feature2 mode                                                |
+| feature3             | Switch    | Feature3 mode                                                |
+| feature4             | Switch    | Feature4 mode                                                |
+| feature5             | Switch    | Feature5 mode                                                |
+| feature6             | Switch    | Feature6 mode                                                |
+| feature7             | Switch    | Feature7 mode                                                |
+| feature8             | Switch    | Feature8 mode                                                |
+| IntelliChlor         |           |                                                              |
+| saltoutput           | Number    | Current salt output % (readonly)                             |
+| salinity             | Number    | Salinity (ppm) (readonly)                                    |
+| IntelliFlo Pump      |           |                                                              |
+| run                  | Number    | Pump running (readonly)                                      |
+| drivestate           | Number    | Pump drivestate (readonly)                                   |
+| mode                 | Number    | Pump mode (readonly)                                         |
+| rpm                  | Number    | Pump RPM (readonly)                                          |
+| power                | Number    | Pump power in Watts (readonly)                               |
+| error                | Number    | Pump error (readonly)                                        |
+| ppc                  | Number    | Pump PPC? (readonly)                                         |
 
 ## Full Example
 
