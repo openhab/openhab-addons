@@ -73,6 +73,7 @@
 #else
 #include <SPI.h>
 #include <Ethernet.h>
+#include <EthernetUdp.h>
 #endif
 
 #ifdef PRODINO_BOARD
@@ -80,9 +81,6 @@
 #include "KMPCommon.h"
 #endif
 
-#ifndef TRANSPORT_ETH_ENC28J60
-#include <EthernetUdp.h>
-#endif
 #include <avr/wdt.h>
 
 #include "NibeGw.h"
