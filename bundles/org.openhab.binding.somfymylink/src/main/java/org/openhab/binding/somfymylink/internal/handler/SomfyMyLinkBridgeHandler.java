@@ -25,19 +25,28 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.StateOption;
+import org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants;
 import org.openhab.binding.somfymylink.internal.config.SomfyMyLinkConfiguration;
 import org.openhab.binding.somfymylink.internal.discovery.SomfyMyLinkDeviceDiscoveryService;
 import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkErrorResponse;
@@ -50,6 +59,8 @@ import org.openhab.binding.somfymylink.internal.model.SomfyMyLinkShadesResponse;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants.*;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -76,7 +87,9 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     private static final int MYLINK_DEFAULT_TIMEOUT = 5000;
     private static final Object CONNECTION_LOCK = new Object();
     private static final int CONNECTION_DELAY = 1000;
-    
+
+    private static final String MYLINK_COMMAND_TEMPLATE = "{\"id\": %1$s, \"method\": \"%2$s\",\"params\": {\"%3$s\": %4$s,\"auth\": \"%5$s\"}}";
+
     @Nullable
     private ScheduledFuture<?> heartbeat;
 
@@ -85,17 +98,38 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     private SomfyMyLinkDeviceDiscoveryService discovery;
 
+    @Nullable
+    private SomfyMyLinkStateDescriptionOptionsProvider stateDescriptionProvider;
+
     // Gson & parser
     private final Gson gson = new Gson();
 
-    public SomfyMyLinkBridgeHandler(Bridge bridge) {
+    public SomfyMyLinkBridgeHandler(Bridge bridge, @Nullable SomfyMyLinkStateDescriptionOptionsProvider stateDescriptionProvider) {
         super(bridge);
 
         this.discovery = new SomfyMyLinkDeviceDiscoveryService(this);
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Command received on mylink {}", command);
+
+        try {
+            if (CHANNEL_SCENES.equals(channelUID.getId())) {
+                if (command instanceof RefreshType) {
+                    // TODO: handle data refresh
+                    return;
+                }
+
+                if (CHANNEL_SCENES.equals(channelUID.getId()) && command instanceof StringType) {
+                    Integer sceneId = Integer.decode(command.toString());
+                    commandScene(sceneId);
+                }
+            }
+        } catch (SomfyMyLinkException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
     }
 
     @Override
@@ -104,8 +138,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         config = getThing().getConfiguration().as(SomfyMyLinkConfiguration.class);
 
         if (validConfiguration(config)) {
-            //this.discovery = new SomfyMyLinkDeviceDiscoveryService(this);
-
             this.discoveryServiceRegistration = this.bundleContext.registerService(DiscoveryService.class, this.discovery, null);
             this.discovery.activate(null);
 
@@ -160,7 +192,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         } catch (SomfyMyLinkException e) {
             logger.debug("Problem connecting to mylink, bridge OFFLINE");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            //scheduleConnectRetry(RECONNECT_MINUTES); // Possibly a temporary problem. Try again later.
         }
     }
 
@@ -211,11 +242,9 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     public SomfyMyLinkShade[] getShadeList() throws SomfyMyLinkException {
-        String targetId = "*.*";
-        String command = "mylink.status.info";
+        String command = buildShadeCommand("mylink.status.info", "*.*");
 
-        SomfyMyLinkShadesResponse response = (SomfyMyLinkShadesResponse) sendCommandWithResponse(command, targetId,
-                SomfyMyLinkShadesResponse.class);
+        SomfyMyLinkShadesResponse response = (SomfyMyLinkShadesResponse) sendCommandWithResponse(command, SomfyMyLinkShadesResponse.class);
 
         if (response != null) {
             return response.getResult();
@@ -225,11 +254,9 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     public void sendPing() throws SomfyMyLinkException {
-        String targetId = "*.*";
-        String command = "mylink.status.ping";
+        String command = buildShadeCommand("mylink.status.ping", "*.*");
 
-        SomfyMyLinkPingResponse response = (SomfyMyLinkPingResponse) sendCommandWithResponse(command, targetId,
-                SomfyMyLinkPingResponse.class);
+        SomfyMyLinkPingResponse response = (SomfyMyLinkPingResponse) sendCommandWithResponse(command, SomfyMyLinkPingResponse.class);
 
         if (response != null) {
             return;
@@ -239,13 +266,20 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     public SomfyMyLinkScene[] getSceneList() throws SomfyMyLinkException {
-        String targetId = "*.*";
-        String command = "mylink.scene.list";
+        String command = buildShadeCommand("mylink.scene.list", "*.*");
 
-        SomfyMyLinkScenesResponse response = (SomfyMyLinkScenesResponse) sendCommandWithResponse(command, targetId,
-                SomfyMyLinkScenesResponse.class);
+        SomfyMyLinkScenesResponse response = (SomfyMyLinkScenesResponse) sendCommandWithResponse(command, SomfyMyLinkScenesResponse.class);
 
         if (response != null) {
+            List<StateOption> options = new ArrayList<>();
+            for (SomfyMyLinkScene scene : response.result) {
+                options.add(new StateOption(scene.getTargetID(), scene.getName()));
+            }
+
+            logger.debug("Setting {} options on bridge", options.size());
+
+            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), SomfyMyLinkBindingConstants.CHANNEL_SCENES), options);
+
             return response.getResult();
         }
 
@@ -254,7 +288,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     public void commandShadeUp(String targetId) throws SomfyMyLinkException {
         try {
-            sendCommand("mylink.move.up", targetId);
+            String command = buildShadeCommand("mylink.move.up", targetId);
+            sendCommand(command);
         } catch (SomfyMyLinkException e) {
             logger.info("Error commanding shade up: " + e.getMessage());
             throw new SomfyMyLinkException("Error commanding shade up", e);
@@ -263,7 +298,8 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     public void commandShadeDown(String targetId) throws SomfyMyLinkException {
         try {
-            sendCommand("mylink.move.down", targetId);
+            String command = buildShadeCommand("mylink.move.down", targetId);
+            sendCommand(command);
         } catch (SomfyMyLinkException e) {
             logger.info("Error commanding shade down: " + e.getMessage());
             throw new SomfyMyLinkException("Error commanding shade down", e);
@@ -272,24 +308,35 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
     public void commandShadeStop(String targetId) throws SomfyMyLinkException {
         try {
-            sendCommand("mylink.move.stop", targetId);
+            String command = buildShadeCommand("mylink.move.stop", targetId);
+            sendCommand(command);
         } catch (SomfyMyLinkException e) {
             logger.info("Error commanding shade stop: " + e.getMessage());
             throw new SomfyMyLinkException("Error commanding shade stop", e);
         }
     }
 
-    private void sendCommand(String command, String targetId) throws SomfyMyLinkException {
-        String myLinkCommand = buildCommand(command, targetId);
+    public void commandScene(Integer sceneId) throws SomfyMyLinkException {
+        try {
+            String command = buildSceneCommand("mylink.scene.run", sceneId);
+            sendCommand(command);
+        } catch (SomfyMyLinkException e) {
+            logger.info("Error commanding shade stop: " + e.getMessage());
+            throw new SomfyMyLinkException("Error commanding shade stop", e);
+        }
+    }
+
+    private void sendCommand(String command) throws SomfyMyLinkException {
+        //String myLinkCommand = buildCommand(command, targetId);
 
         synchronized(CONNECTION_LOCK) {
             try {
-                logger.debug("Sending: " + command + " Target: " + targetId);
+                logger.debug("Sending: {}", command);
                 Socket socket = getConnection();
                 OutputStream out = socket.getOutputStream();
 
                 try {
-                    byte[] sendBuffer = myLinkCommand.getBytes(StandardCharsets.US_ASCII);
+                    byte[] sendBuffer = command.getBytes(StandardCharsets.US_ASCII);
                     // send the command
                     out.write(sendBuffer, 0, sendBuffer.length);
                 } finally {
@@ -324,19 +371,18 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
     
     @Nullable
-    private SomfyMyLinkResponseBase sendCommandWithResponse(String command, String targetId, Type responseType)
+    private SomfyMyLinkResponseBase sendCommandWithResponse(String command, Type responseType)
             throws SomfyMyLinkException {
-        String myLinkCommand = buildCommand(command, targetId);
 
         synchronized(CONNECTION_LOCK) {
             try {
-                logger.debug("Sending: " + command + " Target: " + targetId);
+                logger.debug("Sending: {}", command);
                 Socket socket = getConnection();
                 OutputStream out = socket.getOutputStream();
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                 try {
-                    byte[] sendBuffer = myLinkCommand.getBytes(StandardCharsets.US_ASCII);
+                    byte[] sendBuffer = command.getBytes(StandardCharsets.US_ASCII);
 
                     // send the command
                     out.write(sendBuffer, 0, sendBuffer.length);
@@ -416,16 +462,25 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         return socket;
     }
 
-    private String buildCommand(String command, String targetId) {
+    private String buildShadeCommand(String method, String targetId) {
         if(config == null && StringUtils.isEmpty(config.systemId)) throw new SomfyMyLinkException("Config not setup correctly");
 
         int randomNum = ThreadLocalRandom.current().nextInt(1, 1000);
 
-        // fix '-' back to '.'
-        String tId = targetId.replace('-', '.');
+        // quote and fix '-' back to '.'
+        String tId = String.format("\"%1$s\"", targetId).replace('-', '.');
 
-        String myLinkCommand = "{\"id\": " + randomNum + ", \"method\": \"" + command
-                + "\",\"params\": {\"targetID\": \"" + tId + "\",\"auth\": \"" + config.systemId + "\"}}";
+        String myLinkCommand = String.format(MYLINK_COMMAND_TEMPLATE, randomNum, method, "targetID", tId, config.systemId); 
+
+        return myLinkCommand;
+    }
+
+    private String buildSceneCommand(String method, Integer sceneId) {
+        if(config == null && StringUtils.isEmpty(config.systemId)) throw new SomfyMyLinkException("Config not setup correctly");
+
+        int randomNum = ThreadLocalRandom.current().nextInt(1, 1000);
+
+        String myLinkCommand = String.format(MYLINK_COMMAND_TEMPLATE, randomNum, method, "sceneId", sceneId, config.systemId); 
 
         return myLinkCommand;
     }

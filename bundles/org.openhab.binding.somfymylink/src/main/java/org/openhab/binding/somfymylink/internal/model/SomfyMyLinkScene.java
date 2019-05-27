@@ -24,18 +24,14 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class SomfyMyLinkScene {
 
-    @Nullable
-    private String sceneID;
+    private String sceneID = "";
 
-    @Nullable
-    private String name;
+    private String name = "";
 
-    @Nullable
     public String getTargetID() {
         return sceneID;
     }
 
-    @Nullable
     public String getName() {
         return name;
     }
