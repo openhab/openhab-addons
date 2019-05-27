@@ -27,9 +27,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.somfymylink.internal.handler.SomfyMyLinkBridgeHandler;
+import org.openhab.binding.somfymylink.internal.handler.SomfyMyLinkStateDescriptionOptionsProvider;
 import org.openhab.binding.somfymylink.internal.handler.SomfySceneHandler;
 import org.openhab.binding.somfymylink.internal.handler.SomfyShadeHandler;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link SomfyMyLinkHandlerFactory} is responsible for creating things and thing
@@ -47,6 +49,9 @@ public class SomfyMyLinkHandlerFactory extends BaseThingHandlerFactory {
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_SHADE, THING_TYPE_SCENE));
 
+    @Nullable
+    private SomfyMyLinkStateDescriptionOptionsProvider stateDescriptionProvider;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -57,9 +62,7 @@ public class SomfyMyLinkHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_MYLINK)) {
-            SomfyMyLinkBridgeHandler handler = new SomfyMyLinkBridgeHandler((Bridge) thing);
-            // registerItemDiscoveryService(handler);
-            return handler;
+            return new SomfyMyLinkBridgeHandler((Bridge) thing, stateDescriptionProvider);
         }
         if (THING_TYPE_SHADE.equals(thingTypeUID)) {
             return new SomfyShadeHandler(thing);
@@ -69,6 +72,15 @@ public class SomfyMyLinkHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
+    }
+
+    @Reference
+    protected void setDynamicStateDescriptionProvider(SomfyMyLinkStateDescriptionOptionsProvider provider) {
+        this.stateDescriptionProvider = provider;
+    }
+
+    protected void unsetDynamicStateDescriptionProvider(SomfyMyLinkStateDescriptionOptionsProvider provider) {
+        this.stateDescriptionProvider = null;
     }
 
 }

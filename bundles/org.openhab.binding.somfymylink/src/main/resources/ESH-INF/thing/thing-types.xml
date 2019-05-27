@@ -7,6 +7,9 @@
 	<bridge-type id="mylink">
 		<label>Somfy MyLink</label>
 		<description>Somfy MyLink bridge enabling communication with Somfy devices</description>
+		<channels>
+			<channel id="scenelist" typeId="scenelist" />
+		</channels>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
@@ -26,7 +29,7 @@
 			<bridge-type-ref id="mylink" />
 		</supported-bridge-type-refs>
 		<label>Somfy Scene</label>
-		<description>Scene control</description>
+		<description>Scene control</description> 
 		<channels>
 			<channel id="scenecontrol" typeId="button" />
 		</channels>
@@ -57,6 +60,13 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+
+	<channel-type id="scenelist">
+		<item-type>String</item-type>
+		<label>Scene List</label>
+		<description>Comma-separated list of scenes of form sceneId=sceneName</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
 
 	<channel-type id="shadeControl">
 		<item-type>Rollershutter</item-type>
