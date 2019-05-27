@@ -56,6 +56,7 @@ public class SomfySceneHandler extends BaseThingHandler {
 
                 if (command.equals(OnOffType.ON)) {
                     getBridgeHandler().commandScene(targetId);
+                    updateState(channelUID, OnOffType.OFF);
                 } else {
                     // do nothing
                 }
