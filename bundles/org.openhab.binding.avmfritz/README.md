@@ -77,28 +77,31 @@ If correct credentials are set in the bridge configuration, connected AHA device
 
 ### FRITZ!Box
 
-- ipAddress (mandatory), default "fritz.box"
-- protocol (optional, http or https), default "http"
-- port (optional, 0 to 65335), no default (derived from protocol: 80 or 443)
-- password (optional), no default (depends on FRITZ!Box security configuration)
-- user (optional), no default (depends on FRITZ!Box security configuration)
-- pollingInterval (optional, 5 to 60), default 15 (in seconds)
-- asyncTimeout (optional, 1000 to 60000), default 10000 (in millis)
-- syncTimeout (optional, 500 to 15000), default 2000 (in millis)
+- `ipAddress` (mandatory), default "fritz.box"
+- `protocol` (optional, "http" or "https"), default "http"
+- `port` (optional, 0 to 65335), no default (derived from protocol: 80 or 443)
+- `password` (optional), no default (depends on FRITZ!Box security configuration)
+- `user` (optional), no default (depends on FRITZ!Box security configuration)
+- `pollingInterval` (optional, 5 to 60), default 15 (in seconds)
+- `asyncTimeout` (optional, 1000 to 60000), default 10000 (in milliseconds)
+- `syncTimeout` (optional, 500 to 15000), default 2000 (in milliseconds)
 
 ### FRITZ!Powerline 546E
 
-- ipAddress (mandatory), default "fritz.powerline"
-- protocol (optional, http or https), default "http"
-- port (optional, 0 to 65335), no default (derived from protocol: 80 or 443)
-- password (optional), no default (depends on FRITZ!Powerline security configuration)
-- pollingInterval (optional, 5 to 60), default 15 (in seconds)
-- asyncTimeout (optional, 1000 to 60000), default 10000 (in millis)
-- syncTimeout (optional, 500 to 15000), default 2000 (in millis)
+- `ain` (optional, advanced), no default (AIN number of the device)
+- `ipAddress` (mandatory), default "fritz.powerline"
+- `protocol` (optional, "http" or "https"), default "http"
+- `port` (optional, 0 to 65335), no default (derived from protocol: 80 or 443)
+- `password` (optional), no default (depends on FRITZ!Powerline security configuration)
+- `pollingInterval` (optional, 5 to 60), default 15 (in seconds)
+- `asyncTimeout` (optional, 1000 to 60000), default 10000 (in milliseconds)
+- `syncTimeout` (optional, 500 to 15000), default 2000 (in milliseconds)
 
-### AHA things connected to FRITZ!Box bridge
+If the FRITZ!Powerline 546E is added via auto-discovery it determines its own `ain`, otherwise you have to configure it manually.
 
-- AIN (mandatory), no default (AIN number of device)
+### Things Connected To FRITZ!Box Or FRITZ!Powerline 546E
+
+- `ain` (mandatory), no default (AIN number of the device)
 
 ## Supported Channels
 
