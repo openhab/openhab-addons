@@ -54,7 +54,7 @@
     </repository>
     <snapshotRepository>
       <id>jfrog</id>
-      <url>${oh.repo.distBaseUrl}/libs-snapshot-local</url>
+      <url>${oh.repo.snapshotBaseUrl}/libs-snapshot-local</url>
     </snapshotRepository>
   </distributionManagement>
 
