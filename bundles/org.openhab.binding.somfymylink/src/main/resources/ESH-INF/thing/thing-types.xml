@@ -8,7 +8,7 @@
 		<label>Somfy MyLink</label>
 		<description>Somfy MyLink bridge enabling communication with Somfy devices</description>
 		<channels>
-			<channel id="scenelist" typeId="scenelist" />
+			<channel id="sceneid" typeId="scenelist" />
 		</channels>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">

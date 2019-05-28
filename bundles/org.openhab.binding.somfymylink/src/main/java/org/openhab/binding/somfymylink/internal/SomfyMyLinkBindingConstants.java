@@ -34,7 +34,7 @@ public class SomfyMyLinkBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_SHADELEVEL = "shadelevel";
     public static final String CHANNEL_SCENECONTROL = "scenecontrol";
-    public static final String CHANNEL_SCENES = "scenelist";
+    public static final String CHANNEL_SCENES = "sceneid";
 
 
     // Thing config properties
