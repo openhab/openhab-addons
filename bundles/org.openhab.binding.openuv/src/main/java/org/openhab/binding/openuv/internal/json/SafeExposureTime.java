@@ -52,9 +52,14 @@ public class SafeExposureTime {
             case 5:
                 result = st5;
                 break;
-            default:
+            case 6:
                 result = st6;
+                break;
+            default:
+                result = BigInteger.ZERO;
+
         }
-        return result != BigInteger.ZERO ? new QuantityType<>(result, SmartHomeUnits.MINUTE) : UnDefType.NULL;
+        return (result != BigInteger.ZERO && result != null) ? new QuantityType<>(result, SmartHomeUnits.MINUTE)
+                : UnDefType.NULL;
     }
 }
