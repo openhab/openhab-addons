@@ -56,14 +56,12 @@ public class SomfyShadeHandler extends BaseThingHandler {
 
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
             initDeviceState();
-
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
     public void initDeviceState() {
-        
         Bridge bridge = getBridge();
         
         if (bridge == null) {
@@ -85,9 +83,9 @@ public class SomfyShadeHandler extends BaseThingHandler {
                 String targetId = channelUID.getThingUID().getId();
 
                 if (command instanceof RefreshType) {
-                    // TODO: handle data refresh
                     return;
                 }
+
                 if (CHANNEL_SHADELEVEL.equals(channelUID.getId()) && command instanceof UpDownType) {
                     if (command.equals(UpDownType.DOWN)) {
                         getBridgeHandler().commandShadeDown(targetId);
@@ -95,6 +93,7 @@ public class SomfyShadeHandler extends BaseThingHandler {
                         getBridgeHandler().commandShadeUp(targetId);
                     }
                 }
+                
                 if (CHANNEL_SHADELEVEL.equals(channelUID.getId()) && command instanceof StopMoveType) {
                     getBridgeHandler().commandShadeStop(targetId);
                 }

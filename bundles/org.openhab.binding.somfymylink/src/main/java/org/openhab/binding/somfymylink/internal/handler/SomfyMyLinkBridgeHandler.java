@@ -60,7 +60,6 @@ import org.slf4j.LoggerFactory;
 import static org.openhab.binding.somfymylink.internal.SomfyMyLinkBindingConstants.*;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -115,7 +114,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
         try {
             if (CHANNEL_SCENES.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    // TODO: handle data refresh
                     return;
                 }
 
@@ -185,7 +183,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
             logger.debug("Connected to mylink at {}", config.ipAddress);
 
             updateStatus(ThingStatus.ONLINE);
-
         } catch (SomfyMyLinkException e) {
             logger.debug("Problem connecting to mylink, bridge OFFLINE");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -204,7 +201,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                     sendKeepAlive();
                 }
             }, 1, 1, TimeUnit.MINUTES);
-
         }
     }
 
@@ -324,8 +320,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
 
     private void sendCommand(String command) throws SomfyMyLinkException {
-        //String myLinkCommand = buildCommand(command, targetId);
-
         synchronized(CONNECTION_LOCK) {
             try {
                 logger.debug("Sending: {}", command);
@@ -351,7 +345,6 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
 
                 // give time for mylink to process
                 Thread.sleep(CONNECTION_DELAY);
-
             } catch (SocketTimeoutException e) {
                 logger.warn("Timeout sending command to mylink: {} Message: {}", command, e.getMessage());
                 throw new SomfyMyLinkException("Timeout sending command to mylink", e);
@@ -368,9 +361,7 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
     }
     
     @Nullable
-    private SomfyMyLinkResponseBase sendCommandWithResponse(String command, Type responseType)
-            throws SomfyMyLinkException {
-
+    private SomfyMyLinkResponseBase sendCommandWithResponse(String command, Type responseType) throws SomfyMyLinkException {
         synchronized(CONNECTION_LOCK) {
             try {
                 logger.debug("Sending: {}", command);
@@ -393,15 +384,14 @@ public class SomfyMyLinkBridgeHandler extends BaseBridgeHandler {
                     while (((readCount = in.read(readBuff)) != -1)) {
                         logger.debug("Got response. Len: " + readCount);
                         message += new String(readBuff, 0, readCount);
+                        
                         try {
-                            
                             logger.debug("Got message: " + message);
                             
                             JsonParser parser = new JsonParser();
                             JsonObject o = parser.parse(message).getAsJsonObject();
 
                             if(o.has("error")) {
-
                                 SomfyMyLinkErrorResponse errorResponse = gson.fromJson(message, SomfyMyLinkErrorResponse.class);
 
                                 logger.info("Error communicating with mylink: {}", errorResponse.error.message);
