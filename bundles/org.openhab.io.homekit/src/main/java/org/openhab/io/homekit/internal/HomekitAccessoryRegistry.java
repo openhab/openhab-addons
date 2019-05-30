@@ -72,7 +72,11 @@ class HomekitAccessoryRegistry {
     }
 
     public synchronized void unsetBridge() {
-        this.bridge = null;
+        final HomekitRoot oldBridge = bridge;
+        if (oldBridge != null) {
+            createdAccessories.values().forEach(accessory -> oldBridge.removeAccessory(accessory));
+        }
+        bridge = null;
     }
 
     public synchronized void addRootAccessory(String itemName, HomekitAccessory accessory) {
