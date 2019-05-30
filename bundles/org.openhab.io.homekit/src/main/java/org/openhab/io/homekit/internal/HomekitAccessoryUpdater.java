@@ -45,6 +45,10 @@ public class HomekitAccessoryUpdater {
         if (item == null) {
             return;
         }
+        if (callback == null) {
+            logger.trace("The received subscription contains a null callback, skipping");
+            return;
+        }
         ItemKey itemKey = new ItemKey(item, key);
         subscriptionsByName.compute(itemKey, (k, v) -> {
             if (v != null) {
