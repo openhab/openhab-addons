@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -34,6 +33,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.common.registry.DefaultAbstractManagedProvider;
 import org.eclipse.smarthome.core.storage.StorageService;
 import org.openhab.io.hueemulation.internal.ConfigStore;
+import org.openhab.io.hueemulation.internal.HueEmulationService;
 import org.openhab.io.hueemulation.internal.NetworkUtils;
 import org.openhab.io.hueemulation.internal.dto.HueUserAuth;
 import org.openhab.io.hueemulation.internal.dto.HueUserAuthWithSecrets;
@@ -43,6 +43,8 @@ import org.openhab.io.hueemulation.internal.dto.response.HueSuccessResponseCreat
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,8 +70,10 @@ import io.swagger.annotations.ApiResponses;
 @Component(immediate = false, service = { UserManagement.class }, property = "com.eclipsesource.jaxrs.publish=false")
 @NonNullByDefault
 @Path("")
+@JaxrsResource
+@JaxrsApplicationSelect("(osgi.jaxrs.name=" + HueEmulationService.REST_APP_NAME + ")")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+// @Consumes(MediaType.APPLICATION_JSON)
 public class UserManagement extends DefaultAbstractManagedProvider<HueUserAuthWithSecrets, String> {
     private final Logger logger = LoggerFactory.getLogger(UserManagement.class);
 

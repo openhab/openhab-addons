@@ -6,6 +6,7 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-upnp</feature>
         <feature>openhab-core-automation</feature>
+        <bundle dependency="true">mvn:org.glassfish.jersey.core/jersey-client/2.28</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.io.hueemulation/${project.version}</bundle>
     </feature>
 </features>

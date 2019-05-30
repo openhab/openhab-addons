@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -29,6 +28,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.hueemulation.internal.ConfigStore;
+import org.openhab.io.hueemulation.internal.HueEmulationService;
 import org.openhab.io.hueemulation.internal.NetworkUtils;
 import org.openhab.io.hueemulation.internal.dto.HueUnauthorizedConfig;
 import org.openhab.io.hueemulation.internal.dto.changerequest.HueChangeRequest;
@@ -37,6 +37,8 @@ import org.openhab.io.hueemulation.internal.dto.response.HueResponse.HueErrorMes
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -53,7 +55,9 @@ import io.swagger.annotations.ApiResponses;
 @NonNullByDefault
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@JaxrsResource
+@JaxrsApplicationSelect("(osgi.jaxrs.name=" + HueEmulationService.REST_APP_NAME + ")")
+// @Consumes(MediaType.APPLICATION_JSON)
 public class ConfigurationAccess {
     @Reference
     protected @NonNullByDefault({}) ConfigStore cs;

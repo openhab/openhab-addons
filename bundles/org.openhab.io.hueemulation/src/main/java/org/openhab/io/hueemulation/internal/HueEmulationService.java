@@ -18,10 +18,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import javax.servlet.ServletException;
-import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
@@ -29,10 +31,6 @@ import javax.ws.rs.core.Application;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.ServerProperties;
-import org.glassfish.jersey.servlet.ServletContainer;
-import org.glassfish.jersey.servlet.ServletProperties;
 import org.openhab.io.hueemulation.internal.rest.ConfigurationAccess;
 import org.openhab.io.hueemulation.internal.rest.LightsAndGroups;
 import org.openhab.io.hueemulation.internal.rest.Rules;
@@ -43,6 +41,7 @@ import org.openhab.io.hueemulation.internal.rest.StatusResource;
 import org.openhab.io.hueemulation.internal.rest.UserManagement;
 import org.openhab.io.hueemulation.internal.upnp.UpnpServer;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -52,11 +51,11 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.event.Event;
-import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
+import org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,11 +81,7 @@ public class HueEmulationService implements EventHandler {
 
     public static final String CONFIG_PID = "org.openhab.hueemulation";
     public static final String RESTAPI_PATH = "/api";
-
-    @ApplicationPath(RESTAPI_PATH)
-    public static class JerseyApplication extends Application {
-
-    }
+    public static final String REST_APP_NAME = "HueEmulation";
 
     public class LogAccessInterceptor implements ContainerResponseFilter {
         @NonNullByDefault({})
@@ -98,16 +93,59 @@ public class HueEmulationService implements EventHandler {
                 return;
             }
 
-            InputStream stream = requestContext.getEntityStream();
-            String body = stream != null
-                    ? new BufferedReader(new InputStreamReader(stream)).lines().collect(Collectors.joining("\n"))
-                    : "";
-
+            String body = "";
+            try {
+                InputStream stream = requestContext.getEntityStream();
+                if (stream != null) {
+                    try (InputStreamReader r = new InputStreamReader(stream);
+                            BufferedReader b = new BufferedReader(r)) {
+                        body = b.lines().collect(Collectors.joining("\n"));
+                    }
+                }
+            } catch (IllegalStateException ignored) {
+                body = "--unknown--";
+            }
             logger.debug("REST request {} {}: {}", requestContext.getMethod(), requestContext.getUriInfo().getPath(),
                     body);
             logger.debug("REST response: {}", responseContext.getEntity());
         }
 
+    }
+
+    /**
+     * The Jax-RS application that starts up all REST activities.
+     * It registers itself as a Jax-RS Whiteboard service and all Jax-RS resources that are targeting REST_APP_NAME will
+     * start up.
+     */
+    @JaxrsName(REST_APP_NAME)
+    private class RESTapplication extends Application {
+        private String root;
+
+        RESTapplication(String root) {
+            this.root = root;
+        }
+
+        @NonNullByDefault({})
+        @Override
+        public Map<String, Object> getProperties() {
+            Map<String, Object> p = new TreeMap<>();
+            p.put("jersey.config.server.disableMetainfServicesLookup", true);
+            p.put("jersey.config.server.disableAutoDiscovery", true);
+            return p;
+        }
+
+        @NonNullByDefault({})
+        @Override
+        public Set<Object> getSingletons() {
+            return Stream.of(userManagement, configurationAccess, lightItems, sensors, scenes, schedules, rules,
+                    statusResource, accessInterceptor).collect(Collectors.toSet());
+        }
+
+        Dictionary<String, String> serviceProperties() {
+            Dictionary<String, String> dict = new Hashtable<>();
+            dict.put(JaxrsWhiteboardConstants.JAX_RS_APPLICATION_BASE, root);
+            return dict;
+        }
     }
 
     private final Logger logger = LoggerFactory.getLogger(HueEmulationService.class);
@@ -140,6 +178,7 @@ public class HueEmulationService implements EventHandler {
     @Reference
     protected @NonNullByDefault({}) HttpService httpService;
     private @NonNullByDefault({}) ServiceRegistration<?> eventHandler;
+    private @Nullable ServiceRegistration<RESTapplication> restService;
 
     @Activate
     protected void activate(BundleContext bc) {
@@ -173,7 +212,7 @@ public class HueEmulationService implements EventHandler {
     /**
      * We have a hard dependency on the {@link ConfigStore} and that it has initialized the Hue DataStore config
      * completely. That initialization happens asynchronously and therefore we cannot rely on OSGi activate/modified
-     * state changes. Instead the {@link EventAdmin} is used and we listen for the
+     * state changes. Instead the EventAdmin is used and we listen for the
      * {@link ConfigStore#EVENT_ADDRESS_CHANGED} event that is fired as soon as the config is ready.
      */
     @Override
@@ -184,32 +223,27 @@ public class HueEmulationService implements EventHandler {
         } catch (IllegalStateException ignore) {
         }
 
-        ResourceConfig resourceConfig = ResourceConfig.forApplicationClass(JerseyApplication.class);
-        resourceConfig.property(ServerProperties.APPLICATION_NAME, "HueEmulation");
-        // don't look for implementations described by META-INF/services/*
-        resourceConfig.property(ServerProperties.METAINF_SERVICES_LOOKUP_DISABLE, true);
-        // disable auto discovery on server, as it's handled via OSGI
-        resourceConfig.property(ServerProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true);
-
-        resourceConfig.property(ServerProperties.PROCESSING_RESPONSE_ERRORS_ENABLED, true);
-
-        resourceConfig.registerInstances(userManagement, configurationAccess, lightItems, sensors, scenes, schedules,
-                rules, statusResource, accessInterceptor);
-
-        try {
-            Hashtable<String, String> initParams = new Hashtable<>();
-            initParams.put("com.sun.jersey.api.json.POJOMappingFeature", "false");
-            initParams.put(ServletProperties.PROVIDER_WEB_APP, "false");
-            httpService.registerServlet(RESTAPI_PATH, new ServletContainer(resourceConfig), initParams, null);
-            if (discovery == null) {
-                logger.warn("The UPnP Server service has not been started!");
-            } else if (!discovery.upnpAnnouncementThreadRunning()) {
-                discovery.handleEvent(null);
-            }
-            statusResource.startUpnpSelfTest();
-            logger.info("Hue Emulation service available under {}", RESTAPI_PATH);
-        } catch (ServletException | NamespaceException e) {
-            logger.warn("Could not start Hue Emulation service: {}", e.getMessage(), e);
-        }
+        RESTapplication app = new RESTapplication(RESTAPI_PATH);
+        BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+        restService = context.registerService(RESTapplication.class, app, app.serviceProperties());
+        logger.info("Hue Emulation service available under {}", RESTAPI_PATH);
+        //
+        // ResourceConfig resourceConfig = ResourceConfig.forApplication(this);
+        //
+        // try {
+        // Hashtable<String, String> initParams = new Hashtable<>();
+        // initParams.put("com.sun.jersey.api.json.POJOMappingFeature", "false");
+        // initParams.put("jersey.config.servlet.provider.webapp", "false");
+        // httpService.registerServlet(RESTAPI_PATH, new ServletContainer(resourceConfig), initParams, null);
+        // if (discovery == null) {
+        // logger.warn("The UPnP Server service has not been started!");
+        // } else if (!discovery.upnpAnnouncementThreadRunning()) {
+        // discovery.handleEvent(null);
+        // }
+        // statusResource.startUpnpSelfTest();
+        // logger.info("Hue Emulation service available under {}", RESTAPI_PATH);
+        // } catch (ServletException | NamespaceException e) {
+        // logger.warn("Could not start Hue Emulation service: {}", e.getMessage(), e);
+        // }
     }
 }

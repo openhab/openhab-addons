@@ -248,6 +248,13 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
         configuration = configuration.property(ClientProperties.CONNECT_TIMEOUT, 1000);
         configuration = configuration.property(ClientProperties.READ_TIMEOUT, 1000);
         Client client = ClientBuilder.newClient(configuration);
+
+        // Use this in the future when jersey is updated to 2.28
+        // ClientBuilder clientBuilder = ClientBuilder.newBuilder();
+        // clientBuilder.connectTimeout(2, TimeUnit.SECONDS);
+        // clientBuilder.readTimeout(2, TimeUnit.SECONDS);
+        // Client client = clientBuilder.build();
+
         Response response;
         String url = "";
         try {

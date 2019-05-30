@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -43,6 +42,7 @@ import org.eclipse.smarthome.core.library.CoreItemFactory;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.io.hueemulation.internal.ConfigStore;
 import org.openhab.io.hueemulation.internal.DeviceType;
+import org.openhab.io.hueemulation.internal.HueEmulationService;
 import org.openhab.io.hueemulation.internal.NetworkUtils;
 import org.openhab.io.hueemulation.internal.StateUtils;
 import org.openhab.io.hueemulation.internal.dto.HueGroupEntry;
@@ -57,6 +57,8 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsApplicationSelect;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +99,9 @@ import io.swagger.annotations.ApiResponses;
 @NonNullByDefault
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@JaxrsResource
+@JaxrsApplicationSelect("(osgi.jaxrs.name=" + HueEmulationService.REST_APP_NAME + ")")
+// @Consumes(MediaType.APPLICATION_JSON) // Disable because Amazon Echos are not sending the correct content format
 public class LightsAndGroups implements RegistryChangeListener<Item> {
     private final Logger logger = LoggerFactory.getLogger(LightsAndGroups.class);
     private static final String ITEM_TYPE_GROUP = "Group";
@@ -112,6 +116,8 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     protected @NonNullByDefault({}) ItemRegistry itemRegistry;
     @Reference(policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.OPTIONAL)
     protected volatile @NonNullByDefault({}) EventPublisher eventPublisher;
+
+    protected @NonNullByDefault({}) @Context UriInfo uri;
 
     /**
      * Registers to the {@link ItemRegistry} and enumerates currently existing items.
@@ -243,8 +249,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     @Path("{username}/lights")
     @ApiOperation(value = "Return all lights")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
-    public Response getAllLightsApi(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username) {
+    public Response getAllLightsApi(@PathParam("username") @ApiParam(value = "username") String username) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -255,8 +260,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     @Path("{username}/lights/new")
     @ApiOperation(value = "Return new lights since last scan. Returns an empty list for openHAB as we do not cache that information.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
-    public Response getNewLights(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username) {
+    public Response getNewLights(@PathParam("username") @ApiParam(value = "username") String username) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -267,8 +271,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     @Path("{username}/lights")
     @ApiOperation(value = "Starts a new scan for compatible items. This is usually not necessary, because we are observing the item registry.")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
-    public Response postNewLights(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username) {
+    public Response postNewLights(@PathParam("username") @ApiParam(value = "username") String username) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -279,8 +282,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     @Path("{username}/lights/{id}")
     @ApiOperation(value = "Return a light")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
-    public Response getLightApi(@Context UriInfo uri, //
-            @PathParam("username") @ApiParam(value = "username") String username,
+    public Response getLightApi(@PathParam("username") @ApiParam(value = "username") String username,
             @PathParam("id") @ApiParam(value = "light id") String id) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
@@ -294,8 +296,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     @ApiOperation(value = "Deletes the item that is represented by this id")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "The item got removed"),
             @ApiResponse(code = 403, message = "Access denied") })
-    public Response removeLightAPI(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username,
+    public Response removeLightAPI(@PathParam("username") @ApiParam(value = "username") String username,
             @PathParam("id") @ApiParam(value = "id") String id) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
@@ -318,8 +319,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     @Path("{username}/lights/{id}")
     @ApiOperation(value = "Rename a light")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
-    public Response renameLightApi(@Context UriInfo uri, //
-            @PathParam("username") @ApiParam(value = "username") String username,
+    public Response renameLightApi(@PathParam("username") @ApiParam(value = "username") String username,
             @PathParam("id") @ApiParam(value = "light id") String id, String body) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
@@ -347,29 +347,35 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     @Path("{username}/lights/{id}/state")
     @ApiOperation(value = "Set light state")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
-    public Response setLightStateApi(@Context UriInfo uri, //
-            @PathParam("username") @ApiParam(value = "username") String username,
+    public Response setLightStateApi(@PathParam("username") @ApiParam(value = "username") String username,
             @PathParam("id") @ApiParam(value = "light id") String id, String body) {
+        logger.debug("STATE CHANGE REGISTERED");
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
+        logger.debug("AUTHORIZED");
         HueLightEntry hueDevice = cs.ds.lights.get(id);
         if (hueDevice == null) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.NOT_AVAILABLE, "Light not existing");
         }
 
+        logger.debug("DEVICE FOUND {}", id);
         HueStateChange newState = cs.gson.fromJson(body, HueStateChange.class);
         if (newState == null) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.INVALID_JSON,
                     "Invalid request: No state change data received!");
         }
+        logger.debug("NEW STATE DECODED {}", body);
 
         hueDevice.state = StateUtils.colorStateFromItemState(hueDevice.item.getState(), hueDevice.deviceType);
 
+        logger.debug("STATE CHANGE PROCESSED");
         String itemUID = hueDevice.item.getUID();
         List<HueResponse> responses = new ArrayList<>();
         Command command = StateUtils.computeCommandByState(responses, "/lights/" + id + "/state", hueDevice.state,
                 newState);
+
+        logger.debug("STATE CHANGE COMMAND COMPUTED: {} {}", responses.size(), command);
 
         // If a command could be created, post it to the framework now
         if (command != null) {
@@ -381,6 +387,11 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
             }
         }
 
+        logger.debug("STATE BEFORE RETURN");
+        for (HueResponse r : responses) {
+            logger.debug("RETURN: {}", cs.gson.toJson(r));
+        }
+
         return Response.ok(cs.gson.toJson(responses, new TypeToken<List<?>>() {
         }.getType())).build();
     }
@@ -390,8 +401,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     @Path("{username}/groups/{id}/action")
     @ApiOperation(value = "Initiate group action")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
-    public Response setGroupActionApi(@Context UriInfo uri, //
-            @PathParam("username") @ApiParam(value = "username") String username,
+    public Response setGroupActionApi(@PathParam("username") @ApiParam(value = "username") String username,
             @PathParam("id") @ApiParam(value = "group id") String id, String body) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
@@ -433,8 +443,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     @Path("{username}/groups")
     @ApiOperation(value = "Return all groups")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
-    public Response getAllGroupsApi(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username) {
+    public Response getAllGroupsApi(@PathParam("username") @ApiParam(value = "username") String username) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -445,8 +454,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     @Path("{username}/groups/{id}")
     @ApiOperation(value = "Return a group")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
-    public Response getGroupApi(@Context UriInfo uri, //
-            @PathParam("username") @ApiParam(value = "username") String username,
+    public Response getGroupApi(@PathParam("username") @ApiParam(value = "username") String username,
             @PathParam("id") @ApiParam(value = "group id") String id) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
@@ -504,8 +512,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     @ApiOperation(value = "Deletes the item that is represented by this id")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "The item got removed"),
             @ApiResponse(code = 403, message = "Access denied") })
-    public Response removeGroupAPI(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username,
+    public Response removeGroupAPI(@PathParam("username") @ApiParam(value = "username") String username,
             @PathParam("id") @ApiParam(value = "id") String id) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");

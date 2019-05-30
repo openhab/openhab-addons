@@ -13,7 +13,6 @@
 package org.openhab.io.hueemulation.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The configuration for {@link HueEmulationService}.
@@ -38,7 +37,7 @@ public class HueEmulationConfig {
 
     /** Pairing timeout in seconds */
     public int pairingTimeout = 60;
-    public @Nullable String discoveryIps;
+    public String discoveryIps = "";
     public int discoveryHttpPort = 0;
     /** Comma separated list of tags */
     public String restrictToTagsSwitches = "Switchable";

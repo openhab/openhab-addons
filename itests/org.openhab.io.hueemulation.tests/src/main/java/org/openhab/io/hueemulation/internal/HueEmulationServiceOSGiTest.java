@@ -13,7 +13,7 @@
 package org.openhab.io.hueemulation.internal;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -33,6 +33,7 @@ import org.eclipse.smarthome.test.storage.VolatileStorageService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.jupnp.OSGiUpnpServiceConfiguration;
 import org.jupnp.UpnpService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -76,6 +77,9 @@ public class HueEmulationServiceOSGiTest extends JavaOSGiTest {
 
         ruleRegistry = getService(RuleRegistry.class, RuleRegistry.class);
         assertThat(ruleRegistry, notNullValue());
+
+        registerService(new OSGiUpnpServiceConfiguration(), OSGiUpnpServiceConfiguration.class.getName());
+        assertNotNull(getService(OSGiUpnpServiceConfiguration.class, OSGiUpnpServiceConfiguration.class));
 
         upnpService = getService(UpnpService.class, UpnpService.class);
         assertThat(upnpService, notNullValue());
