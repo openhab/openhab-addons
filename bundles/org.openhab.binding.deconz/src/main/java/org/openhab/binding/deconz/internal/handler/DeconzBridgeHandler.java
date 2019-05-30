@@ -99,8 +99,8 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      */
     private void stopTimer() {
         ScheduledFuture<?> future = scheduledFuture;
-        if (future != null) {
-            future.cancel(false);
+        if (future != null && !future.isCancelled()) {
+            future.cancel(true);
             scheduledFuture = null;
         }
     }
@@ -222,8 +222,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             host = host.substring(0, host.indexOf(':'));
         }
         stopTimer();
-        scheduledFuture = scheduler.scheduleWithFixedDelay(this::startWebsocket, POLL_FREQUENCY_SEC, POLL_FREQUENCY_SEC,
-                TimeUnit.SECONDS);
+        scheduledFuture = scheduler.schedule(this::startWebsocket, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
 
         websocket.start(host + ":" + String.valueOf(websocketport));
     }
@@ -271,8 +270,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         }
         stopTimer();
         // Wait for POLL_FREQUENCY_SEC after a connection error before trying again
-        scheduledFuture = scheduler.scheduleWithFixedDelay(this::startWebsocket, POLL_FREQUENCY_SEC, POLL_FREQUENCY_SEC,
-                TimeUnit.SECONDS);
+        scheduledFuture = scheduler.schedule(this::startWebsocket, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
     }
 
     @Override
