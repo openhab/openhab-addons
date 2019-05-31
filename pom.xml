@@ -73,7 +73,7 @@
 
     <bnd.importpackage></bnd.importpackage>
     <bnd.exportpackage></bnd.exportpackage>
-    <bnd.includeresource></bnd.includeresource>
+    <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
   </properties>
@@ -119,20 +119,6 @@
   </dependencyManagement>
 
   <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-      <resource>
-        <directory>.</directory>
-        <includes>
-          <!-- general -->
-          <include>NOTICE</include>
-          <!-- only a very rare -->
-          <include>*.xsd</include>
-        </includes>
-      </resource>
-    </resources>
     <pluginManagement>
       <plugins>
 
@@ -621,7 +607,7 @@ Import-Package: \\
         </file>
       </activation>
       <properties>
-        <bnd.includeresource>${.}/../../lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+        <bnd.includeresource>-${.}/../../NOTICE, -${.}/../../*.xsd, ${.}/../../lib/; filter:=*.jar; lib:=true</bnd.includeresource>
         <feature.directory>../../src/main/feature/feature.xml</feature.directory>
       </properties>
       <build>
@@ -664,7 +650,7 @@ Import-Package: \\
         </file>
       </activation>
       <properties>
-        <bnd.includeresource>${.}/lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+        <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd, ${.}/lib/; filter:=*.jar; lib:=true</bnd.includeresource>
       </properties>
     </profile>
 
