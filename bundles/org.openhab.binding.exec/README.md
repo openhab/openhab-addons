@@ -99,11 +99,11 @@ Switch YourTrigger
 Number YourNumber "Your Number [%.1f °C]"
 
 // state of the execution, is running or finished
-Switch yourcommand {channel="exec:command:yourcommand:run"}
+Switch yourcommand_Run {channel="exec:command:yourcommand:run", autoupdate="false"}
 // Arguments to be placed for '%2$s' in command line
 String yourcommand_Args {channel="exec:command:yourcommand:input"}
 // Output of command line execution 
-String yourcommand_out {channel="exec:command:yourcommand:output"}
+String yourcommand_Out {channel="exec:command:yourcommand:output"}
 ```
 
 **demo.sitemap**
@@ -122,34 +122,33 @@ sitemap demo label="Your Value"
 **demo.rules**
 
 ```java
-rule "Your Execution"
-  when
-     Item YourTrigger changed
-  then
-        if(YourTrigger.state == ON){
-                yourcommand_Args.sendCommand("Additional Argument to command line for ON")
-        }else{
-                yourcommand_Args.sendCommand("Additional Argument to command line for OFF")
-        }
+rule "begin your execution"
+when
+   Item YourTrigger changed
+then
+      // here we can take different actions according to source Item
+   if(YourTrigger.state == ON){
+      yourcommand_Args.sendCommand("Additional Argument to command line for ON")
+   }else{
+      yourcommand_Args.sendCommand("Additional Argument to command line for OFF")
+   }
 
-      // wait for the command to complete
-      // State will be NULL if not used before or ON while command is executed
-      while(yourcommand.state != OFF){
-         Thread::sleep(500)
-      }
-      
-      // Trigger execution
-      yourcommand.sendCommand(ON)
-      
-      // Logging of command line result
-      logInfo("Your command exec", "Result:" + yourcommand_out.state )
-      
+      // Trigger execution (if autorun false)
+   yourcommand_Run.sendCommand(ON)
+      // the Run indicator state will go ON shortly, and return OFF when script finished
+end
+
+rule "process your results"
+when
+   Item yourcommand_Run changed from ON to OFF
+then
+      // Logging of raw command line result
+   logInfo("Your command exec", "Result:" + yourcommand_Out.state )
       // If the returned string is just a number it can be parsed
       // If not a regex or another transformation can be used
-      YourNumber.postUpdate(
-            (Integer::parseInt(yourcommand_out.state.toString) as Number )
-      )
+   YourNumber.postUpdate(Integer::parseInt(yourcommand_Out.state.toString) as Number)
 end
+
 ```
 
 ## Source
