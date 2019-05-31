@@ -102,7 +102,7 @@ public class A5_38_08_Dimming extends _4BSMessage {
     public State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
         switch (channelId) {
             case CHANNEL_DIMMER:
-                if (!getBit(0, 0)) {
+                if (!getBit(getDB_0(), 0)) {
                     return new PercentType(0);
                 } else {
                     int dimmValue = getDB_2Value();
