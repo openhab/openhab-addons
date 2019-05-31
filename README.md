@@ -1,5 +1,10 @@
 # openHAB 2 Add-ons
 
+<img align="right" width="220" src="./openhab-logo-square-small.png" />
+
+[![Build Status](https://travis-ci.org/openhab/openhab2-addons.svg)](https://travis-ci.org/openhab/openhab2-addons)
+[![](https://img.shields.io/badge/license-EPL%202-green.svg)](https://opensource.org/licenses/EPL-2.0)
+
 This repository contains the official set of add-ons that are implemented on top of openHAB 2 Core APIs.
 Add-ons that got accepted in here will be maintained (e.g. adapted to new core APIs)
 by the [openHAB 2 maintainers](https://github.com/orgs/openhab/teams/2-x-add-ons-maintainers).
