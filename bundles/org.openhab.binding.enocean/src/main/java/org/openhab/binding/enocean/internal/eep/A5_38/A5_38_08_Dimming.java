@@ -110,7 +110,7 @@ public class A5_38_08_Dimming extends _4BSMessage {
                     EnOceanChannelDimmerConfig c = config.as(EnOceanChannelDimmerConfig.class);
 
                     if (!c.eltakoDimmer) {
-                        if (getBit(0, 2)) {
+                        if (getBit(getDB_0(), 2)) {
                             // relative value
                         } else {
                             // absolute value
