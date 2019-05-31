@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.generic;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -41,10 +42,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.openhab.binding.mqtt.generic.ChannelConfig;
-import org.openhab.binding.mqtt.generic.ChannelConfigBuilder;
-import org.openhab.binding.mqtt.generic.ChannelState;
-import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
 import org.openhab.binding.mqtt.generic.values.DateTimeValue;
 import org.openhab.binding.mqtt.generic.values.ImageValue;
@@ -60,25 +57,25 @@ import org.openhab.binding.mqtt.generic.values.TextValue;
  */
 public class ChannelStateTests {
     @Mock
-    MqttBrokerConnection connection;
+    private MqttBrokerConnection connection;
 
     @Mock
-    ChannelStateUpdateListener channelStateUpdateListener;
+    private ChannelStateUpdateListener channelStateUpdateListener;
 
     @Mock
-    ChannelUID channelUID;
+    private ChannelUID channelUID;
 
     @Spy
-    TextValue textValue;
+    private TextValue textValue;
 
-    ScheduledExecutorService scheduler;
+    private ScheduledExecutorService scheduler;
 
-    ChannelConfig config = ChannelConfigBuilder.create("state", "command").build();
+    private ChannelConfig config = ChannelConfigBuilder.create("state", "command").build();
 
     @Before
     public void setUp() {
         initMocks(this);
-        CompletableFuture<Void> voidFutureComplete = new CompletableFuture<Void>();
+        CompletableFuture<Void> voidFutureComplete = new CompletableFuture<>();
         voidFutureComplete.complete(null);
         doReturn(voidFutureComplete).when(connection).unsubscribeAll();
         doReturn(CompletableFuture.completedFuture(true)).when(connection).subscribe(any(), any());
@@ -160,7 +157,7 @@ public class ChannelStateTests {
     }
 
     @Test
-    public void receiveDecimalTest() throws InterruptedException, ExecutionException, TimeoutException {
+    public void receiveDecimalTest() {
         NumberValue value = new NumberValue(null, null, new BigDecimal(10));
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
@@ -178,7 +175,7 @@ public class ChannelStateTests {
     }
 
     @Test
-    public void receiveDecimalFractionalTest() throws InterruptedException, ExecutionException, TimeoutException {
+    public void receiveDecimalFractionalTest() {
         NumberValue value = new NumberValue(null, null, new BigDecimal(10.5));
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
@@ -191,7 +188,7 @@ public class ChannelStateTests {
     }
 
     @Test
-    public void receivePercentageTest() throws InterruptedException, ExecutionException, TimeoutException {
+    public void receivePercentageTest() {
         PercentageValue value = new PercentageValue(new BigDecimal(-100), new BigDecimal(100), new BigDecimal(10), null,
                 null);
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
@@ -211,85 +208,89 @@ public class ChannelStateTests {
     }
 
     @Test
-    public void receiveRGBColorTest() throws InterruptedException, ExecutionException, TimeoutException {
+    public void receiveRGBColorTest() {
         ColorValue value = new ColorValue(true, "FON", "FOFF", 10);
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
 
         c.processMessage("state", "ON".getBytes()); // Normal on state
         assertThat(value.getChannelState().toString(), is("0,0,10"));
-        assertThat(value.getMQTTpublishValue().toString(), is("25,25,25"));
+        assertThat(value.getMQTTpublishValue(), is("25,25,25"));
 
         c.processMessage("state", "FOFF".getBytes()); // Custom off state
         assertThat(value.getChannelState().toString(), is("0,0,0"));
-        assertThat(value.getMQTTpublishValue().toString(), is("0,0,0"));
+        assertThat(value.getMQTTpublishValue(), is("0,0,0"));
 
         c.processMessage("state", "10".getBytes()); // Brightness only
         assertThat(value.getChannelState().toString(), is("0,0,10"));
-        assertThat(value.getMQTTpublishValue().toString(), is("25,25,25"));
+        assertThat(value.getMQTTpublishValue(), is("25,25,25"));
 
         HSBType t = HSBType.fromRGB(12, 18, 231);
 
         c.processMessage("state", "12,18,231".getBytes());
         assertThat(value.getChannelState(), is(t)); // HSB
         // rgb -> hsv -> rgb is quite lossy
-        assertThat(value.getMQTTpublishValue().toString(), is("13,20,225"));
+        assertThat(value.getMQTTpublishValue(), is("13,20,225"));
     }
 
     @Test
-    public void receiveHSBColorTest() throws InterruptedException, ExecutionException, TimeoutException {
+    public void receiveHSBColorTest() {
         ColorValue value = new ColorValue(false, "FON", "FOFF", 10);
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
 
         c.processMessage("state", "ON".getBytes()); // Normal on state
         assertThat(value.getChannelState().toString(), is("0,0,10"));
-        assertThat(value.getMQTTpublishValue().toString(), is("0,0,10"));
+        assertThat(value.getMQTTpublishValue(), is("0,0,10"));
 
         c.processMessage("state", "FOFF".getBytes()); // Custom off state
         assertThat(value.getChannelState().toString(), is("0,0,0"));
-        assertThat(value.getMQTTpublishValue().toString(), is("0,0,0"));
+        assertThat(value.getMQTTpublishValue(), is("0,0,0"));
 
         c.processMessage("state", "10".getBytes()); // Brightness only
         assertThat(value.getChannelState().toString(), is("0,0,10"));
-        assertThat(value.getMQTTpublishValue().toString(), is("0,0,10"));
+        assertThat(value.getMQTTpublishValue(), is("0,0,10"));
 
         c.processMessage("state", "12,18,100".getBytes());
         assertThat(value.getChannelState().toString(), is("12,18,100"));
-        assertThat(value.getMQTTpublishValue().toString(), is("12,18,100"));
+        assertThat(value.getMQTTpublishValue(), is("12,18,100"));
     }
 
     @Test
-    public void receiveLocationTest() throws InterruptedException, ExecutionException, TimeoutException {
+    public void receiveLocationTest() {
         LocationValue value = new LocationValue();
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
 
         c.processMessage("state", "46.833974, 7.108433".getBytes());
         assertThat(value.getChannelState().toString(), is("46.833974,7.108433"));
-        assertThat(value.getMQTTpublishValue().toString(), is("46.833974,7.108433"));
+        assertThat(value.getMQTTpublishValue(), is("46.833974,7.108433"));
     }
 
     @Test
-    public void receiveDateTimeTest() throws InterruptedException, ExecutionException, TimeoutException {
+    public void receiveDateTimeTest() {
         DateTimeValue value = new DateTimeValue();
-        ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
-        c.start(connection, mock(ScheduledExecutorService.class), 100);
+        ChannelState subject = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
+        subject.start(connection, mock(ScheduledExecutorService.class), 100);
 
         ZonedDateTime zd = ZonedDateTime.now();
         String datetime = zd.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        c.processMessage("state", datetime.getBytes());
-        assertThat(value.getChannelState().toString(), is(datetime + "+0100"));
-        assertThat(value.getMQTTpublishValue().toString(), is(datetime));
+
+        subject.processMessage("state", datetime.getBytes());
+
+        String channelState = value.getChannelState().toString();
+        assertTrue("Expected '" + channelState + "' to start with '" + datetime + "'",
+                channelState.startsWith(datetime));
+        assertThat(value.getMQTTpublishValue(), is(datetime));
     }
 
     @Test
-    public void receiveImageTest() throws InterruptedException, ExecutionException, TimeoutException {
+    public void receiveImageTest() {
         ImageValue value = new ImageValue();
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
 
-        byte payload[] = new byte[] { (byte) 0xFF, (byte) 0xD8, 0x01, 0x02, (byte) 0xFF, (byte) 0xD9 };
+        byte[] payload = new byte[]{(byte) 0xFF, (byte) 0xD8, 0x01, 0x02, (byte) 0xFF, (byte) 0xD9};
         c.processMessage("state", payload);
         assertThat(value.getChannelState(), is(instanceOf(RawType.class)));
         assertThat(((RawType) value.getChannelState()).getMimeType(), is("image/jpeg"));
