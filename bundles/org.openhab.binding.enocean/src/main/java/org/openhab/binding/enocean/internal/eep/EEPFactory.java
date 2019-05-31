@@ -22,6 +22,8 @@ import org.openhab.binding.enocean.internal.eep.D5_00.D5_00_01;
 import org.openhab.binding.enocean.internal.eep.F6_01.F6_01_01;
 import org.openhab.binding.enocean.internal.eep.F6_02.F6_02_01;
 import org.openhab.binding.enocean.internal.eep.F6_10.F6_10_00;
+import org.openhab.binding.enocean.internal.eep.F6_10.F6_10_00_EltakoFPE1;
+import org.openhab.binding.enocean.internal.eep.F6_10.F6_10_00_EltakoFPE2;
 import org.openhab.binding.enocean.internal.eep.F6_10.F6_10_01;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
@@ -97,7 +99,21 @@ public class EEPFactory {
                     }
                 } catch (Exception e) {
                 }
+                try {
+                    EEP result = new F6_10_00_EltakoFPE1(msg);
+                    if (result.isValid()) {
+                        return result;
+                    }
+                } catch (Exception e) {
+                }
 
+                try {
+                    EEP result = new F6_10_00_EltakoFPE2(msg);
+                    if (result.isValid()) {
+                        return result;
+                    }
+                } catch (Exception e) {
+                }
                 try {
                     EEP result = new F6_10_01(msg);
                     if (result.isValid()) {
