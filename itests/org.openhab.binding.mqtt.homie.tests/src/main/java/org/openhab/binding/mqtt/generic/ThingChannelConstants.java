@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mqtt.generic;
 
-import static org.openhab.binding.mqtt.generic.internal.MqttBindingConstants.*;
+import static org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
