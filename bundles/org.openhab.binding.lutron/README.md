@@ -33,6 +33,7 @@ This binding currently supports the following thing types:
 * **pico** - Pico Keypad
 * **virtualkeypad** - Repeater virtual keypad
 * **vcrx** - Visor control receiver module (VCRX)
+* **qsio** - HomeWorks QS IO Interface
 * **cco** - Contact closure output module or VCRX CCO
 * **shade** - Lutron shade or motorized drape
 * **greenmode** - Green Mode subsystem
@@ -241,6 +242,25 @@ Example:
 
 ```
 Thing lutron:vcrx:vcrx1 (lutron:ipbridge:radiora2) [ integrationId=13, autorelease="true" ]
+```
+
+### QS IO Interface (HomeWorks QS)
+
+The Lutron QS IO Interface (QSE-IO) appears to OpenHAB as multiple devices.
+The 5 contact closure inputs (CCIs) are handled by the **qsio** thing.
+The 5 contact closure outputs (CCOs) are handled by the **cco** thing (see below).
+The only configuration option is `integrationId`
+
+To support the contact closure inputs, CCI channels named *cci[n]* are created with item type Contact and category Switch.
+They are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
+They present OPEN/CLOSED states but do not accept commands as Contact items are read-only in OpenHAB.
+
+Some functionality may depend on QSE-IO DIP switch settings. See the Lutron documentation for more information.
+
+Example:
+
+```
+Thing lutron:qsio:sensorinputs (lutron:ipbridge:homeworks) [ integrationId=42 ]
 ```
 
 ### CCO Modules
