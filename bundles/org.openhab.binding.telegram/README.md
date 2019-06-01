@@ -1,51 +1,91 @@
 # Telegram Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+The Telegram binding allows sending and receiving messages to and from Telegram clients (https://telegram.org), by using the Telegram Bot API.
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+# Prerequisites
+
+As described in the Telegram Bot API, this is the manual procedure needed in order to get the necessary information.
+
+1. Create the Bot and get the Token
+
+- On a Telegram client open a chat with BotFather.
+- Send `/newbot` to BotFather and fill in all the needed information. The authentication token that is given will be needed in the next steps.
+
+2. Create the destination chat
+
+- Open a chat with your new Bot and send any message to it. The next step will not work unless you send a message to your bot first.
+
+3. Get the chatId
+
+- Open a browser and invoke `https://api.telegram.org/bot<token>/getUpdates` (where `<token>` is the authentication token previously obtained)
+- Look at the JSON result to find the value of `id`. That is the chatId. Note that if using a Telegram group chat, the group chatIds are prefixed with a dash that must be included in the config file. (e.g. bot1.chatId: -22334455)
+
+4. Test the bot
+
+- Open this URL in your web browser, replacing <token> with the authentication token and <chatId> with the chatId:
+- `https://api.telegram.org/bot<token>/sendMessage?chat_id=<chatId>&text=testing`
+- Your Telegram-bot should send you a message with the text: `testing`
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+**telegramBot** - A Telegram Bot that can send and receive messages.
 
-## Discovery
+The Telegram binding supports the following things which origin from the latest message sent to the Telegram bot:
+* message text
+* message date
+* full name of sender (first name + last name)
+* username of sender
+* reply id (used to identify an answer from a user of a previously sent message by the binding)
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+Please note that the things cannot be used to send messages. In order to send a message, an action must be used instead.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+**telegramBot** parameters:
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+| Property                | Default | Required | Description                                                                                  |
+|-------------------------|---------|:--------:|----------------------------------------------------------------------------------------------|
+| `botUsername`                    |         | Yes      | The name of the bot                                                     |
+| `chatIds`     |         | Yes      | Comma-separated list of chat ids                    |
+| `botToken`      |         | Yes      | authentication token                                                                         |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+| Channel Type ID                      | Item Type | Description                                                     |   |   |
+|--------------------------------------|-----------|-----------------------------------------------------------------|---|---|
+| lastMessageText                      | String    | The last received message                                       |   |   |
+| lastMessageDate                      | String    | The date of the last received message                           |   |   |
+| lastMessageName                      | String    | The full name of the sender of the last received message        |   |   |
+| lastMessageUsername                  | String    | The username of the sender of the last received message         |   |   |
+| replyId                              | String    | The id of the reply which was passed to sendTelegram() as replyId argument. This id can be used to have an unambiguous assignment of the users reply to the message which was sent by the bot             |   |   |
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+## Rule Actions
+
+This binding includes a rule action, which allows to send Telegram messages from within rules.
+
+```
+val telegramAction = getActions("telegram","telegram:telegramBot:<uid>")
+```
+where uid is the Thing UID of the Telegram thing (not the chat id!).
+
+
+Once this action instance is retrieved, you can invoke the `sendTelegram' method on it:
+
+```
+telegramAction.sendTelegram("Hello world!")
+```
+
+The following actions are supported.
+Each of the actions returns true on success or false on failure.
+
+| Action                | Description  |
+|-----------------------|--------------|
+| sendTelegram(String message) | Sends a message. |
+| sendTelegram(String format, Object... args)          | Sends a formatted message (See https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html for more information).
+| sendTelegram(String message, String replyId, String... buttons) | Sends a question to the user that can be answered via the defined buttons. The replyId can be freely choosen and is sent back with the answer. Then, the id is required to identify what question has been answered (e.g. in case of multiple open questions). The final result looks like this: ![Telegram Inline Keyboard](doc/queryExample.png). |
+| sendTelegramAnswer(String replyId, String message) | Sends a message after the user has answered a question. You should *always* call this method after you received an answer. It will remove buttons from the specific question and will also stop the progress bar displayed at the client side. If no message is necessary, just pass `null` here. |
+| sendTelegramPhoto(String photoURL, String caption) | Sends a picture. The URL can be specified using the http, https, and file protocols. |
 
 ## Full Example
 
@@ -54,3 +94,4 @@ _Provide a full usage example based on textual configuration files (*.things, *.
 ## Any custom content here!
 
 _Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+b 
