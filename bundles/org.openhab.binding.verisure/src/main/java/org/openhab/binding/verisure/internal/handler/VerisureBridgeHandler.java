@@ -73,7 +73,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
     private final ReentrantLock immediateRefreshJobLock = new ReentrantLock();
 
     private @Nullable String authstring;
-    private @Nullable BigDecimal pinCode;
+    private @Nullable String pinCode;
     private @Nullable BigDecimal refresh = new BigDecimal(600);
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> immediateRefreshJob;
@@ -124,7 +124,7 @@ public class VerisureBridgeHandler extends BaseBridgeHandler {
                     // Configuration change
                     session = new VerisureSession(this.httpClient);
                 }
-                session.initialize(authstring, pinCode);
+                session.initialize(authstring, pinCode, config.username);
                 startAutomaticRefresh();
             } catch (RuntimeException e) {
                 logger.warn("Failed to initialize! Exception caught: {}", e.getMessage(), e);

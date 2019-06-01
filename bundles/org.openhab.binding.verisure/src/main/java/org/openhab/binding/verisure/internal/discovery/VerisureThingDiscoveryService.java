@@ -27,13 +27,14 @@ import org.openhab.binding.verisure.internal.VerisureHandlerFactory;
 import org.openhab.binding.verisure.internal.VerisureSession;
 import org.openhab.binding.verisure.internal.VerisureThingConfiguration;
 import org.openhab.binding.verisure.internal.handler.VerisureBridgeHandler;
-import org.openhab.binding.verisure.internal.model.VerisureAlarmJSON;
-import org.openhab.binding.verisure.internal.model.VerisureBroadbandConnectionJSON;
-import org.openhab.binding.verisure.internal.model.VerisureClimateBaseJSON;
-import org.openhab.binding.verisure.internal.model.VerisureDoorWindowJSON;
-import org.openhab.binding.verisure.internal.model.VerisureSmartPlugJSON;
+import org.openhab.binding.verisure.internal.model.VerisureAlarmsJSON;
+import org.openhab.binding.verisure.internal.model.VerisureBroadbandConnectionsJSON;
+import org.openhab.binding.verisure.internal.model.VerisureClimatesJSON;
+import org.openhab.binding.verisure.internal.model.VerisureDoorWindowsJSON;
+import org.openhab.binding.verisure.internal.model.VerisureSmartLocksJSON;
+import org.openhab.binding.verisure.internal.model.VerisureSmartPlugsJSON;
 import org.openhab.binding.verisure.internal.model.VerisureThingJSON;
-import org.openhab.binding.verisure.internal.model.VerisureUserPresenceJSON;
+import org.openhab.binding.verisure.internal.model.VerisureUserPresencesJSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +89,8 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService {
                 String label = "Device Id: " + deviceId;
                 if (thing.getLocation() != null) {
                     label += ", Location: " + thing.getLocation();
-                } else if (thing.getSiteName() != null) {
+                }
+                if (thing.getSiteName() != null) {
                     label += ", Site name: " + thing.getSiteName();
                 }
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
@@ -113,38 +115,33 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService {
             String deviceId = thing.getDeviceId();
             if (deviceId != null) {
                 deviceId.replaceAll("[^a-zA-Z0-9]+", "");
-                if (thing instanceof VerisureAlarmJSON) {
-                    String type = ((VerisureAlarmJSON) thing).getType();
-                    if ("ARM_STATE".equals(type)) {
-                        thingUID = new ThingUID(THING_TYPE_ALARM, bridgeUID, deviceId);
-                    } else if ("DOOR_LOCK".equals(type)) {
-                        thingUID = new ThingUID(THING_TYPE_SMARTLOCK, bridgeUID, deviceId);
-                    } else {
-                        logger.warn("Unknown alarm/lock device {}.", type);
-                    }
-                } else if (thing instanceof VerisureUserPresenceJSON) {
+                if (thing instanceof VerisureAlarmsJSON) {
+                    thingUID = new ThingUID(THING_TYPE_ALARM, bridgeUID, deviceId);
+                } else if (thing instanceof VerisureSmartLocksJSON) {
+                    thingUID = new ThingUID(THING_TYPE_SMARTLOCK, bridgeUID, deviceId);
+                } else if (thing instanceof VerisureUserPresencesJSON) {
                     thingUID = new ThingUID(THING_TYPE_USERPRESENCE, bridgeUID, deviceId);
-                } else if (thing instanceof VerisureDoorWindowJSON) {
+                } else if (thing instanceof VerisureDoorWindowsJSON) {
                     thingUID = new ThingUID(THING_TYPE_DOORWINDOW, bridgeUID, deviceId);
-                } else if (thing instanceof VerisureSmartPlugJSON) {
+                } else if (thing instanceof VerisureSmartPlugsJSON) {
                     thingUID = new ThingUID(THING_TYPE_SMARTPLUG, bridgeUID, deviceId);
-                } else if (thing instanceof VerisureClimateBaseJSON) {
-                    String type = ((VerisureClimateBaseJSON) thing).getType();
-                    if ("Smoke detector".equals(type)) {
+                } else if (thing instanceof VerisureClimatesJSON) {
+                    String type = ((VerisureClimatesJSON) thing).getData().getInstallation().getClimates().get(0).getDevice().getGui().getLabel();
+                    if ("SMOKE".equals(type)) {
                         thingUID = new ThingUID(THING_TYPE_SMOKEDETECTOR, bridgeUID, deviceId);
-                    } else if ("Water detector".equals(type)) {
+                    } else if ("WATER".equals(type)) {
                         thingUID = new ThingUID(THING_TYPE_WATERDETECTOR, bridgeUID, deviceId);
-                    } else if ("Night Control".equals(type)) {
+                    } else if ("HOMEPAD".equals(type)) {
                         thingUID = new ThingUID(THING_TYPE_NIGHT_CONTROL, bridgeUID, deviceId);
-                    } else if ("Siren".equals(type)) {
+                    } else if ("SIREN".equals(type)) {
                         thingUID = new ThingUID(THING_TYPE_SIREN, bridgeUID, deviceId);
                     } else {
                         logger.warn("Unknown climate device {}.", type);
                     }
-                } else if (thing instanceof VerisureBroadbandConnectionJSON) {
+                } else if (thing instanceof VerisureBroadbandConnectionsJSON) {
                     thingUID = new ThingUID(THING_TYPE_BROADBAND_CONNECTION, bridgeUID, deviceId);
                 } else {
-                    logger.warn("Unsupported JSON!");
+                    logger.warn("Unsupported JSON! thing {}" , thing.toString());
                 }
             }
         }

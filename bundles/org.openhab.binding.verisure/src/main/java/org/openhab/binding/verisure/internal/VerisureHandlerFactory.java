@@ -36,10 +36,12 @@ import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.verisure.internal.discovery.VerisureThingDiscoveryService;
 import org.openhab.binding.verisure.internal.handler.VerisureAlarmThingHandler;
 import org.openhab.binding.verisure.internal.handler.VerisureBridgeHandler;
+import org.openhab.binding.verisure.internal.handler.VerisureBroadbandConnectionThingHandler;
 import org.openhab.binding.verisure.internal.handler.VerisureClimateDeviceThingHandler;
+import org.openhab.binding.verisure.internal.handler.VerisureDoorWindowThingHandler;
 import org.openhab.binding.verisure.internal.handler.VerisureSmartLockThingHandler;
 import org.openhab.binding.verisure.internal.handler.VerisureSmartPlugThingHandler;
-import org.openhab.binding.verisure.internal.handler.VerisureThingHandler;
+import org.openhab.binding.verisure.internal.handler.VerisureUserPresenceThingHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -59,11 +61,13 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>();
     static {
         SUPPORTED_THING_TYPES.addAll(VerisureBridgeHandler.SUPPORTED_THING_TYPES);
-        SUPPORTED_THING_TYPES.addAll(VerisureThingHandler.SUPPORTED_THING_TYPES);
         SUPPORTED_THING_TYPES.addAll(VerisureAlarmThingHandler.SUPPORTED_THING_TYPES);
         SUPPORTED_THING_TYPES.addAll(VerisureSmartLockThingHandler.SUPPORTED_THING_TYPES);
         SUPPORTED_THING_TYPES.addAll(VerisureSmartPlugThingHandler.SUPPORTED_THING_TYPES);
         SUPPORTED_THING_TYPES.addAll(VerisureClimateDeviceThingHandler.SUPPORTED_THING_TYPES);
+        SUPPORTED_THING_TYPES.addAll(VerisureBroadbandConnectionThingHandler.SUPPORTED_THING_TYPES);
+        SUPPORTED_THING_TYPES.addAll(VerisureDoorWindowThingHandler.SUPPORTED_THING_TYPES);
+        SUPPORTED_THING_TYPES.addAll(VerisureUserPresenceThingHandler.SUPPORTED_THING_TYPES);
     }
 
     private static final boolean DEBUG = false;
@@ -91,9 +95,6 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("Create VerisureBridgeHandler");
             thingHandler = new VerisureBridgeHandler((Bridge) thing, httpClient);
             registerObjectDiscoveryService((VerisureBridgeHandler) thingHandler);
-        } else if (VerisureThingHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            logger.debug("Create VerisureThingHandler {}", thing.getThingTypeUID());
-            thingHandler = new VerisureThingHandler(thing);
         } else if (VerisureAlarmThingHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("Create VerisureAlarmThingHandler {}", thing.getThingTypeUID());
             thingHandler = new VerisureAlarmThingHandler(thing);
@@ -106,7 +107,18 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
         } else if (VerisureClimateDeviceThingHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("Create VerisureClimateDeviceThingHandler {}", thing.getThingTypeUID());
             thingHandler = new VerisureClimateDeviceThingHandler(thing);
-        }
+        } else if (VerisureBroadbandConnectionThingHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            logger.debug("Create VerisureBroadbandConnectionThingHandler {}", thing.getThingTypeUID());
+            thingHandler = new VerisureBroadbandConnectionThingHandler(thing);
+        } else if (VerisureDoorWindowThingHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            logger.debug("Create VerisureDoorWindowThingHandler {}", thing.getThingTypeUID());
+            thingHandler = new VerisureDoorWindowThingHandler(thing);
+        } else if (VerisureUserPresenceThingHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            logger.debug("Create VerisureUserPresenceThingHandler {}", thing.getThingTypeUID());
+            thingHandler = new VerisureUserPresenceThingHandler(thing);
+        } else {
+        	logger.debug("Not possible to create thing handler for thing {}", thing);
+        } 
         return thingHandler;
     }
 

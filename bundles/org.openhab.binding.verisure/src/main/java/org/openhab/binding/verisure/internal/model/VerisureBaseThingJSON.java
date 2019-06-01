@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class VerisureBaseThingJSON implements VerisureThingJSON {
 
-    protected @Nullable String id;
+    protected @Nullable String deviceId;
     protected @Nullable String name;
     protected @Nullable String location;
     protected @Nullable String status;
@@ -70,27 +70,11 @@ public class VerisureBaseThingJSON implements VerisureThingJSON {
     }
 
     /**
-     * @return the id
-     */
-    @Override
-    public @Nullable String getId() {
-        return id;
-    }
-
-    /**
-     * @param id the id to set
-     */
-    @Override
-    public void setId(@Nullable String id) {
-        this.id = id;
-    }
-
-    /**
      * @return the deviceId
      */
     @Override
     public @Nullable String getDeviceId() {
-        return id;
+        return deviceId;
     }
 
     /**
@@ -98,7 +82,7 @@ public class VerisureBaseThingJSON implements VerisureThingJSON {
      */
     @Override
     public void setDeviceId(@Nullable String deviceId) {
-        this.id = deviceId;
+        this.deviceId = deviceId;
     }
 
     /**
@@ -112,7 +96,7 @@ public class VerisureBaseThingJSON implements VerisureThingJSON {
     /**
      * @param location the location to set
      */
-    public void setLocation(String location) {
+    public void setLocation(@Nullable String location) {
         this.location = location;
     }
 
@@ -141,7 +125,7 @@ public class VerisureBaseThingJSON implements VerisureThingJSON {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((deviceId == null) ? 0 : deviceId.hashCode());
         result = prime * result + ((location == null) ? 0 : location.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((status == null) ? 0 : status.hashCode());
@@ -165,11 +149,11 @@ public class VerisureBaseThingJSON implements VerisureThingJSON {
         }
 
         VerisureBaseThingJSON other = (VerisureBaseThingJSON) obj;
-        if (id == null) {
-            if (other.id != null) {
+        if (deviceId == null) {
+            if (other.deviceId != null) {
                 return false;
             }
-        } else if (id != null && !id.equals(other.id)) {
+        } else if (deviceId != null && !deviceId.equals(other.deviceId)) {
             return false;
         }
 
@@ -226,9 +210,9 @@ public class VerisureBaseThingJSON implements VerisureThingJSON {
             builder.append(name);
             builder.append(", ");
         }
-        if (id != null) {
-            builder.append(", id=");
-            builder.append(id);
+        if (deviceId != null) {
+            builder.append(", deviceId=");
+            builder.append(deviceId);
         }
         if (location != null) {
             builder.append(", location=");

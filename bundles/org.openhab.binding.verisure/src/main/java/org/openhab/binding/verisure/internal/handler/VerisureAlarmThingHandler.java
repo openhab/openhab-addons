@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.verisure.internal.model.VerisureAlarmJSON;
+import org.openhab.binding.verisure.internal.model.VerisureAlarmsJSON;
 import org.openhab.binding.verisure.internal.model.VerisureThingJSON;
 
 /**
@@ -64,11 +64,11 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
 
     private void handleAlarmState(Command command) {
         if (session != null && config.deviceId != null) {
-            VerisureAlarmJSON alarm = (VerisureAlarmJSON) session
+            VerisureAlarmsJSON alarm = (VerisureAlarmsJSON) session
                     .getVerisureThing(config.deviceId.replaceAll("[^a-zA-Z0-9]+", ""));
             if (alarm != null) {
-            	BigDecimal pinCode = session.getPinCode();
             	BigDecimal installationId = alarm.getSiteId();
+            	BigDecimal pinCode = session.getPinCode(installationId);
             	String deviceId = config.deviceId;
             	if (deviceId != null && pinCode != null && installationId != null) {
             		StringBuilder sb = new StringBuilder(deviceId);
@@ -91,9 +91,9 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
                         logger.debug("Unknown command! {}", command);
                         return;
                     }
-                    session.sendCommand2(url, queryQLAlarmSetState);
-                    ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_STATUS);
-                    updateState(cuid, new StringType("pending"));
+                    session.sendCommand(url, queryQLAlarmSetState, installationId);
+                    ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_ALARM_STATUS);
+                    updateState(cuid, new StringType("PENDING"));
                 } else if (pinCode == null) {
                     logger.warn("PIN code is not configured! Mandatory to control Alarm!");
                 }
@@ -106,7 +106,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
         logger.debug("update on thing: {}", thing);
         updateStatus(ThingStatus.ONLINE);
         if (getThing().getThingTypeUID().equals(THING_TYPE_ALARM)) {
-            VerisureAlarmJSON obj = (VerisureAlarmJSON) thing;
+            VerisureAlarmsJSON obj = (VerisureAlarmsJSON) thing;
             if (obj != null) {
                 updateAlarmState(obj);
             }
@@ -115,36 +115,43 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
         }
     }
 
-    private void updateAlarmState(VerisureAlarmJSON status) {
-        ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_STATUS);
-        String alarmStatus = status.getStatus();
+    private void updateAlarmState(VerisureAlarmsJSON alarmsJSON) {
+        String alarmStatus = alarmsJSON.getData().getInstallation().getArmState().getStatusType();
         if (alarmStatus != null) {
+        	ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_ALARM_STATUS);
             updateState(cuid, new StringType(alarmStatus));
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_NUMERIC_STATUS);
             DecimalType val = new DecimalType(0);
-            if (alarmStatus.equals("unarmed")) {
+            if (alarmStatus.equals("DISARMED")) {
                 val = new DecimalType(0);
-            } else if (alarmStatus.equals("armedhome")) {
+            } else if (alarmStatus.equals("ARMED_HOME")) {
                 val = new DecimalType(1);
-            } else if (alarmStatus.equals("armed")) {
+            } else if (alarmStatus.equals("ARMED_AWAY")) {
                 val = new DecimalType(2);
+            } else if (alarmStatus.equals("PENDING")) {
+                // Schedule another refresh.
+            	logger.debug("Issuing another immediate refresh since statis is stii PENDING ...");
+                this.scheduleImmediateRefresh();
             } else {
                 logger.warn("Unknown alarmstatus: {}", alarmStatus);
             }
             updateState(cuid, val);
+            cuid = new ChannelUID(getThing().getUID(), CHANNEL_SET_ALARM_STATUS);
+            updateState(cuid, val);
             cuid = new ChannelUID(getThing().getUID(), CHANNEL_CHANGED_BY_USER);
-            updateState(cuid, new StringType(status.getName()));
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_LASTUPDATE);
-            updateState(cuid, new StringType(status.getDate()));
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_ALARM_STATUS);
-            updateState(cuid, new StringType(status.getLabel()));
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_SITE_INSTALLATION_ID);
-            BigDecimal siteId = status.getSiteId();
+            updateState(cuid, new StringType(alarmsJSON.getData().getInstallation().getArmState().getName()));
+            cuid = new ChannelUID(getThing().getUID(), CHANNEL_CHANGED_VIA);
+            updateState(cuid, new StringType(alarmsJSON.getData().getInstallation().getArmState().getChangedVia())); 
+            updateTimeStamp(alarmsJSON.getData().getInstallation().getArmState().getDate());
+            cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_ID);
+            BigDecimal siteId = alarmsJSON.getSiteId();
             if (siteId != null) {
                 updateState(cuid, new DecimalType(siteId.longValue()));
             }
-            cuid = new ChannelUID(getThing().getUID(), CHANNEL_SITE_INSTALLATION_NAME);
-            updateState(cuid, new StringType(status.getSiteName()));
+            cuid = new ChannelUID(getThing().getUID(), CHANNEL_INSTALLATION_NAME);
+            updateState(cuid, new StringType(alarmsJSON.getSiteName()));
+        } else {
+        	logger.warn("Alarm status is null!");
         }
     }
 

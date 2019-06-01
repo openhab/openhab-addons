@@ -67,7 +67,7 @@ public class VerisureInstallationsJSON extends VerisureBaseThingJSON {
 	}
 
 	@NonNullByDefault
-	static public class Data {
+	public static class Data {
 
 		@SerializedName("account")
 		private @Nullable Account account;
@@ -112,7 +112,7 @@ public class VerisureInstallationsJSON extends VerisureBaseThingJSON {
 	}
 
 	@NonNullByDefault
-	static public class Account {
+	public static class Account {
 
 		@SerializedName("__typename")
 		private @Nullable String typename;
@@ -168,7 +168,7 @@ public class VerisureInstallationsJSON extends VerisureBaseThingJSON {
 	}
 
 	@NonNullByDefault
-	static public class Owainstallation {
+	public static class Owainstallation {
 
 		@SerializedName("__typename")
 		private @Nullable String typename;

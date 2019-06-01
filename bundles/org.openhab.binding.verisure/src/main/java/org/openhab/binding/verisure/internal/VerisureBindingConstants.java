@@ -44,15 +44,17 @@ public class VerisureBindingConstants {
     public static final String CHANNEL_NUMERIC_STATUS = "numericStatus";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
-    public static final String CHANNEL_LASTUPDATE = "lastUpdate";
+    public static final String CHANNEL_HUMIDITY_ENABLED = "humidityEnabled";
     public static final String CHANNEL_LOCATION = "location";
     public static final String CHANNEL_STATUS = "status";
+    public static final String CHANNEL_CONNECTED = "connected";
     public static final String CHANNEL_STATE = "state";
     public static final String CHANNEL_LABEL = "label";
     public static final String CHANNEL_USER_NAME = "userName";
     public static final String CHANNEL_WEBACCOUNT = "webAccount";
     public static final String CHANNEL_USER_LOCATION_NAME = "userLocationName";
     public static final String CHANNEL_USER_LOCATION_STATUS = "userLocationStatus";
+    public static final String CHANNEL_USER_DEVICE_NAME = "userDeviceName";
     public static final String CHANNEL_SET_ALARM_STATUS = "setAlarmStatus";
     public static final String CHANNEL_SET_SMARTLOCK_STATUS = "setSmartLockStatus";
     public static final String CHANNEL_SMARTLOCK_VOLUME = "smartLockVolume";
@@ -66,11 +68,12 @@ public class VerisureBindingConstants {
     public static final String CHANNEL_ALARM_STATUS = "alarmStatus";
     public static final String CHANNEL_SMARTLOCK_STATUS = "smartLockStatus";
     public static final String CHANNEL_CHANGED_BY_USER = "changedByUser";
+    public static final String CHANNEL_CHANGED_VIA = "changedVia";
     public static final String CHANNEL_TIMESTAMP = "timestamp";
-    public static final String CHANNEL_HAS_WIFI = "hasWifi";
     public static final String CHANNEL_HAZARDOUS = "hazardous";
-    public static final String CHANNEL_SITE_INSTALLATION_NAME = "siteName";
-    public static final String CHANNEL_SITE_INSTALLATION_ID = "siteId";
+    public static final String CHANNEL_MOTOR_JAM = "motorJam";
+    public static final String CHANNEL_INSTALLATION_NAME = "installationName";
+    public static final String CHANNEL_INSTALLATION_ID = "installationId";
 
     // REST URI constants
     public static final String USERNAME = "username";
