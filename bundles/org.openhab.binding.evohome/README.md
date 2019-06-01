@@ -61,7 +61,7 @@ None
 
 | Channel Type ID | Item Type | Description                                                                                                        |
 |-----------------|-----------|--------------------------------------------------------------------------------------------------------------------|
-| Mode            | String    | Allows to view or set the system mode. Supported values are: Auto, Auto, WithEco, Away, DayOff, HeatingOff, Custom |
+| Mode            | String    | Allows to view or set the system mode. Supported values are: Auto, AutoWithEco, Away, DayOff, HeatingOff, Custom |
 
 ### Zone
 
