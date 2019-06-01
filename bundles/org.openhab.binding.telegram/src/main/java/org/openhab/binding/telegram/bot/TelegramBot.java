@@ -80,10 +80,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             telegramHandler.updateChannel(LASTMESSAGENAME, lastMessageName);
             telegramHandler.updateChannel(LASTMESSAGEUSERNAME, lastMessageUsername);
 
-        } else if (update.hasCallbackQuery() && update.getCallbackQuery().getMessage().hasText()
-        /* && update.getCallbackQuery().getMessage().getChatId().intValue() == chatIds */) {
-            // TODO: can it also happen for a callback that this was sent from an unknwon chat?
-            // replyId and answer is seperated by a space
+        } else if (update.hasCallbackQuery() && update.getCallbackQuery().getMessage().hasText()) {
             String[] callbackData = update.getCallbackQuery().getData().split(" ", 2);
 
             if (callbackData.length == 2) {
