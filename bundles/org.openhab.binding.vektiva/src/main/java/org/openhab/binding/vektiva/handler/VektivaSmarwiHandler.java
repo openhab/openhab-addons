@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.vektiva.internal.config.VektivaSmarwiConfiguration;
-import org.openhab.binding.vektiva.internal.net.VektivaSmarwiiSocket;
+import org.openhab.binding.vektiva.internal.net.VektivaSmarwiSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,9 +50,9 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
 
     private VektivaSmarwiConfiguration config = new VektivaSmarwiConfiguration();
 
-    private HttpClient httpClient = new HttpClient();
+    private @Nullable HttpClient httpClient;
 
-    private WebSocketClient webSocketClient = new WebSocketClient();
+    private @Nullable WebSocketClient webSocketClient;
 
     private @Nullable Session session;
 
@@ -60,8 +60,10 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
 
     private int lastPosition = -1;
 
-    public VektivaSmarwiHandler(Thing thing) {
+    public VektivaSmarwiHandler(Thing thing, @Nullable HttpClient httpClient, @Nullable WebSocketClient webSocketClient) {
         super(thing);
+        this.httpClient = httpClient;
+        this.webSocketClient = webSocketClient;
     }
 
     @Override
@@ -71,12 +73,12 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             return;
         }
 
-        if (channelUID.getId().equals(CHANNEL_CONTROL)) {
-            logger.debug("Received command: {}", command.toString());
+        if (CHANNEL_CONTROL.equals(channelUID.getId())) {
+            logger.debug("Received command: {}", command);
             String cmd = getSmarwiCommand(command);
-            if (cmd.equals(COMMAND_OPEN) || cmd.equals(COMMAND_CLOSE) || cmd.equals(COMMAND_STOP)) {
+            if (COMMAND_OPEN.equals(cmd) || COMMAND_CLOSE.equals(cmd) || COMMAND_STOP.equals(cmd)) {
                 if (RESPONSE_OK.equals(sendCommand(cmd))) {
-                    lastPosition = cmd.equals(COMMAND_OPEN) ? 0 : 100;
+                    lastPosition = COMMAND_OPEN.equals(cmd) ? 0 : 100;
                 }
             }
             if (command instanceof PercentType) {
@@ -192,7 +194,7 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "got response code: " + resp.getStatus());
             }
             // reconnect web socket if not connected
-            if (config.useWebSockets && (session == null || !session.isOpen()) && getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            if (config.useWebSockets && (session == null || !session.isOpen()) && ThingStatus.ONLINE.equals(getThing().getStatus())) {
                 logger.debug("Initializing WebSocket session");
                 initializeWebSocketSession();
             }
@@ -247,7 +249,7 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
         try {
             webSocketClient.start();
             // The socket that receives events
-            VektivaSmarwiiSocket socket = new VektivaSmarwiiSocket(this);
+            VektivaSmarwiSocket socket = new VektivaSmarwiSocket(this);
             // Attempt Connect
             Future<Session> fut = webSocketClient.connect(socket, uri);
             // Wait for Connect

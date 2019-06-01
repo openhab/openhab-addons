@@ -20,17 +20,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link VektivaSmarwiiSocket} class defines websocket used for connection with
+ * The {@link VektivaSmarwiSocket} class defines websocket used for connection with
  * the Smarwi thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class VektivaSmarwiiSocket extends WebSocketAdapter {
-    private final Logger logger = LoggerFactory.getLogger(VektivaSmarwiHandler.class);
-    private VektivaSmarwiHandler handler;
+public class VektivaSmarwiSocket extends WebSocketAdapter {
+    private final Logger logger = LoggerFactory.getLogger(VektivaSmarwiSocket.class);
+    private final VektivaSmarwiHandler handler;
 
-    public VektivaSmarwiiSocket(VektivaSmarwiHandler handler) {
+    public VektivaSmarwiSocket(VektivaSmarwiHandler handler) {
         this.handler = handler;
     }
 
