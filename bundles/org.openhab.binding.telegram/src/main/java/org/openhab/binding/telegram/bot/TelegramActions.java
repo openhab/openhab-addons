@@ -70,13 +70,8 @@ public class TelegramActions implements ThingActions {
     }
 
     @RuleAction(label = "Telegram answer", description = "Sends a Telegram answer via Telegram API")
-    public boolean sendTelegramAnswer(@ActionInput(name = "group") @Nullable String group,
-            @ActionInput(name = "replyId") @Nullable String replyId,
+    public boolean sendTelegramAnswer(@ActionInput(name = "replyId") @Nullable String replyId,
             @ActionInput(name = "message") @Nullable String message) {
-        if (group == null) {
-            logger.warn("Group not defined; action skipped.");
-            return false;
-        }
         if (replyId == null) {
             logger.warn("ReplyId not defined; action skipped.");
             return false;
@@ -100,7 +95,7 @@ public class TelegramActions implements ThingActions {
                         bot.execute(editReplyMarkup);
                     }
                 }
-                return message != null ? sendTelegram(group, message) : true;
+                return message != null ? sendTelegram(message) : true;
             } catch (TelegramApiException e) {
                 logger.warn("Failed to send telegram: ", e);
             }
@@ -109,21 +104,14 @@ public class TelegramActions implements ThingActions {
     }
 
     @RuleAction(label = "Telegram message", description = "Sends a Telegram via Telegram API")
-    public boolean sendTelegram(@ActionInput(name = "group") @Nullable String group,
-            @ActionInput(name = "message") @Nullable String message) {
-        return sendTelegram(group, message, (String) null);
+    public boolean sendTelegram(@ActionInput(name = "message") @Nullable String message) {
+        return sendTelegram(message, (String) null);
     }
 
     @RuleAction(label = "Telegram MEssage", description = "Sends a Telegram via Telegram API")
-    public boolean sendTelegram(@ActionInput(name = "group") @Nullable String group,
-            @ActionInput(name = "message") @Nullable String message,
+    public boolean sendTelegram(@ActionInput(name = "message") @Nullable String message,
             @ActionInput(name = "replyId") @Nullable String replyId,
             @ActionInput(name = "buttons") @Nullable String... buttons) {
-        // TODO: group is currently not evaluated since only one bot at a time is supported
-        if (group == null) {
-            logger.warn("Group not defined; action skipped.");
-            return false;
-        }
         if (message == null) {
             logger.warn("Message not defined; action skipped.");
             return false;
@@ -169,20 +157,14 @@ public class TelegramActions implements ThingActions {
     }
 
     @RuleAction(label = "Telegram message", description = "Sends a Telegram via Telegram API")
-    public boolean sendTelegram(@ActionInput(name = "group") @Nullable String group,
-            @ActionInput(name = "message") @Nullable String format,
+    public boolean sendTelegram(@ActionInput(name = "message") @Nullable String format,
             @ActionInput(name = "args") @Nullable Object... args) {
-        return sendTelegram(group, String.format(format, args));
+        return sendTelegram(String.format(format, args));
     }
 
     @RuleAction(label = "Telegram photo", description = "Sends a Picture via Telegram API")
-    public boolean sendTelegramPhoto(@ActionInput(name = "group") @Nullable String group,
-            @ActionInput(name = "photoURL") @Nullable String photoURL,
+    public boolean sendTelegramPhoto(@ActionInput(name = "photoURL") @Nullable String photoURL,
             @ActionInput(name = "caption") @Nullable String caption) {
-        if (group == null) {
-            logger.warn("Group not defined; action skipped.");
-            return false;
-        }
         if (photoURL == null) {
             logger.warn("Photo URL not defined; unable to retrieve photo for sending.");
             return false;
@@ -239,37 +221,37 @@ public class TelegramActions implements ThingActions {
 
     // legacy delegate methods
 
-    public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable String group, @Nullable String format,
+    public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable String format,
             @Nullable Object... args) {
         if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegram(group, format, args);
+            return ((TelegramActions) actions).sendTelegram(format, args);
         } else {
             throw new IllegalArgumentException("Instance is not an TelegramActions class.");
         }
     }
 
-    public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable String group, @Nullable String message,
+    public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable String message,
             @Nullable String replyId, @Nullable String... buttons) {
         if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegram(group, message, replyId, buttons);
+            return ((TelegramActions) actions).sendTelegram(message, replyId, buttons);
         } else {
             throw new IllegalArgumentException("Instance is not an TelegramActions class.");
         }
     }
 
-    public static boolean sendTelegramPhoto(@Nullable ThingActions actions, @Nullable String group,
-            @Nullable String photoURL, @Nullable String caption) {
+    public static boolean sendTelegramPhoto(@Nullable ThingActions actions, @Nullable String photoURL,
+            @Nullable String caption) {
         if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramPhoto(group, photoURL, caption);
+            return ((TelegramActions) actions).sendTelegramPhoto(photoURL, caption);
         } else {
             throw new IllegalArgumentException("Instance is not an TelegramActions class.");
         }
     }
 
-    public static boolean sendTelegramAnswer(@Nullable ThingActions actions, @Nullable String group,
-            @Nullable String replyId, @Nullable String message) {
+    public static boolean sendTelegramAnswer(@Nullable ThingActions actions, @Nullable String replyId,
+            @Nullable String message) {
         if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramAnswer(group, replyId, message);
+            return ((TelegramActions) actions).sendTelegramAnswer(replyId, message);
         } else {
             throw new IllegalArgumentException("Instance is not an TelegramActions class.");
         }
