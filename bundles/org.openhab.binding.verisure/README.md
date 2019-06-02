@@ -79,7 +79,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 |-----------------|-----------|-------------------------------------------------------------------------------------------|
 | numericStatus   | Number    | This channel reports the alarm status as a number.                                        |
 | alarmStatus     | String    | This channel reports the specific alarm status ("DISARMED", "ARMED HOME" or "ARMED AWAY").|
-| lastUpdate      | String    | This channel reports the last time the alarm status was changed.                          |
+| timestamp       | String    | This channel reports the last time the alarm status was changed.                          |
 | changedByUser   | String    | This channel reports the user that last changed the state of the alarm.                   |
 | installationName| String    | This channel reports the installation name.                                                |
 | installationId  | Number    | This channel reports the installation ID.                                             |
@@ -100,7 +100,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 |-----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
 | humidity        | Number                | This channel reports the current humidity in percentage.   |
 | temperature     | Number:Temperature    | This channel reports the current humidity in percentage.   |
-| lastUpdate      | String                | This channel reports the last time this sensor was updated.|
+| timeStamp       | String                | This channel reports the last time this sensor was updated.|
 | location        | String                | This channel reports the location.                         |
 | installationName| String                | This channel reports the installation name.                |
 | installationId  | Number                | This channel reports the installation ID.                  |
@@ -119,7 +119,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 | Channel Type ID | Item Type             | Description                                                | 
 |-----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
 | temperature     | Number:Temperature    | This channel reports the current humidity in percentage.   |
-| lastUpdate      | String                | This channel reports the last time this sensor was updated.|
+| timeStamp       | String                | This channel reports the last time this sensor was updated.|
 | location        | String                | This channel reports the location.                         |
 | installationName| String                | This channel reports the installation name.                |
 | installationId  | Number                | This channel reports the installation ID.                  |
@@ -138,7 +138,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 | Channel Type ID | Item Type             | Description                                                | 
 |-----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
 | temperature     | Number:Temperature    | This channel reports the current humidity in percentage.   |
-| lastUpdate      | String                | This channel reports the last time this sensor was updated.|
+| timestamp       | String                | This channel reports the last time this sensor was updated.|
 | location        | String                | This channel reports the location.                         |
 | installationName| String                | This channel reports the installation name.                |
 | installationId  | Number                | This channel reports the installation ID.                  |
@@ -157,7 +157,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 | Channel Type ID | Item Type             | Description                                                | 
 |-----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
 | temperature     | Number:Temperature    | This channel reports the current humidity in percentage.   |
-| lastUpdate      | String                | This channel reports the last time this sensor was updated.|
+| timestamp       | String                | This channel reports the last time this sensor was updated.|
 | location        | String                | This channel reports the location.                         |
 | installationName| String                | This channel reports the installation name.                |
 | installationId  | Number                | This channel reports the installation ID.                  |
