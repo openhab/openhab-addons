@@ -50,9 +50,11 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
 
     private VektivaSmarwiConfiguration config = new VektivaSmarwiConfiguration();
 
-    private @Nullable HttpClient httpClient;
+    private final @NonNullByDefault({})
+    HttpClient httpClient;
 
-    private @Nullable WebSocketClient webSocketClient;
+    private final @NonNullByDefault({})
+    WebSocketClient webSocketClient;
 
     private @Nullable Session session;
 
@@ -60,7 +62,7 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
 
     private int lastPosition = -1;
 
-    public VektivaSmarwiHandler(Thing thing, @Nullable HttpClient httpClient, @Nullable WebSocketClient webSocketClient) {
+    public VektivaSmarwiHandler(Thing thing, HttpClient httpClient, WebSocketClient webSocketClient) {
         super(thing);
         this.httpClient = httpClient;
         this.webSocketClient = webSocketClient;
@@ -144,13 +146,13 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             }
             return resp.getContentAsString();
         } catch (InterruptedException e) {
-            logger.error("API execution has been interrupted", e);
+            logger.debug("API execution has been interrupted", e);
             updateStatus(ThingStatus.OFFLINE);
         } catch (TimeoutException e) {
-            logger.error("Timeout during API execution", e);
+            logger.debug("Timeout during API execution", e);
             updateStatus(ThingStatus.OFFLINE);
         } catch (ExecutionException e) {
-            logger.error("Exception during API execution", e);
+            logger.debug("Exception during API execution", e);
             updateStatus(ThingStatus.OFFLINE);
         }
         return null;
@@ -164,7 +166,7 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
         try {
             httpClient.start();
         } catch (Exception e) {
-            logger.error("Cannot start http client!", e);
+            logger.debug("Cannot start http client!", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot start http client!");
             return;
         }
@@ -200,6 +202,7 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             }
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "exception during status getting");
+            logger.debug("Exception during status update", e);
             session = null;
         }
     }
@@ -255,7 +258,8 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             // Wait for Connect
             return fut.get();
         } catch (Exception ex) {
-            logger.error("Cannot create websocket client/session", ex);
+            logger.debug("Cannot create websocket client/session", ex);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot create websocket client/session");
         }
         return null;
     }

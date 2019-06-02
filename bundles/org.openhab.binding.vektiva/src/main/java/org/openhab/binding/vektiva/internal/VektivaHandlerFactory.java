@@ -53,12 +53,12 @@ public class VektivaHandlerFactory extends BaseThingHandlerFactory {
     /**
      * the shared http client
      */
-    private @Nullable HttpClient httpClient;
+    private @NonNullByDefault({}) HttpClient httpClient;
 
     /**
      * the shared web socket client
      */
-    private @Nullable WebSocketClient webSocketClient;
+    private @NonNullByDefault({}) WebSocketClient webSocketClient;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
