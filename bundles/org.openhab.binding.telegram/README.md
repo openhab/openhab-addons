@@ -31,6 +31,7 @@ As described in the Telegram Bot API, this is the manual procedure needed in ord
 **telegramBot** - A Telegram Bot that can send and receive messages.
 
 The Telegram binding supports the following things which origin from the latest message sent to the Telegram bot:
+
 * message text
 * message date
 * full name of sender (first name + last name)
@@ -51,13 +52,13 @@ Please note that the things cannot be used to send messages. In order to send a 
 
 ## Channels
 
-| Channel Type ID                      | Item Type | Description                                                     |   |   |
-|--------------------------------------|-----------|-----------------------------------------------------------------|---|---|
-| lastMessageText                      | String    | The last received message                                       |   |   |
-| lastMessageDate                      | String    | The date of the last received message                           |   |   |
-| lastMessageName                      | String    | The full name of the sender of the last received message        |   |   |
-| lastMessageUsername                  | String    | The username of the sender of the last received message         |   |   |
-| replyId                              | String    | The id of the reply which was passed to sendTelegram() as replyId argument. This id can be used to have an unambiguous assignment of the users reply to the message which was sent by the bot             |   |   |
+| Channel Type ID                      | Item Type | Description                                                     |
+|--------------------------------------|-----------|-----------------------------------------------------------------|
+| lastMessageText                      | String    | The last received message                                       |
+| lastMessageDate                      | String    | The date of the last received message                           |
+| lastMessageName                      | String    | The full name of the sender of the last received message        |
+| lastMessageUsername                  | String    | The username of the sender of the last received message         |
+| replyId                              | String    | The id of the reply which was passed to sendTelegram() as replyId argument. This id can be used to have an unambiguous assignment of the users reply to the message which was sent by the bot             |
 
 
 ## Rule Actions
@@ -79,8 +80,8 @@ telegramAction.sendTelegram("Hello world!")
 The following actions are supported.
 Each of the actions returns true on success or false on failure.
 
-| Action                | Description  |
-|-----------------------|--------------|
+| Action                     | Description  |
+|----------------------------|--------------|
 | sendTelegram(String message) | Sends a message. |
 | sendTelegram(String format, Object... args)          | Sends a formatted message (See https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html for more information).
 | sendTelegram(String message, String replyId, String... buttons) | Sends a question to the user that can be answered via the defined buttons. The replyId can be freely choosen and is sent back with the answer. Then, the id is required to identify what question has been answered (e.g. in case of multiple open questions). The final result looks like this: ![Telegram Inline Keyboard](doc/queryExample.png). |
@@ -89,9 +90,160 @@ Each of the actions returns true on success or false on failure.
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+### Send a text message to telegram chat
 
-## Any custom content here!
+telegram.rules
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
-b 
+```java
+rule "Send telegram with Fixed Message"
+when
+   Item Foo changed
+then
+   val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
+   telegramAction.sendTelegram("item Foo changed")
+end
+```
+
+### Send a text message with a formatted message
+
+telegram.rules
+
+```java
+rule "Send telegram with Formatted Message"
+when
+   Item Foo changed
+then
+   val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
+   telegramAction.sendTelegram("item Foo changed to %s and number is %.1f", Foo.state.toString, 23.56)
+end
+```
+
+### Send an image to telegram chat
+
+`http`, `https`, and `file` are the only protocols allowed.
+
+telegram.rules
+
+```java
+rule "Send telegram with image and caption from image accessible by url"
+when
+    Item Light_GF_Living_Table changed
+then
+    val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
+    telegramAction.sendTelegramPhoto("http://www.openhab.org/assets/images/openhab-logo-top.png",
+        "sent from openHAB")
+end
+```
+
+telegram.rules
+
+```java
+rule "Send telegram with image without caption from image accessible by url"
+when
+    Item Light_GF_Living_Table changed
+then
+    val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
+    telegramAction.sendTelegramPhoto("http://www.openhab.org/assets/images/openhab-logo-top.png",
+        null)
+end
+```
+
+To send a base64 jpeg or png image:
+
+telegram.rules
+
+```java
+rule "Send telegram with base64 image and caption"
+when
+    Item Light_GF_Living_Table changed
+then
+    val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
+    var String base64Image = "data:image/jpeg;base64, LzlqLzRBQ..."
+    telegramAction.sendTelegramPhoto(base64Image, "sent from openHAB")
+end
+```
+
+To send an image that resides on the local computer file system:
+
+telegram.rules
+
+```java
+rule "Send telegram with local image and caption"
+when
+    Item Light_GF_Living_Table changed
+then
+    val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
+    telegramAction.sendTelegramPhoto("file:///path/to/local/image.jpg", "sent from openHAB")
+end
+```
+
+To send an image based on an Image Item:
+
+telegram.rules
+
+```java
+rule "Send telegram with Image Item image and caption"
+when
+    Item Webcam_Image changed
+then
+    val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
+    telegramAction.sendTelegramPhoto(Webcam_Image.state.toFullString, "sent from openHAB")
+end
+```
+
+To receive a message and react on that:
+
+telegram.items
+
+```php
+String telegramMessage "Telegram Message" { channel = "telegram:telegramBot:2b155b22:lastMessageText" }
+```
+
+telegram.rules
+
+```java
+rule "Receive telegram"
+when
+    Item telegramMessage received update "lights off"
+then
+    gLights.sendCommand(OFF)
+end
+```
+
+To send a question with two alternatives and a reply from the bot:
+
+telegram.items
+
+```php
+String telegramReplyId "Telegram Reply Id" { channel = "telegram:telegramBot:2b155b22:replyId" }
+```
+
+telegram.rules
+
+```java
+rule "Send telegram with question"
+when
+    Item Presence changed to OFF
+then
+    val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
+    telegramAction.sendTelegram("No one is at home, but some lights are still on. Do you want me to turn off the lights?", "Reply_Lights", "Yes", "No")
+end
+
+
+rule "Reply handler for lights"
+when
+    Item telegramReplyId received update Reply_Lights
+then
+    val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
+
+    if (telegramMessage.state.toString == "Yes")
+    {
+        gLights.sendCommand(OFF)
+        telegramAction.sendTelegramAnswer(telegramReplyId.state.toString, "Ok, lights are *off* now.") 
+    }
+    else
+    {
+        telegramAction.sendTelegramAnswer(telegramReplyId.state.toString, "Ok, I'll leave them *on*.")
+    }
+end
+```
