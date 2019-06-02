@@ -13,10 +13,6 @@
 
   <name>openHAB Add-ons :: Bundles :: Telegram Binding</name>
   
-  <properties>
-    <bnd.importpackage>org.telegram.telegrambots.*;resolution:="optional"</bnd.importpackage>
-  </properties>  
-  
   <dependencies>
     <dependency>
         <groupId>org.telegram</groupId>
