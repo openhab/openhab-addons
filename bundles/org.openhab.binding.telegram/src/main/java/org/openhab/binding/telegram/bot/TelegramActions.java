@@ -86,14 +86,12 @@ public class TelegramActions implements ThingActions {
             try {
                 bot.execute(answerCallbackQuery);
                 Integer messageId = bot.removeMessageId(replyId);
-                if (messageId != null) {
-                    EditMessageReplyMarkup editReplyMarkup = new EditMessageReplyMarkup().setReplyMarkup(null)
-                            .setMessageId(messageId); // remove reply markup from old message
+                EditMessageReplyMarkup editReplyMarkup = new EditMessageReplyMarkup().setReplyMarkup(null)
+                        .setMessageId(messageId); // remove reply markup from old message
 
-                    for (Long chatId : bot.getChatIds()) {
-                        editReplyMarkup.setChatId(chatId);
-                        bot.execute(editReplyMarkup);
-                    }
+                for (Long chatId : bot.getChatIds()) {
+                    editReplyMarkup.setChatId(chatId);
+                    bot.execute(editReplyMarkup);
                 }
                 return message != null ? sendTelegram(message) : true;
             } catch (TelegramApiException e) {
@@ -146,7 +144,9 @@ public class TelegramActions implements ThingActions {
                 for (Long chatId : bot.getChatIds()) {
                     sendMessage.setChatId(chatId);
                     Message retMessage = bot.execute(sendMessage);
-                    bot.addMessageId(replyId, retMessage.getMessageId());
+                    if (replyId != null) {
+                        bot.addMessageId(replyId, retMessage.getMessageId());
+                    }
                 }
                 return true; // TODO: evaluate response and check if true/false
             } catch (TelegramApiException e) {
@@ -260,7 +260,6 @@ public class TelegramActions implements ThingActions {
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         this.handler = (TelegramHandler) handler;
-
     }
 
     @Override
