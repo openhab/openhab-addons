@@ -140,7 +140,9 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             ContentResponse resp = httpClient.newRequest(url).method(HttpMethod.GET).send();
             logger.trace("Response: {}", resp.getContentAsString());
             if (resp.getStatus() == 200) {
-                updateStatus(ThingStatus.ONLINE);
+                if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
@@ -208,7 +210,9 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
     }
 
     public synchronized void processStatusResponse(String content) {
-        updateStatus(ThingStatus.ONLINE);
+        if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
+            updateStatus(ThingStatus.ONLINE);
+        }
         String[] values = content.split("\n");
 
         updateProperty("type", getPropertyValue(values, "t"));
