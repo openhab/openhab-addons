@@ -100,7 +100,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 |-----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
 | humidity        | Number                | This channel reports the current humidity in percentage.   |
 | temperature     | Number:Temperature    | This channel reports the current humidity in percentage.   |
-| timeStamp       | String                | This channel reports the last time this sensor was updated.|
+| timestamp       | String                | This channel reports the last time this sensor was updated.|
 | location        | String                | This channel reports the location.                         |
 | installationName| String                | This channel reports the installation name.                |
 | installationId  | Number                | This channel reports the installation ID.                  |
@@ -119,7 +119,7 @@ Only the bridge require manual configuration. The devices and sensors can be add
 | Channel Type ID | Item Type             | Description                                                | 
 |-----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
 | temperature     | Number:Temperature    | This channel reports the current humidity in percentage.   |
-| timeStamp       | String                | This channel reports the last time this sensor was updated.|
+| timestamp       | String                | This channel reports the last time this sensor was updated.|
 | location        | String                | This channel reports the location.                         |
 | installationName| String                | This channel reports the installation name.                |
 | installationId  | Number                | This channel reports the installation ID.                  |
