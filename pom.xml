@@ -395,8 +395,7 @@ Import-Package: \\
             </headerDefinitions>
             <includes>
               <include>**/org/openhab/**/*.java</include>
-              <include>**/feature.xml</include>
-              <include>**/OSGI-INF/*.xml</include>
+              <include>**/features/**/header.xml</include>
             </includes>
             <excludes>
               <exclude>target/**</exclude>
