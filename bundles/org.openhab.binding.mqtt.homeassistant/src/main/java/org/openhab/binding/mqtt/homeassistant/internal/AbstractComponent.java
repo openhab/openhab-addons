@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -77,6 +78,7 @@ public abstract class AbstractComponent<C extends BaseChannelConfiguration> {
         if (groupId == null || StringUtils.isBlank(groupId)) {
             groupId = this.haID.getFallbackGroupId();
         }
+        groupId = URLEncoder.encode(groupId).replace(".", "%DOT");
 
         this.channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID, groupId);
         this.channelGroupUID = new ChannelGroupUID(componentConfiguration.getThingUID(), groupId);
