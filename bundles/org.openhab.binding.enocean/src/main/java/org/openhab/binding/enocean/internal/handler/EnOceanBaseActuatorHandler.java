@@ -189,8 +189,8 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
         // check if the channel is linked otherwise do nothing
         String channelId = channelUID.getId();
-        Channel channel = getThing().getChannel(channelId);
-        if (channel == null || !isLinked(channelId)) {
+        Channel channel = getThing().getChannel(channelUID);
+        if (channel == null || !isLinked(channelUID)) {
             return;
         }
 
@@ -216,11 +216,12 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             Configuration channelConfig = channel.getConfiguration();
 
             EEP eep = EEPFactory.createEEP(sendingEEPType);
-            if (eep.setSenderId(senderId).setDestinationId(destinationId)
-                    .setSuppressRepeating(getConfiguration().suppressRepeating)
-                    .convertFromCommand(channelId, channelTypeId, command, id -> getCurrentState(id), channelConfig)
-                    .hasData()) {
-                ESP3Packet msg = eep.getERP1Message();
+            if (eep.convertFromCommand(channelId, channelTypeId, command, id -> getCurrentState(id), channelConfig)
+                   .hasData()) {
+                ESP3Packet msg = eep.setSenderId(senderId)
+                                    .setDestinationId(destinationId)
+                                    .setSuppressRepeating(getConfiguration().suppressRepeating)
+                                    .getERP1Message();
 
                 getBridgeHandler().sendMessage(msg, null);
             }

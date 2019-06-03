@@ -83,8 +83,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
         super.channelLinked(channelUID);
 
         // if linked channel is a listening channel => put listener
-        String id = channelUID.getId();
-        Channel channel = getThing().getChannel(id);
+        Channel channel = getThing().getChannel(channelUID);
         addListener(channel);
     }
 
@@ -97,7 +96,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
         getBridgeHandler().removePacketListener(this);
 
         this.getThing().getChannels().forEach(c -> {
-            if (isLinked(c.getUID().getId()) && !addListener(c)) {
+            if (isLinked(c.getUID()) && !addListener(c)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Wrong channel configuration");
             }
         });
@@ -108,8 +107,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
         super.channelUnlinked(channelUID);
 
         // if unlinked channel is listening channel => remove listener
-        String id = channelUID.getId();
-        Channel channel = getThing().getChannel(id);
+        Channel channel = getThing().getChannel(channelUID);
         removeListener(channel);
     }
 
@@ -217,7 +215,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
         }
 
         String channelId = channelUID.getId();
-        Channel channel = getThing().getChannel(channelId);
+        Channel channel = getThing().getChannel(channelUID);
         if (channel == null) {
             return;
         }
