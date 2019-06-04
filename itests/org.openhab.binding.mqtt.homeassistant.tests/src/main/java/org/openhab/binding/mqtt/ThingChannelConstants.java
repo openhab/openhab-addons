@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mqtt;
 
-import static org.openhab.binding.mqtt.generic.internal.MqttBindingConstants.*;
+import static org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
