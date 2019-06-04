@@ -57,7 +57,7 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
 
     // There is no data structure which holds the last triggered event, so we have to implement it by ourself
     // This is especially needed for press and release events
-    protected Hashtable<String, String> lastEvents = new Hashtable<>();;
+    protected Hashtable<String, String> lastEvents = new Hashtable<>();
 
     protected EnOceanBaseConfig config = null;
 
@@ -171,11 +171,6 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
             thingBuilder.withChannels(channelList);
             updateThing(thingBuilder.build());
         }
-    }
-
-    @Override
-    public void thingUpdated(Thing thing) {
-        super.thingUpdated(thing);
     }
 
     protected State getCurrentState(Channel channel) {
