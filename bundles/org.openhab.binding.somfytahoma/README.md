@@ -16,6 +16,7 @@ This binding integrates the [Somfy Tahoma](https://www.somfy.fr/produits/domotiq
 - awnings (UP, DOWN, STOP control of an awning). IO Homecontrol devices are allowed to set exact position of an awning (0-100%)
 - windows (UP, DOWN, STOP control of a window). IO Homecontrol devices are allowed to set exact position of a window (0-100%)
 - pergolas (UP, DOWN, STOP control of a pergola). IO Homecontrol devices are allowed to set exact position of a pergola (0-100%)
+- curtains (UP, DOWN, STOP control of a curtain). IO Homecontrol devices are allowed to set exact position of a shutter (0-100%)
 - on/off switches (connected by RTS, IO protocol or supported by USB stick - z-wave, enocean, ..)
 - light switches (similar to on/off)
 - light sensors (luminance value)
@@ -58,7 +59,7 @@ Please see the example below.
 | gateway       | status  | status of your Tahoma gateway |
 | gate          | gate_command | used for controlling your gate (open, close, stop, pedestrian) |
 | gate          | gate_state | get state of your gate |
-| roller shutter, screen, venetian blind, garage door, awning, window, pergola | control |  device controller which reacts to commands UP/DOWN/STOP + closure 0-100 |
+| roller shutter, screen, venetian blind, garage door, awning, window, pergola, curtain | control |  device controller which reacts to commands UP/DOWN/STOP + closure 0-100 |
 | venetian blind | orientation | percentual orientation of the blind's slats, it can have value 0-100). For IO Homecontrol devices only (non RTS)|
 | action group | execute_action | switch which reacts to ON command and triggers the predefined Tahoma action |
 | onoff, light | switch | reacts to standard ON/OFF commands |
