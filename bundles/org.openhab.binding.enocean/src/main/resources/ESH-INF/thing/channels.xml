@@ -135,6 +135,13 @@
 		<item-type>Contact</item-type>
 		<label>Contact</label>
 		<description>Contact channel</description>
+		<config-description>
+			<parameter name="inverted" type="boolean">
+				<label>Invert Open/Closed</label>
+				<description>True for Eltako FPE-2, false otherwise.</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-type id="windowHandleState">

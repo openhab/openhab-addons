@@ -18,23 +18,24 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
 import org.openhab.binding.enocean.internal.eep.Base._RPSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
 /**
  *
- * @author  Holger Englert - Initial contribution
+ * @author Holger Englert - Initial contribution
  */
-public class F6_10_00_EltakoFPE2 extends _RPSMessage {
+public class F6_10_00_EltakoFPE extends _RPSMessage {
 
-    final byte OPEN = 0x10;
-    final byte CLOSED = 0x00;
+    final byte OPEN = 0x00;
+    final byte CLOSED = 0x10;
 
-    public F6_10_00_EltakoFPE2() {
+    public F6_10_00_EltakoFPE() {
         super();
     }
 
-    public F6_10_00_EltakoFPE2(ERP1Message packet) {
+    public F6_10_00_EltakoFPE(ERP1Message packet) {
         super(packet);
     }
 
@@ -42,7 +43,12 @@ public class F6_10_00_EltakoFPE2 extends _RPSMessage {
     protected State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
 
         if (channelId.equals(CHANNEL_CONTACT)) {
-            return bytes[0] == CLOSED ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+            EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);
+            if (c.inverted) {
+                return bytes[0] == CLOSED ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+            } else {
+                return bytes[0] == CLOSED ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+            }
         }
 
         return UnDefType.UNDEF;
@@ -50,7 +56,8 @@ public class F6_10_00_EltakoFPE2 extends _RPSMessage {
 
     @Override
     protected boolean validateData(byte[] bytes) {
-        return super.validateData(bytes);
+        // FPE just sends 0b00010000 or 0b00000000 value, so we apply mask 0b11101111 
+        return super.validateData(bytes)  && ((bytes[0] & (byte) 0xEF) == (byte) 0x00);
     }
 
 }
