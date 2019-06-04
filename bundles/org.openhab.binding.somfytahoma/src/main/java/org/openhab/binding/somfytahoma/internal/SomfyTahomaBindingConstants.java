@@ -109,6 +109,9 @@ public class SomfyTahomaBindingConstants {
     // Gate
     public static final ThingTypeUID THING_TYPE_GATE = new ThingTypeUID(BINDING_ID, "gate");
 
+    // Curtains
+    public static final ThingTypeUID THING_TYPE_CURTAIN = new ThingTypeUID(BINDING_ID, "curtain");
+
     // List of all Channel ids
     // Gateway
     public static final String STATUS = "status";
@@ -217,6 +220,7 @@ public class SomfyTahomaBindingConstants {
     public static final String WINDOWHANDLE = "WindowHandle";
     public static final String TEMPERATURESENSOR = "TemperatureSensor";
     public static final String GATE = "Gate";
+    public static final String CURTAIN = "Curtain";
 
     // unsupported uiClasses
     public static final String PROTOCOLGATEWAY = "ProtocolGateway";

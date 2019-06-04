@@ -230,6 +230,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
             case GATE:
                 deviceDiscovered(device, THING_TYPE_GATE);
                 break;
+            case CURTAIN:
+                deviceDiscovered(device, THING_TYPE_CURTAIN);
+                break;
             case PROTOCOLGATEWAY:
             case REMOTECONTROLLER:
             case NETWORKCOMPONENT:
