@@ -14,7 +14,7 @@ package org.openhab.binding.enocean.internal.eep.D2_01;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
-import java.util.Map;
+import java.util.function.Function;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -197,7 +197,7 @@ public abstract class D2_01 extends _VLDMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Map<String, State> currentState, Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
 
         if (channelId.equals(CHANNEL_GENERAL_SWITCHING)) {
             if (command == RefreshType.REFRESH) {
@@ -231,7 +231,7 @@ public abstract class D2_01 extends _VLDMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
+    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
             Configuration config) {
 
         switch (channelId) {
@@ -247,7 +247,7 @@ public abstract class D2_01 extends _VLDMessage {
                 return getPowerMeasurementData();
             case CHANNEL_TOTALUSAGE:
                 State value = getEnergyMeasurementData();
-
+                State currentState = getCurrentStateFunc.apply(channelId);
                 return EEPHelper.validateTotalUsage(value, currentState, config);
         }
 

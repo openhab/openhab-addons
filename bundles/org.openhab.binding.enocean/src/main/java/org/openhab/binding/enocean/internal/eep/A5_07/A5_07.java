@@ -14,6 +14,8 @@ package org.openhab.binding.enocean.internal.eep.A5_07;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
+import java.util.function.Function;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -50,7 +52,7 @@ public abstract class A5_07 extends _4BSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
+    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
             Configuration config) {
         if (!isValid()) {
             return UnDefType.UNDEF;

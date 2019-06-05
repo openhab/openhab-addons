@@ -14,7 +14,7 @@ package org.openhab.binding.enocean.internal.eep.A5_20;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
-import java.util.Map;
+import java.util.function.Function;
 
 import javax.measure.quantity.Temperature;
 
@@ -61,8 +61,8 @@ public class A5_20_04 extends A5_20 {
         // return getBit(getDB_0Value(), 6) ? "triggered" : null;
     }
 
-    private byte getPos(Map<String, State> currentState) {
-        State current = currentState.get(CHANNEL_VALVE_POSITION);
+    private byte getPos(Function<String, State> getCurrentStateFunc) {
+        State current = getCurrentStateFunc.apply(CHANNEL_VALVE_POSITION);
 
         if ((current != null) && (current instanceof DecimalType)) {
             DecimalType state = current.as(DecimalType.class);
@@ -75,8 +75,8 @@ public class A5_20_04 extends A5_20 {
         return 25; // 25 %
     }
 
-    private byte getTsp(Map<String, State> currentState) {
-        State current = currentState.get(CHANNEL_TEMPERATURE_SETPOINT);
+    private byte getTsp(Function<String, State> getCurrentStateFunc) {
+        State current = getCurrentStateFunc.apply(CHANNEL_TEMPERATURE_SETPOINT);
 
         double value = 20.0; // 20 °C
 
@@ -96,8 +96,8 @@ public class A5_20_04 extends A5_20 {
         return (byte) ((value - 10.0) * (255.0 / 20.0));
     }
 
-    private byte getMc(Map<String, State> currentState) {
-        State current = currentState.get(CHANNEL_MEASUREMENT_CONTROL);
+    private byte getMc(Function<String, State> getCurrentStateFunc) {
+        State current = getCurrentStateFunc.apply(CHANNEL_MEASUREMENT_CONTROL);
 
         if ((current != null) && (current instanceof OnOffType)) {
             OnOffType state = current.as(OnOffType.class);
@@ -110,8 +110,8 @@ public class A5_20_04 extends A5_20 {
         return 0x00; // on
     }
 
-    private byte getWuc(Map<String, State> currentState) {
-        State current = currentState.get(CHANNEL_WAKEUPCYCLE);
+    private byte getWuc(Function<String, State> getCurrentStateFunc) {
+        State current = getCurrentStateFunc.apply(CHANNEL_WAKEUPCYCLE);
 
         if ((current != null) && (current instanceof DecimalType)) {
             DecimalType state = current.as(DecimalType.class);
@@ -124,8 +124,8 @@ public class A5_20_04 extends A5_20 {
         return 0x13; // 19 = 600 sec = 10 min
     }
 
-    private byte getDso(Map<String, State> currentState) {
-        State current = currentState.get(CHANNEL_DISPLAY_ORIENTATION);
+    private byte getDso(Function<String, State> getCurrentStateFunc) {
+        State current = getCurrentStateFunc.apply(CHANNEL_DISPLAY_ORIENTATION);
 
         if ((current != null) && (current instanceof DecimalType)) {
             DecimalType state = current.as(DecimalType.class);
@@ -138,8 +138,8 @@ public class A5_20_04 extends A5_20 {
         return 0x00; // 0°
     }
 
-    private byte getBlc(Map<String, State> currentState) {
-        State current = currentState.get(CHANNEL_BUTTON_LOCK);
+    private byte getBlc(Function<String, State> getCurrentStateFunc) {
+        State current = getCurrentStateFunc.apply(CHANNEL_BUTTON_LOCK);
 
         if ((current != null) && (current instanceof OnOffType)) {
             OnOffType state = current.as(OnOffType.class);
@@ -152,8 +152,8 @@ public class A5_20_04 extends A5_20 {
         return 0x00; // unlocked
     }
 
-    private byte getSer(Map<String, State> currentState) {
-        State current = currentState.get(CHANNEL_SERVICECOMMAND);
+    private byte getSer(Function<String, State> getCurrentStateFunc) {
+        State current = getCurrentStateFunc.apply(CHANNEL_SERVICECOMMAND);
 
         if ((current != null) && (current instanceof DecimalType)) {
             DecimalType state = current.as(DecimalType.class);
@@ -168,26 +168,22 @@ public class A5_20_04 extends A5_20 {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Map<String, State> currentState, Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
 
         if (CHANNEL_SEND_COMMAND.equals(channelId) && (command.equals(OnOffType.ON))) {
-            byte db3 = getPos(currentState);
-            byte db2 = getTsp(currentState);
-            byte db1 = (byte) (0x00 | getMc(currentState) | getWuc(currentState));
-            byte db0 = (byte) (0x00 | getDso(currentState) | TeachInBit | getBlc(currentState) | getSer(currentState));
+            byte db3 = getPos(getCurrentStateFunc);
+            byte db2 = getTsp(getCurrentStateFunc);
+            byte db1 = (byte) (0x00 | getMc(getCurrentStateFunc) | getWuc(getCurrentStateFunc));
+            byte db0 = (byte) (0x00 | getDso(getCurrentStateFunc) | TeachInBit | getBlc(getCurrentStateFunc) | getSer(getCurrentStateFunc));
 
             setData(db3, db2, db1, db0);
 
             return;
         }
-
-        if (command instanceof State) {
-            currentState.put(channelId, (State) command);
-        }
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
+    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
             Configuration config) {
 
         switch (channelId) {

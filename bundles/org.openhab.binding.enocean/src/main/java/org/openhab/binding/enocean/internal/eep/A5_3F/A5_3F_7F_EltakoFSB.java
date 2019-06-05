@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_3F;
 
-import java.util.Map;
+import java.util.function.Function;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -48,7 +48,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Map<String, State> currentState, Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
 
         int shutTime = 0xFF;
         if (config != null) {
@@ -56,7 +56,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
         }
 
         if (command instanceof PercentType) {
-            State channelState = currentState.get(channelId);
+            State channelState = getCurrentStateFunc.apply(channelId);
 
             PercentType target = (PercentType) command;
             if (target.intValue() == PercentType.ZERO.intValue()) {
@@ -91,8 +91,9 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
-            Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, State> getCurrentStateFunc, Configuration config) {
+        State currentState = getCurrentStateFunc.apply(channelId);
 
         if (currentState != null) {
             int direction = getDB_1() == MoveUp ? -1 : 1;
