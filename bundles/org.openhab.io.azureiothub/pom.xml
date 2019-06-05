@@ -11,7 +11,7 @@
 
   <artifactId>org.openhab.io.azureiothub</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Azure IoT Hub Connector</name>
+  <name>openHAB Add-ons :: Bundles :: IO :: Azure IoT Hub Connector</name>
 
   <dependencies>
     <dependency>

@@ -22,7 +22,6 @@ import java.util.Map;
  * @author Andy Lintner - Initial contribution
  */
 public enum HomekitDeviceType {
-
     DIMMABLE_LIGHTBULB("DimmableLighting"),
     HUMIDITY_SENSOR("CurrentHumidity"),
     LIGHTBULB("Lighting"),

@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.voice.mactts</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: macOS Text-to-Speech</name>
+  <name>openHAB Add-ons :: Bundles :: Voice :: macOS Text-to-Speech</name>
 
 </project>

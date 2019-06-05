@@ -22,7 +22,6 @@ import java.util.Optional;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
@@ -34,9 +33,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
-public class AVMFritzModelTest {
+public class AVMFritzDeviceListModelTest {
 
-    private final Logger logger = LoggerFactory.getLogger(AVMFritzModelTest.class);
+    private final Logger logger = LoggerFactory.getLogger(AVMFritzDeviceListModelTest.class);
 
     private DeviceListModel devices;
 
@@ -479,12 +478,11 @@ public class AVMFritzModelTest {
         assertEquals("17,18", group.getGroupinfo().getMembers());
     }
 
-    @Deprecated
-    private Optional<AVMFritzBaseModel> findModel(@NonNull String name) {
+    private Optional<AVMFritzBaseModel> findModel(String name) {
         return devices.getDevicelist().stream().filter(it -> name.equals(it.getProductName())).findFirst();
     }
 
-    private Optional<AVMFritzBaseModel> findModelByIdentifier(@NonNull String identifier) {
+    private Optional<AVMFritzBaseModel> findModelByIdentifier(String identifier) {
         return devices.getDevicelist().stream().filter(it -> identifier.equals(it.getIdentifier())).findFirst();
     }
 

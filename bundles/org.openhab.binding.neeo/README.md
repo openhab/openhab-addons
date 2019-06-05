@@ -179,6 +179,7 @@ The following are the configurations available to each of the bridges/things:
 ### NEEO Brain
 
 The NEEO Brain has the following channels:
+
 | Channel Type ID    | Read/Write | Item Type    | Description                                                                                |
 |--------------------|------------|--------------|--------------------------------------------------------------------------------------------|
 | forwardActions     | R          | Trigger      | The forward actions channel                                                                |

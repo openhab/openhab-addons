@@ -316,8 +316,8 @@ Bridge dsmr:dsmrBridge:mysmartmeter [serialPort="/dev/ttyUSB0"] {
 
 ```
 String P1Version "P1 Version output" {channel="dsmr:device_v5:mysmartmeter:dsmrV5Device:p1_version_output"}
-Number:Energy MeterDeliveryTariff0 "Total electricity delivered to the resident during low tariff period [%.3f kWh]" {channel="dsmr:device_v5:mysmartmeter:electricityV5:emeter_delivery_tariff1}
-Number:Energy MeterDeliveryTariff1 "Total electricity delivered to the resident during high tariff period [%.3f kWh]" {channel="dsmr:device_v5:mysmartmeter:electricityV5:emeter_delivery_tariff2}
+Number:Energy MeterDeliveryTariff0 "Total electricity delivered to the resident during low tariff period [%.3f kWh]" {channel="dsmr:electricity_v5_0:mysmartmeter:electricityV5:emeter_delivery_tariff1"}
+Number:Energy MeterDeliveryTariff1 "Total electricity delivered to the resident during high tariff period [%.3f kWh]" {channel="dsmr:electricity_v5_0:mysmartmeter:electricityV5:emeter_delivery_tariff2"}
 ```
 
 ## Determine M-Bus channel

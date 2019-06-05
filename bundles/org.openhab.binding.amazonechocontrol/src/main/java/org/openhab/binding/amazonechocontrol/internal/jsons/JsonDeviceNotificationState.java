@@ -25,7 +25,7 @@ public class JsonDeviceNotificationState {
 
     public @Nullable DeviceNotificationState @Nullable [] deviceNotificationStates;
 
-    public class DeviceNotificationState {
+    public static class DeviceNotificationState {
         public @Nullable String deviceSerialNumber;
         public @Nullable String deviceType;
         public @Nullable String softwareVersion;

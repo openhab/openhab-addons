@@ -189,10 +189,10 @@ public class ChromecastCommander {
             setVolumeInternal((PercentType) command);
         } else if (command == IncreaseDecreaseType.INCREASE) {
             setVolumeInternal(new PercentType(
-                    Math.max(statusUpdater.getVolume().intValue() + VOLUMESTEP, PercentType.ZERO.intValue())));
+                    Math.min(statusUpdater.getVolume().intValue() + VOLUMESTEP, PercentType.HUNDRED.intValue())));
         } else if (command == IncreaseDecreaseType.DECREASE) {
             setVolumeInternal(new PercentType(
-                    Math.min(statusUpdater.getVolume().intValue() - VOLUMESTEP, PercentType.HUNDRED.intValue())));
+                    Math.max(statusUpdater.getVolume().intValue() - VOLUMESTEP, PercentType.ZERO.intValue())));
         }
     }
 

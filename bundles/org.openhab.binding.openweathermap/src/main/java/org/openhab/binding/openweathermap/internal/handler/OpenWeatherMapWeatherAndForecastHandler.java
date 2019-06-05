@@ -249,17 +249,25 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     state = getDateTimeTypeState(weatherData.getDt());
                     break;
                 case CHANNEL_CONDITION:
-                    state = getStringTypeState(weatherData.getWeather().get(0).getDescription());
+                    if (!weatherData.getWeather().isEmpty()) {
+                        state = getStringTypeState(weatherData.getWeather().get(0).getDescription());
+                    }
                     break;
                 case CHANNEL_CONDITION_ID:
-                    state = getStringTypeState(weatherData.getWeather().get(0).getId().toString());
+                    if (!weatherData.getWeather().isEmpty()) {
+                        state = getStringTypeState(weatherData.getWeather().get(0).getId().toString());
+                    }
                     break;
                 case CHANNEL_CONDITION_ICON:
-                    state = getRawTypeState(
-                            OpenWeatherMapConnection.getWeatherIcon(weatherData.getWeather().get(0).getIcon()));
+                    if (!weatherData.getWeather().isEmpty()) {
+                        state = getRawTypeState(
+                                OpenWeatherMapConnection.getWeatherIcon(weatherData.getWeather().get(0).getIcon()));
+                    }
                     break;
                 case CHANNEL_CONDITION_ICON_ID:
-                    state = getStringTypeState(weatherData.getWeather().get(0).getIcon());
+                    if (!weatherData.getWeather().isEmpty()) {
+                        state = getStringTypeState(weatherData.getWeather().get(0).getIcon());
+                    }
                     break;
                 case CHANNEL_TEMPERATURE:
                     state = getQuantityTypeState(weatherData.getMain().getTemp(), CELSIUS);
@@ -316,17 +324,25 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     state = getDateTimeTypeState(forecastData.getDt());
                     break;
                 case CHANNEL_CONDITION:
-                    state = getStringTypeState(forecastData.getWeather().get(0).getDescription());
+                    if (!forecastData.getWeather().isEmpty()) {
+                        state = getStringTypeState(forecastData.getWeather().get(0).getDescription());
+                    }
                     break;
                 case CHANNEL_CONDITION_ID:
-                    state = getStringTypeState(forecastData.getWeather().get(0).getId().toString());
+                    if (!forecastData.getWeather().isEmpty()) {
+                        state = getStringTypeState(forecastData.getWeather().get(0).getId().toString());
+                    }
                     break;
                 case CHANNEL_CONDITION_ICON:
-                    state = getRawTypeState(
-                            OpenWeatherMapConnection.getWeatherIcon(forecastData.getWeather().get(0).getIcon()));
+                    if (!forecastData.getWeather().isEmpty()) {
+                        state = getRawTypeState(
+                                OpenWeatherMapConnection.getWeatherIcon(forecastData.getWeather().get(0).getIcon()));
+                    }
                     break;
                 case CHANNEL_CONDITION_ICON_ID:
-                    state = getStringTypeState(forecastData.getWeather().get(0).getIcon());
+                    if (!forecastData.getWeather().isEmpty()) {
+                        state = getStringTypeState(forecastData.getWeather().get(0).getIcon());
+                    }
                     break;
                 case CHANNEL_TEMPERATURE:
                     state = getQuantityTypeState(forecastData.getMain().getTemp(), CELSIUS);
@@ -389,17 +405,25 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     state = getDateTimeTypeState(forecastData.getDt());
                     break;
                 case CHANNEL_CONDITION:
-                    state = getStringTypeState(forecastData.getWeather().get(0).getDescription());
+                    if (!forecastData.getWeather().isEmpty()) {
+                        state = getStringTypeState(forecastData.getWeather().get(0).getDescription());
+                    }
                     break;
                 case CHANNEL_CONDITION_ID:
-                    state = getStringTypeState(forecastData.getWeather().get(0).getId().toString());
+                    if (!forecastData.getWeather().isEmpty()) {
+                        state = getStringTypeState(forecastData.getWeather().get(0).getId().toString());
+                    }
                     break;
                 case CHANNEL_CONDITION_ICON:
-                    state = getRawTypeState(
-                            OpenWeatherMapConnection.getWeatherIcon(forecastData.getWeather().get(0).getIcon()));
+                    if (!forecastData.getWeather().isEmpty()) {
+                        state = getRawTypeState(
+                                OpenWeatherMapConnection.getWeatherIcon(forecastData.getWeather().get(0).getIcon()));
+                    }
                     break;
                 case CHANNEL_CONDITION_ICON_ID:
-                    state = getStringTypeState(forecastData.getWeather().get(0).getIcon());
+                    if (!forecastData.getWeather().isEmpty()) {
+                        state = getStringTypeState(forecastData.getWeather().get(0).getIcon());
+                    }
                     break;
                 case CHANNEL_MIN_TEMPERATURE:
                     state = getQuantityTypeState(forecastData.getTemp().getMin(), CELSIUS);
