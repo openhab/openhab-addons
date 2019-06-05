@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.enocean.internal.discovery.EnOceanDeviceDiscoveryService;
 import org.openhab.binding.enocean.internal.handler.EnOceanBaseActuatorHandler;
@@ -54,7 +55,11 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    private SerialPortManager serialPortManager;
+    @Reference
+    SerialPortManager serialPortManager;
+
+    @Reference
+    ItemChannelLinkRegistry itemChannelLinkRegistry;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -67,19 +72,15 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (EnOceanBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            if (serialPortManager == null) {
-                return null;
-            }
-
             EnOceanBridgeHandler bridgeHandler = new EnOceanBridgeHandler((Bridge) thing, serialPortManager);
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (EnOceanBaseActuatorHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new EnOceanBaseActuatorHandler(thing);
+            return new EnOceanBaseActuatorHandler(thing, itemChannelLinkRegistry);
         } else if (EnOceanBaseSensorHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new EnOceanBaseSensorHandler(thing);
+            return new EnOceanBaseSensorHandler(thing, itemChannelLinkRegistry);
         } else if (EnOceanClassicDeviceHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new EnOceanClassicDeviceHandler(thing);
+            return new EnOceanClassicDeviceHandler(thing, itemChannelLinkRegistry);
         }
 
         return null;
@@ -101,14 +102,5 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
         discoveryService.activate();
         this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
-    }
-
-    @Reference
-    protected void setSerialPortManager(SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
     }
 }
