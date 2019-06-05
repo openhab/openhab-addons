@@ -145,7 +145,7 @@ public abstract class EnOceanTransceiver {
     public EnOceanTransceiver(TransceiverErrorListener errorListener, ScheduledExecutorService scheduler) {
 
         requestQueue = new RequestQueue(scheduler);
-        listeners = new HashMap<Long, HashSet<ESP3PacketListener>>();
+        listeners = new HashMap<>();
         teachInListener = null;
         this.errorListener = errorListener;
     }
@@ -427,20 +427,19 @@ public abstract class EnOceanTransceiver {
         }
     }
 
-    public void addPacketListener(ESP3PacketListener listener) {
+    public void addPacketListener(ESP3PacketListener listener, long senderIdToListenTo) {
 
-        if (listeners.computeIfAbsent(listener.getSenderIdToListenTo(), k -> new HashSet<ESP3PacketListener>())
-                .add(listener)) {
-            logger.debug("Listener added: {}", listener.getSenderIdToListenTo());
+        if (listeners.computeIfAbsent(senderIdToListenTo, k -> new HashSet<>()).add(listener)) {
+            logger.debug("Listener added: {}", senderIdToListenTo);
         }
     }
 
-    public void removePacketListener(ESP3PacketListener listener) {
-        HashSet<ESP3PacketListener> pl = listeners.get(listener.getSenderIdToListenTo());
+    public void removePacketListener(ESP3PacketListener listener, long senderIdToListenTo) {
+        HashSet<ESP3PacketListener> pl = listeners.get(senderIdToListenTo);
         if (pl != null) {
             pl.remove(listener);
             if (pl.isEmpty()) {
-                listeners.remove(listener.getSenderIdToListenTo());
+                listeners.remove(senderIdToListenTo);
             }
         }
     }

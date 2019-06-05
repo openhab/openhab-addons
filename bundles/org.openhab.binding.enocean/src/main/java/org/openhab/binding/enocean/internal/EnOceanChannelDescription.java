@@ -32,7 +32,7 @@ public class EnOceanChannelDescription {
     /**
      * Ctor for an EnOceanChannelDescription
      *
-     * @param channelTypeUID   ChannelTypeUID of channel
+     * @param channelTypeUID ChannelTypeUID of channel
      * @param acceptedItemType AcceptedItemType of channel like Switch, Dimmer or null if we accept everything
      */
     public EnOceanChannelDescription(ChannelTypeUID channelTypeUID, String itemType) {
@@ -42,12 +42,12 @@ public class EnOceanChannelDescription {
     /**
      * Ctor for an EnOceanChannelDescription with detailed information
      *
-     * @param channelTypeUID   ChannelTypeUID of channel
+     * @param channelTypeUID ChannelTypeUID of channel
      * @param acceptedItemType ItemType of channel like Switch, Dimmer
-     * @param label            of created channel
-     * @param isStateChannel   otherwise created channel is a trigger channel
-     * @param autoCreate       create channel during thing initialization, otherwise channel is created
-     *                             manually/predefined
+     * @param label of created channel
+     * @param isStateChannel otherwise created channel is a trigger channel
+     * @param autoCreate create channel during thing initialization, otherwise channel is created
+     *            manually/predefined
      */
     public EnOceanChannelDescription(ChannelTypeUID channelTypeUID, String itemType, String label,
             boolean isStateChannel, boolean autoCreate) {
