@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_38;
 
-import java.util.Map;
+import java.util.function.Function;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -41,7 +41,7 @@ public class A5_38_08_Switching extends _4BSMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command outputCommand,
-            Map<String, State> currentState, Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
 
         if ((OnOffType) outputCommand == OnOffType.ON) {
             setData(CommandId, Zero, Zero, (byte) (TeachInBit | SwitchOn));

@@ -14,6 +14,8 @@ package org.openhab.binding.enocean.internal.eep.A5_14;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
+import java.util.function.Function;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -65,7 +67,7 @@ public class A5_14_09 extends A5_14 {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
+    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
             Configuration config) {
         switch (channelId) {
             case CHANNEL_WINDOWHANDLESTATE:
@@ -74,6 +76,6 @@ public class A5_14_09 extends A5_14 {
                 return getContact();
         }
 
-        return super.convertToStateImpl(channelId, channelTypeId, currentState, config);
+        return super.convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config);
     }
 }
