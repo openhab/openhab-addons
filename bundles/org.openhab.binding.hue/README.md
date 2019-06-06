@@ -139,9 +139,8 @@ The devices support some of the following channels:
 
 | Channel Type ID   | Item Type          | Description                                                                                                                             | Thing types supporting this channel |
 |-------------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------|
-| switch            | Switch             | This channel supports switching the device on and off.                                                                                  | 0000, 0010                          |
-| color             | Color              | This channel supports full color control with hue, saturation and brightness values.                                                    | 0200, 0210                          |
-| brightness        | Dimmer             | This channel supports adjusting the brightness value. Note that this is not available, if the color channel is supported.               | 0100, 0110, 0220                    |
+| color             | Color              | This channel supports full color control with hue, saturation and brightness values. Can also be used as ON/OFF switch.                                                     | 0200, 0210                          |
+| brightness        | Dimmer             | This channel supports adjusting the brightness value. Note that this is not available, if the color channel is supported. Can also be used as ON/OFF switch.               | 0100, 0110, 0220                    |
 | color_temperature | Dimmer             | This channel supports adjusting the color temperature from cold (0%) to warm (100%).                                                    | 0210, 0220                          |
 | alert             | String             | This channel supports displaying alerts by flashing the bulb either once or multiple times. Valid values are: NONE, SELECT and LSELECT. | 0000, 0100, 0200, 0210, 0220        |
 | effect            | Switch             | This channel supports color looping.                                                                                                    | 0200, 0210, 0220                    |
