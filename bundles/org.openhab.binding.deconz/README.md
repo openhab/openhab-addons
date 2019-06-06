@@ -144,7 +144,7 @@ Switch                  Basement_Alarm          "Basement Alarm Triggered [%s]" 
 ```php
 rule "example trigger rule"
 when
-    Channel "deconz:switch:livingroom-hue-tap:buttonevent" triggered 34   // Hue Tap Button 1 pressed
+    Channel "deconz:switch:homeserver:livingroom-hue-tap:buttonevent" triggered 34   // Hue Tap Button 1 pressed
 then
     ...
 end
