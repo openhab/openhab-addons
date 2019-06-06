@@ -129,7 +129,7 @@ public class MoonCalc {
         long parentNewMoonMillis = DateTimeUtils.toCalendar(parentNewMoon).getTimeInMillis();
         long ageRangeTimeMillis = phase.getNew().getTimeInMillis() - parentNewMoonMillis;
         long ageCurrentMillis = System.currentTimeMillis() - parentNewMoonMillis;
-        double agePercent = ageCurrentMillis * 100.0 / ageRangeTimeMillis;
+        double agePercent = ageRangeTimeMillis != 0 ? ageCurrentMillis * 100.0 / ageRangeTimeMillis : 0;
         phase.setAgePercent(agePercent);
         phase.setAgeDegree(3.6 * agePercent);
         double illumination = getIllumination(DateTimeUtils.dateToJulianDate(calendar));
