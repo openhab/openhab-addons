@@ -17,6 +17,7 @@ This will be used in iOS when pairing. The pin code is in the form "###-##-###".
 Requirements beyond this are not clear, and Apple enforces limitations on eligible pins within iOS.
 At the very least, you cannot use repeating (111-11-111) or sequential (123-45-678) pin codes.
 If your home network is secure, a good starting point is the pin code used in most sample applications: 031-45-154.
+Check for typos in the pin-code if you encounter "Bad Client Credential" errors during pairing.  
 
 Other settings, such as using Fahrenheit temperatures, customizing the thermostat heat/cool/auto modes, and specifying the interface to advertise the HomeKit bridge (which can be edited in Paper UI standard mode) are also illustrated in the following sample:
 
@@ -60,7 +61,7 @@ org.openhab.homekit:maximumTemperature=100
 After setting this global configuration, you will need to tag your [openHAB items](https://www.openhab.org/docs/configuration/items.html) for HomeKit in order to map them to an ontology.
 For our purposes, you may consider HomeKit accessories to be of two forms: simple and complex.
 
-A simple accessory will be mapped to a single openHAB item (i.e. a Lighbulb is mapped to a Switch, Dimmer, or Color item).
+A simple accessory will be mapped to a single openHAB item (i.e. a Lightbulb is mapped to a Switch, Dimmer, or Color item).
 A complex accessory will be made up of multiple openHAB items (i.e. a Thermostat is composed of Heating and Cooling thresholds, a mode, and current temperature).
 Complex accessories require a tag on a Group indicating the accessory type, as well as tags on the items it composes.
 
