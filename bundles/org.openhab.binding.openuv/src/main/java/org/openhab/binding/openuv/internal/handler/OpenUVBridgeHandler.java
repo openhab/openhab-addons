@@ -61,7 +61,6 @@ import com.google.gson.JsonDeserializer;
 public class OpenUVBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(OpenUVBridgeHandler.class);
     private static final String ERROR_QUOTA_EXCEEDED = "Daily API quota exceeded";
-    private static final String ERROR_NO_API_KEY = "No API Key provided";
     private static final String ERROR_WRONG_KEY = "User with API Key not found";
 
     private static final int REQUEST_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(30);
