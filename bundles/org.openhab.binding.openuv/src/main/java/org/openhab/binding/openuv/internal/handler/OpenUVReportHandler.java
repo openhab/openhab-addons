@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -173,35 +174,41 @@ public class OpenUVReportHandler extends BaseThingHandler {
      */
     private void updateChannel(ChannelUID channelUID, OpenUVResult openUVData) {
         Channel channel = getThing().getChannel(channelUID.getId());
-        switch (channel.getChannelTypeUID().getId()) {
-            case UVINDEX:
-                updateState(channelUID, openUVData.getUv());
-                break;
-            case UVCOLOR:
-                updateState(channelUID, getAsHSB(openUVData.getUv().intValue()));
-                break;
-            case UVMAX:
-                updateState(channelUID, openUVData.getUvMax());
-                break;
-            case OZONE:
-                updateState(channelUID, new QuantityType<>(openUVData.getOzone(), SmartHomeUnits.DOBSON_UNIT));
-                break;
-            case OZONETIME:
-                updateState(channelUID, openUVData.getOzoneTime());
-                break;
-            case UVMAXTIME:
-                updateState(channelUID, openUVData.getUVMaxTime());
-                break;
-            case UVTIME:
-                updateState(channelUID, openUVData.getUVTime());
-                break;
-            case SAFEEXPOSURE:
-                SafeExposureConfiguration configuration = channel.getConfiguration()
-                        .as(SafeExposureConfiguration.class);
-                if (configuration.index != null) {
-                    updateState(channelUID, openUVData.getSafeExposureTime().getSafeExposure(configuration.index));
+        if (channel != null) {
+            ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+            if (channelTypeUID != null) {
+                switch (channelTypeUID.getId()) {
+                    case UVINDEX:
+                        updateState(channelUID, openUVData.getUv());
+                        break;
+                    case UVCOLOR:
+                        updateState(channelUID, getAsHSB(openUVData.getUv().intValue()));
+                        break;
+                    case UVMAX:
+                        updateState(channelUID, openUVData.getUvMax());
+                        break;
+                    case OZONE:
+                        updateState(channelUID, new QuantityType<>(openUVData.getOzone(), SmartHomeUnits.DOBSON_UNIT));
+                        break;
+                    case OZONETIME:
+                        updateState(channelUID, openUVData.getOzoneTime());
+                        break;
+                    case UVMAXTIME:
+                        updateState(channelUID, openUVData.getUVMaxTime());
+                        break;
+                    case UVTIME:
+                        updateState(channelUID, openUVData.getUVTime());
+                        break;
+                    case SAFEEXPOSURE:
+                        SafeExposureConfiguration configuration = channel.getConfiguration()
+                                .as(SafeExposureConfiguration.class);
+                        if (configuration.index != -1) {
+                            updateState(channelUID,
+                                    openUVData.getSafeExposureTime().getSafeExposure(configuration.index));
+                        }
+                        break;
                 }
-                break;
+            }
         }
     }
 
