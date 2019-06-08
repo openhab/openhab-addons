@@ -38,7 +38,7 @@ public class JsonRegisterAppRequest {
     public UserContextMap user_context_map = new UserContextMap();
     public String[] requested_token_type = { "bearer", "mac_dms", "website_cookies" };
 
-    public static class Cookies {
+    public class Cookies {
         @Nullable
         public JsonWebSiteCookie @Nullable [] website_cookies;
         @Nullable
@@ -46,7 +46,7 @@ public class JsonRegisterAppRequest {
 
     }
 
-    public static class RegistrationData {
+    public class RegistrationData {
         public String domain = "Device";
         public String app_version = "2.2.223830.0";
         public String device_type = "A2IVLV5VM2W81";
@@ -59,12 +59,12 @@ public class JsonRegisterAppRequest {
         public String software_version = "1";
     }
 
-    public static class AuthData {
+    public class AuthData {
         @Nullable
         public String access_token;
     }
 
-    public static class UserContextMap {
+    public class UserContextMap {
         public String frc = "";
     }
 }

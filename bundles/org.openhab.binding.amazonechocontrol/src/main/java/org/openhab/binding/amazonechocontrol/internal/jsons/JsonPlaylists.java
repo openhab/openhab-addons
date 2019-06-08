@@ -27,7 +27,7 @@ public class JsonPlaylists {
 
     public @Nullable Map<String, @Nullable PlayList @Nullable []> playlists;
 
-    public static class PlayList {
+    public class PlayList {
         public @Nullable String playlistId;
         public @Nullable String title;
         public int trackCount;

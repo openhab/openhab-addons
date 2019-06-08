@@ -26,15 +26,15 @@ import org.eclipse.jdt.annotation.Nullable;
 public class JsonExchangeTokenResponse {
     public @Nullable Response response;
 
-    public static class Response {
+    public class Response {
         public @Nullable Tokens tokens;
     }
 
-    public static class Tokens {
+    public class Tokens {
         public @Nullable Map<String, Cookie[]> cookies;
     }
 
-    public static class Cookie {
+    public class Cookie {
         public @Nullable String Path;
         public @Nullable Boolean Secure;
         public @Nullable String Value;

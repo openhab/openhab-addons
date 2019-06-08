@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class JsonDevices {
 
-    public static class Device {
+    public class Device {
         public @Nullable String accountName;
         public @Nullable String serialNumber;
         public @Nullable String deviceOwnerCustomerId;

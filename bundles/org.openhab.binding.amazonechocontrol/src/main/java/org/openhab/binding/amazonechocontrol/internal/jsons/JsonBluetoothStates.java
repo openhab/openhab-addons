@@ -44,7 +44,7 @@ public class JsonBluetoothStates {
 
     public @Nullable BluetoothState @Nullable [] bluetoothStates;
 
-    public static class PairedDevice {
+    public class PairedDevice {
         public @Nullable String address;
         public boolean connected;
         public @Nullable String deviceClass;
@@ -53,7 +53,7 @@ public class JsonBluetoothStates {
 
     }
 
-    public static class BluetoothState {
+    public class BluetoothState {
         public @Nullable String deviceSerialNumber;
         public @Nullable String deviceType;
         public @Nullable String friendlyName;

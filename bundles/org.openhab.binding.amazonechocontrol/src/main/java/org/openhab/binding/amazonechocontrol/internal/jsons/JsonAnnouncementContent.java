@@ -24,17 +24,17 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class JsonAnnouncementContent {
 
-    public String locale = "";
+    public @Nullable String locale;
     public final Display display = new Display();
     public final Speak speak = new Speak();
 
-    public static class Display {
+    public class Display {
         public @Nullable String title;
         public @Nullable String body;
 
     }
 
-    public static class Speak {
+    public class Speak {
         public String type = "text";
         public @Nullable String value;
 
