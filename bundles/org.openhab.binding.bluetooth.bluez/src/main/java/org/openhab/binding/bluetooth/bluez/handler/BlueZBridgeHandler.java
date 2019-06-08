@@ -92,8 +92,10 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
         try {
             manager = BluetoothManager.getBluetoothManager();
             if (manager == null) {
-                throw new IllegalStateException("BlueZ Manager returned is null");
+                logger.warn("BlueZ Manager returned is null");
+                throw new IllegalStateException();
             }
+            logger.debug("got a bluetooth manager: {}", manager);
         } catch (UnsatisfiedLinkError e) {
             throw new IllegalStateException("BlueZ JNI connection cannot be established.", e);
         } catch (RuntimeException e) {
@@ -127,6 +129,7 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
                 continue;
             }
             if (adapter.getAddress().equals(address.toString())) {
+                logger.debug("found matching adapter");
                 this.adapter = adapter;
                 updateStatus(ThingStatus.ONLINE);
                 startDiscovery();
