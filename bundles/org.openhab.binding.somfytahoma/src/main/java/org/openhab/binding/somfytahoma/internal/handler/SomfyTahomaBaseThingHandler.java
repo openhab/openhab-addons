@@ -58,7 +58,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     public void initialize() {
         thingStates = new ExpiringCache<>(CACHE_EXPIRY, () -> getThingStates());
 
-        if (ThingStatus.ONLINE.equals(getBridge().getStatus())) {
+        if (ThingStatus.ONLINE == getBridge().getStatus()) {
             SomfyTahomaState state = getCachedThingState(STATUS_STATE);
             updateThingStatus(state);
         } else {
@@ -97,13 +97,13 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     private void setAvailable() {
-        if (!ThingStatus.ONLINE.equals(thing.getStatus())) {
+        if (ThingStatus.ONLINE != thing.getStatus()) {
             updateStatus(ThingStatus.ONLINE);
         }
     }
 
     private void setUnavailable() {
-        if (!ThingStatus.OFFLINE.equals(thing.getStatus()) && !isAlwaysOnline()) {
+        if (ThingStatus.OFFLINE != thing.getStatus() && !isAlwaysOnline()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, UNAVAILABLE);
         }
     }
@@ -316,7 +316,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
             if (isChannelLinked(channel)) {
                 State channelState = getChannelState(channel, states);
                 if (channelState != null) {
-                    logger.trace("Updating channel: {} with state: {}", channel.getUID(), channelState.toString());
+                    logger.trace("Updating channel: {} with state: {}", channel.getUID(), channelState);
                     updateState(channel.getUID(), channelState);
                 } else {
                     logger.debug("Cannot find state for channel {}", channel.getUID());
