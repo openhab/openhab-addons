@@ -351,6 +351,12 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     }
 
     private State lastPowerState = OnOffType.OFF;
+    private void doPowerOnCheck(State state) {
+        if (configuration.refreshInterval == 0 && lastPowerState == OnOffType.OFF && state == OnOffType.ON) {
+            sendCommand(EiscpCommand.INFO_QUERY);
+        }
+        lastPowerState = state;
+    }
 
     @Override
     public void statusUpdateReceived(String ip, EiscpMessage data) {
@@ -376,13 +382,9 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                  * ZONE 1
                  */
                 case POWER:
-                    State state = convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class);
-                    updateState(CHANNEL_POWER, state);
-                    if (configuration.refreshInterval == 0 && lastPowerState == OnOffType.OFF
-                            && state == OnOffType.ON) {
-                        sendCommand(EiscpCommand.INFO_QUERY);
-                    }
-                    lastPowerState = state;
+                    State powerState = convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class);
+                    updateState(CHANNEL_POWER, powerState);
+                    doPowerOnCheck(powerState);
                     break;
                 case MUTE:
                     updateState(CHANNEL_MUTE, convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class));
@@ -404,7 +406,9 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                  * ZONE 2
                  */
                 case ZONE2_POWER:
-                    updateState(CHANNEL_POWERZONE2, convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class));
+                    State powerZone2State = convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class);
+                    updateState(CHANNEL_POWERZONE2, powerZone2State);
+                    doPowerOnCheck(powerZone2State);
                     break;
                 case ZONE2_MUTE:
                     updateState(CHANNEL_MUTEZONE2, convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class));
@@ -423,7 +427,9 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                  * ZONE 3
                  */
                 case ZONE3_POWER:
-                    updateState(CHANNEL_POWERZONE3, convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class));
+                    State powerZone3State = convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class);
+                    updateState(CHANNEL_POWERZONE3, powerZone3State);
+                    doPowerOnCheck(powerZone3State);
                     break;
                 case ZONE3_MUTE:
                     updateState(CHANNEL_MUTEZONE3, convertDeviceValueToOpenHabState(data.getValue(), OnOffType.class));
