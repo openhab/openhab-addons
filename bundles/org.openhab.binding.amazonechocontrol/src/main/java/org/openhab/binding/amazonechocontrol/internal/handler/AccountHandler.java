@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,14 +55,15 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPu
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushActivity.Key;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushDevice.DopplerId;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushNotificationChange;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState.DeviceNotificationState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMusicProvider;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommand;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords.WakeWord;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
@@ -83,7 +85,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     private @Nullable Connection connection;
     private @Nullable WebSocketConnection webSocketConnection;
     private final Set<EchoHandler> echoHandlers = new HashSet<>();
-    private final Set<SmartHomeDeviceHandler> smartHomeDeviceHandlers = new HashSet<>();
     private final Set<FlashBriefingProfileHandler> flashBriefingProfileHandlers = new HashSet<>();
     private final Object synchronizeConnection = new Object();
     private Map<String, Device> jsonSerialNumberDeviceMapping = new HashMap<>();
@@ -141,10 +142,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         return new ArrayList<>(jsonSerialNumberDeviceMapping.values());
     }
 
-    public List<SmartHomeDeviceHandler> getSmartHomeDeviceHandlers() {
-        return new ArrayList<>(this.smartHomeDeviceHandlers);
-    }
-
     public void addEchoHandler(EchoHandler echoHandler) {
         synchronized (echoHandlers) {
             if (!echoHandlers.add(echoHandler)) {
@@ -154,16 +151,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         forceCheckData();
     }
 
-    public void addSmartHomeDeviceHandler(SmartHomeDeviceHandler smartHomeDeviceHandler) {
-        synchronized (smartHomeDeviceHandler) {
-            if (!smartHomeDeviceHandlers.add(smartHomeDeviceHandler)) {
-                return;
-            }
-        }
-        forceCheckData();
-    }
-
-    void forceCheckData() {
+    public void forceCheckData() {
         if (foceCheckDataJob == null) {
             foceCheckDataJob = scheduler.schedule(this::forceCheckDataHandler, 1000, TimeUnit.MILLISECONDS);
         }
@@ -197,12 +185,22 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             flashBriefingProfileHandlers.add(flashBriefingProfileHandler);
         }
         Connection connection = this.connection;
-        if (connection != null) {
+        if (connection != null && connection.getIsLoggedIn()) {
             if (currentFlashBriefingJson.isEmpty()) {
                 updateFlashBriefingProfiles(connection);
             }
             flashBriefingProfileHandler.initialize(this, currentFlashBriefingJson);
         }
+    }
+
+    private void scheduleUpdate() {
+        checkDataCounter = 999;
+    }
+
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        super.childHandlerInitialized(childHandler, childThing);
+        scheduleUpdate();
     }
 
     @Override
@@ -338,7 +336,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             updateDeviceList();
             updateFlashBriefingHandlers();
             updateStatus(ThingStatus.ONLINE);
-            checkDataCounter = 0;
+            scheduleUpdate();
             checkData();
         }
     }
@@ -389,6 +387,30 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 logger.error("checkData fails with unexpected error {}", e);
             }
         }
+    }
+
+    private void refreshNotifications(@Nullable JsonCommandPayloadPushNotificationChange pushPayload) {
+        Connection currentConnection = this.connection;
+        if (currentConnection == null) {
+            return;
+        }
+        if (!currentConnection.getIsLoggedIn()) {
+            return;
+        }
+        JsonNotificationResponse[] notifications;
+        ZonedDateTime timeStamp = ZonedDateTime.now();
+        try {
+            notifications = currentConnection.notifications();
+        } catch (IOException | URISyntaxException e) {
+            logger.debug("refreshNotifications failed {}", e);
+            return;
+        }
+        ZonedDateTime timeStampNow = ZonedDateTime.now();
+
+        for (EchoHandler child : echoHandlers) {
+            child.updateNotifications(timeStamp, timeStampNow, pushPayload, notifications);
+        }
+
     }
 
     private void refreshData() {
@@ -486,6 +508,9 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                             notificationSounds, musicProviders);
                 }
 
+                // refresh notifications
+                refreshNotifications(null);
+
                 // update account state
                 updateStatus(ThingStatus.ONLINE);
 
@@ -527,37 +552,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             }
         }
         return null;
-    }
-
-    public List<SmartHomeDevice> updateSmartHomeDeviceList() {
-
-        Connection currentConnection = connection;
-        if (currentConnection == null) {
-            return new ArrayList<SmartHomeDevice>();
-        }
-
-        List<SmartHomeDevice> smartHomeDevices = null;
-        try {
-            if (currentConnection.getIsLoggedIn()) {
-                smartHomeDevices = currentConnection.getSmarthomeDeviceList();
-            }
-        } catch (IOException | URISyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-        }
-        if (smartHomeDevices != null) {
-            Map<String, SmartHomeDevice> newJsonSerialDeviceMapping = new HashMap<>();
-            for (SmartHomeDevice smartDevice : smartHomeDevices) {
-                String entityId = smartDevice.entityId;
-                if (entityId != null) {
-                    newJsonSerialDeviceMapping.put(entityId, smartDevice);
-                }
-            }
-        }
-        if (smartHomeDevices != null) {
-            return smartHomeDevices;
-        }
-
-        return new ArrayList<SmartHomeDevice>();
     }
 
     public List<Device> updateDeviceList() {
@@ -712,7 +706,9 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                             TimeUnit.MILLISECONDS);
                     break;
                 case "PUSH_NOTIFICATION_CHANGE":
-                    // Currently ignored
+                    JsonCommandPayloadPushNotificationChange pushPayload = gson.fromJson(pushCommand.payload,
+                            JsonCommandPayloadPushNotificationChange.class);
+                    refreshNotifications(pushPayload);
                     break;
                 default:
                     String payload = pushCommand.payload;

@@ -123,8 +123,9 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 if (device == null) {
                     continue;
                 }
-                if (device.address != null && device.friendlyName != null) {
-                    options.add(new StateOption(device.address, device.friendlyName));
+                final String value = device.address;
+                if (value != null && device.friendlyName != null) {
+                    options.add(new StateOption(value, device.friendlyName));
                 }
             }
             StateDescription result = new StateDescription(originalStateDescription.getMinimum(),
@@ -151,8 +152,8 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 for (PlayList[] innerLists : playlistMap.values()) {
                     if (innerLists != null && innerLists.length > 0) {
                         PlayList playList = innerLists[0];
-                        if (playList.playlistId != null && playList.title != null) {
-                            final String value = playList.playlistId;
+                        final String value = playList.playlistId;
+                        if (value != null && playList.title != null) {
                             options.add(new StateOption(value,
                                     String.format("%s (%d)", playList.title, playList.trackCount)));
                         }
