@@ -15,4 +15,7 @@ public class JsonSmartHomeDeviceAlias {
         this.friendlyName = friendlyName;
         this.enabled = enabled;
     }
+
+    public JsonSmartHomeDeviceAlias() {
+    }
 }

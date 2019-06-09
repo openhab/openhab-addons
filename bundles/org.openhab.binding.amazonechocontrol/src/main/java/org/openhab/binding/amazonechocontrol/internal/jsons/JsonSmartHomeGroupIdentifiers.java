@@ -6,7 +6,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class JsonSmartHomeGroupIdentifiers {
 
-    public class SmartHomeGroupIdentifier {
+    public static class SmartHomeGroupIdentifier {
         public @Nullable String value;
     }
 

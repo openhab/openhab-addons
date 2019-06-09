@@ -7,7 +7,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeGroupId
 @NonNullByDefault
 public class JsonSmartHomeGroups {
 
-    public class SmartHomeGroup {
+    public static class SmartHomeGroup {
         public @Nullable String applianceGroupName;
         public @Nullable Boolean isSpace;
         public @Nullable Boolean space;
