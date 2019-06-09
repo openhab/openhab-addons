@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * @author Lukas Knoeller - Contributor
+ * @author Lukas Knoeller
  */
 @NonNullByDefault
 public class JsonSmartHomeDevices {

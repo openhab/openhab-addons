@@ -42,9 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Lukas Knoeller
- *
  */
 
 public class SmartHomeDeviceHandler extends BaseThingHandler {
