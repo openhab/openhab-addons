@@ -16,3 +16,6 @@ xtend-gen/
 bundles/**/src/main/history
 features/**/src/main/history
 features/**/src/main/feature
+
+.vscode
+.factorypath
