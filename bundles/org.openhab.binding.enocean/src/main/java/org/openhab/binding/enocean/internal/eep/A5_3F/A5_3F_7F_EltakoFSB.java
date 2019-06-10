@@ -105,7 +105,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
                     return getDB_1() == MoveUp ? PercentType.ZERO : PercentType.HUNDRED;
                 } else {
                     PercentType current = PercentType.ZERO;
-                    if (currentState != UnDefType.UNDEF) {
+                    if (currentState instanceof PercentType) {
                         current = currentState.as(PercentType.class);
                     }
 
