@@ -26,6 +26,19 @@ It provides features to control and view the current state of echo devices:
 - change the equalizer settings
 - get information about the next alarm, reminder and timer
 
+Also this binding includes the features to control your lights connected to your Echo devices:
+
+- turn on/off your lights
+- change the color
+- control groups of lights or just single bulbs
+- receive the current state of the lights
+
+Restrictions:
+
+- groups can't receive their current color (multiple colors are possible)
+- lights can only receive their state every 30 seconds
+- turning on/off (or switch color, change brightness) will send a request for every single bulb in a group
+
 Some ideas what you can do in your home by using rules and other openHAB controlled devices:
 
 - Automatic turn on your amplifier and connect echo with bluetooth if the echo plays music
@@ -41,6 +54,14 @@ Some ideas what you can do in your home by using rules and other openHAB control
 - Implement own handling for voice commands in a rule
 - Change the equalizer settings depending on the bluetooth connection
 - Turn on a light on your alexa alarm time
+
+With the possibility to control your lights you could do:
+
+- a scene-based configuration of your rooms
+- connect single bulbs to functions of openhab
+- simulate your presence at home
+- automaticly turn on your lights at the evening
+- integrate your smart bulbs with rules
 
 ## Note
 
@@ -60,6 +81,8 @@ The binding is tested with amazon.de, amazon.fr, amazon.it, amazon.com and amazo
 | echoshow             | Amazon Echo Show Device               |
 | wha                  | Amazon Echo Whole House Audio Control |
 | flashbriefingprofile | Flash briefing profile                |
+| light                | Smart bulbs connected to the Echo     |
+| lightGroup           | Groups of lights                      |
 
 ## First Steps
 
@@ -142,6 +165,10 @@ It will be configured at runtime by using the save channel to store the current 
 | save                  | Switch      | W         | flashbriefingprofile     | Write Only! Stores the current configuration of flash briefings within the thing
 | active                | Switch      | R/W       | flashbriefingprofile     | Active the profile
 | playOnDevice          | String      | W         | flashbriefingprofile     | Specify the echo serial number or name to start the flash briefing. 
+| lightState            | Switch      | R/W       | light, lightGroup             | Shows and changes the state (ON/OFF) of your light or lightgroup
+| lightBrightness       | Dimmer      | R/W       | light, lightGroup             | Shows and changes the brightness of your light or lightgroup
+| lightColor            | String      | R/W       | light, lightGroup             | Shows and changes the color of your light (groups are not able to show their color!)
+| whiteTemperature      | String      | R/W       | light, lightGroup             | White temperatures of your lights
 
 ## Advanced Feature Technically Experienced Users
 
@@ -242,6 +269,13 @@ String FlashBriefing_Technical_Play   "Play (Write only)" { channel="amazonechoc
 Switch FlashBriefing_LifeStyle_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:save"} 
 Switch FlashBriefing_LifeStyle_Active "Active" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:active"}
 String FlashBriefing_LifeStyle_Play   "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:playOnDevice"}
+
+
+// Lights and lightgroups - you will find the applianceId in the properties of your light or lightgroup!
+Switch Light_State "On/Off" { channel="amazonechocontrol:lightGroup:account1:applianceId:lightState" }
+Dimmer Light_Brightness "Brightness" { channel="amazonechocontrol:lightGroup:account1:applianceId:lightBrightness" }
+String Light_Color "Color" { channel="amazonechocontrol:lightGroup:account1:applianceId:lightColor" }
+String Light_White "White temperature" { channel="amazonechocontrol:lightGroup:account1:applianceId:whiteTemperature" }
 ```
 
 ### amazonechocontrol.sitemap:
@@ -305,6 +339,12 @@ sitemap amazonechocontrol label="Echo Devices"
             Switch  item=FlashBriefing_LifeStyle_Save
             Switch  item=FlashBriefing_LifeStyle_Active
             Text    item=FlashBriefing_LifeStyle_Play
+        }
+        Frame label="Lights and light groups" {
+            Switch item=Light_State
+            Slider item=Light_Brightness
+            Selection item=Light_Color mappings=[ ''='', 'red'='Red', 'crimson'='Crimson', 'salmon'='Salmon', 'orange'='Orange', 'gold'='Gold', 'yellow'='Yellow', 'green'='Green', 'turquoise'='Turquoise', 'cyan'='Cyan', 'sky_blue'='Sky Blue', 'blue'='Blue', 'purple'='Purple', 'magenta'='Magenta', 'pink'='Pink', 'lavender'='Lavender' ]
+            Selection item=Light_White mappings=[ ''='', 'warm_white'='Warm white', 'soft_white'='Soft white', 'white'='White', 'daylight_white'='Daylight white', 'cool_white'='Cool white' ]
         }
 }
 ```
