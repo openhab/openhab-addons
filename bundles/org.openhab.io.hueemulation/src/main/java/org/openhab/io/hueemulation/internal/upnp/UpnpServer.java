@@ -339,7 +339,7 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
      * configuration ready event and depending on service start order we are also called by our own activate() method
      * when the configuration is already ready at that time.
      * <p>
-     * Therefore this method is "synchronized" and chains a completeable future for each call to re-evaluate the config
+     * Therefore this method is "synchronized" and chains a completable future for each call to re-evaluate the config
      * after the former future has finished.
      */
     @Override
