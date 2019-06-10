@@ -154,7 +154,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
 
         EEP eep = EEPFactory.buildEEP(receivingEEPType, (ERP1Message) packet);
         logger.debug("ESP Packet payload {} for {} received", HexUtils.bytesToHex(packet.getPayload()),
-                config.enoceanId);
+                HexUtils.bytesToHex(msg.getSenderId()));
 
         if (eep.isValid()) {
             byte[] senderId = msg.getSenderId();
