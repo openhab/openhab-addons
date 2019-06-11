@@ -117,7 +117,7 @@ public class HueEmulationService implements EventHandler {
     // Don't fail the service if the upnp server does not come up
     // That part is required for discovery only but does not affect already configured hue applications
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policyOption = ReferencePolicyOption.GREEDY)
-    protected @NonNullByDefault({}) UpnpServer discovery;
+    protected @Nullable UpnpServer discovery;
     @Reference
     protected @NonNullByDefault({}) ConfigStore cs;
     @Reference
@@ -201,10 +201,11 @@ public class HueEmulationService implements EventHandler {
             initParams.put("com.sun.jersey.api.json.POJOMappingFeature", "false");
             initParams.put(ServletProperties.PROVIDER_WEB_APP, "false");
             httpService.registerServlet(RESTAPI_PATH, new ServletContainer(resourceConfig), initParams, null);
-            if (discovery == null) {
+            UpnpServer localDiscovery = discovery;
+            if (localDiscovery == null) {
                 logger.warn("The UPnP Server service has not been started!");
-            } else if (!discovery.upnpAnnouncementThreadRunning()) {
-                discovery.handleEvent(null);
+            } else if (!localDiscovery.upnpAnnouncementThreadRunning()) {
+                localDiscovery.handleEvent(null);
             }
             statusResource.startUpnpSelfTest();
             logger.info("Hue Emulation service available under {}", RESTAPI_PATH);
