@@ -12,7 +12,7 @@
 		<properties>
 			<property name="vendor">Heatmiser</property>
 			<property name="modelId">NeoHub</property>
-        </properties>
+	        </properties>
 
 	 	<config-description>
 			<parameter name="hostName" type="text" required="true">
@@ -26,7 +26,7 @@
 				<default>4242</default>
 			</parameter>
 
-			<parameter name="pollInterval" type="integer" required="true">
+			<parameter name="pollInterval" type="integer"  min="10" required="true" unit="sec">
 				<label>Polling Interval</label>
 				<description>Time (seconds) between polling requests to the NeoHub</description>
 				<default>60</default>
@@ -79,10 +79,10 @@
 
 		<properties>
 			<property name="vendor">Heatmiser</property>
-			<property name="modelId">NeoPlug</property>
+			<property name="modelId">NeoStat</property>
 			<property name="deviceNameInHub"></property>
-        </properties>
-        <representation-property>deviceNameInHub</representation-property>
+	        </properties>
+	        <representation-property>deviceNameInHub</representation-property>
 
 	</thing-type>
 
@@ -110,8 +110,8 @@
 			<property name="vendor">Heatmiser</property>
 			<property name="modelId">NeoPlug</property>
 			<property name="deviceNameInHub"></property>
-        </properties>
-        <representation-property>deviceNameInHub</representation-property>
+	        </properties>
+        	<representation-property>deviceNameInHub</representation-property>
 
 	</thing-type>
 
