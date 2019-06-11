@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NeoBaseHandler extends BaseThingHandler {
 
-    protected static final Logger logger = 
+    protected static final Logger LOGGER = 
             LoggerFactory.getLogger(NeoBaseHandler.class);
 
     /*
@@ -90,7 +90,7 @@ public class NeoBaseHandler extends BaseThingHandler {
             msg = String.format(
                     "configuration error for %s, status => offline!", 
                     getThing().getLabel());
-            logger.info(msg);
+            LOGGER.info(msg);
             updateStatus(ThingStatus.OFFLINE, 
                 ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
@@ -99,7 +99,7 @@ public class NeoBaseHandler extends BaseThingHandler {
         msg = String.format(
                 "%s initialized, status => online..", 
                 getThing().getLabel());
-        logger.info(msg);
+        LOGGER.info(msg);
         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, msg);
     }
     
@@ -125,7 +125,7 @@ public class NeoBaseHandler extends BaseThingHandler {
                 msg = String.format(
                         "hub has no info for %s, status => offline!", 
                         getThing().getLabel());
-                logger.error(msg);
+                LOGGER.error(msg);
                 updateStatus(ThingStatus.OFFLINE, 
                     ThingStatusDetail.CONFIGURATION_ERROR, msg);
             }
@@ -137,7 +137,7 @@ public class NeoBaseHandler extends BaseThingHandler {
                 msg = String.format(
                         "hub reports %s offline, status => offline!", 
                         getThing().getLabel());
-                logger.error(msg);
+                LOGGER.error(msg);
                 updateStatus(ThingStatus.OFFLINE, 
                     ThingStatusDetail.CONFIGURATION_ERROR, msg);
             }
@@ -146,7 +146,7 @@ public class NeoBaseHandler extends BaseThingHandler {
                 msg = String.format(
                         "received info for %s from hub, status => online..", 
                         getThing().getLabel());
-                logger.info(msg);
+                LOGGER.info(msg);
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, msg);
             }
         }
@@ -179,15 +179,15 @@ public class NeoBaseHandler extends BaseThingHandler {
             // issue command, check result, and update status accordingly
             switch (getNeoHub().toNeoHubSendChannelValue(cmdStr)) {
                 case SUCCEEDED:
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("command succeeded..");
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("command succeeded..");
                     }
     
                     if (getThing().getStatus() != ThingStatus.ONLINE) {   
                         msg = String.format(
                                 "command for %s succeeded, status => online..", 
                                 getThing().getLabel());
-                        logger.info(msg);
+                        LOGGER.info(msg);
                         
                         updateStatus(ThingStatus.ONLINE, 
                                 ThingStatusDetail.NONE, msg);
@@ -202,7 +202,7 @@ public class NeoBaseHandler extends BaseThingHandler {
                     msg = String.format(
                             "hub communication error for %s, status => offline!", 
                             getThing().getLabel());
-                    logger.error(msg);
+                    LOGGER.error(msg);
     
                     if (getThing().getStatus() == ThingStatus.ONLINE) {   
                         updateStatus(ThingStatus.OFFLINE, 
@@ -214,7 +214,7 @@ public class NeoBaseHandler extends BaseThingHandler {
                     msg = String.format(
                             "hub initialization error for %s, status => offline!",
                             getThing().getLabel());
-                    logger.error(msg);
+                    LOGGER.error(msg);
     
                     if (getThing().getStatus() == ThingStatus.ONLINE) {   
                         updateStatus(ThingStatus.OFFLINE, 
@@ -226,7 +226,7 @@ public class NeoBaseHandler extends BaseThingHandler {
             msg = String.format(
                     "unknown command error for %s, => command ignored!", 
                     getThing().getLabel());
-            logger.error(msg);
+            LOGGER.error(msg);
         }
     }
 

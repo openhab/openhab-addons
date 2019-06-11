@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 */
 public class NeoHubHandler extends BaseBridgeHandler {
 
-    private static final Logger logger = 
+    private static final Logger LOGGER = 
             LoggerFactory.getLogger(NeoHubHandler.class);
 
     private NeoHubConfiguration config;
@@ -69,7 +69,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
         String msg;
 
         msg = "status => unknown..";
-        logger.info(msg);
+        LOGGER.info(msg);
         updateStatus(ThingStatus.UNKNOWN, 
             ThingStatusDetail.CONFIGURATION_PENDING, msg);
 
@@ -77,42 +77,42 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
         if (config == null) {
             msg = "missing configuration, status => offline!";
-            logger.error(msg);
+            LOGGER.error(msg);
             updateStatus(ThingStatus.OFFLINE, 
                 ThingStatusDetail.CONFIGURATION_PENDING, msg);
             return;
         }
 
-        if (logger.isDebugEnabled()) 
-            logger.debug("hostname={}", config.hostName);
+        if (LOGGER.isDebugEnabled()) 
+            LOGGER.debug("hostname={}", config.hostName);
 
         if (config.hostName.isEmpty()) {
             msg = "missing host name, status => offline!";
-            logger.error(msg);
+            LOGGER.error(msg);
             updateStatus(ThingStatus.OFFLINE, 
                 ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
 
-        if (logger.isDebugEnabled()) 
-            logger.debug("port={}", config.portNumber);
+        if (LOGGER.isDebugEnabled()) 
+            LOGGER.debug("port={}", config.portNumber);
 
         if (config.portNumber <= 0 || config.portNumber > 0xFFFF) {
             msg = "port out of range, status => offline!";
-            logger.error(msg);
+            LOGGER.error(msg);
             updateStatus(ThingStatus.OFFLINE, 
                 ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
 
-        if (logger.isDebugEnabled()) 
-            logger.debug("polling interval={}", config.pollInterval);
+        if (LOGGER.isDebugEnabled()) 
+            LOGGER.debug("polling interval={}", config.pollInterval);
 
         if (config.pollInterval < FAST_POLL_INTERVAL || config.pollInterval > LAZY_POLL_INTERVAL) {
             msg = String.format(
                     "polling interval out of range [%d..%d], status => offline!",
                     FAST_POLL_INTERVAL, LAZY_POLL_INTERVAL);
-            logger.error(msg);
+            LOGGER.error(msg);
             updateStatus(ThingStatus.OFFLINE, 
                 ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
@@ -120,8 +120,8 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
         socket = new NeoHubSocket(config.hostName, config.portNumber); 
 
-        if (logger.isDebugEnabled()) 
-            logger.debug("start background polling..");
+        if (LOGGER.isDebugEnabled()) 
+            LOGGER.debug("start background polling..");
 
         // create a "lazy" polling scheduler
         if (lazyPollingScheduler == null || lazyPollingScheduler.isCancelled()) { 
@@ -145,8 +145,8 @@ public class NeoHubHandler extends BaseBridgeHandler {
    
     @Override
     public void dispose() {
-        if (logger.isDebugEnabled()) 
-            logger.debug("stop background polling..");
+        if (LOGGER.isDebugEnabled()) 
+            LOGGER.debug("stop background polling..");
 
         // clean up the lazy polling scheduler
         if (lazyPollingScheduler != null && !lazyPollingScheduler.isCancelled()) { 
@@ -180,18 +180,18 @@ public class NeoHubHandler extends BaseBridgeHandler {
             
         if (socket == null || config == null) {
             msg = "hub not initialized, status => offline!";
-            logger.error(msg);
+            LOGGER.error(msg);
             updateStatus(ThingStatus.OFFLINE, 
                 ThingStatusDetail.HANDLER_INITIALIZING_ERROR, msg);
             return NeoHubReturnResult.ERR_INITIALIZATION;
         }
         
-        if (logger.isDebugEnabled()) 
-            logger.debug("sending command {}", commandStr);
+        if (LOGGER.isDebugEnabled()) 
+            LOGGER.debug("sending command {}", commandStr);
         
         if (socket.sendMessage(commandStr) == null) {
             msg = "communication error, status => offline!";
-            logger.error(msg);
+            LOGGER.error(msg);
             updateStatus(ThingStatus.OFFLINE, 
                 ThingStatusDetail.COMMUNICATION_ERROR, msg);
             return NeoHubReturnResult.ERR_COMMUNICATION;
@@ -215,7 +215,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
         
         if (socket == null || config == null) {
             msg = "hub not initialized, status => offline!";
-            logger.error(msg);
+            LOGGER.error(msg);
             updateStatus(ThingStatus.OFFLINE, 
                 ThingStatusDetail.HANDLER_INITIALIZING_ERROR, msg);
             return null;
@@ -223,7 +223,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
         if ((response = socket.sendMessage(CMD_CODE_INFO)) == null) { 
             msg = "communication error, status => offline!";
-            logger.error(msg);
+            LOGGER.error(msg);
             updateStatus(ThingStatus.OFFLINE, 
                 ThingStatusDetail.COMMUNICATION_ERROR, msg);
             return null;
@@ -233,7 +233,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             result = NeoHubInfoResponse.createInfoResponse(response);
             if (getThing().getStatus() != ThingStatus.ONLINE) {  
                 msg = "info received, status => online..";
-                logger.info(msg);
+                LOGGER.info(msg);
                 updateStatus(ThingStatus.ONLINE,
                     ThingStatusDetail.NONE, msg);
             }
@@ -243,7 +243,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             msg = String.format(
                     "parsing error, cause = %s, status => offline..", 
                     e.getMessage());
-            logger.error(msg);
+            LOGGER.error(msg);
             updateStatus(ThingStatus.OFFLINE,
                 ThingStatusDetail.COMMUNICATION_ERROR, msg);
             return null;

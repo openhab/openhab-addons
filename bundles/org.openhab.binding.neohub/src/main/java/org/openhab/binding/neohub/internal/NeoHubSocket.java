@@ -38,7 +38,8 @@ import org.slf4j.LoggerFactory;
  */
 public class NeoHubSocket {
 
-    private static final Logger logger = LoggerFactory.getLogger(NeoHubSocket.class);
+    private static final Logger LOGGER = 
+            LoggerFactory.getLogger(NeoHubSocket.class);
 
     /**
      * Name of host or IP to connect to.
@@ -73,9 +74,9 @@ public class NeoHubSocket {
             final InputStreamReader in = new InputStreamReader(socket.getInputStream(), US_ASCII);
             final OutputStreamWriter out = new OutputStreamWriter(socket.getOutputStream(), US_ASCII);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("sending {} characters..", request.length());
-                logger.debug(">> {}", request);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("sending {} characters..", request.length());
+                LOGGER.debug(">> {}", request);
             }
 
             out.write(request);
@@ -88,10 +89,10 @@ public class NeoHubSocket {
             }
 
         } catch (final IOException e) {
-            logger.error(String.format("communication error with hub " +
+            LOGGER.error(String.format("communication error with hub " +
                     "[host=%s, port=%d, timeout=%d] !']", hostname, port, TCP_SOCKET_IMEOUT));
 
-            logger.debug(String.format("error cause = %s!'", e.toString()));
+            LOGGER.debug(String.format("error cause = %s!'", e.toString()));
 
             return null;
 
@@ -101,14 +102,14 @@ public class NeoHubSocket {
 
         final String responseStr = response.toString();
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("received {} characters..", responseStr.length());
-            logger.trace("<< {}", responseStr);
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("received {} characters..", responseStr.length());
+            LOGGER.trace("<< {}", responseStr);
         } else
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("received {} characters (set log level to TRACE to see full string)..", responseStr.length());
-            logger.debug("<< {} ...", responseStr.substring(1, Math.min(responseStr.length(), 30)));
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("received {} characters (set log level to TRACE to see full string)..", responseStr.length());
+            LOGGER.debug("<< {} ...", responseStr.substring(1, Math.min(responseStr.length(), 30)));
         }
 
         return responseStr;

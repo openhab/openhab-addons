@@ -41,7 +41,8 @@ import org.slf4j.LoggerFactory;
  */
 public class NeoHubDiscoveryService extends AbstractDiscoveryService {
 
-    private static final Logger logger = LoggerFactory.getLogger(NeoHubDiscoveryService.class);
+    private static final Logger LOGGER = 
+            LoggerFactory.getLogger(NeoHubDiscoveryService.class);
 
     private ScheduledFuture<?> discoveryScheduler;
     private NeoHubHandler hub;
@@ -74,18 +75,18 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         String msg = "start background discovery..";
-        logger.info(msg);
+        LOGGER.info(msg);
 
         if (discoveryScheduler == null || discoveryScheduler.isCancelled()) { 
             discoveryScheduler = scheduler.scheduleWithFixedDelay(this::startScan, 
-                    30, DISCOVERY_REFRESH_PERIOD, TimeUnit.SECONDS);
+                    10, DISCOVERY_REFRESH_PERIOD, TimeUnit.SECONDS);
         }
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
         String msg = "stop background discovery..";
-        logger.info(msg);
+        LOGGER.info(msg);
 
         if (discoveryScheduler != null && !discoveryScheduler.isCancelled()) { 
             discoveryScheduler.cancel(true);
@@ -137,7 +138,7 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
         thingDiscovered(device);
 
         String msg = String.format("discovered device=%s, name=%s ..", deviceType, deviceOpenHabId);
-        logger.debug(msg);
+        LOGGER.debug(msg);
     }
 
 }

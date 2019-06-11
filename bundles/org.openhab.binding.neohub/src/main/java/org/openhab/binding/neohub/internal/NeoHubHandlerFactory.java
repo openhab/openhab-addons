@@ -42,7 +42,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.neohub", service = ThingHandlerFactory.class)
 public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_NEOHUB, 
                                                          THING_TYPE_NEOSTAT, 
                                                          THING_TYPE_NEOPLUG)));
