@@ -4,11 +4,11 @@ The NeoHub binding allows you to connect openHab via TCP/IP to Heatmiser's NeoHu
 
 ## Binding Configuration
 
-The binding polls each thermostat or plug that is configured in your items, at the _refresh_ rate as set in the configuration. 
+The binding polls each thermostat or plug that is configured in your items, at the pollInterval rate as set in the configuration. 
 
 | Property            | Default | Required | Description
 |---------------------|---------|----------|------------------------------------------
-| refreshInterval     | 60000   |   No     | Refresh interval in milliseconds
+| pollInterval        | 60      |   No     | Refresh interval in seconds
 | hostName            |         |   Yes    | The IP address of the NeoHub
 | portNumber          | 4242    |   No     | The port number for the NeoHub interface
 
