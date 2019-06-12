@@ -51,6 +51,7 @@ Number:Dimensionless OWM_Cloudiness "Cloudiness [%d %unit%]" <clouds> {channel="
 Number Synop_beaufort "Beaufort [SCALE(synop_beaufort.scale):%s]" <beaufort> {channel="synopanalyzer:synopanalyzer:orly:wind-speed-beaufort", channel="sagercaster:sagercaster:triel:wind-speed-beaufort" [profile="follow"] }
            	
 ```
+
 Here is the definition of output channels
 
 ```

@@ -13,7 +13,7 @@
 /**
  *       eltiempo.selfip.com - Sager Weathercaster Algorhithm
  *
- *       	Copyright © 2008 Naish666 (eltiempo.selfip.com)
+ *          Copyright © 2008 Naish666 (eltiempo.selfip.com)
  *               October 2008 - v1.0
  *          Java transposition done by Gaël L'hopital - 2015
  **
@@ -62,7 +62,7 @@ import java.util.Map;
 /**
  * This class is responsible for handling the SagerWeatherCaster algorithm
  *
- * @author Gaël L'hopital
+ * @author Gaël L'hopital - Initial contribution
  */
 public class SagerWeatherCaster {
 
