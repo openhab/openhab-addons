@@ -27,10 +27,12 @@ import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -67,6 +69,8 @@ public class SmhiHandler extends BaseThingHandler {
 
     protected static final String smhiURL = "http://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/%s/lat/%s/data.json";
 
+    protected @Nullable PointType location;
+
     // Timeout for weather data requests.
     private static final int SMHI_TIMEOUT = 5000;
 
@@ -97,7 +101,20 @@ public class SmhiHandler extends BaseThingHandler {
 
         config = getConfigAs(SmhiConfiguration.class);
 
-        boolean configValid = true;
+        if (StringUtils.trimToNull(config.location) == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The 'location' parameter must be configured.");
+            return;
+        }
+
+        try {
+            location = new PointType(config.location);
+        } catch (IllegalArgumentException e) {
+            location = null;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The 'location' parameter could not be split into latitude and longitude.");
+            return;
+        }
 
         DecimalFormat df = new DecimalFormat("##.######");
         DecimalFormatSymbols custom = new DecimalFormatSymbols();
@@ -110,14 +127,25 @@ public class SmhiHandler extends BaseThingHandler {
         String latitude = df.format(Double.valueOf(parts[0]));
         String longitude = df.format(Double.valueOf(parts[1]));
 
-        if (!isValidGpsCoordinate(dlatitude, dlongitude)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Location is not a valid GPS coordinate.");
+        apiRequest = String.format(smhiURL, longitude, latitude);
+
+        try {
+            if (HttpUtil.executeUrl("GET", apiRequest, null, null, "application/json", SMHI_TIMEOUT)
+                    .contains("out of bounds")) {
+
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "The 'location' parameter is out of bound.");
+                return;
+
+            }
+
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error connecting to SMHI API.");
             return;
         }
 
-        apiRequest = String.format(smhiURL, longitude, latitude);
         updateStatus(ThingStatus.ONLINE);
+
         startAutomaticRefresh(config.refresh);
 
     }
@@ -338,13 +366,6 @@ public class SmhiHandler extends BaseThingHandler {
         }
 
         return UnDefType.NULL;
-    }
-
-    private boolean isValidGpsCoordinate(double latitude, double longitude) {
-        if (latitude > -90 && latitude < 90 && longitude > -180 && longitude < 180) {
-            return true;
-        }
-        return false;
     }
 
 }

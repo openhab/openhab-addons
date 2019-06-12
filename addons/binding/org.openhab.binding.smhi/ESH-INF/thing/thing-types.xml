@@ -24,12 +24,11 @@
 		</channel-groups>
 
 		<config-description>
-			<parameter name="location" type="text">
-					<label>Location</label>
-					<description>Location of weather in lat,lon coordinates. Defauls to Stockholm Castle</description>
-					<required>true</required>
-					<default>59.322665376,18.069666388</default>
-			</parameter>
+        <parameter name="location" type="text" required="true">
+            <context>location</context>
+            <label>Location of Weather</label>
+            <description>Location of weather in geographical coordinates (latitude/longitude/altitude).</description>
+        </parameter>
 			<parameter name="refresh" type="text">
 					<label>Refresh Interval</label>
 					<description>Specifies the refresh interval in minutes.</description>

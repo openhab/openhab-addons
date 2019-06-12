@@ -13,6 +13,7 @@ Import-Package:
  com.google.gson.annotations,
  javax.measure;version="1.0.0",
  javax.measure.quantity;version="1.0.0",
+ org.apache.commons.lang;version="2.6.0",
  org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.core.library.dimension,
