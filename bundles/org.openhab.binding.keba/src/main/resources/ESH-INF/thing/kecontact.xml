@@ -248,8 +248,8 @@
 	</channel-type>
 	<channel-type id="setenergylimit">
 		<item-type>Number</item-type>
-		<label>Setenergylimit</label>
-		<description>set an energy limit for an already running or the next charging session.</description>
+		<label>Energy limit</label>
+		<description>An energy limit for an already running or the next charging session.</description>
 		<state pattern="%d Wh" readOnly="false"></state>
 	</channel-type>
 </thing:thing-descriptions>
