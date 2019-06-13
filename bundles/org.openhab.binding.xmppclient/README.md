@@ -8,15 +8,31 @@ xmppBridge - Basic XMPP (Jabber) client thing, that can send and receive message
 
 ## Thing Configuration
 
+Sample configurations:
+
+```
+Bridge xmppclient:xmppBridge:xmpp "XMPP Client" [ username="openhab", domain="example.com", password="********" ] {
+  Channels:
+    Trigger String : xmpp_command [ separator="##" ]
+}
+```
+
+```
+Bridge xmppclient:xmppBridge:xmpp "XMPP Client" [ host="xmpp.example.com", port=7222, username="openhab", domain="example.com", password="********" ] {
+  Channels:
+    Trigger String : xmpp_command [ separator="##" ]
+}
+```
+
 **xmppBridge** parameters:
 
-| Name   |      Label      |  Description |  Required |
-|----------|-------------|------|------|
-| host | Server Hostname/IP | The IP/Hostname of the XMPP server | true |
-| port | XMPP server Port | The typical port is 5222 | true |
-| username | Username | The XMPP username | true |
-| password | Password | The XMPP password | true |
-
+| Name   |      Label      |  Description |  Required | Default value |
+|----------|-------------|------|------|------|
+| username | Username | The XMPP username (left part of JID) | true | - |
+| domain | Domain | The XMPP domain name (right part of JID) | true | - |
+| password | Password | The XMPP user password | true | - |
+| host | Server Hostname/IP | The IP/Hostname of the XMPP server | false | as "domain" parameter |
+| port | XMPP server Port | The typical port is 5222 | false | 5222 |
 
 ## Channels
 
