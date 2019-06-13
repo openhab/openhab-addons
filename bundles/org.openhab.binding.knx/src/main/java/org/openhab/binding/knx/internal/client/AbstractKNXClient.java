@@ -142,7 +142,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
     private boolean scheduleReconnectJob() {
         if (autoReconnectPeriod > 0) {
-            connectJob = knxScheduler.scheduleWithFixedDelay(() -> connect(), 0, autoReconnectPeriod, TimeUnit.SECONDS);
+            connectJob = knxScheduler.schedule(this::connect, autoReconnectPeriod, TimeUnit.SECONDS);
             return true;
         } else {
             return false;
@@ -196,7 +196,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         } catch (KNXException | InterruptedException e) {
             logger.debug("Error connecting to the bus: {}", e.getMessage(), e);
             disconnect(e);
-            knxScheduler.schedule(this::connect, autoReconnectPeriod, TimeUnit.SECONDS);
+            scheduleReconnectJob();
             return false;
         }
     }
