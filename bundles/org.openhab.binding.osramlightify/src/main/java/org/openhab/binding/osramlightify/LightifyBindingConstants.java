@@ -45,6 +45,7 @@ public final class LightifyBindingConstants {
     public static final int LIGHTIFY_DEVICE_TYPE_LIGHT_DIMMABLE = 0x01;
     public static final int LIGHTIFY_DEVICE_TYPE_LIGHT_TUNABLE = 0x02;
     public static final int LIGHTIFY_DEVICE_TYPE_LIGHT_SOFT_SWITCHABLE = 0x04;
+    public static final int LIGHTIFY_DEVICE_TYPE_LIGHT_RGB = 0x08;
     public static final int LIGHTIFY_DEVICE_TYPE_LIGHT_RGBW = 0x0A;
     public static final int LIGHTIFY_DEVICE_TYPE_POWER = 0x10;
     public static final int LIGHTIFY_DEVICE_TYPE_MOTION_SENSOR = 0x20;
@@ -69,6 +70,7 @@ public final class LightifyBindingConstants {
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_LIGHT_DIMMABLE = new ThingTypeUID(BINDING_ID, "dimmable");
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_POWER = new ThingTypeUID(BINDING_ID, "power");
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_LIGHT_TUNABLE = new ThingTypeUID(BINDING_ID, "tunable");
+    public static final ThingTypeUID THING_TYPE_LIGHTIFY_LIGHT_RGB = new ThingTypeUID(BINDING_ID, "rgb");
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_LIGHT_RGBW = new ThingTypeUID(BINDING_ID, "rgbw");
     public static final ThingTypeUID THING_TYPE_LIGHTIFY_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, "motionsensor");
 
@@ -82,7 +84,8 @@ public final class LightifyBindingConstants {
         ).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream.of(
-            THING_TYPE_LIGHTIFY_LIGHT_DIMMABLE, THING_TYPE_LIGHTIFY_LIGHT_TUNABLE, THING_TYPE_LIGHTIFY_LIGHT_RGBW,
+            THING_TYPE_LIGHTIFY_LIGHT_DIMMABLE, THING_TYPE_LIGHTIFY_LIGHT_TUNABLE,
+            THING_TYPE_LIGHTIFY_LIGHT_RGB, THING_TYPE_LIGHTIFY_LIGHT_RGBW,
             THING_TYPE_LIGHTIFY_POWER
         ).collect(Collectors.toSet()));
 
@@ -92,6 +95,7 @@ public final class LightifyBindingConstants {
                 put(LIGHTIFY_DEVICE_TYPE_LIGHT_DIMMABLE, THING_TYPE_LIGHTIFY_LIGHT_DIMMABLE);
                 put(LIGHTIFY_DEVICE_TYPE_LIGHT_TUNABLE, THING_TYPE_LIGHTIFY_LIGHT_TUNABLE);
                 put(LIGHTIFY_DEVICE_TYPE_LIGHT_SOFT_SWITCHABLE, THING_TYPE_LIGHTIFY_LIGHT_DIMMABLE);
+                put(LIGHTIFY_DEVICE_TYPE_LIGHT_RGBW, THING_TYPE_LIGHTIFY_LIGHT_RGB);
                 put(LIGHTIFY_DEVICE_TYPE_LIGHT_RGBW, THING_TYPE_LIGHTIFY_LIGHT_RGBW);
                 put(LIGHTIFY_DEVICE_TYPE_POWER, THING_TYPE_LIGHTIFY_POWER);
                 put(LIGHTIFY_DEVICE_TYPE_MOTION_SENSOR, THING_TYPE_LIGHTIFY_MOTION_SENSOR);

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="osramlightify" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="rgb">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>RGB Light</label>
+		<description>A light that can change color and brightness. Brightness may be changed via a dimmer item on the color channel.</description>
+
+		<channels>
+			<channel id="color" typeId="color" />
+		</channels>
+
+		<config-description>
+			<parameter name="transitionTime" type="decimal" min="0.0" max="6553.5">
+				<label>Transition Time</label>
+				<description>Time taken to fade from one state to another in seconds to 1 d.p. Minimum is 0, maximum is 6553.5 seconds. Leave blank to use the default for the gateway.</description>
+			</parameter>
+
+			<parameter name="transitionToOffTime" type="decimal" min="0.0" max="6553.5">
+				<label>Transition To Off Time</label>
+				<description>Time taken to fade to off in seconds to 1 d.p. Minimum is 0, maximum is 6553.5 seconds. Leave blank to use the default for the gateway.</description>
+			</parameter>
+
+			<parameter name="increaseDecreaseStep" type="integer" min="0" max="100">
+				<label>Step size for INCREASE/DECREASE commands</label>
+				<description>How much to step brightness or temperature percentage in response to an INCREASE or DECREASE command. Leave blank to use the default for the gateway.</description>
+			</parameter>
+
+			<parameter name="whiteTemperatureMin" type="integer" min="1000" max="10000">
+				<default>1900</default>
+				<label>Minimum white temperature</label>
+				<description>Minimum white temperature in Kelvin supported by this device.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="whiteTemperatureMax" type="integer" min="1000" max="10000">
+				<default>6500</default>
+				<label>Maximum white temperature</label>
+				<description>Maximum white temperature in Kelvin supported by this device.</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
