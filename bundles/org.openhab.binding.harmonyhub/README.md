@@ -20,6 +20,12 @@ There is a single device thing for every physical device configured on the harmo
 Each device has a single channel with the id "button" which sends a string with the name of the button to press on the device.
 This channel is dynamically generated with the possible button press strings listed as channel state options.
 
+## Prerequisites
+
+In order to be able to find you Harmony Hub you have to enable XMPP Access. By default, Harmony firmware will keep XMPP disabled. To enable XMPP Access from your Harmony app, go to: Menu > Harmony Setup > Add/Edit Devices & Activities > Remote & Hub > Enable XMPP
+
+Find more Information on: https://community.logitech.com/s/question/0D55A00008OsX3CSAV/update-to-accessing-harmony-hubs-local-api-via-xmpp
+
 ## Discovery
 
 The Harmony binding will automatically find all Harmony Hubs on the local network and add them to the inbox.
