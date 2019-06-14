@@ -64,8 +64,8 @@
 		<category>PowerOutlet</category>
 		<channels>
 			<channel id="switch" typeId="system.power" />
-            <channel id="led" typeId="led" />
-            <channel id="rssi" typeId="rssi" />
+			<channel id="led" typeId="led" />
+			<channel id="rssi" typeId="rssi" />
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="switch-outlet">
@@ -77,13 +77,13 @@
 	</channel-group-type>
 	<channel-group-type id="energy-outlet">
 		<label>Outlet</label>
-        <category>PowerOutlet</category>
+		<category>PowerOutlet</category>
 		<channels>
-            <channel id="switch" typeId="system.power" />
-            <channel id="power" typeId="power" />
-            <channel id="energyUsage" typeId="energy-usage" />
-            <channel id="current" typeId="current" />
-            <channel id="voltage" typeId="voltage" />
+			<channel id="switch" typeId="system.power" />
+			<channel id="power" typeId="power" />
+			<channel id="energyUsage" typeId="energy-usage" />
+			<channel id="current" typeId="current" />
+			<channel id="voltage" typeId="voltage" />
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
