@@ -25,7 +25,7 @@ import javax.servlet.ServletException;
  */
 public class JerseyServletContainerInitializer implements ServletContainerInitializer {
     @Override
-    public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
+    public void onStartup(Set<Class<?>> c, ServletContext ctx) {
 
     }
 }
