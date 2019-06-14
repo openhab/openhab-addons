@@ -17,16 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.SocketAddress;
-import java.net.StandardSocketOptions;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedSelectorException;
 import java.nio.channels.DatagramChannel;
@@ -37,7 +28,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
@@ -155,7 +145,7 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
      */
     @NonNullByDefault({})
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         if (xmlDocWithAddress == null || xmlDocWithAddress.isEmpty()) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
@@ -208,7 +198,7 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
     }
 
     private void useAddressPort(HueEmulationConfigWithRuntime r) {
-        final String urlBase = "http://" + r.addressString + ":" + String.valueOf(r.port);
+        final String urlBase = "http://" + r.addressString + ":" + r.port;
         this.baseurl = urlBase + DISCOVERY_FILE;
 
         final String[] stVersions = { "upnp:rootdevice", "urn:schemas-upnp-org:device:basic:1",
@@ -271,7 +261,7 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
                     ip = "[" + ip.split("%")[0] + "]";
                 }
                 try {
-                    url = "http://" + ip + ":" + String.valueOf(config.port) + DISCOVERY_FILE;
+                    url = "http://" + ip + ":" + config.port + DISCOVERY_FILE;
                     response = client.target(url).request().get();
                     boolean isOurs = response.readEntity(String.class).contains(cs.ds.config.bridgeid);
                     selfTests.add(new SelfTestReport(url, response.getStatus() == 200, isOurs));
@@ -308,7 +298,7 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
             r = new HueEmulationConfigWithRuntime(this, cs.getConfig(), cs.ds.config.ipaddress, MULTI_ADDR_IPV4,
                     MULTI_ADDR_IPV6);
         } catch (UnknownHostException e) {
-            logger.warn("The picked default IP address is not valid: ", e.getMessage());
+            logger.warn("The picked default IP address is not valid: {}", e.getMessage());
             throw new IllegalStateException(e);
         }
         return r;
@@ -363,8 +353,6 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
 
     /**
      * Stops the upnp server from running
-     *
-     * @throws InterruptedException
      */
     @Deactivate
     public void deactivate() {
@@ -375,7 +363,7 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
         }
     }
 
-    private void handleRead(SelectionKey key, Set<InetAddress> addresses) throws IOException {
+    private void handleRead(SelectionKey key) throws IOException {
         logger.trace("upnp thread handle received message");
         DatagramChannel channel = (DatagramChannel) key.channel();
         ClientRecord clntRec = (ClientRecord) key.attachment();
@@ -424,22 +412,25 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
         boolean hasIPv4 = false;
         boolean hasIPv6 = false;
 
-        try (DatagramChannel channel = DatagramChannel.open(); Selector selector = Selector.open()) {
+        try (
+                DatagramChannel channelV4 = DatagramChannel.open(StandardProtocolFamily.INET);
+                DatagramChannel channelV6 = DatagramChannel.open(StandardProtocolFamily.INET6);
+                Selector selector = Selector.open()) {
 
             threadContext.asyncIOselector = selector;
 
-            channel.setOption(StandardSocketOptions.SO_REUSEADDR, true)
-                    .setOption(StandardSocketOptions.IP_MULTICAST_LOOP, true).bind(new InetSocketAddress(UPNP_PORT));
+            bind(channelV4);
+            bind(channelV6);
             for (InetAddress address : cs.getDiscoveryIps()) {
                 NetworkInterface networkInterface = NetworkInterface.getByInetAddress(address);
                 if (networkInterface == null) {
                     continue;
                 }
                 if (address instanceof Inet4Address) {
-                    channel.join(MULTI_ADDR_IPV4, networkInterface);
+                    channelV4.join(MULTI_ADDR_IPV4, networkInterface);
                     hasIPv4 = true;
                 } else {
-                    channel.join(MULTI_ADDR_IPV6, networkInterface);
+                    channelV6.join(MULTI_ADDR_IPV6, networkInterface);
                     hasIPv6 = true;
                 }
             }
@@ -450,16 +441,18 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
                 return;
             }
 
-            channel.configureBlocking(false);
 
-            channel.register(selector, SelectionKey.OP_READ, new ClientRecord());
 
             if (hasIPv4) {
+                channelV4.configureBlocking(false);
+                channelV4.register(selector, SelectionKey.OP_READ, new ClientRecord());
                 try (DatagramSocket sendSocket = new DatagramSocket(new InetSocketAddress(config.address, 0))) {
                     sendUPNPDatagrams(sendSocket, MULTI_ADDR_IPV4, UPNP_PORT);
                 }
             }
             if (hasIPv6) {
+                channelV6.configureBlocking(false);
+                channelV6.register(selector, SelectionKey.OP_READ, new ClientRecord());
                 try (DatagramSocket sendSocket = new DatagramSocket()) {
                     sendUPNPDatagrams(sendSocket, MULTI_ADDR_IPV6, UPNP_PORT);
                 }
@@ -475,7 +468,7 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
                 while (keyIter.hasNext()) {
                     SelectionKey key = keyIter.next();
                     if (key.isReadable()) {
-                        handleRead(key, cs.getDiscoveryIps());
+                        handleRead(key);
                     }
                     keyIter.remove();
                 }
@@ -502,6 +495,12 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
         } finally {
             threadContext.asyncIOselector = null;
         }
+    }
+
+    private void bind(DatagramChannel channel) throws IOException {
+        channel.setOption(StandardSocketOptions.SO_REUSEADDR, true)
+                .setOption(StandardSocketOptions.IP_MULTICAST_LOOP, true)
+                .bind(new InetSocketAddress(UPNP_PORT));
     }
 
     /**
