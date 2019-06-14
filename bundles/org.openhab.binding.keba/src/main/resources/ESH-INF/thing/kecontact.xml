@@ -53,6 +53,7 @@
 			<channel id="sessionrfidtag" typeId="sessionrfidtag" />
 			<channel id="sessionrfidclass" typeId="sessionrfidclass" />
 			<channel id="sessionid" typeId="sessionid" />
+			<channel id="setenergylimit" typeId="setenergylimit" />
 		</channels>
 
 		<config-description>
@@ -244,5 +245,11 @@
 		<label>Session ID</label>
 		<description>Session ID of the last charging session</description>
 		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="setenergylimit">
+		<item-type>Number</item-type>
+		<label>Energy limit</label>
+		<description>An energy limit for an already running or the next charging session.</description>
+		<state pattern="%d Wh" readOnly="false"></state>
 	</channel-type>
 </thing:thing-descriptions>
