@@ -467,6 +467,12 @@ public class KeContactHandler extends BaseThingHandler {
                         updateState(CHANNEL_SESSION_SESSION_ID, newState);
                         break;
                     }
+                    case "Setenergy": {
+                        int state = entry.getValue().getAsInt() / 10;
+                        State newState = new DecimalType(state);
+                        updateState(CHANNEL_SETENERGY, newState);
+                        break;
+                    }
                 }
             }
         } catch (JsonParseException e) {
@@ -545,6 +551,14 @@ public class KeContactHandler extends BaseThingHandler {
                         } else {
                             logger.warn("'Display' is not supported on a KEBA KeContact {}:{}", type, series);
                         }
+                    }
+                    break;
+                }
+                case CHANNEL_SETENERGY: {
+                    if (command instanceof DecimalType) {
+                        transceiver.send(
+                                "setenergy " + String.valueOf(
+                                        Math.min(Math.max(0, ((DecimalType) command).intValue()*10), 999999999)), this);
                     }
                     break;
                 }
