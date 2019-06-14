@@ -21,8 +21,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.firebase</groupId>
-      <artifactId>tubesock</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.firebase.tubesock</artifactId>
       <version>0.0.1</version>
       <scope>provided</scope>
     </dependency>
