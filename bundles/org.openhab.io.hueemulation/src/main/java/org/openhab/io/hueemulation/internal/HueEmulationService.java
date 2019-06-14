@@ -91,8 +91,7 @@ public class HueEmulationService implements EventHandler {
     public class LogAccessInterceptor implements ContainerResponseFilter {
         @NonNullByDefault({})
         @Override
-        public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
-                throws IOException {
+        public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
 
             if (!logger.isDebugEnabled()) {
                 return;

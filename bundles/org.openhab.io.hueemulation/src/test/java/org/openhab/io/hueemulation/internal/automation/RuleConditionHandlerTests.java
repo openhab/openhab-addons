@@ -67,7 +67,7 @@ public class RuleConditionHandlerTests {
     }
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() {
         ds = new HueDataStore();
 
         ds.lights.put("1", new HueLightEntry(new SwitchItem("switch"), "switch", DeviceType.SwitchType));
