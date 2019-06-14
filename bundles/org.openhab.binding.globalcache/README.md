@@ -135,7 +135,7 @@ A *Contact Closure channel* activates the contact closure (relay) on the iTach o
 For example, the following item links to the module 1, connector 1 channel on an iTach CC device.
 
 ```
-Contact MyRelay    "My Relay [%s]"  (gRelays)   { channel="globalcache:itachCC:000C1E039BCF:cc-m1#c1" }
+Switch MyRelay    "My Relay [%s]"  (gRelays)   { channel="globalcache:itachCC:000C1E039BCF:cc-m1#c1" }
 ```
 
 The item definition for an iTach Flex WiFi device would look like this.
