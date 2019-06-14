@@ -113,7 +113,7 @@ public class TimerTriggerHandler extends BaseTriggerModuleHandler implements Cal
     }
 
     @Override
-    public Duration call() throws Exception {
+    public Duration call() {
         ((TriggerHandlerCallback) callback).triggered(module, null);
         config.repeat -= 1;
         if (config.repeat == 0) {

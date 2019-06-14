@@ -78,7 +78,7 @@ public class ConfigurationAccess {
     @ApiOperation(value = "Return the full data store")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
     public Response getAllApi(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username) throws IOException {
+            @PathParam("username") @ApiParam(value = "username") String username) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -91,7 +91,7 @@ public class ConfigurationAccess {
     @ApiOperation(value = "Return the configuration")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
     public Response getFullConfigApi(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username) throws IOException {
+            @PathParam("username") @ApiParam(value = "username") String username) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
@@ -104,7 +104,7 @@ public class ConfigurationAccess {
     @ApiOperation(value = "Return the reduced configuration")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
     public Response putFullConfigApi(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username, String body) throws IOException {
+            @PathParam("username") @ApiParam(value = "username") String username, String body) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }

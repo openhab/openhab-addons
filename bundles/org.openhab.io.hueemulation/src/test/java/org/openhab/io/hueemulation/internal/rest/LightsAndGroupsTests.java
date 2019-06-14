@@ -89,7 +89,7 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void addSwitchableByCategory() throws IOException {
+    public void addSwitchableByCategory() {
         SwitchItem item = new SwitchItem("switch1");
         item.setCategory("Light");
         itemRegistry.add(item);
@@ -100,7 +100,7 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void addSwitchableByTag() throws IOException {
+    public void addSwitchableByTag() {
         SwitchItem item = new SwitchItem("switch1");
         item.addTag("Switchable");
         itemRegistry.add(item);
@@ -110,7 +110,7 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void ignoreByTag() throws IOException {
+    public void ignoreByTag() {
         SwitchItem item = new SwitchItem("switch1");
         item.addTags("Switchable", "internal"); // The ignore tag will win
         itemRegistry.add(item);
@@ -119,7 +119,7 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void addGroupSwitchableByTag() throws IOException {
+    public void addGroupSwitchableByTag() {
         GroupItem item = new GroupItem("group1", new SwitchItem("switch1"));
         item.addTag("Switchable");
         itemRegistry.add(item);
@@ -129,7 +129,7 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void addGroupWithoutTypeByTag() throws IOException {
+    public void addGroupWithoutTypeByTag() {
         GroupItem item = new GroupItem("group1", null);
         item.addTag("Switchable");
 
@@ -142,7 +142,7 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void removeGroupWithoutTypeAndTag() throws IOException {
+    public void removeGroupWithoutTypeAndTag() {
         String groupName = "group1";
         GroupItem item = new GroupItem(groupName, null);
         item.addTag("Switchable");
@@ -157,7 +157,7 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void updateSwitchable() throws IOException {
+    public void updateSwitchable() {
         SwitchItem item = new SwitchItem("switch1");
         item.setLabel("labelOld");
         item.addTag("Switchable");
@@ -187,7 +187,7 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void changeSwitchState() throws IOException {
+    public void changeSwitchState() {
 
         assertThat(((HueStatePlug) cs.ds.lights.get("1").state).on, is(false));
 
@@ -204,7 +204,7 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void changeGroupItemSwitchState() throws IOException {
+    public void changeGroupItemSwitchState() {
 
         assertThat(((HueStatePlug) cs.ds.groups.get("10").action).on, is(false));
 
@@ -221,7 +221,7 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void changeOnValue() throws IOException {
+    public void changeOnValue() {
 
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));
 
@@ -235,7 +235,7 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void changeOnAndBriValues() throws IOException {
+    public void changeOnAndBriValues() {
 
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(0));
@@ -250,7 +250,7 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void changeHueSatValues() throws IOException {
+    public void changeHueSatValues() {
         HueLightEntry hueDevice = cs.ds.lights.get("2");
         hueDevice.item.setState(OnOffType.ON);
         hueDevice.state.as(HueStateColorBulb.class).on = true;
@@ -271,7 +271,7 @@ public class LightsAndGroupsTests {
      * Amazon echos are setting ct only, if commanded to turn a light white.
      */
     @Test
-    public void changeCtValue() throws IOException {
+    public void changeCtValue() {
         HueLightEntry hueDevice = cs.ds.lights.get("2");
         hueDevice.item.setState(OnOffType.ON);
         hueDevice.state.as(HueStateColorBulb.class).on = true;
@@ -292,7 +292,7 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void switchOnWithXY() throws IOException {
+    public void switchOnWithXY() {
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(0));
 
@@ -313,8 +313,7 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void allLightsAndSingleLight()
-            throws InterruptedException, ExecutionException, TimeoutException, IOException {
+    public void allLightsAndSingleLight() {
         Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights").request().get();
         assertEquals(200, response.getStatus());
 
