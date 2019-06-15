@@ -19,8 +19,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>io.moquette</groupId>
-      <artifactId>moquette-broker</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>io.moquette.moquette-broker</artifactId>
       <version>0.12.1</version>
       <scope>provided</scope>
       <exclusions>
