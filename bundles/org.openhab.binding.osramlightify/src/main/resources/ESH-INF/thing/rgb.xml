@@ -13,6 +13,7 @@
 
 		<channels>
 			<channel id="color" typeId="color" />
+			<channel id="effect" typeId="effect" />
 		</channels>
 
 		<config-description>
