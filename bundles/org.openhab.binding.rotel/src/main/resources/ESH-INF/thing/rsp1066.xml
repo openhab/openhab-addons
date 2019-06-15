@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rotel"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Rotel RSP-1066 Connection Thing Type -->
+	<thing-type id="rsp1066">
+		<label>RSP-1066 Connection</label>
+		<description>Connection to the Rotel RSP-1066</description>
+
+		<channel-groups>
+			<channel-group id="mainZone" typeId="mainZoneType3" />
+			<channel-group id="zone2" typeId="zone2type2" />
+		</channel-groups>
+
+		<properties>
+			<property name="protocol">HEX</property>
+		</properties>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="false">
+				<context>serial-port</context>
+				<label>Serial Port</label>
+				<description>Serial port to use for connecting to the Rotel device</description>
+			</parameter>
+			<parameter name="host" type="text" required="false">
+				<context>network-address</context>
+				<label>Address</label>
+				<description>Host name or IP address of the machine connected to the Rotel device (serial over IP)</description>
+			</parameter>
+			<parameter name="port" type="integer" required="false">
+				<label>Port</label>
+				<description>Communication port (serial over IP)</description>
+			</parameter>
+			<parameter name="inputLabelVideo1" type="text" required="false">
+				<label>Input Label Video 1</label>
+				<description>Label setup for the source Video 1</description>
+			</parameter>
+			<parameter name="inputLabelVideo2" type="text" required="false">
+				<label>Input Label Video 2</label>
+				<description>Label setup for the source Video 2</description>
+			</parameter>
+			<parameter name="inputLabelVideo3" type="text" required="false">
+				<label>Input Label Video 3</label>
+				<description>Label setup for the source Video 3</description>
+			</parameter>
+			<parameter name="inputLabelVideo4" type="text" required="false">
+				<label>Input Label Video 4</label>
+				<description>Label setup for the source Video 4</description>
+			</parameter>
+			<parameter name="inputLabelVideo5" type="text" required="false">
+				<label>Input Label Video 5</label>
+				<description>Label setup for the source Video 5</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

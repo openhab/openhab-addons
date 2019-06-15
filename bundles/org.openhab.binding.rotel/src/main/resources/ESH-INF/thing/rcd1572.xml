@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rotel"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Rotel RCD-1572 Connection Thing Type -->
+	<thing-type id="rcd1572">
+		<label>RCD-1572 Connection</label>
+		<description>Connection to the Rotel RCD-1572</description>
+
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="playControl" typeId="system.media-control" />
+			<channel id="track" typeId="track" />
+		</channels>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="false">
+				<context>serial-port</context>
+				<label>Serial Port</label>
+				<description>Serial port to use for connecting to the Rotel device</description>
+			</parameter>
+			<parameter name="host" type="text" required="false">
+				<context>network-address</context>
+				<label>Address</label>
+				<description>Host name or IP address of the machine connected to the Rotel device (serial over IP)</description>
+			</parameter>
+			<parameter name="port" type="integer" required="false">
+				<label>Port</label>
+				<description>Communication port (serial over IP)</description>
+			</parameter>
+			<parameter name="protocol" type="text" required="false">
+				<label>Protocol Version</label>
+				<description>Choose one of the two protocol versions (depends on your device firmware)</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="ASCII_V1">ASCII V1</option>
+					<option value="ASCII_V2">ASCII V2</option>
+				</options>
+				<default>ASCII_V2</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
