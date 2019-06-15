@@ -50,7 +50,7 @@
                   </fileset>
                   <filterchain>
                     <linecontainsRegExp>
-                      <regexp pattern="(feature>)|(feature\s)|(bundle\s)"/>
+                      <regexp pattern="(feature>)|(feature\s)|(bundle>)|(bundle\s)"/>
                     </linecontainsRegExp>
                   </filterchain>
                   <footer file="src/main/resources/footer.xml" filtering="no"/>
