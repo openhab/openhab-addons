@@ -15,7 +15,7 @@ package org.openhab.binding.neohub.internal;
 import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
 
 import org.eclipse.jdt.annotation.Nullable;
-
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -84,7 +84,7 @@ public class NeoBaseHandler extends BaseThingHandler {
         String msg; 
                 
         @Nullable
-        String remoteName = getThing().getProperties().get(PROPERTY_NEO_HUB_NAME);
+        String remoteName = getThing().getProperties().get(PROPERTY_NEOHUB_NAME);
 
         if (remoteName.isEmpty()) {
             msg = String.format(
@@ -115,7 +115,7 @@ public class NeoBaseHandler extends BaseThingHandler {
         String msg;
 
         @Nullable
-        String remoteName = getThing().getProperties().get(PROPERTY_NEO_HUB_NAME);
+        String remoteName = getThing().getProperties().get(PROPERTY_NEOHUB_NAME);
 
         NeoHubInfoResponse.DeviceInfo myPollResponse = 
                 pollResponse.getDeviceInfo(remoteName);
@@ -267,8 +267,8 @@ public class NeoBaseHandler extends BaseThingHandler {
      * NOTE: descendant classes MAY override this method
      * e.g. to send additional commands for dependent channels (if any)
      */
-    protected void toNeoHubSendCommandSet(String channel, Command command) {
-        toNeoHubSendCommand(channel, command);
+    protected void toNeoHubSendCommandSet(String channelId, Command command) {
+        toNeoHubSendCommand(channelId, command);
     }
     
 
@@ -277,7 +277,10 @@ public class NeoBaseHandler extends BaseThingHandler {
      * method by which the handler informs OpenHab about channel state changes  
      */
     protected void toOpenHabSendChannelValues(
-            NeoHubInfoResponse.DeviceInfo pollResponse) {
+            NeoHubInfoResponse.DeviceInfo device) {
     }
-
+    
+    protected OnOffType invert(OnOffType value) {
+        return OnOffType.from(value == OnOffType.OFF);
+    }
 }

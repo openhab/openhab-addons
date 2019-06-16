@@ -38,21 +38,23 @@ public class NeoHubBindingConstants {
     /*
      *  Thing Type UIDs
      */
-    public static final ThingTypeUID THING_TYPE_NEOHUB  = new ThingTypeUID(BINDING_ID, DEVICE_ID_NEOHUB);
-    public static final ThingTypeUID THING_TYPE_NEOSTAT = new ThingTypeUID(BINDING_ID, DEVICE_ID_NEOSTAT);
-    public static final ThingTypeUID THING_TYPE_NEOPLUG = new ThingTypeUID(BINDING_ID, DEVICE_ID_NEOPLUG);
+    public static final ThingTypeUID THING_TYPE_NEOHUB  = 
+            new ThingTypeUID(BINDING_ID, DEVICE_ID_NEOHUB);
+    public static final ThingTypeUID THING_TYPE_NEOSTAT = 
+            new ThingTypeUID(BINDING_ID, DEVICE_ID_NEOSTAT);
+    public static final ThingTypeUID THING_TYPE_NEOPLUG = 
+            new ThingTypeUID(BINDING_ID, DEVICE_ID_NEOPLUG);
 
     /* 
      * Channel IDs
      */
-    public static final String CHANNEL_ROOM_TEMP        = "roomTemperature";
-    public static final String CHANNEL_SET_TEMP         = "setTemperature";
-    public static final String CHANNEL_FLOOR_TEMP       = "floorTemperature";
-    public static final String CHANNEL_HEATING_MODE     = "heatingMode";
-    public static final String CHANNEL_AWAY_MODE        = "awayMode";
-    public static final String CHANNEL_STANDBY_MODE     = "standbyMode";
-    public static final String CHANNEL_SWITCH_STATE     = "switchState";
-    public static final String CHANNEL_MANUAL_MODE      = "switchManualMode";
+    public static final String CHAN_ROOM_TEMP    = "roomTemperature";
+    public static final String CHAN_SET_TEMP     = "setTemperature";
+    public static final String CHAN_FLOOR_TEMP   = "floorTemperature";
+    public static final String CHAN_ABS_PRES     = "absentPresent";
+    public static final String CHAN_HEATING_MODE = "heatingMode";
+    public static final String CHAN_OFF_ON       = "offOn";
+    public static final String CHAN_MAN_AUTO     = "manualAuto";
     
     /*
      * enumerator for results of method calls
@@ -66,7 +68,7 @@ public class NeoHubBindingConstants {
      * the property IdD for the name of a thing in the NeoHub
      * note: names may differ between the NeoHub and the OpenHAB framework  
      */
-    public static final String PROPERTY_NEO_HUB_NAME = "deviceNameInHub";
+    public static final String PROPERTY_NEOHUB_NAME = "deviceNameInHub";
 
     /*
      * socket timeout in seconds for the TCP connection to the hub
@@ -77,7 +79,7 @@ public class NeoHubBindingConstants {
      * setup parameters for de-bouncing of state changes (time in seconds) 
      * so state changes that occur within this time window are ignored
      */
-    public static final long DEBOUNCE_DELAY = 10;
+    public static final long DEBOUNCE_DELAY = 15;
 
     /*
      * setup parameters for lazy polling  
@@ -87,7 +89,8 @@ public class NeoHubBindingConstants {
     /* 
      * setup parameters for fast polling bursts 
      * a burst comprises FAST_POLL_CYCLES polling calls spaced at FAST_POLL_INTERVAL
-     * for example 5 polling calls made at 4 second intervals (e.g. 5 x 4 => 20 seconds)   
+     * for example 5 polling calls made at 4 second intervals 
+     * (e.g. 5 x 4 => 20 seconds)   
      */
     public static final int FAST_POLL_CYCLES = 5;
     public static final int FAST_POLL_INTERVAL = 4;
@@ -104,9 +107,14 @@ public class NeoHubBindingConstants {
      */
     public static final String CMD_CODE_INFO    = "{\"INFO\":0}"; 
     public static final String CMD_CODE_TEMP    = "{\"SET_TEMP\":[%s, \"%s\"]}";
-    public static final String CMD_CODE_AWAY    = "{\"AWAY_%s\":\"%s\"}";
-    public static final String CMD_CODE_STANDBY = "{\"FROST_%s\":\"%s\"}";
+    public static final String CMD_CODE_AWAY    = "{\"FROST_%s\":\"%s\"}";
     public static final String CMD_CODE_TIMER   = "{\"TIMER_%s\":\"%s\"}";
     public static final String CMD_CODE_MANUAL  = "{\"MANUAL_%s\":\"%s\"}";
+    
+    /*
+     *  openHAB status strings
+     */
+    public static final String VAL_OFF      = "Off";
+    public static final String VAL_HEATING  = "Heating";
 
 }

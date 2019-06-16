@@ -19,6 +19,7 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 
 import org.eclipse.smarthome.core.thing.Thing;
@@ -37,37 +38,24 @@ public class NeoStatHandler extends NeoBaseHandler {
         super(thing);
     }
 
-    
+
     /*
      * build the command string
      */
     @Override
     protected String toNeoHubBuildCommandString(String channelId, Command command) {
-        String cmdValue;
-
         @Nullable
-        String nameInHub = getThing().getProperties().get(PROPERTY_NEO_HUB_NAME);
+        String nameInHub = getThing().getProperties().get(PROPERTY_NEOHUB_NAME);
 
-        if (command instanceof QuantityType<?>) {
-            cmdValue = ((QuantityType<?>) command).toBigDecimal().toString();
-            switch(channelId)
-            {
-                case CHANNEL_SET_TEMP: 
-                    return String.format(CMD_CODE_TEMP, cmdValue, nameInHub);
-            }
+        if (command instanceof QuantityType<?> && channelId.equals(CHAN_SET_TEMP)) {
+            return String.format(CMD_CODE_TEMP, 
+                ((QuantityType<?>) command).toBigDecimal().toString(), nameInHub);
         } else   
 
-        if (command instanceof OnOffType) {
-            cmdValue = ((OnOffType) command).toString();
-            switch(channelId)
-            {
-                case CHANNEL_AWAY_MODE:  
-                    return String.format(CMD_CODE_AWAY, cmdValue, nameInHub);
-
-                case CHANNEL_STANDBY_MODE:
-                    return String.format(CMD_CODE_STANDBY, cmdValue, nameInHub);
-            }
-        } 
+        if (command instanceof OnOffType && channelId.equals(CHAN_ABS_PRES)) {
+            return String.format(CMD_CODE_AWAY, 
+                invert((OnOffType) command).toString(), nameInHub);
+        }
         return "";
     }
 
@@ -77,26 +65,24 @@ public class NeoStatHandler extends NeoBaseHandler {
      */
     @Override
     protected void toOpenHabSendChannelValues(NeoHubInfoResponse.DeviceInfo device) {
-        toOpenHabSendValueDebounced(CHANNEL_SET_TEMP, 
-            new QuantityType<Temperature>(device.getCurrentSetTemperature(), 
+        toOpenHabSendValueDebounced(CHAN_SET_TEMP, 
+            new QuantityType<Temperature>(device.getTargetTemperature(), 
                     SIUnits.CELSIUS));
         
-        toOpenHabSendValueDebounced(CHANNEL_ROOM_TEMP, 
-            new QuantityType<Temperature>(device.getCurrentTemperature(), 
+        toOpenHabSendValueDebounced(CHAN_ROOM_TEMP, 
+            new QuantityType<Temperature>(device.getRoomTemperature(), 
                     SIUnits.CELSIUS));
         
-        toOpenHabSendValueDebounced(CHANNEL_FLOOR_TEMP, 
-            new QuantityType<Temperature>(device.getCurrentFloorTemperature(), 
+        toOpenHabSendValueDebounced(CHAN_FLOOR_TEMP, 
+            new QuantityType<Temperature>(device.getFloorTemperature(), 
                     SIUnits.CELSIUS));
         
-        toOpenHabSendValueDebounced(CHANNEL_AWAY_MODE, 
-            OnOffType.from(device.isAway()));
-        
-        toOpenHabSendValueDebounced(CHANNEL_STANDBY_MODE, 
-            OnOffType.from(device.isStandby()));
-
-        toOpenHabSendValueDebounced(CHANNEL_HEATING_MODE, 
-            OnOffType.from(device.isHeating() || device.isPreHeat()));
+        toOpenHabSendValueDebounced(CHAN_ABS_PRES,  
+            OnOffType.from(!device.isStandby())); 
+                
+        toOpenHabSendValueDebounced(CHAN_HEATING_MODE, 
+            (device.isHeating() || device.isPreHeating() ? 
+                new StringType(VAL_HEATING) : new StringType(VAL_OFF)));
     }
 
 }   

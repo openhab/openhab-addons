@@ -41,22 +41,17 @@ public class NeoPlugHandler extends NeoBaseHandler {
      */
     @Override
     protected String toNeoHubBuildCommandString(String channelId, Command command) {
-        String cmdValue;
-
         @Nullable
-        String nameInHub = getThing().getProperties().get(PROPERTY_NEO_HUB_NAME);
+        String nameInHub = getThing().getProperties().get(PROPERTY_NEOHUB_NAME);
 
-        if (command instanceof OnOffType) {
-            cmdValue = ((OnOffType) command).toString();
-            switch(channelId)
-            {
-                case CHANNEL_MANUAL_MODE: {  
-                    return String.format(CMD_CODE_MANUAL, cmdValue, nameInHub);
-                }
-                case CHANNEL_SWITCH_STATE: {   
-                    return String.format(CMD_CODE_TIMER, cmdValue, nameInHub);
-                }
-            }
+        if (command instanceof OnOffType && channelId.equals(CHAN_OFF_ON)) {
+            return String.format(CMD_CODE_TIMER, 
+                ((OnOffType) command).toString(), nameInHub);
+        } else
+
+        if (command instanceof OnOffType && channelId.equals(CHAN_MAN_AUTO)) {
+            return String.format(CMD_CODE_MANUAL,
+                invert((OnOffType) command).toString(), nameInHub);
         }
         return "";
     }
@@ -67,13 +62,13 @@ public class NeoPlugHandler extends NeoBaseHandler {
      * then send the original command to the hub 
      */
     @Override
-    protected void toNeoHubSendCommandSet(String channel, Command command) {
+    protected void toNeoHubSendCommandSet(String channelId, Command command) {
         // if this is a manual command, switch to manual mode first..  
-        if (channel.equals(CHANNEL_SWITCH_STATE) && command instanceof OnOffType) {
-            toNeoHubSendCommand(CHANNEL_MANUAL_MODE, OnOffType.from(true));
+        if (channelId.equals(CHAN_OFF_ON) && command instanceof OnOffType) {
+            toNeoHubSendCommand(CHAN_MAN_AUTO, OnOffType.from(false));
         }
         // send the actual command to the hub
-        toNeoHubSendCommand(channel, command);
+        toNeoHubSendCommand(channelId, command);
     }
 
 
@@ -81,23 +76,11 @@ public class NeoPlugHandler extends NeoBaseHandler {
      * => executes a (de-bounced) update on the respective OpenHAB channels
      */
     @Override
-    protected void toOpenHabSendChannelValues(NeoHubInfoResponse.DeviceInfo
-            pollResponse) {
-        // set the (RO) state switch value
-        toOpenHabSendValueDebounced(CHANNEL_SWITCH_STATE, 
-                OnOffType.from(pollResponse.isTimerOn()));
-
-        // the plug is in manual mode.. 
-        if (pollResponse.stateManual()) {
-            toOpenHabSendValueDebounced(CHANNEL_MANUAL_MODE, 
-                    OnOffType.ON);
-        } 
-        
-        // the plug is in auto Mode.. 
-        if (pollResponse.stateAuto()) { 
-            toOpenHabSendValueDebounced(CHANNEL_MANUAL_MODE, 
-                    OnOffType.OFF);
-        }
+    protected void toOpenHabSendChannelValues(NeoHubInfoResponse.DeviceInfo device) {
+        toOpenHabSendValueDebounced(CHAN_MAN_AUTO,  
+            OnOffType.from(!device.stateManual())); 
+                
+        toOpenHabSendValueDebounced(CHAN_OFF_ON, 
+            OnOffType.from(device.isTimerOn())); 
     }
-
 }

@@ -18,7 +18,7 @@ package org.openhab.binding.neohub.internal;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class NeoHubConfiguration {
-    
+
     public String hostName; 
     public int portNumber;
     public int pollInterval;

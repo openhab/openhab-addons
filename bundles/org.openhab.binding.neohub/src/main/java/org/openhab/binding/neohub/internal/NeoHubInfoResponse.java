@@ -46,7 +46,7 @@ class NeoHubInfoResponse {
             return (manualOff != null && manualOff);
          }
     }
-
+ 
     static class DeviceInfo {
 
         @SerializedName("device")
@@ -90,15 +90,15 @@ class NeoHubInfoResponse {
             return deviceName != null ? deviceName : "";
         }
 
-        public BigDecimal getCurrentSetTemperature() {
+        public BigDecimal getTargetTemperature() {
             return safeBigDecimal(currentSetTemperature);
         }
 
-        public BigDecimal getCurrentTemperature() {
+        public BigDecimal getRoomTemperature() {
             return safeBigDecimal(currentTemperature);
         }
 
-        public BigDecimal getCurrentFloorTemperature() {
+        public BigDecimal getFloorTemperature() {
             return safeBigDecimal(currentFloorTemperature);
         }
 
@@ -126,7 +126,7 @@ class NeoHubInfoResponse {
             return safeBoolean(heating);
         }
 
-        public Boolean isPreHeat() {
+        public Boolean isPreHeating() {
             return safeBoolean(preHeat);
         }
 

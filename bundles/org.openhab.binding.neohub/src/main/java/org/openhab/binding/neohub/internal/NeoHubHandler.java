@@ -57,7 +57,6 @@ public class NeoHubHandler extends BaseBridgeHandler {
         super(bridge);
     }
 
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // future: currently there is nothing to do for a NeoHub

@@ -26,7 +26,7 @@
 				<default>4242</default>
 			</parameter>
 
-			<parameter name="pollInterval" type="integer"  min="10" required="true" unit="sec">
+			<parameter name="pollInterval" type="integer" min="10" required="true">
 				<label>Polling Interval</label>
 				<description>Time (seconds) between polling requests to the NeoHub</description>
 				<default>60</default>
@@ -61,28 +61,24 @@
         		<description>Actual floor temperature</description>
 			</channel>
 
-			<channel id="heatingMode" typeId="state">
-		   		<label>Heating On</label>
-   				<description>The thermostat is calling for heat</description>
+			<channel id="heatingMode" typeId="heatingMode">
+		   		<label>Heating mode (Off,&#160;Heating)</label>
+   				<description>Indicates is the thermostat is calling for heat</description>
 			</channel>
 
-			<channel id="awayMode" typeId="setState">
-		   		<label>Away Mode (home/away)</label>
-   				<description>The thermostat is in AWAY mode</description>
+			<channel id="absentPresent" typeId="absentPresent">
+		   		<label>Occupancy Mode (Absent,&#160;Present)</label>
+   				<description>The occupancy mode of the thermostat (user can override)</description>
 			</channel>
 
-			<channel id="standbyMode" typeId="setState">
-		   		<label>Standby Mode (auto/standby)</label>
-   				<description>The thermostat is in STANDBY mode</description>
-			</channel>
 		</channels>
 
 		<properties>
 			<property name="vendor">Heatmiser</property>
 			<property name="modelId">NeoStat</property>
 			<property name="deviceNameInHub"></property>
-	        </properties>
-	        <representation-property>deviceNameInHub</representation-property>
+		</properties>
+	    <representation-property>deviceNameInHub</representation-property>
 
 	</thing-type>
 
@@ -96,13 +92,14 @@
 		<description>Heatmiser NeoPlug Smart Plug</description>
 
 		<channels>
-			<channel id="switchState" typeId="setState">
-		   		<label>Plug State (off/on)</label>
-   				<description>The state of the plug (off/on)</description>
+			<channel id="offOn" typeId="offOn">
+		   		<label>Switch State (Off,&#160;On)</label>
+   				<description>The state of the plug (user can override)</description>
 			</channel>
-			<channel id="switchManualMode" typeId="setState">
-		   		<label>Manual Mode (auto/manual)</label>
-   				<description>The plug can be controlled manually</description>
+
+			<channel id="manualAuto" typeId="manualAuto">
+		   		<label>Program mode (Manual,&#160;Auto)</label>
+   				<description>The program mode of the plug (user can override)</description>
 			</channel>
 		</channels>
 
@@ -110,8 +107,8 @@
 			<property name="vendor">Heatmiser</property>
 			<property name="modelId">NeoPlug</property>
 			<property name="deviceNameInHub"></property>
-	        </properties>
-        	<representation-property>deviceNameInHub</representation-property>
+	    </properties>
+       	<representation-property>deviceNameInHub</representation-property>
 
 	</thing-type>
 
@@ -125,21 +122,35 @@
 	<channel-type id="setTemperature">
    		<item-type>Number:Temperature</item-type>
    		<label>Set Temperature</label>
-		<description>Target temperature setting (Read-Write)</description>
+		<description>Target temperature setting</description>
    		<state readOnly="false" pattern="%.1f %unit%" min="5" max="30" step="1"/>
 	</channel-type>
 	
-	<channel-type id="state">
-		<item-type>Switch</item-type>
-		<label>State</label>
-		<description>State of the device (Read-Only)</description>
+	<channel-type id="heatingMode">
+		<item-type>String</item-type>
+		<label>Heating mode (Off, Heating)</label>
+ 		<description>Indicates is the thermostat is calling for heat</description>
    		<state readOnly="true"/>
 	</channel-type>
-	
-	<channel-type id="setState">
+
+	<channel-type id="absentPresent">
 		<item-type>Switch</item-type>
-		<label>Set state</label>
-		<description>State of the device (Read-Write)</description>
+		<label>Occupancy Mode (Absent,&#160;Present)</label>
+   		<description>The occupancy mode of the thermostat (user can override)</description>
+   		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="manualAuto">
+		<item-type>Switch</item-type>
+		<label>Program mode (Manual,&#160;Auto)</label>
+   		<description>The program mode of the device (user can override)</description>
+   		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="offOn">
+		<item-type>Switch</item-type>
+		<label>Switch State (Off,&#160;On)</label>
+   		<description>The state of the plug (user can override)</description>
    		<state readOnly="false"/>
 	</channel-type>
 

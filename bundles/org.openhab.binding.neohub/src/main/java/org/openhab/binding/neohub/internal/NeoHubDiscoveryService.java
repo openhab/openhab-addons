@@ -131,8 +131,8 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
         device = DiscoveryResultBuilder.create(deviceUID)
                             .withBridge(bridgeUID)
                             .withLabel(deviceOpenHabId)
-                            .withProperty(PROPERTY_NEO_HUB_NAME, deviceNeohubName)
-                            .withRepresentationProperty(PROPERTY_NEO_HUB_NAME)
+                            .withProperty(PROPERTY_NEOHUB_NAME, deviceNeohubName)
+                            .withRepresentationProperty(PROPERTY_NEOHUB_NAME)
                             .build();
 
         thingDiscovered(device);
