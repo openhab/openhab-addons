@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 @Component
 @NonNullByDefault
 public class SamsungTvTlsTrustManagerProvider implements TlsTrustManagerProvider {
-    private final static Logger logger = LoggerFactory.getLogger(WakeOnLanUtility.class);
+    private Logger logger = LoggerFactory.getLogger(WakeOnLanUtility.class);
 
     @Override
     public String getHostName() {
@@ -46,7 +46,7 @@ public class SamsungTvTlsTrustManagerProvider implements TlsTrustManagerProvider
     private final X509ExtendedTrustManager trustAllCerts = new X509ExtendedTrustManager() {
 
         private void logCertificateCN(String function, X509Certificate @Nullable [] x509Certificates) {
-            if (x509Certificates != null) {
+            if (x509Certificates != null && logger.isTraceEnabled()) {
                 for (X509Certificate certificate : x509Certificates) {
                     logger.trace("TrustManager {} CN: {}", function,
                             certificate.getSubjectX500Principal().getName(X500Principal.RFC2253));
