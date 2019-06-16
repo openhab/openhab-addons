@@ -23,13 +23,12 @@ import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler;
  *
  */
 public class BridgeConfiguration {
-
-    private BigDecimal autoReconnectPeriod;
+    private int autoReconnectPeriod;
     private BigDecimal readingPause;
     private BigDecimal readRetriesLimit;
     private BigDecimal responseTimeout;
 
-    public BigDecimal getAutoReconnectPeriod() {
+    public int getAutoReconnectPeriod() {
         return autoReconnectPeriod;
     }
 
@@ -45,4 +44,7 @@ public class BridgeConfiguration {
         return responseTimeout;
     }
 
+    public void setAutoReconnectPeriod(int period) {
+        autoReconnectPeriod = period;
+    }
 }
