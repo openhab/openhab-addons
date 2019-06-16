@@ -149,6 +149,14 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
     }
 
+    private void cancelReconnectJob() {
+        ScheduledFuture<?> currentReconnectJob = connectJob;
+        if (currentReconnectJob != null) {
+            currentReconnectJob.cancel(true);
+            connectJob = null;
+        }
+    }
+
     protected abstract KNXNetworkLink establishConnection() throws KNXException, InterruptedException;
 
     private synchronized boolean connectIfNotAutomatic() {
@@ -192,6 +200,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
                     TimeUnit.MILLISECONDS);
 
             statusUpdateCallback.updateStatus(ThingStatus.ONLINE);
+            connectJob = null;
             return true;
         } catch (KNXException | InterruptedException e) {
             logger.debug("Error connecting to the bus: {}", e.getMessage(), e);
@@ -291,6 +300,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     }
 
     public void dispose() {
+        cancelReconnectJob();
         disconnect(null);
     }
 
