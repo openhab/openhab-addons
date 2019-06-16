@@ -34,7 +34,7 @@
 				<option value="WebSocket">Websocket (2016 and later TV's)</option>
 				<option value="SecureWebSocket">Secure websocket (2016 and later TV's)</option>
 			</options>
-			<default>SecureWebSocket</default>
+			<default>None</default>
 		</parameter>
 		<parameter name="webSocketToken" type="text" readOnly="true">
 			<label>Websocket Token</label>

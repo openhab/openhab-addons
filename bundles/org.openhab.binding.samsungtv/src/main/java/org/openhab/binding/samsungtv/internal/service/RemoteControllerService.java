@@ -60,7 +60,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class RemoteControllerService implements SamsungTvService, RemoteControllerWebsocketCallback {
 
-    private Logger logger = LoggerFactory.getLogger(RemoteControllerService.class);
+    private final Logger logger = LoggerFactory.getLogger(RemoteControllerService.class);
 
     public static final String SERVICE_NAME = "RemoteControlReceiver";
 

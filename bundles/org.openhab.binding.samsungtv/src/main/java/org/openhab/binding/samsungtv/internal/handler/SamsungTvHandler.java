@@ -68,7 +68,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     private static final int WOL_PACKET_RETRY_COUNT = 10;
     private static final int WOL_SERVICE_CHECK_COUNT = 30;
 
-    private Logger logger = LoggerFactory.getLogger(SamsungTvHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SamsungTvHandler.class);
 
     private UpnpIOService upnpIOService;
     private DiscoveryServiceRegistry discoveryServiceRegistry;
