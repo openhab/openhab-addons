@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="siemensrds"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="climatixic">
+
+		<label>Climatix IC</label>
+		<description>The Siemens Climatix IC cloud server for accessing RDS Smart Thermostats</description>
+
+		<properties>
+			<property name="vendor">Siemens</property>
+			<property name="modelId">ClimatixIC</property>
+        </properties>
+
+	 	<config-description>
+			<parameter name="userEmail" type="text" required="true">
+				<label>User E-mail Address</label>
+				<description>The e-mail address that was used to register the smart thermostats</description>
+			</parameter>
+
+			<parameter name="userPassword" type="text" required="true">
+		                <context>password</context>
+				<label>User Password</label>
+				<description>The password that was used to register the smart thermostats</description>
+			</parameter>
+
+			<parameter name="pollInterval" type="integer"  min="10" required="true">
+				<label>Polling Interval</label>
+				<description>Time (seconds) between polling requests to the cloud server</description>
+				<default>60</default>
+			</parameter>
+
+		</config-description>
+
+	</bridge-type>
+
+	<thing-type id="rds">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="climatixic"/>
+		</supported-bridge-type-refs>
+
+		<label>RDS Thermostat</label>
+		<description>Siemens RDS Smart Thermostat</description>
+
+		<channels>
+			<channel id="roomTemperature" typeId="temperature">
+		   		<label>Room Temperature</label>
+		   		<description>Actual room temperature</description>
+			</channel>
+
+			<channel id="setTemperature" typeId="setTemperature">
+		   		<label>Target Temperature</label>
+   				<description>Target temperature setting for the room</description>
+			</channel>
+
+			<channel id="heatingOffCooling" typeId="heatingOffCooling">
+		   		<label>Heating / Cooling</label>
+   				<description>Heating / Cooling state </description>
+			</channel>
+
+			<channel id="roomHumidity" typeId="humidity">
+		   		<label>Room Humidity</label>
+		   		<description>Actual room humidity</description>
+			</channel>
+
+			<channel id="roomAirQuality" typeId="airQuality">
+		   		<label>Room Air Quality</label>
+		   		<description>Actual room air quality</description>
+			</channel>
+
+			<channel id="outsideTemperature" typeId="temperature">		   		
+		   		<label>Outside Temperature</label>
+		   		<description>Actual outside temperature</description>
+			</channel>
+
+			<channel id="greenLeaf" typeId="greenLeaf">
+		   		<label>Green Leaf Mode</label>
+   				<description>Energy saving level</description>
+			</channel>
+
+			<channel id="absentPresent" typeId="absentPresent">
+		   		<label>Occupancy Mode</label>
+   				<description>Occupancy mode (user can override)</description>
+			</channel>
+
+			<channel id="dhwAutoOffOn" typeId="dhwAutoOffOn">
+		   		<label>Hot Water Override (Null=No&#160;override[auto])</label>
+   				<description>Hot Water Mode and Override</description>
+			</channel>
+			
+		</channels>
+
+		<properties>
+			<property name="vendor">Siemens</property>
+			<property name="modelId">RDS</property>
+			<property name="climatixIcPlantId"></property>
+        	</properties>
+	        <representation-property>climatixIcPlantId</representation-property>
+
+	</thing-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Measured temperature value</description>
+   		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="setTemperature">
+   		<item-type>Number:Temperature</item-type>
+   		<label>Set Temperature</label>
+		<description>Target temperature setting</description>
+   		<state readOnly="false" pattern="%.1f %unit%" min="5" max="30" step="0.5"/>
+	</channel-type>
+	
+	<channel-type id="heatingOffCooling">
+		<item-type>String</item-type>
+		<label>Heating / Cooling</label>
+   		<description>Heating / Cooling state</description>
+   		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>Measured humidity value</description>
+   		<state readOnly="true" pattern="%.1f %%r.H."/>
+	</channel-type>
+
+	<channel-type id="airQuality">
+		<item-type>String</item-type>
+		<label>Air Quality</label>
+		<description>Room Air Quality</description>
+   		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="greenLeaf">
+		<item-type>String</item-type>
+		<label>Energy savings level </label>
+		<description>Energy savings level</description>
+   		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dhwAutoOffOn">
+		<item-type>String</item-type>
+		<label>Hot Water Mode</label>
+		<description>Domestic Hot Water mode (user can override)</description>
+   		<state readOnly="false">
+	   		<options>
+		   		<option value="Null">Null</option>
+		   		<option value="Off">Off</option>
+		   		<option value="On">On</option>
+	   		</options>
+   		</state>
+	</channel-type>
+
+	<channel-type id="absentPresent">
+		<item-type>String</item-type>
+		<label>Occupancy Mode (Absent..Present)</label>
+		<description>Occupancy mode (user can override)</description>
+   		<state readOnly="false">
+	   		<options>
+		   		<option value="Absent">Absent</option>
+		   		<option value="Present">Present</option>
+	   		</options>
+   		</state>
+	</channel-type>
+	
+
+
+</thing:thing-descriptions>
