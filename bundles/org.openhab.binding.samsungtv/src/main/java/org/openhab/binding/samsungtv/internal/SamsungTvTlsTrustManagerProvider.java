@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 @Component
 @NonNullByDefault
 public class SamsungTvTlsTrustManagerProvider implements TlsTrustManagerProvider {
-    private static Logger logger = LoggerFactory.getLogger(WakeOnLanUtility.class);
+    private final static Logger logger = LoggerFactory.getLogger(WakeOnLanUtility.class);
 
     @Override
     public String getHostName() {
