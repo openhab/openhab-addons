@@ -33,10 +33,10 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.activation</groupId>
-      <artifactId>activation</artifactId>
-      <version>1.1.1</version>
-      <scope>provided</scope>
+      <groupId>org.apache.servicemix.specs</groupId>
+      <artifactId>org.apache.servicemix.specs.activation-api-1.1</artifactId>
+      <version>2.9.0</version>
+     <scope>provided</scope>
     </dependency>
   </dependencies>
 
