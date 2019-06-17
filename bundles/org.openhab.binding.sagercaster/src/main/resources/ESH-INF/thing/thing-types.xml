@@ -19,12 +19,20 @@
             	<label>Wind to</label>
             </channel>           
             <channel id="windevolution" typeId="windevolution" />
-            <channel id="pressuretrend" typeId="pressuretrend" />
+            <channel id="pressuretrend" typeId="trend">
+                    <label>Pressure Trend</label>
+                    <description>Pressure Evolution trend over observation delay</description>            
+            </channel>
+            <channel id="temperaturetrend" typeId="trend" >
+                    <label>Temperature Trend</label>
+                    <description>Temperature Evolution trend over observation delay</description>            
+            </channel>
             <channel id="timestamp" typeId="timestamp" />
             <channel id="cloudiness" typeId="cloudiness" />
             <channel id="isRaining" typeId="isRaining" />
             <channel id="wind-speed-beaufort" typeId="wind-speed-beaufort" />
             <channel id="pressure" typeId="pressure" />
+            <channel id="temperature" typeId="temperature" />
             <channel id="wind-angle" typeId="wind-direction-rw"/>
         </channels>
 		
@@ -58,23 +66,40 @@
                 <option value="E">Unsettled and warmer</option>
                 <option value="F">Unsettled and cooler</option>
                 <option value="G">Increasing cloudiness or overcast followed by Precipitation or showers/Flurries</option>
+                <option value="G1">Increasing cloudiness or overcast followed by Precipitation or showers</option>
+                <option value="G2">Increasing cloudiness or overcast followed by Precipitation or Flurries</option>
                 <option value="H">Increasing cloudiness or overcast followed by Precipitation or showers and warmer</option>
                 <option value="J">Showers</option>
                 <option value="K">Showers/Flurries and warmer</option>
+                <option value="K1">Showers and warmer</option>
+                <option value="K2">Flurries and warmer</option>
                 <option value="L">Showers/Flurries and cooler</option>
+                <option value="L1">Showers and cooler</option>
+                <option value="L2">Flurries and cooler</option>
                 <option value="M">Precipitation</option>
                 <option value="N">Precipitation and warmer</option>
                 <option value="P">Precipitation and turning cooler; then improvement likely in 24 hours</option>
                 <option value="R">Precipitation or showers/Flurries followed by improvement (within 12 hours)</option>
+                <option value="R1">Precipitation or showers followed by improvement (within 12 hours)</option>
+                <option value="R2">Precipitation or flurries followed by improvement (within 12 hours)</option>
                 <option value="S">Precipitation or showers/Flurries followed by improvement (within 12 hours) and becoming cooler</option>
+                <option value="S1">Precipitation or showers followed by improvement (within 12 hours) and becoming cooler</option>
+                <option value="S2">Precipitation or flurries followed by improvement (within 12 hours) and becoming cooler</option>
                 <option value="T">Precipitation or showers/Flurries followed by improvement early in period (within 6 hours)</option>
+                <option value="T1">Precipitation or showers followed by improvement early in period (within 6 hours)</option>
+                <option value="T2">Precipitation or flurries followed by improvement early in period (within 6 hours)</option>
                 <option value="U">Precipitation or showers/Flurries by improvement early in period (within 6 hours) and becoming cooler</option>
+                <option value="U1">Precipitation or showers by improvement early in period (within 6 hours) and becoming cooler</option>
+                <option value="U2">Precipitation or flurries by improvement early in period (within 6 hours) and becoming cooler</option>
                 <option value="W">Precipitation or showers/Flurries followed by fair early in period (within 6 hours) and becoming cooler</option>
+                <option value="W1">Precipitation or showers followed by fair early in period (within 6 hours) and becoming cooler</option>
+                <option value="W2">Precipitation or flurries followed by fair early in period (within 6 hours) and becoming cooler</option>
                 <option value="X">Unsettled followed by fair</option>
                 <option value="Y">Unsettled followed by fair early in period (within 6 hours) and becoming cooler</option>
             </options>
         </state>
     </channel-type>
+    
     <channel-type id="velocity">
         <item-type>String</item-type>
         <label>Wind Velocity</label>
@@ -122,10 +147,8 @@
         </state>
     </channel-type>
         
-    <channel-type id="pressuretrend" advanced="true">
+    <channel-type id="trend" advanced="true">
         <item-type>String</item-type>
-        <label>Pressure Trend</label>
-        <description>Pressure Evolution Trend over observation delay</description>
         <state readOnly="true" pattern="%s">
             <options>
                 <option value="1">Rising Rapidly</option>
@@ -173,6 +196,14 @@
         <description>Sea Level Pressure</description>
         <category>Pressure</category>
         <state pattern="%.3f %unit%" />
+    </channel-type>
+    
+    <channel-type id="temperature">
+        <item-type>Number:Temperature</item-type>
+        <label>Temperature</label>
+        <description>Current temperature</description>
+        <category>Temperature</category>
+        <state readOnly="true" pattern="%.1f %unit%" />
     </channel-type>
 	
 

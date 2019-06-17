@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Pressure;
+import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -83,13 +84,10 @@ public class SagerCasterHandler extends BaseThingHandler {
         public @Nullable T getAgedValue() {
             return agedValue;
         }
-
-        public @Nullable Long getOldestTimeStamp() {
-            return values.firstKey();
-        }
     }
 
     private final ExpiringMap<QuantityType<Pressure>> pressureCache = new ExpiringMap<>();
+    private final ExpiringMap<QuantityType<Temperature>> temperatureCache = new ExpiringMap<>();
     private final ExpiringMap<QuantityType<Angle>> bearingCache = new ExpiringMap<>();
 
     public SagerCasterHandler(Thing thing, WindDirectionStateDescriptionProvider stateDescriptionProvider) {
@@ -103,8 +101,10 @@ public class SagerCasterHandler extends BaseThingHandler {
         int observationPeriod = ((BigDecimal) getConfig().get(CONFIG_PERIOD)).intValue();
         String latitude = location.split(",")[0];
         sagerWeatherCaster.setLatitude(Double.parseDouble(latitude));
-        pressureCache.setObservationPeriod(TimeUnit.SECONDS.toMillis(observationPeriod));
-        bearingCache.setObservationPeriod(TimeUnit.SECONDS.toMillis(observationPeriod));
+        long period = TimeUnit.SECONDS.toMillis(observationPeriod);
+        pressureCache.setObservationPeriod(period);
+        bearingCache.setObservationPeriod(period);
+        temperatureCache.setObservationPeriod(period);
         defineWindDirectionStateDescriptions();
         updateStatus(ThingStatus.ONLINE);
     }
@@ -174,6 +174,25 @@ public class SagerCasterHandler extends BaseThingHandler {
                                             new StringType(String.valueOf(sagerWeatherCaster.getPressureEvolution())));
                                     postNewForecast();
                                 }).start();
+                            } else {
+                                updateState(CHANNEL_FORECAST, new StringType(
+                                        "Not enough historic data to study pressure evolution, wait a bit ..."));
+                            }
+                        }
+                    }
+                    break;
+                case CHANNEL_TEMPERATURE:
+                    logger.debug("Temperature updated");
+                    if (command instanceof QuantityType) {
+                        @SuppressWarnings("unchecked")
+                        QuantityType<Temperature> newTemperature = ((QuantityType<Temperature>) command)
+                                .toUnit(SIUnits.CELSIUS);
+                        if (newTemperature != null) {
+                            temperatureCache.put(newTemperature);
+                            QuantityType<Temperature> agedTemperature = temperatureCache.getAgedValue();
+                            if (agedTemperature != null) {
+                                // TODO
+                                // https://www.sciencedirect.com/topics/engineering/outdoor-air-temperature
                             } else {
                                 updateState(CHANNEL_FORECAST, new StringType(
                                         "Not enough historic data to study pressure evolution, wait a bit ..."));
