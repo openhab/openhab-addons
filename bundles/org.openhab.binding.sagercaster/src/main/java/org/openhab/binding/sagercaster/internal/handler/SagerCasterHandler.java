@@ -56,6 +56,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SagerCasterHandler extends BaseThingHandler {
+    private static final StringType FORECAST_PENDING = new StringType(
+            "Not enough historic data to study pressure evolution, wait a bit ...");
     private final Logger logger = LoggerFactory.getLogger(SagerCasterHandler.class);
     private final static SagerWeatherCaster sagerWeatherCaster = new SagerWeatherCaster();
     private final WindDirectionStateDescriptionProvider stateDescriptionProvider;
@@ -175,8 +177,7 @@ public class SagerCasterHandler extends BaseThingHandler {
                                     postNewForecast();
                                 }).start();
                             } else {
-                                updateState(CHANNEL_FORECAST, new StringType(
-                                        "Not enough historic data to study pressure evolution, wait a bit ..."));
+                                updateState(CHANNEL_FORECAST, FORECAST_PENDING);
                             }
                         }
                     }
@@ -194,8 +195,7 @@ public class SagerCasterHandler extends BaseThingHandler {
                                 // TODO
                                 // https://www.sciencedirect.com/topics/engineering/outdoor-air-temperature
                             } else {
-                                updateState(CHANNEL_FORECAST, new StringType(
-                                        "Not enough historic data to study pressure evolution, wait a bit ..."));
+                                updateState(CHANNEL_FORECAST, FORECAST_PENDING);
                             }
                         }
                     }
@@ -215,8 +215,7 @@ public class SagerCasterHandler extends BaseThingHandler {
                                 postNewForecast();
                             }).start();
                         } else {
-                            updateState(CHANNEL_WINDFROM, new StringType(
-                                    "Not enough historic data to study pressure evolution, wait a bit ..."));
+                            updateState(CHANNEL_WINDFROM, FORECAST_PENDING);
                         }
                     }
                     break;

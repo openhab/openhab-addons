@@ -149,6 +149,7 @@
         
     <channel-type id="trend" advanced="true">
         <item-type>String</item-type>
+        <label>Tendance</label>
         <state readOnly="true" pattern="%s">
             <options>
                 <option value="1">Rising Rapidly</option>
