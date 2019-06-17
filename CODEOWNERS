@@ -136,6 +136,7 @@
 /bundles/org.openhab.binding.seneye/ @nikotanghe
 /bundles/org.openhab.binding.sensebox/ @hakan42
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
+/bundles/org.openhab.binding.siemensrds/ @andrewfg
 /bundles/org.openhab.binding.silvercrestwifisocket/ @jmvaz
 /bundles/org.openhab.binding.sleepiq/ @syphr42
 /bundles/org.openhab.binding.smaenergymeter/ @monnimeter
