@@ -18,7 +18,7 @@ package org.openhab.binding.siemensrds.internal;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class RdsConfiguration {
-    
+ 
     public String userEmail; 
     public String userPassword;
     public int pollInterval;

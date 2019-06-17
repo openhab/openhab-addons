@@ -36,7 +36,7 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 class RdsPlants {
-
+ 
     protected static final Logger LOGGER = 
             LoggerFactory.getLogger(RdsPlants.class);
 

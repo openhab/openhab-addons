@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class RdsBindingConstants {
-
+ 
     /*
      * binding id 
      */

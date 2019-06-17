@@ -48,7 +48,7 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 class RdsDataPoints {
-    
+ 
     protected static final Logger LOGGER = 
             LoggerFactory.getLogger(RdsDataPoints.class);
 

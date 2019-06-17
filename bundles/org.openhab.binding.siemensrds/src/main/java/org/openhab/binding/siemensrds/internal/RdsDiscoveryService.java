@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class RdsDiscoveryService extends AbstractDiscoveryService {
-
+ 
     private static final Logger LOGGER = 
             LoggerFactory.getLogger(RdsDiscoveryService.class);
 

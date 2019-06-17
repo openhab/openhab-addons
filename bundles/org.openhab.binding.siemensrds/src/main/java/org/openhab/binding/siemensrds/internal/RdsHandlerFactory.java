@@ -42,7 +42,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.siemensrds", 
     service = ThingHandlerFactory.class)
 public class RdsHandlerFactory extends BaseThingHandlerFactory {
-
+ 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_CLOUD, 
                                                          THING_TYPE_RDS)));

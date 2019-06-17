@@ -39,7 +39,7 @@ import com.google.gson.annotations.SerializedName;
  * 
  */
 class RdsAccessToken {
-
+ 
     protected static final Logger LOGGER = 
             LoggerFactory.getLogger(RdsAccessToken.class);
 
@@ -49,7 +49,7 @@ class RdsAccessToken {
     private String expires;
         
     private Date expDate = null;
-    
+
     /*
      * private method:
      * execute the HTTP POST on the server
