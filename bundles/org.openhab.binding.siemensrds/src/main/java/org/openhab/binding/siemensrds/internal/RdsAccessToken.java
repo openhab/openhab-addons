@@ -54,7 +54,7 @@ class RdsAccessToken {
      * private method:
      * execute the HTTP POST on the server
      */
-    private static String httpGetTokenJson(String user, String password) { 
+    private static String httpGetTokenJson(String apiKey, String user, String password) { 
         String result = "";
 
         try {
@@ -74,8 +74,7 @@ class RdsAccessToken {
             https.setRequestProperty(HDR_CONT_TYPE,
                                      VAL_CONT_PLAIN);
             
-            https.setRequestProperty(HDR_SUB_KEY, 
-                                     VAL_SUB_KEY);
+            https.setRequestProperty(HDR_SUB_KEY, apiKey);
                     
             String requestStr = 
                     String.format(TOKEN_REQ, user, password);  
@@ -114,9 +113,9 @@ class RdsAccessToken {
      * execute a POST on the cloud server, parse the JSON, 
      * and create a class that encapsulates the data
      */
-    public static RdsAccessToken create(String user, String password) {
+    public static RdsAccessToken create(String apiKey, String user, String password) {
         RdsAccessToken result = null;
-        String json = httpGetTokenJson(user, password);
+        String json = httpGetTokenJson(apiKey, user, password);
 
         try {
             if (!json.equals("")) {

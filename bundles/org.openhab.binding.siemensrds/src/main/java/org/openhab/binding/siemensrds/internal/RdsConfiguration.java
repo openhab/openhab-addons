@@ -22,5 +22,6 @@ public class RdsConfiguration {
     public String userEmail; 
     public String userPassword;
     public int pollInterval;
+    public String apiKey;
 
 }

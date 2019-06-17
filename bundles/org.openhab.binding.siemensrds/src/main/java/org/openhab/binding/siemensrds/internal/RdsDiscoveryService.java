@@ -94,7 +94,7 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
 
     private void discoverPlants() {
         if (cloud != null) {
-            RdsPlants plants = RdsPlants.create(cloud.getToken());
+            RdsPlants plants = RdsPlants.create(cloud.getApiKey(), cloud.getToken());
             for (RdsPlants.PlantInfo plant : plants.getPlants()) { 
                 publishPlant(plant);
             }
@@ -107,7 +107,7 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
     
             if (plantId != null && !plantId.isEmpty()) { 
                 RdsDataPoints points = 
-                    RdsDataPoints.create(cloud.getToken(), plantId);
+                    RdsDataPoints.create(cloud.getApiKey(), cloud.getToken(), plantId);
     
                 if (points != null) { 
                     State desc = points.getRaw(OBJ_DESCRIPTION);

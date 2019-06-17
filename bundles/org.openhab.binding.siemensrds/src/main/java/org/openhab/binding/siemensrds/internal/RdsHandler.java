@@ -231,7 +231,7 @@ public class RdsHandler extends BaseThingHandler {
             return;
         }
 
-        points = RdsDataPoints.create(cloud.getToken(), plantId);
+        points = RdsDataPoints.create(cloud.getApiKey(), cloud.getToken(), plantId);
 
         if (points == null) {
             if (getThing().getStatus() == ThingStatus.ONLINE) {   
@@ -290,14 +290,14 @@ public class RdsHandler extends BaseThingHandler {
     private synchronized void doHandleCommand(String channelId, Command command) {
         RdsCloudHandler cloud = getCloudHandler();
         if (cloud != null && points == null) {
-            points = RdsDataPoints.create(cloud.getToken(), plantId);
+            points = RdsDataPoints.create(cloud.getApiKey(), cloud.getToken(), plantId);
         }
         
         if (points != null && cloud != null) {
             for (int i = 0; i < CHAN_MAP.length; i++) {
                 if (channelId.equals(CHAN_MAP[i].channelId)) {
                     // NOTE: command.format("%s") *should* work on any type :) 
-                    points.setValue(cloud.getToken(),
+                    points.setValue(cloud.getApiKey(), cloud.getToken(),
                             CHAN_MAP[i].objectName, command.format("%s"));
                     debouncer.initialize(channelId);
                     break;

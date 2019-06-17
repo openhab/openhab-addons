@@ -120,7 +120,7 @@ public class RdsCloudHandler extends BaseBridgeHandler {
         
         if (accessToken == null || accessToken.isExpired()) {
             accessToken = 
-                RdsAccessToken.create(config.userEmail, config.userPassword);
+                RdsAccessToken.create(config.apiKey, config.userEmail, config.userPassword);
         }
 
         if (accessToken != null ) { 
@@ -147,5 +147,9 @@ public class RdsCloudHandler extends BaseBridgeHandler {
     public synchronized String getToken() {
         refreshToken();
         return (accessToken != null ? accessToken.getToken() : "");
+    }
+
+    public String getApiKey() {
+        return (config != null ? config.apiKey : "");
     }
 }
