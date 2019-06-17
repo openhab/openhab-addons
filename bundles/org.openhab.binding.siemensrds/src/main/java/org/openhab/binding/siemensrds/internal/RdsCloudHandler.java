@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * 
 */
 public class RdsCloudHandler extends BaseBridgeHandler {
-
+ 
     private static final Logger LOGGER = 
             LoggerFactory.getLogger(RdsCloudHandler.class);
 

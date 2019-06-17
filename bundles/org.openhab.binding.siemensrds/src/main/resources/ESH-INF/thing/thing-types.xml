@@ -36,7 +36,7 @@
 				<label>Climatix IC API Key</label>
 				<description>The key needed to access the Siemens Climatix IC cloud server</description>
 			</parameter>
-
+ 
 		</config-description>
 
 	</bridge-type>

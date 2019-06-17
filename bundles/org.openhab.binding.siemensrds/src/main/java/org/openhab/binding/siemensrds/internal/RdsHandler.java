@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class RdsHandler extends BaseThingHandler {
-
+ 
     protected static final Logger LOGGER = 
             LoggerFactory.getLogger(RdsHandler.class);
 

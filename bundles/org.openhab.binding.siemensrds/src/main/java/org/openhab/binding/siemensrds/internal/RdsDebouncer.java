@@ -25,7 +25,7 @@ import java.util.Map;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class RdsDebouncer {
-    
+ 
     private final Map<String, DebounceDelay> channels = 
             new HashMap<String, DebounceDelay>();
     
