@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.astro.internal.calc;
 
 import static org.junit.Assert.assertEquals;
@@ -14,15 +26,31 @@ import org.junit.Test;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunPhaseName;
 
+/***
+ * Specific unit tests to check if {@link SunCalc} generates correct data for
+ * Amsterdam city on 27 February 2019. In particular the following cases are
+ * covered:
+ * <ul>
+ * <li>checks if generated data are the same (with some accuracy) as produced by
+ * haevens-above.com</li>
+ * <li>checks if the generated {@link Sun#getAllRanges()} are consistent with
+ * each other</li>
+ * </ul>
+ * 
+ * @author Witold Markowski
+ * @see <a href="https://github.com/openhab/openhab2-addons/issues/5006">[astro]
+ *      Sun Phase returns UNDEF</a>
+ * @see <a href="https://www.heavens-above.com/sun.aspx">Heavens Above Sun</a>
+ */
 public class SunCalcTest {
 
-    private SunCalc sunCalc;
     private final static Calendar FEB_27_2019 = new GregorianCalendar(2019, Calendar.FEBRUARY, 27);
-
     private final static double AMSTERDAM_LATITUDE = 52.367607;
     private final static double AMSTERDAM_LONGITUDE = 4.8978293;
-    private final static Double AMSTERDAM_ALTITUDE = new Double(0.0);
+    private final static double AMSTERDAM_ALTITUDE = 0.0;
     private final static int ACCURACY_IN_MILLIS = 3 * 60 * 1000;
+
+    private SunCalc sunCalc;
 
     @Before
     public void init() {
