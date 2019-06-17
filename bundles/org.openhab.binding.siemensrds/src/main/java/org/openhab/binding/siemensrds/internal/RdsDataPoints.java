@@ -61,7 +61,7 @@ class RdsDataPoints {
      * private method:
      * execute an HTTP GET command on the remote cloud server
      */
-    private static String httpGetPointListJson(String token, String plantId) { 
+    private static String httpGetPointListJson(String apiKey, String token, String plantId) { 
         String result = "";
         
         try {
@@ -78,8 +78,7 @@ class RdsDataPoints {
             https.setRequestProperty(HDR_ACCEPT, 
                                      VAL_ACCEPT);
             
-            https.setRequestProperty(HDR_SUB_KEY, 
-                                     VAL_SUB_KEY);
+            https.setRequestProperty(HDR_SUB_KEY, apiKey);
     
             https.setRequestProperty(HDR_AUTHORIZE, 
                        String.format(VAL_AUTHORIZE, token));
@@ -110,10 +109,10 @@ class RdsDataPoints {
      * execute a GET on the cloud server, parse the JSON, 
      * and create a real class that encapsulates the retrieved data
      */
-    public static RdsDataPoints create(String token, String plantId) {
+    public static RdsDataPoints create(String apiKey, String token, String plantId) {
         RdsDataPoints result = null;
 
-        String json = httpGetPointListJson(token, plantId);
+        String json = httpGetPointListJson(apiKey, token, plantId);
 
         try {
             if (!json.equals("")) {
@@ -135,7 +134,7 @@ class RdsDataPoints {
      * private method:
      * execute an HTTP PUT on the server to set a data point value
      */
-    private void httpSetPointValueJson(String token, String pointId, String json) {  
+    private void httpSetPointValueJson(String apiKey, String token, String pointId, String json) {  
         try {
             URL url = new URL(String.format(URL_SETVAL, pointId));
                     
@@ -155,9 +154,8 @@ class RdsDataPoints {
             https.setRequestProperty(HDR_AUTHORIZE, 
                        String.format(VAL_AUTHORIZE, token));
     
-            https.setRequestProperty(HDR_SUB_KEY, 
-                                     VAL_SUB_KEY);
-                    
+            https.setRequestProperty(HDR_SUB_KEY, apiKey); 
+
             https.setDoOutput(true);
             DataOutputStream wr = new DataOutputStream(https.getOutputStream());
             wr.writeBytes(json);
@@ -321,7 +319,7 @@ class RdsDataPoints {
      * public method:
      * set a new data point value on the server
      */
-    public void setValue(String token, String objectName, String value) {
+    public void setValue(String apiKey, String token, String objectName, String value) {
         String pointId = getPointId(objectName);
         BasePoint point = getPoint(objectName);
 
@@ -331,7 +329,7 @@ class RdsDataPoints {
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace("setValue: {} => {}", objectName, json);
             }
-            httpSetPointValueJson(token, pointId, json);
+            httpSetPointValueJson(apiKey, token, pointId, json);
         }
     }
 

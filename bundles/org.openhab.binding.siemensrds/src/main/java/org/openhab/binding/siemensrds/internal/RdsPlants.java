@@ -62,7 +62,7 @@ class RdsPlants {
     /* 
      * execute the HTTP GET on the server
      */
-    private static String httpGetPlantListJson(String token) { 
+    private static String httpGetPlantListJson(String apiKey, String token) { 
         String result = "";
 
         try {
@@ -79,8 +79,7 @@ class RdsPlants {
             https.setRequestProperty(HDR_ACCEPT, 
                                      VAL_ACCEPT);
             
-            https.setRequestProperty(HDR_SUB_KEY, 
-                                     VAL_SUB_KEY);
+            https.setRequestProperty(HDR_SUB_KEY, apiKey);
     
             https.setRequestProperty(HDR_AUTHORIZE, 
                    String.format(VAL_AUTHORIZE, token));
@@ -114,11 +113,11 @@ class RdsPlants {
      * execute a GET on the cloud server, parse JSON, 
      * and create a class that encapsulates the data
      */
-    public static RdsPlants create(String token) {
+    public static RdsPlants create(String apiKey, String token) {
         RdsPlants result = null;
 
         try {
-            String json = httpGetPlantListJson(token);
+            String json = httpGetPlantListJson(apiKey, token);
             if (!json.equals("")) {
                 Gson gson = new Gson();
                 result = gson.fromJson(json, RdsPlants.class);

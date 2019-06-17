@@ -21,7 +21,7 @@
 			</parameter>
 
 			<parameter name="userPassword" type="text" required="true">
-		                <context>password</context>
+		        <context>password</context>
 				<label>User Password</label>
 				<description>The password that was used to register the smart thermostats</description>
 			</parameter>
@@ -30,6 +30,11 @@
 				<label>Polling Interval</label>
 				<description>Time (seconds) between polling requests to the cloud server</description>
 				<default>60</default>
+			</parameter>
+
+			<parameter name="apiKey" type="text" required="true">
+				<label>Climatix IC API Key</label>
+				<description>The key needed to access the Siemens Climatix IC cloud server</description>
 			</parameter>
 
 		</config-description>
