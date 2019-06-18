@@ -61,7 +61,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
     private static final int HOMBOT_PORT = 6260;
 
     /**
-     * HTTP read timeout (in ms) - allows us to shutdown the listening every TIMEOUT
+     * HTTP read timeout (in milliseconds) - allows us to shutdown the listening every TIMEOUT
      */
     private static final int TIMEOUT = 500;
 
@@ -164,11 +164,10 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
                 if (scanning && baseAdr != null) {
                     String ipAdd = getNextIPAddress(baseAdr);
                     String url = "http://" + ipAdd + ":" + HOMBOT_PORT + "/status.txt";
-                    String message = null;
 
                     try {
-                        message = HttpUtil.executeUrl("GET", url, TIMEOUT);
-                        if (message != null && message.length() > 0) {
+                        String message = HttpUtil.executeUrl("GET", url, TIMEOUT);
+                        if (message != null && !message.isEmpty()) {
                             messageReceive(message, ipAdd);
                         }
                     } catch (IOException e) {
