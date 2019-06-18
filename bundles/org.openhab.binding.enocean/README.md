@@ -79,6 +79,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 | lightSensor                     | A5-06       | 0x01          | illumination                 | Eltako TF-AHDSB                | Discovery |
 | roomOperatingPanel              | A5-10       | 0x01-23       | temperature, setPoint, fanSpeedStage,<br/>occupancy           | Thermokon SR04 | Discovery |
 | automatedMeterSensor            | A5-12       | 0x00-03       | counter, currentNumber, instantpower,<br/>totalusage, amrLitre, amrCubicMetre | FWZ12 | Discovery |
+| environmentalSensor             | A5-13       | 0x01-02       | temperature, windspeed, illumination,<br/>rainStatus | FWS61 | Discovery |
 | centralCommand                  | A5-38       | 0x08          | dimmer, generalSwitch        | Eltako FUD14, FSR14            | Teach-in |
 | rollershutter                   | A5-3F/D2-05/A5-38 | 0x7F/00/08 | rollershutter             | Eltako FSB14, NodOn SIN-2-RS-01| Teach-in/Discovery |
 | measurementSwitch               | D2-01       | 0x00-0F,11,12 | generalSwitch(/A/B), instantpower,<br/>totalusage, repeaterMode | NodOn In Wall Switch | Discovery |
@@ -168,6 +169,8 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | enoceanId         | | |
 | automatedMeterSensor            | receivingEEPId    |                             | A5_12_00-03 |
 |                                 | enoceanId         | | |
+| environmentalSensor             | receivingEEPId    |                             | A5_13_01 |
+|                                 | enoceanId         | | |
 | centralCommand                  | senderIdOffset    | SenderId used for sending msg.<br/>If omitted, nextSenderId of bridge is used | 1-127 |
 |                                 | enoceanId         | | |
 |                                 | sendingEEPId      | EEP used for sending msg    | A5_38_08_01, A5_38_08_02 |
@@ -214,6 +217,11 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | temperature         | Number:Temperature | Temperature in degree Celsius |
 | humidity            | Number             | Relative humidity level in percentages |
 | illumination        | Number:Illuminance | Illumination in lux |
+| illuminationWest    | Number:Illuminance | Illumination in lux |
+| illuminationSouthNorth| Number:Illuminance | Illumination in lux |
+| illuminationEast    | Number:Illuminance | Illumination in lux |
+| rainStatus          | Switch             | Rain indicator |
+| windspeed           | Number:Speed       | windspeed in m/s |
 | occupancy           | Switch             | Occupancy button pressed (ON) or released (OFF) |
 | motionDetection     | Switch             | On=Motion detected, Off=not |
 | setPoint            | Number             | linear set point |
