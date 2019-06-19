@@ -34,6 +34,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.jupnp.UpnpService;
+import org.jupnp.mock.MockUpnpService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openhab.core.automation.RuleRegistry;
@@ -47,7 +48,7 @@ import org.osgi.service.event.EventAdmin;
  */
 public class HueEmulationServiceOSGiTest extends JavaOSGiTest {
     private HueEmulationService hueService;
-    VolatileStorageService volatileStorageService = new VolatileStorageService();
+    private VolatileStorageService volatileStorageService = new VolatileStorageService();
 
     private @Nullable RuleRegistry ruleRegistry;
     private @Nullable ItemRegistry itemRegistry;
@@ -91,10 +92,10 @@ public class HueEmulationServiceOSGiTest extends JavaOSGiTest {
     }
 
     @Test(timeout = 5000)
-    public void UpnpServiceTest() throws InterruptedException, ExecutionException, TimeoutException, IOException {
+    public void UpnpServiceTest() throws IOException {
         waitFor(() -> !hueService.cs.ds.config.ipaddress.isEmpty(), 5000, 100);
         host = "http://" + hueService.cs.ds.config.ipaddress + ":"
-                + String.valueOf(hueService.cs.config.discoveryHttpPort);
+                + hueService.cs.config.discoveryHttpPort;
 
         HttpURLConnection c = (HttpURLConnection) new URL(host + "/description.xml").openConnection();
         assertThat(c.getResponseCode(), is(200));
@@ -114,13 +115,11 @@ public class HueEmulationServiceOSGiTest extends JavaOSGiTest {
             _is = urlConnection.getErrorStream();
         }
         try (InputStream in = new BufferedInputStream(_is)) {
-            if (in != null) {
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-                String line = "";
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+            String line;
 
-                while ((line = bufferedReader.readLine()) != null) {
-                    result += line;
-                }
+            while ((line = bufferedReader.readLine()) != null) {
+                result += line;
             }
         }
         return result;
