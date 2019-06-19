@@ -62,6 +62,7 @@ Use the following options for a **network:speedtest**:
 -   **uploadSize:** Size of the file to be uploaded in bytes. Default is 1000000.
 -   **url:** Url of the speed test server.
 -   **fileName:** Name of the file to download from test server
+-   **initialDelay:** Delay before starting the first speed test (can help avoid flooding your server at startup)
 
 ## Presence detection - Configure target device
 
