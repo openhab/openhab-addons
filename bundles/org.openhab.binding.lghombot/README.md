@@ -6,7 +6,7 @@ The binding uses the HTTP service on port 6260 right now.
 
 ## Supported Things
 
-### Hacked LG HomBot series 62XX are supported.
+Hacked LG HomBot series 62XX are supported.
 
 The service that the binding connects to is actually lg.srv [found here](https://sourceforge.net/projects/lgsrv/) running on a HomBot.
 

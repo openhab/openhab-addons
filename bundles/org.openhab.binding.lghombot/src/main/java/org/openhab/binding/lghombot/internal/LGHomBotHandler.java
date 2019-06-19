@@ -215,7 +215,7 @@ public class LGHomBotHandler extends BaseThingHandler {
         if (localTimer != null) {
             localTimer.cancel(false);
         }
-        refreshTimer = scheduler.scheduleWithFixedDelay(() -> updateAllChannels(), initialWaitTime,
+        refreshTimer = scheduler.scheduleWithFixedDelay(this::updateAllChannels, initialWaitTime,
                 config.getPollingPeriod(), TimeUnit.SECONDS);
     }
 

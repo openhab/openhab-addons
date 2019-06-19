@@ -222,7 +222,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
      * First parse the first string to see that it's a HomBot, then parse nickname, server version & firmware version.
      * We then create our thing from it.
      *
-     * @param message possibly null, possibly empty message
+     * @param message a response from a lgsrv to be parsed
      * @param ipAddress current probed ip address
      */
     private void messageReceive(String message, String ipAddress) {
@@ -283,7 +283,7 @@ public class LGHomBotDiscovery extends AbstractDiscoveryService {
             try {
                 localExecutorService.awaitTermination(TIMEOUT * SCAN_THREADS, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
-                logger.debug("HomBot scan interrupted.", e);
+                logger.debug("Stop scan interrupted.", e);
             }
             localExecutorService.shutdown();
             executorService = null;
