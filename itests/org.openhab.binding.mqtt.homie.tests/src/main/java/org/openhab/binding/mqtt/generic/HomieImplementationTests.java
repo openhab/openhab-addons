@@ -29,8 +29,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -67,7 +65,10 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Initial contribution
  */
 public class HomieImplementationTests extends JavaOSGiTest {
-    final Logger logger = LoggerFactory.getLogger(HomieImplementationTests.class);
+    private static final String BASE_TOPIC = "homie";
+    private static final String DEVICE_ID = ThingChannelConstants.testHomieThing.getId();
+    private static final String DEVICE_TOPIC = BASE_TOPIC + "/" + DEVICE_ID;
+
     private MqttService mqttService;
     private MqttBrokerConnection embeddedConnection;
     private MqttBrokerConnection connection;
@@ -81,26 +82,18 @@ public class HomieImplementationTests extends JavaOSGiTest {
     @Mock
     HomieThingHandler handler;
 
-    ScheduledExecutorService scheduler;
+    private ScheduledExecutorService scheduler;
 
     /**
      * Create an observer that fails the test as soon as the broker client connection changes its connection state
      * to something else then CONNECTED.
      */
-    MqttConnectionObserver failIfChange = new MqttConnectionObserver() {
-        @Override
-        public void connectionStateChanged(@NonNull MqttConnectionState state, @Nullable Throwable error) {
-            assertThat(state, is(MqttConnectionState.CONNECTED));
-        }
-    };
+    private MqttConnectionObserver failIfChange = (state, error) -> assertThat(state, is(MqttConnectionState.CONNECTED));
 
-    private final String baseTopic = "homie";
-    private final String deviceID = ThingChannelConstants.testHomieThing.getId();
-    private final String deviceTopic = baseTopic + "/" + deviceID;
-    String propertyTestTopic;
+    private String propertyTestTopic;
 
     @Before
-    public void setUp() throws InterruptedException, ConfigurationException, ExecutionException, TimeoutException {
+    public void setUp() throws InterruptedException, ExecutionException, TimeoutException {
         registerVolatileStorageService();
         initMocks(this);
         mqttService = getService(MqttService.class);
@@ -120,13 +113,13 @@ public class HomieImplementationTests extends JavaOSGiTest {
         embeddedConnection.setQos(1);
 
         List<CompletableFuture<Boolean>> futures = new ArrayList<>();
-        futures.add(embeddedConnection.publish(deviceTopic + "/$homie", "3.0".getBytes()));
-        futures.add(embeddedConnection.publish(deviceTopic + "/$name", "Name".getBytes()));
-        futures.add(embeddedConnection.publish(deviceTopic + "/$state", "ready".getBytes()));
-        futures.add(embeddedConnection.publish(deviceTopic + "/$nodes", "testnode".getBytes()));
+        futures.add(embeddedConnection.publish(DEVICE_TOPIC + "/$homie", "3.0".getBytes()));
+        futures.add(embeddedConnection.publish(DEVICE_TOPIC + "/$name", "Name".getBytes()));
+        futures.add(embeddedConnection.publish(DEVICE_TOPIC + "/$state", "ready".getBytes()));
+        futures.add(embeddedConnection.publish(DEVICE_TOPIC + "/$nodes", "testnode".getBytes()));
 
         // Add homie node topics
-        final String testNode = deviceTopic + "/testnode";
+        final String testNode = DEVICE_TOPIC + "/testnode";
         futures.add(embeddedConnection.publish(testNode + "/$name", "Testnode".getBytes()));
         futures.add(embeddedConnection.publish(testNode + "/$type", "Type".getBytes()));
         futures.add(
@@ -154,7 +147,7 @@ public class HomieImplementationTests extends JavaOSGiTest {
         futures.add(embeddedConnection.publish(propertyTestTopic + "/$datatype", "boolean".getBytes()));
 
         registeredTopics = futures.size();
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()])).get(200, TimeUnit.MILLISECONDS);
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(200, TimeUnit.MILLISECONDS);
 
         scheduler = new ScheduledThreadPoolExecutor(4);
     }
@@ -171,14 +164,14 @@ public class HomieImplementationTests extends JavaOSGiTest {
     @Test
     public void retrieveAllTopics() throws InterruptedException, ExecutionException, TimeoutException {
         CountDownLatch c = new CountDownLatch(registeredTopics);
-        connection.subscribe(deviceTopic + "/#", (topic, payload) -> c.countDown()).get(200, TimeUnit.MILLISECONDS);
+        connection.subscribe(DEVICE_TOPIC + "/#", (topic, payload) -> c.countDown()).get(200, TimeUnit.MILLISECONDS);
         assertTrue("Connection " + connection.getClientId() + " not retrieving all topics",
                 c.await(1000, TimeUnit.MILLISECONDS));
     }
 
     @Test
     public void retrieveOneAttribute() throws InterruptedException, ExecutionException {
-        WaitForTopicValue watcher = new WaitForTopicValue(connection, deviceTopic + "/$homie");
+        WaitForTopicValue watcher = new WaitForTopicValue(connection, DEVICE_TOPIC + "/$homie");
         assertThat(watcher.waitForTopicValue(100), is("3.0"));
     }
 
@@ -187,10 +180,10 @@ public class HomieImplementationTests extends JavaOSGiTest {
     public void retrieveAttributes() throws InterruptedException, ExecutionException {
         assertThat(connection.hasSubscribers(), is(false));
 
-        Node node = new Node(deviceTopic, "testnode", ThingChannelConstants.testHomieThing, callback,
+        Node node = new Node(DEVICE_TOPIC, "testnode", ThingChannelConstants.testHomieThing, callback,
                 new NodeAttributes());
         Property property = spy(
-                new Property(deviceTopic + "/testnode", node, "temperature", callback, new PropertyAttributes()));
+                new Property(DEVICE_TOPIC + "/testnode", node, "temperature", callback, new PropertyAttributes()));
 
         // Create a scheduler
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
@@ -224,8 +217,7 @@ public class HomieImplementationTests extends JavaOSGiTest {
     public Property createSpyProperty(InvocationOnMock invocation) {
         final Node node = (Node) invocation.getMock();
         final String id = (String) invocation.getArguments()[0];
-        Property property = spy(node.createProperty(id, spy(new PropertyAttributes())));
-        return property;
+        return spy(node.createProperty(id, spy(new PropertyAttributes())));
     }
 
     // Inject a spy'ed node
@@ -252,7 +244,7 @@ public class HomieImplementationTests extends JavaOSGiTest {
         doAnswer(this::createSpyNode).when(device).createNode(any());
 
         // initialize the device, subscribe and wait.
-        device.initialize(baseTopic, deviceID, Collections.emptyList());
+        device.initialize(BASE_TOPIC, DEVICE_ID, Collections.emptyList());
         device.subscribe(connection, scheduler, 200).get();
 
         assertThat(device.isInitialized(), is(true));
