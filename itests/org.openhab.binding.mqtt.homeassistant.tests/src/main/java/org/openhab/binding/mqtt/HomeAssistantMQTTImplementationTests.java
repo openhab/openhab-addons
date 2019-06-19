@@ -30,8 +30,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -53,9 +51,6 @@ import org.openhab.binding.mqtt.homeassistant.internal.ComponentSwitch;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
-import org.osgi.service.cm.ConfigurationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -67,12 +62,11 @@ import com.google.gson.GsonBuilder;
  * @author David Graeff - Initial contribution
  */
 public class HomeAssistantMQTTImplementationTests extends JavaOSGiTest {
-    final Logger logger = LoggerFactory.getLogger(HomeAssistantMQTTImplementationTests.class);
     private MqttService mqttService;
     private MqttBrokerConnection embeddedConnection;
     private MqttBrokerConnection connection;
     private int registeredTopics = 100;
-    Throwable failure = null;
+    private Throwable failure = null;
 
     @Mock
     ChannelStateUpdateListener channelStateUpdateListener;
@@ -84,12 +78,7 @@ public class HomeAssistantMQTTImplementationTests extends JavaOSGiTest {
      * Create an observer that fails the test as soon as the broker client connection changes its connection state
      * to something else then CONNECTED.
      */
-    MqttConnectionObserver failIfChange = new MqttConnectionObserver() {
-        @Override
-        public void connectionStateChanged(@NonNull MqttConnectionState state, @Nullable Throwable error) {
-            assertThat(state, is(MqttConnectionState.CONNECTED));
-        }
-    };
+    private MqttConnectionObserver failIfChange = (state, error) -> assertThat(state, is(MqttConnectionState.CONNECTED));
     private String testObjectTopic;
 
     @Before
@@ -124,7 +113,7 @@ public class HomeAssistantMQTTImplementationTests extends JavaOSGiTest {
         futures.add(embeddedConnection.publish(testObjectTopic + "/state", "true".getBytes()));
 
         registeredTopics = futures.size();
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()])).get(200, TimeUnit.MILLISECONDS);
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(200, TimeUnit.MILLISECONDS);
 
         failure = null;
 
@@ -141,7 +130,7 @@ public class HomeAssistantMQTTImplementationTests extends JavaOSGiTest {
 
     @Test
     public void reconnectTest()
-            throws InterruptedException, ExecutionException, TimeoutException, ConfigurationException {
+            throws InterruptedException, ExecutionException, TimeoutException {
         connection.removeConnectionObserver(failIfChange);
         connection.stop().get(2000, TimeUnit.MILLISECONDS);
         connection = new MqttBrokerConnection(embeddedConnection.getHost(), embeddedConnection.getPort(),
@@ -208,9 +197,9 @@ public class HomeAssistantMQTTImplementationTests extends JavaOSGiTest {
 
         haComponents.values().stream().map(e -> e.start(connection, scheduler, 100))
                 .reduce(CompletableFuture.completedFuture(null), (a, v) -> a.thenCompose(b -> v)).exceptionally(e -> {
-                    failure = e;
-                    return null;
-                }).get();
+            failure = e;
+            return null;
+        }).get();
 
         // We should have received the retained value, while subscribing to the channels MQTT state topic.
         verify(channelStateUpdateListener, times(1)).updateChannelState(any(), any());
@@ -219,6 +208,5 @@ public class HomeAssistantMQTTImplementationTests extends JavaOSGiTest {
         value = haComponents.get(channelGroupId).channelTypes().get(ComponentSwitch.switchChannelID).getState()
                 .getCache().getChannelState();
         assertThat(value, is(OnOffType.ON));
-
     }
 }

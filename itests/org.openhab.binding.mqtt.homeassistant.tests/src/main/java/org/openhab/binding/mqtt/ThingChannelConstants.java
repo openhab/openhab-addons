@@ -31,29 +31,5 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
  */
 public class ThingChannelConstants {
     // Common ThingUID and ChannelUIDs
-    final public static ThingUID testHomeAssistantThing = new ThingUID(HOMEASSISTANT_MQTT_THING, "device234");
-
-    final public static ChannelTypeUID unknownChannel = new ChannelTypeUID(BINDING_ID, "unknown");
-
-    final public static String jsonPathJSON = "{ \"device\": { \"status\": { \"temperature\": 23.2 }}}";
-    final public static String jsonPathPattern = "$.device.status.temperature";
-
-    final public static List<Channel> thingChannelList = new ArrayList<>();
-    final public static List<Channel> thingChannelListWithJson = new ArrayList<>();
-
-    static Configuration textConfiguration() {
-        Map<String, Object> data = new HashMap<>();
-        data.put("stateTopic", "test/state");
-        data.put("commandTopic", "test/command");
-        return new Configuration(data);
-    }
-
-    static Configuration textConfigurationWithJson() {
-        Map<String, Object> data = new HashMap<>();
-        data.put("stateTopic", "test/state");
-        data.put("commandTopic", "test/command");
-        data.put("transformationPattern", "JSONPATH:" + jsonPathPattern);
-        return new Configuration(data);
-    }
-
+    public static final ThingUID testHomeAssistantThing = new ThingUID(HOMEASSISTANT_MQTT_THING, "device234");
 }

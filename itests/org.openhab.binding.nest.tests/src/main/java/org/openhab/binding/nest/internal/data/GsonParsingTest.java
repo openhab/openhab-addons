@@ -24,6 +24,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Test cases for gson parsing of model classes
+ *
+ * @author David Bennett - Initial contribution
+ * @author Wouter Born - Increase test coverage
+ */
 public class GsonParsingTest {
 
     private final Logger logger = LoggerFactory.getLogger(GsonParsingTest.class);
