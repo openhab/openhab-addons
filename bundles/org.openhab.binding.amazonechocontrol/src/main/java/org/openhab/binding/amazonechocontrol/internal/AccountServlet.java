@@ -629,7 +629,7 @@ public class AccountServlet extends HttpServlet {
                 headers.put("Referer", referer);
             }
 
-            urlConnection = connection.makeRequest(verb, url, postData, json, false, headers, false);
+            urlConnection = connection.makeRequest(verb, url, postData, json, false, headers, 0);
             if (urlConnection.getResponseCode() == 302) {
                 {
                     String location = urlConnection.getHeaderField("location");

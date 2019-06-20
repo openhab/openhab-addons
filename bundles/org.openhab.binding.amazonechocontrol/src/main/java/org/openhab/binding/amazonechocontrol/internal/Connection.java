@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -45,6 +47,7 @@ import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
@@ -111,9 +114,15 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class Connection {
+    
+    private static final String THING_THREADPOOL_NAME = "thingHandler";
+
+    protected final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool(THING_THREADPOOL_NAME);
+    
     private static final long expiresIn = 432000; // five days
     private static final Pattern charsetPattern = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
-
+  
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
 
     private final CookieManager cookieManager = new CookieManager();
@@ -426,7 +435,7 @@ public class Connection {
     }
 
     private @Nullable Authentication tryGetBootstrap() throws IOException, URISyntaxException {
-        HttpsURLConnection connection = makeRequest("GET", alexaServer + "/api/bootstrap", null, false, false, null, false);
+        HttpsURLConnection connection = makeRequest("GET", alexaServer + "/api/bootstrap", null, false, false, null, 0);
         String contentType = connection.getContentType();
         if (connection.getResponseCode() == 200 && StringUtils.startsWithIgnoreCase(contentType, "application/json")) {
             try
@@ -491,17 +500,16 @@ public class Connection {
 
     public String makeRequestAndReturnString(String verb, String url, @Nullable String postData, boolean json,
             @Nullable Map<String, String> customHeaders) throws IOException, URISyntaxException {
-        HttpsURLConnection connection = makeRequest(verb, url, postData, json, true, customHeaders, false);
+        HttpsURLConnection connection = makeRequest(verb, url, postData, json, true, customHeaders, 0);
         String result = convertStream(connection);
         this.logger.debug("Result of {} {}:{}", verb, url, result);
         return result;
     }
 
     public HttpsURLConnection makeRequest(String verb, String url, @Nullable String postData, boolean json,
-            boolean autoredirect, @Nullable Map<String, String> customHeaders, boolean repeatBadRequest)
+            boolean autoredirect, @Nullable Map<String, String> customHeaders, int badRequestRepeats)
                     throws IOException, URISyntaxException {
         String currentUrl = url;
-        int badRequestCounter = 0;
         int redirectCounter = 0;
         while (true) // loop for handling redirect and bad request, using automatic redirect is not possible,
             // because
@@ -613,16 +621,17 @@ public class Connection {
                         }
                     }
                 }
-                if (code == 400 && repeatBadRequest) {
-                    badRequestCounter++;
-                    if (badRequestCounter < 3) {
+                if (code == 400 && badRequestRepeats > 0) {
+                    scheduler.schedule(() -> {
+                        logger.debug("Retry call to {}", url);
                         try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
+                            makeRequest(verb, url, postData, json,
+                            autoredirect, customHeaders, badRequestRepeats - 1);
+                        } catch (IOException | URISyntaxException e) {
+                            logger.debug("Repeat fails {}", e);
                         }
-                        continue; // repeat call
-                    }
-                    badRequestCounter += 0;
+                    }, 500, TimeUnit.MILLISECONDS);
+                    return connection;                   
                 }
                 if (code == 200) {
                     logger.debug("Call to {} succeeded", url);
@@ -971,7 +980,7 @@ public class Connection {
     public void command(Device device, String command) throws IOException, URISyntaxException {
         String url = alexaServer + "/api/np/command?deviceSerialNumber=" + device.serialNumber + "&deviceType="
                 + device.deviceType;
-        makeRequest("POST", url, command, true, true, null, false);
+        makeRequest("POST", url, command, true, true, null, 0);
     }
 
     public void notificationVolume(Device device, int volume) throws IOException, URISyntaxException {
@@ -979,7 +988,7 @@ public class Connection {
                 + "/" + device.serialNumber;
         String command = "{\"deviceSerialNumber\":\"" + device.serialNumber + "\",\"deviceType\":\"" + device.deviceType
                 + "\",\"softwareVersion\":\"" + device.softwareVersion + "\",\"volumeLevel\":" + volume + "}";
-        makeRequest("PUT", url, command, true, true, null, false);
+        makeRequest("PUT", url, command, true, true, null, 0);
     }
 
     public void ascendingAlarm(Device device, boolean ascendingAlarm) throws IOException, URISyntaxException {
@@ -987,7 +996,7 @@ public class Connection {
         String command = "{\"ascendingAlarmEnabled\":" + (ascendingAlarm ? "true" : "false")
                 + ",\"deviceSerialNumber\":\"" + device.serialNumber + "\",\"deviceType\":\"" + device.deviceType
                 + "\",\"deviceAccountId\":null}";
-        makeRequest("PUT", url, command, true, true, null, false);
+        makeRequest("PUT", url, command, true, true, null, 0);
     }
 
     public DeviceNotificationState[] getDeviceNotificationStates() {
@@ -1025,11 +1034,11 @@ public class Connection {
             // disconnect
             makeRequest("POST",
                     alexaServer + "/api/bluetooth/disconnect-sink/" + device.deviceType + "/" + device.serialNumber, "",
-                    true, true, null, false);
+                    true, true, null, 0);
         } else {
             makeRequest("POST",
                     alexaServer + "/api/bluetooth/pair-sink/" + device.deviceType + "/" + device.serialNumber,
-                    "{\"bluetoothDeviceAddress\":\"" + address + "\"}", true, true, null, false);
+                    "{\"bluetoothDeviceAddress\":\"" + address + "\"}", true, true, null, 0);
         }
     }
 
@@ -1043,7 +1052,7 @@ public class Connection {
                     + "&contentType=station&callSign=&mediaOwnerCustomerId="
                     + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
                             : this.accountCustomerId),
-                    "", true, true, null, false);
+                    "", true, true, null, 0);
         }
     }
 
@@ -1058,7 +1067,7 @@ public class Connection {
                     + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
                             : this.accountCustomerId)
                     + "&shuffle=false",
-                    command, true, true, null, false);
+                    command, true, true, null, 0);
         }
     }
 
@@ -1074,7 +1083,7 @@ public class Connection {
                     + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
                             : this.accountCustomerId)
                     + "&shuffle=false",
-                    command, true, true, null, false);
+                    command, true, true, null, 0);
         }
     }
 
@@ -1191,7 +1200,7 @@ public class Connection {
         Map<String, String> headers = new HashMap<>();
         headers.put("Routines-Version", "1.1.218665");
 
-        makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null, true);
+        makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null, 3);
     }
 
     private void executeSequenceNodes(JsonArray nodesToExecute) throws IOException, URISyntaxException {
@@ -1299,7 +1308,7 @@ public class Connection {
             request.sequenceJson = sequenceJson;
 
             String requestJson = gson.toJson(request);
-            makeRequest("POST", alexaServer + "/api/behaviors/preview", requestJson, true, true, null, true);
+            makeRequest("POST", alexaServer + "/api/behaviors/preview", requestJson, true, true, null, 3);
         } else {
             logger.warn("Routine {} not found", utterance);
         }
@@ -1325,7 +1334,7 @@ public class Connection {
         JsonEnabledFeeds enabled = new JsonEnabledFeeds();
         enabled.enabledFeeds = enabledFlashBriefing;
         String json = gsonWithNullSerialization.toJson(enabled);
-        makeRequest("POST", alexaServer + "/api/content-skills/enabled-feeds", json, true, true, null, false);
+        makeRequest("POST", alexaServer + "/api/content-skills/enabled-feeds", json, true, true, null, 0);
     }
 
     public JsonNotificationSound[] getNotificationSounds(Device device) throws IOException, URISyntaxException {
@@ -1455,7 +1464,7 @@ public class Connection {
         startRoutineRequest.status = null;
 
         String postData = gson.toJson(startRoutineRequest);
-        makeRequest("POST", alexaServer + "/api/behaviors/preview", postData, true, true, null, true);
+        makeRequest("POST", alexaServer + "/api/behaviors/preview", postData, true, true, null, 3);
     }
 
     public JsonEqualizer getEqualizer(Device device) throws IOException, URISyntaxException {
@@ -1467,6 +1476,6 @@ public class Connection {
     public void SetEqualizer(Device device, JsonEqualizer settings) throws IOException, URISyntaxException {
         String postData = gson.toJson(settings);
         makeRequest("POST", alexaServer + "/api/equalizer/" + device.serialNumber + "/" + device.deviceType, postData,
-                true, true, null, false);
+                true, true, null, 0);
     }   
 }
