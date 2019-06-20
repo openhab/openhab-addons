@@ -5140,10 +5140,14 @@ public class SagerWeatherCaster {
     }
 
     public void setBeaufort(int beaufortIndex) {
-        if (this.currentBeaufort != beaufortIndex) {
-            this.currentBeaufort = beaufortIndex;
+        if (currentBeaufort != beaufortIndex) {
+            currentBeaufort = beaufortIndex;
             updatePrediction();
         }
+    }
+
+    public int getBeaufort() {
+        return currentBeaufort;
     }
 
     public int getWindEvolution() {

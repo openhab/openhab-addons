@@ -11,7 +11,10 @@
 
         <channels>
             <channel id="forecast" typeId="forecast" />
-            <channel id="velocity" typeId="velocity" />           
+            <channel id="velocity" typeId="velocity" />
+            <channel id="velocity-beaufort" typeId="wind-speed-beaufort">
+                <label>Wind Velocity</label>
+            </channel>            
             <channel id="windfrom" typeId="winddirection">
                 <label>Wind from</label>
             </channel>  
@@ -27,7 +30,6 @@
                     <label>Temperature Trend</label>
                     <description>Temperature Evolution trend over observation delay</description>            
             </channel>
-            <channel id="timestamp" typeId="timestamp" />
             <channel id="cloudiness" typeId="cloudiness" />
             <channel id="isRaining" typeId="isRaining" />
             <channel id="wind-speed-beaufort" typeId="wind-speed-beaufort" />
@@ -59,6 +61,7 @@
         <label>Weather Forecast</label>
         <state readOnly="true" pattern="%s">
             <options>
+                <option value="0">Not enough historic data to study pressure evolution, wait a bit ...</option>
                 <option value="A">Fair</option>
                 <option value="B">Fair and warmer</option>
                 <option value="C">Fair and cooler</option>
@@ -106,11 +109,11 @@
         <state readOnly="true" pattern="%s">
             <options>
                 <option value="N">Probably increasing</option>
-                <option value="F">Moderate to fresh (Beaufort 4-5)</option>
-                <option value="S">Strong (Beaufort 6-7) (Strong winds may precede gales over open water)</option>
-                <option value="G">Gale (Beaufort 7-8)</option>
-                <option value="W">Dangerous gale (whole gale) (Beaufort 10-11)</option>
-                <option value="H">Hurricane (Beaufort 12+)</option>
+                <option value="F">Moderate to fresh</option>
+                <option value="S">Strong winds may precede gales over open water)</option>
+                <option value="G">Gale</option>
+                <option value="W">Dangerous gale (whole gale)</option>
+                <option value="H">Hurricane</option>
                 <option value="D">Diminishing, or moderating somewhat if current winds are of fresh to strong velocity</option>
                 <option value="U">No important change. Some tendency for slight increase in winds during day, diminishing in evening</option>
             </options>

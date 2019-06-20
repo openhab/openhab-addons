@@ -30,7 +30,6 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -56,11 +55,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SagerCasterHandler extends BaseThingHandler {
-    private static final StringType FORECAST_PENDING = new StringType(
-            "Not enough historic data to study pressure evolution, wait a bit ...");
+    private final static StringType FORECAST_PENDING = new StringType("0");
     private final Logger logger = LoggerFactory.getLogger(SagerCasterHandler.class);
     private final static SagerWeatherCaster sagerWeatherCaster = new SagerWeatherCaster();
     private final WindDirectionStateDescriptionProvider stateDescriptionProvider;
+    private int currentTemp = 0;
 
     private class ExpiringMap<T> {
         private SortedMap<Long, T> values = new TreeMap<Long, T>();
@@ -190,12 +189,11 @@ public class SagerCasterHandler extends BaseThingHandler {
                                 .toUnit(SIUnits.CELSIUS);
                         if (newTemperature != null) {
                             temperatureCache.put(newTemperature);
+                            currentTemp = newTemperature.intValue();
                             QuantityType<Temperature> agedTemperature = temperatureCache.getAgedValue();
                             if (agedTemperature != null) {
                                 // TODO
                                 // https://www.sciencedirect.com/topics/engineering/outdoor-air-temperature
-                            } else {
-                                updateState(CHANNEL_FORECAST, FORECAST_PENDING);
                             }
                         }
                     }
@@ -214,9 +212,8 @@ public class SagerCasterHandler extends BaseThingHandler {
                                         new StringType(String.valueOf(sagerWeatherCaster.getWindEvolution())));
                                 postNewForecast();
                             }).start();
-                        } else {
-                            updateState(CHANNEL_WINDFROM, FORECAST_PENDING);
                         }
+                        ;
                     }
                     break;
                 default:
@@ -226,11 +223,47 @@ public class SagerCasterHandler extends BaseThingHandler {
     }
 
     private void postNewForecast() {
-        updateState(CHANNEL_FORECAST, new StringType(sagerWeatherCaster.getForecast()));
-        updateState(CHANNEL_VELOCITY, new StringType(sagerWeatherCaster.getWindVelocity()));
+        String forecast = sagerWeatherCaster.getForecast();
+        // Sharpens forecast if current temp is below 2 degrees, likely to be flurries rather than shower
+        if ("G".equals(forecast) || "K".equals(forecast) || "L".equals(forecast) || "R".equals(forecast)
+                || "S".equals(forecast) || "T".equals(forecast) || "U".equals(forecast) || "W".equals(forecast)) {
+            if (currentTemp > 2) {
+                forecast = forecast + "1";
+            } else {
+                forecast = forecast + "2";
+            }
+        }
+        updateState(CHANNEL_FORECAST, new StringType(forecast));
         updateState(CHANNEL_WINDFROM, new StringType(sagerWeatherCaster.getWindDirection()));
         updateState(CHANNEL_WINDTO, new StringType(sagerWeatherCaster.getWindDirection2()));
-        updateState(CHANNEL_TIMESTAMP, new DateTimeType());
+
+        String velocity = sagerWeatherCaster.getWindVelocity();
+        updateState(CHANNEL_VELOCITY, new StringType(velocity));
+        int predictedBeaufort = sagerWeatherCaster.getBeaufort();
+        switch (velocity) {
+            case "N":
+                predictedBeaufort += 1;
+                break;
+            case "F":
+                predictedBeaufort = 4;
+                break;
+            case "S":
+                predictedBeaufort = 6;
+                break;
+            case "G":
+                predictedBeaufort = 8;
+                break;
+            case "W":
+                predictedBeaufort = 10;
+                break;
+            case "H":
+                predictedBeaufort = 12;
+                break;
+            case "D":
+                predictedBeaufort -= 1;
+                break;
+        }
+        updateState(CHANNEL_VELOCITY_BEAUFORT, new DecimalType(predictedBeaufort));
     }
 
 }
