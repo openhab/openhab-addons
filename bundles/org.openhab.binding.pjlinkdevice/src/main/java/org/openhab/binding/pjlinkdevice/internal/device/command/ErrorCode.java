@@ -34,7 +34,7 @@ public enum ErrorCode {
 
     public static ErrorCode getValueForCode(String code) throws ResponseException {
         for (ErrorCode result : ErrorCode.values()) {
-            if (result.code.equals(code)) {
+            if (result.code.equals(code.toUpperCase())) {
                 return result;
             }
         }

@@ -34,7 +34,7 @@ public abstract class PrefixedResponse implements Response {
     @Override
     public void parse(String response) throws ResponseException {
         String fullPrefix = "%1" + this.prefix;
-        if (!response.startsWith(fullPrefix)) {
+        if (!response.toUpperCase().startsWith(fullPrefix)) {
             throw new ResponseException(
                     MessageFormat.format("Expected prefix ''{0}'', instead got ''{1}''", fullPrefix, response));
         }

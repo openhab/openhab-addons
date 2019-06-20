@@ -42,7 +42,7 @@ public abstract class AbstractCommand<RequestType extends Request, ResponseType 
         if (responseString == null) {
             throw new ResponseException("Response is null");
         }
-        if (responseString.equals("PJLINK ERRA")) {
+        if (responseString.toUpperCase().equals("PJLINK ERRA")) {
             throw new AuthenticationException("Authentication error, wrong password provided?");
         }
         return this.parseResponse(responseString);

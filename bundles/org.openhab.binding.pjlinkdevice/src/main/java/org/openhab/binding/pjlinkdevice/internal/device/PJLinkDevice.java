@@ -121,6 +121,7 @@ public class PJLinkDevice {
             if (header == null) {
                 throw new ResponseException("No PJLink header received from the device");
             }
+            header = header.toUpperCase();
             switch (header.substring(0, "PJLINK x".length())) {
                 case "PJLINK 0":
                     logger.info("Authentication not needed");

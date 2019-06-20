@@ -32,7 +32,7 @@ public enum AcknowledgeResponseValue {
 
     public static AcknowledgeResponseValue getValueForCode(String code) throws ResponseException {
         for (AcknowledgeResponseValue result : AcknowledgeResponseValue.values()) {
-            if (result.code.equals(code)) {
+            if (result.code.equals(code.toUpperCase())) {
                 return result;
             }
         }
