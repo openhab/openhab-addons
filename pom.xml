@@ -33,6 +33,7 @@
     <module>bom</module>
     <module>bundles</module>
     <module>features</module>
+    <module>itests</module>
   </modules>
 
   <scm>
@@ -666,17 +667,6 @@ Import-Package: \\
       </properties>
     </profile>
 
-    <profile>
-      <id>skip-itest</id>
-      <activation>
-        <property>
-          <name>!skipTests</name>
-        </property>
-      </activation>
-      <modules>
-        <module>itests</module>
-      </modules>
-    </profile>
     <profile>
       <id>with-bnd-resolver-resolve</id>
       <activation>
