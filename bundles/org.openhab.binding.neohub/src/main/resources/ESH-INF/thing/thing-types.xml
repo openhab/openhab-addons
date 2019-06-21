@@ -62,13 +62,13 @@
 			</channel>
 
 			<channel id="heatingMode" typeId="heatingMode">
-		   		<label>Heating mode (Off,&#160;Heating)</label>
+		   		<label>Heating (Off::Heating)</label>
    				<description>Indicates is the thermostat is calling for heat</description>
 			</channel>
 
 			<channel id="absentPresent" typeId="absentPresent">
-		   		<label>Occupancy Mode (Absent,&#160;Present)</label>
-   				<description>The occupancy mode of the thermostat (user can override)</description>
+		   		<label>Occupancy State (Absent::Present)</label>
+   				<description>The occupancy state of the thermostat (user can override)</description>
 			</channel>
 
 		</channels>
@@ -93,12 +93,12 @@
 
 		<channels>
 			<channel id="offOn" typeId="offOn">
-		   		<label>Switch State (Off,&#160;On)</label>
+		   		<label>Switch State (Off::On)</label>
    				<description>The state of the plug (user can override)</description>
 			</channel>
 
 			<channel id="manualAuto" typeId="manualAuto">
-		   		<label>Program mode (Manual,&#160;Auto)</label>
+		   		<label>Program Mode (Manual::Auto)</label>
    				<description>The program mode of the plug (user can override)</description>
 			</channel>
 		</channels>
@@ -128,28 +128,28 @@
 	
 	<channel-type id="heatingMode">
 		<item-type>String</item-type>
-		<label>Heating mode (Off, Heating)</label>
+		<label>Heating (Off::Heating)</label>
  		<description>Indicates is the thermostat is calling for heat</description>
    		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="absentPresent">
 		<item-type>Switch</item-type>
-		<label>Occupancy Mode (Absent,&#160;Present)</label>
+		<label>Occupancy Sate (Absent::Present)</label>
    		<description>The occupancy mode of the thermostat (user can override)</description>
    		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="manualAuto">
 		<item-type>Switch</item-type>
-		<label>Program mode (Manual,&#160;Auto)</label>
+		<label>Program Mode (Manual::Auto)</label>
    		<description>The program mode of the device (user can override)</description>
    		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="offOn">
 		<item-type>Switch</item-type>
-		<label>Switch State (Off,&#160;On)</label>
+		<label>Switch State (Off::On)</label>
    		<description>The state of the plug (user can override)</description>
    		<state readOnly="false"/>
 	</channel-type>
