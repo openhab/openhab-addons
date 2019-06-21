@@ -15,6 +15,8 @@ package org.openhab.binding.loxone.internal.controls;
 import static org.openhab.binding.loxone.internal.LxBindingConstants.*;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -114,13 +116,17 @@ class LxControlJalousie extends LxControl {
     @Override
     public void initialize(LxControlConfig config) {
         super.initialize(config);
+        Set<String> blindsTags = new HashSet<>(tags);
+        Set<String> switchTags = new HashSet<>(tags);
+        blindsTags.add("Blinds");
+        switchTags.add("Switchable");
         addChannel("Rollershutter", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_ROLLERSHUTTER),
-                defaultChannelLabel, "Rollershutter", tags, this::handleOperateCommands, this::getOperateState);
+                defaultChannelLabel, "Rollershutter", blindsTags, this::handleOperateCommands, this::getOperateState);
         addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH),
-                defaultChannelLabel + " / Shade", "Rollershutter shading", null, this::handleShadeCommands,
+                defaultChannelLabel + " / Shade", "Rollershutter shading", switchTags, this::handleShadeCommands,
                 () -> OnOffType.OFF);
         addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH),
-                defaultChannelLabel + " / Auto Shade", "Rollershutter automatic shading", null,
+                defaultChannelLabel + " / Auto Shade", "Rollershutter automatic shading", switchTags,
                 this::handleAutoShadeCommands, this::getAutoShadeState);
     }
 
