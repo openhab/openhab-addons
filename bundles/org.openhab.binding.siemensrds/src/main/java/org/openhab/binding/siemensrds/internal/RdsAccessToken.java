@@ -26,6 +26,7 @@ import java.util.Date;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,20 +114,20 @@ class RdsAccessToken {
      * execute a POST on the cloud server, parse the JSON, 
      * and create a class that encapsulates the data
      */
+    @Nullable
     public static RdsAccessToken create(String apiKey, String user, String password) {
-        RdsAccessToken result = null;
         String json = httpGetTokenJson(apiKey, user, password);
 
         try {
             if (!json.equals("")) {
                 Gson gson = new Gson();
-                result = gson.fromJson(json, RdsAccessToken.class);
+
+                return gson.fromJson(json, RdsAccessToken.class);
             }
         } catch (Exception e) {
             LOGGER.debug("create: exception={}", e.getMessage());
         }
-        
-        return result;
+        return null;
     }
     
     

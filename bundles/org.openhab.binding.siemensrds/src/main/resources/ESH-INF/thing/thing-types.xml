@@ -86,16 +86,26 @@
    				<description>Energy saving level</description>
 			</channel>
 
-			<channel id="absentPresent" typeId="absentPresent">
-		   		<label>Occupancy Mode</label>
-   				<description>Occupancy mode (user can override)</description>
+			<channel id="statProgramMode" typeId="statProgramMode">
+				<label>T&apos;stat Program (Manual::Auto)</label>
+		   		<description>The program mode of the thermostat (user can override)</description>
 			</channel>
 
-			<channel id="dhwAutoOffOn" typeId="dhwAutoOffOn">
-		   		<label>Hot Water Override (Null=No&#160;override[auto])</label>
-   				<description>Hot Water Mode and Override</description>
+			<channel id="statOccupancyState" typeId="statOccupancyState">
+		   		<label>Occupancy State (Absent::Present)</label>
+   				<description>The occupancy mode of the thermostat (user can override)</description>
+			</channel>
+
+			<channel id="dhwProgramMode" typeId="dhwProgramMode">
+				<label>DHW Program (Manual::Auto)</label>
+		   		<description>The program mode of the domestic water heating (user can override)</description>
 			</channel>
 			
+			<channel id="dhwOffOnState" typeId="dhwOffOnState">
+				<label>DHW Switch State (Off::On)</label>
+		   		<description>The state of the domestic water heating (user can override)</description>
+			</channel>
+
 		</channels>
 
 		<properties>
@@ -103,7 +113,7 @@
 			<property name="modelId">RDS</property>
 			<property name="climatixIcPlantId"></property>
         	</properties>
-	        <representation-property>climatixIcPlantId</representation-property>
+        <representation-property>climatixIcPlantId</representation-property>
 
 	</thing-type>
 
@@ -132,7 +142,7 @@
 		<item-type>Number</item-type>
 		<label>Humidity</label>
 		<description>Measured humidity value</description>
-   		<state readOnly="true" pattern="%.1f %%r.H."/>
+   		<state readOnly="true" pattern="%.0f %%r.H."/>
 	</channel-type>
 
 	<channel-type id="airQuality">
@@ -149,31 +159,31 @@
    		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="dhwAutoOffOn">
-		<item-type>String</item-type>
-		<label>Hot Water Mode</label>
-		<description>Domestic Hot Water mode (user can override)</description>
-   		<state readOnly="false">
-	   		<options>
-		   		<option value="Null">Null</option>
-		   		<option value="Off">Off</option>
-		   		<option value="On">On</option>
-	   		</options>
-   		</state>
+	<channel-type id="statProgramMode">
+		<item-type>Switch</item-type>
+		<label>Thermostat Program Mode (Manual::Auto)</label>
+   		<description>The program mode of the thermostat (user can override)</description>
+   		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="absentPresent">
-		<item-type>String</item-type>
-		<label>Occupancy Mode (Absent..Present)</label>
-		<description>Occupancy mode (user can override)</description>
-   		<state readOnly="false">
-	   		<options>
-		   		<option value="Absent">Absent</option>
-		   		<option value="Present">Present</option>
-	   		</options>
-   		</state>
+	<channel-type id="statOccupancyState">
+		<item-type>Switch</item-type>
+		<label>Occupancy State (Absent::Present)</label>
+   		<description>The occupancy state of the thermostat (user can override)</description>
+   		<state readOnly="false"/>
 	</channel-type>
-	
+	<channel-type id="dhwProgramMode">
+		<item-type>Switch</item-type>
+		<label>DHW Program Mode (Manual::Auto)</label>
+   		<description>The program mode of the domestic water heating (user can override)</description>
+   		<state readOnly="false"/>
+	</channel-type>
 
+	<channel-type id="dhwOffOnState">
+		<item-type>Switch</item-type>
+		<label>DHW Switch State (Off::On)</label>
+   		<description>The switch state of the domestic water heating (user can override)</description>
+   		<state readOnly="false"/>
+	</channel-type>
 
 </thing:thing-descriptions>

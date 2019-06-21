@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,21 +114,18 @@ class RdsPlants {
      * execute a GET on the cloud server, parse JSON, 
      * and create a class that encapsulates the data
      */
+    @Nullable
     public static RdsPlants create(String apiKey, String token) {
-        RdsPlants result = null;
-
         try {
             String json = httpGetPlantListJson(apiKey, token);
             if (!json.equals("")) {
                 Gson gson = new Gson();
-                result = gson.fromJson(json, RdsPlants.class);
+                return gson.fromJson(json, RdsPlants.class);
             }
-
         } catch (Exception e) {
             LOGGER.debug("create: exception={}", e.getMessage());
         }
-
-        return result;
+        return null;
     }
 
 
