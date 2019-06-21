@@ -58,13 +58,13 @@ public class RdsBindingConstants {
             "]";
 
     private static final String ARG_PARENT = "?parentId=[\"%s\"]&take=100";
-    private static final String ARG_POINT = "?filterId=[\"%s\"]";
+    private static final String ARG_POINT = "?filterId=[%s]";
     
     public static final String URL_TOKEN  = API + "Token"; 
     public static final String URL_PLANTS = API + "Plants" + ARG_RDS; 
     public static final String URL_POINTS = API + "DataPoints" + ARG_PARENT; 
     public static final String URL_SETVAL = API + "DataPoints/%s"; 
-    public static final String URL_GETVAL = API + "DataPoints/Values" + ARG_POINT; 
+    public static final String URL_VALUES = API + "DataPoints/Values" + ARG_POINT; 
     
     public static final String HTTP_POST = "POST"; 
     public static final String HTTP_GET  = "GET"; 
@@ -76,9 +76,9 @@ public class RdsBindingConstants {
     public static final String HDR_ACCEPT = "Accept";
     public static final String VAL_ACCEPT = "application/json";
     
-    public static final String HDR_CONT_TYPE = "Content-Type";
+    public static final String HDR_CONT_TYPE  = "Content-Type";
     public static final String VAL_CONT_PLAIN = "text/plain;charset=UTF-8";
-    public static final String VAL_CONT_JSON = "application/json;charset=UTF-8";
+    public static final String VAL_CONT_JSON  = "application/json;charset=UTF-8";
     
     public static final String HDR_SUB_KEY = "Ocp-Apim-Subscription-Key";
 
@@ -106,7 +106,7 @@ public class RdsBindingConstants {
      * intervals (e.g. 6 x 4 => 24 seconds)   
      */
     public static final int FAST_POLL_CYCLES = 4;
-    public static final int FAST_POLL_INTERVAL = 6;
+    public static final int FAST_POLL_INTERVAL = 8;
     
     /*
      * setup parameters for device discovery 
@@ -120,83 +120,109 @@ public class RdsBindingConstants {
    /*
     * ==================== USED DATA POINTS ==========================
     * where:  
-    *   OBJ_ = the Object Name id string in the ClimatixIc server
-    *   CHA_ = the Channel ID string in the OpenHAB binding
+    *   HIE_ = the Hierarchy Name in the ClimatixIc server
+    *   CHA_ = the Channel ID in the OpenHAB binding
     */
     
-    // device name (id=70) 
-    public static final String OBJ_DESCRIPTION = "R(1)'Description";
+    // device name  
+    public static final String HIE_DESCRIPTION = "R(1)'Description";
 
-    // room (actual) temperature (id=86) (read-only)
+    // room (actual) temperature (read-only)
     private static final String CHA_ROOM_TEMP = "roomTemperature";
-    private static final String OBJ_ROOM_TEMP = "R(1)'RHvacCoo'RTemp";
+    private static final String HIE_ROOM_TEMP = "RTemp";
 
-    // room relative humidity (id=85) (read-only)
+    // room relative humidity (read-only)
     private static final String CHA_ROOM_HUMIDITY = "roomHumidity";
-    private static final String OBJ_ROOM_HUMIDITY = "R(1)'RHvacCoo'RHuRel";
+    private static final String HIE_ROOM_HUMIDITY = "RHuRel";
 
-    // room air quality (low/med/high) (id=74) (read-only)
+    // room air quality (low/med/high) (read-only)
     private static final String CHA_ROOM_AIR_QUALITY = "roomAirQuality";
-    private static final String OBJ_ROOM_AIR_QUALITY = "R(1)'RHvacCoo'RAQualInd";
+    private static final String HIE_ROOM_AIR_QUALITY = "RAQualInd";
 
-    // green leaf state (poor..excellent) (id=52) (read-write)
+    // green leaf state (poor..excellent) (read-write)
     // note: writing the value "5" forces the device to green mode 
     private static final String CHA_GREEN_LEAF = "greenLeaf";
-    private static final String OBJ_GREEN_LEAF = "R(1)'RGrnLf'REei";
+    protected static final String HIE_GREEN_LEAF = "REei";
 
-    // outside air temperature (id=0E) (read-only)
+    // outside air temperature (read-only)
     private static final String CHA_OUTSIDE_TEMP = "outsideTemperature";
-    private static final String OBJ_OUTSIDE_TEMP = "R(1)'TOa";
+    private static final String HIE_OUTSIDE_TEMP = "TOa";
 
-    // set-point for temporary override (id=83) (read-write)
+    // set-point override (read-write)
     private static final String CHA_SETPOINT = "setTemperature";
-    private static final String OBJ_SETPOINT = "R(1)'RHvacCoo'SpTRDtr'SpTR";
+    private static final String HIE_SETPOINT = "SpTR";
 
-    // occupancy mode (id=51) (read-write)
-    private static final String CHA_ABSENT_PRESENT = "absentPresent";
-    private static final String OBJ_ABSENT_PRESENT = "R(1)'ROpModDtr'OccMod";
-
-    // domestic hot water mode (id=53) (read-write)
-    private static final String CHA_DHW_AUTO_OFF_ON = "dhwAutoOffOn";
-    private static final String OBJ_DHW_AUTO_OFF_ON = "R(1)'RHvacCoo'DhwOp'DhwMod";
-
-    // heating/cooling state (id=56) (read-only)
+    // heating/cooling state (read-only)
     private static final String CHA_HEAT_OFF_COOL = "heatingOffCooling";
-    private static final String OBJ_HEAT_OFF_COOL = 
-            "R(1)'RHvacCoo'HCStaDtr'HCSta";
+    private static final String HIE_HEAT_COOL_STATE = "HCSta";
 
+    /* thermostat occupancy state (absent, present) (read-write)
+     * NOTE: uses different parameters as follows.. 
+     *    OccMod = 2, 3 to read, and command to, the absent, present states
+     */
+    protected static final String CHA_STAT_OCC_STATE = "statOccupancyState";
+    protected static final String HIE_STAT_OCC_MODE = "OccMod";
+
+    /* thermostat program mode (read-write)
+     * NOTE: uses different parameters as follows.. 
+     *   PrOpModRsn presentPriority < / > 13 combined with
+     *      OccMod = 2 to read the manual, auto mode
+     *   CmfBtn = 1 to command to the manual mode
+     *   REei = 5 to command to the auto mode    
+     */
+    protected static final String CHA_STAT_PROG_MODE = "statProgramMode";
+    private static final String HIE_PR_OP_MOD_RSN = "PrOpModRsn";
+    protected static final String HIE_STAT_CMF_BTN = "CmfBtn";
+
+    /* domestic hot water state (off, on) (read-write)
+     * NOTE: uses different parameters as follows.. 
+     *    DhwMod = 1, 2 to read, and command to, the off, on states
+     */
+    protected static final String CHA_DHW_OFFON_STATE = "dhwOffOnState";
+    private static final String HIE_DHW_MODE = "DhwMod";
+
+    /* domestic hot water program mode (manual, auto) (read-write)
+     * NOTE: uses different parameters as follows.. 
+     *    DhwMod presentPriority < / > 13 to read the manual, auto mode
+     *    DhwMod = 0 to command to the auto mode
+     *    DhwMod = its current value to command it's resp. manual states
+     */
+    protected static final String CHA_DHW_PROG_MODE = "dhwProgramMode";
+    
     public static final ChannelMap[] CHAN_MAP = {
-        new ChannelMap(CHA_ROOM_TEMP,        OBJ_ROOM_TEMP,        Ptype.VALUE),
-        new ChannelMap(CHA_ROOM_HUMIDITY,    OBJ_ROOM_HUMIDITY,    Ptype.VALUE),
-        new ChannelMap(CHA_ROOM_AIR_QUALITY, OBJ_ROOM_AIR_QUALITY, Ptype.ENUM),
-        new ChannelMap(CHA_GREEN_LEAF,       OBJ_GREEN_LEAF,       Ptype.ENUM),
-        new ChannelMap(CHA_OUTSIDE_TEMP,     OBJ_OUTSIDE_TEMP,     Ptype.VALUE),
-        new ChannelMap(CHA_SETPOINT,         OBJ_SETPOINT,         Ptype.VALUE),
-        new ChannelMap(CHA_ABSENT_PRESENT,   OBJ_ABSENT_PRESENT,   Ptype.ENUM),
-        new ChannelMap(CHA_DHW_AUTO_OFF_ON,  OBJ_DHW_AUTO_OFF_ON,  Ptype.ENUM),
-        new ChannelMap(CHA_HEAT_OFF_COOL,    OBJ_HEAT_OFF_COOL,    Ptype.ENUM)
+        new ChannelMap(CHA_ROOM_TEMP,        HIE_ROOM_TEMP,        Ptype.RAW),
+        new ChannelMap(CHA_ROOM_HUMIDITY,    HIE_ROOM_HUMIDITY,    Ptype.RAW),
+        new ChannelMap(CHA_OUTSIDE_TEMP,     HIE_OUTSIDE_TEMP,     Ptype.RAW),
+        new ChannelMap(CHA_SETPOINT,         HIE_SETPOINT,         Ptype.RAW),
+        new ChannelMap(CHA_ROOM_AIR_QUALITY, HIE_ROOM_AIR_QUALITY, Ptype.ENUM),
+        new ChannelMap(CHA_GREEN_LEAF,       HIE_GREEN_LEAF,       Ptype.ENUM),
+        new ChannelMap(CHA_HEAT_OFF_COOL,    HIE_HEAT_COOL_STATE,  Ptype.ENUM),
+        new ChannelMap(CHA_STAT_OCC_STATE,   HIE_STAT_OCC_MODE,    Ptype.CUSTOM),
+        new ChannelMap(CHA_STAT_PROG_MODE,   HIE_PR_OP_MOD_RSN,    Ptype.CUSTOM),
+        new ChannelMap(CHA_DHW_OFFON_STATE,  HIE_DHW_MODE,         Ptype.CUSTOM),
+        new ChannelMap(CHA_DHW_PROG_MODE,    HIE_DHW_MODE,         Ptype.CUSTOM)
     };        
 
-    
 /*    
     // ==================== UNUSED DATA POINTS ==========================
 
     // room air quality (numeric value) 
-    private static final String OBJ_ROOM_AIR_QUALITY_VAL = "R(1)'RHvacCoo'RAQual";
+    private static final String OBJ_ROOM_AIR_QUALITY_VAL = "RAQual";
 
     // other set-points for phases of the time program mode
-    private static final String OBJ_CMF_SETPOINT = "R(1)'RHvacCoo'TCtlH'SpHCmf";
-    private static final String OBJ_PCF_SETPOINT = "R(1)'RHvacCoo'TCtlH'SpHPcf";
-    private static final String OBJ_ECO_SETPOINT = "R(1)'RHvacCoo'TCtlH'SpHEco";
-    private static final String OBJ_PRT_SETPOINT = "R(1)'RHvacCoo'TCtlH'SpHPrt";
+    private static final String HIE_CMF_SETPOINT = "SpHCmf";
+    private static final String HIE_PCF_SETPOINT = "SpHPcf";
+    private static final String HIE_ECO_SETPOINT = "SpHEco";
+    private static final String HIE_PRT_SETPOINT = "SpHPrt";
 
     // enable heating control
-    private static final String OBJ_ENABLE_HEATING = "R(1)'RHvacCoo'TCtlH'EnHCtl";
+    private static final String HIE_ENABLE_HEATING = "EnHCtl";
 
     // comfort button
-    private static final String OBJ_COMFORT_BUTTON = "R(1)'ROpModDtr'CmfBtn";
+    private static final String HIE_COMFORT_BUTTON = "CmfBtn";
 
 */
+
 }
 
 /**
@@ -204,7 +230,8 @@ public class RdsBindingConstants {
  */
 enum Ptype {
     ENUM,
-    VALUE
+    RAW,
+    CUSTOM
 }
 
 /**
@@ -212,13 +239,12 @@ enum Ptype {
  */
 class ChannelMap {
     public String channelId;
-    public String objectName;
-    public Ptype pType;
+    public String hierarchyName;
+    public Ptype pointType;
 
-    public ChannelMap(String channelId, String objectName, Ptype pType) {
+    public ChannelMap(String channelId, String hierarchyName, Ptype pType) {
         this.channelId = channelId;
-        this.objectName = objectName;
-        this.pType = pType;
+        this.hierarchyName = hierarchyName;
+        this.pointType = pType;
     }
 }
-    

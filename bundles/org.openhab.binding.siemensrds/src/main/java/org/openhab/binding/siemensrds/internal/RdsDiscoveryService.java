@@ -95,8 +95,10 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
     private void discoverPlants() {
         if (cloud != null) {
             RdsPlants plants = RdsPlants.create(cloud.getApiKey(), cloud.getToken());
-            for (RdsPlants.PlantInfo plant : plants.getPlants()) { 
-                publishPlant(plant);
+            if (plants != null ) {
+                for (RdsPlants.PlantInfo plant : plants.getPlants()) { 
+                    publishPlant(plant);
+                }
             }
         }
     }
@@ -110,7 +112,7 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
                     RdsDataPoints.create(cloud.getApiKey(), cloud.getToken(), plantId);
     
                 if (points != null) { 
-                    State desc = points.getRaw(OBJ_DESCRIPTION);
+                    State desc = points.getRaw(HIE_DESCRIPTION);
     
                     if (desc != null) {
                         String label = desc.toString().replaceAll("\\s+", "_");

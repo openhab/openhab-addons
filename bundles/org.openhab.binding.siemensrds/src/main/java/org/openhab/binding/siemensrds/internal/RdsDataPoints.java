@@ -20,10 +20,13 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -57,9 +60,12 @@ class RdsDataPoints {
     @SerializedName("values")
     private Map<String, BasePoint> points;
 
+    private String valueFilter = "";
+
     /*
      * private method:
      * execute an HTTP GET command on the remote cloud server
+     * to retrieve the full data point list for the given plantId
      */
     private static String httpGetPointListJson(String apiKey, String token, String plantId) { 
         String result = "";
@@ -105,14 +111,20 @@ class RdsDataPoints {
     
     
     /*
-     * public method:
+     * public static method:
      * execute a GET on the cloud server, parse the JSON, 
-     * and create a real class that encapsulates the retrieved data
+     * and create a real instance of this class that encapsulates all the 
+     * retrieved data point values
      */
+    @Nullable
     public static RdsDataPoints create(String apiKey, String token, String plantId) {
-        RdsDataPoints result = null;
-
         String json = httpGetPointListJson(apiKey, token, plantId);
+
+        LOGGER.debug("create: received {} characters (log:set TRACE to see all)", 
+                json.length());
+
+        if (LOGGER.isTraceEnabled()) 
+            LOGGER.trace("create: response={}", json);
 
         try {
             if (!json.equals("")) {
@@ -120,13 +132,12 @@ class RdsDataPoints {
                         .registerTypeAdapter(BasePoint.class, 
                                 new PointDeserializer())
                         .create();
-                result = gson.fromJson(json, RdsDataPoints.class);
+                return gson.fromJson(json, RdsDataPoints.class);
             }
         } catch (Exception e) {
             LOGGER.error("create: exception={}", e.getMessage());
         }
-        
-        return result;
+        return null;
     }
 
 
@@ -172,19 +183,17 @@ class RdsDataPoints {
     }
 
     
-/*
- 
-    // ======================== CURRENTLY UN-USED CODE ======================
-
-    // private method:
-    // execute an HTTP GET on the server to refresh a single data point value
-    private String httpGetPointValueJson(String token, String pointId) {  
+    /*
+     *  private method:
+     * execute an HTTP GET command on the remote cloud server
+     * to retrieve the data points given in filterId
+     */
+    private String httpGetPointValuesJson(String apiKey, String token, String filterId) {  
         String result = "";
 
         try {
-    
             URL url = 
-                new URL(String.format(URL_GETVAL, pointId));
+                new URL(String.format(URL_VALUES, filterId));
                     
             HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
                     
@@ -199,8 +208,7 @@ class RdsDataPoints {
             https.setRequestProperty(HDR_AUTHORIZE, 
                     String.format(VAL_AUTHORIZE, token));
     
-            https.setRequestProperty(HDR_SUB_KEY, 
-                                     VAL_SUB_KEY);
+            https.setRequestProperty(HDR_SUB_KEY, apiKey); 
 
             int responseCode = https.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) { 
@@ -213,28 +221,26 @@ class RdsDataPoints {
                 } 
                 in.close();
                 result = response.toString();
-
             } else {
-                logger.error("http error: {}", responseCode);
+                LOGGER.error("httpGetPointValuesJson: http error={}", responseCode);
             }
         } catch (Exception e) {
-            logger.error("exception: {}", e.getMessage());
+            LOGGER.error("httpGetPointValuesJson: exception={}", e.getMessage());
         }
         return result;
     }
     
-*/
-    
+
     /*
      * private method:
-     * retrieve the data point with the given objectName
+     * retrieve the data point with the given hierarchyName
      */
-    private BasePoint getPoint(String objectName) {
-        if (objectName != null) {
+    private BasePoint getPoint(String hierarchyName) {
+        if (hierarchyName != null) {
             for (Map.Entry<String, BasePoint> entry : points.entrySet()) {
                 BasePoint point = entry.getValue();
-                if (point != null && point.objectName != null && 
-                        point.objectName.equals(objectName)) {
+                if (point != null && point.hierarchyName != null && 
+                        point.hierarchyName.contains(hierarchyName)) {
                     return point;
                 }
             }
@@ -245,14 +251,14 @@ class RdsDataPoints {
 
     /*
      * private method:
-     * retrieve the data point with the given objectName
+     * retrieve the data point with the given hierarchyName
      */
-    private String getPointId(String objectName) {
-        if (objectName != null) {
+    private String getPointId(String hierarchyName) {
+        if (hierarchyName != null) {
             for (Map.Entry<String, BasePoint> entry : points.entrySet()) {
                 BasePoint point = entry.getValue();
-                if (point != null && point.objectName != null && 
-                        point.objectName.equals(objectName)) {
+                if (point != null && point.hierarchyName != null && 
+                        point.hierarchyName.contains(hierarchyName)) {
                     return entry.getKey();
                 }
             }
@@ -263,38 +269,77 @@ class RdsDataPoints {
     
     /*
      * public method:
-     * retrieve the state of the data point with the given objectName
+     * retrieve the state of the data point with the given hierarchyName
      */
-    public State getRaw(String objectName) {
-        BasePoint point = getPoint(objectName);
+    public synchronized State getRaw(String hierarchyName) {
+        BasePoint point = getPoint(hierarchyName);
         if (point != null) {
             State state = point.getRaw();
 
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace("getRaw: {} <= {}", objectName, state.toString()); 
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("getRaw: {}={}", hierarchyName, state.toString()); 
             }
             return state;
         }
-        LOGGER.error("getRaw: {} <= No Value!", objectName); 
+        LOGGER.error("getRaw: {}=No Value!", hierarchyName); 
         return null;
     }
     
 
     /*
      * public method:
-     * retrieve the enum state of the data point with the given objectName
+     * return the presentPriority of the data point with the given hierarchyName
      */
-    public State getEnum(String objectName) {
-        BasePoint point = getPoint(objectName);
+    public synchronized int getPresPrio(String hierarchyName) {
+        BasePoint point = getPoint(hierarchyName);
+        if (point != null) {
+            int presentPriority = point.getPresentPriority();
+
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("getPresentPriority: {}={}", 
+                        hierarchyName, presentPriority); 
+            }
+            return presentPriority;
+        }
+        LOGGER.error("getPresentPriority: {}=No Value!", hierarchyName); 
+        return 0;
+    }
+    
+
+    /*
+     * public method:
+     * return the presentPriority of the data point with the given hierarchyName
+     */
+    public synchronized int asInt(String hierarchyName) {
+        BasePoint point = getPoint(hierarchyName);
+        if (point != null) {
+            int value = point.asInt();
+
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("asInt: {}={}", hierarchyName, value); 
+            }
+            return value;
+        }
+        LOGGER.error("getAsInt: {}=No Value!", hierarchyName); 
+        return 0;
+    }
+
+    
+    /*
+     * public method:
+     * retrieve the enum state of the data point with the given hierarchyName
+     */
+    public synchronized State getEnum(String hierarchyName) {
+        BasePoint point = getPoint(hierarchyName);
         if (point != null) {
             State state = point.getEnum();
 
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace("getEnum: {} <= {}", objectName, state.toString()); 
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("getEnum: {}={}", hierarchyName, state.toString()); 
             }
             return state;
         }
-        LOGGER.error("getEnum: {} <= No Value!", objectName); 
+        LOGGER.error("getEnum: {}=No Value!", hierarchyName); 
         return null;
     }
     
@@ -319,21 +364,104 @@ class RdsDataPoints {
      * public method:
      * set a new data point value on the server
      */
-    public void setValue(String apiKey, String token, String objectName, String value) {
-        String pointId = getPointId(objectName);
-        BasePoint point = getPoint(objectName);
+    public void setValue(String apiKey, String token, String hierarchyName, String value) {
+        String pointId = getPointId(hierarchyName);
+        BasePoint point = getPoint(hierarchyName);
 
         if (pointId != null && point != null) {
             String json = point.commandJson(value);
 
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace("setValue: {} => {}", objectName, json);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("setValue: {}=>{}", hierarchyName, json);
             }
             httpSetPointValueJson(apiKey, token, pointId, json);
         }
     }
 
     
+    /*
+     * public method:
+     * set a new data point value on the server
+     */
+    public boolean refresh(String apiKey, String token) {
+        @Nullable
+        RdsDataPoints nuPoints = null;
+        
+        if (valueFilter.equals("")) {
+            Set<String> set = new HashSet<>();
+            String pointId;
+
+            for (ChannelMap chan : CHAN_MAP) {
+                pointId = getPointId(chan.hierarchyName);
+                if (pointId != null) {
+                    set.add(String.format("\"%s\"", pointId));
+                }
+            }
+            valueFilter = String.join(",",  set);
+        }
+
+        if (LOGGER.isTraceEnabled()) 
+            LOGGER.trace("refresh: request={}", valueFilter);
+
+        String json = httpGetPointValuesJson(apiKey, token, valueFilter);
+        
+        LOGGER.debug(
+            "refresh: received {} characters (log:set TRACE to see all)", 
+                json.length());
+
+        if (LOGGER.isTraceEnabled()) 
+            LOGGER.trace("refresh: response={}", json);
+
+        if (json.equals("")) { 
+            return false;
+        }
+
+        try {
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(BasePoint.class, 
+                            new PointDeserializer())
+                    .create();
+            nuPoints = gson.fromJson(json, RdsDataPoints.class);
+        } catch (Exception e) {
+            LOGGER.error("refreshUsedValues: exception={}", e.getMessage());
+            return false;
+        }
+        
+        synchronized (this) {
+            for (Map.Entry<String, BasePoint> entry : nuPoints.points.entrySet()) {
+                BasePoint nuPoint = entry.getValue();
+                BasePoint exPoint = points.get(entry.getKey());
+                
+                if (nuPoint instanceof BooleanPoint && 
+                        exPoint instanceof BooleanPoint) {
+                    ((BooleanPoint) exPoint).value = 
+                            ((BooleanPoint) nuPoint).value;
+                } else 
+        
+                if (nuPoint instanceof TextPoint && 
+                        exPoint instanceof TextPoint) {
+                    ((TextPoint) exPoint).value = 
+                            ((TextPoint) nuPoint).value;
+                } else 
+                    
+                if (nuPoint instanceof NumericPoint && 
+                        exPoint instanceof NumericPoint) {
+                    ((NumericPoint) exPoint).value = 
+                            ((NumericPoint) nuPoint).value;
+                } else 
+                    
+                if (nuPoint instanceof InnerValuePoint && 
+                        exPoint instanceof InnerValuePoint) {
+                    ((InnerValuePoint) exPoint).inner.value = 
+                            ((InnerValuePoint) nuPoint).inner.value;
+                    ((InnerValuePoint) exPoint).inner.presentPriority = 
+                            ((InnerValuePoint) nuPoint).inner.presentPriority;
+                }
+            }
+        }
+        return true;
+    }
+
 }
 
     /**
@@ -383,6 +511,10 @@ class RdsDataPoints {
             return isEnum;
         }
         
+        public int getPresentPriority() {
+            return 0;
+        }
+
         /*
          * => MUST be overridden
          */
@@ -434,6 +566,7 @@ class RdsDataPoints {
             }
             return String.format("{\"value\":%s}", newVal);
         }
+        
     }
     
     
@@ -532,6 +665,14 @@ class RdsDataPoints {
                 return new DecimalType(inner.value);
             }
             return null;
+        }
+
+        @Override
+        public int getPresentPriority () {
+            if (inner != null) {
+                return (int) inner.presentPriority;
+            }
+            return 0;
         }
     }
     
