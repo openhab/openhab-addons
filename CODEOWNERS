@@ -61,6 +61,7 @@
 /bundles/org.openhab.binding.hdpowerview/ @beowulfe
 /bundles/org.openhab.binding.helios/ @kgoderis
 /bundles/org.openhab.binding.heos/ @Wire82
+/bundles/org.openhab.binding.homeconnect/ @bruestel
 /bundles/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
 /bundles/org.openhab.binding.hpprinter/ @cossey
 /bundles/org.openhab.binding.hue/ @cweitkamp

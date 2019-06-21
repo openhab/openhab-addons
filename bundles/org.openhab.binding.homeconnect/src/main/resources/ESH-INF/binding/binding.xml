@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="homeconnect" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
+
+	<name>Home Connect Binding</name>
+	<description>This is the binding for Home Connect.</description>
+	<author>Jonas Brüstel</author>
+
+	<config-description>
+		<parameter name="embeddedLogging" type="boolean">
+			<label>Enable extended logging</label>
+			<description>If enabled, the binding will log to separate file</description>
+			<default>true</default>
+			<required>true</required>
+		</parameter>
+	</config-description>
+
+</binding:binding>

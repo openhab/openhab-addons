@@ -27,6 +27,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.osgi.service.http.HttpService;
@@ -67,6 +68,7 @@ public class AccountsServlet extends HttpServlet {
         accounts.remove(accountThing);
     }
 
+    @Deactivate
     public void deactivate() {
         httpService.unregister(SERVLET_URL);
     }

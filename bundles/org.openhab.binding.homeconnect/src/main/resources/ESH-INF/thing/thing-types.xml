@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="homeconnect"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Home Connect API Bridge -->
+	<bridge-type id="api_bridge">
+		<label>Home Connect API</label>
+		<description>This bridge represents the gateway to the Home Connect API.</description>
+		<config-description>
+			<parameter name="clientId" type="text" required="true">
+				<label>Client id</label>
+				<description>Application client id</description>
+			</parameter>
+			<parameter name="clientSecret" type="text" required="true">
+				<label>Client secret</label>
+				<description>Application client secret</description>
+			</parameter>
+			<parameter name="simulator" type="boolean" required="true">
+				<label>Use simulator environment</label>
+				<description>Use simulated environment at https://developer.home-connect.com/simulator/</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Dishwasher -->
+	<thing-type id="dishwasher">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge" />
+		</supported-bridge-type-refs>
+		<label>Dishwasher</label>
+		<description>Home Connect connected dishwasher (e.g. Bosch or Siemens).</description>
+		<channels>
+			<channel id="power_state" typeId="power_state" />
+			<channel id="door_state" typeId="door_state" />
+			<channel id="operation_state" typeId="operation_state" />
+			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state" />
+			<channel id="remote_control_active_state" typeId="remote_control_active_state" />
+			<channel id="selected_program_state" typeId="selected_program_state" />
+			<channel id="basic_actions_state" typeId="basic_actions_state" />
+			<channel id="active_program_state" typeId="active_program_state" />
+			<channel id="remaining_program_time_state" typeId="remaining_program_time_state" />
+			<channel id="program_progress_state" typeId="program_progress_state" />
+		</channels>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Oven -->
+	<thing-type id="oven">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge" />
+		</supported-bridge-type-refs>
+		<label>Oven</label>
+		<description>Home Connect connected oven (e.g. Bosch or Siemens).</description>
+		<channels>
+			<channel id="power_state" typeId="power_state" />
+			<channel id="door_state" typeId="door_state" />
+			<channel id="operation_state" typeId="operation_state" />
+			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state" />
+			<channel id="remote_control_active_state" typeId="remote_control_active_state" />
+			<channel id="active_program_state" typeId="active_program_state" />
+			<channel id="selected_program_state" typeId="selected_program_state" />
+			<channel id="setpoint_temperature" typeId="setpoint_temperature" />
+			<channel id="duration" typeId="duration" />
+			<channel id="basic_actions_state" typeId="basic_actions_state" />
+			<channel id="remaining_program_time_state" typeId="remaining_program_time_state" />
+			<channel id="program_progress_state" typeId="program_progress_state" />
+			<channel id="oven_current_cavity_temperature" typeId="current_cavity_temperature" />
+			<channel id="elapsed_program_time" typeId="elapsed_program_time" />
+
+		</channels>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Washer -->
+	<thing-type id="washer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge" />
+		</supported-bridge-type-refs>
+		<label>Washer</label>
+		<description>Home Connect connected washing machine (e.g. Bosch or Siemens).</description>
+		<channels>
+			<channel id="door_state" typeId="door_state" />
+			<channel id="operation_state" typeId="operation_state" />
+			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state" />
+			<channel id="remote_control_active_state" typeId="remote_control_active_state" />
+			<channel id="local_control_active_state" typeId="local_control_active_state"></channel>
+			<channel id="active_program_state" typeId="active_program_state" />
+			<channel id="selected_program_state" typeId="selected_program_state" />
+			<channel id="laundry_care_washer_temperature" typeId="laundry_care_washer_temperature" />
+			<channel id="laundry_care_washer_spin_speed" typeId="laundry_care_washer_spin_speed" />
+			<channel id="laundry_care_washer_idos1" typeId="laundry_care_washer_idos1" />
+			<channel id="laundry_care_washer_idos2" typeId="laundry_care_washer_idos2" />
+			<channel id="basic_actions_state" typeId="basic_actions_state" />
+			<channel id="remaining_program_time_state" typeId="remaining_program_time_state" />
+			<channel id="program_progress_state" typeId="program_progress_state" />
+		</channels>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Washer dryer combination -->
+	<thing-type id="washerdryer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge" />
+		</supported-bridge-type-refs>
+		<label>Washer Dryer combination</label>
+		<description>Home Connect connected combined washer dryer appliance.</description>
+		<channels>
+			<channel id="door_state" typeId="door_state" />
+			<channel id="operation_state" typeId="operation_state" />
+			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state" />
+			<channel id="remote_control_active_state" typeId="remote_control_active_state" />
+			<channel id="local_control_active_state" typeId="local_control_active_state"></channel>
+			<channel id="active_program_state" typeId="active_program_state" />
+			<channel id="selected_program_state" typeId="selected_program_state" />
+			<channel id="laundry_care_washer_temperature" typeId="laundry_care_washer_temperature" />
+			<channel id="laundry_care_washer_spin_speed" typeId="laundry_care_washer_spin_speed" />
+			<channel id="dryer_drying_target" typeId="dryer_drying_target" />
+			<channel id="basic_actions_state" typeId="basic_actions_state" />
+			<channel id="remaining_program_time_state" typeId="remaining_program_time_state" />
+			<channel id="program_progress_state" typeId="program_progress_state" />
+		</channels>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Dryer -->
+	<thing-type id="dryer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge" />
+		</supported-bridge-type-refs>
+		<label>Dryer</label>
+		<description>Home Connect connected dryer (e.g. Bosch or Siemens).</description>
+		<channels>
+			<channel id="door_state" typeId="door_state" />
+			<channel id="operation_state" typeId="operation_state" />
+			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state" />
+			<channel id="remote_control_active_state" typeId="remote_control_active_state" />
+			<channel id="local_control_active_state" typeId="local_control_active_state"></channel>
+			<channel id="active_program_state" typeId="active_program_state" />
+			<channel id="selected_program_state" typeId="selected_program_state" />
+			<channel id="dryer_drying_target" typeId="dryer_drying_target" />
+			<channel id="basic_actions_state" typeId="basic_actions_state" />
+			<channel id="remaining_program_time_state" typeId="remaining_program_time_state" />
+			<channel id="program_progress_state" typeId="program_progress_state" />
+		</channels>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Fridge Freezer -->
+	<thing-type id="fridgefreezer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge" />
+		</supported-bridge-type-refs>
+		<label>Refrigerator / Freezer</label>
+		<description>Home Connect connected refrigerator/freezer (e.g. Bosch or Siemens).</description>
+		<channels>
+			<channel id="door_state" typeId="door_state" />
+			<channel id="setpoint_temperature_refrigerator" typeId="setpoint_temperature_refrigerator" />
+			<channel id="super_mode_refrigerator" typeId="super_mode_refrigerator" />
+			<channel id="setpoint_temperature_freezer" typeId="setpoint_temperature_freezer" />
+			<channel id="super_mode_freezer" typeId="super_mode_freezer" />
+		</channels>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Coffee Machine -->
+	<thing-type id="coffeemaker">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge" />
+		</supported-bridge-type-refs>
+		<label>Coffee Machine</label>
+		<description>Home Connect connected coffee machine (e.g. Bosch or Siemens).</description>
+		<channels>
+			<channel id="power_state" typeId="power_state" />
+			<channel id="operation_state" typeId="operation_state" />
+			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state" />
+			<channel id="local_control_active_state" typeId="local_control_active_state"></channel>
+			<channel id="active_program_state" typeId="active_program_state" />
+			<channel id="selected_program_state" typeId="selected_program_state" />
+			<channel id="basic_actions_state" typeId="basic_actions_state" />
+			<channel id="program_progress_state" typeId="program_progress_state" />
+			<channel id="coffeemaker_drip_tray_full_state" typeId="coffeemaker_drip_tray_full_state" />
+			<channel id="coffeemaker_water_tank_empty_state" typeId="coffeemaker_water_tank_empty_state" />
+			<channel id="coffeemaker_bean_container_empty_state" typeId="coffeemaker_bean_container_empty_state" />
+		</channels>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Hood -->
+	<thing-type id="hood">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge" />
+		</supported-bridge-type-refs>
+		<label>Hood</label>
+		<description>Home Connect connected kitchen hood.</description>
+		<channels>
+			<channel id="power_state" typeId="power_state" />
+			<channel id="operation_state" typeId="operation_state" />
+			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state" />
+			<channel id="remote_control_active_state" typeId="remote_control_active_state" />
+			<channel id="local_control_active_state" typeId="local_control_active_state"></channel>
+			<channel id="active_program_state" typeId="active_program_state" />
+			<channel id="selected_program_state" typeId="selected_program_state" />
+			<channel id="hood_venting_level" typeId="hood_venting_level" />
+			<channel id="hood_intensive_level" typeId="hood_intensive_level" />
+			<channel id="basic_actions_state" typeId="basic_actions_state" />
+		</channels>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Cooktop -->
+	<thing-type id="hob">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api_bridge" />
+		</supported-bridge-type-refs>
+		<label>Cooktop</label>
+		<description>Home Connect connected kitchen cooktop (hob).</description>
+		<channels>
+			<channel id="power_state" typeId="power_state" />
+			<channel id="operation_state" typeId="operation_state" />
+			<channel id="remote_control_active_state" typeId="remote_control_active_state" />
+			<channel id="local_control_active_state" typeId="local_control_active_state"></channel>
+			<channel id="active_program_state" typeId="active_program_state" />
+			<channel id="selected_program_state" typeId="selected_program_state" />
+		</channels>
+		<config-description>
+			<parameter name="haId" type="text" required="true">
+				<label>haId</label>
+				<description>Unique identifier representing a specific home appliance.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel types -->
+	<channel-type id="basic_actions_state">
+		<item-type>String</item-type>
+		<label>Program actions</label>
+		<state>
+			<options>
+				<option value="start">Start program</option>
+				<option value="stop">Stop program</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="power_state">
+		<item-type>Switch</item-type>
+		<label>Power State</label>
+		<description>This setting describes the current power state of the home appliance.</description>
+	</channel-type>
+	<channel-type id="local_control_active_state">
+		<item-type>Switch</item-type>
+		<label>Local Control State</label>
+		<description>This status indicates whether the home appliance is currently manually controlled by the user operating the home appliance, e.g. opening the door or pressing a button.</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="coffeemaker_drip_tray_full_state">
+		<item-type>Switch</item-type>
+		<label>Drip Tray Full</label>
+		<description>Is coffee maker drip tray full?</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="coffeemaker_water_tank_empty_state">
+		<item-type>Switch</item-type>
+		<label>Water Tank Empty</label>
+		<description>Is coffee maker water tank empty?</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="coffeemaker_bean_container_empty_state">
+		<item-type>Switch</item-type>
+		<label>Bean Container Empty</label>
+		<description>Is coffee maker bean container is empty?</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="door_state">
+		<item-type>Contact</item-type>
+		<label>Door State</label>
+		<description>This status describes the door state of a home appliance. A status change is either triggered by the user operating the home appliance locally (i.e. opening/closing door) or automatically by the home appliance (i.e. locking the door).</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="operation_state">
+		<item-type>String</item-type>
+		<label>Operation State</label>
+		<description>This status describes the operation state of the home appliance.</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="remote_start_allowance_state">
+		<item-type>Switch</item-type>
+		<label>Remote Start Allowance State</label>
+		<description>This status indicates whether the remote program start is enabled. This can happen due to a programmatic change (only disabling), or manually by the user changing the flag locally on the home appliance, or automatically after a certain duration - usually 24 hours.</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="remote_control_active_state">
+		<item-type>Switch</item-type>
+		<label>Remote Control Activation State</label>
+		<description>This status indicates whether the allowance for remote controlling is enabled.</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="active_program_state">
+		<item-type>String</item-type>
+		<label>Active Program</label>
+		<description>This status describes the active program of the home appliance.</description>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="selected_program_state">
+		<item-type>String</item-type>
+		<label>Selected Program</label>
+		<description>This state describes the selected program of the home appliance.</description>
+	</channel-type>
+	<channel-type id="remaining_program_time_state">
+		<item-type>Number:Time</item-type>
+		<label>Remaining program time</label>
+		<description>This status indicates the remaining program time of the home appliance.</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="program_progress_state">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Progress State</label>
+		<description>This status describes the program progress of the home appliance.</description>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+	</channel-type>
+	<channel-type id="current_cavity_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Cavity Temperature</label>
+		<description>This status describes the oven cavity temperature of the home appliance.</description>
+		<state readOnly="true" pattern="%.0f %unit%" />
+	</channel-type>
+	<channel-type id="elapsed_program_time">
+		<item-type>Number:Time</item-type>
+		<label>Elapsed Program Time</label>
+		<description>This status describes the elapsed program time of the home appliance.</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="setpoint_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint Temperature</label>
+		<description>This status describes the intended cooking compartment temperature of the home appliance.</description>
+		<state pattern="%.0f %unit%" step="1" />
+	</channel-type>
+	<channel-type id="duration">
+		<item-type>Number:Time</item-type>
+		<label>Selected duration</label>
+		<description>This status describes the duration of the program of the home appliance.</description>
+		<state pattern="%d %unit%" step="60" min="60"></state>
+	</channel-type>
+	<channel-type id="laundry_care_washer_temperature">
+		<item-type>String</item-type>
+		<label>Washing Program Temperature</label>
+		<description>This status describes the temperature of the washing program of the home appliance.</description>
+		<state>
+			<options>
+				<option value="LaundryCare.Washer.EnumType.Temperature.Cold">Cold water</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.GC20">20 °C</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.GC30">30 °C</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.GC40">40 °C</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.GC50">50 °C</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.GC60">60 °C</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.GC70">70 °C</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.GC80">80 °C</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.GC90">90 °C</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.Auto">Auto</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.UlCold">Cold (US/CA)</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.UlWarm">Warm (US/CA)</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.UlHot">Hot (US/CA)</option>
+				<option value="LaundryCare.Washer.EnumType.Temperature.UlExtraHot">Extra hot (US/CA)</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="laundry_care_washer_spin_speed">
+		<item-type>String</item-type>
+		<label>Spin Speed</label>
+		<description>This status defines the spin speed of a washer program of the home appliance.</description>
+		<state>
+			<options>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.Off">No spinning</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.RPM400">400 rpm</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.RPM600">600 rpm</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.RPM800">800 rpm</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.RPM1000">1000 rpm</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.RPM1200">1200 rpm</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.RPM1400">1400 rpm</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.RPM1600">1600 rpm</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.Auto">Auto</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.UlNo">No spinning (US/CA)</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.UlLow">Low (US/CA)</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.UlMedium">Medium (US/CA)</option>
+				<option value="LaundryCare.Washer.EnumType.SpinSpeed.UlHigh">High (US/CA)</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="laundry_care_washer_idos1">
+		<item-type>String</item-type>
+		<label>i-Dos 1 dosing level</label>
+		<description>This status defines the i-Dos dosing level of a washer program of the home appliance. (If appliance supports i-Dos)</description>
+		<state>
+			<options>
+				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Off">Off</option>
+				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Light">Light</option>
+				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Normal">Normal</option>
+				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Strong">Strong</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="laundry_care_washer_idos2">
+		<item-type>String</item-type>
+		<label>i-Dos 2 dosing level</label>
+		<description>This status defines the i-Dos dosing level of a washer program of the home appliance. (If appliance supports i-Dos)</description>
+		<state>
+			<options>
+				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Off">Off</option>
+				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Light">Light</option>
+				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Normal">Normal</option>
+				<option value="LaundryCare.Washer.EnumType.IDosingLevel.Strong">Strong</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="setpoint_temperature_refrigerator">
+		<item-type>Number:Temperature</item-type>
+		<label>Refrigerator temperature</label>
+		<description>Target temperature of the refrigerator compartment (Range depends on appliance - common range 2 to 8°C).</description>
+		<state step="1" pattern="%.0f %unit%"></state>
+	</channel-type>
+	<channel-type id="setpoint_temperature_freezer">
+		<item-type>Number:Temperature</item-type>
+		<label>Freezer temperature</label>
+		<description>Target temperature of the freezer compartment (Range depends on appliance - common range -16 to -24°C).</description>
+		<state step="1" pattern="%.0f %unit%"></state>
+	</channel-type>
+	<channel-type id="super_mode_refrigerator">
+		<item-type>Switch</item-type>
+		<label>Refrigerator super mode</label>
+		<description>The setting has no impact on setpoint temperatures but will make the fridge compartment cool to the lowest possible temperature until it is disabled by the manually by the customer or by the HA because of a timeout.</description>
+		<state readOnly="false" />
+	</channel-type>
+	<channel-type id="super_mode_freezer">
+		<item-type>Switch</item-type>
+		<label>Freezer super mode</label>
+		<description>This setting has no impact on setpoint temperatures but will make the freezer compartment cool to the lowest possible temperature until it is disabled by the manually by the customer or by the home appliance because of a timeout.</description>
+		<state readOnly="false" />
+	</channel-type>
+	<channel-type id="dryer_drying_target">
+		<item-type>String</item-type>
+		<label>Drying target</label>
+		<description>Specifies the desired dryness setting.</description>
+		<state readOnly="false" />
+	</channel-type>
+	<channel-type id="hood_venting_level">
+		<item-type>String</item-type>
+		<label>Venting level</label>
+		<description>This option defines the required fan setting of the hood.</description>
+		<state readOnly="false" />
+	</channel-type>
+	<channel-type id="hood_intensive_level">
+		<item-type>String</item-type>
+		<label>Intensive level</label>
+		<description>This option defines the intensive setting of the hood.</description>
+		<state readOnly="false" />
+	</channel-type>
+
+</thing:thing-descriptions>
