@@ -20,15 +20,20 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-import javax.measure.Unit;
 import javax.measure.quantity.Speed;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -40,8 +45,6 @@ import org.openhab.binding.buienradar.internal.buienradarapi.Prediction;
 import org.openhab.binding.buienradar.internal.buienradarapi.PredictionAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tec.uom.se.unit.Units;
 
 /**
  * The {@link BuienradarHandler} is responsible for handling commands, which are
@@ -58,10 +61,14 @@ public class BuienradarHandler extends BaseThingHandler {
 
     private @NonNullByDefault({}) ScheduledFuture<?> listenableFuture;
 
+    /**
+     * Prevents race-condition access to listenableFuture.
+     */
+    private final Lock listenableFutureLock = new ReentrantLock();
+
     private @NonNullByDefault({}) PointType location;
 
-    private static final Unit<Speed> MILLIMETRE_PER_HOUR = Units.METRE.divide(1000).divide(Units.HOUR)
-            .asType(Speed.class);
+    private @NonNullByDefault({}) BuienradarConfiguration config;
 
     public BuienradarHandler(Thing thing) {
         super(thing);
@@ -75,7 +82,7 @@ public class BuienradarHandler extends BaseThingHandler {
     @SuppressWarnings("null")
     @Override
     public void initialize() {
-        BuienradarConfiguration config = getConfigAs(BuienradarConfiguration.class);
+        this.config = getConfigAs(BuienradarConfiguration.class);
 
         boolean configValid = true;
         if (StringUtils.trimToNull(config.location) == null) {
@@ -96,29 +103,59 @@ public class BuienradarHandler extends BaseThingHandler {
         if (configValid) {
             updateStatus(ThingStatus.UNKNOWN);
         }
-        if (listenableFuture == null || listenableFuture.isCancelled()) {
-            listenableFuture = scheduler.scheduleWithFixedDelay(this::refresh, 0L, config.refreshIntervalMinutes,
-                    MINUTES);
+        try {
+            listenableFutureLock.lock();
+            if (listenableFuture == null || listenableFuture.isCancelled()) {
+                listenableFuture = scheduler.scheduleWithFixedDelay(() -> refresh(), 0L, config.refreshIntervalMinutes,
+                        MINUTES);
+            }
+        } finally {
+            listenableFutureLock.unlock();
         }
     }
 
     private void refresh() {
+        refresh(config.retries, ZonedDateTime.now().plusMinutes(config.refreshIntervalMinutes),
+                config.exponentialBackoffRetryBaseInSeconds);
+    }
+
+    private void refresh(int tries, ZonedDateTime nextRefresh, int retryInSeconds) {
+        if (nextRefresh.isBefore(ZonedDateTime.now())) {
+            // The next refresh is already running, stop retries.
+            return;
+        }
+        if (tries <= 0) {
+            // We are out of tries, stop retrying.
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
         try {
             @SuppressWarnings("null")
-            final List<Prediction> predictions = client.getPredictions(location);
+            final Optional<List<Prediction>> predictionsOpt = client.getPredictions(location);
+            if (!predictionsOpt.isPresent()) {
+                // Did not get a result, retry the retrieval.
+                logger.warn("Did not get a result from buienradar. Retrying. {} tries remaining, waiting {} seconds.",
+                        tries, retryInSeconds);
+                scheduler.schedule(() -> refresh(tries - 1, nextRefresh, retryInSeconds * 2), retryInSeconds,
+                        TimeUnit.SECONDS);
+                return;
+            }
+            final List<Prediction> predictions = predictionsOpt.get();
+            if (!predictions.isEmpty()) {
+                final ZonedDateTime actual = predictions.get(0).getActualDateTime();
+                updateState(BuienradarBindingConstants.ACTUAL_DATETIME, new DateTimeType(actual));
+            }
             for (final Prediction prediction : predictions) {
                 final BigDecimal intensity = prediction.getIntensity();
-                final ZonedDateTime nowPlusThree = ZonedDateTime.now().plusMinutes(3);
-                final ZonedDateTime lastFiveMinute = nowPlusThree.withMinute((nowPlusThree.getMinute() / 5) * 5)
-                        .withSecond(0).withNano(0);
-                final long minutesFromNow = lastFiveMinute.until(prediction.getDateTime(), ChronoUnit.MINUTES);
-                final long minuteClass = minutesFromNow;
-                logger.debug("Forecast for {} at {} is {}", minutesFromNow, prediction.getDateTime(), intensity);
-                if (minuteClass >= 0 && minuteClass <= 115) {
-                    final String label = String.format(Locale.ENGLISH, "forecast_%d", minuteClass);
 
-                    /** @TODO: edejong 2019-04-03 Change to SmartHomeUnits.MILLIMETRE_PER_HOUR for OH 2.5 */
-                    updateState(label, new QuantityType<Speed>(intensity, MILLIMETRE_PER_HOUR));
+                final long minutesFromNow = prediction.getActualDateTime().until(prediction.getDateTimeOfPrediction(),
+                        ChronoUnit.MINUTES);
+                logger.debug("Forecast for {} at {} made at {} is {}", minutesFromNow,
+                        prediction.getDateTimeOfPrediction(), prediction.getActualDateTime(), intensity);
+                if (minutesFromNow >= 0 && minutesFromNow <= 115) {
+                    final String label = String.format(Locale.ENGLISH, "forecast_%d", minutesFromNow);
+
+                    updateState(label, new QuantityType<Speed>(intensity, SmartHomeUnits.MILLIMETRE_PER_HOUR));
                 }
             }
 
@@ -133,9 +170,14 @@ public class BuienradarHandler extends BaseThingHandler {
     @SuppressWarnings("null")
     @Override
     public void dispose() {
-        if (listenableFuture != null && !listenableFuture.isCancelled()) {
-            listenableFuture.cancel(true);
-            listenableFuture = null;
+        try {
+            listenableFutureLock.lock();
+            if (listenableFuture != null && !listenableFuture.isCancelled()) {
+                listenableFuture.cancel(true);
+                listenableFuture = null;
+            }
+        } finally {
+            listenableFutureLock.unlock();
         }
     }
 }
