@@ -156,6 +156,7 @@ With low baud rates and/or long read requests (that is, many items polled), ther
 ### `poller` Thing
 
 `poller` thing takes care of polling the Modbus serial slave or Modbus TCP server data regularly.
+You must give each of your bridge Things a name that is unique for this binding.
 
 | Parameter     | Type    | Required | Default if omitted | Description                                                                                                                                                                                    |
 | ------------- | ------- | -------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
