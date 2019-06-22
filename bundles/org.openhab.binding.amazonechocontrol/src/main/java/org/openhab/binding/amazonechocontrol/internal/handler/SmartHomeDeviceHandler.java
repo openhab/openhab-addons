@@ -140,15 +140,11 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         if (accountHandler == null) {
             return;
         }
-        int waitForUpdate = -1;
 
         try {
             Map<String, String> props = this.thing.getProperties();
             String entityId = props.get(DEVICE_PROPERTY_LIGHT_ENTITY_ID);
             String channelId = channelUID.getId();
-            if (command instanceof RefreshType) {
-                waitForUpdate = 0;
-            }
             if (channelId.equals(CHANNEL_LIGHT_STATE)) {
                 if (command instanceof OnOffType) {
                     connection = accountHandler.findConnection();
@@ -168,7 +164,6 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                             }
                         }
                     }
-                    waitForUpdate = 1;
                 }
             }
             if (channelId.equals(CHANNEL_LIGHT_COLOR)) {
@@ -216,16 +211,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                                     ((PercentType) command).floatValue() / 100);
                         }
                     }
-                    waitForUpdate = 1;
                 }
-            }
-
-            if (waitForUpdate < 0) {
-                return;
-            }
-
-            if (command instanceof RefreshType) {
-                waitForUpdate = 0;
             }
 
         } catch (Exception e) {
