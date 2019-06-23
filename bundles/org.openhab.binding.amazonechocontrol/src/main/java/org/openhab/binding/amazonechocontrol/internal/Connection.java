@@ -439,8 +439,7 @@ public class Connection {
         HttpsURLConnection connection = makeRequest("GET", alexaServer + "/api/bootstrap", null, false, false, null, 0);
         String contentType = connection.getContentType();
         if (connection.getResponseCode() == 200 && StringUtils.startsWithIgnoreCase(contentType, "application/json")) {
-            try
-            {
+            try {
                 String bootstrapResultJson = convertStream(connection);
                 JsonBootstrapResult result = parseJson(bootstrapResultJson, JsonBootstrapResult.class);
                 Authentication authentication = result.authentication;
@@ -452,9 +451,8 @@ public class Connection {
                     return authentication;
                 }
             }
-            catch (JsonSyntaxException | IllegalStateException e)
-            {
-                // We have not received a valid json
+            catch (JsonSyntaxException | IllegalStateException e) {
+                logger.info("No valid json received {}", e);
                 return null;
             }
         }
