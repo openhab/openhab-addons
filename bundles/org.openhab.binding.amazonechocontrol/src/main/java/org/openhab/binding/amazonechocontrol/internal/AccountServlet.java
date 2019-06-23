@@ -76,14 +76,14 @@ public class AccountServlet extends HttpServlet {
 
     private final Logger logger = LoggerFactory.getLogger(AccountServlet.class);
 
-    HttpService httpService;
+    final HttpService httpService;
     String servletUrlWithoutRoot;
-    String servletUrl;
+    final String servletUrl;
     AccountHandler account;
     String id;
     @Nullable
     Connection connectionToInitialize;
-    Gson gson;
+    final Gson gson;
 
     public AccountServlet(HttpService httpService, String id, AccountHandler account, Gson gson) {
         this.httpService = httpService;
