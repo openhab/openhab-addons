@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -31,8 +32,8 @@ import com.google.gson.JsonSyntaxException;
 public class ChannelHandlerAnnouncement extends ChannelHandler {
     public static final String CHANNEL_NAME = "announcement";
 
-    public ChannelHandlerAnnouncement(IAmazonThingHandler thingHandler) {
-        super(thingHandler);
+    public ChannelHandlerAnnouncement(IAmazonThingHandler thingHandler, Gson gson) {
+        super(thingHandler, gson);
     }
 
     @Override

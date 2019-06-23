@@ -35,12 +35,13 @@ public abstract class ChannelHandler {
             throws IOException, URISyntaxException;
 
     protected final IAmazonThingHandler thingHandler;
-    protected final Gson gson = new Gson();
+    protected final Gson gson;
     private final Logger logger;
 
-    protected ChannelHandler(IAmazonThingHandler thingHandler) {
+    protected ChannelHandler(IAmazonThingHandler thingHandler, Gson gson) {
         this.logger = LoggerFactory.getLogger(this.getClass());
         this.thingHandler = thingHandler;
+        this.gson = gson;
     }
 
     protected <T> @Nullable T tryParseJson(String json, Class<T> type) {

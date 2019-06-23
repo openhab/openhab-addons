@@ -141,10 +141,11 @@ public class Connection {
     private @Nullable String accountCustomerId;
     private @Nullable String customerName;
 
-    private final Gson gson = new Gson();
+    private final Gson gson;
     private final Gson gsonWithNullSerialization;
 
-    public Connection(@Nullable Connection oldConnection) {
+    public Connection(@Nullable Connection oldConnection, Gson gson) {
+        this.gson = gson;
         String frc = null;
         String serial = null;
         String deviceId = null;

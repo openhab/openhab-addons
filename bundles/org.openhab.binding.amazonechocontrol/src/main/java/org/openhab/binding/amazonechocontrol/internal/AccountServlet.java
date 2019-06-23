@@ -83,12 +83,13 @@ public class AccountServlet extends HttpServlet {
     String id;
     @Nullable
     Connection connectionToInitialize;
-    Gson gson = new Gson();
+    Gson gson;
 
-    public AccountServlet(HttpService httpService, String id, AccountHandler account) {
+    public AccountServlet(HttpService httpService, String id, AccountHandler account, Gson gson) {
         this.httpService = httpService;
         this.account = account;
         this.id = id;
+        this.gson = gson;
         try {
             servletUrlWithoutRoot = "amazonechocontrol/" + URLEncoder.encode(id, "UTF8");
         } catch (UnsupportedEncodingException e) {
@@ -112,7 +113,7 @@ public class AccountServlet extends HttpServlet {
         if (oldConnection == null) {
             oldConnection = account.findConnection();
         }
-        return new Connection(oldConnection);
+        return new Connection(oldConnection, this.gson);
     }
 
     public void dispose() {
@@ -157,7 +158,7 @@ public class AccountServlet extends HttpServlet {
             Map<String, String[]> map = req.getParameterMap();
             String domain = map.get("domain")[0];
             String loginData = connection.serializeLoginData();
-            Connection newConnection = new Connection(null);
+            Connection newConnection = new Connection(null, this.gson);
             if (newConnection.tryRestoreLogin(loginData, domain)) {
                 account.setConnection(newConnection);
             }
@@ -282,7 +283,7 @@ public class AccountServlet extends HttpServlet {
                 }
                 // handle commands
                 if (baseUrl.equals("/newdevice") || baseUrl.equals("/newdevice/")) {
-                    this.connectionToInitialize = new Connection(null);
+                    this.connectionToInitialize = new Connection(null, this.gson);
                     this.account.setConnection(null);
                     resp.sendRedirect(this.servletUrl);
                     return;

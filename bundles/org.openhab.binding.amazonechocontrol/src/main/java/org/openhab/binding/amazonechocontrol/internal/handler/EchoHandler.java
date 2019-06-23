@@ -102,7 +102,7 @@ import com.google.gson.Gson;
 public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
-    private Gson gson = new Gson();
+    private Gson gson;
     private @Nullable Device device;
     private Set<String> capabilities = new HashSet<>();
     private @Nullable AccountHandler account;
@@ -142,9 +142,10 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
     long mediaStartMs;
     String lastSpokenText = "";
 
-    public EchoHandler(Thing thing) {
+    public EchoHandler(Thing thing, Gson gson) {
         super(thing);
-        channelHandlers.add(new ChannelHandlerAnnouncement(this));
+        this.gson = gson;
+        channelHandlers.add(new ChannelHandlerAnnouncement(this, this.gson));
     }
 
     @Override
