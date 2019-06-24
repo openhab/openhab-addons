@@ -53,7 +53,11 @@ class WebSocketBase extends WebSocketAdapter {
 
     @Override
     public void onWebSocketError(@Nullable Throwable error) {
-        logger.debug("{} connection error: {}", this.getClass().getSimpleName(), error);
+        if (logger.isTraceEnabled()) {
+            logger.trace("{} connection error: {}", this.getClass().getSimpleName(), error);
+        } else {
+            logger.debug("{} connection error: {}", this.getClass().getSimpleName());
+        }
         super.onWebSocketError(error);
         isConnecting = false;
     }
