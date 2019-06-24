@@ -94,10 +94,10 @@ public class VerisureBindingConstants {
     public static final String STATUS = BASEURL + "/uk/status";
     public static final String SETTINGS = BASEURL + "/uk/settings.html?giid=";
     public static final String SET_INSTALLATION = BASEURL + "/setinstallation?giid=";
-    public static final String BASEURL_API = "https://m-api01.verisure.com";
-    public static final String START_GRAPHQL = BASEURL_API + "/graphql";
-    public static final String AUTH_TOKEN = BASEURL_API + "/auth/token";
-    public static final String AUTH_LOGIN = BASEURL_API + "/auth/login";
+    public static final String BASEURL_API = "https://m-api02.verisure.com";
+    public static final String START_GRAPHQL = "/graphql";
+    public static final String AUTH_TOKEN = "/auth/token";
+    public static final String AUTH_LOGIN = "/auth/login";
 
     public static final String ALARMSTATUS_PATH = "/remotecontrol";
     public static final String SMARTLOCK_PATH = "/overview/doorlock/";

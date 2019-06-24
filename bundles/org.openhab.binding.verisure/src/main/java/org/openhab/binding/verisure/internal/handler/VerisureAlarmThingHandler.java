@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -91,9 +92,13 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler {
                         logger.debug("Unknown command! {}", command);
                         return;
                     }
-                    session.sendCommand(url, queryQLAlarmSetState, installationId);
-                    ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_ALARM_STATUS);
-                    updateState(cuid, new StringType("PENDING"));
+                    int httpResultCode = session.sendCommand(url, queryQLAlarmSetState, installationId);
+					if (httpResultCode == HttpStatus.OK_200) {
+						ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_ALARM_STATUS);
+						updateState(cuid, new StringType("PENDING"));
+					} else {
+						logger.warn("Could not send command, HTTP result code: {}", httpResultCode);
+					}
                 } else if (pinCode == null) {
                     logger.warn("PIN code is not configured! Mandatory to control Alarm!");
                 }

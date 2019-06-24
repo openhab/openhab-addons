@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -92,9 +93,13 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler {
 						logger.debug("Unknown command! {}", command);
 						return;
 					}
-					session.sendCommand(START_GRAPHQL, queryQLSmartPlugSetState, installationId);
-					ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_STATUS);
-					updateState(cuid, new StringType("pending"));
+					int httpResultCode = session.sendCommand(url, queryQLSmartPlugSetState, installationId);
+					if (httpResultCode == HttpStatus.OK_200) {
+						ChannelUID cuid = new ChannelUID(getThing().getUID(), CHANNEL_STATUS);
+						updateState(cuid, new StringType("pending"));
+					} else {
+						logger.warn("Failed to send command, HTTP result code {}", httpResultCode);
+					}
 				}
 			}
 		}

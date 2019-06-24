@@ -132,7 +132,6 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
     @Reference
     protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
         logger.debug("setHttpClientFactory this: {}", this);
-        logger.debug("setHttpClientFactory configure proxy!");
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.httpClient = new HttpClient(new SslContextFactory());
         
