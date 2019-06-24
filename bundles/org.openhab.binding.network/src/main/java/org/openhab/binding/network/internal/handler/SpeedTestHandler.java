@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.network.internal.handler;
 
-import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
 import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
+import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
@@ -64,14 +64,15 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
     @Override
     public void initialize() {
         configuration = getConfigAs(SpeedTestConfiguration.class);
-        logger.info("Speedtests starts in {} minutes, then refreshes every {} minutes", configuration.initialDelay,
-                configuration.refreshInterval);
-        refreshTask = scheduler.scheduleWithFixedDelay(this::startSpeedTest, configuration.initialDelay,
+        logger.info("Speedtests starts in {} minutes, then refreshes every {} minutes",
+                configuration.initialDelayMinutes, configuration.refreshInterval);
+        refreshTask = scheduler.scheduleWithFixedDelay(this::startSpeedTest, configuration.initialDelayMinutes,
                 configuration.refreshInterval, TimeUnit.MINUTES);
-          updateStatus(ThingStatus.ONLINE);     
+        updateStatus(ThingStatus.ONLINE);
     }
 
-    private void startSpeedTest() {
+    @SuppressWarnings("null")
+    synchronized private void startSpeedTest() {
         if (speedTestSocket == null) {
             logger.debug("Network speedtest started");
             speedTestSocket = new SpeedTestSocket(1500);
@@ -84,9 +85,10 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
         } else {
             logger.info("A speedtest is already in progress, will retry on next refresh");
         }
-     }
-     
-     private void stopSpeedTest() {
+    }
+
+    @SuppressWarnings("null")
+    synchronized private void stopSpeedTest() {
         updateState(CHANNEL_TEST_ISRUNNING, OnOffType.OFF);
         updateProgress(UnDefType.NULL);
         updateState(CHANNEL_TEST_END, new DateTimeType());
@@ -96,24 +98,29 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
             speedTestSocket = null;
             logger.debug("Network speedtest finished");
         }
-     }
+    }
 
     @Override
     public void onCompletion(final @Nullable SpeedTestReport testReport) {
         if (testReport != null) {
             BigDecimal rate = testReport.getTransferRateBit();
-            QuantityType<DataTransferRate> quantity = new QuantityType<DataTransferRate>(rate, BIT_PER_SECOND).toUnit(MEGABIT_PER_SECOND);
-            switch (testReport.getSpeedTestMode()) {
-                case DOWNLOAD:
-                    updateState(CHANNEL_RATE_DOWN, quantity);
-                    speedTestSocket.startUpload(configuration.getUploadURL(), configuration.uploadSize);
-                    break;
-                case UPLOAD:
-                    updateState(CHANNEL_RATE_UP, quantity);
-                    stopSpeedTest();
-                    break;
-                default:
-                    break;
+            QuantityType<DataTransferRate> quantity = new QuantityType<DataTransferRate>(rate, BIT_PER_SECOND)
+                    .toUnit(MEGABIT_PER_SECOND);
+            if (quantity != null) {
+                switch (testReport.getSpeedTestMode()) {
+                    case DOWNLOAD:
+                        updateState(CHANNEL_RATE_DOWN, quantity);
+                        if (speedTestSocket != null) {
+                            speedTestSocket.startUpload(configuration.getUploadURL(), configuration.uploadSize);
+                        }
+                        break;
+                    case UPLOAD:
+                        updateState(CHANNEL_RATE_UP, quantity);
+                        stopSpeedTest();
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
@@ -150,13 +157,13 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-          if (CHANNEL_TEST_ISRUNNING.equals(channelUID.getId())) {
-                if (command == OnOffType.ON) {
-                    startSpeedTest();
-                } else if (command == OnOffType.OFF) {
-                    stopSpeedTest();
-                }
-          } else {
+        if (CHANNEL_TEST_ISRUNNING.equals(channelUID.getId())) {
+            if (command == OnOffType.ON) {
+                startSpeedTest();
+            } else if (command == OnOffType.OFF) {
+                stopSpeedTest();
+            }
+        } else {
             logger.debug("Command {} is not supported for channel: {}.", command, channelUID.getId());
         }
     }
