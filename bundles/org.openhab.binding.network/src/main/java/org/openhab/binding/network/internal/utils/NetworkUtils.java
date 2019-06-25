@@ -101,7 +101,7 @@ public class NetworkUtils {
     /**
      * Takes the interfaceIPs and fetches every IP which can be assigned on their network
      *
-     * @param networkIPs          The IPs which are assigned to the Network Interfaces
+     * @param networkIPs The IPs which are assigned to the Network Interfaces
      * @param maximumPerInterface The maximum of IP addresses per interface or 0 to get all.
      * @return Every single IP which can be assigned on the Networks the computer is connected to
      */
@@ -147,10 +147,10 @@ public class NetworkUtils {
      * Try to establish a tcp connection to the given port. Returns false if a timeout occurred
      * or the connection was denied.
      *
-     * @param host    The IP or hostname
-     * @param port    The tcp port. Must be not 0.
+     * @param host The IP or hostname
+     * @param port The tcp port. Must be not 0.
      * @param timeout Timeout in ms
-     * @param logger  A slf4j logger instance to log IOException
+     * @param logger A slf4j logger instance to log IOException
      * @return
      * @throws IOException
      */
@@ -223,7 +223,7 @@ public class NetworkUtils {
     /**
      * Use the native ping utility of the operating system to detect device presence.
      *
-     * @param hostname    The DNS name, IPv4 or IPv6 address. Must not be null.
+     * @param hostname The DNS name, IPv4 or IPv6 address. Must not be null.
      * @param timeoutInMS Timeout in milliseconds. Be aware that DNS resolution is not part of this timeout.
      * @return Returns true if the device responded
      * @throws IOException The ping command could probably not be found
@@ -297,11 +297,11 @@ public class NetworkUtils {
      * * iputils arping which is sometimes preinstalled on fedora/ubuntu and the
      * * https://github.com/ThomasHabets/arping which also works on Windows and MacOS.
      *
-     * @param arpUtilPath   The arping absolute path including filename. Example: "arping" or "/usr/bin/arping" or
-     *                          "C:\something\arping.exe" or "arp-ping.exe"
+     * @param arpUtilPath The arping absolute path including filename. Example: "arping" or "/usr/bin/arping" or
+     *            "C:\something\arping.exe" or "arp-ping.exe"
      * @param interfaceName An interface name, on linux for example "wlp58s0", shown by ifconfig. Must not be null.
-     * @param ipV4address   The ipV4 address. Must not be null.
-     * @param timeoutInMS   A timeout in milliseconds
+     * @param ipV4address The ipV4 address. Must not be null.
+     * @param timeoutInMS A timeout in milliseconds
      * @return Return true if the device responded
      * @throws IOException The ping command could probably not be found
      */
