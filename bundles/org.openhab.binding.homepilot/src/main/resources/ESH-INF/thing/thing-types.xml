@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="homepilot"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <!-- Sample Thing Type -->
+    <bridge-type id="bridge">
+        <label>HomePilot Zentrale</label>
+    </bridge-type>
+    
+    <thing-type id="switch">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge"/>
+        </supported-bridge-type-refs>
+        <label>HomePilot Universal Aktor</label>
+        <description>HomePilot Universal Aktor</description>
+        <channels>
+            <channel id="state" typeId="state"/>
+        </channels>
+    </thing-type>
+    
+    <thing-type id="rollershutter">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="bridge"/>
+        </supported-bridge-type-refs>
+        <label>HomePilot Rohrmotor</label>
+        <description>HomePilot Rohrmotor</description>
+        <channels>
+            <channel id="rollershutter" typeId="rollershutter"/>
+        </channels>
+    </thing-type>
+
+    <channel-type id="state">
+        <item-type>Switch</item-type>
+        <label>HomePilot Switch Channel</label>
+        <description>Switch channel for HomePilot Binding</description>
+    </channel-type>
+    
+    <channel-type id="position">
+        <item-type>Number</item-type>
+        <label>HomePilot Position Channel</label>
+        <description>Position channel for HomePilot Binding</description>
+        <state min="0" max="100" step="1" readOnly="false" pattern="%d"></state>
+    </channel-type>
+    
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter</label>
+		<description>Rollershutter control for rollershutter action</description>
+		<category>Blinds</category>
+	</channel-type>
+</thing:thing-descriptions>
