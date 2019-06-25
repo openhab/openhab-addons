@@ -64,38 +64,38 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
     @Override
     public void initialize() {
         configuration = getConfigAs(SpeedTestConfiguration.class);
-        logger.info("Speedtests starts in {} minutes, then refreshes every {} minutes",
-                configuration.initialDelayMinutes, configuration.refreshInterval);
-        refreshTask = scheduler.scheduleWithFixedDelay(this::startSpeedTest, configuration.initialDelayMinutes,
+        logger.info("Speedtests starts in {} minutes, then refreshes every {} minutes", configuration.initialDelay,
+                configuration.refreshInterval);
+        refreshTask = scheduler.scheduleWithFixedDelay(this::startSpeedTest, configuration.initialDelay,
                 configuration.refreshInterval, TimeUnit.MINUTES);
         updateStatus(ThingStatus.ONLINE);
     }
 
-    @SuppressWarnings("null")
     synchronized private void startSpeedTest() {
         if (speedTestSocket == null) {
             logger.debug("Network speedtest started");
-            speedTestSocket = new SpeedTestSocket(1500);
-            speedTestSocket.addSpeedTestListener(this);
+            final SpeedTestSocket socket = new SpeedTestSocket(1500);
+            speedTestSocket = socket;
+            socket.addSpeedTestListener(this);
             updateState(CHANNEL_TEST_ISRUNNING, OnOffType.ON);
             updateState(CHANNEL_TEST_START, new DateTimeType());
             updateState(CHANNEL_TEST_END, UnDefType.NULL);
             updateProgress(new QuantityType<>(0, SmartHomeUnits.PERCENT));
-            speedTestSocket.startDownload(configuration.getDownloadURL());
+            socket.startDownload(configuration.getDownloadURL());
         } else {
             logger.info("A speedtest is already in progress, will retry on next refresh");
         }
     }
 
-    @SuppressWarnings("null")
     synchronized private void stopSpeedTest() {
         updateState(CHANNEL_TEST_ISRUNNING, OnOffType.OFF);
         updateProgress(UnDefType.NULL);
         updateState(CHANNEL_TEST_END, new DateTimeType());
         if (speedTestSocket != null) {
-            speedTestSocket.closeSocket();
-            speedTestSocket.removeSpeedTestListener(this);
-            speedTestSocket = null;
+            SpeedTestSocket socket = speedTestSocket;
+            socket.closeSocket();
+            socket.removeSpeedTestListener(this);
+            socket = null;
             logger.debug("Network speedtest finished");
         }
     }
@@ -110,7 +110,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
                 switch (testReport.getSpeedTestMode()) {
                     case DOWNLOAD:
                         updateState(CHANNEL_RATE_DOWN, quantity);
-                        if (speedTestSocket != null) {
+                        if (speedTestSocket != null && configuration != null) {
                             speedTestSocket.startUpload(configuration.getUploadURL(), configuration.uploadSize);
                         }
                         break;
@@ -127,8 +127,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
 
     @Override
     public void onError(final @Nullable SpeedTestError testError, final @Nullable String errorMessage) {
-        if (SpeedTestError.UNSUPPORTED_PROTOCOL.equals(testError)
-                || SpeedTestError.UNSUPPORTED_PROTOCOL.equals(testError)) {
+        if (SpeedTestError.UNSUPPORTED_PROTOCOL.equals(testError) || SpeedTestError.MALFORMED_URI.equals(testError)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
             freeRefreshTask();
             return;

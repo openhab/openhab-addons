@@ -125,7 +125,7 @@
 				<default>20</default>
 			</parameter>
 			<parameter name="initialDelay" type="integer" min="2">
-				<label>Initial Delay (min)</label>
+				<label>Initial Delay</label>
 				<description>Delay before starting the first speed test (minutes) after initialization of the binding.</description>
 				<default>5</default>
                 <advanced>true</advanced>

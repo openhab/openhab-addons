@@ -20,7 +20,7 @@ package org.openhab.binding.network.internal;
  */
 public class SpeedTestConfiguration {
     public Integer refreshInterval = 20;
-    public Integer initialDelayMinutes = 5;
+    public Integer initialDelay = 5;
     public Integer uploadSize = 1000000;
     private String url;
     private String fileName;
