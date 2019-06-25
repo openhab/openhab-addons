@@ -100,19 +100,7 @@ public class HomePilotThingHandler extends BaseThingHandler {
 		}
 	}
 
-	@Override
-	public void handleUpdate(ChannelUID channelUID, State newState) {
-		logger.info("handleUpdate " + channelUID + "; " + newState + "; " + getThing().getUID());
-	}
-
-	@Override
-	public void thingUpdated(Thing thing) {
-		super.thingUpdated(thing);
-		logger.info("thingUpdated " + thing.getLabel());
-	}
-
 	void refresh(final HomePilotDevice device) {
-		logger.info("refresh " + device.getName() + " with " + device.getPosition());
 		if (getBridge() != null) {
 			HomePilotBridgeHandler handler = (HomePilotBridgeHandler) getBridge().getHandler();
 			if (handler != null) {
