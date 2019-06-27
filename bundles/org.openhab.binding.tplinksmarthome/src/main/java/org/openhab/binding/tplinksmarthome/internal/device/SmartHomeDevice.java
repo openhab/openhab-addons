@@ -52,6 +52,7 @@ public abstract class SmartHomeDevice {
     }
 
     /**
+     * Sets connection and configuration values.
      *
      * @param connection The connection to the device
      * @param configuration The global configuration
