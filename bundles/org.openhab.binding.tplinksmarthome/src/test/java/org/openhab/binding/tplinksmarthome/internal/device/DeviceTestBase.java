@@ -24,7 +24,6 @@ import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Before;
 import org.mockito.Mock;
@@ -90,7 +89,7 @@ public class DeviceTestBase<T extends SmartHomeDevice> {
      * @param responseFilenames names of the files to read that contains the answer. It's the unencrypted json string
      * @throws IOException exception in case device not reachable
      */
-    protected void setSocketReturnAssert(@NonNull String... responseFilenames) throws IOException {
+    protected void setSocketReturnAssert(String... responseFilenames) throws IOException {
         AtomicInteger index = new AtomicInteger();
 
         doAnswer(i -> {
@@ -109,12 +108,12 @@ public class DeviceTestBase<T extends SmartHomeDevice> {
      * @param filenames names of the files containing the reference json
      * @throws IOException exception in case device not reachable
      */
-    protected void assertInput(@NonNull String... filenames) throws IOException {
+    protected void assertInput(String... filenames) throws IOException {
         assertInput(Function.identity(), Function.identity(), filenames);
     }
 
     protected void assertInput(Function<String, String> jsonProcessor, Function<String, String> expectedProcessor,
-            @NonNull String... filenames) throws IOException {
+            String... filenames) throws IOException {
         AtomicInteger index = new AtomicInteger();
 
         doAnswer(arg -> {

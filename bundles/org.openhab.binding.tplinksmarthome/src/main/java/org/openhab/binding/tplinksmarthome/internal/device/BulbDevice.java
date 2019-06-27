@@ -28,7 +28,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.tplinksmarthome.internal.Commands;
-import org.openhab.binding.tplinksmarthome.internal.Connection;
 import org.openhab.binding.tplinksmarthome.internal.model.HasErrorResponse;
 import org.openhab.binding.tplinksmarthome.internal.model.LightState;
 import org.openhab.binding.tplinksmarthome.internal.model.TransitionLightStateResponse;
@@ -69,11 +68,11 @@ public class BulbDevice extends SmartHomeDevice {
         final HasErrorResponse response;
 
         if (command instanceof OnOffType) {
-            response = handleOnOffType(channelId, connection, (OnOffType) command, transitionPeriod);
+            response = handleOnOffType(channelId, (OnOffType) command, transitionPeriod);
         } else if (command instanceof HSBType) {
-            response = handleHSBType(channelId, connection, (HSBType) command, transitionPeriod);
+            response = handleHSBType(channelId, (HSBType) command, transitionPeriod);
         } else if (command instanceof DecimalType) {
-            response = handleDecimalType(channelId, connection, (DecimalType) command, transitionPeriod);
+            response = handleDecimalType(channelId, (DecimalType) command, transitionPeriod);
         } else {
             return false;
         }
@@ -81,9 +80,8 @@ public class BulbDevice extends SmartHomeDevice {
         return response != null;
     }
 
-    @Nullable
-    private HasErrorResponse handleOnOffType(String channelID, Connection connection, OnOffType onOff,
-            int transitionPeriod) throws IOException {
+    private @Nullable HasErrorResponse handleOnOffType(String channelID, OnOffType onOff, int transitionPeriod)
+            throws IOException {
         if (CHANNELS_BULB_SWITCH.contains(channelID)) {
             return commands.setTransitionLightStateResponse(
                     connection.sendCommand(commands.setLightState(onOff, transitionPeriod)));
@@ -91,27 +89,25 @@ public class BulbDevice extends SmartHomeDevice {
         return null;
     }
 
-    @Nullable
-    private HasErrorResponse handleDecimalType(String channelID, Connection connection, DecimalType command,
-            int transitionPeriod) throws IOException {
+    private @Nullable HasErrorResponse handleDecimalType(String channelID, DecimalType command, int transitionPeriod)
+            throws IOException {
         if (CHANNEL_COLOR.equals(channelID) || CHANNEL_BRIGHTNESS.equals(channelID)) {
             return commands.setTransitionLightStateResponse(
                     connection.sendCommand(commands.setBrightness(command.intValue(), transitionPeriod)));
         } else if (CHANNEL_COLOR_TEMPERATURE.equals(channelID)) {
-            return handleColorTemperature(connection, convertPercentageToKelvin(command.intValue()), transitionPeriod);
+            return handleColorTemperature(convertPercentageToKelvin(command.intValue()), transitionPeriod);
         }
         return null;
     }
 
-    private @Nullable TransitionLightStateResponse handleColorTemperature(Connection connection, int colorTemperature,
-            int transitionPeriod) throws IOException {
+    private @Nullable TransitionLightStateResponse handleColorTemperature(int colorTemperature, int transitionPeriod)
+            throws IOException {
         return commands.setTransitionLightStateResponse(
                 connection.sendCommand(commands.setColorTemperature(colorTemperature, transitionPeriod)));
     }
 
     @Nullable
-    private HasErrorResponse handleHSBType(String channelID, Connection connection, HSBType command,
-            int transitionPeriod) throws IOException {
+    private HasErrorResponse handleHSBType(String channelID, HSBType command, int transitionPeriod) throws IOException {
         if (CHANNEL_COLOR.equals(channelID)) {
             return commands.setTransitionLightStateResponse(
                     connection.sendCommand(commands.setColor(command, transitionPeriod)));

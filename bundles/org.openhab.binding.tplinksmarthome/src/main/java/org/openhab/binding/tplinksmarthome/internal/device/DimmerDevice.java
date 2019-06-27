@@ -23,8 +23,6 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.tplinksmarthome.internal.Connection;
-import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeConfiguration;
 import org.openhab.binding.tplinksmarthome.internal.model.HasErrorResponse;
 
 /**
@@ -36,15 +34,13 @@ import org.openhab.binding.tplinksmarthome.internal.model.HasErrorResponse;
 public class DimmerDevice extends SwitchDevice {
 
     @Override
-    protected @Nullable HasErrorResponse setOnOffState(Connection connection, ChannelUID channelUid, OnOffType onOff)
-            throws IOException {
+    protected @Nullable HasErrorResponse setOnOffState(ChannelUID channelUid, OnOffType onOff) throws IOException {
         return commands.setSwitchStateResponse(connection.sendCommand(commands.setSwitchState(onOff)));
     }
 
     @Override
     public boolean handleCommand(ChannelUID channelUid, Command command) throws IOException {
-        return CHANNEL_BRIGHTNESS.equals(channelUid.getId())
-                ? handleBrightnessChannel(channelUid, connection, command, configuration)
+        return CHANNEL_BRIGHTNESS.equals(channelUid.getId()) ? handleBrightnessChannel(channelUid, command)
                 : super.handleCommand(channelUid, command);
     }
 
@@ -53,17 +49,15 @@ public class DimmerDevice extends SwitchDevice {
      * setting the brightness the on/off command must be send to the device as well when the brightness.
      *
      * @param channelUid uid of the channel to handle
-     * @param connection Connection to use
      * @param command command to the send
      * @return returns true if the command was handled
      * @throws IOException throws an {@link IOException} if the command handling failed
      */
-    private boolean handleBrightnessChannel(ChannelUID channelUid, Connection connection, Command command,
-            TPLinkSmartHomeConfiguration configuration) throws IOException {
+    private boolean handleBrightnessChannel(ChannelUID channelUid, Command command) throws IOException {
         HasErrorResponse response = null;
 
         if (command instanceof OnOffType) {
-            response = setOnOffState(connection, channelUid, (OnOffType) command);
+            response = setOnOffState(channelUid, (OnOffType) command);
         } else if (command instanceof PercentType) {
             PercentType percentCommand = (PercentType) command;
 
@@ -72,7 +66,7 @@ public class DimmerDevice extends SwitchDevice {
                 response = commands.setDimmerBrightnessResponse(
                         connection.sendCommand(commands.setDimmerBrightness(percentCommand.intValue())));
             } else {
-                response = setOnOffState(connection, channelUid, OnOffType.OFF);
+                response = setOnOffState(channelUid, OnOffType.OFF);
             }
         }
         checkErrors(response);
