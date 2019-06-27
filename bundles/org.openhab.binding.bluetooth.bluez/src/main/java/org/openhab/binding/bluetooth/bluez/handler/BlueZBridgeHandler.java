@@ -92,8 +92,7 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
         try {
             manager = BluetoothManager.getBluetoothManager();
             if (manager == null) {
-                logger.warn("BlueZ Manager returned is null");
-                throw new IllegalStateException();
+                throw new IllegalStateException("Received null BlueZ manager");
             }
         } catch (UnsatisfiedLinkError e) {
             throw new IllegalStateException("BlueZ JNI connection cannot be established.", e);
