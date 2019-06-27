@@ -6,7 +6,7 @@
 	<!-- Generic OnkyoAVR Thing Type -->
 	<thing-type id="onkyoAVR">
 		<label>Onkyo AV Receiver</label>
-		<description>Network enabled Onkyo AV Receiver/description>
+		<description>Network enabled Onkyo AV Receiver</description>
 
 		<channel-groups>
 			<channel-group typeId="zone1Controls" id="zone1" />
