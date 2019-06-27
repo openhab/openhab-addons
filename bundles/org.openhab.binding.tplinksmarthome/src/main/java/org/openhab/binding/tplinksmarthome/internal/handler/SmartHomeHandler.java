@@ -61,7 +61,7 @@ public class SmartHomeHandler extends BaseThingHandler {
     private @NonNullByDefault({}) ExpiringCache<@Nullable DeviceState> cache;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param thing The thing to handle
      * @param smartHomeDevice Specific Smart Home device handler
@@ -74,12 +74,12 @@ public class SmartHomeHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(ChannelUID channelUid, Command command) {
         try {
             if (command instanceof RefreshType) {
-                updateChannelState(channelUID, cache.getValue());
-            } else if (!smartHomeDevice.handleCommand(channelUID.getId(), connection, command, configuration)) {
-                logger.debug("Command {} is not supported for channel: {}", command, channelUID.getId());
+                updateChannelState(channelUid, cache.getValue());
+            } else if (!smartHomeDevice.handleCommand(channelUid, command)) {
+                logger.debug("Command {} is not supported for channel: {}", command, channelUid.getId());
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -102,8 +102,10 @@ public class SmartHomeHandler extends BaseThingHandler {
                     "No ip address or the device id configured.");
             return;
         }
-        logger.debug("Initializing TP-Link Smart device on ip {}", configuration.ipAddress);
+        logger.debug("Initializing TP-Link Smart device on ip '{}' or deviceId '{}' ", configuration.ipAddress,
+                configuration.deviceId);
         connection = createConnection(configuration);
+        smartHomeDevice.initialize(connection, configuration);
         cache = new ExpiringCache<@Nullable DeviceState>(TimeUnit.SECONDS.toMillis(configuration.refresh),
                 this::refreshCache);
         updateStatus(ThingStatus.UNKNOWN);
@@ -123,12 +125,12 @@ public class SmartHomeHandler extends BaseThingHandler {
         return new Connection(config.ipAddress);
     }
 
-    @Nullable
-    private DeviceState refreshCache() {
+    private @Nullable DeviceState refreshCache() {
         try {
             updateIpAddress();
-            DeviceState deviceState = new DeviceState(connection.sendCommand(smartHomeDevice.getUpdateCommand()));
+            final DeviceState deviceState = new DeviceState(connection.sendCommand(smartHomeDevice.getUpdateCommand()));
             updateDeviceId(deviceState.getSysinfo().getDeviceId());
+            smartHomeDevice.refreshedDeviceState(deviceState);
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -197,8 +199,7 @@ public class SmartHomeHandler extends BaseThingHandler {
 
     void refreshChannels() {
         logger.trace("Update Channels for:{}", thing.getUID());
-        DeviceState value = cache.getValue();
-        getThing().getChannels().forEach(channel -> updateChannelState(channel.getUID(), value));
+        getThing().getChannels().forEach(channel -> updateChannelState(channel.getUID(), cache.getValue()));
     }
 
     /**
@@ -209,7 +210,10 @@ public class SmartHomeHandler extends BaseThingHandler {
      *
      */
     private void updateChannelState(ChannelUID channelUID, @Nullable DeviceState deviceState) {
-        String channelId = channelUID.getId();
+        if (!isLinked(channelUID)) {
+            return;
+        }
+        String channelId = channelUID.isInGroup() ? channelUID.getIdWithoutGroup() : channelUID.getId();
         final State state;
 
         if (deviceState == null) {
@@ -217,7 +221,7 @@ public class SmartHomeHandler extends BaseThingHandler {
         } else if (CHANNEL_RSSI.equals(channelId)) {
             state = new DecimalType(deviceState.getSysinfo().getRssi());
         } else {
-            state = smartHomeDevice.updateChannel(channelId, deviceState);
+            state = smartHomeDevice.updateChannel(channelUID, deviceState);
         }
         updateState(channelUID, state);
     }
