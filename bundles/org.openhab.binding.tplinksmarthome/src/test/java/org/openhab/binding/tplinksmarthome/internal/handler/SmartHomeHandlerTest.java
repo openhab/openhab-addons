@@ -21,7 +21,7 @@ import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindin
 
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -51,22 +51,23 @@ import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@NonNullByDefault
 public class SmartHomeHandlerTest {
 
-    private SmartHomeHandler handler;
+    private @NonNullByDefault({}) SmartHomeHandler handler;
 
     @Mock
-    private Connection connection;
+    private @NonNullByDefault({}) Connection connection;
     @Mock
-    private ThingHandlerCallback callback;
+    private @NonNullByDefault({}) ThingHandlerCallback callback;
     @Mock
-    private Thing thing;
+    private @NonNullByDefault({}) Thing thing;
     @Mock
-    private SmartHomeDevice smartHomeDevice;
+    private @NonNullByDefault({}) SmartHomeDevice smartHomeDevice;
     @Mock
-    private TPLinkSmartHomeDiscoveryService discoveryService;
+    private @NonNullByDefault({}) TPLinkSmartHomeDiscoveryService discoveryService;
 
-    private @NonNull final Configuration configuration = new Configuration();
+    private final Configuration configuration = new Configuration();
 
     @Before
     public void setUp() throws IOException {
