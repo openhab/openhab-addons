@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.junit.Test;
 import org.openhab.binding.tplinksmarthome.internal.model.GetSysinfo;
@@ -28,6 +28,7 @@ import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@NonNullByDefault
 public class PropertiesCollectorTest {
 
     /**
@@ -60,8 +61,8 @@ public class PropertiesCollectorTest {
         assertProperties("rangeextender_get_sysinfo_response", TPLinkSmartHomeThingType.RE270K, 11);
     }
 
-    private void assertProperties(@NonNull String responseFile, @NonNull TPLinkSmartHomeThingType thingType,
-            int expectedSize) throws IOException {
+    private void assertProperties(String responseFile, TPLinkSmartHomeThingType thingType, int expectedSize)
+            throws IOException {
         ThingTypeUID thingTypeUID = thingType.thingTypeUID();
         Map<String, Object> props = PropertiesCollector.collectProperties(thingTypeUID, "localhost",
                 ModelTestUtil.jsonFromFile(responseFile, GetSysinfo.class).getSysinfo());

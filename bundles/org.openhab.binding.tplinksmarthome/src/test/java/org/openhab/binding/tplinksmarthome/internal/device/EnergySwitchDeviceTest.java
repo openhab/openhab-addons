@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -35,13 +35,13 @@ import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @RunWith(value = Parameterized.class)
+@NonNullByDefault
 public class EnergySwitchDeviceTest {
 
     private static final List<Object[]> TESTS = Arrays
             .asList(new Object[][] { { "plug_get_realtime_response", }, { "plug_get_realtime_response_v2", } });
 
     private final EnergySwitchDevice device = new EnergySwitchDevice();
-    @NonNull
     private final DeviceState deviceState;
 
     public EnergySwitchDeviceTest(String name) throws IOException {
