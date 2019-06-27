@@ -5,7 +5,7 @@
 
 	<thing-type id="HT-RC560">
 		<label>Onkyo HT-RC560 AV Receiver</label>
-		<description>Network enabled Onkyo AV Receiver/description>
+		<description>Network enabled Onkyo AV Receiver</description>
 
 		<channel-groups>
 			<channel-group typeId="zone1Controls" id="zone1" />
