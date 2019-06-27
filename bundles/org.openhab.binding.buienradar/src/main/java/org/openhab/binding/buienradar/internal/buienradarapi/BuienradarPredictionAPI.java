@@ -20,15 +20,15 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.eclipse.smarthome.core.library.types.PointType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,10 +101,13 @@ public class BuienradarPredictionAPI implements PredictionAPI {
      *
      * @param line The line to parse, such as <code>100|23:00</code>
      * @param now The reference time to determine which instant to match to.
+     * @param actual The date time of the 'actual' prediction if known. If None is given, it is assumed this is the
+     *            first row of the results.
      * @return A Prediction interface, which contains the tuple with the intensity and the time.
      * @throws BuienradarParseException Thrown when the line could not be correctly parsed.
      */
-    public static Prediction parseLine(String line, ZonedDateTime now) throws BuienradarParseException {
+    public static Prediction parseLine(String line, ZonedDateTime now, Optional<ZonedDateTime> actual)
+            throws BuienradarParseException {
         final String[] lineElements = line.trim().split("\\|");
         if (lineElements.length != 2) {
             throw new BuienradarParseException(
@@ -120,29 +123,44 @@ public class BuienradarPredictionAPI implements PredictionAPI {
             }
 
             @Override
-            public final ZonedDateTime getDateTime() {
+            public ZonedDateTime getDateTimeOfPrediction() {
                 return dateTime;
+            }
+
+            @Override
+            public ZonedDateTime getActualDateTime() {
+                return actual.orElseGet(this::getDateTimeOfPrediction);
             }
         };
     }
 
     @Override
-    public List<Prediction> getPredictions(PointType location) throws IOException {
-        final String address = String.format(Locale.ENGLISH, BASE_ADDRESS + "?lat=%.8f&lon=%.8f",
+    public Optional<List<Prediction>> getPredictions(PointType location) throws IOException {
+        final String address = String.format(Locale.ENGLISH, BASE_ADDRESS + "?lat=%.2f&lon=%.2f",
                 location.getLatitude().doubleValue(), location.getLongitude().doubleValue());
-        final String result = HttpUtil.executeUrl("GET", address, TIMEOUT_MS);
+
+        final String result;
+        try {
+            result = HttpUtil.executeUrl("GET", address, TIMEOUT_MS);
+        } catch (IOException e) {
+            logger.warn("IO Exception when trying to retrieve Buienradar results", e);
+            return Optional.empty();
+        }
 
         if (result.trim().isEmpty()) {
             logger.warn(String.format("Buienradar API at URI %s return empty result", address));
-            return Collections.emptyList();
+            return Optional.empty();
         }
         final List<Prediction> predictions = new ArrayList<Prediction>(24);
         final List<String> errors = new LinkedList<String>();
         logger.debug("Returned result from buienradar: {}", result);
         final String[] lines = result.split("\n");
+        Optional<ZonedDateTime> actual = Optional.empty();
         for (String line : lines) {
             try {
-                predictions.add(parseLine(line, ZonedDateTime.now()));
+                final Prediction prediction = parseLine(line, ZonedDateTime.now(), actual);
+                actual = Optional.of(prediction.getActualDateTime());
+                predictions.add(prediction);
             } catch (BuienradarParseException e) {
                 errors.add(e.getMessage());
             }
@@ -150,7 +168,7 @@ public class BuienradarPredictionAPI implements PredictionAPI {
         if (!errors.isEmpty()) {
             logger.warn("Could not parse all results: " + errors.stream().collect(Collectors.joining(", ")));
         }
-        return predictions;
+        return Optional.of(predictions);
     }
 
 }
