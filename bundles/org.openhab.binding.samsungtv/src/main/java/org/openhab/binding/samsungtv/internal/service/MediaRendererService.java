@@ -55,7 +55,7 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
     private final List<String> supportedCommands = Arrays.asList(VOLUME, MUTE, BRIGHTNESS, CONTRAST, SHARPNESS,
             COLOR_TEMPERATURE);
 
-    private Logger logger = LoggerFactory.getLogger(MediaRendererService.class);
+    private final Logger logger = LoggerFactory.getLogger(MediaRendererService.class);
 
     private @Nullable UpnpIOService service;
 
