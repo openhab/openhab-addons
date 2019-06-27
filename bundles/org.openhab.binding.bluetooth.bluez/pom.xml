@@ -20,11 +20,6 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.sputnikdev</groupId>
-      <artifactId>bluetooth-manager-tinyb</artifactId>
-      <version>1.3.3</version>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
+
 </project>
