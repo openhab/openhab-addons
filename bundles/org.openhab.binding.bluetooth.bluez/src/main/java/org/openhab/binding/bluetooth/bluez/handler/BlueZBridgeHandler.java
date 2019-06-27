@@ -88,8 +88,12 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
 
     @Override
     public void initialize() {
+        BluetoothManager manager;
         try {
-            BluetoothManager.getBluetoothManager();
+            manager = BluetoothManager.getBluetoothManager();
+            if (manager == null) {
+                throw new IllegalStateException("Received null BlueZ manager");
+            }
         } catch (UnsatisfiedLinkError e) {
             throw new IllegalStateException("BlueZ JNI connection cannot be established.", e);
         } catch (RuntimeException e) {
@@ -116,9 +120,14 @@ public class BlueZBridgeHandler extends BaseBridgeHandler implements BluetoothAd
         }
 
         logger.debug("Creating BlueZ adapter with address '{}'", address);
-        for (tinyb.BluetoothAdapter a : BluetoothManager.getBluetoothManager().getAdapters()) {
-            if (a.getAddress().equals(address.toString())) {
-                adapter = a;
+
+        for (tinyb.BluetoothAdapter adapter : manager.getAdapters()) {
+            if (adapter == null) {
+                logger.warn("got null adapter from bluetooth manager");
+                continue;
+            }
+            if (adapter.getAddress().equals(address.toString())) {
+                this.adapter = adapter;
                 updateStatus(ThingStatus.ONLINE);
                 startDiscovery();
                 discoveryJob = scheduler.scheduleWithFixedDelay(this::refreshDevices, 0, 10, TimeUnit.SECONDS);
