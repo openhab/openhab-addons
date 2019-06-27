@@ -28,7 +28,6 @@ import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
-import org.openhab.binding.samsungtv.internal.service.RemoteControllerService;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +55,6 @@ public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
         if (uid != null) {
             Map<String, Object> properties = new HashMap<>();
             properties.put(HOST_NAME, device.getIdentity().getDescriptorURL().getHost());
-
-            properties.putAll(RemoteControllerService.discover(device.getIdentity().getDescriptorURL().getHost()));
 
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withLabel(getLabel(device)).build();
@@ -98,8 +95,8 @@ public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
                     if (logger.isDebugEnabled()) {
                         String modelName = device.getDetails().getModelDetails().getModelName();
                         String friendlyName = device.getDetails().getFriendlyName();
-                        logger.debug("Discovered a Samsung TV '{}' model '{}' thing with UDN '{}'", friendlyName,
-                                modelName, udn);
+                        logger.debug("Retrieved Thing UID for a Samsung TV '{}' model '{}' thing with UDN '{}'",
+                                friendlyName, modelName, udn);
                     }
 
                     return new ThingUID(SAMSUNG_TV_THING_TYPE, udn);

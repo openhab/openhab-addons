@@ -98,6 +98,12 @@ class WebSocketRemote extends WebSocketBase {
                     if (jsonMsg.data.token != null) {
                         this.remoteControllerWebSocket.callback.putConfig(SamsungTvConfiguration.WEBSOCKET_TOKEN,
                                 jsonMsg.data.token);
+                        // try opening additional websockets
+                        try {
+                            this.remoteControllerWebSocket.openConnection();
+                        } catch (RemoteControllerException e) {
+                            logger.warn("{}: Error ({})", this.getClass().getSimpleName(), e.getMessage());
+                        }
                     }
                     getApps();
                     break;

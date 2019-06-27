@@ -18,20 +18,26 @@ import java.security.cert.X509Certificate;
 
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.X509ExtendedTrustManager;
+import javax.security.auth.x500.X500Principal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.TlsTrustManagerProvider;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides a TrustManager to allow secure websocket connections to any TV (=server)
+ * TODO: convert to using TrustAllTrustMananger (not supported in OH2.4 yet)
  *
  * @author Arjan Mels - Initial Contribution
  */
 @Component
 @NonNullByDefault
 public class SamsungTvTlsTrustManagerProvider implements TlsTrustManagerProvider {
+    private final Logger logger = LoggerFactory.getLogger(WakeOnLanUtility.class);
+
     @Override
     public String getHostName() {
         return "SmartViewSDK";
@@ -39,14 +45,25 @@ public class SamsungTvTlsTrustManagerProvider implements TlsTrustManagerProvider
 
     private final X509ExtendedTrustManager trustAllCerts = new X509ExtendedTrustManager() {
 
+        private void logCertificateCN(String function, X509Certificate @Nullable [] x509Certificates) {
+            if (x509Certificates != null && logger.isTraceEnabled()) {
+                for (X509Certificate certificate : x509Certificates) {
+                    logger.trace("TrustManager {} CN: {}", function,
+                            certificate.getSubjectX500Principal().getName(X500Principal.RFC2253));
+                }
+            }
+        }
+
         @Override
         public void checkClientTrusted(X509Certificate @Nullable [] x509Certificates, @Nullable String s)
                 throws CertificateException {
+            logCertificateCN("checkClientTrusted", x509Certificates);
         }
 
         @Override
         public void checkServerTrusted(X509Certificate @Nullable [] x509Certificates, @Nullable String s)
                 throws CertificateException {
+            logCertificateCN("checkServerTrusted", x509Certificates);
         }
 
         @Override
@@ -57,26 +74,31 @@ public class SamsungTvTlsTrustManagerProvider implements TlsTrustManagerProvider
         @Override
         public void checkClientTrusted(X509Certificate @Nullable [] x509Certificates, @Nullable String s,
                 @Nullable Socket socket) throws CertificateException {
+            logCertificateCN("checkClientTrustedSocket", x509Certificates);
         }
 
         @Override
         public void checkServerTrusted(X509Certificate @Nullable [] x509Certificates, @Nullable String s,
                 @Nullable Socket socket) throws CertificateException {
+            logCertificateCN("checkServerTrustedSocket", x509Certificates);
         }
 
         @Override
         public void checkClientTrusted(X509Certificate @Nullable [] x509Certificates, @Nullable String s,
                 @Nullable SSLEngine sslEngine) throws CertificateException {
+            logCertificateCN("checkClientTrustedEngine", x509Certificates);
         }
 
         @Override
         public void checkServerTrusted(X509Certificate @Nullable [] x509Certificates, @Nullable String s,
                 @Nullable SSLEngine sslEngine) throws CertificateException {
+            logCertificateCN("checkServerTrustedEngine", x509Certificates);
         }
     };
 
     @Override
     public X509ExtendedTrustManager getTrustManager() {
         return trustAllCerts;
+        // return TrustAllTrustMananger.getInstance();
     }
 }

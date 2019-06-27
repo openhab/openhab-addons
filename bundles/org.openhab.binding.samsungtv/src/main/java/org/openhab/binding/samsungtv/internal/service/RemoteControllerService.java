@@ -60,7 +60,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class RemoteControllerService implements SamsungTvService, RemoteControllerWebsocketCallback {
 
-    private Logger logger = LoggerFactory.getLogger(RemoteControllerService.class);
+    private final Logger logger = LoggerFactory.getLogger(RemoteControllerService.class);
 
     public static final String SERVICE_NAME = "RemoteControlReceiver";
 
@@ -209,17 +209,18 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
         String protocol = (String) getConfig(SamsungTvConfiguration.PROTOCOL);
         logger.info("Using {} interface", protocol);
 
-        if (SamsungTvConfiguration.PROTOCOL_NONE.equals(protocol)) {
-            remoteController = null;
-            return;
-        } else if (SamsungTvConfiguration.PROTOCOL_LEGACY.equals(protocol)) {
+        if (SamsungTvConfiguration.PROTOCOL_LEGACY.equals(protocol)) {
             remoteController = new RemoteControllerLegacy(host, port, "openHAB", "openHAB");
-        } else {
+        } else if (SamsungTvConfiguration.PROTOCOL_WEBSOCKET.equals(protocol)
+                || SamsungTvConfiguration.PROTOCOL_SECUREWEBSOCKET.equals(protocol)) {
             try {
                 remoteController = new RemoteControllerWebSocket(host, port, "openHAB", "openHAB", this);
             } catch (RemoteControllerException e) {
                 reportError("Cannot connect to remote control service", e);
             }
+        } else {
+            remoteController = null;
+            return;
         }
 
         if (remoteController != null) {
