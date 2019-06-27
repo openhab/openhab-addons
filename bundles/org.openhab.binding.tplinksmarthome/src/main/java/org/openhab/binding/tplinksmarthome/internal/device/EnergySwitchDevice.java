@@ -47,10 +47,17 @@ public class EnergySwitchDevice extends SwitchDevice {
         return state;
     }
 
-    protected State updateEnergyChannel(String matchChannelId, Realtime realtime) {
+    /**
+     * Gets the state for an energy channel.
+     *
+     * @param channelId Id of the energy channel to get the state
+     * @param realtime data object containing the data from the device
+     * @return state object for the given channel
+     */
+    protected State updateEnergyChannel(String channelId, Realtime realtime) {
         final double value;
 
-        switch (matchChannelId) {
+        switch (channelId) {
             case CHANNEL_ENERGY_CURRENT:
                 value = realtime.getCurrent();
                 break;
