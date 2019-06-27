@@ -23,7 +23,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public class GetRealtime {
+public class GetRealtime extends ContextState {
 
     public static class EMeter {
         private Realtime getRealtime = new Realtime();
