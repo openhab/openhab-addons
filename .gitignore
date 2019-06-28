@@ -3,6 +3,7 @@
 .DS_Store
 *.iml
 npm-debug.log
+.build.log
 
 .metadata/
 bin/
