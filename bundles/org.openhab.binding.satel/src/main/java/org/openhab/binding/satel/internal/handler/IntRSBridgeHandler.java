@@ -20,11 +20,13 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.satel.internal.config.IntRSConfig;
 import org.openhab.binding.satel.internal.protocol.IntRSModule;
 import org.openhab.binding.satel.internal.protocol.SatelModule;
@@ -37,14 +39,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class IntRSBridgeHandler extends SatelBridgeHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_INTRS);
 
     private final Logger logger = LoggerFactory.getLogger(IntRSBridgeHandler.class);
 
-    public IntRSBridgeHandler(Bridge bridge) {
+    private final SerialPortManager serialPortManager;
+
+    public IntRSBridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -53,7 +59,7 @@ public class IntRSBridgeHandler extends SatelBridgeHandler {
 
         IntRSConfig config = getConfigAs(IntRSConfig.class);
         if (StringUtils.isNotBlank(config.getPort())) {
-            SatelModule satelModule = new IntRSModule(config.getPort(), config.getTimeout());
+            SatelModule satelModule = new IntRSModule(config.getPort(), serialPortManager, config.getTimeout());
             super.initialize(satelModule);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
