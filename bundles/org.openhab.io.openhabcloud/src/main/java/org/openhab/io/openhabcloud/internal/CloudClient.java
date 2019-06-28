@@ -71,17 +71,6 @@ public class CloudClient {
      * Logger for this class
      */
     private Logger logger = LoggerFactory.getLogger(CloudClient.class);
-    /*
-     * This constant defines maximum number of HTTP connections per peer
-     * address for HTTP client which performs local connections to openHAB
-     */
-    private static final int HTTP_CLIENT_MAX_CONNECTIONS_PER_DEST = 200;
-
-    /*
-     * This constant defines HTTP request timeout. It should be kept at about
-     * 30 seconds minimum to make it work for long polling requests
-     */
-    private static final long HTTP_CLIENT_TIMEOUT = 30;
 
     /*
      * This variable holds base URL for the openHAB Cloud connections
@@ -330,7 +319,7 @@ public class CloudClient {
             if (data.has("protocol")) {
                 proto = data.getString("protocol");
             }
-            request.timeout(HTTP_CLIENT_TIMEOUT, TimeUnit.SECONDS).header("X-Forwarded-Proto", proto);
+            request.header("X-Forwarded-Proto", proto);
 
             if (requestMethod.equals("GET")) {
                 request.method(HttpMethod.GET);
