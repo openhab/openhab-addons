@@ -75,6 +75,10 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private static final String PROPERTY_CURRENTSUBTITLE = "currentsubtitle";
     private static final String PROPERTY_CURRENTVIDEOSTREAM = "currentvideostream";
     private static final String PROPERTY_CURRENTAUDIOSTREAM = "currentaudiostream";
+    private static final String PROPERTY_SUBTITLES = "subtitles";
+    private static final String PROPERTY_AUDIOSTREAMS = "audiostreams";
+    private static final String PROPERTY_VIDEOSTREAMS = "videostreams";
+    private static final String PROPERTY_STREAMDETAILS = "streamdetails";
     private static final String PROPERTY_CANHIBERNATE = "canhibernate";
     private static final String PROPERTY_CANREBOOT = "canreboot";
     private static final String PROPERTY_CANSHUTDOWN = "canshutdown";
@@ -509,8 +513,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     private void requestPlayerUpdate(int activePlayer) {
-        requestPlayerItemUpdate(activePlayer);
         requestPlayerPropertiesUpdate(activePlayer);
+        requestPlayerItemUpdate(activePlayer);
     }
 
     private void requestPlayerItemUpdate(int activePlayer) {
@@ -677,7 +681,8 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     private void requestPlayerPropertiesUpdate(int activePlayer) {
         final String[] properties = { PROPERTY_SUBTITLEENABLED, PROPERTY_CURRENTSUBTITLE, PROPERTY_CURRENTAUDIOSTREAM,
-                PROPERTY_CURRENTVIDEOSTREAM, PROPERTY_PERCENTAGE, PROPERTY_TIME, PROPERTY_TOTALTIME };
+                PROPERTY_CURRENTVIDEOSTREAM, PROPERTY_PERCENTAGE, PROPERTY_TIME, PROPERTY_TOTALTIME,
+                PROPERTY_AUDIOSTREAMS, PROPERTY_SUBTITLES};
 
         JsonObject params = new JsonObject();
         params.addProperty("playerid", activePlayer);
@@ -748,7 +753,39 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     // do nothing
                 }
             }
-
+            
+            if (result.has(PROPERTY_AUDIOSTREAMS)) {                        
+                try { 
+                    JsonElement audioGroup = result.get(PROPERTY_AUDIOSTREAMS);
+                    if (audioGroup instanceof JsonArray) {
+                        List<KodiAudioStream> audioStreamList = new ArrayList<KodiAudioStream>();
+                        for (JsonElement element : audioGroup.getAsJsonArray()) {
+                            KodiAudioStream audioStream = gson.fromJson(element, KodiAudioStream.class);
+                            audioStreamList.add(audioStream);
+                        }
+                        listener.updateAudioStreams(audioStreamList);
+                    }
+                } catch (JsonSyntaxException e) {
+                     // do nothing
+                }
+            }
+            
+            if (result.has(PROPERTY_SUBTITLES)) {
+                try {  
+                    JsonElement subtitleGroup = result.get(PROPERTY_SUBTITLES);
+                    if (subtitleGroup instanceof JsonArray) {
+                        List<KodiSubtitle> subtitleList = new ArrayList<KodiSubtitle>();
+                        for (JsonElement element : subtitleGroup.getAsJsonArray()) {
+                            KodiSubtitle subtitle = gson.fromJson(element, KodiSubtitle.class);
+                            subtitleList.add(subtitle);
+                        }
+                        listener.updateSubtitles(subtitleList);
+                    }
+                } catch (JsonSyntaxException e) {
+                    // do nothing
+                }    
+            }
+            
             double percentage = -1;
             if (result.has(PROPERTY_PERCENTAGE)) {
                 percentage = result.get(PROPERTY_PERCENTAGE).getAsDouble();

@@ -19,6 +19,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.openhab.binding.kodi.internal.model.KodiSystemProperties;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
+import org.openhab.binding.kodi.internal.model.KodiAudioStream;
+import org.openhab.binding.kodi.internal.model.KodiSubtitle;
 
 /**
  * Interface which has to be implemented by a class in order to get status
@@ -93,6 +95,8 @@ public interface KodiEventListener extends EventListener {
 
     void updateFanart(@Nullable RawType fanart);
 
+    void updateAudioStreams(List<KodiAudioStream> audioStreamList);
+    
     void updateAudioCodec(String codec);
 
     void updateAudioName(String name);
@@ -110,6 +114,8 @@ public interface KodiEventListener extends EventListener {
     void updateVideoWidth(int width);
 
     void updateVideoHeight(int height);
+    
+    void updateSubtitles(List<KodiSubtitle> subtitleList);
 
     void updateSubtitleEnabled(boolean enabled);
 

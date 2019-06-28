@@ -56,6 +56,8 @@ import org.openhab.binding.kodi.internal.config.KodiChannelConfig;
 import org.openhab.binding.kodi.internal.config.KodiConfig;
 import org.openhab.binding.kodi.internal.model.KodiFavorite;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannel;
+import org.openhab.binding.kodi.internal.model.KodiAudioStream;
+import org.openhab.binding.kodi.internal.model.KodiSubtitle;
 import org.openhab.binding.kodi.internal.model.KodiSystemProperties;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 import org.slf4j.Logger;
@@ -619,6 +621,26 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         }
     }
 
+    public void updateAudioStreams(List<KodiAudioStream> audios) {
+        if (isLinked(CHANNEL_AUDIO_INDEX)) {
+            List<StateOption> options = new ArrayList<>();
+            for (KodiAudioStream audio :  audios) {
+                options.add(new StateOption(Integer.toString(audio.getIndex()),Integer.toString(audio.getIndex())+" "+audio.getLanguage()+"  ["+audio.getName()+"] ("+audio.getCodec()+"-"+Integer.toString(audio.getChannels())+" "+ Integer.toString(audio.getBitrate()/1000)+"kb/s]"));
+            }
+            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_AUDIO_INDEX), options);
+        }
+    }   
+
+    public void updateSubtitles(List<KodiSubtitle> subtitles) {
+        if (isLinked(CHANNEL_SUBTITLE_INDEX)) {
+            List<StateOption> options = new ArrayList<>();
+            for (KodiSubtitle subtitle : subtitles) {
+                options.add(new StateOption(Integer.toString(subtitle.getIndex()),Integer.toString(subtitle.getIndex())+" "+subtitle.getLanguage()+"  ["+subtitle.getName()+"]"));
+            }
+            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SUBTITLE_INDEX), options);
+        }
+    }      
+    
     @Override
     public void updateConnectionState(boolean connected) {
         if (connected) {
