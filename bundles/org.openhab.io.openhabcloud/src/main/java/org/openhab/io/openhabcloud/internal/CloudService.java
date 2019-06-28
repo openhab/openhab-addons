@@ -84,6 +84,9 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     private static final String CFG_MODE = "mode";
     private static final String SECRET_FILE_NAME = "openhabcloud" + File.separator + "secret";
     private static final String DEFAULT_URL = "https://myopenhab.org/";
+    private static final int DEFAULT_LOCAL_OPENHAB_MAX_CONCURRENT_REQUESTS = 200;
+    private static final int DEFAULT_LOCAL_OPENHAB_REQUEST_TIMEOUT = 30000;
+    private static final String HTTPCLIENT_NAME = "openhabcloud";
 
     private Logger logger = LoggerFactory.getLogger(CloudService.class);
 
@@ -175,6 +178,11 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     protected void deactivate() {
         logger.debug("openHAB Cloud connector deactivated");
         cloudClient.shutdown();
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            logger.debug("Could not stop Jetty http client", e);
+        }
     }
 
     @Modified
@@ -214,6 +222,17 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
         if (cloudClient != null) {
             cloudClient.shutdown();
+        }
+
+        httpClient.setMaxConnectionsPerDestination(DEFAULT_LOCAL_OPENHAB_MAX_CONCURRENT_REQUESTS);
+        httpClient.setConnectTimeout(DEFAULT_LOCAL_OPENHAB_REQUEST_TIMEOUT);
+
+        if (!httpClient.isRunning()) {
+            try {
+                httpClient.start();
+            } catch (Exception e) {
+                logger.error("Could not start Jetty http client", e);
+            }
         }
 
         String localBaseUrl = "http://localhost:" + localPort;
@@ -332,7 +351,8 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
     @Reference
     protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClient = httpClientFactory.createHttpClient(HTTPCLIENT_NAME);
+        this.httpClient.setStopTimeout(0);
     }
 
     protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
