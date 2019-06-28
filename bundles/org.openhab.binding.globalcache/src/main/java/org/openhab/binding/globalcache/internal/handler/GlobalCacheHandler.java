@@ -1072,6 +1072,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
                     String encodedReply = URLEncoder.encode(new String(buffer, CHARSET), CHARSET);
                     logger.debug("encodedReply='{}'", encodedReply);
                     updateState(channel.getUID(), new StringType(encodedReply));
+                    triggerChannel(channel.getUID(), encodedReply);
                 } catch (UnsupportedEncodingException e) {
                     logger.warn("Exception while encoding data read from serial device: {}", e.getMessage());
                 }
