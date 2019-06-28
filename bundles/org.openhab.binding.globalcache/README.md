@@ -341,6 +341,7 @@ then
     var serialResponse = triggerEvent.getEvent().toString
     // parse serialResponse
 end
+```
 
 ### Manual Thing Creation
 
