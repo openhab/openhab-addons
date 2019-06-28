@@ -331,6 +331,17 @@ then
 end
 ```
 
+This is an example of how to react to feedback from the serial port from within a rule.
+
+```
+rule "Process feedback from serial port"
+when
+    Channel "globalcache:gc100_06:000C1EFFF039:sl-m1#c1-receive" triggered
+then
+    var serialResponse = triggerEvent.getEvent().toString
+    // parse serialResponse
+end
+
 ### Manual Thing Creation
 
 Place a file named *globalcache.things* in the *conf/things* directory.
