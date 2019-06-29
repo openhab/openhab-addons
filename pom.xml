@@ -61,7 +61,7 @@
   <repositories>
     <repository>
       <id>osgiify</id>
-      <url>file://c:/testrepo</url>
+      <url>https://dl.bintray.com/openhab/mvn/openhab-osgiify</url>
     </repository>
   </repositories>
 
