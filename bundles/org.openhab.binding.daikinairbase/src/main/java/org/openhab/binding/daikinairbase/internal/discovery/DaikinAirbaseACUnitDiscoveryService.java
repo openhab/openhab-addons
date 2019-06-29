@@ -123,7 +123,7 @@ public class DaikinAirbaseACUnitDiscoveryService extends AbstractDiscoveryServic
             String host = incomingPacket.getAddress().toString().substring(1);
             logger.debug("Received packet from {}", host);
             ControlInfo controlInfo = new DaikinAirbaseWebTargets(host).getControlInfo();
-            if (controlInfo.ret == "OK") {
+            if (controlInfo.ret.equals("OK")) {
                   ThingUID thingUID = new ThingUID(DaikinAirbaseBindingConstants.THING_TYPE_AC_UNIT, host.replace('.', '_'));
                   DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
                           .withProperty(DaikinAirbaseConfiguration.HOST, host).withLabel("Daikin Airbase AC Unit (" + host + ")")
