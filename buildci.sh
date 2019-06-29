@@ -51,6 +51,7 @@ if [[ ! -z "$CHANGED_DIR" ]] && [[ -e "bundles/$CHANGED_DIR" ]]; then
     echo "MAVEN_OPTS='-Xms1g -Xmx2g -Dorg.slf4j.simpleLogger.log.org.openhab.tools.analysis.report.ReportUtility=DEBUG -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN'" > ~/.mavenrc
     cd "bundles/$CHANGED_DIR"
     mvn clean install -B 2>&1 | 
+    mvn clean install -B 2>&1 | 
 	    stdbuf -o0 grep -vE "Download(ed|ing) from [a-z.]+: https:" | # Filter out Download(s)
 	    stdbuf -o0 grep -v "target/code-analysis" | # filter out some debug code from reporting utility
 	    tee ${CDIR}/.build.log
@@ -73,7 +74,7 @@ if [[ ! -z "$CHANGED_DIR" ]] && [[ -e "bundles/$CHANGED_DIR" ]]; then
 else
     echo "Build all"
     echo "MAVEN_OPTS='-Xms1g -Xmx2g -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'" > ~/.mavenrc
-    mvnp clean install -B -DskipChecks=true -DskipTests=true
+    mvnp clean install -B -DskipChecks=true
     if [[ $? -eq 0 ]]; then
       print_reactor_summary .build.log
     else

@@ -34,6 +34,7 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionObserver;
 import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionState;
 import org.eclipse.smarthome.io.transport.mqtt.MqttException;
 import org.eclipse.smarthome.io.transport.mqtt.MqttService;
+import org.eclipse.smarthome.test.java.JavaTest;
 import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
 import org.junit.After;
@@ -53,7 +54,7 @@ import io.moquette.broker.subscriptions.Topic;
  *
  * @author David Graeff - Initial contribution
  */
-public class MqttEmbeddedBrokerServiceTest {
+public class MqttEmbeddedBrokerServiceTest extends JavaTest {
     private final Logger logger = LoggerFactory.getLogger(MqttEmbeddedBrokerServiceTest.class);
 
     private EmbeddedBrokerService subject;
@@ -187,7 +188,7 @@ public class MqttEmbeddedBrokerServiceTest {
         MVStore mvStore = new MVStore.Builder().fileName(temp.getAbsolutePath()).autoCommitDisabled().open();
         MVMap<Topic, RetainedMessage> openMap = mvStore.openMap("retained_store");
 
-        assertThat(openMap.size(), is(1));
+        waitForAssert(() -> assertThat(openMap.size(), is(1)));
         for (Map.Entry<Topic, RetainedMessage> entry : openMap.entrySet()) {
             assertThat(entry.getKey().toString(), is("demotopic"));
             assertThat(new String(entry.getValue().getPayload()), is("testtest"));

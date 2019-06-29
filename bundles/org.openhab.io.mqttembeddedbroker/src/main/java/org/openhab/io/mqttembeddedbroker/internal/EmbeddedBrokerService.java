@@ -179,6 +179,8 @@ public class EmbeddedBrokerService
         if (!config.persistenceFile.isEmpty()) {
             final String persistenceFilename = config.persistenceFile;
             if (!Paths.get(persistenceFilename).isAbsolute()) {
+                logger.warn("ud folder: {}", ConfigConstants.getUserDataFolder());
+                logger.warn("ud absolute folder: {}", Paths.get(ConfigConstants.getUserDataFolder()).toAbsolutePath());
                 this.persistenceFilename = Paths.get(ConfigConstants.getUserDataFolder()).toAbsolutePath()
                         .resolve(persistenceFilename).toString();
             }
