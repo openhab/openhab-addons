@@ -144,7 +144,7 @@ public class PushbulletHandler extends BaseThingHandler {
             logger.debug("Packed Request: {}", request);
 
             Properties headers = new Properties();
-            headers.put(HttpHeader.USER_AGENT, "openHAB / Pushbullet binding " + VERSION.toString());
+            headers.put(HttpHeader.USER_AGENT, "openHAB / Pushbullet binding " + VERSION);
             headers.put(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString());
             headers.put("Access-Token", configuration.getToken());
 
