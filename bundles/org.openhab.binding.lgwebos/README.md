@@ -47,7 +47,7 @@ Please note that at least one channel must be bound to an item before the bindin
 | power           | Switch    | Current power setting. TV can only be powered off, not on.                                                                                                                                                              | RW         |
 | mute            | Switch    | Current mute setting.                                                                                                                                                                                                   | RW         |
 | volume          | Dimmer    | Current volume setting. Setting and reporting absolute percent values only works when using internal speakers. When connected to an external amp, the volume should be controlled using increase and decrease commands. | RW         |
-| channel         | Number    | Current channel number.                                                                                                               | RW         |
+| channel         | String    | Current channel number.                                                                                                               | RW         |
 | channelName     | String    | Current channel name.                                                                                                                                                                                                    | R          |
 | toast           | String    | Displays a short message on the TV screen. See also rules section.                                                                                                                                                      | W          |
 | mediaPlayer     | Player    | Media control player                                                                                                                                                                                                    | W          |
@@ -76,9 +76,9 @@ Switch LG_TV0_Power "TV Power" <television>  { autoupdate="false", channel="lgwe
 Switch LG_TV0_Mute  "TV Mute"                { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mute"}
 Dimmer LG_TV0_Volume "Volume [%S]"           { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:volume" }
 Number LG_TV0_VolDummy "VolumeUpDown"
-Number LG_TV0_ChannelNo "Channel [%d]"       { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channel" }
+String LG_TV0_Channel "Channel [%d]"         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channel" }
 Number LG_TV0_ChannelDummy "ChannelUpDown"
-String LG_TV0_Channel "Channel [%S]"         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channelName"}
+String LG_TV0_ChannelName "Channel [%S]"     { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channelName"}
 String LG_TV0_Toast                          { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:toast"}
 Switch LG_TV0_Stop "Stop"                    { autoupdate="false", channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mediaStop" }
 String LG_TV0_Application "Application [%s]" { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:appLauncher"}
@@ -98,9 +98,9 @@ sitemap demo label="Main Menu"
         Switch item=LG_TV0_Mute
         Text item=LG_TV0_Volume
         Switch item=LG_TV0_VolDummy icon="soundvolume" label="Volume" mappings=[1="▲", 0="▼"]
-        Text item=LG_TV0_ChannelNo
-        Switch item=LG_TV0_ChannelDummy icon="television" label="Channel" mappings=[1="▲", 0="▼"]
         Text item=LG_TV0_Channel
+        Switch item=LG_TV0_ChannelDummy icon="television" label="Channel" mappings=[1="▲", 0="▼"]
+        Text item=LG_TV0_ChannelName
         Default item=LG_TV0_Player
         Text item=LG_TV0_Application
         Selection item=LG_TV0_Application mappings=[
@@ -147,10 +147,15 @@ end
 rule "ChannelUpDown"
 when Item LG_TV0_ChannelDummy received command
 then
-    var currentChannel = LG_TV0_ChannelNo.state as DecimalType
+    val actions = getActions("lgwebos","lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46")
+    if(null === actions) {
+        logInfo("actions", "Actions not found, check thing ID")
+        return
+    }
+                
     switch receivedCommand{
-        case 0: LG_TV0_ChannelNo.sendCommand(currentChannel - 1)
-        case 1: LG_TV0_ChannelNo.sendCommand(currentChannel + 1)
+                    case 0: actions.decreaseChannel()
+                    case 1: actions.increaseChannel()
     }
 end
 ```

@@ -44,10 +44,9 @@
 		<state min="0" max="100" step="1"></state>
 	</channel-type>
 	<channel-type id="channelType">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Channel</label>
 		<description>Current Channel</description>
-		<state min="1" step="1"></state>
 	</channel-type>
 	<channel-type id="channelNameChannelType">
 		<item-type>String</item-type>
