@@ -858,8 +858,6 @@ public class Connection {
         Set<String> keys = smartHomeDevices.keySet();
         for (String key : keys) {
             JsonObject keyObject = smartHomeDevices.get(key).getAsJsonObject();
-            // TODO
-            logger.error(keyObject.toString());
             SmartHomeDevice shd = parseJson(keyObject.toString(), SmartHomeDevice.class);
             if (keyObject.get("aliases").getAsJsonArray().size() > 0) {
                 shd.alias = new JsonSmartHomeDeviceAlias[1];
@@ -949,7 +947,7 @@ public class Connection {
         return smartHomeGroupArray;
     }
 
-    // Placeholder for an api-request
+    // Need to cache the light colors here
     public List<JsonColors> getEchoLightColors() {
         ArrayList<JsonColors> colors = new ArrayList<>();
         String[] stringColors = { "red", "crimson", "salmon", "orange", "gold", "yellow", "green", "turquoise", "cyan",
@@ -961,7 +959,7 @@ public class Connection {
         return colors;
     }
 
-    // Placeholder for an api-request
+    // Need to cache the light temperature list here
     public List<JsonColorTemperature> getEchoLightTemperatures() {
         ArrayList<JsonColorTemperature> temperatures = new ArrayList<>();
         String[] stringTemperatures = { "warm_white", "soft_white", "white", "daylight_white", "cool_white" };
@@ -1112,6 +1110,7 @@ public class Connection {
         String state = null;
         if (device.getThingTypeUID().equals(THING_TYPE_LIGHT)
                 || device.getThingTypeUID().equals(THING_TYPE_LIGHT_GROUP)) {
+
             JsonArray capabilities = this.getBulbCapabilities(applianceId);
 
             for (JsonElement capability : capabilities) {

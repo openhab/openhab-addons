@@ -15,6 +15,7 @@ package org.openhab.binding.amazonechocontrol.internal.handler;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -120,7 +122,12 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                     }
                 }
             };
-            updateStateJob = scheduler.scheduleWithFixedDelay(runnable, 0, 30, TimeUnit.SECONDS);
+
+            Configuration config = accountHandler.getThing().getConfiguration();
+
+            updateStateJob = scheduler.scheduleWithFixedDelay(runnable, 0,
+                    ((BigDecimal) config.getProperties().get("pollingIntervalSmartHome")).longValue(),
+                    TimeUnit.SECONDS);
         }
     }
 
@@ -257,6 +264,16 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
     }
 
     public List<SmartHomeDevice> updateSmartHomeDevices() {
+
+        /*
+         * Configuration config = accountHandler.getThing().getConfiguration();
+         * boolean discoverSmartHome = (boolean) config.getProperties().get("discoverSmartHome");
+         * 
+         * if (discoverSmartHome == false) {
+         * return new ArrayList<SmartHomeDevice>();
+         * }
+         */
+
         Connection currentConnection = connection;
         if (currentConnection == null) {
             return new ArrayList<SmartHomeDevice>();
