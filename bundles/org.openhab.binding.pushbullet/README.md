@@ -111,10 +111,6 @@ then
 end
 ```
 
-
-
-
-
 ## Creating an account for your bot(s)
 
 The pushbullet accounts are bound to either Google or Facebook accounts.
