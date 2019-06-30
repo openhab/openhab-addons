@@ -40,42 +40,42 @@ public class EventDataJson {
     /*
      * Temperature from station in degrees F
      */
-    public double tempf;
+    public Double tempf;
 
     /*
      * Real-feel temperature
      */
-    public double feelsLike;
+    public Double feelsLike;
 
     /*
      * Dew point
      */
-    public double dewPoint;
+    public Double dewPoint;
 
     /*
      * Relative humidity from station
      */
-    public double humidity;
+    public Double humidity;
 
     /*
      * Relative barometric pressure in inches
      */
-    public double baromrelin;
+    public Double baromrelin;
 
     /*
      * Absolute barometric pressure in inches
      */
-    public double baromabsin;
+    public Double baromabsin;
 
     /*
      * Temperature from indoor sensor
      */
-    public double tempinf;
+    public Double tempinf;
 
     /*
      * Humidity from indoor sensor
      */
-    public double humidityin;
+    public Double humidityin;
 
     /*
      * Battery from indoor sensor
@@ -85,17 +85,17 @@ public class EventDataJson {
     /*
      * Solar radiation
      */
-    public double solarradiation;
+    public Double solarradiation;
 
     /*
      * UV Index
      */
-    public int uv;
+    public Integer uv;
 
     /*
      * Carbon dioxide
      */
-    public double co;
+    public Double co;
 
     /*
      * Battery level
@@ -106,89 +106,89 @@ public class EventDataJson {
      * Wind speed
      * Instantaneous wind speed, mph
      */
-    public double windspeedmph;
+    public Double windspeedmph;
 
     /*
      * Wind direction
      * Instantaneous wind direction, 0-360 degrees
      */
-    public long winddir;
+    public Integer winddir;
 
     /*
      * Wind gust speed
      * Max wind speed in the last 10 minutes, mph
      */
-    public double windgustmph;
+    public Double windgustmph;
 
     /*
      * Wind gust direction
      * Wind direction at which the wind gust occurred, 0-360 degrees
      */
-    public double windgustdir;
+    public Integer windgustdir;
 
     /*
      * Maximum daily wind gust speed
      * Maximum wind speed in last day, mph
      */
-    public double maxdailygust;
+    public Double maxdailygust;
 
     /*
      * Wind speed 2-minute average
      * Average wind speed, 2 minute average, mph
      * Name must contain underscore
      */
-    public double windspdmph_avg2m;
+    public Double windspdmph_avg2m;
 
     /*
      * Wind direction 2 minute average
-     * Average wind direction, 2 minute average, mph
+     * Average wind direction, 2 minute average, 0-360 degrees
      * Name must contain underscore
      */
-    public double winddir_avg2m;
+    public Integer winddir_avg2m;
 
     /*
      * Wind speed 10-minute average
      * Average wind speed, 10 minute average, mph
      * Name must contain underscore
      */
-    public double windspdmph_avg10m;
+    public Double windspdmph_avg10m;
 
     /*
      * Wind direction 10 minute average
-     * Average wind direction, 10 minute average, mph
+     * Average wind direction, 10 minute average, 0-360 degrees
      * Name must contain underscore
      */
-    public double winddir_avg10m;
+    public Integer winddir_avg10m;
 
     /*
      * Hourly rain rate in inches/hour
      */
-    public double hourlyrainin;
+    public Double hourlyrainin;
 
     /*
      * Daily rain, inches
      */
-    public double dailyrainin;
+    public Double dailyrainin;
 
     /*
      * Weekly rain, inches
      */
-    public double weeklyrainin;
+    public Double weeklyrainin;
 
     /*
      * Monthly rain, inches
      */
-    public double monthlyrainin;
+    public Double monthlyrainin;
 
     /*
      * Yearly rain, inches
      */
-    public double yearlyrainin;
+    public Double yearlyrainin;
 
     /*
      * Event rain, inches
      */
-    public double eventrainin;
+    public Double eventrainin;
 
     /*
      * Rain in past 24 hours, inches
@@ -199,7 +199,7 @@ public class EventDataJson {
     /*
      * Total rain since last factory reset, inches
      */
-    public double totalrainin;
+    public Double totalrainin;
 
     /*
      * lastRain - Last time hourlyrainin > 0,
@@ -209,30 +209,30 @@ public class EventDataJson {
     /*
      * Temperature from remote sensors 1-10
      */
-    public double temp1f;
-    public double temp2f;
-    public double temp3f;
-    public double temp4f;
-    public double temp5f;
-    public double temp6f;
-    public double temp7f;
-    public double temp8f;
-    public double temp9f;
-    public double temp10f;
+    public Double temp1f;
+    public Double temp2f;
+    public Double temp3f;
+    public Double temp4f;
+    public Double temp5f;
+    public Double temp6f;
+    public Double temp7f;
+    public Double temp8f;
+    public Double temp9f;
+    public Double temp10f;
 
     /*
      * Relative humidity from remote sensors 1-10
      */
-    public double humidity1;
-    public double humidity2;
-    public double humidity3;
-    public double humidity4;
-    public double humidity5;
-    public double humidity6;
-    public double humidity7;
-    public double humidity8;
-    public double humidity9;
-    public double humidity10;
+    public Double humidity1;
+    public Double humidity2;
+    public Double humidity3;
+    public Double humidity4;
+    public Double humidity5;
+    public Double humidity6;
+    public Double humidity7;
+    public Double humidity8;
+    public Double humidity9;
+    public Double humidity10;
 
     /*
      * Battery status of remote sensors 1-10
@@ -266,28 +266,28 @@ public class EventDataJson {
     /*
      * Soil temperature from remote sensors 1-10
      */
-    public double soiltemp1;
-    public double soiltemp2;
-    public double soiltemp3;
-    public double soiltemp4;
-    public double soiltemp5;
-    public double soiltemp6;
-    public double soiltemp7;
-    public double soiltemp8;
-    public double soiltemp9;
-    public double soiltemp10;
+    public Double soiltemp1;
+    public Double soiltemp2;
+    public Double soiltemp3;
+    public Double soiltemp4;
+    public Double soiltemp5;
+    public Double soiltemp6;
+    public Double soiltemp7;
+    public Double soiltemp8;
+    public Double soiltemp9;
+    public Double soiltemp10;
 
     /*
      * Soil moisture from remote sensors 1-10
      */
-    public double soilhum1;
-    public double soilhum2;
-    public double soilhum3;
-    public double soilhum4;
-    public double soilhum5;
-    public double soilhum6;
-    public double soilhum7;
-    public double soilhum8;
-    public double soilhum9;
-    public double soilhum10;
+    public Double soilhum1;
+    public Double soilhum2;
+    public Double soilhum3;
+    public Double soilhum4;
+    public Double soilhum5;
+    public Double soilhum6;
+    public Double soilhum7;
+    public Double soilhum8;
+    public Double soilhum9;
+    public Double soilhum10;
 }

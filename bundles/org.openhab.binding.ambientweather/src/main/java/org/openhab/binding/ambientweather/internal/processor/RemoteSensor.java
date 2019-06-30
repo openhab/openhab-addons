@@ -20,8 +20,6 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openhab.binding.ambientweather.internal.handler.AmbientWeatherStationHandler;
@@ -83,23 +81,22 @@ public class RemoteSensor {
             while (reader.hasNext()) {
                 String name = reader.nextName();
                 if (("temp" + sensorNumber + "f").equals(name)) {
-                    handler.updateChannel(CHGRP_REMOTE_SENSOR + sensorNumber + "#" + CH_TEMPERATURE,
-                            new QuantityType<>(reader.nextDouble(), ImperialUnits.FAHRENHEIT));
+                    handler.updateQuantity(CHGRP_REMOTE_SENSOR + sensorNumber, CH_TEMPERATURE, reader.nextDouble(),
+                            ImperialUnits.FAHRENHEIT);
                 } else if (("humidity" + sensorNumber).equals(name)) {
-                    handler.updateChannel(CHGRP_REMOTE_SENSOR + sensorNumber + "#" + CH_HUMIDITY,
-                            new QuantityType<>(reader.nextDouble(), SmartHomeUnits.PERCENT));
+                    handler.updateQuantity(CHGRP_REMOTE_SENSOR + sensorNumber, CH_HUMIDITY, reader.nextDouble(),
+                            SmartHomeUnits.PERCENT);
                 } else if (("soiltemp" + sensorNumber).equals(name)) {
-                    handler.updateChannel(CHGRP_REMOTE_SENSOR + sensorNumber + "#" + CH_SOIL_TEMPERATURE,
-                            new QuantityType<>(reader.nextDouble(), ImperialUnits.FAHRENHEIT));
+                    handler.updateQuantity(CHGRP_REMOTE_SENSOR + sensorNumber, CH_SOIL_TEMPERATURE, reader.nextDouble(),
+                            ImperialUnits.FAHRENHEIT);
                 } else if (("soilhum" + sensorNumber).equals(name)) {
-                    double soilMoisture = reader.nextDouble();
-                    handler.updateChannel(CHGRP_REMOTE_SENSOR + sensorNumber + "#" + CH_SOIL_MOISTURE,
-                            new QuantityType<>(soilMoisture, SmartHomeUnits.PERCENT));
-                    handler.updateChannel(CHGRP_REMOTE_SENSOR + sensorNumber + "#" + CH_SOIL_MOISTURE_LEVEL,
-                            new StringType(convertSoilMoistureToString(soilMoisture)));
+                    Double soilMoisture = reader.nextDouble();
+                    handler.updateQuantity(CHGRP_REMOTE_SENSOR + sensorNumber, CH_SOIL_MOISTURE, soilMoisture,
+                            SmartHomeUnits.PERCENT);
+                    handler.updateString(CHGRP_REMOTE_SENSOR + sensorNumber, CH_SOIL_MOISTURE_LEVEL,
+                            convertSoilMoistureToString(soilMoisture));
                 } else if (("batt" + sensorNumber).equals(name)) {
-                    handler.updateChannel(CHGRP_REMOTE_SENSOR + sensorNumber + "#" + CH_BATTERY_INDICATOR,
-                            new StringType(reader.nextString()));
+                    handler.updateString(CHGRP_REMOTE_SENSOR + sensorNumber, CH_BATTERY_INDICATOR, reader.nextString());
                 } else {
                     reader.skipValue();
                 }

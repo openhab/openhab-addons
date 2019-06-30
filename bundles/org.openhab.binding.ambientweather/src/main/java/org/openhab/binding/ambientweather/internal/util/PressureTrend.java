@@ -13,7 +13,8 @@
 package org.openhab.binding.ambientweather.internal.util;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.StringType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link PressureTrend} is responsible for determining the 3 hour
@@ -23,6 +24,8 @@ import org.eclipse.smarthome.core.library.types.StringType;
  */
 @NonNullByDefault
 public class PressureTrend extends SlidingTimeWindow<Double> {
+    private final Logger logger = LoggerFactory.getLogger(PressureTrend.class);
+
     // Pressure trend is established after 3 hours
     private static final long PRESSURE_TREND_PERIOD = 1000 * 60 * 60 * 3;
 
@@ -31,22 +34,26 @@ public class PressureTrend extends SlidingTimeWindow<Double> {
     private static final double STEADY_THRESHOLD = 0.02;
 
     // Pressure trends
-    private static final StringType RISING_RAPIDLY = new StringType("RISING RAPIDLY");
-    private static final StringType RISING = new StringType("RISING");
-    private static final StringType FALLING_RAPIDLY = new StringType("FALLING RAPIDLY");
-    private static final StringType FALLING = new StringType("FALLING");
-    private static final StringType STEADY = new StringType("STEADY");
-    private static final StringType UNKNOWN = new StringType("UNKNOWN");
+    private static final String RISING_RAPIDLY = "RISING RAPIDLY";
+    private static final String RISING = "RISING";
+    private static final String FALLING_RAPIDLY = "FALLING RAPIDLY";
+    private static final String FALLING = "FALLING";
+    private static final String STEADY = "STEADY";
+    private static final String UNKNOWN = "UNKNOWN";
 
     public PressureTrend() {
         super(PRESSURE_TREND_PERIOD);
     }
 
-    public StringType getPressureTrend() {
+    public String getPressureTrend() {
         long firstTime;
         long lastTime;
         double firstValue;
         double lastValue;
+
+        if (storage.isEmpty()) {
+            return UNKNOWN;
+        }
 
         synchronized (storage) {
             firstTime = storage.firstKey();
@@ -55,12 +62,12 @@ public class PressureTrend extends SlidingTimeWindow<Double> {
             lastValue = storage.get(storage.lastKey()).doubleValue();
         }
         if (lastTime - firstTime < period * 0.99) {
-            // Not with 1% of time period
+            // Not within 1% of time period
             return UNKNOWN;
         }
 
         double pressureDifference = lastValue - firstValue;
-        StringType pressureTrend;
+        String pressureTrend;
         if (pressureDifference > RAPIDLY_THRESHOLD) {
             pressureTrend = RISING_RAPIDLY;
         } else if (pressureDifference > STEADY_THRESHOLD && pressureDifference <= RAPIDLY_THRESHOLD) {

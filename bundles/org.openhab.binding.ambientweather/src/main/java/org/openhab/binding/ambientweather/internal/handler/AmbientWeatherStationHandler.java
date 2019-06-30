@@ -12,11 +12,21 @@
  */
 package org.openhab.binding.ambientweather.internal.handler;
 
+import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.common.AbstractUID;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -24,7 +34,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.ambientweather.internal.config.StationConfig;
 import org.openhab.binding.ambientweather.internal.processor.ProcessorFactory;
 import org.openhab.binding.ambientweather.internal.processor.ProcessorNotFoundException;
@@ -42,8 +51,7 @@ public class AmbientWeatherStationHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(AmbientWeatherStationHandler.class);
 
     // MAC address for weather station handled by this thing handler
-    @Nullable
-    private String macAddress;
+    private @Nullable String macAddress;
 
     // Short name for logging station type
     private String station;
@@ -58,13 +66,21 @@ public class AmbientWeatherStationHandler extends BaseThingHandler {
 
         // Name of station thing type used in logging
         String s = thing.getThingTypeUID().getAsString();
-        station = s.substring(s.indexOf(':') + 1).toUpperCase();
+        station = s.substring(s.indexOf(AbstractUID.SEPARATOR) + 1).toUpperCase();
     }
 
     @Override
     public void initialize() {
         macAddress = getConfigAs(StationConfig.class).macAddress;
         logger.debug("Station {}: Initializing station handler for MAC {}", station, macAddress);
+        try {
+            ProcessorFactory.getProcessor(thing).setChannelGroupId();
+            ProcessorFactory.getProcessor(thing).setNumberOfSensors();
+        } catch (ProcessorNotFoundException e) {
+            logger.warn("Station {}: Unable to set channel group Id and/or number of sensors: {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
+            return;
+        }
         Thing bridge = getBridge();
         if (bridge != null) {
             logger.debug("Station {}: Set station status to match bridge status: {}", station, bridge.getStatus());
@@ -114,20 +130,55 @@ public class AmbientWeatherStationHandler extends BaseThingHandler {
         }
     }
 
-    /*
-     * Helper function called by the processor to update the channel state
-     */
-    public void updateChannel(String channelId, State state) {
-        // Only update channel if it's linked
-        if (isLinked(channelId)) {
-            updateState(channelId, state);
+    public void updateQuantity(String groupId, String channelId, @Nullable Number value, Unit<?> unit) {
+        String channel = groupId + "#" + channelId;
+        if (value != null && isLinked(channel)) {
+            updateState(channel, new QuantityType<>(value, unit));
         }
     }
 
-    /*
-     * Helper function called by the processor to get the time zone
-     */
-    public ZoneId getZoneId() {
+    public void updateString(String groupId, String channelId, @Nullable String value) {
+        String channel = groupId + "#" + channelId;
+        if (value != null && isLinked(channel)) {
+            updateState(channel, new StringType(value));
+        }
+    }
+
+    public void updateNumber(String groupId, String channelId, @Nullable Number value) {
+        String channel = groupId + "#" + channelId;
+        if (value != null && isLinked(channel)) {
+            if (value instanceof Integer) {
+                updateState(channel, new DecimalType(value.intValue()));
+            } else if (value instanceof Double) {
+                updateState(channel, new DecimalType(value.doubleValue()));
+            }
+        }
+    }
+
+    public void updateDate(String groupId, String channelId, @Nullable String date) {
+        String channel = groupId + "#" + channelId;
+        if (date != null && isLinked(channel)) {
+            updateState(channel, getLocalDateTimeType(date, getZoneId()));
+        }
+    }
+
+    private DateTimeType getLocalDateTimeType(String dateTimeString, ZoneId zoneId) {
+        DateTimeType dateTimeType;
+        try {
+            Instant instant = Instant.parse(dateTimeString);
+            ZonedDateTime localDateTime = instant.atZone(zoneId);
+            dateTimeType = new DateTimeType(localDateTime);
+        } catch (DateTimeParseException e) {
+            logger.debug("Error parsing date/time string: {}", e.getMessage());
+            dateTimeType = new DateTimeType();
+        } catch (IllegalArgumentException e) {
+            logger.debug("Error converting to DateTimeType: {}", e.getMessage());
+            dateTimeType = new DateTimeType();
+        }
+        return dateTimeType;
+    }
+
+    private ZoneId getZoneId() {
         return timeZoneProvider.getTimeZone();
     }
 

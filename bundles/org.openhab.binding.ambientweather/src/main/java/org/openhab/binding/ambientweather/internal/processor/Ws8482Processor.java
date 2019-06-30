@@ -15,14 +15,10 @@ package org.openhab.binding.ambientweather.internal.processor;
 import static org.openhab.binding.ambientweather.internal.AmbientWeatherBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openhab.binding.ambientweather.internal.handler.AmbientWeatherStationHandler;
 import org.openhab.binding.ambientweather.internal.model.EventDataJson;
-
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link Ws8482Processor} is responsible for updating
@@ -35,37 +31,35 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class Ws8482Processor extends AbstractProcessor {
 
-    public Ws8482Processor() {
-        // Set the number of remote sensor channels supported by this station
+    @Override
+    public void setChannelGroupId() {
+        channelGroupId = CHGRP_WS8482;
+    }
+
+    @Override
+    public void setNumberOfSensors() {
         remoteSensor.setNumberOfSensors(7);
     }
 
     @Override
     public void processInfoUpdate(AmbientWeatherStationHandler handler, String station, String name, String location) {
         // Update name and location channels
-        handler.updateChannel(CHGRP_STATION + "#" + CH_NAME, new StringType(name));
-        handler.updateChannel(CHGRP_STATION + "#" + CH_LOCATION, new StringType(location));
+        handler.updateString(CHGRP_STATION, CH_NAME, name);
+        handler.updateString(CHGRP_STATION, CH_LOCATION, location);
     }
 
     @Override
     public void processWeatherData(AmbientWeatherStationHandler handler, String station, String jsonData) {
-        EventDataJson data;
-        try {
-            logger.debug("Station {}: Parsing weather data event json", station);
-            data = ProcessorFactory.getGson().fromJson(jsonData, EventDataJson.class);
-        } catch (JsonSyntaxException e) {
-            logger.info("Station {}: Data event cannot be parsed: {}", station, e.getMessage());
+        EventDataJson data = parseEventData(station, jsonData);
+        if (data == null) {
             return;
         }
 
-        // Update the weather data channels for the WS-8482
-        handler.updateChannel(CHGRP_WS8482 + "#" + CH_OBSERVATION_TIME,
-                getLocalDateTimeType(data.date, handler.getZoneId()));
-        handler.updateChannel(CHGRP_WS8482 + "#" + CH_TEMPERATURE,
-                new QuantityType<>(data.tempinf, ImperialUnits.FAHRENHEIT));
-        handler.updateChannel(CHGRP_WS8482 + "#" + CH_HUMIDITY,
-                new QuantityType<>(data.humidityin, SmartHomeUnits.PERCENT));
-        handler.updateChannel(CHGRP_WS8482 + "#" + CH_BATTERY_INDICATOR, new StringType(data.battout));
+        // Update the weather data channels
+        handler.updateDate(channelGroupId, CH_OBSERVATION_TIME, data.date);
+        handler.updateString(channelGroupId, CH_BATTERY_INDICATOR, data.battout);
+        handler.updateQuantity(channelGroupId, CH_TEMPERATURE, data.tempf, ImperialUnits.FAHRENHEIT);
+        handler.updateQuantity(channelGroupId, CH_HUMIDITY, data.humidity, SmartHomeUnits.PERCENT);
 
         // Update the remote sensor channels
         remoteSensor.updateChannels(handler, jsonData);

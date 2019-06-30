@@ -35,14 +35,10 @@ public class ProcessorFactory {
     private static final Gson GSON = new Gson();
 
     // Supported weather stations
-    @Nullable
-    private static Ws1400ipProcessor WS1400IP_PROCESSOR;
-    @Nullable
-    private static Ws2902aProcessor WS2902A_PROCESSOR;
-    @Nullable
-    private static Ws8482Processor WS8482_PROCESSOR;
-    @Nullable
-    private static Ws0900ipProcessor WS0900IP_PROCESSOR;
+    private @Nullable static Ws1400ipProcessor WS1400IP_PROCESSOR;
+    private @Nullable static Ws2902aProcessor WS2902A_PROCESSOR;
+    private @Nullable static Ws8482Processor WS8482_PROCESSOR;
+    private @Nullable static Ws0900ipProcessor WS0900IP_PROCESSOR;
 
     /**
      * Individual weather station processors use this one Gson instance,
@@ -61,35 +57,41 @@ public class ProcessorFactory {
      * @return instance of a weather station processor
      * @throws ProcessorNotFoundException
      */
-    @Nullable
     public static AbstractProcessor getProcessor(Thing thing) throws ProcessorNotFoundException {
         // Return the processor for this thing type
         String thingType = thing.getThingTypeUID().getAsString().toLowerCase();
         switch (thingType) {
             case "ambientweather:ws1400ip": {
-                if (WS1400IP_PROCESSOR == null) {
-                    WS1400IP_PROCESSOR = new Ws1400ipProcessor();
+                Ws1400ipProcessor processor = WS1400IP_PROCESSOR;
+                if (processor == null) {
+                    processor = new Ws1400ipProcessor();
+                    WS1400IP_PROCESSOR = processor;
                 }
-                return WS1400IP_PROCESSOR;
+                return processor;
             }
             case "ambientweather:ws2902a": {
-                if (WS2902A_PROCESSOR == null) {
-                    WS2902A_PROCESSOR = new Ws2902aProcessor();
+                Ws2902aProcessor processor = WS2902A_PROCESSOR;
+                if (processor == null) {
+                    processor = new Ws2902aProcessor();
+                    WS2902A_PROCESSOR = processor;
                 }
-                return WS2902A_PROCESSOR;
+                return processor;
             }
             case "ambientweather:ws8482": {
-                if (WS8482_PROCESSOR == null) {
-                    WS8482_PROCESSOR = new Ws8482Processor();
+                Ws8482Processor processor = WS8482_PROCESSOR;
+                if (processor == null) {
+                    processor = new Ws8482Processor();
+                    WS8482_PROCESSOR = processor;
                 }
-                return WS8482_PROCESSOR;
+                return processor;
             }
             case "ambientweather:ws0900ip": {
-                if (WS0900IP_PROCESSOR == null) {
-                    WS0900IP_PROCESSOR = new Ws0900ipProcessor();
-                    ;
+                Ws0900ipProcessor processor = WS0900IP_PROCESSOR;
+                if (processor == null) {
+                    processor = new Ws0900ipProcessor();
+                    WS0900IP_PROCESSOR = processor;
                 }
-                return WS0900IP_PROCESSOR;
+                return processor;
             }
         }
         throw new ProcessorNotFoundException("No processor for thing type " + thingType);

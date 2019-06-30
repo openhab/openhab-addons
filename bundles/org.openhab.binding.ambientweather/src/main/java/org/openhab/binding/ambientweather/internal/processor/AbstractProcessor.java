@@ -12,16 +12,14 @@
  */
 package org.openhab.binding.ambientweather.internal.processor;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeParseException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.openhab.binding.ambientweather.internal.handler.AmbientWeatherStationHandler;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ambientweather.internal.model.EventDataJson;
+import org.openhab.binding.ambientweather.internal.util.PressureTrend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link AbstractProcessor} is the generic/error processor
@@ -31,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Initial contribution
  */
 @NonNullByDefault
-public abstract class AbstractProcessor {
+public abstract class AbstractProcessor implements ProcessorInterface {
     // @formatter:off
     private static final String[] UV_INDEX = {
         "LOW",
@@ -53,10 +51,20 @@ public abstract class AbstractProcessor {
     };
     // @formatter:on
 
-    public static final String[] WIND_DIRECTIONS = new String[] { "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S",
-            "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW" };
+    private static final String[] WIND_DIRECTIONS = new String[] { "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
+            "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW" };
+
+    protected static final String NOT_APPLICABLE = "N/A";
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+    // Used to calculate barometric pressure trend
+    protected PressureTrend pressureTrend = new PressureTrend();
+
+    /*
+     * The channel group Id for this processor
+     */
+    protected String channelGroupId = "";
 
     /*
      * Used to extract remote sensor data from the data event Json
@@ -64,50 +72,23 @@ public abstract class AbstractProcessor {
     protected RemoteSensor remoteSensor = new RemoteSensor();
 
     /*
-     * Updates the info channels (i.e. name and location) for a station
+     * Parse the event data json string
      */
-    public abstract void processInfoUpdate(AmbientWeatherStationHandler handler, String station, String name,
-            String location);
-
-    /*
-     * Updates the weather data channels for a station
-     */
-    public abstract void processWeatherData(AmbientWeatherStationHandler handler, String station, String jsonData);
-
-    /*
-     * Helper function called by processor to convert UTC time milliseconds to local time
-     */
-    public DateTimeType getLocalDateTimeType(long dateTimeMillis, ZoneId zoneId) {
-        Instant instant = Instant.ofEpochMilli(dateTimeMillis);
-        ZonedDateTime localDateTime = instant.atZone(zoneId);
-        DateTimeType dateTimeType = new DateTimeType(localDateTime);
-        return dateTimeType;
-    }
-
-    /*
-     * Helper function called by processor to convert UTC time string to local time
-     * Input string is of form 2018-12-02T10:47:00.000Z
-     */
-    public DateTimeType getLocalDateTimeType(String dateTimeString, ZoneId zoneId) {
-        DateTimeType dateTimeType;
+    protected @Nullable EventDataJson parseEventData(String station, String jsonData) {
+        EventDataJson data = null;
         try {
-            Instant instant = Instant.parse(dateTimeString);
-            ZonedDateTime localDateTime = instant.atZone(zoneId);
-            dateTimeType = new DateTimeType(localDateTime);
-        } catch (DateTimeParseException e) {
-            logger.debug("Error parsing date/time string: {}", e.getMessage());
-            dateTimeType = new DateTimeType();
-        } catch (IllegalArgumentException e) {
-            logger.debug("Error converting to DateTimeType: {}", e.getMessage());
-            dateTimeType = new DateTimeType();
+            logger.debug("Station {}: Parsing weather data event json", station);
+            data = ProcessorFactory.getGson().fromJson(jsonData, EventDataJson.class);
+        } catch (JsonSyntaxException e) {
+            logger.info("Station {}: Data event cannot be parsed: {}", station, e.getMessage());
         }
-        return dateTimeType;
+        return data;
     }
 
     /*
      * Convert the UV Index integer value to a string representation
      */
-    public String convertUVIndexToString(int uvIndex) {
+    protected String convertUVIndexToString(int uvIndex) {
         if (uvIndex < 0 || uvIndex >= UV_INDEX.length) {
             return "UNKNOWN";
         }
