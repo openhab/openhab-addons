@@ -89,11 +89,6 @@ public class PushbulletHandler extends BaseThingHandler {
         logger.debug("Start initializing!");
         config = getConfigAs(PushbulletConfiguration.class);
 
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
-        updateStatus(ThingStatus.UNKNOWN);
-
         // Name and Token are both "required", so set the Thing immediately ONLINE.
         updateStatus(ThingStatus.ONLINE);
 
