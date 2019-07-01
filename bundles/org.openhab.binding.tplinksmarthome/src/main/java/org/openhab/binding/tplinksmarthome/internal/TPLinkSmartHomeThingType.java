@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -85,6 +86,10 @@ public enum TPLinkSmartHomeThingType {
      */
     public static final Map<ThingTypeUID, TPLinkSmartHomeThingType> THING_TYPE_MAP = SUPPORTED_THING_TYPES_LIST.stream()
             .collect(Collectors.toMap(TPLinkSmartHomeThingType::thingTypeUID, Function.identity()));
+    private static final List<TPLinkSmartHomeThingType> BULB_WITH_TEMPERATURE_COLOR_1 = Stream.of(LB120, KL120)
+            .collect(Collectors.toList());
+    private static final List<TPLinkSmartHomeThingType> BULB_WITH_TEMPERATURE_COLOR_2 = Stream
+            .of(KB130, KL130, LB130, LB230).collect(Collectors.toList());
 
     private ThingTypeUID thingTypeUID;
     private DeviceType type;
@@ -106,6 +111,32 @@ public enum TPLinkSmartHomeThingType {
      */
     public ThingTypeUID thingTypeUID() {
         return thingTypeUID;
+    }
+
+    /**
+     * Returns true if the given {@link ThingTypeUID} matches a device that is a bulb with color temperature ranges 1
+     * (2700 to 6500k).
+     *
+     * @param thingTypeUID if the check
+     * @return true if it's a bulb device with color temperature range 1
+     */
+    public static boolean isBulbDeviceWithTemperatureColor1(ThingTypeUID thingTypeUID) {
+        return isDevice(thingTypeUID, BULB_WITH_TEMPERATURE_COLOR_1);
+    }
+
+    /**
+     * Returns true if the given {@link ThingTypeUID} matches a device that is a bulb with color temperature ranges 2
+     * (2500 to 9000k).
+     *
+     * @param thingTypeUID if the check
+     * @return true if it's a bulb device with color temperature range 2
+     */
+    public static boolean isBulbDeviceWithTemperatureColor2(ThingTypeUID thingTypeUID) {
+        return isDevice(thingTypeUID, BULB_WITH_TEMPERATURE_COLOR_2);
+    }
+
+    private static boolean isDevice(ThingTypeUID thingTypeUID, List<TPLinkSmartHomeThingType> thingTypes) {
+        return thingTypes.stream().anyMatch(t -> t.is(thingTypeUID));
     }
 
     /**

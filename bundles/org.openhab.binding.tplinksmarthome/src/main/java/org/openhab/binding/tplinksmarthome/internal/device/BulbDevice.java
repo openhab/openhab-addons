@@ -96,6 +96,8 @@ public class BulbDevice extends SmartHomeDevice {
                     connection.sendCommand(commands.setBrightness(command.intValue(), transitionPeriod)));
         } else if (CHANNEL_COLOR_TEMPERATURE.equals(channelID)) {
             return handleColorTemperature(convertPercentageToKelvin(command.intValue()), transitionPeriod);
+        } else if (CHANNEL_COLOR_TEMPERATURE_ABS.equals(channelID)) {
+            return handleColorTemperature(guardColorTemperature(command.intValue()), transitionPeriod);
         }
         return null;
     }
@@ -129,6 +131,9 @@ public class BulbDevice extends SmartHomeDevice {
                 break;
             case CHANNEL_COLOR_TEMPERATURE:
                 state = new PercentType(convertKelvinToPercentage(lightState.getColorTemp()));
+                break;
+            case CHANNEL_COLOR_TEMPERATURE_ABS:
+                state = new DecimalType(guardColorTemperature(lightState.getColorTemp()));
                 break;
             case CHANNEL_SWITCH:
                 state = lightState.getOnOff();
