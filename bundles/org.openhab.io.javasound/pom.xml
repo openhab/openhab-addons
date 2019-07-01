@@ -15,8 +15,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>javazoom</groupId>
-      <artifactId>jlayer</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>javazoom.jlayer</artifactId>
       <version>1.0.1</version>
       <scope>provided</scope>
     </dependency>

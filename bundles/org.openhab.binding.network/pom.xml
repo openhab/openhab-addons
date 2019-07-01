@@ -15,14 +15,14 @@
   
   <dependencies>
     <dependency>
-        <groupId>fr.bmartel</groupId>
-        <artifactId>jspeedtest</artifactId>
+        <groupId>org.openhab.osgiify</groupId>
+        <artifactId>fr.bmartel.jspeedtest</artifactId>
         <version>1.32.1</version>
         <scope>provided</scope>
     </dependency>
     <dependency>
-        <groupId>fr.bmartel</groupId>
-        <artifactId>http-endec</artifactId>
+        <groupId>org.openhab.osgiify</groupId>
+        <artifactId>fr.bmartel.http-endec</artifactId>
         <version>1.04</version>
         <scope>provided</scope>
     </dependency>

@@ -5,10 +5,9 @@
     <feature name="openhab-binding-knx" description="KNX Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
-        <feature prerequisite="true">wrap</feature>
-        <bundle dependency="true">wrap:mvn:com.github.calimero/calimero-core/2.4$Bundle-Name=Calimero%20Core&amp;Bundle-SymbolicName=com.github.calimero.calimero-core&amp;Bundle-Version=2.4</bundle>
-        <bundle dependency="true">wrap:mvn:com.github.calimero/calimero-device/2.4$Bundle-Name=Calimero%20KNX%20Device&amp;Bundle-SymbolicName=com.github.calimero.calimero-device&amp;Bundle-Version=2.4</bundle>
-        <bundle dependency="true">wrap:mvn:com.github.calimero/calimero-rxtx/2.4$Bundle-Name=Calimero%20rxtx%20Adapter&amp;Bundle-SymbolicName=com.github.calimero.calimero-rxtx&amp;Bundle-Version=2.4</bundle>
+        <bundle dependency="true">mvn:org.openhab.osgiify/com.github.calimero.calimero-core/2.4</bundle>
+        <bundle dependency="true">mvn:org.openhab.osgiify/com.github.calimero.calimero-device/2.4</bundle>
+        <bundle dependency="true">mvn:org.openhab.osgiify/com.github.calimero.calimero-rxtx/2.4</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.knx/${project.version}</bundle>
     </feature>
 </features>
