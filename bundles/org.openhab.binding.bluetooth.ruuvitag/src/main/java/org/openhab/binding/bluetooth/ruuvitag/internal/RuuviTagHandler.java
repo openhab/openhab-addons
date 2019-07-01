@@ -14,6 +14,10 @@ package org.openhab.binding.bluetooth.ruuvitag.internal;
 
 import static org.openhab.binding.bluetooth.ruuvitag.internal.RuuviTagBindingConstants.*;
 
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
@@ -28,6 +32,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.bluetooth.BeaconBluetoothHandler;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 import org.slf4j.Logger;
@@ -45,8 +50,13 @@ import fi.tkgwf.ruuvi.common.parser.impl.AnyDataFormatParser;
 @NonNullByDefault
 public class RuuviTagHandler extends BeaconBluetoothHandler {
 
+    // Ruuvitag sends an update every 10 seconds. So we keep a heartbeat to give it some slack
+    private static final int HEARTBEAT_TIMEOUT_MINUTES = 1;
     private final Logger logger = LoggerFactory.getLogger(RuuviTagHandler.class);
     private final AnyDataFormatParser parser = new AnyDataFormatParser();
+    private final AtomicBoolean receivedStatus = new AtomicBoolean();
+
+    private @NonNullByDefault({}) ScheduledFuture<?> heartbeatFuture;
 
     public RuuviTagHandler(Thing thing) {
         super(thing);
@@ -55,85 +65,110 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
     @Override
     public void initialize() {
         super.initialize();
+        if (getThing().getStatus() != ThingStatus.OFFLINE) {
+            heartbeatFuture = scheduler.scheduleWithFixedDelay(this::heartbeat, 0, HEARTBEAT_TIMEOUT_MINUTES,
+                    TimeUnit.MINUTES);
+        }
+    }
+
+    private void heartbeat() {
+        synchronized (receivedStatus) {
+            if (!receivedStatus.getAndSet(false) && getThing().getStatus() == ThingStatus.ONLINE) {
+                getThing().getChannels().stream().map(Channel::getUID).filter(this::isLinked)
+                        .forEach(c -> updateState(c, UnDefType.UNDEF));
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "No data received for some time");
+            }
+        }
     }
 
     @Override
     public void dispose() {
-        super.dispose();
+        try {
+            super.dispose();
+        } finally {
+            if (heartbeatFuture != null) {
+                heartbeatFuture.cancel(true);
+                heartbeatFuture = null;
+            }
+        }
     }
 
     @Override
     public void onScanRecordReceived(BluetoothScanNotification scanNotification) {
-        super.onScanRecordReceived(scanNotification);
-        final byte[] manufacturerData = scanNotification.getManufacturerData();
-        if (manufacturerData != null && manufacturerData.length > 0) {
-            final RuuviMeasurement ruuvitagData = parser.parse(manufacturerData);
-            logger.trace("Ruuvi received new scan notification for {}: {}", scanNotification.getAddress(),
-                    ruuvitagData);
-            if (ruuvitagData != null) {
-                boolean atLeastOneRuuviFieldPresent = false;
-                for (Channel channel : getThing().getChannels()) {
-                    ChannelUID channelUID = channel.getUID();
-                    switch (channelUID.getId()) {
-                        case CHANNEL_ID_ACCELERATIONX:
-                            atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                    ruuvitagData.getAccelerationX(), SmartHomeUnits.STANDARD_GRAVITY);
-                            break;
-                        case CHANNEL_ID_ACCELERATIONY:
-                            atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                    ruuvitagData.getAccelerationY(), SmartHomeUnits.STANDARD_GRAVITY);
-                            break;
-                        case CHANNEL_ID_ACCELERATIONZ:
-                            atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                    ruuvitagData.getAccelerationZ(), SmartHomeUnits.STANDARD_GRAVITY);
-                            break;
-                        case CHANNEL_ID_BATTERY:
-                            atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                    ruuvitagData.getBatteryVoltage(), SmartHomeUnits.VOLT);
-                            break;
-                        case CHANNEL_ID_DATA_FORMAT:
-                            atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                    ruuvitagData.getDataFormat());
-                            break;
-                        case CHANNEL_ID_HUMIDITY:
-                            atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getHumidity(),
-                                    SmartHomeUnits.PERCENT);
-                            break;
-                        case CHANNEL_ID_MEASUREMENT_SEQUENCE_NUMBER:
-                            atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                    ruuvitagData.getMeasurementSequenceNumber(), SmartHomeUnits.ONE);
-                            break;
-                        case CHANNEL_ID_MOVEMENT_COUNTER:
-                            atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                    ruuvitagData.getMovementCounter(), SmartHomeUnits.ONE);
-                            break;
-                        case CHANNEL_ID_PRESSURE:
-                            atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPressure(),
-                                    SIUnits.PASCAL);
-                            break;
-                        case CHANNEL_ID_TEMPERATURE:
-                            atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                    ruuvitagData.getTemperature(), SIUnits.CELSIUS);
-                            break;
-                        case CHANNEL_ID_TX_POWER:
-                            atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getTxPower(),
-                                    SmartHomeUnits.DECIBEL_MILLIWATTS);
-                            break;
+        synchronized (receivedStatus) {
+            receivedStatus.set(true);
+            super.onScanRecordReceived(scanNotification);
+            final byte[] manufacturerData = scanNotification.getManufacturerData();
+            if (manufacturerData != null && manufacturerData.length > 0) {
+                final RuuviMeasurement ruuvitagData = parser.parse(manufacturerData);
+                logger.trace("Ruuvi received new scan notification for {}: {}", scanNotification.getAddress(),
+                        ruuvitagData);
+                if (ruuvitagData != null) {
+                    boolean atLeastOneRuuviFieldPresent = false;
+                    for (Channel channel : getThing().getChannels()) {
+                        ChannelUID channelUID = channel.getUID();
+                        switch (channelUID.getId()) {
+                            case CHANNEL_ID_ACCELERATIONX:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                                        ruuvitagData.getAccelerationX(), SmartHomeUnits.STANDARD_GRAVITY);
+                                break;
+                            case CHANNEL_ID_ACCELERATIONY:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                                        ruuvitagData.getAccelerationY(), SmartHomeUnits.STANDARD_GRAVITY);
+                                break;
+                            case CHANNEL_ID_ACCELERATIONZ:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                                        ruuvitagData.getAccelerationZ(), SmartHomeUnits.STANDARD_GRAVITY);
+                                break;
+                            case CHANNEL_ID_BATTERY:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                                        ruuvitagData.getBatteryVoltage(), SmartHomeUnits.VOLT);
+                                break;
+                            case CHANNEL_ID_DATA_FORMAT:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                                        ruuvitagData.getDataFormat());
+                                break;
+                            case CHANNEL_ID_HUMIDITY:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                                        ruuvitagData.getHumidity(), SmartHomeUnits.PERCENT);
+                                break;
+                            case CHANNEL_ID_MEASUREMENT_SEQUENCE_NUMBER:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                                        ruuvitagData.getMeasurementSequenceNumber(), SmartHomeUnits.ONE);
+                                break;
+                            case CHANNEL_ID_MOVEMENT_COUNTER:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                                        ruuvitagData.getMovementCounter(), SmartHomeUnits.ONE);
+                                break;
+                            case CHANNEL_ID_PRESSURE:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                                        ruuvitagData.getPressure(), SIUnits.PASCAL);
+                                break;
+                            case CHANNEL_ID_TEMPERATURE:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                                        ruuvitagData.getTemperature(), SIUnits.CELSIUS);
+                                break;
+                            case CHANNEL_ID_TX_POWER:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                                        ruuvitagData.getTxPower(), SmartHomeUnits.DECIBEL_MILLIWATTS);
+                                break;
+                        }
                     }
-                }
-                if (atLeastOneRuuviFieldPresent) {
-                    // In practice, updated to ONLINE by super.onScanRecordReceived already, based on RSSI value
+                    if (atLeastOneRuuviFieldPresent) {
+                        // In practice, updated to ONLINE by super.onScanRecordReceived already, based on RSSI value
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Received Ruuvi Tag data but no fields could be parsed");
+                    }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Received Ruuvi Tag data but no fields could be parsed");
+                            "Received bluetooth data which could not be parsed to any known Ruuvi Tag data formats");
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Received bluetooth data which could not be parsed to any known Ruuvi Tag data formats");
+                // Received Bluetooth scan with no manufacturer data
+                // This happens -- we ignore this silently.
             }
-        } else {
-            // Received Bluetooth scan with no manufacturer data
-            // This happens -- we ignore this silently.
         }
     }
 
@@ -143,8 +178,8 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
      * Update is not done when value is null.
      *
      * @param channelUID channel UID
-     * @param value      value to update
-     * @param unit       unit associated with the value
+     * @param value value to update
+     * @param unit unit associated with the value
      * @return whether the value was present
      */
     private <T extends Quantity<T>> boolean updateStateIfLinked(ChannelUID channelUID, @Nullable Number value,
@@ -164,7 +199,7 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
      * Update is not done when value is null.
      *
      * @param channelUID channel UID
-     * @param value      value to update
+     * @param value value to update
      * @return whether the value was present
      */
     private <T extends Quantity<T>> boolean updateStateIfLinked(ChannelUID channelUID, @Nullable Integer value) {
