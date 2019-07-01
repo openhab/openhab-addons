@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluetooth.ruuvitag.handler;
+package org.openhab.binding.bluetooth.ruuvitag.internal;
 
-import static org.openhab.binding.bluetooth.ruuvitag.RuuviTagBindingConstants.*;
+import static org.openhab.binding.bluetooth.ruuvitag.internal.RuuviTagBindingConstants.*;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluetooth.ruuvitag;
+package org.openhab.binding.bluetooth.ruuvitag.internal;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
