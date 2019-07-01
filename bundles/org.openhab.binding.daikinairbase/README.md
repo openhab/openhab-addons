@@ -40,12 +40,12 @@ daikinairbase:ac_unit:living_room_ac [ host="192.168.0.5" ]
 daikinairbase.items:
 
 ```
-Switch DaikinACUnit_Power { channel="daikin:ac_unit:living_room_ac:power" }
-Number:Temperature DaikinACUnit_SetPoint { channel="daikin:ac_unit:living_room_ac:setpoint" }
-String DaikinACUnit_Mode { channel="daikin:ac_unit:living_room_ac:mode" }
-String DaikinACUnit_Fan { channel="daikin:ac_unit:living_room_ac:fanspeed" }
-Number:Temperature DaikinACUnit_IndoorTemperature { channel="daikin:ac_unit:living_room_ac:indoortemp" }
-Number:Temperature DaikinACUnit_OutdoorTemperature { channel="daikin:ac_unit:living_room_ac:outdoortemp" }
+Switch DaikinACUnit_Power { channel="daikinairbase:ac_unit:living_room_ac:power" }
+Number:Temperature DaikinACUnit_SetPoint { channel="daikinairbase:ac_unit:living_room_ac:setpoint" }
+String DaikinACUnit_Mode { channel="daikinairbase:ac_unit:living_room_ac:mode" }
+String DaikinACUnit_Fan { channel="daikinairbase:ac_unit:living_room_ac:fanspeed" }
+Number:Temperature DaikinACUnit_IndoorTemperature { channel="daikinairbase:ac_unit:living_room_ac:indoortemp" }
+Number:Temperature DaikinACUnit_OutdoorTemperature { channel="daikinairbase:ac_unit:living_room_ac:outdoortemp" }
 ```
 
 daikinairbase.sitemap:
