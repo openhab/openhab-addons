@@ -24,7 +24,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -250,7 +251,7 @@ public class SmartHomeHandler extends BaseThingHandler {
         if (deviceState == null) {
             state = UnDefType.UNDEF;
         } else if (CHANNEL_RSSI.equals(channelId)) {
-            state = new DecimalType(deviceState.getSysinfo().getRssi());
+            state = new QuantityType<>(deviceState.getSysinfo().getRssi(), SmartHomeUnits.DECIBEL_MILLIWATTS);
         } else {
             state = smartHomeDevice.updateChannel(channelUID, deviceState);
         }

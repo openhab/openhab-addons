@@ -23,8 +23,8 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -125,7 +125,8 @@ public class SmartHomeHandlerTest {
         handler.handleCommand(channelUID, RefreshType.REFRESH);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
         verify(callback).stateUpdated(eq(channelUID), stateCaptor.capture());
-        assertEquals("State of RSSI channel should be set", new DecimalType(expectedRssi), stateCaptor.getValue());
+        assertEquals("State of RSSI channel should be set", new QuantityType<>(expectedRssi + " dBm"),
+                stateCaptor.getValue());
     }
 
     @Test

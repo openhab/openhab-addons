@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.junit.Before;
 import org.junit.Test;
@@ -89,6 +89,6 @@ public class PowerStripDeviceTest extends DeviceTestBase<PowerStripDevice> {
     @Test
     public void testUpdateChannelEnergyCurrent() {
         assertEquals("Energy current should have valid state value", 1,
-                ((DecimalType) device.updateChannel(CHANNEL_ENERGY_CURRENT_OUTLET_2, deviceState)).intValue());
+                ((QuantityType<?>) device.updateChannel(CHANNEL_ENERGY_CURRENT_OUTLET_2, deviceState)).intValue());
     }
 }

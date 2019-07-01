@@ -254,19 +254,19 @@ Either `deviceId` or `ipAddress` must be set.
 
 All devices support some of the following channels:
 
-| Channel Type ID     | Item Type | Description                                        | Thing types supporting this channel                                                         |
-|---------------------|-----------|----------------------------------------------------|---------------------------------------------------------------------------------------------|
-| switch              | Switch    | Switch the Smart Home device on or off.            | HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS300, KP100, KP200, KP400, RE270K, RE370K |
-| brightness          | Dimmer    | Set the brightness of Smart Home device or dimmer. | HS220, KB100, KL110, KL120, LB100, LB110, LB120, LB200                                      |
-| colorTemperature    | Dimmer    | Set the color temperature in percentage.           | KB130, KL120, KL130, LB120, LB130, LB230                                                    |
-| colorTemperatureAbs | Number    | Set the color temperature in Kelvin.               | KB130, KL120, KL130, LB120, LB130, LB230                                                    |
-| color               | Color     | Set the color of the Smart Home light.             | KB130, KL130, LB130, LB230                                                                  |
-| power               | Number    | Actual energy usage in Watt.                       | HS110, HS300, KLxxx, LBxxx                                                                  |
-| eneryUsage          | Number    | Energy Usage in kWh.                               | HS110, HS300                                                                                |
-| current             | Number    | Actual current usage in Ampere.                    | HS110, HS300                                                                                |
-| voltage             | Number    | Actual voltage usage in Volt.                      | HS110, HS300                                                                                |
-| led                 | Switch    | Switch the status led on the device on or off.     | HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS220, HS300, KP100, KP200, KP400          |
-| rssi                | Number    | Wi-Fi signal strength indicator in dBm.            | All                                                                                         |
+| Channel Type ID     | Item Type                | Description                                        | Thing types supporting this channel                                                         |
+|---------------------|--------------------------|----------------------------------------------------|---------------------------------------------------------------------------------------------|
+| switch              | Switch                   | Switch the Smart Home device on or off.            | HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS300, KP100, KP200, KP400, RE270K, RE370K |
+| brightness          | Dimmer                   | Set the brightness of Smart Home device or dimmer. | HS220, KB100, KL110, KL120, LB100, LB110, LB120, LB200                                      |
+| colorTemperature    | Dimmer                   | Set the color temperature in percentage.           | KB130, KL120, KL130, LB120, LB130, LB230                                                    |
+| colorTemperatureAbs | Number                   | Set the color temperature in Kelvin.               | KB130, KL120, KL130, LB120, LB130, LB230                                                    |
+| color               | Color                    | Set the color of the Smart Home light.             | KB130, KL130, LB130, LB230                                                                  |
+| power               | Number:Power             | Actual energy usage in Watt.                       | HS110, HS300, KLxxx, LBxxx                                                                  |
+| eneryUsage          | Number:Energy            | Energy Usage in kWh.                               | HS110, HS300                                                                                |
+| current             | Number:ElectricCurrent   | Actual current usage in Ampere.                    | HS110, HS300                                                                                |
+| voltage             | Number:ElectricPotential | Actual voltage usage in Volt.                      | HS110, HS300                                                                                |
+| led                 | Switch                   | Switch the status led on the device on or off.     | HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS220, HS300, KP100, KP200, KP400          |
+| rssi                | Number:Power             | Wi-Fi signal strength indicator in dBm.            | All                                                                                         |
 
 The outlet devices (HS107, HS300, KP200, KP400) have group channels.
 This means the channel is prefixed with the group id.
@@ -300,11 +300,11 @@ tplinksmarthome:lb130:bulb2   "Living Room Bulb 2" [ deviceId="00000000000000000
 ### tplinksmarthome.items:
 
 ```
-Switch   TP_L_TV      "TV"                                 { channel="tplinksmarthome:hs100:tv:switch" }
-Switch   TP_L_Laptop  "Laptop"                             { channel="tplinksmarthome:hs300:laptop:outlet1#switch" }
-Number   TP_L_RSSI    "Signal [%d] dB"            <signal> { channel="tplinksmarthome:hs100:tv:rssi" }
-Dimmer   TP_LB_Bulb   "Dimmer [%d %%]"            <slider> { channel="tplinksmarthome:lb110:bulb1:brightness" }
-Dimmer   TP_LB_ColorT "Color Temperature [%d] %%" <slider> { channel="tplinksmarthome:lb130:bulb2:colorTemperature" }
-Color    TP_LB_Color  "Color"                     <slider> { channel="tplinksmarthome:lb130:bulb2:color" }
-Switch   TP_LB_ColorS "Switch"                             { channel="tplinksmarthome:lb130:bulb2:color" }
+Switch       TP_L_TV      "TV"                                 { channel="tplinksmarthome:hs100:tv:switch" }
+Switch       TP_L_Laptop  "Laptop"                             { channel="tplinksmarthome:hs300:laptop:outlet1#switch" }
+Number:Power TP_L_RSSI    "Signal [%d %unit%]"        <signal> { channel="tplinksmarthome:hs100:tv:rssi" }
+Dimmer       TP_LB_Bulb   "Dimmer [%d %%]"            <slider> { channel="tplinksmarthome:lb110:bulb1:brightness" }
+Dimmer       TP_LB_ColorT "Color Temperature [%d %%]" <slider> { channel="tplinksmarthome:lb130:bulb2:colorTemperature" }
+Color        TP_LB_Color  "Color"                     <slider> { channel="tplinksmarthome:lb130:bulb2:color" }
+Switch       TP_LB_ColorS "Switch"                             { channel="tplinksmarthome:lb130:bulb2:color" }
 ```
