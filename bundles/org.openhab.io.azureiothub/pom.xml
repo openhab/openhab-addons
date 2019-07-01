@@ -15,20 +15,20 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.microsoft.azure.sdk.iot</groupId>
-      <artifactId>iot-device-client</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.microsoft.azure.sdk.iot.iot-device-client</artifactId>
       <version>1.2.27</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.microsoft.azure.sdk.iot</groupId>
-      <artifactId>iot-service-client</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.microsoft.azure.sdk.iot.iot-service-client</artifactId>
       <version>1.4.20</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.microsoft.azure</groupId>
-      <artifactId>azure-eventhubs</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.microsoft.azure.azure-eventhubs</artifactId>
       <version>0.14.0</version>
       <scope>provided</scope>
     </dependency>

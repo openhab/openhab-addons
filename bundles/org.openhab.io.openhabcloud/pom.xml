@@ -21,26 +21,26 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.squareup.okhttp3</groupId>
-      <artifactId>okhttp</artifactId>
-      <version>3.12.1</version>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.okhttp</artifactId>
+      <version>3.8.1_1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.squareup.okio</groupId>
-      <artifactId>okio</artifactId>
-      <version>1.15.0</version>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.okio</artifactId>
+      <version>1.13.0_1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>io.socket</groupId>
-      <artifactId>socket.io-client</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>io.socket.socket.io-client</artifactId>
       <version>1.0.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>io.socket</groupId>
-      <artifactId>engine.io-client</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>io.socket.engine.io-client</artifactId>
       <version>1.0.0</version>
       <scope>provided</scope>
     </dependency>
