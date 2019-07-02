@@ -12,21 +12,24 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import org.eclipse.smarthome.core.library.types.*;
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComThermostat3Message.SubType.*;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
-import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComThermostat3Message.SubType.MERTIK__G6R_H4T1;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComThermostat3Message.SubType.MERTIK__G6R_H4TB__G6R_H4T__G6R_H4T21_Z22;
 
 /**
  * RFXCOM data class for thermostat3message.

@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.junit.Assert.*;
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.THERMOSTAT3;
+import static org.openhab.binding.rfxcom.internal.messages.RFXComThermostat3Message.SubType.*;
+
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -22,13 +27,6 @@ import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.THERMOSTAT3;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComThermostat3Message.SubType.MERTIK__G6R_H4T1;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComThermostat3Message.SubType.MERTIK__G6R_H4TB__G6R_H4T__G6R_H4T21_Z22;
 
 /**
  * Test for RFXCom-binding
@@ -53,20 +51,16 @@ public class RFXComThermostat3MessageTest {
 
     @Test
     public void testSomeMessages() throws RFXComException {
-        testMessage("08420101019FAB0280", MERTIK__G6R_H4TB__G6R_H4T__G6R_H4T21_Z22, 1, "106411", RFXComThermostat3Message.Commands.UP, (byte) 8, OnOffType.ON, null, UpDownType.UP, StringType.valueOf("UP"));
-        testMessage("084200000000410500", MERTIK__G6R_H4T1, 0, "65", RFXComThermostat3Message.Commands.RUN_DOWN, (byte) 0, OnOffType.OFF, null, UpDownType.DOWN, StringType.valueOf("RUN_DOWN"));
+        testMessage("08420101019FAB0280", MERTIK__G6R_H4TB__G6R_H4T__G6R_H4T21_Z22, 1, "106411",
+                RFXComThermostat3Message.Commands.UP, (byte) 8, OnOffType.ON, null, UpDownType.UP,
+                StringType.valueOf("UP"));
+        testMessage("084200000000410500", MERTIK__G6R_H4T1, 0, "65", RFXComThermostat3Message.Commands.RUN_DOWN,
+                (byte) 0, OnOffType.OFF, null, UpDownType.DOWN, StringType.valueOf("RUN_DOWN"));
     }
 
-    private void testMessage(String hexMessage,
-                             RFXComThermostat3Message.SubType subtype,
-                             int sequenceNumber, String sensorId,
-                             RFXComThermostat3Message.Commands command,
-                             byte signalLevel,
-                             State commandChannel,
-                             State secondCommandChannel,
-                             State controlChannel,
-                             State commandStringChannel
-    ) throws RFXComException {
+    private void testMessage(String hexMessage, RFXComThermostat3Message.SubType subtype, int sequenceNumber,
+            String sensorId, RFXComThermostat3Message.Commands command, byte signalLevel, State commandChannel,
+            State secondCommandChannel, State controlChannel, State commandStringChannel) throws RFXComException {
         byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComThermostat3Message msg = (RFXComThermostat3Message) RFXComMessageFactory.createMessage(message);
         assertEquals("SubType", subtype, msg.subType);
@@ -86,7 +80,6 @@ public class RFXComThermostat3MessageTest {
     }
     // TODO please add tests for real messages
 
-
     @Test
     public void testCommandChannelOn() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
@@ -100,7 +93,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void test_command_channel_off() throws RFXComUnsupportedChannelException {
+    public void testCommandChannelOff() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND, OnOffType.OFF);
@@ -112,7 +105,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void test_second_command_channel_on() throws RFXComUnsupportedChannelException {
+    public void testSecondCommandChannelOn() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_SECOND, OnOffType.ON);
@@ -124,7 +117,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void test_second_command_channel_off() throws RFXComUnsupportedChannelException {
+    public void testSecondCommandChannelOff() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_SECOND, OnOffType.OFF);
@@ -136,7 +129,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void test_control_up() throws RFXComUnsupportedChannelException {
+    public void testControlUp() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_CONTROL, UpDownType.UP);
@@ -149,7 +142,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void test_control_down() throws RFXComUnsupportedChannelException {
+    public void testControlDown() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_CONTROL, UpDownType.DOWN);
@@ -162,7 +155,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void test_control_stop() throws RFXComUnsupportedChannelException {
+    public void testControlStop() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_CONTROL, StopMoveType.STOP);
@@ -170,13 +163,12 @@ public class RFXComThermostat3MessageTest {
         assertEquals(UnDefType.UNDEF, msg.convertToState(CHANNEL_COMMAND));
         assertEquals(StringType.valueOf("STOP"), msg.convertToState(CHANNEL_COMMAND_STRING));
 
-
         assertNull(msg.convertToState(CHANNEL_CONTROL));
         assertNull(msg.convertToState(CHANNEL_COMMAND_SECOND));
     }
 
     @Test
-    public void test_status_off() throws RFXComUnsupportedChannelException {
+    public void testStatusOff() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("OFF"));
@@ -188,7 +180,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void test_status_on() throws RFXComUnsupportedChannelException {
+    public void testStatusOn() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("On"));
@@ -200,7 +192,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void test_status_up() throws RFXComUnsupportedChannelException {
+    public void testStatusUp() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("UP"));
@@ -213,7 +205,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void test_status_down() throws RFXComUnsupportedChannelException {
+    public void testStatusDown() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("down"));
@@ -225,7 +217,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void test_status_run_up() throws RFXComUnsupportedChannelException {
+    public void testStatusRunUp() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("RUN_UP"));
@@ -237,7 +229,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void test_status_run_down() throws RFXComUnsupportedChannelException {
+    public void testStatusRunDown() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("RUN_DOWN"));
@@ -249,7 +241,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void test_status_stop() throws RFXComUnsupportedChannelException {
+    public void testStatusStop() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("STOP"));
@@ -262,7 +254,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void test_status_second_on() throws RFXComUnsupportedChannelException {
+    public void testStatusSecondOn() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("SECOND_ON"));
@@ -275,7 +267,7 @@ public class RFXComThermostat3MessageTest {
     }
 
     @Test
-    public void test_status_second_off() throws RFXComUnsupportedChannelException {
+    public void testStatusSecondOff() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND_STRING, StringType.valueOf("SECOND_OFF"));

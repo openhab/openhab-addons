@@ -26,15 +26,14 @@
 	<channel-type id="commandId">
 		<item-type>Number</item-type>
 		<label>Command ID</label>
-		<description>Command channel, ID of the channel</description>
+		<description>Command channel, ID of the command</description>
 		<state min="0" max="255" step="1" pattern="%d" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="commandString">
 		<item-type>String</item-type>
 		<label>Command String</label>
-		<description>Command channel, Name of the channel</description>
-		<state min="0" max="255" step="1" pattern="%d" readOnly="false"></state>
+		<description>Command channel, Name of the command</description>
 	</channel-type>
 
 	<channel-type id="contact">
