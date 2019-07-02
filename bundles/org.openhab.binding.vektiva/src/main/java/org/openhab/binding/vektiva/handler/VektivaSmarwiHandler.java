@@ -12,6 +12,15 @@
  */
 package org.openhab.binding.vektiva.handler;
 
+import static org.openhab.binding.vektiva.VektivaBindingConstants.*;
+
+import java.net.URI;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -32,11 +41,6 @@ import org.openhab.binding.vektiva.internal.net.VektivaSmarwiSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
-import java.util.concurrent.*;
-
-import static org.openhab.binding.vektiva.VektivaBindingConstants.*;
-
 /**
  * The {@link VektivaSmarwiHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -50,11 +54,9 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
 
     private VektivaSmarwiConfiguration config = new VektivaSmarwiConfiguration();
 
-    private final @NonNullByDefault({})
-    HttpClient httpClient;
+    private final HttpClient httpClient;
 
-    private final @NonNullByDefault({})
-    WebSocketClient webSocketClient;
+    private final WebSocketClient webSocketClient;
 
     private @Nullable Session session;
 
@@ -97,21 +99,7 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
         if (future != null && !(future.isCancelled() || future.isDone())) {
             future.cancel(true);
         }
-        if (httpClient.isStarted()) {
-            try {
-                httpClient.stop();
-            } catch (Exception e) {
-                //silence
-            }
-        }
         closeSession();
-        if (webSocketClient.isStarted()) {
-            try {
-                webSocketClient.stop();
-            } catch (Exception e) {
-                //silence
-            }
-        }
     }
 
     private void closeSession() {
@@ -165,14 +153,6 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
         config = getConfigAs(VektivaSmarwiConfiguration.class);
         logger.debug("IP address: {}", config.ip);
 
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            logger.debug("Cannot start http client!", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot start http client!");
-            return;
-        }
-
         future = scheduler.scheduleWithFixedDelay(this::checkStatus, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
 
@@ -195,10 +175,12 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             if (resp.getStatus() == 200) {
                 processStatusResponse(resp.getContentAsString());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "got response code: " + resp.getStatus());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "got response code: " + resp.getStatus());
             }
             // reconnect web socket if not connected
-            if (config.useWebSockets && (session == null || !session.isOpen()) && ThingStatus.ONLINE.equals(getThing().getStatus())) {
+            if (config.useWebSockets && (session == null || !session.isOpen())
+                    && ThingStatus.ONLINE.equals(getThing().getStatus())) {
                 logger.debug("Initializing WebSocket session");
                 initializeWebSocketSession();
             }
@@ -239,7 +221,9 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
     private String getPropertyValue(String[] values, String property) {
         for (String val : values) {
             String[] keyVal = val.split(":");
-            if (keyVal.length != 2) continue;
+            if (keyVal.length != 2) {
+                continue;
+            }
             String key = keyVal[0];
             String value = keyVal[1];
             if (property.equals(key)) {
@@ -254,7 +238,6 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
         URI uri = URI.create(url);
 
         try {
-            webSocketClient.start();
             // The socket that receives events
             VektivaSmarwiSocket socket = new VektivaSmarwiSocket(this);
             // Attempt Connect
@@ -263,7 +246,8 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             return fut.get();
         } catch (Exception ex) {
             logger.debug("Cannot create websocket client/session", ex);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot create websocket client/session");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Cannot create websocket client/session");
         }
         return null;
     }
