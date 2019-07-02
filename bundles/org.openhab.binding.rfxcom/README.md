@@ -154,7 +154,7 @@ This binding currently supports following channel types:
 |-----------------|---------------|------------------------------------------------------------------------------------|
 | chimesound      | Number        | Id of the chime sound                                                              |
 | command         | Switch        | Command channel.                                                                   |
-| commandId       | String        | Id of the command.                                                                 |
+ | commandId       | Number        | Id of the command (between 0 and 255).                                             |
 | commandString   | String        | Id of the command.                                                                 |
 | contact         | Contact       | Contact channel.                                                                   |
 | datetime        | DateTime      | DateTime channel.                                                                  |
