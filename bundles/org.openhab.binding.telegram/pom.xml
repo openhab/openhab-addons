@@ -42,6 +42,8 @@
     <json.version>20180813</json.version>
     <guava.version>25.1-jre</guava.version>
     <commonio.version>2.5</commonio.version>
+
+    <bnd.importpackage>sun.net.*;resolution:="optional",com.google.inject.*;resolution:="optional"</bnd.importpackage>
   </properties>
   <dependencies>
     <dependency>
