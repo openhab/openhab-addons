@@ -27,25 +27,34 @@ function mvnp() {
     wait $pid
 }
 
+COMMITS=${1:-"master...HEAD"}
+
 # Determine if this is a new addon -> Perform tests + integration tests and all SAT checks with increased warning level
-CHANGED_DIR=`git diff --diff-filter=A --dirstat=files,0 master...HEAD bundles/ | sed 's/^[ 0-9.]\+% bundles\///g' | grep -o -P "^([^/]*)" | uniq`
+CHANGED_DIR=`git diff --dirstat=files,0 $COMMITS bundles/ | sed 's/^[ 0-9.]\+% bundles\///g' | grep -o -P "^([^/]*)" | uniq`
 CDIR=`pwd`
 
 if [ ! -z "$CHANGED_DIR" ] && [ -e "bundles/$CHANGED_DIR" ]; then
-    echo "New addon pull request: Building $CHANGED_DIR"
+    echo "Single addon pull request: Building $CHANGED_DIR"
     echo "MAVEN_OPTS='-Xms1g -Xmx2g -Dorg.slf4j.simpleLogger.log.org.openhab.tools.analysis.report.ReportUtility=DEBUG -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN'" > ~/.mavenrc
     cd "bundles/$CHANGED_DIR"
     mvn clean install -B 2>&1 | 
 	    stdbuf -o0 grep -vE "Download(ed|ing) from [a-z.]+: https:" | # Filter out Download(s)
 	    stdbuf -o0 grep -v "target/code-analysis" | # filter out some debug code from reporting utility
 	    tee $CDIR/.build.log
+    if [ $? -ne 0 ]; then
+        exit 1
+    fi
+
     if [ -e "../itests/$CHANGED_DIR" ]; then
-      echo "New addon pull request: Building itest $CHANGED_DIR"
-      cd "../itests/$CHANGED_DIR"
-      mvn clean install -B 2>&1 | 
+        echo "Single addon pull request: Building itest $CHANGED_DIR"
+        cd "../itests/$CHANGED_DIR"
+        mvn clean install -B 2>&1 |
 	      stdbuf -o0 grep -vE "Download(ed|ing) from [a-z.]+: https:" | # Filter out Download(s)
 	      stdbuf -o0 grep -v "target/code-analysis" | # filter out some debug code from reporting utility
 	      tee -a $CDIR/.build.log
+        if [ $? -ne 0 ]; then
+            exit 1
+        fi
     fi
 else
     echo "Build all"
@@ -55,5 +64,6 @@ else
       print_reactor_summary .build.log
     else
       tail -n 1000 .build.log
+      exit 1
     fi
 fi
