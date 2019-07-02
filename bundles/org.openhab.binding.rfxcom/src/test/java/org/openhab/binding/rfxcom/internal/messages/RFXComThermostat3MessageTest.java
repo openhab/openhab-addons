@@ -88,7 +88,7 @@ public class RFXComThermostat3MessageTest {
 
 
     @Test
-    public void test_command_channel_on() throws RFXComUnsupportedChannelException {
+    public void testCommandChannelOn() throws RFXComUnsupportedChannelException {
         RFXComThermostat3Message msg = new RFXComThermostat3Message();
 
         msg.convertFromState(CHANNEL_COMMAND, OnOffType.ON);
