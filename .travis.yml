@@ -23,7 +23,5 @@ travisBuddy:
     insertMode: update
     successBuildLog: true
 
-before_install: true
-before_script: true
 install: true
-script: ./buildci.sh
+script: ./buildci.sh "$TRAVIS_COMMIT_RANGE"
