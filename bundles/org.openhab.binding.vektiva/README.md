@@ -50,4 +50,3 @@ Default item=SmarwiD
 ## Note
 
 This binding currently does not support controlling via vektiva.online cloud service and uses local device API, which is described here: https://vektiva.gitlab.io/vektivadocs/api/api.html
- 
