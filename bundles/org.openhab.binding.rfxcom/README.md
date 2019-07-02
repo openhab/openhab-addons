@@ -160,7 +160,7 @@ This binding currently supports following channel types:
 | datetime        | DateTime      | DateTime channel.                                                                  |
 | dimminglevel    | Dimmer        | Dimming level channel.                                                             |
 | forecast        | String        | Weather forecast from device: NO\_INFO\_AVAILABLE/SUNNY/PARTLY\_CLOUDY/CLOUDY/RAIN |
-| tempcontrol     | Dimmer        | Global control for temperature also setting ON, OFF, UP, DOWN                      |
+| tempcontrol     | Rollershutter | Global control for temperature also setting ON, OFF, UP, DOWN                      |
 | humidity        | Number        | Relative humidity level in percentages.                                            |
 | humiditystatus  | String        | Current humidity status: NORMAL/COMFORT/DRY/WET                                    |
 | instantamp      | Number        | Instant current in Amperes.                                                        |
