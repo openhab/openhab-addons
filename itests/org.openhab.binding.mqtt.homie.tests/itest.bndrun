@@ -12,8 +12,7 @@ Fragment-Host: org.openhab.binding.mqtt.homie
 # We would like to use the "volatile" storage only
 -runblacklist: \
     bnd.identity;id='org.openhab.core.storage.json',\
-    bnd.identity;id='org.openhab.core.storage.mapdb',\
-    bnd.identity;id='com.h2database.mvstore'
+    bnd.identity;id='org.openhab.core.storage.mapdb'
 
 #
 # done
@@ -76,4 +75,5 @@ Fragment-Host: org.openhab.binding.mqtt.homie
 	io.netty.resolver;version='[4.1.34,4.1.35)',\
 	io.netty.transport;version='[4.1.34,4.1.35)',\
 	org.apache.servicemix.bundles.commons-codec;version='[1.3.0,1.3.1)',\
-	org.openhab.io.mqttembeddedbroker;version='[2.5.0,2.5.1)'
+	org.openhab.io.mqttembeddedbroker;version='[2.5.0,2.5.1)',\
+	io.moquette.moquette-broker;version='[0.12.1,0.12.2)'

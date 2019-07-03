@@ -338,6 +338,8 @@ public class EmbeddedBrokerService
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
         if (state == MqttConnectionState.CONNECTED) {
             logger.debug("Embedded broker connection connected");
+        } else if (state == MqttConnectionState.CONNECTING) {
+            logger.debug("Embedded broker connection still connecting");
         } else {
             if (error == null) {
                 logger.warn("Embedded broker offline - Reason unknown");
@@ -372,7 +374,6 @@ public class EmbeddedBrokerService
                 connectionStateChanged(MqttConnectionState.DISCONNECTED, new TimeoutException("Timeout"));
             }
         });
-
     }
 
     public @Nullable MqttBrokerConnection getConnection() {

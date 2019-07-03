@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.generic;
+package org.openhab.binding.mqtt;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
@@ -53,6 +53,7 @@ import org.openhab.binding.mqtt.homie.internal.homie300.Property;
 import org.openhab.binding.mqtt.homie.internal.homie300.PropertyAttributes;
 import org.openhab.binding.mqtt.homie.internal.homie300.PropertyAttributes.DataTypeEnum;
 import org.openhab.binding.mqtt.homie.internal.homie300.PropertyHelper;
+import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.tools.ChildMap;
 import org.openhab.binding.mqtt.generic.tools.WaitForTopicValue;
 import org.osgi.service.cm.ConfigurationException;
@@ -64,7 +65,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Graeff - Initial contribution
  */
-public class HomieImplementationTests extends JavaOSGiTest {
+public class HomieImplementationTest extends JavaOSGiTest {
     private static final String BASE_TOPIC = "homie";
     private static final String DEVICE_ID = ThingChannelConstants.testHomieThing.getId();
     private static final String DEVICE_TOPIC = BASE_TOPIC + "/" + DEVICE_ID;

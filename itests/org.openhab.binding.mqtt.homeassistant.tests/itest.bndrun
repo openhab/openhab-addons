@@ -75,4 +75,5 @@ Fragment-Host: org.openhab.binding.mqtt.homeassistant
 	io.netty.resolver;version='[4.1.34,4.1.35)',\
 	io.netty.transport;version='[4.1.34,4.1.35)',\
 	org.apache.servicemix.bundles.commons-codec;version='[1.3.0,1.3.1)',\
-	org.openhab.io.mqttembeddedbroker;version='[2.5.0,2.5.1)'
+	org.openhab.io.mqttembeddedbroker;version='[2.5.0,2.5.1)',\
+	io.moquette.moquette-broker;version='[0.12.1,0.12.2)'
