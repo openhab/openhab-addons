@@ -73,9 +73,9 @@ Thing exec:command:myscript [command="php ./configurations/scripts/script.php %2
 
 ```java
 String APCRaw "[%s]" (All) {channel="exec:command:apc:output"}
-String APCRunning {channel="exec:command:apc:run"}
-String APCExitValue {channel="exec:command:apc:exit"}
-String APCLastExecution {channel="exec:command:apc:lastexecution"}
+Switch APCRunning {channel="exec:command:apc:run"}
+Number APCExitValue "[%d]" {channel="exec:command:apc:exit"}
+DateTime APCLastExecution {channel="exec:command:apc:lastexecution"}
 ```
 
 ## Full Example
