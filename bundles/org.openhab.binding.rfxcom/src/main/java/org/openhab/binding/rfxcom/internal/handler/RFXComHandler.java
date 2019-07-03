@@ -141,13 +141,17 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                     updateStatus(ThingStatus.ONLINE);
 
                     for (Channel channel : getThing().getChannels()) {
-                        String channelId = channel.getUID().getId();
+                        ChannelUID uid = channel.getUID();
+                        String channelId = uid.getId();
 
                         try {
                             if (channelId.equals(CHANNEL_LOW_BATTERY)) {
-                                updateState(channelId, isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL)));
+                                updateState(uid, isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL)));
                             } else {
-                                updateState(channelId, message.convertToState(channelId));
+                                State state = message.convertToState(channelId);
+                                if (state != null) {
+                                    updateState(uid, state);
+                                }
                             }
                         } catch (RFXComException e) {
                             logger.trace("{} does not handle {}", channelId, message);
