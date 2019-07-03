@@ -483,11 +483,22 @@ A Lighting1 device
 
 #### Channels
 
-| Name        | Channel Type                        | Item Type | Remarks  |
-|-------------|-------------------------------------|-----------|----------|
-| command     | [command](#channels)                | Switch    |          |
-| contact     | [contact](#channels)                | Contact   |          |
-| signalLevel | [system.signal-strength](#channels) | Number    |          |
+| Name              | Channel Type                        | Item Type | Remarks  |
+|-------------------|-------------------------------------|-----------|----------|
+| command           | [command](#channels)                | Switch    |          |
+| commandString\*\* | [commandString](#channels)          | String    |          |
+| contact           | [contact](#channels)                | Contact   |          |
+| signalLevel       | [system.signal-strength](#channels) | Number    |          |
+
+\*\* `commandString` supports:
+
+* OFF
+* ON
+* DIM
+* BRIGHT
+* GROUP_OFF
+* GROUP_ON
+* CHIME
 
 #### Configuration Options
 
@@ -655,13 +666,39 @@ A Lighting5 device
 
 #### Channels
 
-| Name         | Channel Type                        | Item Type | Remarks  |
-|--------------|-------------------------------------|-----------|----------|
-| command      | [command](#channels)                | Switch    |          |
-| contact      | [command](#channels)                | Contact   |          |
-| dimmingLevel | [dimminglevel](#channels)           | Dimmer    |          |
-| mood         | [mood](#channels)                   | Number    |          |
-| signalLevel  | [system.signal-strength](#channels) | Number    |          |
+| Name              | Channel Type                        | Item Type | Remarks  |
+|-------------------|-------------------------------------|-----------|----------|
+| command           | [command](#channels)                | Switch    |          |
+| commandString\*\* | [commandString](#channels)          | String    |          |
+| contact           | [command](#channels)                | Contact   |          |
+| dimmingLevel      | [dimminglevel](#channels)           | Dimmer    |          |
+| mood              | [mood](#channels)                   | Number    |          |
+| signalLevel       | [system.signal-strength](#channels) | Number    |          |
+
+\*\* `commandString` supports:
+
+* OFF
+* ON
+* GROUP_OFF
+* LEARN
+* GROUP_ON
+* MOOD1
+* MOOD2
+* MOOD3
+* MOOD4
+* MOOD5
+* RESERVED1
+* RESERVED2
+* UNLOCK
+* LOCK
+* ALL_LOCK
+* CLOSE_RELAY
+* STOP_RELAY
+* OPEN_RELAY
+* SET_LEVEL
+* COLOUR_PALETTE
+* COLOUR_TONE
+* COLOUR_CYCLE
 
 #### Configuration Options
 
