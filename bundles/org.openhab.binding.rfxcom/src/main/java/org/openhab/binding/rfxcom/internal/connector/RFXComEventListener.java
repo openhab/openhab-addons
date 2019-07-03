@@ -23,7 +23,7 @@ public interface RFXComEventListener {
      * Procedure for receive raw data from RFXCOM controller.
      *
      * @param data
-     *            Received raw data.
+     *                 Received raw data.
      */
     void packetReceived(byte[] data);
 
@@ -31,7 +31,7 @@ public interface RFXComEventListener {
      * Procedure for receiving information fatal error.
      *
      * @param error
-     *            Error occurred.
+     *                  Error occurred.
      */
     void errorOccurred(String error);
 

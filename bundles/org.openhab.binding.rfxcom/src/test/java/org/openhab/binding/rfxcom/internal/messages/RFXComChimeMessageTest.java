@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComChimeMessage.SubType;
 
-
 /**
  * Test for RFXCom-binding
  *

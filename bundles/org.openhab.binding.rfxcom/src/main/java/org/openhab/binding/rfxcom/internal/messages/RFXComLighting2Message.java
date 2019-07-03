@@ -152,7 +152,7 @@ public class RFXComLighting2Message extends RFXComDeviceMessageImpl<RFXComLighti
      * Convert a 0-15 scale value to a percent type.
      *
      * @param pt
-     *            percent type to convert
+     *               percent type to convert
      * @return converted value 0-15
      */
     public static int getDimLevelFromPercentType(PercentType pt) {
@@ -164,7 +164,7 @@ public class RFXComLighting2Message extends RFXComDeviceMessageImpl<RFXComLighti
      * Convert a 0-15 scale value to a percent type.
      *
      * @param value
-     *            percent type to convert
+     *                  percent type to convert
      * @return converted value 0-15
      */
     public static PercentType getPercentTypeFromDimLevel(int value) {
