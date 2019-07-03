@@ -10,7 +10,7 @@ jdk:
 cache:
   directories:
   - $HOME/.m2
-  - $HOME/.p2
+  - $HOME/.bnd/cache/
 
 before_cache:
   # remove resolver-status.properties, they change with each run and invalidate the cache
