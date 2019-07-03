@@ -67,8 +67,11 @@ public class RFXComBindingConstants {
     public static final String CHANNEL_VENETIAN_BLIND = "venetianBlind";
     public static final String CHANNEL_SUN_WIND_DETECTOR = "sunWindDetector";
     public static final String CHANNEL_COMMAND = "command";
+    public static final String CHANNEL_COMMAND_SECOND = "command2nd";
+    public static final String CHANNEL_CONTROL = "control";
     public static final String CHANNEL_PROGRAM = "program";
     public static final String CHANNEL_COMMAND_ID = "commandId";
+    public static final String CHANNEL_COMMAND_STRING = "commandString";
     public static final String CHANNEL_MOOD = "mood";
     public static final String CHANNEL_SIGNAL_LEVEL = "signalLevel";
     public static final String CHANNEL_DIMMING_LEVEL = "dimmingLevel";
