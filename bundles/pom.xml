@@ -156,6 +156,7 @@
     <module>org.openhab.binding.plugwise</module>
     <module>org.openhab.binding.powermax</module>
     <module>org.openhab.binding.pulseaudio</module>
+    <module>org.openhab.binding.pushbullet</module>
     <module>org.openhab.binding.regoheatpump</module>
     <module>org.openhab.binding.rfxcom</module>
     <module>org.openhab.binding.rme</module>
