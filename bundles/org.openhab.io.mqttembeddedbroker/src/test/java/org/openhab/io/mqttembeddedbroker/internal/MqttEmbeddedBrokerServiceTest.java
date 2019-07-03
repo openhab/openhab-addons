@@ -179,6 +179,8 @@ public class MqttEmbeddedBrokerServiceTest extends JavaTest {
 
         File jksFile = new File(subject.getPersistenceFilename());
         assertTrue(jksFile.exists());
+        // this is needed to ensure the file is correctly written
+        waitForAssert(() -> assertEquals(12288, jksFile.length()));
 
         // The original file is still open, create a temp file for examination
         File temp = File.createTempFile("abc", ".tmp");

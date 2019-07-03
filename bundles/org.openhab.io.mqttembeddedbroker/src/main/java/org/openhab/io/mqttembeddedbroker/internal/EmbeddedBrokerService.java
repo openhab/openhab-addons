@@ -14,6 +14,8 @@ package org.openhab.io.mqttembeddedbroker.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -179,10 +181,9 @@ public class EmbeddedBrokerService
         if (!config.persistenceFile.isEmpty()) {
             final String persistenceFilename = config.persistenceFile;
             if (!Paths.get(persistenceFilename).isAbsolute()) {
-                logger.warn("ud folder: {}", ConfigConstants.getUserDataFolder());
-                logger.warn("ud absolute folder: {}", Paths.get(ConfigConstants.getUserDataFolder()).toAbsolutePath());
-                this.persistenceFilename = Paths.get(ConfigConstants.getUserDataFolder()).toAbsolutePath()
-                        .resolve(persistenceFilename).toString();
+                Path path = Paths.get(ConfigConstants.getUserDataFolder()).toAbsolutePath();
+                Files.createDirectories(path);
+                this.persistenceFilename = path.resolve(persistenceFilename).toString();
             }
 
             logger.info("Broker persistence file: {}", persistenceFilename);
