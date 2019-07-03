@@ -18,11 +18,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.MimeTypes;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.pushbullet.internal.action.PushbulletActions;
@@ -113,75 +111,93 @@ public class PushbulletHandler extends BaseThingHandler {
 
         PushbulletConfiguration configuration = getConfigAs(PushbulletConfiguration.class);
         logger.debug("CFG {}", configuration);
-        logger.debug("CFG Name  '{}'", configuration.getName());
 
-        try {
-            logger.debug("Recipient is '{}'", recipient);
-            logger.debug("Title is     '{}'", title);
-            logger.debug("Message is   '{}'", message);
+        Properties headers = prepareRequestHeaders(configuration);
 
-            Push push = new Push();
-            push.setTitle(title);
-            push.setBody(message);
-            push.setType(type);
+        String request = prepareMessageBody(recipient, title, message, type);
 
-            if (recipient != null) {
-                if (isValidEmail(recipient)) {
-                    logger.debug("Recipient is an email address");
-                    push.setEmail(recipient);
-                } else if (isValidChannel(recipient)) {
-                    logger.debug("Recipient is a channel tag");
-                    push.setChannel(recipient);
-                } else {
-                    logger.warn("Invalid recipient: {}", recipient);
-                    logger.warn("Message will be broadcast to all user's devices.");
-                }
+        try (InputStream stream = new ByteArrayInputStream(request.getBytes(StandardCharsets.UTF_8))) {
+
+            String pushAPI = configuration.getApiUrlBase() + "/" + API_METHOD_PUSHES;
+
+            String responseString = HttpUtil.executeUrl(HttpMethod.POST.asString(), pushAPI, headers, stream,
+                    MimeTypes.Type.APPLICATION_JSON.asString(), TIMEOUT);
+
+            logger.debug("Got Response: {}", responseString);
+            PushResponse response = gson.fromJson(responseString, PushResponse.class);
+
+            logger.debug("Unpacked Response: {}", response);
+
+            stream.close();
+
+            if ((null != response) && (null == response.getPushError())) {
+                result = true;
             }
-
-            logger.debug("Push: {}", push);
-
-            String request = gson.toJson(push);
-            logger.debug("Packed Request: {}", request);
-
-            Properties headers = new Properties();
-            headers.put(HttpHeader.USER_AGENT, "openHAB / Pushbullet binding " + VERSION);
-            headers.put(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString());
-            headers.put("Access-Token", configuration.getToken());
-
-            logger.debug("Headers: {}", headers);
-
-            try (InputStream stream = new ByteArrayInputStream(request.getBytes(StandardCharsets.UTF_8))) {
-
-                String pushAPI = configuration.getApiUrlBase() + "/" + API_METHOD_PUSHES;
-
-                String responseString = HttpUtil.executeUrl(HttpMethod.POST.asString(), pushAPI, headers, stream,
-                        MimeTypes.Type.APPLICATION_JSON.asString(), TIMEOUT);
-
-                logger.debug("Got Response: {}", responseString);
-                PushResponse response = gson.fromJson(responseString, PushResponse.class);
-
-                logger.debug("Unpacked Response: {}", response);
-
-                stream.close();
-
-                if ((null != response) && (null == response.getPushError())) {
-                    result = true;
-                }
-            }
-            catch (IOException e) {
-                logger.warn("IO problems pushing note: {}", e.getMessage());
-            }
-
-        } catch (java.lang.Error e) {
-            if (e.getCause() instanceof HttpResponseException) {
-                logger.debug("Possibly expired token, check on web site", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-httpresponseexception");
-            }
-
-            logger.debug("Error in getResponseString: ", e);
+        }
+        catch (IOException e) {
+            logger.warn("IO problems pushing note: {}", e.getMessage());
         }
 
         return result;
+    }
+
+    /**
+     * helper method to populate the request headers
+     *
+     * @param configuration
+     * @return
+     */
+    private Properties prepareRequestHeaders(PushbulletConfiguration configuration) {
+        Properties headers = new Properties();
+        headers.put(HttpHeader.USER_AGENT, "openHAB / Pushbullet binding " + VERSION);
+        headers.put(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString());
+        headers.put("Access-Token", configuration.getToken());
+
+        logger.debug("Headers: {}", headers);
+
+        return headers;
+    }
+
+    /**
+     * helper method to create a message body from data to be transferred.
+     *
+     * @param recipient
+     * @param title
+     * @param message
+     * @param type
+     *
+     * @return the message as a String to be posted
+     */
+    private String prepareMessageBody(@Nullable String recipient, @Nullable String title, @Nullable String message,
+            String type) {
+        logger.debug("Recipient is '{}'", recipient);
+        logger.debug("Title is     '{}'", title);
+        logger.debug("Message is   '{}'", message);
+
+        Push push = new Push();
+        push.setTitle(title);
+        push.setBody(message);
+        push.setType(type);
+
+        if (recipient != null) {
+            if (isValidEmail(recipient)) {
+                logger.debug("Recipient is an email address");
+                push.setEmail(recipient);
+            } else if (isValidChannel(recipient)) {
+                logger.debug("Recipient is a channel tag");
+                push.setChannel(recipient);
+            } else {
+                logger.warn("Invalid recipient: {}", recipient);
+                logger.warn("Message will be broadcast to all user's devices.");
+            }
+        }
+
+        logger.debug("Push: {}", push);
+
+        String request = gson.toJson(push);
+        logger.debug("Packed Request: {}", request);
+
+        return request;
     }
 
     /**
