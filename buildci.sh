@@ -29,8 +29,10 @@ function mvnp() {
 
 COMMITS=${1:-"master...HEAD"}
 
-# Determine if this is a new addon -> Perform tests + integration tests and all SAT checks with increased warning level
+# Determine if this is a single changed addon -> Perform build with tests + integration tests and all SAT checks
 CHANGED_BUNDLE_DIR=`git diff --dirstat=files,0 ${COMMITS} bundles/ | sed 's/^[ 0-9.]\+% bundles\///g' | grep -o -P "^([^/]*)" | uniq`
+# Determine if this is a single changed itest -> Perform build with tests + integration tests and all SAT checks
+# for this we have to remove '.tests' from the folder name.
 CHANGED_ITEST_DIR=`git diff --dirstat=files,0 ${COMMITS} itests/ | sed 's/^[ 0-9.]\+% itests\///g' | sed 's/\.tests\///g' | uniq`
 CDIR=`pwd`
 
@@ -56,6 +58,7 @@ if [[ ! -z "$CHANGED_DIR" ]] && [[ -e "bundles/$CHANGED_DIR" ]]; then
         exit 1
     fi
 
+    # add the postfix to make sure we actually find the correct itest
     if [[ -e "../itests/$CHANGED_DIR.tests" ]]; then
         echo "Single addon pull request: Building itest $CHANGED_DIR"
         cd "../itests/$CHANGED_DIR.tests"
