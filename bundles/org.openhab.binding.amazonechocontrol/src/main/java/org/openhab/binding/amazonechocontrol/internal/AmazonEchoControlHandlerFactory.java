@@ -31,9 +31,11 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.amazonechocontrol.internal.discovery.AmazonEchoDiscovery;
+import org.openhab.binding.amazonechocontrol.internal.discovery.SmartHomeDevicesDiscovery;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.internal.handler.EchoHandler;
 import org.openhab.binding.amazonechocontrol.internal.handler.FlashBriefingProfileHandler;
+import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
@@ -124,6 +126,11 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
                     String.class.getClassLoader());
             return new FlashBriefingProfileHandler(thing, storage);
         }
+        if (thingTypeUID.equals(THING_TYPE_LIGHT) || thingTypeUID.equals(THING_TYPE_LIGHT_GROUP)) {
+            Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
+                    String.class.getClassLoader());
+            return new SmartHomeDeviceHandler(thing, storage);
+        }
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new EchoHandler(thing, gson);
         }
@@ -131,6 +138,11 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private synchronized void registerDiscoveryService(AccountHandler bridgeHandler) {
+        SmartHomeDevicesDiscovery smartHomeDevicesDiscovery = new SmartHomeDevicesDiscovery(bridgeHandler);
+        smartHomeDevicesDiscovery.activate();
+        this.discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), bundleContext.registerService(
+                DiscoveryService.class.getName(), smartHomeDevicesDiscovery, new Hashtable<String, Object>()));
+
         AmazonEchoDiscovery discoveryService = new AmazonEchoDiscovery(bridgeHandler);
         discoveryService.activate();
         this.discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), bundleContext

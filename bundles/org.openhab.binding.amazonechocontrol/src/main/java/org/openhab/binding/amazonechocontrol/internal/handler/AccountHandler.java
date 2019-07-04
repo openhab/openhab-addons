@@ -64,6 +64,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationResp
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommand;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords.WakeWord;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
@@ -85,6 +86,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     private @Nullable Connection connection;
     private @Nullable WebSocketConnection webSocketConnection;
     private final Set<EchoHandler> echoHandlers = new HashSet<>();
+    private final Set<SmartHomeDeviceHandler> smartHomeDeviceHandlers = new HashSet<>();
     private final Set<FlashBriefingProfileHandler> flashBriefingProfileHandlers = new HashSet<>();
     private final Object synchronizeConnection = new Object();
     private Map<String, Device> jsonSerialNumberDeviceMapping = new HashMap<>();
@@ -143,9 +145,22 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         return new ArrayList<>(jsonSerialNumberDeviceMapping.values());
     }
 
+    public List<SmartHomeDeviceHandler> getSmartHomeDeviceHandlers() {
+        return new ArrayList<>(this.smartHomeDeviceHandlers);
+    }
+
     public void addEchoHandler(EchoHandler echoHandler) {
         synchronized (echoHandlers) {
             if (!echoHandlers.add(echoHandler)) {
+                return;
+            }
+        }
+        forceCheckData();
+    }
+
+    public void addSmartHomeDeviceHandler(SmartHomeDeviceHandler smartHomeDeviceHandler) {
+        synchronized (smartHomeDeviceHandler) {
+            if (!smartHomeDeviceHandlers.add(smartHomeDeviceHandler)) {
                 return;
             }
         }
@@ -553,6 +568,37 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             }
         }
         return null;
+    }
+
+    public List<SmartHomeDevice> updateSmartHomeDeviceList() {
+
+        Connection currentConnection = connection;
+        if (currentConnection == null) {
+            return new ArrayList<SmartHomeDevice>();
+        }
+
+        List<SmartHomeDevice> smartHomeDevices = null;
+        try {
+            if (currentConnection.getIsLoggedIn()) {
+                smartHomeDevices = currentConnection.getSmarthomeDeviceList();
+            }
+        } catch (IOException | URISyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+        }
+        if (smartHomeDevices != null) {
+            Map<String, SmartHomeDevice> newJsonSerialDeviceMapping = new HashMap<>();
+            for (SmartHomeDevice smartDevice : smartHomeDevices) {
+                String entityId = smartDevice.entityId;
+                if (entityId != null) {
+                    newJsonSerialDeviceMapping.put(entityId, smartDevice);
+                }
+            }
+        }
+        if (smartHomeDevices != null) {
+            return smartHomeDevices;
+        }
+
+        return new ArrayList<SmartHomeDevice>();
     }
 
     public List<Device> updateDeviceList() {

@@ -42,9 +42,12 @@ public class AmazonEchoControlBindingConstants {
     public static final ThingTypeUID THING_TYPE_FLASH_BRIEFING_PROFILE = new ThingTypeUID(BINDING_ID,
             "flashbriefingprofile");
 
+    public static final ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "light");
+    public static final ThingTypeUID THING_TYPE_LIGHT_GROUP = new ThingTypeUID(BINDING_ID, "lightGroup");
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_ACCOUNT, THING_TYPE_ECHO, THING_TYPE_ECHO_SPOT, THING_TYPE_ECHO_SHOW,
-                    THING_TYPE_ECHO_WHA, THING_TYPE_FLASH_BRIEFING_PROFILE));
+                    THING_TYPE_ECHO_WHA, THING_TYPE_FLASH_BRIEFING_PROFILE, THING_TYPE_LIGHT, THING_TYPE_LIGHT_GROUP));
 
     // List of all Channel ids
     public static final String CHANNEL_PLAYER = "player";
@@ -82,6 +85,10 @@ public class AmazonEchoControlBindingConstants {
     public static final String CHANNEL_MEDIA_PROGRESS_TIME = "mediaProgressTime";
     public static final String CHANNEL_ASCENDING_ALARM = "ascendingAlarm";
     public static final String CHANNEL_NOTIFICATION_VOLUME = "notificationVolume";
+    public static final String CHANNEL_LIGHT_STATE = "lightState";
+    public static final String CHANNEL_LIGHT_COLOR = "lightColor";
+    public static final String CHANNEL_LIGHT_WHITE_TEMPERATURE = "whiteTemperature";
+    public static final String CHANNEL_LIGHT_BRIGHTNESS = "lightBrightness";
     public static final String CHANNEL_NEXT_REMINDER = "nextReminder";
     public static final String CHANNEL_NEXT_ALARM = "nextAlarm";
     public static final String CHANNEL_NEXT_MUSIC_ALARM = "nextMusicAlarm";
@@ -101,12 +108,25 @@ public class AmazonEchoControlBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_MUSIC_PROVIDER_ID = new ChannelTypeUID(BINDING_ID,
             "musicProviderId");
     public static final ChannelTypeUID CHANNEL_TYPE_START_COMMAND = new ChannelTypeUID(BINDING_ID, "startCommand");
+    public static final ChannelTypeUID CHANNEL_TYPE_LIGHT_COLOR = new ChannelTypeUID(BINDING_ID, "lightColor");
 
     // List of all Properties
     public static final String DEVICE_PROPERTY_SERIAL_NUMBER = "serialNumber";
     public static final String DEVICE_PROPERTY_FAMILY = "deviceFamily";
     public static final String DEVICE_PROPERTY_FLASH_BRIEFING_PROFILE = "configurationJson";
+    public static final String DEVICE_PROPERTY_APPLIANCE_ID = "applianceId";
+    public static final String DEVICE_PROPERTY_LIGHT_ENTITY_ID = "entityId";
+    public static final String DEVICE_PROPERTY_LIGHT_SUBDEVICE = "subDevice";
 
     // Other
     public static final String FLASH_BRIEFING_COMMAND_PREFIX = "FlashBriefing.";
+
+    // List of all smart bulb actions
+    public static final String DEVICE_TURN_ON = "turnOn";
+    public static final String DEVICE_TURN_OFF = "turnOff";
+
+    // List of Alexa interfaces
+    public static final String INTERFACE_BRIGHTNESS = "Alexa.BrightnessController";
+    public static final String INTERFACE_COLOR_TEMPERATURE = "Alexa.ColorTemperatureController";
+    public static final String INTERFACE_COLOR = "Alexa.ColorController";
 }
