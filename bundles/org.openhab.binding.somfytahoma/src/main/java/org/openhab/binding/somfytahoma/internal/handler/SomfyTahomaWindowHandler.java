@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -21,6 +19,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 /**
  * The {@link SomfyTahomaWindowHandler} is responsible for handling commands,
@@ -48,19 +48,17 @@ public class SomfyTahomaWindowHandler extends SomfyTahomaRollerShutterHandler {
             updateChannelState(channelUID);
         } else {
             String cmd = getTahomaCommand(command.toString());
-            //Check if the rollershutter is not moving
-            String executionId = getCurrentExecutions();
-            if (executionId != null) {
-                //STOP command should be interpreted if rollershutter is moving
-                //otherwise do nothing
-                if (COMMAND_STOP.equals(cmd)) {
+            if (COMMAND_STOP.equals(cmd)) {
+                //Check if the window is not moving
+                String executionId = getCurrentExecutions();
+                if (executionId != null) {
+                    //STOP command should be interpreted if window is moving
+                    //otherwise do nothing
                     cancelExecution(executionId);
                 }
             } else {
-                if (!cmd.equals(COMMAND_STOP)) {
-                    String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + command.toString() + "]" : "[]";
-                    sendCommand(cmd, param);
-                }
+                String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + command.toString() + "]" : "[]";
+                sendCommand(cmd, param);
             }
         }
     }

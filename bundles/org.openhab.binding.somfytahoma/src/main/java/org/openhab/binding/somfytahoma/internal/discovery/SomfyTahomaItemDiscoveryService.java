@@ -47,11 +47,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
 
     private SomfyTahomaBridgeHandler bridge;
 
-    @Nullable
-    private DiscoveryServiceCallback discoveryServiceCallback;
-    @Nullable
-    private ScheduledFuture<?> discoveryJob;
+    private @Nullable DiscoveryServiceCallback discoveryServiceCallback;
 
+    private @Nullable ScheduledFuture<?> discoveryJob;
 
     private static final int DISCOVERY_TIMEOUT_SEC = 10;
     private static final int DISCOVERY_REFRESH_SEC = 1800;
