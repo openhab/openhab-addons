@@ -73,7 +73,7 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
 
     private @NonNullByDefault({}) SnmpTargetConfiguration config;
     private final SnmpService snmpService;
-    private @NonNullByDefault({}) ScheduledFuture<?> refresh;
+    private @Nullable ScheduledFuture<?> refresh;
     private int timeoutCounter = 0;
 
     private @NonNullByDefault({}) AbstractTarget target;
@@ -151,8 +151,9 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
 
     @Override
     public void dispose() {
-        if (!refresh.isCancelled()) {
-            refresh.cancel(true);
+        final ScheduledFuture<?> r = refresh;
+        if (r != null && !r.isCancelled()) {
+            r.cancel(true);
         }
         snmpService.removeCommandResponder(this);
     }
