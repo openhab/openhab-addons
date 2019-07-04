@@ -31,7 +31,7 @@ Optionally one can specify:
 - `transform` - A [transformation](https://www.openhab.org/docs/configuration/transformations.html) to apply on the execution result,
 - `interval` - An interval, in seconds, the command will be repeatedly executed. Default is 60 seconds, set to 0 to avoid repetition.
 - `timeout` - A time-out, in seconds, the execution of the command will time out, and lastly,
-- `autorun` - A boolean parameter to make the command execute immediately every time the state of the input channel has changed.
+- `autorun` - A boolean parameter to make the command execute immediately every time the input channel is sent a command.
 
 For each command a separate Thing has to be defined.
 
@@ -44,8 +44,9 @@ The `command` itself can be enhanced using the well known syntax of the [Java fo
 The following parameters are automatically added:
 
 -   the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
--   the current State of the input channel (see below, example: `%2$s`)
+-   the current (or last) command to the input channel (see below, example: `%2$s`)
 
+note - if you trigger execution using autorun or the run channel, the %2 substitution will use the most recent command sent to the input channel.
 
 ## Channels
 
@@ -80,14 +81,12 @@ DateTime APCLastExecution {channel="exec:command:apc:lastexecution"}
 
 ## Full Example
 
-Following is an example how to set up an exec command thing, debug it with a rule and set the returned string to an Number Item. 
-
-**For this to work also the openHAB RegEx Transformation has to be installed**
+Following is an example how to set up an exec command thing, pass it a parameter, debug it with a rule and set the returned string to an Number Item. 
 
 **demo.things**
 
 ```java
-// "%2$s" will be replace by the input channel, this makes it possible to use one command line with different arguments.
+// "%2$s" will be replace by the input channel command, this makes it possible to use one command line with different arguments.
 // e.g: "ls" as <YOUR COMMAND> and "-a" or "-l" as additional argument set to the input channel in the rule.
 Thing exec:command:yourcommand [ command="<YOUR COMMAND> %2$s", interval=0, autorun=false ]
 ```
