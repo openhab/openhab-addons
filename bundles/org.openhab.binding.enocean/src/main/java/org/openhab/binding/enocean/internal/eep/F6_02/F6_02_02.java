@@ -14,7 +14,7 @@ package org.openhab.binding.enocean.internal.eep.F6_02;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
-import java.util.Map;
+import java.util.function.Function;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -81,7 +81,7 @@ public class F6_02_02 extends _RPSMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Map<String, State> currentState, Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
 
         if (command instanceof StringType) {
 
@@ -107,10 +107,12 @@ public class F6_02_02 extends _RPSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
-            Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         // this method is used by the classic device listener channels to convert an rocker switch message into an
         // appropriate item update
+        State currentState = getCurrentStateFunc.apply(channelId);
+
         if (!isValid()) {
             return UnDefType.UNDEF;
         }

@@ -2,6 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.openhab</groupId>
+    <artifactId>openhab-super-pom</artifactId>
+    <version>[1.0, 2.0)</version>
+  </parent>
+
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
   <version>2.5.0-SNAPSHOT</version>
@@ -44,13 +50,20 @@
   <distributionManagement>
     <repository>
       <id>bintray</id>
-      <url>https://api.bintray.com/maven/openhab/mvn/openhab2-addons/;publish=1</url>
+      <url>${oh.repo.distBaseUrl}/openhab2-addons/;publish=1</url>
     </repository>
     <snapshotRepository>
       <id>jfrog</id>
-      <url>https://openhab.jfrog.io/openhab/libs-snapshot-local</url>
+      <url>${oh.repo.snapshotBaseUrl}/libs-snapshot-local</url>
     </snapshotRepository>
   </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>osgiify</id>
+      <url>https://dl.bintray.com/openhab/mvn/openhab-osgiify</url>
+    </repository>
+  </repositories>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -61,13 +74,13 @@
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
     <bnd.version>4.2.0</bnd.version>
-    <karaf.version>4.2.4</karaf.version>
+    <karaf.version>4.2.6</karaf.version>
     <sat.version>0.6.1</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
 
     <bnd.importpackage></bnd.importpackage>
     <bnd.exportpackage></bnd.exportpackage>
-    <bnd.includeresource></bnd.includeresource>
+    <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
   </properties>
@@ -112,60 +125,7 @@
     </dependencies>
   </dependencyManagement>
 
-  <repositories>
-    <repository>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>jcenter</id>
-      <name>JCenter Repository</name>
-      <url>https://jcenter.bintray.com</url>
-    </repository>
-
-    <repository>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>openhab-artifactory-release</id>
-      <name>JFrog Artifactory Repository</name>
-      <url>https://openhab.jfrog.io/openhab/libs-release</url>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>jcenter</id>
-      <url>https://jcenter.bintray.com</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>openhab-artifactory-release</id>
-      <url>https://openhab.jfrog.io/openhab/libs-release</url>
-    </pluginRepository>
-  </pluginRepositories>
-
   <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-      <resource>
-        <directory>.</directory>
-        <includes>
-          <!-- general -->
-          <include>NOTICE</include>
-          <!-- only a very rare -->
-          <include>*.xsd</include>
-        </includes>
-      </resource>
-    </resources>
     <pluginManagement>
       <plugins>
 
@@ -353,12 +313,6 @@ Import-Package: \\
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.8.2</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
           <version>3.0.0-M2</version>
         </plugin>
@@ -448,8 +402,7 @@ Import-Package: \\
             </headerDefinitions>
             <includes>
               <include>**/org/openhab/**/*.java</include>
-              <include>**/feature.xml</include>
-              <include>**/OSGI-INF/*.xml</include>
+              <include>**/features/**/header.xml</include>
             </includes>
             <excludes>
               <exclude>target/**</exclude>
@@ -544,8 +497,8 @@ Import-Package: \\
           <artifactId>sat-plugin</artifactId>
           <version>${sat.version}</version>
           <configuration>
-            <checkstyleProperties>${basedirRoot}/tools/checkstyle/ruleset.properties</checkstyleProperties>
-            <checkstyleFilter>${basedirRoot}/tools/checkstyle/suppressions.xml</checkstyleFilter>
+            <checkstyleProperties>${basedirRoot}/tools/static-code-analysis/checkstyle/ruleset.properties</checkstyleProperties>
+            <checkstyleFilter>${basedirRoot}/tools/static-code-analysis/checkstyle/suppressions.xml</checkstyleFilter>
           </configuration>
           <executions>
             <execution>
@@ -660,7 +613,7 @@ Import-Package: \\
         </file>
       </activation>
       <properties>
-        <bnd.includeresource>${.}/../../lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+        <bnd.includeresource>-${.}/../../NOTICE, -${.}/../../*.xsd, ${.}/../../lib/; filter:=*.jar; lib:=true</bnd.includeresource>
         <feature.directory>../../src/main/feature/feature.xml</feature.directory>
       </properties>
       <build>
@@ -703,7 +656,7 @@ Import-Package: \\
         </file>
       </activation>
       <properties>
-        <bnd.includeresource>${.}/lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+        <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd, ${.}/lib/; filter:=*.jar; lib:=true</bnd.includeresource>
       </properties>
     </profile>
 
@@ -744,28 +697,6 @@ Import-Package: \\
           </plugins>
         </pluginManagement>
       </build>
-    </profile>
-    <profile>
-      <id>openhab-snapshot-repository</id>
-      <activation>
-        <property>
-          <name>!noOhSnapRepo</name>
-        </property>
-      </activation>
-      <repositories>
-        <repository>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>daily</updatePolicy>
-          </snapshots>
-          <id>openhab-artifactory-snapshot</id>
-          <name>JFrog Artifactory Repository</name>
-          <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
-        </repository>
-      </repositories>
     </profile>
   </profiles>
 

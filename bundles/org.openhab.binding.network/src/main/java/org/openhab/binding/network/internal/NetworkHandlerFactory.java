@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.network.internal.handler.NetworkHandler;
+import org.openhab.binding.network.internal.handler.SpeedTestHandler;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -75,6 +76,8 @@ public class NetworkHandlerFactory extends BaseThingHandlerFactory {
             return new NetworkHandler(thing, false, configuration);
         } else if (thingTypeUID.equals(NetworkBindingConstants.SERVICE_DEVICE)) {
             return new NetworkHandler(thing, true, configuration);
+        } else if (thingTypeUID.equals(NetworkBindingConstants.SPEEDTEST_DEVICE)) {
+            return new SpeedTestHandler(thing);
         }
         return null;
     }

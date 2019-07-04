@@ -28,13 +28,12 @@ import org.eclipse.smarthome.test.java.JavaOSGiTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.openhab.binding.mqtt.TransformationServiceProvider;
-import org.openhab.binding.mqtt.internal.handler.ThingChannelConstants;
-import org.openhab.binding.mqtt.internal.homeassistant.ChannelConfigurationTypeAdapterFactory;
-import org.openhab.binding.mqtt.internal.homeassistant.DiscoverComponents;
-import org.openhab.binding.mqtt.internal.homeassistant.HaID;
-import org.openhab.binding.mqtt.internal.homeassistant.HandlerConfiguration;
-import org.openhab.binding.mqtt.internal.homeassistant.DiscoverComponents.ComponentDiscovered;
+import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
+import org.openhab.binding.mqtt.homeassistant.internal.ChannelConfigurationTypeAdapterFactory;
+import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
+import org.openhab.binding.mqtt.homeassistant.internal.HaID;
+import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -57,7 +56,7 @@ public class DiscoverComponentsTests extends JavaOSGiTest {
     @Before
     public void setUp() {
         initMocks(this);
-        CompletableFuture<Void> voidFutureComplete = new CompletableFuture<Void>();
+        CompletableFuture<Void> voidFutureComplete = new CompletableFuture<>();
         voidFutureComplete.complete(null);
         doReturn(voidFutureComplete).when(connection).unsubscribeAll();
         doReturn(CompletableFuture.completedFuture(true)).when(connection).subscribe(any(), any());

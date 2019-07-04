@@ -37,6 +37,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.mqtt.MqttActionCallback;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
+import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionObserver;
 import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionState;
 import org.eclipse.smarthome.io.transport.mqtt.MqttException;
 import org.eclipse.smarthome.io.transport.mqtt.MqttMessageSubscriber;
@@ -67,6 +68,9 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     private volatile @Nullable CompletableFuture<Boolean> publicStoppedFuture;
     private volatile @Nullable CompletableFuture<Boolean> profileStoppedFuture;
 
+    private MqttMessageSubscriber messageSubscriber;
+    private MqttConnectionObserver connectionObserver;
+
     private Path persistenceBasePath;
     private SSLContextProvider sslContextProvider;
     private @Nullable String clientId;
@@ -74,12 +78,13 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     private volatile String cocoAddress = "";
     private volatile int port;
 
-    NhcMqttConnection2(String clientId, String persistencePath) throws CertificateException {
+    NhcMqttConnection2(String clientId, String persistencePath, MqttMessageSubscriber messageSubscriber,
+            MqttConnectionObserver connectionObserver) throws CertificateException {
         persistenceBasePath = Paths.get(persistencePath).resolve("nikohomecontrol");
-        // to be removed after testing
-        logger.debug("Niko Home Control: base persistence path set to {}", persistenceBasePath);
         sslContextProvider = getSSLContext();
         this.clientId = clientId;
+        this.messageSubscriber = messageSubscriber;
+        this.connectionObserver = connectionObserver;
     }
 
     private SSLContextProvider getSSLContext() throws CertificateException {
@@ -125,11 +130,11 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      * @param port        Port for MQTT communication with the Niko Connected Controller
      * @throws MqttException
      */
-    synchronized void startPublicConnection(MqttMessageSubscriber subscriber, String cocoAddress, int port)
-            throws MqttException {
-        if (publicStoppedFuture != null) {
+    synchronized void startPublicConnection(String cocoAddress, int port) throws MqttException {
+        CompletableFuture<Boolean> future = publicStoppedFuture;
+        if (future != null) {
             try {
-                publicStoppedFuture.get(5000, TimeUnit.MILLISECONDS);
+                future.get(5000, TimeUnit.MILLISECONDS);
                 logger.debug("Niko Home Control: finished stopping public connection");
             } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
                 logger.debug("Niko Home Control: error stopping public connection");
@@ -141,12 +146,13 @@ public class NhcMqttConnection2 implements MqttActionCallback {
         this.cocoAddress = cocoAddress;
         this.port = port;
         String clientId = this.clientId + "-public";
-        MqttBrokerConnection connection = createMqttConnection(subscriber, null, null, clientId);
+        MqttBrokerConnection connection = createMqttConnection(null, null, clientId);
+        connection.addConnectionObserver(connectionObserver);
         mqttPublicConnection = connection;
         try {
             if (connection.start().get(5000, TimeUnit.MILLISECONDS)) {
                 if (publicSubscribedFuture == null) {
-                    publicSubscribedFuture = connection.subscribe("#", subscriber);
+                    publicSubscribedFuture = connection.subscribe("#", messageSubscriber);
                 }
             } else {
                 logger.debug("Niko Home Control: error connecting");
@@ -175,11 +181,11 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      * @param password   Password for the touch profile
      * @throws MqttException
      */
-    synchronized void startProfileConnection(MqttMessageSubscriber subscriber, String username, String password)
-            throws MqttException {
-        if (profileStoppedFuture != null) {
+    synchronized void startProfileConnection(String username, String password) throws MqttException {
+        CompletableFuture<Boolean> future = profileStoppedFuture;
+        if (future != null) {
             try {
-                profileStoppedFuture.get(5000, TimeUnit.MILLISECONDS);
+                future.get(5000, TimeUnit.MILLISECONDS);
                 logger.debug("Niko Home Control: finished stopping profile connection");
             } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
                 logger.debug("Niko Home Control: error stopping profile connection");
@@ -194,12 +200,13 @@ public class NhcMqttConnection2 implements MqttActionCallback {
 
         logger.debug("Niko Home Control: starting profile connection...");
         String clientId = this.clientId + "-profile";
-        MqttBrokerConnection connection = createMqttConnection(subscriber, username, password, clientId);
+        MqttBrokerConnection connection = createMqttConnection(username, password, clientId);
+        connection.addConnectionObserver(connectionObserver);
         mqttProfileConnection = connection;
         try {
             if (connection.start().get(5000, TimeUnit.MILLISECONDS)) {
                 if (profileSubscribedFuture == null) {
-                    profileSubscribedFuture = connection.subscribe("#", subscriber);
+                    profileSubscribedFuture = connection.subscribe("#", messageSubscriber);
                 }
             } else {
                 logger.warn("Niko Home Control: error with profile password");
@@ -217,11 +224,9 @@ public class NhcMqttConnection2 implements MqttActionCallback {
         }
     }
 
-    private MqttBrokerConnection createMqttConnection(MqttMessageSubscriber subscriber, @Nullable String username,
-            @Nullable String password, @Nullable String clientId) throws MqttException {
+    private MqttBrokerConnection createMqttConnection(@Nullable String username, @Nullable String password,
+            @Nullable String clientId) throws MqttException {
         Path persistencePath = persistenceBasePath.resolve(clientId);
-        // to remove after testing
-        logger.debug("Niko Home Control: persistence path set to {}", persistencePath);
         MqttBrokerConnection connection = new MqttBrokerConnection(cocoAddress, port, true, clientId);
         connection.setPersistencePath(persistencePath);
         connection.setSSLContextProvider(sslContextProvider);
@@ -235,11 +240,16 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      */
     void stopPublicConnection() {
         logger.debug("Niko Home Control: stopping public connection...");
-        publicStoppedFuture = stopConnection(mqttPublicConnection);
+        MqttBrokerConnection connection = mqttPublicConnection;
+        if (connection != null) {
+            connection.removeConnectionObserver(connectionObserver);
+        }
+        publicStoppedFuture = stopConnection(connection);
         mqttPublicConnection = null;
 
-        if (publicSubscribedFuture != null) {
-            publicSubscribedFuture.complete(false);
+        CompletableFuture<Boolean> future = publicSubscribedFuture;
+        if (future != null) {
+            future.complete(false);
             publicSubscribedFuture = null;
         }
     }
@@ -249,11 +259,16 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      */
     void stopProfileConnection() {
         logger.debug("Niko Home Control: stopping profile connection...");
+        MqttBrokerConnection connection = mqttProfileConnection;
+        if (connection != null) {
+            connection.removeConnectionObserver(connectionObserver);
+        }
         profileStoppedFuture = stopConnection(mqttProfileConnection);
         mqttProfileConnection = null;
 
-        if (profileSubscribedFuture != null) {
-            profileSubscribedFuture.complete(false);
+        CompletableFuture<Boolean> future = profileSubscribedFuture;
+        if (future != null) {
+            future.complete(false);
             profileSubscribedFuture = null;
         }
     }

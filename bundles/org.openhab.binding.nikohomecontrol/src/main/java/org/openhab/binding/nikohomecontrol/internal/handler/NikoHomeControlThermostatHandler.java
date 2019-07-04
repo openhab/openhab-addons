@@ -16,6 +16,8 @@ import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -35,6 +37,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostat;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostatEvent;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
+import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcThermostat2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,28 +82,20 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         }
         NikoHomeControlCommunication nhcComm = nhcBridgeHandler.getCommunication();
 
-        if (nhcComm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Niko Home Control: bridge communication not initialized when trying to execute thermostat command "
-                            + thermostatId);
-            return;
-        }
+        // This can be expensive, therefore do it in a job.
+        scheduler.submit(() -> {
+            if (nhcComm == null || !nhcComm.communicationActive()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "Niko Home Control: bridge communication not initialized when trying to execute thermostat command "
+                                + thermostatId);
+                return;
+            }
 
-        NhcThermostat nhcThermostat = nhcComm.getThermostats().get(thermostatId);
-        if (nhcThermostat == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Niko Home Control: thermostatId " + thermostatId
-                            + " does not match a thermostat in the controller");
-            return;
-        }
-
-        if (nhcComm.communicationActive()) {
-            handleCommandSelection(channelUID, command);
-        } else {
-            // We lost connection but the connection object is there, so was correctly started.
-            // Try to restart communication.
-            // This can be expensive, therefore do it in a job.
-            scheduler.submit(() -> {
+            if (nhcComm.communicationActive()) {
+                handleCommandSelection(channelUID, command);
+            } else {
+                // We lost connection but the connection object is there, so was correctly started.
+                // Try to restart communication.
                 nhcComm.restartCommunication();
                 // If still not active, take thing offline and return.
                 if (!nhcComm.communicationActive()) {
@@ -113,8 +108,8 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
                 // And finally handle the command
                 handleCommandSelection(channelUID, command);
-            });
-        }
+            }
+        });
     }
 
     private void handleCommandSelection(ChannelUID channelUID, Command command) {
@@ -195,32 +190,51 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
             return;
         }
         NikoHomeControlCommunication nhcComm = nhcBridgeHandler.getCommunication();
-        if (nhcComm == null || !nhcComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Niko Home Control: no connection with Niko Home Control, could not initialize thermostat "
-                            + thermostatId);
-            return;
+
+        // We need to do this in a separate thread because we may have to wait for the
+        // communication to become active
+        scheduler.submit(() -> {
+            if (nhcComm == null || !nhcComm.communicationActive()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Niko Home Control: no connection with Niko Home Control, could not initialize thermostat "
+                                + thermostatId);
+                return;
+            }
+
+            nhcThermostat = nhcComm.getThermostats().get(thermostatId);
+            if (nhcThermostat == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "Niko Home Control: thermostatId does not match a thermostat in the controller "
+                                + thermostatId);
+                return;
+            }
+
+            nhcThermostat.setEventHandler(this);
+
+            updateProperties();
+
+            String thermostatLocation = nhcThermostat.getLocation();
+            if (thing.getLocation() == null) {
+                thing.setLocation(thermostatLocation);
+            }
+
+            thermostatEvent(nhcThermostat.getMeasured(), nhcThermostat.getSetpoint(), nhcThermostat.getMode(),
+                    nhcThermostat.getOverrule(), nhcThermostat.getDemand());
+
+            logger.debug("Niko Home Control: thermostat intialized {}", thermostatId);
+        });
+    }
+
+    private void updateProperties() {
+        Map<String, String> properties = new HashMap<>();
+
+        if (nhcThermostat instanceof NhcThermostat2) {
+            NhcThermostat2 thermostat = (NhcThermostat2) nhcThermostat;
+            properties.put("model", thermostat.getModel());
+            properties.put("technology", thermostat.getTechnology());
         }
 
-        nhcThermostat = nhcComm.getThermostats().get(thermostatId);
-        if (nhcThermostat == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Niko Home Control: thermostatId does not match a thermostat in the controller " + thermostatId);
-            return;
-        }
-
-        String thermostatLocation = nhcThermostat.getLocation();
-
-        nhcThermostat.setEventHandler(this);
-
-        if (thing.getLocation() == null) {
-            thing.setLocation(thermostatLocation);
-        }
-
-        thermostatEvent(nhcThermostat.getMeasured(), nhcThermostat.getSetpoint(), nhcThermostat.getMode(),
-                nhcThermostat.getOverrule(), nhcThermostat.getDemand());
-
-        logger.debug("Niko Home Control: thermostat intialized {}", thermostatId);
+        thing.setProperties(properties);
     }
 
     @Override

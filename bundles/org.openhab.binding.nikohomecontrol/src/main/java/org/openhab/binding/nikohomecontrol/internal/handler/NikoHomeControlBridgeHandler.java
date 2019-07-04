@@ -91,8 +91,9 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
             int refreshInterval = config.refresh;
             setupRefreshTimer(refreshInterval);
 
-            if (nhcDiscovery != null) {
-                nhcDiscovery.discoverDevices();
+            NikoHomeControlDiscoveryService discovery = nhcDiscovery;
+            if (discovery != null) {
+                discovery.discoverDevices();
             } else {
                 logger.debug("Niko Home Control: cannot discover devices, discovery service not started");
             }
@@ -105,8 +106,9 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
      * @param interval_config Time before refresh in minutes.
      */
     private void setupRefreshTimer(int refreshInterval) {
-        if (refreshTimer != null) {
-            refreshTimer.cancel(true);
+        ScheduledFuture<?> timer = refreshTimer;
+        if (timer != null) {
+            timer.cancel(true);
             refreshTimer = null;
         }
 
@@ -174,12 +176,15 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
     @Override
     public void dispose() {
-        if (refreshTimer != null) {
-            refreshTimer.cancel(true);
+        ScheduledFuture<?> timer = refreshTimer;
+        if (timer != null) {
+            timer.cancel(true);
         }
         refreshTimer = null;
-        if (nhcComm != null) {
-            nhcComm.stopCommunication();
+
+        NikoHomeControlCommunication comm = nhcComm;
+        if (comm != null) {
+            comm.stopCommunication();
         }
         nhcComm = null;
     }

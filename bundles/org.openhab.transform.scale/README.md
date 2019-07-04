@@ -40,7 +40,7 @@ At last, Scale transform can take care of formatting an output with this entry :
 `format=%label% (%value%) !`
 
 Where : 
-- `%label` will be replaced by transformed value and 
+- `%label%` will be replaced by transformed value and 
 - `%value%` is the numeric value presen
 ## Example
 

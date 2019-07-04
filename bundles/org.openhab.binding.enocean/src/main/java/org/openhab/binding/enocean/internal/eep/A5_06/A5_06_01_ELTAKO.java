@@ -14,6 +14,8 @@ package org.openhab.binding.enocean.internal.eep.A5_06;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_ILLUMINATION;
 
+import java.util.function.Function;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -44,7 +46,7 @@ public class A5_06_01_ELTAKO extends _4BSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
+    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
             Configuration config) {
 
         switch (channelId) {

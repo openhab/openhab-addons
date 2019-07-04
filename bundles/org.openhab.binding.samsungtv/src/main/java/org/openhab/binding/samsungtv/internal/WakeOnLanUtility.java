@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WakeOnLanUtility {
 
-    private static Logger logger = LoggerFactory.getLogger(WakeOnLanUtility.class);
+    private static final Logger logger = LoggerFactory.getLogger(WakeOnLanUtility.class);
 
     /**
      * Get MAC address for host

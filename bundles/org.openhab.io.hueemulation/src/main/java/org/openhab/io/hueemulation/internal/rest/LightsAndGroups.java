@@ -32,6 +32,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.registry.RegistryChangeListener;
 import org.eclipse.smarthome.core.events.EventPublisher;
 import org.eclipse.smarthome.core.items.GenericItem;
@@ -111,7 +112,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     @Reference
     protected @NonNullByDefault({}) ItemRegistry itemRegistry;
     @Reference(policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.OPTIONAL)
-    protected volatile @NonNullByDefault({}) EventPublisher eventPublisher;
+    protected volatile @Nullable EventPublisher eventPublisher;
 
     /**
      * Registers to the {@link ItemRegistry} and enumerates currently existing items.
@@ -373,9 +374,10 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
 
         // If a command could be created, post it to the framework now
         if (command != null) {
-            if (eventPublisher != null) {
+            EventPublisher localEventPublisher = eventPublisher;
+            if (localEventPublisher != null) {
                 logger.debug("sending {} to {}", command, itemUID);
-                eventPublisher.post(ItemEventFactory.createCommandEvent(itemUID, command, "hueemulation"));
+                localEventPublisher.post(ItemEventFactory.createCommandEvent(itemUID, command, "hueemulation"));
             } else {
                 logger.warn("No event publisher. Cannot post item '{}' command!", itemUID);
             }
@@ -418,8 +420,10 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         // If a command could be created, post it to the framework now
         if (command != null) {
             logger.debug("sending {} to {}", command, id);
-            if (eventPublisher != null) {
-                eventPublisher.post(ItemEventFactory.createCommandEvent(groupItem.getUID(), command, "hueemulation"));
+            EventPublisher localEventPublisher = eventPublisher;
+            if (localEventPublisher != null) {
+                localEventPublisher
+                        .post(ItemEventFactory.createCommandEvent(groupItem.getUID(), command, "hueemulation"));
             } else {
                 logger.warn("No event publisher. Cannot post item '{}' command!", groupItem.getUID());
             }

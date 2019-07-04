@@ -21,7 +21,6 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComHomeConfortMessage.Commands;
 import org.openhab.binding.rfxcom.internal.messages.RFXComHomeConfortMessage.SubType;
 
-
 /**
  * Test for RFXCom-binding
  *
@@ -29,12 +28,11 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComHomeConfortMessage.Sub
  * @author Mike Jagdis - added message handling and real test
  */
 public class RFXComHomeConfortTest {
-    private void testMessage(SubType subType, Commands command, String deviceId, String data)
-            throws RFXComException {
+    private void testMessage(SubType subType, Commands command, String deviceId, String data) throws RFXComException {
 
         RFXComHomeConfortMessage message = (RFXComHomeConfortMessage) RFXComMessageFactory.createMessage(HOME_CONFORT);
         message.setSubType(subType);
-	message.command = command;
+        message.command = command;
         message.setDeviceId(deviceId);
 
         assertArrayEquals(HexUtils.hexToBytes(data), message.decodeMessage());

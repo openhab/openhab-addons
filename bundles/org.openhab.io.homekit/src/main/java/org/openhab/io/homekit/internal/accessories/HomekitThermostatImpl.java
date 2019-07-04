@@ -128,25 +128,25 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
 
     @Override
     public CompletableFuture<ThermostatMode> getCurrentMode() {
-        String stringValue = settings.getCurrentModeOff();
+        String stringValue = settings.thermostatCurrentModeOff;
         if (currentHeatingCoolingModeItem != null) {
             stringValue = currentHeatingCoolingModeItem.getState().toString();
         }
         ThermostatMode mode;
 
-        if (stringValue.equalsIgnoreCase(settings.getThermostatCurrentModeCooling())) {
+        if (stringValue.equalsIgnoreCase(settings.thermostatCurrentModeCooling)) {
             mode = ThermostatMode.COOL;
-        } else if (stringValue.equalsIgnoreCase(settings.getThermostatCurrentModeHeating())) {
+        } else if (stringValue.equalsIgnoreCase(settings.thermostatCurrentModeHeating)) {
             mode = ThermostatMode.HEAT;
-        } else if (stringValue.equalsIgnoreCase(settings.getCurrentModeOff())) {
+        } else if (stringValue.equalsIgnoreCase(settings.thermostatCurrentModeOff)) {
             mode = ThermostatMode.OFF;
         } else if (stringValue.equals("UNDEF") || stringValue.equals("NULL")) {
             logger.debug("Heating cooling target mode not available. Relaying value of OFF to Homekit");
             mode = ThermostatMode.OFF;
         } else {
             logger.error("Unrecognized heatingCoolingCurrentMode: {}. Expected {}, {}, or {} strings in value.",
-                    stringValue, settings.getThermostatCurrentModeCooling(), settings.getThermostatCurrentModeHeating(),
-                    settings.getCurrentModeOff());
+                    stringValue, settings.thermostatCurrentModeCooling, settings.thermostatCurrentModeHeating,
+                    settings.thermostatCurrentModeOff);
             mode = ThermostatMode.OFF;
         }
         return CompletableFuture.completedFuture(mode);
@@ -167,21 +167,21 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
         ThermostatMode mode;
 
         String stringValue = state.toString();
-        if (stringValue.equalsIgnoreCase(settings.getThermostatTargetModeCool())) {
+        if (stringValue.equalsIgnoreCase(settings.thermostatTargetModeCool)) {
             mode = ThermostatMode.COOL;
-        } else if (stringValue.equalsIgnoreCase(settings.getThermostatTargetModeHeat())) {
+        } else if (stringValue.equalsIgnoreCase(settings.thermostatTargetModeHeat)) {
             mode = ThermostatMode.HEAT;
-        } else if (stringValue.equalsIgnoreCase(settings.getThermostatTargetModeAuto())) {
+        } else if (stringValue.equalsIgnoreCase(settings.thermostatTargetModeAuto)) {
             mode = ThermostatMode.AUTO;
-        } else if (stringValue.equalsIgnoreCase(settings.getThermostatTargetModeOff())) {
+        } else if (stringValue.equalsIgnoreCase(settings.thermostatTargetModeOff)) {
             mode = ThermostatMode.OFF;
         } else if (stringValue.equals("UNDEF") || stringValue.equals("NULL")) {
             logger.debug("Heating cooling target mode not available. Relaying value of OFF to Homekit");
             mode = ThermostatMode.OFF;
         } else {
             logger.warn("Unrecognized heating cooling target mode: {}. Expected {}, {}, {}, or {} strings in value.",
-                    stringValue, settings.getThermostatTargetModeCool(), settings.getThermostatTargetModeHeat(),
-                    settings.getThermostatTargetModeAuto(), settings.getThermostatTargetModeOff());
+                    stringValue, settings.thermostatTargetModeCool, settings.thermostatTargetModeHeat,
+                    settings.thermostatTargetModeAuto, settings.thermostatTargetModeOff);
             mode = ThermostatMode.OFF;
         }
         return CompletableFuture.completedFuture(mode);
@@ -201,19 +201,19 @@ class HomekitThermostatImpl extends AbstractTemperatureHomekitAccessoryImpl<Grou
         String modeString = null;
         switch (mode) {
             case AUTO:
-                modeString = settings.getThermostatTargetModeAuto();
+                modeString = settings.thermostatTargetModeAuto;
                 break;
 
             case COOL:
-                modeString = settings.getThermostatTargetModeCool();
+                modeString = settings.thermostatTargetModeCool;
                 break;
 
             case HEAT:
-                modeString = settings.getThermostatTargetModeHeat();
+                modeString = settings.thermostatTargetModeHeat;
                 break;
 
             case OFF:
-                modeString = settings.getThermostatTargetModeOff();
+                modeString = settings.thermostatTargetModeOff;
                 break;
         }
         targetHeatingCoolingModeItem.send(new StringType(modeString));

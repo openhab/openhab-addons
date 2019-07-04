@@ -133,7 +133,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         // Therefore the components are assembled into a list and given to the DiscoveryResult label for the user to
         // easily recognize object capabilities.
         HaID topicParts = determineTopicParts(topic);
-        final String thingID = topicParts.objectID;
+        final String thingID = topicParts.getFallbackGroupId();
         final ThingUID thingUID = new ThingUID(MqttBindingConstants.HOMEASSISTANT_MQTT_THING, connectionBridge,
                 thingID);
 
