@@ -64,7 +64,7 @@ public class SnmpTargetHandlerTest extends JavaTest {
     private static final ChannelUID CHANNEL_UID = new ChannelUID(THING_UID, "testchannel");
     private static final String TEST_OID = "1.2.3.4";
     private static final String TEST_ADDRESS = "192.168.0.1";
-    private static final String TEST_STRING = "foo";
+    private static final String TEST_STRING = "foo.";
 
     private @Mock SnmpServiceImpl snmpService;
     private @Mock ThingHandlerCallback thingHandlerCallback;

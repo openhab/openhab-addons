@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.snmp.internal.config;
 
+import org.openhab.binding.snmp.internal.SnmpProtocolVersion;
+
 /**
  * The {@link SnmpTargetConfiguration} class contains fields mapping thing configuration parameters.
  *
@@ -22,7 +24,7 @@ public class SnmpTargetConfiguration {
     public int port = 161;
     public String community = "public";
     public int refresh = 60;
-    public int protocol = 0;
+    public SnmpProtocolVersion protocol = SnmpProtocolVersion.v1;
     public int timeout = 1500;
     public int retries = 2;
 }

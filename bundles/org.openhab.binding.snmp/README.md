@@ -51,8 +51,8 @@ It defaults to `public`.
 
 Currently two protocol versions are supported.
 The protocol version can be set with the `protocol` parameter.
-The allowed values are `0` for v1 and `1` for v2c.
-The default is `0` (v1).
+The allowed values are `v1` or `V1`for v1 and `v2c` or `V2C` for v2c.
+The default is `v1`.
 
 By using the `refresh` parameter the time between two subsequent GET requests to the target can be set.
 The default is `60` for 60s.
@@ -108,7 +108,7 @@ The `datatype` parameter is used to convert the configuration strings to the nee
 demo.things:
 
 ```
-Thing snmp:target:router [ hostname="192.168.0.1", protocol="1" ] {
+Thing snmp:target:router [ hostname="192.168.0.1", protocol="v2c" ] {
     Channels:
       Type number : inBytes [ oid=".1.3.6.1.2.1.31.1.1.1.6.2", mode="READ" ]
       Type number : outBytes [ oid=".1.3.6.1.2.1.31.1.1.1.10.2", mode="READ" ]
