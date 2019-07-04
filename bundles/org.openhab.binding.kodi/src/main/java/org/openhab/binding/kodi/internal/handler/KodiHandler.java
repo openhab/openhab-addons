@@ -557,7 +557,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                         updatePVRChannelStateDescription(PVR_RADIO, CHANNEL_PVR_OPEN_RADIO);
                     } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Connection could not be established");
+                                "No connection established");
                     }
                 }, 1, getIntConfigParameter(REFRESH_PARAMETER, 10), TimeUnit.SECONDS);
 
