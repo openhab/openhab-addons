@@ -49,7 +49,7 @@ public class BindingServlet extends HttpServlet {
     String servletUrl;
     HttpService httpService;
 
-    List<Thing> accountHandlers = new ArrayList<Thing>();
+    List<Thing> accountHandlers = new ArrayList<>();
 
     public BindingServlet(HttpService httpService) {
         this.httpService = httpService;
@@ -126,5 +126,4 @@ public class BindingServlet extends HttpServlet {
             logger.warn("return html failed with uri syntax error {}", e);
         }
     }
-
 }
