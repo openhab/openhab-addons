@@ -28,5 +28,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/tinyb-0.5.1.jar" />
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
