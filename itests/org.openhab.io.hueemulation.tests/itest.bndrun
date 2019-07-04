@@ -4,10 +4,11 @@ Bundle-SymbolicName: ${project.artifactId}
 Fragment-Host: org.openhab.io.hueemulation
 
 -runrequires: \
-    bnd.identity;id='org.openhab.io.hueemulation.tests',\
-    bnd.identity;id='org.openhab.core.binding.xml',\
-    bnd.identity;id='org.openhab.core.thing.xml',\
-    bnd.identity;id='com.eclipsesource.jaxrs.jersey-all'
+	bnd.identity;id='org.openhab.io.hueemulation.tests',\
+	bnd.identity;id='org.openhab.core.binding.xml',\
+	bnd.identity;id='org.openhab.core.thing.xml',\
+	bnd.identity;id='com.eclipsesource.jaxrs.jersey-all',\
+	bnd.identity;id='org.jupnp'
 
 # We would like to use the "volatile" storage only
 -runblacklist: \
@@ -18,7 +19,6 @@ Fragment-Host: org.openhab.io.hueemulation
 # done
 #
 -runbundles: \
-	ch.qos.logback.classic;version='[1.2.3,1.2.4)',\
 	ch.qos.logback.core;version='[1.2.3,1.2.4)',\
 	com.google.gson;version='[2.8.2,2.8.3)',\
 	javax.measure.unit-api;version='[1.0.0,1.0.1)',\
@@ -80,5 +80,4 @@ Fragment-Host: org.openhab.io.hueemulation
 	org.openhab.core.config.xml;version='[2.5.0,2.5.1)',\
 	org.openhab.core.thing.xml;version='[2.5.0,2.5.1)',\
 	com.eclipsesource.jaxrs.jersey-all;version='[2.22.2,2.22.3)',\
-	org.openhab.core.config.discovery;version='[2.5.0,2.5.1)',\
-	org.openhab.core.config.discovery.upnp;version='[2.5.0,2.5.1)'
+	slf4j.simple;version='[1.7.21,1.7.22)'

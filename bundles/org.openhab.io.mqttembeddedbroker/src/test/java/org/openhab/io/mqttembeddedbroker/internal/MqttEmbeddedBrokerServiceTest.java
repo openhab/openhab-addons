@@ -198,7 +198,7 @@ public class MqttEmbeddedBrokerServiceTest extends JavaTest {
         MVStore mvStore = new MVStore.Builder().fileName(temp.getAbsolutePath()).autoCommitDisabled().open();
         MVMap<Topic, RetainedMessage> openMap = mvStore.openMap("retained_store");
 
-        waitForAssert(() -> assertThat(openMap.size(), is(1)));
+        assertThat(openMap.size(), is(1));
         for (Map.Entry<Topic, RetainedMessage> entry : openMap.entrySet()) {
             assertThat(entry.getKey().toString(), is("demotopic"));
             assertThat(new String(entry.getValue().getPayload()), is("testtest"));
