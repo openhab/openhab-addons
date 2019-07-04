@@ -28,19 +28,49 @@
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
-      <artifactId>netty-all</artifactId>
+      <artifactId>netty-common</artifactId>
       <version>4.0.32.Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.nimbusds</groupId>
-      <artifactId>srp6a</artifactId>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-buffer</artifactId>
+      <version>4.0.32.Final</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-transport</artifactId>
+      <version>4.0.32.Final</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-handler</artifactId>
+      <version>4.0.32.Final</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-codec</artifactId>
+      <version>4.0.32.Final</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-codec-http</artifactId>
+      <version>4.0.32.Final</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.nimbusds.srp6a</artifactId>
       <version>1.5.2</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>net.vrallev.ecc</groupId>
-      <artifactId>ecc-25519-java</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>net.vrallev.ecc.ecc-25519-java</artifactId>
       <version>1.0.1</version>
       <scope>provided</scope>
     </dependency>
@@ -51,8 +81,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.zeromq</groupId>
-      <artifactId>curve25519-java</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>org.zeromq.curve25519-java</artifactId>
       <version>0.1.0</version>
       <scope>provided</scope>
     </dependency>

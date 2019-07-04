@@ -16,6 +16,7 @@ import static org.openhab.binding.samsungtv.internal.SamsungTvBindingConstants.*
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
@@ -67,7 +68,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     private static final int WOL_PACKET_RETRY_COUNT = 10;
     private static final int WOL_SERVICE_CHECK_COUNT = 30;
 
-    private Logger logger = LoggerFactory.getLogger(SamsungTvHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SamsungTvHandler.class);
 
     private UpnpIOService upnpIOService;
     private DiscoveryServiceRegistry discoveryServiceRegistry;
@@ -149,14 +150,6 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
         discoveryServiceRegistry.addDiscoveryListener(this);
 
         checkAndCreateServices();
-
-        SamsungTvConfiguration configuration = getConfigAs(SamsungTvConfiguration.class);
-        if (StringUtils.isEmpty(configuration.macAddress) && configuration.hostName != null) {
-            String macAddress = WakeOnLanUtility.getMACAddress(configuration.hostName);
-            if (macAddress != null) {
-                getConfig().put(SamsungTvConfiguration.MAC_ADDRESS, macAddress);
-            }
-        }
     }
 
     @Override
@@ -277,14 +270,12 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
             RemoteControllerService service = (RemoteControllerService) findServiceInstance(
                     RemoteControllerService.SERVICE_NAME);
             if (service == null) {
-                putOffline();
                 SamsungTvConfiguration configuration = getConfigAs(SamsungTvConfiguration.class);
                 service = RemoteControllerService.createNonUpnpService(configuration.hostName, configuration.port);
                 startService(service);
             } else {
                 // open connection again if needed
                 if (!service.checkConnection()) {
-                    putOffline();
                     service.start();
                 }
             }
@@ -309,9 +300,27 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
         SamsungTvConfiguration configuration = getConfigAs(SamsungTvConfiguration.class);
 
-        if (configuration.hostName.equals(result.getProperties().get(SamsungTvConfiguration.HOST_NAME))) {
+        if (configuration.hostName != null
+                && configuration.hostName.equals(result.getProperties().get(SamsungTvConfiguration.HOST_NAME))) {
             logger.debug("thingDiscovered: {}, {}", result.getProperties().get(SamsungTvConfiguration.HOST_NAME),
                     result);
+
+            /* Check if configuration should be updated */
+            if (StringUtils.isEmpty(configuration.macAddress)) {
+                String macAddress = WakeOnLanUtility.getMACAddress(configuration.hostName);
+                if (macAddress != null) {
+                    getConfig().put(SamsungTvConfiguration.MAC_ADDRESS, macAddress);
+                    logger.debug("thingDiscovered, macAddress: {}", macAddress);
+                }
+            }
+            if (SamsungTvConfiguration.PROTOCOL_NONE.equals(configuration.protocol)) {
+                Map<String, Object> properties = RemoteControllerService.discover(configuration.hostName);
+                for (Map.Entry<String, Object> property : properties.entrySet()) {
+                    getConfig().put(property.getKey(), property.getValue());
+                    logger.debug("thingDiscovered, {}: {}", property.getKey(), property.getValue());
+                }
+            }
+
             /*
              * SamsungTV discovery services creates thing UID from UPnP UDN.
              * When thing is generated manually, thing UID may not match UPnP UDN, so store it for later use (e.g.

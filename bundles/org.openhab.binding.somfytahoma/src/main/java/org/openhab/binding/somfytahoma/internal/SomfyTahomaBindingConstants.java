@@ -193,6 +193,8 @@ public class SomfyTahomaBindingConstants {
     public static final String STATUS_STATE = "core:StatusState";
     public static final String UNAVAILABLE = "unavailable";
     public static final String AUTHENTICATION_CHALLENGE = "HTTP protocol violation: Authentication challenge without WWW-Authenticate header";
+    public static final String TOO_MANY_REQUESTS = "Too many requests, try again later";
+    public static final int SUSPEND_TIME = 120;
 
     // supported uiClasses
     public static final String ROLLERSHUTTER = "RollerShutter";

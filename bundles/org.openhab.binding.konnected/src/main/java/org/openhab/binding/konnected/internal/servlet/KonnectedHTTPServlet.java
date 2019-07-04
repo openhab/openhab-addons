@@ -16,15 +16,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.openhab.binding.konnected.internal.gson.KonnectedModuleGson;
 import org.openhab.binding.konnected.internal.handler.KonnectedHandler;
-import org.osgi.service.http.HttpService;
-import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,57 +41,20 @@ public class KonnectedHTTPServlet extends HttpServlet {
     private static final String CHARSET = "utf-8";
     private final Gson gson = new Gson();
 
-    private final HttpService httpService;
-
-    private final String path;
     private HashMap<String, KonnectedHandler> konnectedThingHandlers = new HashMap<>();
 
-    public KonnectedHTTPServlet(HttpService httpService, String id) {
-        this.httpService = httpService;
-        this.path = id;
+    public KonnectedHTTPServlet() {
     }
 
-    public void add(KonnectedHandler thingHandler) throws KonnectedWebHookFail {
+    public void add(KonnectedHandler thingHandler) {
         logger.trace("Adding KonnectedHandler[{}] to KonnectedHTTPServlet.", thingHandler.getThing().getUID());
-
-        if (konnectedThingHandlers.size() == 0) {
-            this.activate();
-        }
-
         konnectedThingHandlers.put(thingHandler.getThing().getUID().getAsString(), thingHandler);
     }
 
     public void remove(KonnectedHandler thingHandler) {
-        logger.trace("Removing KonnectedHandler [{}] from KonnectedHTTP Servlet. ", thingHandler.getThing().getUID());
+        logger.trace("Removing KonnectedHandler [{}] from KonnectedHTTPServlet. ", thingHandler.getThing().getUID());
 
         konnectedThingHandlers.remove(thingHandler.getThing().getUID().getAsString());
-
-        if (konnectedThingHandlers.size() == 0) {
-            this.deactivate();
-        }
-    }
-
-    /**
-     * Activation callback.
-     *
-     * @param config Service config.
-     **/
-    public void activate() throws KonnectedWebHookFail {
-        try {
-            logger.debug("Trying to Start Webhook at {}.", path);
-            httpService.registerServlet(path, this, null, httpService.createDefaultHttpContext());
-            logger.debug("Started Konnected Webhook servlet at {}", path);
-        } catch (ServletException | NamespaceException e) {
-            throw new KonnectedWebHookFail("Could not start Konnected Webhook servlet: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Webhook Deactivation callback.
-     */
-    public void deactivate() {
-        httpService.unregister(path);
-        logger.debug("Konnected webhook servlet stopped");
     }
 
     @Override
@@ -140,7 +100,4 @@ public class KonnectedHTTPServlet extends HttpServlet {
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     }
 
-    public String getPath() {
-        return path;
-    }
 }

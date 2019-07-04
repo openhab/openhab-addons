@@ -27,6 +27,8 @@ import org.openhab.binding.knx.internal.client.IPClient;
 import org.openhab.binding.knx.internal.client.KNXClient;
 import org.openhab.binding.knx.internal.client.NoOpClient;
 import org.openhab.binding.knx.internal.config.IPBridgeConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link IPBridgeThingHandler} is responsible for handling commands, which are
@@ -39,13 +41,12 @@ import org.openhab.binding.knx.internal.config.IPBridgeConfiguration;
  */
 @NonNullByDefault
 public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
-
     private static final String MODE_ROUTER = "ROUTER";
     private static final String MODE_TUNNEL = "TUNNEL";
 
-    @Nullable
-    private IPClient client;
+    private final Logger logger = LoggerFactory.getLogger(IPBridgeThingHandler.class);
 
+    private @Nullable IPClient client;
     private final NetworkAddressService networkAddressService;
 
     public IPBridgeThingHandler(Bridge bridge, NetworkAddressService networkAddressService) {
@@ -56,6 +57,13 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
     @Override
     public void initialize() {
         IPBridgeConfiguration config = getConfigAs(IPBridgeConfiguration.class);
+        int autoReconnectPeriod = config.getAutoReconnectPeriod();
+        if (autoReconnectPeriod != 0 && autoReconnectPeriod < 30) {
+            logger.info("autoReconnectPeriod set to {}s, allowed range is 0 (never) or >30", thing.getUID(),
+                    autoReconnectPeriod);
+            autoReconnectPeriod = 30;
+            config.setAutoReconnectPeriod(autoReconnectPeriod);
+        }
         String localSource = config.getLocalSourceAddr();
         String connectionTypeString = config.getType();
         int port = config.getPortNumber().intValue();
@@ -91,9 +99,9 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         }
 
         updateStatus(ThingStatus.UNKNOWN);
-        client = new IPClient(ipConnectionType, ip, localSource, port, localEndPoint, useNAT,
-                config.getAutoReconnectPeriod().intValue(), thing.getUID(), config.getResponseTimeout().intValue(),
-                config.getReadingPause().intValue(), config.getReadRetriesLimit().intValue(), getScheduler(), this);
+        client = new IPClient(ipConnectionType, ip, localSource, port, localEndPoint, useNAT, autoReconnectPeriod,
+                thing.getUID(), config.getResponseTimeout().intValue(), config.getReadingPause().intValue(),
+                config.getReadRetriesLimit().intValue(), getScheduler(), this);
 
         client.initialize();
     }

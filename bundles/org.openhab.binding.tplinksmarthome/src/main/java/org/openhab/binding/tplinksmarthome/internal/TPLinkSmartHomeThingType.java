@@ -27,7 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  */
 @NonNullByDefault
-enum TPLinkSmartHomeThingType {
+public enum TPLinkSmartHomeThingType {
 
     // Bulb Thing Type UIDs
     KB100("kb100", DeviceType.BULB),
@@ -55,6 +55,12 @@ enum TPLinkSmartHomeThingType {
 
     // Dimmer Thing Type UIDs
     HS220("hs220", DeviceType.DIMMER),
+
+    // Power Strip Thing Type UIDs.
+    HS107("hs107", DeviceType.STRIP),
+    HS300("hs300", DeviceType.STRIP),
+    KP200("kp200", DeviceType.STRIP),
+    KP400("kp400", DeviceType.STRIP),
 
     // Range Extender Thing Type UIDs
     RE270K("re270", DeviceType.RANGE_EXTENDER),
@@ -99,6 +105,29 @@ enum TPLinkSmartHomeThingType {
     }
 
     /**
+     * Returns true if the given {@link ThingTypeUID} matches a device that is a range extender.
+     *
+     * @param thingTypeUID if the check
+     * @return true if it's a range extender
+     */
+    public static boolean isRangeExtenderDevice(ThingTypeUID thingTypeUID) {
+        return SUPPORTED_THING_TYPES_LIST.stream().filter(t -> t.is(thingTypeUID))
+                .anyMatch(t -> t.type == DeviceType.RANGE_EXTENDER);
+    }
+
+    /**
+     * Returns true if the given {@link ThingTypeUID} matches a device that supports the power strip communication
+     * protocol.
+     *
+     * @param thingTypeUID if the check
+     * @return true if it's a power strip supporting device
+     */
+    public static boolean isStripDevice(ThingTypeUID thingTypeUID) {
+        return SUPPORTED_THING_TYPES_LIST.stream().filter(t -> t.is(thingTypeUID))
+                .anyMatch(t -> t.type == DeviceType.STRIP);
+    }
+
+    /**
      * Returns true if the given {@link ThingTypeUID} matches a device that supports the switching communication
      * protocol.
      *
@@ -108,17 +137,6 @@ enum TPLinkSmartHomeThingType {
     public static boolean isSwitchingDevice(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_LIST.stream().filter(t -> t.is(thingTypeUID))
                 .anyMatch(t -> t.type == DeviceType.PLUG || t.type == DeviceType.SWITCH);
-    }
-
-    /**
-     * Returns true if the given {@link ThingTypeUID} matches a device that is a range extender.
-     *
-     * @param thingTypeUID if the check
-     * @return true if it's a range extender
-     */
-    public static boolean isRangeExtenderDevice(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_LIST.stream().filter(t -> t.is(thingTypeUID))
-                .anyMatch(t -> t.type == DeviceType.RANGE_EXTENDER);
     }
 
     /**
@@ -151,6 +169,10 @@ enum TPLinkSmartHomeThingType {
          * Wi-Fi range extender device with plug.
          */
         RANGE_EXTENDER,
+        /**
+         * Power strip device.
+         */
+        STRIP,
         /**
          * Switch device.
          */

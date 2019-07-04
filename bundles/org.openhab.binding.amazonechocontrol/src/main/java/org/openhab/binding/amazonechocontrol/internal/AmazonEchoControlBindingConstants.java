@@ -45,7 +45,7 @@ public class AmazonEchoControlBindingConstants {
     public static final ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "light");
     public static final ThingTypeUID THING_TYPE_LIGHT_GROUP = new ThingTypeUID(BINDING_ID, "lightGroup");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_ACCOUNT, THING_TYPE_ECHO, THING_TYPE_ECHO_SPOT, THING_TYPE_ECHO_SHOW,
                     THING_TYPE_ECHO_WHA, THING_TYPE_FLASH_BRIEFING_PROFILE, THING_TYPE_LIGHT, THING_TYPE_LIGHT_GROUP));
 

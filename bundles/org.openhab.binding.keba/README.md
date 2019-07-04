@@ -42,6 +42,7 @@ All devices support the following channels:
 | sessionrfidtag     | String    | yes       | RFID tag used for the last charging session                            |
 | sessionrfidclass   | String    | yes       | RFID tag class used for the last charging session                      |
 | sessionid          | Number    | yes       | session ID of the last charging session                                |
+| setenergylimit     | Number    | no        | set an energy limit for an already running or the next charging session|
 
 
 ## Example
@@ -76,6 +77,7 @@ Number KebaSessionEnergy  {channel="keba:kecontact:1:sessionconsumption"}
 Number KebaTotalEnergy  {channel="keba:kecontact:1:totalconsumption"}
 Switch KebaInputSwitch  {channel="keba:kecontact:1:input"}
 Switch KebaOutputSwitch  {channel="keba:kecontact:1:output"}
+Number KebaSetEnergyLimit {channel="keba:kecontact:1:setenergylimit"}
 ```
 
 demo.sitemap:
@@ -96,6 +98,7 @@ sitemap demo label="Main Menu"
 				Text item=KebaFailSafeCurrent label="Failsafe supply current [%.0f mA]"
 				Text item=KebaSessionEnergy label="Energy during current session [%.0f Wh]"
 				Text item=KebaTotalEnergy label="Energy during all sessions [%.0f Wh]"
+				Switch item=KebaSetEnergyLimit label="Set charge energy limit" mappings=[0="off", 20000="20kWh"]
 			}
 }
 ```
