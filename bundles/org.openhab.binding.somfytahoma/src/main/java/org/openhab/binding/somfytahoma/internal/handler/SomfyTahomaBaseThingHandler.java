@@ -210,6 +210,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
                     Double valDec = Double.parseDouble(state.getValue().toString());
                     return new DecimalType(valDec);
                 case TYPE_STRING:
+                case TYPE_BOOLEAN:
                     String value = state.getValue().toString().toLowerCase();
                     if ("String".equals(acceptedState)) {
                         return new StringType(value);
@@ -228,10 +229,12 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     private State parseStringState(String value) {
         switch (value) {
             case "on":
+            case "true":
                 return OnOffType.ON;
             case "off":
+            case "false":
                 return OnOffType.OFF;
-            case "notdetected":
+            case "notDetected":
             case "nopersoninside":
             case "closed":
             case "locked":

@@ -28,11 +28,11 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
-
 import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 /**
  * The {@link SomfyTahomaItemDiscoveryService} discovers rollershutters and
@@ -108,7 +108,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 THING_TYPE_CONTACTSENSOR, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_WINDOW, THING_TYPE_EXTERNAL_ALARM,
                 THING_TYPE_INTERNAL_ALARM, THING_TYPE_POD, THING_TYPE_HEATING_SYSTEM, THING_TYPE_ONOFF_HEATING_SYSTEM,
                 THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA, THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR,
-                THING_TYPE_GATE));
+                THING_TYPE_GATE, THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN));
     }
 
     @Override
@@ -204,7 +204,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 }
                 break;
             case POD:
-                deviceDiscovered(device, THING_TYPE_POD);
+                if (hasState(device, CYCLIC_BUTTON_STATE)) {
+                    deviceDiscovered(device, THING_TYPE_POD);
+                }
                 break;
             case HEATINGSYSTEM:
                 if (isOnOffHeatingSystem(device)) {
@@ -228,37 +230,71 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
             case GATE:
                 deviceDiscovered(device, THING_TYPE_GATE);
                 break;
+            case ELECTRICITYSENSOR:
+                if (hasEnergyConsumption(device)) {
+                    deviceDiscovered(device, THING_TYPE_ELECTRICITYSENSOR);
+                } else {
+                    logUnsupportedDevice(device);
+                }
+                break;
+            case DOCK:
+                deviceDiscovered(device, THING_TYPE_DOCK);
+                break;
+            case SIREN:
+                deviceDiscovered(device, THING_TYPE_SIREN);
+                break;
             case PROTOCOLGATEWAY:
             case REMOTECONTROLLER:
             case NETWORKCOMPONENT:
                 break;
             default:
-                logger.info("Detected a new unsupported device: {}", device.getUiClass());
-                logger.info("If you want to add the support, please create a new issue and attach the information below");
-                logger.info("Supported commands: {}", device.getDefinition().toString());
-
-                StringBuilder sb = new StringBuilder().append('\n');
-                for (SomfyTahomaState state : device.getStates()) {
-                    sb.append(state.toString()).append('\n');
-                }
-                logger.info("Device states: {}", sb.toString());
+                logUnsupportedDevice(device);
         }
     }
 
-    private boolean isSilentRollerShutter(SomfyTahomaDevice device) {
-        SomfyTahomaDeviceDefinition def = device.getDefinition();
-        for (SomfyTahomaDeviceDefinitionCommand cmd : def.getCommands()) {
-            if (cmd.getCommandName().equals(COMMAND_SET_CLOSURESPEED)) {
+    private boolean isStateLess(SomfyTahomaDevice device) {
+        return device.getStates().size() == 0 || (device.getStates().size() == 1 && hasState(device, STATUS_STATE));
+    }
+
+    private void logUnsupportedDevice(SomfyTahomaDevice device) {
+        if (!isStateLess(device)) {
+            logger.info("Detected a new unsupported device: {}", device.getUiClass());
+            logger.info("If you want to add the support, please create a new issue and attach the information below");
+            logger.info("Supported commands: {}", device.getDefinition());
+
+            StringBuilder sb = new StringBuilder().append('\n');
+            for (SomfyTahomaState state : device.getStates()) {
+                sb.append(state.toString()).append('\n');
+            }
+            logger.info("Device states: {}", sb);
+        }
+    }
+
+    private boolean hasState(SomfyTahomaDevice device, String state) {
+        for (SomfyTahomaState st : device.getStates()) {
+            if (state.equals(st.getName())) {
                 return true;
             }
         }
         return false;
     }
 
+    private boolean hasEnergyConsumption(SomfyTahomaDevice device) {
+        return hasState(device, ENERGY_CONSUMPTION_STATE);
+    }
+
+    private boolean isSilentRollerShutter(SomfyTahomaDevice device) {
+        return hasCommmand(device, COMMAND_SET_CLOSURESPEED);
+    }
+
     private boolean isOnOffHeatingSystem(SomfyTahomaDevice device) {
+        return hasCommmand(device, COMMAND_SET_HEATINGLEVEL);
+    }
+
+    private boolean hasCommmand(SomfyTahomaDevice device, String command) {
         SomfyTahomaDeviceDefinition def = device.getDefinition();
         for (SomfyTahomaDeviceDefinitionCommand cmd : def.getCommands()) {
-            if (cmd.getCommandName().equals(COMMAND_SET_HEATINGLEVEL)) {
+            if (cmd.getCommandName().equals(command)) {
                 return true;
             }
         }

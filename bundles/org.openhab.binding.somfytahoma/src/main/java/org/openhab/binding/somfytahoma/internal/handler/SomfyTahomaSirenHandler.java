@@ -13,6 +13,8 @@
 package org.openhab.binding.somfytahoma.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -25,23 +27,23 @@ import java.util.HashMap;
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 /**
- * The {@link SomfyTahomaPodHandler} is responsible for handling commands,
- * which are sent to one of the channels of the pod thing.
+ * The {@link SomfyTahomaSirenHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the siren thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaPodHandler extends SomfyTahomaBaseThingHandler {
+public class SomfyTahomaSirenHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaPodHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaSirenHandler.class);
 
-    public SomfyTahomaPodHandler(Thing thing) {
+    public SomfyTahomaSirenHandler(Thing thing) {
         super(thing);
         stateNames = new HashMap<String, String>() {
             {
-                put(CYCLIC_BUTTON, CYCLIC_BUTTON_STATE);
-                put(BATTERY_STATUS, BATTERY_STATUS_STATE);
-                put(LIGHTING_LED_POD_MODE, "internal:LightingLedPodModeState");
+                put(BATTERY, "core:BatteryState");
+                put(ONOFF_STATE, "core:OnOffState");
+                put(MEMORIZED_VOLUME, "io:MemorizedSimpleVolumeState");
             }
         };
     }
@@ -52,5 +54,16 @@ public class SomfyTahomaPodHandler extends SomfyTahomaBaseThingHandler {
         if (RefreshType.REFRESH.equals(command)) {
             updateChannelState(channelUID);
         }
+
+        //it is possible only to disable the siren
+        if (ONOFF_STATE.equals(channelUID.getId()) && command.equals(OnOffType.OFF)) {
+            sendCommand(COMMAND_OFF, "[]");
+        }
+
+        // highest or normal memorized volume
+        if (MEMORIZED_VOLUME.equals(channelUID.getId()) && command instanceof StringType) {
+            sendCommand("setMemorizedSimpleVolume", "[\"" + command.toString().toLowerCase() + "\"]");
+        }
+
     }
 }

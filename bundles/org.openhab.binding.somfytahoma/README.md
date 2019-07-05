@@ -22,11 +22,14 @@ This binding integrates the [Somfy Tahoma](https://www.somfy.fr/produits/domotiq
 - occupancy sensors (OPEN/CLOSE contact)
 - smoke sensors (OPEN/CLOSE contact)
 - contact sensors (OPEN/CLOSE contact)
-- temperature sensor (get temperature)
+- temperature sensors (get temperature)
+- electricity sensors (get energy consumption)
 - door locks (LOCK/UNLOCK, OPEN/CLOSE commands)
 - heating systems (control temperature, set heating level)
 - alarms (both interior/external)
 - pods
+- docks (battery info, siren control)
+- sirens (battery status full/low/normal/verylow, siren control ON/OFF, setting memorized volume)
 - action groups (scenarios which can execute predefined Tahoma group of steps, e.g. send to all roller shutters DOWN command, one by one)
 
 Both Somfy Tahoma and Somfy Connexoon gateways have been confirmed working.
@@ -64,9 +67,18 @@ Please see the example below.
 | onoff, light | switch | reacts to standard ON/OFF commands |
 | smoke sensor, occupancy sensor & contact sensor | contact | normal value is CLOSE, changes to OPEN when detection triggered |
 | light sensor | luminance | light luminance value in luxes |
-| pod | cyclic_button_state | pod cyclic button state |
-| pod | battery_status_state | pod battery status state |
-| pod | lighting_led_pod_mod_state | lighting led pod mod state |
+| electricity sensor | energy_consumption | energy consumption value in watts |
+| dock | battery_status | indicates running on battery (yes/no) |
+| dock | battery_level | remaining battery percentage |
+| dock | siren_status | used for controlling and getting siren state (on, off, cyclic) |
+| dock | short_beep | testing of dock's siren - short beep |
+| dock | long_beep | testing of dock's siren - long beep |
+| siren | battery | battery level full/low/normal/verylow |
+| siren | onoff | controlling siren status ON/OFF |
+| siren | memorized_volume | setting memorized volume (normal/highest) |
+| pod | cyclic_button | pod cyclic button state |
+| pod | battery_status | pod battery status state |
+| pod | lighting_led_pod_mode | lighting led pod mod state |
 | interior alarm | alarm_command | used for sending commands to Somfy alarm device |
 | interior alarm | intrusion_control | used for alarm external intrusion controlling |
 | interior alarm | alarm_state | state of the Somfy alarm |
@@ -107,6 +119,9 @@ Bridge somfytahoma:bridge:237dbae7 "Somfy Tahoma Bridge" [ email="my@email.com",
     Thing lightsensor 2c90808c3a0c193f013a743f2f660f12 "Light sensor" [ url="io://0204-4519-8041/13527450" ]
     Thing occupancysensor 995e16ca-07c4-4111-9cda-504cb5120f82 "Occupancy sensor" [ url="io://0204-4519-8041/4855758" ]
     Thing smokesensor 9438e6ff-c17e-40d7-a4b4-3e797eca5bf7 "Smoke sensor" [ url="io://0204-4510-8041/13402124" ]
+    Thing electricitysensor 9998e6ff-c17e-40d7-a4b4-3e797eca5bf7 "Electricity sensor" [ url="io://0204-4510-8041/288702124" ]
+    Thing dock 1212f2e3-bcde-21dd-b3a6-13ef7abcd134 "Dock" [ url="io://0204-4510-8041/244402124" ]
+    Thing siren 1212f2e3-aeae-21dd-b3a6-13ef7abcd134 "Siren" [ url="io://0204-4510-8041/244405678" ]
 }
 ```
 
@@ -135,6 +150,7 @@ Switch TahomaZwaveSwitch "Switch" { channel="somfytahoma:onoff:237dbae7:095d6c49
 Switch TahomaLightSwitch "Light Switch" { channel="somfytahoma:light:237dbae7:1b8e7d29-bf1e-4ae1-9432-3dfef52ef14d:switch" }
 
 Number LightSensor "Light Sensor [%.1f lux]" { channel="somfytahoma:lightsensor:237dbae7:2c90808c3a0c193f013a743f2f660f12:luminance" }
+Number EnergyConsumptionSensor "Energy Consumption [%.1f W]" { channel="somfytahoma:electricitysensor:237dbae7:9998e6ff-c17e-40d7-a4b4-3e797eca5bf7:energy_consumption" }
 
 Contact OccupancySensor "Occupancy Sensor is [%s]" { channel="somfytahoma:occupancysensor:237dbae7:995e16ca-07c4-4111-9cda-504cb5120f82:contact" }
 Contact SmokeSensor "Smoke Sensor is [%s]" { channel="somfytahoma:smokesensor:237dbae7:9438e6ff-c17e-40d7-a4b4-3e797eca5bf7:contact" }
@@ -146,6 +162,15 @@ String HeatingSystemLevel "Heating level [%s]" { channel="somfytahoma:onoffheati
 Switch DoorLock "Lock" { channel="somfytahoma:doorlock:237dbae7:6612f2e3-bcde-21dd-b3a6-13ef7abcd134:lock" }
 Switch DoorLockOpenClose "Open/Close" { channel="somfytahoma:doorlock:237dbae7:6612f2e3-bcde-21dd-b3a6-13ef7abcd134:open" }
 
+String DockBatteryStatus "Dock battery status [%s]" { somfytahoma:dock:237dbae7:1212f2e3-bcde-21dd-b3a6-13ef7abcd134:battery_status }
+String DockBatteryLevel "Dock battery level [%s]" { somfytahoma:dock:237dbae7:1212f2e3-bcde-21dd-b3a6-13ef7abcd134:battery_level }
+String DockSiren "Dock siren [%s]" { somfytahoma:dock:237dbae7:1212f2e3-bcde-21dd-b3a6-13ef7abcd134:siren }
+Switch DockShortBeep "Dock short beep" { somfytahoma:dock:237dbae7:1212f2e3-bcde-21dd-b3a6-13ef7abcd134:short_beep }
+Switch DockLongBeep "Dock long beep" { somfytahoma:dock:237dbae7:1212f2e3-bcde-21dd-b3a6-13ef7abcd134:long_beep }
+
+String SirenBattery "Siren battery [%s]" { somfytahoma:siren:237dbae7:1212f2e3-aeae-21dd-b3a6-13ef7abcd134:battery }
+Switch SirenSwitch "Siren switch" { somfytahoma:siren:237dbae7:1212f2e3-aeae-21dd-b3a6-13ef7abcd134:onoff }
+String SirenVolume "Siren volume [%s]" { somfytahoma:siren:237dbae7:1212f2e3-aeae-21dd-b3a6-13ef7abcd134:memorized_volume }
 ```
 
 .sitemap file
@@ -167,10 +192,19 @@ Text item=OccupancySensor
 Text item=SmokeSensor
 Text item=ContactSensor
 Text item=TemperatureSensor
+Text item=ElectricitySensor
 Switch item=HeatingSystemOnOff
 Selection item=HeatingSystemLevel mappings=["frostprotection"="FROST PROTECTION", "comfort"="COMFORT", "eco"="ECO", "off"="OFF"]
 Switch item=DoorLock
 Switch item=DoorLockOpenClose
+Text item=DockBatteryStatus
+Text item=DockBatteryLevel
+Selection item=DockSiren mappings=["off"="OFF", "on"="ON", "cyclic"="CYCLIC"]
+Switch item=DockShortBeep
+Switch item=DockLongBeep
+String item=SirenBattery
+Switch item=SirenSwitch
+Selection item=SirenVolume mappings=["normal"="NORMAL", "highest"="HIGHEST"]
 ```
 
 ## Alexa compatibility

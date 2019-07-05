@@ -128,7 +128,8 @@ public class SomfyTahomaBridgeHandler extends ConfigStatusBridgeHandler {
             return;
         }
 
-        if (tooManyRequests || ThingStatus.ONLINE == thing.getStatus()) {
+        if (tooManyRequests) {
+            logger.debug("Skipping login due to too many requests");
             return;
         }
 

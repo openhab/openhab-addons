@@ -109,6 +109,15 @@ public class SomfyTahomaBindingConstants {
     // Gate
     public static final ThingTypeUID THING_TYPE_GATE = new ThingTypeUID(BINDING_ID, "gate");
 
+    // Electricity sensor
+    public static final ThingTypeUID THING_TYPE_ELECTRICITYSENSOR = new ThingTypeUID(BINDING_ID, "electricitysensor");
+
+    // Dock
+    public static final ThingTypeUID THING_TYPE_DOCK = new ThingTypeUID(BINDING_ID, "dock");
+
+    // Siren
+    public static final ThingTypeUID THING_TYPE_SIREN = new ThingTypeUID(BINDING_ID, "siren");
+
     // List of all Channel ids
     // Gateway
     public static final String STATUS = "status";
@@ -148,6 +157,10 @@ public class SomfyTahomaBindingConstants {
     public static final String INTRUSION_CONTROL = "intrusion_control";
     public static final String INTRUSION_STATE = "intrusion_state";
 
+    // Pod
+    public static final String CYCLIC_BUTTON = "cyclic_button";
+    public static final String LIGHTING_LED_POD_MODE = "lighting_led_pod_mode";
+
     // Heating system
     public static final String TARGET_TEMPERATURE = "target_temperature";
     public static final String CURRENT_TEMPERATURE = "current_temperature";
@@ -161,6 +174,20 @@ public class SomfyTahomaBindingConstants {
     // Gate
     public static final String GATE_STATE = "gate_state";
     public static final String GATE_COMMAND = "gate_command";
+
+    // ElectricitySensor
+    public static final String ENERGY_CONSUMPTION = "energy_consumption";
+
+    // Dock
+    public static final String BATTERY_STATUS = "battery_status";
+    public static final String SIREN_STATUS = "siren_status";
+    public static final String SHORT_BIP = "short_beep";
+    public static final String LONG_BIP = "long_beep";
+
+    // Siren
+    public static final String MEMORIZED_VOLUME = "memorized_volume";
+    public static final String ONOFF_STATE = "onoff";
+    public static final String BATTERY = "battery";
 
     //Constants
     private static final String API_URL = "https://www.tahomalink.com/enduser-mobile-web/";
@@ -176,6 +203,7 @@ public class SomfyTahomaBindingConstants {
     public static final int TYPE_PERCENT = 1;
     public static final int TYPE_DECIMAL = 2;
     public static final int TYPE_STRING = 3;
+    public static final int TYPE_BOOLEAN = 6;
     public static final String COMMAND_MY = "my";
     public static final String COMMAND_SET_CLOSURE = "setClosure";
     public static final String COMMAND_SET_DEPLOYMENT = "setDeployment";
@@ -191,6 +219,9 @@ public class SomfyTahomaBindingConstants {
     public static final String COMMAND_STOP = "stop";
     public static final String COMMAND_OFF = "off";
     public static final String STATUS_STATE = "core:StatusState";
+    public static final String ENERGY_CONSUMPTION_STATE = "core:ElectricEnergyConsumptionState";
+    public static final String CYCLIC_BUTTON_STATE = "core:CyclicButtonState";
+    public static final String BATTERY_STATUS_STATE = "internal:BatteryStatusState";
     public static final String UNAVAILABLE = "unavailable";
     public static final String AUTHENTICATION_CHALLENGE = "HTTP protocol violation: Authentication challenge without WWW-Authenticate header";
     public static final String TOO_MANY_REQUESTS = "Too many requests, try again later";
@@ -219,6 +250,9 @@ public class SomfyTahomaBindingConstants {
     public static final String WINDOWHANDLE = "WindowHandle";
     public static final String TEMPERATURESENSOR = "TemperatureSensor";
     public static final String GATE = "Gate";
+    public static final String ELECTRICITYSENSOR = "ElectricitySensor";
+    public static final String DOCK = "Dock";
+    public static final String SIREN = "Siren";
 
     // unsupported uiClasses
     public static final String PROTOCOLGATEWAY = "ProtocolGateway";

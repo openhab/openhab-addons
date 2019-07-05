@@ -13,6 +13,8 @@
 package org.openhab.binding.somfytahoma.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -25,23 +27,23 @@ import java.util.HashMap;
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 /**
- * The {@link SomfyTahomaPodHandler} is responsible for handling commands,
- * which are sent to one of the channels of the pod thing.
+ * The {@link SomfyTahomaDockHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the dock thing.
  *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaPodHandler extends SomfyTahomaBaseThingHandler {
+public class SomfyTahomaDockHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaPodHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaDockHandler.class);
 
-    public SomfyTahomaPodHandler(Thing thing) {
+    public SomfyTahomaDockHandler(Thing thing) {
         super(thing);
         stateNames = new HashMap<String, String>() {
             {
-                put(CYCLIC_BUTTON, CYCLIC_BUTTON_STATE);
                 put(BATTERY_STATUS, BATTERY_STATUS_STATE);
-                put(LIGHTING_LED_POD_MODE, "internal:LightingLedPodModeState");
+                put(BATTERY_LEVEL, "core:BatteryLevelState");
+                put(SIREN_STATUS, "internal:SirenStatusState");
             }
         };
     }
@@ -51,6 +53,19 @@ public class SomfyTahomaPodHandler extends SomfyTahomaBaseThingHandler {
         logger.debug("Received command {} for channel {}", command, channelUID);
         if (RefreshType.REFRESH.equals(command)) {
             updateChannelState(channelUID);
+        }
+
+        if (SIREN_STATUS.equals(channelUID.getId()) && command instanceof StringType) {
+            sendCommand("siren", "[\"" + command.toString().toLowerCase() + "\"]");
+            return;
+        }
+        if (SHORT_BIP.equals(channelUID.getId()) && OnOffType.ON.equals(command)) {
+            sendCommand("shortBip", "[3]");
+            return;
+        }
+        if (LONG_BIP.equals(channelUID.getId()) && OnOffType.ON.equals(command)) {
+            sendCommand("longBip", "[3]");
+            return;
         }
     }
 }
