@@ -208,5 +208,4 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         }
         return icloudAccount;
     }
-
 }
