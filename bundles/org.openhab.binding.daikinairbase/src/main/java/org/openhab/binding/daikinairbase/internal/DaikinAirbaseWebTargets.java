@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.daikinairbase.internal.api.ControlInfo;
 import org.openhab.binding.daikinairbase.internal.api.SensorInfo;
+import org.openhab.binding.daikinairbase.internal.api.BasicInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,7 @@ public class DaikinAirbaseWebTargets {
     private String setControlInfoUri;
     private String getControlInfoUri;
     private String getSensorInfoUri;
+    private String BasicInfoUri;
     private Logger logger = LoggerFactory.getLogger(DaikinAirbaseWebTargets.class);
 
     public DaikinAirbaseWebTargets(String ipAddress) {
@@ -43,6 +45,7 @@ public class DaikinAirbaseWebTargets {
         setControlInfoUri = baseUri + "skyfi/aircon/set_control_info";
         getControlInfoUri = baseUri + "skyfi/aircon/get_control_info";
         getSensorInfoUri = baseUri + "skyfi/aircon/get_sensor_info";
+        BasicInfoUri = baseUri + "skyfi/common/basic_info";
     }
 
     public ControlInfo getControlInfo() throws DaikinAirbaseCommunicationException {
@@ -58,6 +61,11 @@ public class DaikinAirbaseWebTargets {
     public SensorInfo getSensorInfo() throws DaikinAirbaseCommunicationException {
         String response = invoke(getSensorInfoUri);
         return SensorInfo.parse(response);
+    }
+
+    public BasicInfo BasicInfo() throws DaikinAirbaseCommunicationException {
+        String response = invoke(BasicInfoUri);
+        return BasicInfo.parse(response);
     }
 
     private String invoke(String uri) throws DaikinAirbaseCommunicationException {

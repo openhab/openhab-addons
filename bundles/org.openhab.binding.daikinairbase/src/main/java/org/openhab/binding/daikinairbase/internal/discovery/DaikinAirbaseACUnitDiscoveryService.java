@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.daikinairbase.internal.DaikinAirbaseBindingConstants;
 import org.openhab.binding.daikinairbase.internal.DaikinAirbaseWebTargets;
 import org.openhab.binding.daikinairbase.internal.config.DaikinAirbaseConfiguration;
+import org.openhab.binding.daikinairbase.internal.api.BasicInfo;
 import org.openhab.binding.daikinairbase.internal.api.ControlInfo;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -124,7 +125,8 @@ public class DaikinAirbaseACUnitDiscoveryService extends AbstractDiscoveryServic
             logger.debug("Received packet from {}", host);
             ControlInfo controlInfo = new DaikinAirbaseWebTargets(host).getControlInfo();
             if (controlInfo.ret.equals("OK")) {
-                  ThingUID thingUID = new ThingUID(DaikinAirbaseBindingConstants.THING_TYPE_AC_UNIT, host.replace('.', '_'));
+                  BasicInfo basicInfo = new DaikinAirbaseWebTargets(host).BasicInfo();
+                  ThingUID thingUID = new ThingUID(DaikinAirbaseBindingConstants.THING_TYPE_AC_UNIT, basicInfo.SSID);
                   DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
                           .withProperty(DaikinAirbaseConfiguration.HOST, host).withLabel("Daikin Airbase AC Unit (" + host + ")")
                           .build();
