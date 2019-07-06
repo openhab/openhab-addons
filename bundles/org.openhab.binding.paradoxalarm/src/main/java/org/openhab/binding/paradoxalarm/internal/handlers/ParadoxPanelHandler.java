@@ -19,7 +19,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
+import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeException;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxInformation;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 import org.slf4j.Logger;
@@ -39,19 +39,9 @@ public class ParadoxPanelHandler extends EntityBaseHandler {
         super(thing);
     }
 
-    private void refreshModelData() {
-        try {
-            ParadoxPanel.getInstance().updateEntitiesStates();
-        } catch (ParadoxBindingException e) {
-            logger.warn("Unable to retrieve memory map.", e);
-        }
-    }
-
     @Override
     protected void updateEntity() {
         try {
-            refreshModelData();
-
             ParadoxPanel panel = ParadoxPanel.getInstance();
             StringType panelState = panel.isOnline() ? STATE_ONLINE : STATE_OFFLINE;
             updateState(PANEL_STATE_CHANNEL_UID, panelState);
@@ -62,11 +52,11 @@ public class ParadoxPanelHandler extends EntityBaseHandler {
                 updateProperty(PANEL_TYPE_PROPERTY_NAME, panelInformation.getPanelType().name());
                 updateProperty(PANEL_HARDWARE_VERSION_PROPERTY_NAME, panelInformation.getHardwareVersion().toString());
                 updateProperty(PANEL_APPLICATION_VERSION_PROPERTY_NAME,
-                        panelInformation.getApplicationVersion().toString());
+                    panelInformation.getApplicationVersion().toString());
                 updateProperty(PANEL_BOOTLOADER_VERSION_PROPERTY_NAME,
-                        panelInformation.getBootLoaderVersion().toString());
+                    panelInformation.getBootLoaderVersion().toString());
             }
-        } catch (ParadoxBindingException e) {
+        } catch (ParadoxRuntimeException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
         }
     }

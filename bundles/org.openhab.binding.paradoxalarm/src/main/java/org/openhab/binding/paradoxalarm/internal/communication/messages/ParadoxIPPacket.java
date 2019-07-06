@@ -18,6 +18,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
+import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeException;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 
 /**
@@ -25,7 +26,7 @@ import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
  *
  * @author Konstantin_Polihronov - Initial contribution
  */
-public class ParadoxIPPacket {
+public class ParadoxIPPacket implements IPPacketPayload {
 
     public static final byte[] EMPTY_PAYLOAD = new byte[0];
 
@@ -60,15 +61,15 @@ public class ParadoxIPPacket {
     private byte[] payload;
     private boolean isChecksumRequired;
 
-    public ParadoxIPPacket(IPPacketPayload payload) throws IOException {
+    public ParadoxIPPacket(IPPacketPayload payload) {
         this(payload.getBytes(), true);
     }
 
-    public ParadoxIPPacket(String payload, boolean isChecksumRequired) throws IOException {
+    public ParadoxIPPacket(String payload, boolean isChecksumRequired) {
         this(payload.getBytes(StandardCharsets.US_ASCII), isChecksumRequired);
     }
 
-    public ParadoxIPPacket(byte[] payload, boolean isChecksumRequired) throws IOException {
+    public ParadoxIPPacket(byte[] payload, boolean isChecksumRequired) {
         this.isChecksumRequired = isChecksumRequired;
 
         if (payload == null) {
@@ -86,26 +87,31 @@ public class ParadoxIPPacket {
         // }
     }
 
-    public byte[] getBytes() throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    @Override
+    public byte[] getBytes() {
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        outputStream.write(startOfHeader);
-        outputStream.write(ByteBuffer.allocate(Short.SIZE / Byte.SIZE).order(ByteOrder.LITTLE_ENDIAN)
+            outputStream.write(startOfHeader);
+            outputStream.write(ByteBuffer.allocate(Short.SIZE / Byte.SIZE).order(ByteOrder.LITTLE_ENDIAN)
                 .putShort(payloadLength).array());
-        outputStream.write(messageType);
-        outputStream.write(encryption);
-        outputStream.write(command);
-        outputStream.write(subCommand);
-        outputStream.write(unknown0);
-        outputStream.write(ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(theRest).array());
-        outputStream.write(payload);
-        byte[] byteArray = outputStream.toByteArray();
+            outputStream.write(messageType);
+            outputStream.write(encryption);
+            outputStream.write(command);
+            outputStream.write(subCommand);
+            outputStream.write(unknown0);
+            outputStream.write(ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(theRest).array());
+            outputStream.write(payload);
+            byte[] byteArray = outputStream.toByteArray();
 
-        if (isChecksumRequired) {
-            byteArray[byteArray.length - 1] = ParadoxUtil.calculateChecksum(payload);
+            if (isChecksumRequired) {
+                byteArray[byteArray.length - 1] = ParadoxUtil.calculateChecksum(payload);
+            }
+
+            return byteArray;
+        } catch (IOException e) {
+            throw new ParadoxRuntimeException("Unable to create byte array stream.", e);
         }
-
-        return byteArray;
     }
 
     public byte getStartOfHeader() {

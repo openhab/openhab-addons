@@ -38,7 +38,7 @@ public class Zone extends Entity {
 
     public void setZoneState(ZoneState zoneState) {
         this.zoneState = zoneState;
-        logger.trace("Zone {} state updated to:\tOpened: {}, Tampered: {}, LowBattery: {}", getLabel(),
-                zoneState.isOpened(), zoneState.isTampered(), zoneState.hasLowBattery());
+        logger.debug("Zone {} state updated to:\tOpened: {}, Tampered: {}, LowBattery: {}", getLabel(),
+            zoneState.isOpened(), zoneState.isTampered(), zoneState.hasLowBattery());
     }
 }

@@ -23,6 +23,7 @@ import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
  * @author Konstantin_Polihronov - Initial contribution
  */
 public class EvoParser extends AbstractParser {
+
     @Override
     public PartitionState calculatePartitionState(byte[] partitionFlags) {
         byte firstByte = partitionFlags[0];
@@ -64,7 +65,7 @@ public class EvoParser extends AbstractParser {
     @Override
     public ZoneState calculateZoneState(int id, ZoneStateFlags zoneStateFlags) {
 
-        int index = id / 8;
+        int index = (id - 1) / 8;
         int bitNumber = id % 8 - 1;
 
         byte[] zonesOpened = zoneStateFlags.getZonesOpened();

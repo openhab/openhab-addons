@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication.messages;
 
-import java.io.IOException;
-
 /**
  * Interface representing what we need to add IPPacketPayload.
  * Not sure if we need it as it needs only getBytes() method so far.
@@ -22,5 +20,5 @@ import java.io.IOException;
  */
 public interface IPPacketPayload {
 
-    byte[] getBytes() throws IOException;
+    byte[] getBytes();
 }

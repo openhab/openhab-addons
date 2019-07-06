@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
+import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
 import org.openhab.binding.paradoxalarm.internal.model.PanelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,22 +46,26 @@ public class ParadoxCommunicatorFactory {
         this.scheduler = scheduler;
     }
 
-    public IParadoxCommunicator createCommunicator(String panelTypeStr)
-            throws UnknownHostException, IOException, InterruptedException, ParadoxBindingException {
+    public IParadoxCommunicator createCommunicator(String panelTypeStr) {
         PanelType panelType = PanelType.from(panelTypeStr);
-        return createCommunicator(panelType);
+        try {
+            return createCommunicator(panelType);
+        } catch (IOException | ParadoxException e) {
+            logger.warn("Unable to create communicator for Panel {}. Exception={}", panelTypeStr, e);
+            return null;
+        }
     }
 
     public IParadoxCommunicator createCommunicator(PanelType panelType)
-            throws UnknownHostException, IOException, InterruptedException, ParadoxBindingException {
+            throws UnknownHostException, IOException, ParadoxException {
         switch (panelType) {
             case EVO48:
             case EVO192:
             case EVOHD:
                 logger.debug("Creating new communicator for Paradox {} system", panelType);
-                return new EvoCommunicator(ipAddress, tcpPort, ip150Password, pcPassword, scheduler);
+                return new EvoCommunicator(ipAddress, tcpPort, ip150Password, pcPassword, scheduler, panelType);
             default:
-                throw new ParadoxBindingException("Unsupported panel type: " + panelType);
+                throw new ParadoxException("Unsupported panel type: " + panelType);
         }
     }
 }

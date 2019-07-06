@@ -19,7 +19,6 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 import org.openhab.binding.paradoxalarm.internal.model.Partition;
 import org.slf4j.Logger;
@@ -41,18 +40,13 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
     @Override
     protected void updateEntity() {
         int index = calculateEntityIndex();
-        try {
-            List<Partition> partitions = ParadoxPanel.getInstance().getPartitions();
-            Partition partition = partitions.get(index);
-            if (partition != null) {
-                updateState(PARTITION_LABEL_CHANNEL_UID, new StringType(partition.getLabel()));
-                updateState(PARTITION_STATE_CHANNEL_UID, new StringType(partition.getState().getMainState()));
-                updateState(PARTITION_ADDITIONAL_STATES_CHANNEL_UID,
-                        new StringType(partition.getState().getAdditionalState()));
-            }
-        } catch (ParadoxBindingException e) {
-            logger.warn("Unable to update partition with Id {} due to missing ParadoxPanel. Exception: {}", index + 1,
-                    e);
+        List<Partition> partitions = ParadoxPanel.getInstance().getPartitions();
+        Partition partition = partitions.get(index);
+        if (partition != null) {
+            updateState(PARTITION_LABEL_CHANNEL_UID, new StringType(partition.getLabel()));
+            updateState(PARTITION_STATE_CHANNEL_UID, new StringType(partition.getState().getMainState()));
+            updateState(PARTITION_ADDITIONAL_STATES_CHANNEL_UID,
+                    new StringType(partition.getState().getAdditionalState()));
         }
     }
 }

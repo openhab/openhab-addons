@@ -36,11 +36,11 @@ public class MemoryMap {
         this.ramCache = ramCache;
     }
 
-    public byte[] getElement(int index) {
+    public synchronized byte[] getElement(int index) {
         return ramCache.get(index);
     }
 
-    public void updateElement(int index, byte[] elementValue) {
-        ramCache.set(index, elementValue);
+    public synchronized void updateElement(int index, byte[] elementValue) {
+        ramCache.set(index - 1, elementValue);
     }
 }

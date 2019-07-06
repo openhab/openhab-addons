@@ -12,25 +12,32 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
-import java.io.IOException;
-
-import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
+import java.util.Collection;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
- * The {@link IParadoxGenericCommunicator} is representing the functionality of generic communication. Only login/logout
+ * The {@link IParadoxInitialLoginCommunicator} is representing the functionality of generic communication. Only
+ * login/logout
  * sequence which is used to determine the Panel type.
  *
  * @author Konstantin_Polihronov - Initial contribution
  */
-public interface IParadoxGenericCommunicator {
-    void close();
+public interface IParadoxInitialLoginCommunicator extends IConnectionHandler {
 
-    void logoutSequence() throws IOException;
-
-    void loginSequence() throws IOException, InterruptedException, ParadoxBindingException;
+    void startLoginSequence();
 
     byte[] getPanelInfoBytes();
 
-    boolean isOnline();
+    void setPanelInfoBytes(byte[] panelInfoBytes);
+
+    byte[] getPcPasswordBytes();
+
+    String getPassword();
+
+    ScheduledExecutorService getScheduler();
+
+    void setListeners(Collection<IDataUpdateListener> listeners);
+
+    void updateListeners();
 
 }

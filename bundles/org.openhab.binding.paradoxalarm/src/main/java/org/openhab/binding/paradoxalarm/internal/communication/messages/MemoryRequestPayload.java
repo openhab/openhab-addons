@@ -15,7 +15,8 @@ package org.openhab.binding.paradoxalarm.internal.communication.messages;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
+import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
+import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeException;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,9 +36,9 @@ public abstract class MemoryRequestPayload implements IPPacketPayload {
     private int address;
     private byte bytesToRead;
 
-    public MemoryRequestPayload(int address, byte bytesToRead) throws ParadoxBindingException {
+    public MemoryRequestPayload(int address, byte bytesToRead) throws ParadoxException {
         if (bytesToRead < 1 || bytesToRead > 64) {
-            throw new ParadoxBindingException("Invalid bytes to read. Valid values are 1 to 64.");
+            throw new ParadoxException("Invalid bytes to read. Valid values are 1 to 64.");
         }
 
         this.address = address;
@@ -49,22 +50,26 @@ public abstract class MemoryRequestPayload implements IPPacketPayload {
     protected abstract byte calculateControlByte();
 
     @Override
-    public byte[] getBytes() throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    public byte[] getBytes() {
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        outputStream.write(ParadoxUtil.shortToByteArray(MESSAGE_START));
-        outputStream.write(calculateControlByte());
-        outputStream.write((byte) 0x00);
+            outputStream.write(ParadoxUtil.shortToByteArray(MESSAGE_START));
+            outputStream.write(calculateControlByte());
+            outputStream.write((byte) 0x00);
 
-        outputStream.write(ParadoxUtil.shortToByteArray((short) address));
+            outputStream.write(ParadoxUtil.shortToByteArray((short) address));
 
-        outputStream.write(bytesToRead);
+            outputStream.write(bytesToRead);
 
-        // The bellow 0x00 is dummy which will be overwritten by the checksum
-        outputStream.write(0x00);
-        byte[] byteArray = outputStream.toByteArray();
+            // The bellow 0x00 is dummy which will be overwritten by the checksum
+            outputStream.write(0x00);
+            byte[] byteArray = outputStream.toByteArray();
 
-        return byteArray;
+            return byteArray;
+        } catch (IOException e) {
+            throw new ParadoxRuntimeException("Unable to create byte array stream.", e);
+        }
     }
 
     protected int getAddress() {

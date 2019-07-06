@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication.messages;
 
-import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
+import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ public class EpromRequestPayload extends MemoryRequestPayload implements IPPacke
 
     private final Logger logger = LoggerFactory.getLogger(EpromRequestPayload.class);
 
-    public EpromRequestPayload(int address, byte bytesToRead) throws ParadoxBindingException {
+    public EpromRequestPayload(int address, byte bytesToRead) throws ParadoxException {
         super(address, bytesToRead);
     }
 

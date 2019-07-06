@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication.messages;
 
-import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
+import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 
 /**
@@ -24,7 +24,7 @@ public class RamRequestPayload extends MemoryRequestPayload implements IPPacketP
 
     private static final byte CONTROL_BYTE = ParadoxUtil.setBit((byte) 0, 7, 1);
 
-    public RamRequestPayload(int address, byte bytesToRead) throws ParadoxBindingException {
+    public RamRequestPayload(int address, byte bytesToRead) throws ParadoxException {
         super(address, bytesToRead);
     }
 

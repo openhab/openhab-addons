@@ -21,7 +21,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class EntityBaseHandler extends BaseThingHandler {
 
-    private static final long INITIAL_DELAY_SECONDS = 10;
+    private static final long INITIAL_DELAY_SECONDS = 20;
 
     private final Logger logger = LoggerFactory.getLogger(EntityBaseHandler.class);
 
@@ -45,7 +44,7 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing.");
+        logger.debug("Start initializing. {}", thing.getLabel());
         updateStatus(ThingStatus.UNKNOWN);
 
         config = getConfigAs(EntityConfiguration.class);
@@ -55,15 +54,10 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
 
     private void initializeDelayed() {
         logger.trace("Start initializeDelayed() in {}", getThing().getUID());
-        try {
-            ParadoxPanel panel = ParadoxPanel.getInstance();
-            if (!panel.isPanelSupported()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Panel " + panel.getPanelInformation().getPanelType().name() + " is not supported.");
-            }
-        } catch (ParadoxBindingException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                    "Unable to retrieve/create Paradox panel instance.");
+        ParadoxPanel panel = ParadoxPanel.getInstance();
+        if (!panel.isPanelSupported()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                "Panel " + panel.getPanelInformation().getPanelType().name() + " is not supported.");
         }
     }
 
@@ -73,7 +67,7 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
             if (ThingStatus.ONLINE == getThing().getStatus()) {
                 updateEntity();
             } else {
-                logger.debug("Received REFRESH command but {} is OFFLINE", getThing().getUID());
+                logger.debug("Received REFRESH command but {} has the following detailed status {}", getThing().getUID(), getThing().getStatusInfo());
             }
         }
     }

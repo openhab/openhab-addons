@@ -18,9 +18,10 @@ package org.openhab.binding.paradoxalarm.internal.model;
  * @author Konstantin_Polihronov - Initial contribution
  */
 public enum PanelType {
-    EVO48,
-    EVO192,
-    EVOHD,
+    EVO48(4, 48, 2, 16),
+    EVO96(4, 96, 3, 16),
+    EVO192(8, 192, 5, 16),
+    EVOHD(8, 192, 5, 16),
     SP5500,
     SP6000,
     SP7000,
@@ -30,9 +31,20 @@ public enum PanelType {
     SP65,
     UNKNOWN;
 
-    @Override
-    public String toString() {
-        return this.name();
+    private int partitions;
+    private int zones;
+    private int pgms; // Programmable outputs
+    private int ramPagesNumber; // Ram pages 64 bytes each
+
+    private PanelType() {
+        this(0, 0, 0, 0);
+    }
+
+    private PanelType(int numberPartitions, int numberZones, int pgms, int ramPages) {
+        this.partitions = numberPartitions;
+        this.zones = numberZones;
+        this.pgms = pgms;
+        this.ramPagesNumber = ramPages;
     }
 
     public static PanelType from(String panelTypeStr) {
@@ -46,4 +58,26 @@ public enum PanelType {
             return PanelType.UNKNOWN;
         }
     }
+
+    public int getPartitions() {
+        return partitions;
+    }
+
+    public int getZones() {
+        return zones;
+    }
+
+    @Override
+    public String toString() {
+        return this.name();
+    }
+
+    public int getPgms() {
+        return pgms;
+    }
+
+    public int getRamPagesNumber() {
+        return ramPagesNumber;
+    }
+
 }

@@ -21,7 +21,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 import org.openhab.binding.paradoxalarm.internal.model.Zone;
 import org.slf4j.Logger;
@@ -43,24 +42,18 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
     @Override
     protected void updateEntity() {
         int index = calculateEntityIndex();
-        try {
-            List<Zone> zones = ParadoxPanel.getInstance().getZones();
-            if (zones != null && zones.size() > index) {
-                Zone zone = zones.get(index);
-                if (zone != null) {
-                    updateState(ZONE_LABEL_CHANNEL_UID, new StringType(zone.getLabel()));
-                    updateState(ZONE_OPENED_CHANNEL_UID, booleanToContactState(zone.getZoneState().isOpened()));
-                    updateState(ZONE_TAMPERED_CHANNEL_UID, booleanToSwitchState(zone.getZoneState().isTampered()));
-                    updateState(ZONE_LOW_BATTERY_CHANNEL_UID,
-                            booleanToSwitchState(zone.getZoneState().hasLowBattery()));
-                }
-            } else {
-                logger.warn("Attempted to access zone out of bounds of current zone list. Index: {}, List: {}", index,
-                        zones);
+        List<Zone> zones = ParadoxPanel.getInstance().getZones();
+        if (zones != null && zones.size() > index) {
+            Zone zone = zones.get(index);
+            if (zone != null) {
+                updateState(ZONE_LABEL_CHANNEL_UID, new StringType(zone.getLabel()));
+                updateState(ZONE_OPENED_CHANNEL_UID, booleanToContactState(zone.getZoneState().isOpened()));
+                updateState(ZONE_TAMPERED_CHANNEL_UID, booleanToSwitchState(zone.getZoneState().isTampered()));
+                updateState(ZONE_LOW_BATTERY_CHANNEL_UID, booleanToSwitchState(zone.getZoneState().hasLowBattery()));
             }
-        } catch (ParadoxBindingException e) {
-            logger.warn("Unable to update zone {} due to missing ParadoxPanel. Exception: {}",
-                    String.valueOf(index + 1), e);
+        } else {
+            logger.warn("Attempted to access zone out of bounds of current zone list. Index: {}, List: {}", index,
+                    zones);
         }
     }
 

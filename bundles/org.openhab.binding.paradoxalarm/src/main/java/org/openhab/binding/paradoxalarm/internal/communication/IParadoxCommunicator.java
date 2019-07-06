@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
-import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
-import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxBindingException;
 import org.openhab.binding.paradoxalarm.internal.model.ZoneStateFlags;
 
 /**
@@ -24,18 +23,19 @@ import org.openhab.binding.paradoxalarm.internal.model.ZoneStateFlags;
  *
  * @author Konstantin_Polihronov - Initial contribution
  */
-public interface IParadoxCommunicator extends IParadoxGenericCommunicator {
+public interface IParadoxCommunicator extends IParadoxInitialLoginCommunicator {
 
-    void refreshMemoryMap() throws ParadoxBindingException, IOException, InterruptedException;
+    void refreshMemoryMap();
 
-    List<byte[]> readPartitionFlags();
+    List<byte[]> getPartitionFlags();
 
-    ZoneStateFlags readZoneStateFlags();
-
-    List<String> readPartitionLabels() throws IOException, InterruptedException, ParadoxBindingException;
-
-    List<String> readZoneLabels() throws IOException, InterruptedException, ParadoxBindingException;
+    ZoneStateFlags getZoneStateFlags();
 
     void executeCommand(String commandAsString);
 
+    Map<Integer, String> getPartitionLabels();
+
+    Map<Integer, String> getZoneLabels();
+
+    void initializeData();
 }
