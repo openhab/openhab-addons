@@ -95,7 +95,7 @@ public interface KodiEventListener extends EventListener {
 
     void updateFanart(@Nullable RawType fanart);
 
-    void updateAudioStreams(List<KodiAudioStream> audioStreamList);
+    void updateAudioStreamOptions(List<KodiAudioStream> audioStreamList);
     
     void updateAudioCodec(String codec);
 
@@ -115,7 +115,7 @@ public interface KodiEventListener extends EventListener {
 
     void updateVideoHeight(int height);
     
-    void updateSubtitles(List<KodiSubtitle> subtitleList);
+    void updateSubtitleOptions(List<KodiSubtitle> subtitleList);
 
     void updateSubtitleEnabled(boolean enabled);
 

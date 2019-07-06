@@ -621,21 +621,22 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         }
     }
 
-    public void updateAudioStreams(List<KodiAudioStream> audios) {
+    public void updateAudioStreamOptions(List<KodiAudioStream> audios) {
         if (isLinked(CHANNEL_AUDIO_INDEX)) {
             List<StateOption> options = new ArrayList<>();
             for (KodiAudioStream audio :  audios) {
-                options.add(new StateOption(Integer.toString(audio.getIndex()),Integer.toString(audio.getIndex())+" "+audio.getLanguage()+"  ["+audio.getName()+"] ("+audio.getCodec()+"-"+Integer.toString(audio.getChannels())+" "+ Integer.toString(audio.getBitrate()/1000)+"kb/s]"));
+                options.add(new StateOption(Integer.toString(audio.getIndex()),audio.getLanguage()+"  ["+audio.getName()+"] ("+audio.getCodec()+"-"+Integer.toString(audio.getChannels())+" "+ Integer.toString(audio.getBitrate()/1000)+"kb/s)"));
             }
+            logger.debug(audios.toString());
             stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_AUDIO_INDEX), options);
         }
     }   
 
-    public void updateSubtitles(List<KodiSubtitle> subtitles) {
+    public void updateSubtitleOptions(List<KodiSubtitle> subtitles) {
         if (isLinked(CHANNEL_SUBTITLE_INDEX)) {
             List<StateOption> options = new ArrayList<>();
             for (KodiSubtitle subtitle : subtitles) {
-                options.add(new StateOption(Integer.toString(subtitle.getIndex()),Integer.toString(subtitle.getIndex())+" "+subtitle.getLanguage()+"  ["+subtitle.getName()+"]"));
+                options.add(new StateOption(Integer.toString(subtitle.getIndex()),subtitle.getLanguage()+"  ["+subtitle.getName()+"]"));
             }
             stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SUBTITLE_INDEX), options);
         }

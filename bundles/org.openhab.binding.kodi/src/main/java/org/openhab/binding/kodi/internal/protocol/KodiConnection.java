@@ -398,7 +398,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     /**
      * Activates the given window.
      *
-     * @param window          the window
+     * @param window the window
      * @param windowParameter list of parameters of the window
      */
     public synchronized void activateWindow(final String window, @Nullable final String[] windowParameter) {
@@ -464,11 +464,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
 
     public synchronized void setSubtitleEnabled(boolean subtitleenabled) {
         JsonObject params = new JsonObject();
-        if (subtitleenabled) {
-            params.addProperty("subtitle", "on");
-        } else {
-            params.addProperty("subtitle", "off");
-        }
+        params.addProperty("subtitle", subtitleenabled ? "on" : "off");
         int activePlayer = getActivePlayer();
         params.addProperty("playerid", activePlayer);
         socket.callMethod("Player.SetSubtitle", params);
@@ -589,6 +585,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 if (item.has("title")) {
                     title = item.get("title").getAsString();
                 }
+                if (title.isEmpty()) {
+                    title = item.get("label").getAsString();
+                }
 
                 String showTitle = "";
                 if (item.has("showtitle")) {
@@ -650,7 +649,6 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     fanart = getImageForElement(item.get(PROPERTY_FANART));
                 }
 
-                logger.debug("Original title: {} - {}", originaltitle, mediaType,mediaid,uniqueIDImdb);
                 listener.updateMediaID(mediaid);
                 listener.updateAlbum(album);
                 listener.updateTitle(title);
@@ -674,7 +672,6 @@ public class KodiConnection implements KodiClientSocketEventListener {
                 listener.updateUniqueIDImdbtvshow(uniqueIDImdbtvshow);
                 listener.updateUniqueIDTmdbtvshow(uniqueIDTmdbtvshow);
                 listener.updateUniqueIDTmdbepisode(uniqueIDTmdbepisode);
-
             }
         }
     }
@@ -692,6 +689,38 @@ public class KodiConnection implements KodiClientSocketEventListener {
         if (response instanceof JsonObject) {
             JsonObject result = response.getAsJsonObject();
 
+            if (result.has(PROPERTY_AUDIOSTREAMS)) {                        
+                try { 
+                    JsonElement audioGroup = result.get(PROPERTY_AUDIOSTREAMS);
+                    if (audioGroup instanceof JsonArray) {
+                        List<KodiAudioStream> audioStreamList = new ArrayList<>();
+                        for (JsonElement element : audioGroup.getAsJsonArray()) {
+                            KodiAudioStream audioStream = gson.fromJson(element, KodiAudioStream.class);
+                            audioStreamList.add(audioStream);
+                        }
+                        listener.updateAudioStreamOptions(audioStreamList);
+                    }
+                } catch (JsonSyntaxException e) {
+                     // do nothing
+                }
+            }
+            
+            if (result.has(PROPERTY_SUBTITLES)) {
+                try {  
+                    JsonElement subtitleGroup = result.get(PROPERTY_SUBTITLES);
+                    if (subtitleGroup instanceof JsonArray) {
+                        List<KodiSubtitle> subtitleList = new ArrayList<>();
+                        for (JsonElement element : subtitleGroup.getAsJsonArray()) {
+                            KodiSubtitle subtitle = gson.fromJson(element, KodiSubtitle.class);
+                            subtitleList.add(subtitle);
+                        }
+                        listener.updateSubtitleOptions(subtitleList);
+                    }
+                } catch (JsonSyntaxException e) {
+                    // do nothing
+                }    
+            }
+            
             boolean subtitleEnabled = false;
             if (result.has(PROPERTY_SUBTITLEENABLED)) {
                 subtitleEnabled = result.get(PROPERTY_SUBTITLEENABLED).getAsBoolean();
@@ -753,39 +782,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
                     // do nothing
                 }
             }
-            
-            if (result.has(PROPERTY_AUDIOSTREAMS)) {                        
-                try { 
-                    JsonElement audioGroup = result.get(PROPERTY_AUDIOSTREAMS);
-                    if (audioGroup instanceof JsonArray) {
-                        List<KodiAudioStream> audioStreamList = new ArrayList<KodiAudioStream>();
-                        for (JsonElement element : audioGroup.getAsJsonArray()) {
-                            KodiAudioStream audioStream = gson.fromJson(element, KodiAudioStream.class);
-                            audioStreamList.add(audioStream);
-                        }
-                        listener.updateAudioStreams(audioStreamList);
-                    }
-                } catch (JsonSyntaxException e) {
-                     // do nothing
-                }
-            }
-            
-            if (result.has(PROPERTY_SUBTITLES)) {
-                try {  
-                    JsonElement subtitleGroup = result.get(PROPERTY_SUBTITLES);
-                    if (subtitleGroup instanceof JsonArray) {
-                        List<KodiSubtitle> subtitleList = new ArrayList<KodiSubtitle>();
-                        for (JsonElement element : subtitleGroup.getAsJsonArray()) {
-                            KodiSubtitle subtitle = gson.fromJson(element, KodiSubtitle.class);
-                            subtitleList.add(subtitle);
-                        }
-                        listener.updateSubtitles(subtitleList);
-                    }
-                } catch (JsonSyntaxException e) {
-                    // do nothing
-                }    
-            }
-            
+
             double percentage = -1;
             if (result.has(PROPERTY_PERCENTAGE)) {
                 percentage = result.get(PROPERTY_PERCENTAGE).getAsDouble();
@@ -920,11 +917,37 @@ public class KodiConnection implements KodiClientSocketEventListener {
             listener.updatePVRChannel("");
             listener.updateThumbnail(null);
             listener.updateFanart(null);
-            listener.updateAudioCodec(null);
-            listener.updateVideoCodec(null);
             listener.updateCurrentTimePercentage(-1);
             listener.updateCurrentTime(-1);
             listener.updateDuration(-1);
+            listener.updateMediaID(-1);
+            listener.updateOriginalTitle("");
+            listener.updateSeason(-1);
+            listener.updateEpisode(-1);
+            listener.updateMediaFile("");
+            listener.updateMpaa("");
+            listener.updateRating(-1);
+            listener.updateUserRating(-1);
+            listener.updateUniqueIDDouban("");
+            listener.updateUniqueIDImdb("");
+            listener.updateUniqueIDTmdb("");
+            listener.updateUniqueIDImdbtvshow("");
+            listener.updateUniqueIDTmdbtvshow("");
+            listener.updateUniqueIDTmdbepisode("");
+            listener.updateAudioStreamOptions(new ArrayList<>());    
+            listener.updateSubtitleOptions(new ArrayList<>());    
+            listener.updateAudioCodec(null);
+            listener.updateVideoCodec(null);
+            listener.updateAudioIndex(-1);
+            listener.updateAudioName(null);
+            listener.updateAudioLanguage(null);
+            listener.updateAudioChannels(-1);
+            listener.updateVideoIndex(-1);
+            listener.updateVideoHeight(-1);
+            listener.updateVideoWidth(-1);
+            listener.updateSubtitleIndex(-1);
+            listener.updateSubtitleName(null);
+            listener.updateSubtitleLanguage(null);
         }
         // keep track of our current state
         currentState = state;

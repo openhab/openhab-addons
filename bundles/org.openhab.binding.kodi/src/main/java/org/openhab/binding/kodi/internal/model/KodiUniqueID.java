@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.kodi.internal.model;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * Class representing a Kodi UniqueID
  *
