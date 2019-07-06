@@ -27,8 +27,9 @@ import org.osgi.service.component.annotations.Component;
  * handlers.
  *
  * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
+ * @author Paul Smedley <paul@smedley.id.au> - mods for Daikin Airbase
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.daikin")
+@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.daikinairbase")
 @NonNullByDefault
 public class DaikinAirbaseHandlerFactory extends BaseThingHandlerFactory {
 
