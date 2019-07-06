@@ -13,13 +13,10 @@
 
   <name>openHAB Add-ons :: Bundles :: AllPlay Binding</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>de.kaizencode.tchaikovsky</artifactId>
-      <version>0.0.1</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
-
+  <properties>
+    <embedDependency.groupId>org.openhab.osgiify</embedDependency.groupId>
+    <embedDependency.artifactId>de.kaizencode.tchaikovsky</embedDependency.artifactId>
+    <embedDependency.version>0.0.1</embedDependency.version>
+  </properties>
+  
 </project>

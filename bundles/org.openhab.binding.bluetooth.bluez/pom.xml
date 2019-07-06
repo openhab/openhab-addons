@@ -22,4 +22,10 @@
     </dependency>
   </dependencies>
 
+  <properties>
+    <embedDependency.groupId>org.openhab.osgiify</embedDependency.groupId>
+    <embedDependency.artifactId>intel-iot-devkit.tinyb</embedDependency.artifactId>
+    <embedDependency.version>0.5.1</embedDependency.version>
+  </properties>
+  
 </project>
