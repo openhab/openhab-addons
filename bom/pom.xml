@@ -38,11 +38,11 @@
               </goals>
               <configuration>
                 <target>
-                  <copy file="${basedirRoot}/../../bundles/pom.xml" tofile="${basedirRoot}/../../bom/openhab-addons/pom.xml" overwrite="true"/>
+                  <copy file="${basedirRoot}/../../bundles/pom.xml" overwrite="true" tofile="${basedirRoot}/../../bom/openhab-addons/pom.xml"></copy>
                   <!-- rewrite footer -->
-                  <replaceregexp file="${basedirRoot}/../../bom/openhab-addons/pom.xml" match="/modules[\s\S]*dependencies>" replace="/dependencies>" />
+                  <replaceregexp file="${basedirRoot}/../../bom/openhab-addons/pom.xml" match="/modules[\s\S]*dependencies&gt;" replace="/dependencies&gt;"></replaceregexp>
                   <!-- rewrite header -->
-                  <replaceregexp file="${basedirRoot}/../../bom/openhab-addons/pom.xml" match="\S*parent[\s\S]*modules>\S*" replace="header" />
+                  <replaceregexp file="${basedirRoot}/../../bom/openhab-addons/pom.xml" match="\S*parent[\s\S]*modules&gt;\S*" replace="header"></replaceregexp>
                   <replace file="{basedirRoot}/../../bom/openhab-addons/pom.xml">
                     <replacetoken>header</replacetoken>
                     <replacevalue><![CDATA[<parent>
@@ -64,10 +64,10 @@
                     <replacevalue><![CDATA[<dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>]]></replacevalue>
-                </replace>
-                <replace file="{basedirRoot}/../../bom/openhab-addons/pom.xml">
-                  <replacetoken><![CDATA[</module>]]></replacetoken>
-                  <replacevalue><![CDATA[</artifactId>
+                  </replace>
+                  <replace file="{basedirRoot}/../../bom/openhab-addons/pom.xml">
+                    <replacetoken><![CDATA[</module>]]></replacetoken>
+                    <replacevalue><![CDATA[</artifactId>
       <version>@dollar{project.version}</version>
     </dependency>]]></replacevalue>
                   </replace>
