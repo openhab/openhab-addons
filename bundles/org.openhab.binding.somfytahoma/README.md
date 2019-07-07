@@ -1,6 +1,10 @@
 # Somfy Tahoma Binding
 
-This binding integrates the [Somfy Tahoma](https://www.somfy.fr/produits/domotique/maison-connectee-tahoma) and [Somfy Connexoon](https://www.somfy.fr/produits/domotique/equipements-connectes-connexoon) home automation systems.
+This binding integrates the
+[Somfy Tahoma](https://www.somfy.fr/produits/1811478/)
+and
+[Somfy Connexoon](https://www.somfy.fr/produits/1811429/)
+home automation systems.
 
 ## Supported Things
 
