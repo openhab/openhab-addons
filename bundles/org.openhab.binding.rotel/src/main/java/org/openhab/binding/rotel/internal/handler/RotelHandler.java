@@ -1691,6 +1691,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     handlePowerOffZone3();
                     handlePowerOffZone4();
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+                } else {
+                    updateStatus(ThingStatus.ONLINE);
                 }
             }
         }, 1, POLLING_INTERVAL, TimeUnit.SECONDS);
