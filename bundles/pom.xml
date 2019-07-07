@@ -249,8 +249,8 @@
       <optional>true</optional>
       <exclusions>
         <exclusion>
-            <groupId>*</groupId>
-            <artifactId>*</artifactId>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
