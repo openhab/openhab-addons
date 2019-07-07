@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link AbstractParser} Contains parsing methods irelevant from panel type
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public abstract class AbstractParser implements IParadoxParser {
 

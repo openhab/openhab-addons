@@ -34,8 +34,8 @@
 				<context>password</context>
 			</parameter>
 			<parameter name="ipAddress" type="text" required="true">
-				<label>IP Address</label>
-				<description>IP address of IP150</description>
+				<label>Network Address</label>
+				<description>IP address or host name of IP150</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="port" type="integer" required="true">

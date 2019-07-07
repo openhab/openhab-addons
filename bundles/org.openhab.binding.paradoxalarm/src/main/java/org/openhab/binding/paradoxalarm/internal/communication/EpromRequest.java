@@ -18,7 +18,7 @@ import org.openhab.binding.paradoxalarm.internal.model.EntityType;
 /**
  * The {@link EpromRequest}. Request for retrieving EPROM data from Paradox system.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class EpromRequest extends Request {
 

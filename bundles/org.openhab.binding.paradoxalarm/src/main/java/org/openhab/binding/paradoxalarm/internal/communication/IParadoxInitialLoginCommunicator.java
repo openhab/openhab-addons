@@ -20,7 +20,7 @@ import java.util.concurrent.ScheduledExecutorService;
  * login/logout
  * sequence which is used to determine the Panel type.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public interface IParadoxInitialLoginCommunicator extends IConnectionHandler {
 

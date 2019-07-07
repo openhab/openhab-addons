@@ -18,7 +18,7 @@ import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 /**
  * The {@link RamRequestPayload} Object representing payload of IP packet which retrieves data from Paradox RAM
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class RamRequestPayload extends MemoryRequestPayload implements IPPacketPayload {
 

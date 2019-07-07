@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * The {@link Partition} Paradox partition.
  * ID is always numeric (1-8 for Evo192)
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class Partition extends Entity {
 

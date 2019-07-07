@@ -20,7 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * The {@link ParadoxAlarmBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 @NonNullByDefault
 public class ParadoxAlarmBindingConstants {

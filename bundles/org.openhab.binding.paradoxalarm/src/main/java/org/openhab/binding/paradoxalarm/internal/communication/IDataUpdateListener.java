@@ -15,7 +15,7 @@ package org.openhab.binding.paradoxalarm.internal.communication;
 /**
  * The {@link IDataUpdateListener} - Listener interface used to provide updates when data is retrieved.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public interface IDataUpdateListener {
 

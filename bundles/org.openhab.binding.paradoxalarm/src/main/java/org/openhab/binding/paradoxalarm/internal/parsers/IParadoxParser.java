@@ -20,7 +20,7 @@ import org.openhab.binding.paradoxalarm.internal.model.ZoneStateFlags;
 /**
  * The {@link IParadoxParser} Interface for Paradox Parsers implementations
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public interface IParadoxParser {
     PartitionState calculatePartitionState(byte[] partitionFlags);

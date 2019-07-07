@@ -15,7 +15,7 @@ package org.openhab.binding.paradoxalarm.internal.handlers;
 /**
  * The {@link ParadoxIP150BridgeConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class ParadoxIP150BridgeConfiguration {
 

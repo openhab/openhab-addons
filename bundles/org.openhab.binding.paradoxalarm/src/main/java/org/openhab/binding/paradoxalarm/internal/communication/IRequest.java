@@ -17,7 +17,7 @@ import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket
 /**
  * The {@link IRequest} - interface definition for the request used in the communication.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public interface IRequest {
 

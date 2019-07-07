@@ -16,7 +16,7 @@ package org.openhab.binding.paradoxalarm.internal.communication.messages;
  * Interface representing what we need to add IPPacketPayload.
  * Not sure if we need it as it needs only getBytes() method so far.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public interface IPPacketPayload {
 

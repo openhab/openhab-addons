@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * The {@link Entity} Entity - base abstract class for Paradox entities (Partitions, zones, etc).
  * Extend this class and add entity specific data (states, troubles, etc).
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public abstract class Entity {
     private final Logger logger = LoggerFactory.getLogger(Entity.class);

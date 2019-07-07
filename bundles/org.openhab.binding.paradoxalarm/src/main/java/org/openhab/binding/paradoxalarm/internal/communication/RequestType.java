@@ -15,7 +15,7 @@ package org.openhab.binding.paradoxalarm.internal.communication;
 /**
  * The {@link RequestType}. Enum with possible request types to Paradox system.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public enum RequestType {
     LOGON_SEQUENCE,

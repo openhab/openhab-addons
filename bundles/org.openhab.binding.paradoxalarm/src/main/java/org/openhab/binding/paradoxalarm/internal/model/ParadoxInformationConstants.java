@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.util.HexUtils;
  * information (serial number, panel type, application, hardware and bootloader
  * versions. It's the object representation of 37 bytes 0x72 serial response.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class ParadoxInformationConstants {
     public static Map<String, PanelType> panelTypes = new HashMap<>();

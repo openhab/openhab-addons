@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link CommunicationState}. This is enum based state machine used mostly for the logon process orchestration.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public enum CommunicationState {
     START {

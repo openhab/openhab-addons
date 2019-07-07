@@ -22,7 +22,7 @@ import org.openhab.binding.paradoxalarm.internal.parsers.IParadoxParser;
  * information (serial number, panel type, application, hardware and bootloader
  * versions. It's the object representation of 37 bytes 0x72 serial response.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class ParadoxInformation {
 

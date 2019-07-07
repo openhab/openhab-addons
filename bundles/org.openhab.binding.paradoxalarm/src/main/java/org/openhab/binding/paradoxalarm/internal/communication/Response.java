@@ -15,7 +15,7 @@ package org.openhab.binding.paradoxalarm.internal.communication;
 /**
  * The {@link Response}. The response which is returned after receiving data from socket.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class Response implements IResponse {
 

@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link ParadoxPartitionHandler} Handler that updates states of paradox partitions from the cache.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class ParadoxPartitionHandler extends EntityBaseHandler {
 

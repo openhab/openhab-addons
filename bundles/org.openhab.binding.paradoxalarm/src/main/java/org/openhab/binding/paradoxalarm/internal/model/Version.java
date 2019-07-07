@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link Version} This class holds version information
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class Version {
     private final Logger logger = LoggerFactory.getLogger(Version.class);

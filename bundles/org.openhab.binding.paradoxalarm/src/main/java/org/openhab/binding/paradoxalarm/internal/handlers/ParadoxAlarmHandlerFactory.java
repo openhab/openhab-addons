@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * The {@link ParadoxAlarmHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.paradoxalarm", service = ThingHandlerFactory.class)

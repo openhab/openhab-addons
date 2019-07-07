@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * packet if we have something to read.
  * For more details about usage see method {@link AbstractCommunicator.submitRequest()}
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class SyncQueue {
 

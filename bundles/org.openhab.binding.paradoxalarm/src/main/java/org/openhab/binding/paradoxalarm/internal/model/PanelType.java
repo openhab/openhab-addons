@@ -15,7 +15,7 @@ package org.openhab.binding.paradoxalarm.internal.model;
 /**
  * The {@link PanelType} Enum of all panel types
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public enum PanelType {
     EVO48(4, 48, 2, 16),

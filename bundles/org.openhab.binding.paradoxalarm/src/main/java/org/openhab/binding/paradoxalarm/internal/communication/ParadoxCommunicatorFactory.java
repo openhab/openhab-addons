@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * The {@link ParadoxCommunicatorFactory} used to create the proper communication implementation objects based on panel
  * type.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class ParadoxCommunicatorFactory {
 

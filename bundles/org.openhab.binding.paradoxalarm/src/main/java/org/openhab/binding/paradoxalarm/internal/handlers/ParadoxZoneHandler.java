@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link ParadoxZoneHandler} Handler that updates states of paradox zones from the cache.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class ParadoxZoneHandler extends EntityBaseHandler {
 

@@ -15,7 +15,7 @@ package org.openhab.binding.paradoxalarm.internal.communication;
 /**
  * The {@link IResponse} - interface for the response used in communication on the way back.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 interface IResponse {
 

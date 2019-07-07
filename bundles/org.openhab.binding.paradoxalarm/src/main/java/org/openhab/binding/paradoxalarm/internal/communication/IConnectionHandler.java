@@ -15,7 +15,7 @@ package org.openhab.binding.paradoxalarm.internal.communication;
 /**
  * The {@link IConnectionHandler} is base communication interface which defines only the basic communication level.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public interface IConnectionHandler {
 

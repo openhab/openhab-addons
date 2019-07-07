@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link EvoCommunicator} is responsible for handling communication to Evo192 alarm system via IP150 interface.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class EvoCommunicator extends GenericCommunicator implements IParadoxCommunicator {
 
@@ -207,6 +207,10 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
 
     @Override
     public void refreshMemoryMap() {
+        if (!isOnline()) {
+            return;
+        }
+
         SyncQueue queue = SyncQueue.getInstance();
         synchronized (queue) {
             for (int i = 1; i <= panelType.getRamPagesNumber(); i++) {

@@ -15,7 +15,7 @@ package org.openhab.binding.paradoxalarm.internal.model;
 /**
  * The {@link Partition} Paradox partition states. Retrieved and parsed from RAM memory responses.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class PartitionState {
 
@@ -52,7 +52,6 @@ public class PartitionState {
 
     public String getAdditionalState() {
         StringBuilder sb = new StringBuilder();
-        // TODO check if isInAlarm also includes the other three if yes -> check only the other three
         if (isInAlarm) {
             append(sb, "In alarm");
         } else if (isInSilentAlarm) {
@@ -116,17 +115,12 @@ public class PartitionState {
 
     @Override
     public String toString() {
-        return "PartitionState [isArmed=" + isArmed + ", isArmedInAway=" + isArmedInAway + ", isArmedInStay="
-                + isArmedInStay + ", isArmedInNoEntry=" + isArmedInNoEntry + ", isInAlarm=" + isInAlarm
-                + ", isInSilentAlarm=" + isInSilentAlarm + ", isInAudibleAlarm=" + isInAudibleAlarm + ", isInFireAlarm="
-                + isInFireAlarm + ", isReadyToArm=" + isReadyToArm + ", isInExitDelay=" + isInExitDelay
-                + ", isInEntryDelay=" + isInEntryDelay + ", isInTrouble=" + isInTrouble + ", hasAlarmInMemory="
-                + hasAlarmInMemory + ", isInZoneBypass=" + isInZoneBypass + ", hasZoneInTamperTrouble="
-                + hasZoneInTamperTrouble + ", hasZoneInLowBatteryTrouble=" + hasZoneInLowBatteryTrouble
-                + ", hasZoneInFireLoopTrouble=" + hasZoneInFireLoopTrouble + ", hasZoneInSupervisionTrouble="
-                + hasZoneInSupervisionTrouble + ", isStayInstantReady=" + isStayInstantReady + ", isForceReady="
-                + isForceReady + ", isBypassReady=" + isBypassReady + ", isInhibitReady=" + isInhibitReady
-                + ", areAllZoneclosed=" + areAllZoneclosed + "]";
+        return "PartitionState [isArmed=" + isArmed + ", isArmedInAway=" + isArmedInAway + ", isArmedInStay=" + isArmedInStay + ", isArmedInNoEntry=" + isArmedInNoEntry + ", isInAlarm=" + isInAlarm +
+                ", isInSilentAlarm=" + isInSilentAlarm + ", isInAudibleAlarm=" + isInAudibleAlarm + ", isInFireAlarm=" + isInFireAlarm + ", isReadyToArm=" + isReadyToArm + ", isInExitDelay=" +
+                isInExitDelay + ", isInEntryDelay=" + isInEntryDelay + ", isInTrouble=" + isInTrouble + ", hasAlarmInMemory=" + hasAlarmInMemory + ", isInZoneBypass=" + isInZoneBypass +
+                ", hasZoneInTamperTrouble=" + hasZoneInTamperTrouble + ", hasZoneInLowBatteryTrouble=" + hasZoneInLowBatteryTrouble + ", hasZoneInFireLoopTrouble=" + hasZoneInFireLoopTrouble +
+                ", hasZoneInSupervisionTrouble=" + hasZoneInSupervisionTrouble + ", isStayInstantReady=" + isStayInstantReady + ", isForceReady=" + isForceReady + ", isBypassReady=" + isBypassReady +
+                ", isInhibitReady=" + isInhibitReady + ", areAllZoneclosed=" + areAllZoneclosed + "]";
     }
 
     public boolean isArmed() {

@@ -20,7 +20,7 @@ import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 /**
  * The {@link EvoParser} Implementation of parser interface for EVO type panels
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class EvoParser extends AbstractParser {
 

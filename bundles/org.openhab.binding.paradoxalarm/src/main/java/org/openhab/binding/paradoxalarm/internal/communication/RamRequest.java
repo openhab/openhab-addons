@@ -17,7 +17,7 @@ import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket
 /**
  * The {@link RamRequest}. Request for retrieving RAM pages from Paradox system.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class RamRequest extends Request {
 

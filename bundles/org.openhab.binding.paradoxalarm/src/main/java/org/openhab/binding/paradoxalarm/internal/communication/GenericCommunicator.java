@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link GenericCommunicator} Used for the common communication logic for all types of panels.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class GenericCommunicator extends AbstractCommunicator implements IParadoxInitialLoginCommunicator {
 

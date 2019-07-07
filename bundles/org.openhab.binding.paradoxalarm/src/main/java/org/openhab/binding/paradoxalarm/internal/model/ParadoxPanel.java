@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link ParadoxPanel} Composition class which contains all Paradox entities.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class ParadoxPanel implements IDataUpdateListener {
 

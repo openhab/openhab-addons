@@ -15,7 +15,7 @@ package org.openhab.binding.paradoxalarm.internal.model;
 /**
  * The {@link EntityType} Enum of paradox entity types - zones, partitions, maybe more in the future...
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public enum EntityType {
     ZONE,

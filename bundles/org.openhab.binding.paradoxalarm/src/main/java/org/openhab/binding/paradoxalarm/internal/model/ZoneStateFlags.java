@@ -15,7 +15,7 @@ package org.openhab.binding.paradoxalarm.internal.model;
 /**
  * The {@link ZoneStateFlags} Paradox zone state flags. Retrieved and parsed from RAM memory responses.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class ZoneStateFlags {
     private byte[] zonesOpened;

@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * The {@link AbstractCommunicator} Abstract class with common low-level communication logic. Extended by the
  * communicator classes.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public abstract class AbstractCommunicator implements IConnectionHandler {
 
@@ -67,7 +67,7 @@ public abstract class AbstractCommunicator implements IConnectionHandler {
         initializeSocket();
     }
 
-    protected void initializeSocket() throws IOException {
+    protected void initializeSocket() throws IOException, UnknownHostException {
         if (socket != null) {
             close();
         }

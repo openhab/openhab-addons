@@ -13,6 +13,7 @@
 package org.openhab.binding.paradoxalarm.internal.handlers;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -49,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * The {@link ParadoxIP150BridgeHandler} This is the handler that takes care of communication to/from Paradox alarm
  * system.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 @SuppressWarnings("null")
 @NonNullByDefault({})
@@ -98,8 +99,13 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
 
             timeStamp = System.currentTimeMillis();
             scheduler.schedule(() -> doPostOnlineTask(initialCommunicator), 500, TimeUnit.MILLISECONDS);
+        } catch (UnknownHostException e) {
+            logger.warn("Error while starting socket communication. {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown host. Probably misconfiguration or DNS issue.");
+            throw new ParadoxRuntimeException(e);
         } catch (IOException e) {
             logger.warn("Error while starting socket communication. {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error while starting socket communication.");
             throw new ParadoxRuntimeException(e);
         }
     }
@@ -113,6 +119,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
                 logger.warn(
                     "Initial communicator not coming up online for {} seconds. Probably there is something wrong with communication.",
                     ONLINE_WAIT_TRESHOLD_MILLIS);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error while starting socket communication.");
             }
             return;
         }
@@ -165,6 +172,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
                 logger.debug("Communicator not yet online. Rescheduling...");
                 return;
             } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error while starting socket communication.");
                 throw new ParadoxRuntimeException("Communicator didn't go online in defined treshold time. " + ONLINE_WAIT_TRESHOLD_MILLIS + "sec.");
             }
         }
@@ -183,16 +191,8 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
     private void scheduleRefresh() {
         logger.debug("Scheduling cache update. Refresh interval: {}s. Starts after: {}s.", config.getRefresh(),
             INITIAL_SCHEDULE_DELAY_SECONDS);
-        refreshCacheUpdateSchedule = scheduler.scheduleWithFixedDelay(this::updateDataCache,
+        refreshCacheUpdateSchedule = scheduler.scheduleWithFixedDelay(communicator::refreshMemoryMap,
             INITIAL_SCHEDULE_DELAY_SECONDS, config.getRefresh(), TimeUnit.SECONDS);
-    }
-
-    private void updateDataCache() {
-        logger.debug("Refreshing memory map");
-        boolean isOnline = communicator.isOnline();
-        if (isOnline) {
-            communicator.refreshMemoryMap();
-        }
     }
 
     @Override
@@ -230,13 +230,13 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
             }
         }
 
-        if (communicator == null || !communicator.isOnline()) {
+        if (communicator != null && communicator.isOnline()) {
+            logger.debug("Communicator is online");
+            communicator.refreshMemoryMap();;
+            updateStatus(ThingStatus.ONLINE);
+        } else {
             logger.debug("Communicator is null or not online");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Device is offline");
-        } else {
-            logger.debug("Communicator is online");
-            updateDataCache();
-            updateStatus(ThingStatus.ONLINE);
         }
     }
 

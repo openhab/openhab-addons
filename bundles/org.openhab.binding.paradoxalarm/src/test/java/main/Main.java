@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link Main} - used for testing purposes of low-level stuff.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class Main {
 

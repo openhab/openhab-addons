@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * The {@link ParadoxUtil} Utility class for different calculations / manipulations of data in the model and
  * communicators.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class ParadoxUtil {
 

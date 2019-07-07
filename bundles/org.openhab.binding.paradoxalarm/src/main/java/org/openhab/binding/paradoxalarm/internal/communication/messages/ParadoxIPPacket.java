@@ -24,7 +24,7 @@ import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 /**
  * The {@link ParadoxIPPacket} This class is object representing a full IP request packet. Header and payload together.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class ParadoxIPPacket implements IPPacketPayload {
 

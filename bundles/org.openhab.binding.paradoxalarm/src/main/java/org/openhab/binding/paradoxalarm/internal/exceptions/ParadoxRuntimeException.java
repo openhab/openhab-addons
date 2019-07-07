@@ -15,7 +15,7 @@ package org.openhab.binding.paradoxalarm.internal.exceptions;
 /**
  * The {@link ParadoxRuntimeException} Used for Paradox binding specific runtime exceptions.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class ParadoxRuntimeException extends RuntimeException {
 

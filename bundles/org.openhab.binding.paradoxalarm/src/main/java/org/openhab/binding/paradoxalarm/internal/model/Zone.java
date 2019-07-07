@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * ID is always numeric (1-8 for Evo192)
  * States are taken from cached RAM memory map and parsed.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class Zone extends Entity {
 

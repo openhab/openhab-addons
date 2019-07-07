@@ -17,9 +17,6 @@ import static org.openhab.binding.paradoxalarm.internal.handlers.ParadoxAlarmBin
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeException;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxInformation;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 import org.slf4j.Logger;
@@ -28,7 +25,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link ParadoxPanelHandler} This is the handler that takes care of the panel related stuff.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 @NonNullByDefault
 public class ParadoxPanelHandler extends EntityBaseHandler {
@@ -41,23 +38,19 @@ public class ParadoxPanelHandler extends EntityBaseHandler {
 
     @Override
     protected void updateEntity() {
-        try {
-            ParadoxPanel panel = ParadoxPanel.getInstance();
-            StringType panelState = panel.isOnline() ? STATE_ONLINE : STATE_OFFLINE;
-            updateState(PANEL_STATE_CHANNEL_UID, panelState);
+        ParadoxPanel panel = ParadoxPanel.getInstance();
+        StringType panelState = panel.isOnline() ? STATE_ONLINE : STATE_OFFLINE;
+        updateState(PANEL_STATE_CHANNEL_UID, panelState);
 
-            ParadoxInformation panelInformation = panel.getPanelInformation();
-            if (panelInformation != null) {
-                updateProperty(PANEL_SERIAL_NUMBER_PROPERTY_NAME, panelInformation.getSerialNumber());
-                updateProperty(PANEL_TYPE_PROPERTY_NAME, panelInformation.getPanelType().name());
-                updateProperty(PANEL_HARDWARE_VERSION_PROPERTY_NAME, panelInformation.getHardwareVersion().toString());
-                updateProperty(PANEL_APPLICATION_VERSION_PROPERTY_NAME,
-                    panelInformation.getApplicationVersion().toString());
-                updateProperty(PANEL_BOOTLOADER_VERSION_PROPERTY_NAME,
-                    panelInformation.getBootLoaderVersion().toString());
-            }
-        } catch (ParadoxRuntimeException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+        ParadoxInformation panelInformation = panel.getPanelInformation();
+        if (panelInformation != null) {
+            updateProperty(PANEL_SERIAL_NUMBER_PROPERTY_NAME, panelInformation.getSerialNumber());
+            updateProperty(PANEL_TYPE_PROPERTY_NAME, panelInformation.getPanelType().name());
+            updateProperty(PANEL_HARDWARE_VERSION_PROPERTY_NAME, panelInformation.getHardwareVersion().toString());
+            updateProperty(PANEL_APPLICATION_VERSION_PROPERTY_NAME,
+                panelInformation.getApplicationVersion().toString());
+            updateProperty(PANEL_BOOTLOADER_VERSION_PROPERTY_NAME,
+                panelInformation.getBootLoaderVersion().toString());
         }
     }
 }

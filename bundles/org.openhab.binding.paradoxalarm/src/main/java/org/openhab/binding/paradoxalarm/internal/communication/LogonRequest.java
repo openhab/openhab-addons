@@ -17,7 +17,7 @@ import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket
 /**
  * The {@link LogonRequest}. Request for initial logon sequence.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class LogonRequest extends Request {
 

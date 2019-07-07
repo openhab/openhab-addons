@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * The {@link EpromRequestPayload} Abstract class which contains common logic used in RAM and EPROM payload generation
  * classes.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public abstract class MemoryRequestPayload implements IPPacketPayload {
 

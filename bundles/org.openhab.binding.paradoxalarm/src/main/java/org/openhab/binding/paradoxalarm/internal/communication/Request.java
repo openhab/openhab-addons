@@ -17,7 +17,7 @@ import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket
 /**
  * The {@link Request}. Abstract request class. Used to be derived for the particular types of requests to Paradox.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public abstract class Request implements IRequest {
 

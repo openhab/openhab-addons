@@ -15,7 +15,7 @@ package org.openhab.binding.paradoxalarm.internal.handlers;
 /**
  * The {@link EntityConfiguration} Common configuration class used by all entities at the moment.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public class EntityConfiguration {
     private int id;

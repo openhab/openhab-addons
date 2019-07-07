@@ -21,7 +21,7 @@ import org.openhab.binding.paradoxalarm.internal.model.ZoneStateFlags;
  * The {@link IParadoxCommunicator} is representing the functionality of communication implementation.
  * If another Paradox alarm system is used this interface must be implemented.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public interface IParadoxCommunicator extends IParadoxInitialLoginCommunicator {
 

@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link EntityBaseHandler} abstract handler class that contains common logic for entities.
  *
- * @author Konstantin_Polihronov - Initial contribution
+ * @author Konstantin Polihronov - Initial contribution
  */
 public abstract class EntityBaseHandler extends BaseThingHandler {
 
