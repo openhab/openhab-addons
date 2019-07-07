@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,7 +62,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author David Graeff - Initial contribution
  */
-public class HomeAssistantMQTTImplementationTests extends JavaOSGiTest {
+public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
     private MqttService mqttService;
     private MqttBrokerConnection embeddedConnection;
     private MqttBrokerConnection connection;
@@ -78,11 +79,12 @@ public class HomeAssistantMQTTImplementationTests extends JavaOSGiTest {
      * Create an observer that fails the test as soon as the broker client connection changes its connection state
      * to something else then CONNECTED.
      */
-    private MqttConnectionObserver failIfChange = (state, error) -> assertThat(state, is(MqttConnectionState.CONNECTED));
+    private MqttConnectionObserver failIfChange = (state, error) -> assertThat(state,
+            is(MqttConnectionState.CONNECTED));
     private String testObjectTopic;
 
     @Before
-    public void setUp() throws InterruptedException, ExecutionException, TimeoutException {
+    public void setUp() throws InterruptedException, ExecutionException, TimeoutException, IOException {
         registerVolatileStorageService();
         initMocks(this);
         mqttService = getService(MqttService.class);
@@ -129,8 +131,7 @@ public class HomeAssistantMQTTImplementationTests extends JavaOSGiTest {
     }
 
     @Test
-    public void reconnectTest()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void reconnectTest() throws InterruptedException, ExecutionException, TimeoutException {
         connection.removeConnectionObserver(failIfChange);
         connection.stop().get(2000, TimeUnit.MILLISECONDS);
         connection = new MqttBrokerConnection(embeddedConnection.getHost(), embeddedConnection.getPort(),
@@ -197,9 +198,9 @@ public class HomeAssistantMQTTImplementationTests extends JavaOSGiTest {
 
         haComponents.values().stream().map(e -> e.start(connection, scheduler, 100))
                 .reduce(CompletableFuture.completedFuture(null), (a, v) -> a.thenCompose(b -> v)).exceptionally(e -> {
-            failure = e;
-            return null;
-        }).get();
+                    failure = e;
+                    return null;
+                }).get();
 
         // We should have received the retained value, while subscribing to the channels MQTT state topic.
         verify(channelStateUpdateListener, times(1)).updateChannelState(any(), any());

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mqtt.generic;
+package org.openhab.binding.mqtt;
 
 import static org.junit.Assert.assertTrue;
 
