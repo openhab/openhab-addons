@@ -62,7 +62,7 @@ The AirQuality information that is retrieved is available as these channels:
 | o3              | Number               | Ozone level (O3)                             |
 | no2             | Number               | Nitrogen Dioxide level (NO2)                 |
 | co              | Number               | Carbon monoxide level (CO)                   |
-| so2             | Number               | Sulfur monoxide level (SO2)                   |
+| so2             | Number               | Sulfur dioxide level (SO2)                   |
 | observationTime | DateTime             | Observation date and time                    |
 | temperature     | Number:Temperature   | Temperature in Celsius degrees               |
 | pressure        | Number:Pressure      | Pressure level                               |
