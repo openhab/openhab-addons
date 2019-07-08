@@ -15,14 +15,14 @@
 				<context>network-address</context>
 			</parameter>
 			<!-- optional -->
-			<parameter name="protocol" type="integer">
+			<parameter name="protocol" type="text">
 				<label>SNMP version</label>
 				<options>
-					<option value="0">V1</option>
-					<option value="1">V2c</option>
+					<option value="v1">V1</option>
+					<option value="v2c">V2c</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
-				<default>0</default>
+				<default>v1</default>
 			</parameter>
 			<parameter name="community" type="text">
 				<label>SNMP Community</label>
