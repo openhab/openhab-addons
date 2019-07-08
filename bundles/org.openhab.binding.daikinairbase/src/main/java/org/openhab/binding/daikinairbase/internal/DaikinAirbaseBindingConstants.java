@@ -19,10 +19,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link DaikinBindingConstants} class defines common constants, which are
+ * The {@link DaikinAirbaseBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
+ * @author Paul Smedley <paul@smedley.id.au> - mods for Daikin Airbase
  */
 @NonNullByDefault
 public class DaikinAirbaseBindingConstants {
@@ -39,6 +40,14 @@ public class DaikinAirbaseBindingConstants {
     public static final String CHANNEL_AC_POWER = "power";
     public static final String CHANNEL_AC_MODE = "mode";
     public static final String CHANNEL_AC_FAN_SPEED = "fanspeed";
+    public static final String CHANNEL_AC_ZONE1 = "zone1";
+    public static final String CHANNEL_AC_ZONE2 = "zone2";
+    public static final String CHANNEL_AC_ZONE3 = "zone3";
+    public static final String CHANNEL_AC_ZONE4 = "zone4";
+    public static final String CHANNEL_AC_ZONE5 = "zone5";
+    public static final String CHANNEL_AC_ZONE6 = "zone6";
+    public static final String CHANNEL_AC_ZONE7 = "zone7";
+    public static final String CHANNEL_AC_ZONE8 = "zone8";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AC_UNIT);
 }

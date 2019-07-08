@@ -40,6 +40,8 @@ import org.openhab.binding.daikinairbase.internal.api.Enums.FanMovement;
 import org.openhab.binding.daikinairbase.internal.api.Enums.FanSpeed;
 import org.openhab.binding.daikinairbase.internal.api.Enums.Mode;
 import org.openhab.binding.daikinairbase.internal.api.SensorInfo;
+import org.openhab.binding.daikinairbase.internal.api.ModelInfo;
+import org.openhab.binding.daikinairbase.internal.api.ZoneInfo;
 import org.openhab.binding.daikinairbase.internal.config.DaikinAirbaseConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,6 +98,54 @@ public class DaikinAirbaseAcUnitHandler extends BaseThingHandler {
             case DaikinAirbaseBindingConstants.CHANNEL_AC_MODE:
                 if (command instanceof StringType) {
                     changeMode(Mode.valueOf(((StringType) command).toString()));
+                    return;
+                }
+                break;
+            case DaikinAirbaseBindingConstants.CHANNEL_AC_ZONE1:
+                if (command instanceof OnOffType) {
+                    changeZone1(((OnOffType) command).equals(OnOffType.ON));
+                    return;
+                }
+                break;
+            case DaikinAirbaseBindingConstants.CHANNEL_AC_ZONE2:
+                if (command instanceof OnOffType) {
+                    changeZone2(((OnOffType) command).equals(OnOffType.ON));
+                    return;
+                }
+                break;
+            case DaikinAirbaseBindingConstants.CHANNEL_AC_ZONE3:
+                if (command instanceof OnOffType) {
+                    changeZone3(((OnOffType) command).equals(OnOffType.ON));
+                    return;
+                }
+                break;
+            case DaikinAirbaseBindingConstants.CHANNEL_AC_ZONE4:
+                if (command instanceof OnOffType) {
+                    changeZone4(((OnOffType) command).equals(OnOffType.ON));
+                    return;
+                }
+                break;
+            case DaikinAirbaseBindingConstants.CHANNEL_AC_ZONE5:
+                if (command instanceof OnOffType) {
+                    changeZone5(((OnOffType) command).equals(OnOffType.ON));
+                    return;
+                }
+                break;
+            case DaikinAirbaseBindingConstants.CHANNEL_AC_ZONE6:
+                if (command instanceof OnOffType) {
+                    changeZone6(((OnOffType) command).equals(OnOffType.ON));
+                    return;
+                }
+                break;
+            case DaikinAirbaseBindingConstants.CHANNEL_AC_ZONE7:
+                if (command instanceof OnOffType) {
+                    changeZone7(((OnOffType) command).equals(OnOffType.ON));
+                    return;
+                }
+                break;
+            case DaikinAirbaseBindingConstants.CHANNEL_AC_ZONE8:
+                if (command instanceof OnOffType) {
+                    changeZone8(((OnOffType) command).equals(OnOffType.ON));
                     return;
                 }
                 break;
@@ -176,6 +226,18 @@ public class DaikinAirbaseAcUnitHandler extends BaseThingHandler {
 
             updateTemperatureChannel(DaikinAirbaseBindingConstants.CHANNEL_OUTDOOR_TEMP, sensorInfo.outdoortemp);
         }
+        ModelInfo modelInfo = webTargets.getModelInfo();
+        ZoneInfo zoneInfo = webTargets.getZoneInfo();
+        if (zoneInfo != null) {
+            updateState(DaikinAirbaseBindingConstants.CHANNEL_AC_ZONE1, zoneInfo.zone1 ? OnOffType.ON : OnOffType.OFF);
+            updateState(DaikinAirbaseBindingConstants.CHANNEL_AC_ZONE2, zoneInfo.zone2 ? OnOffType.ON : OnOffType.OFF);
+            updateState(DaikinAirbaseBindingConstants.CHANNEL_AC_ZONE3, zoneInfo.zone3 ? OnOffType.ON : OnOffType.OFF);
+            updateState(DaikinAirbaseBindingConstants.CHANNEL_AC_ZONE4, zoneInfo.zone4 ? OnOffType.ON : OnOffType.OFF);
+            updateState(DaikinAirbaseBindingConstants.CHANNEL_AC_ZONE5, zoneInfo.zone5 ? OnOffType.ON : OnOffType.OFF);
+            updateState(DaikinAirbaseBindingConstants.CHANNEL_AC_ZONE6, zoneInfo.zone6 ? OnOffType.ON : OnOffType.OFF);
+            updateState(DaikinAirbaseBindingConstants.CHANNEL_AC_ZONE7, zoneInfo.zone7 ? OnOffType.ON : OnOffType.OFF);
+            updateState(DaikinAirbaseBindingConstants.CHANNEL_AC_ZONE8, zoneInfo.zone8 ? OnOffType.ON : OnOffType.OFF);
+        }
     }
 
     private void updateTemperatureChannel(String channel, Optional<Double> maybeTemperature) {
@@ -224,4 +286,53 @@ public class DaikinAirbaseAcUnitHandler extends BaseThingHandler {
         info.fanSpeed = fanSpeed;
         webTargets.setControlInfo(info);
     }
+
+    private void changeZone1(boolean zone1) throws DaikinAirbaseCommunicationException {
+        ZoneInfo info = webTargets.getZoneInfo();
+        info.zone1 = zone1;
+        webTargets.setZoneInfo(info);
+    }
+
+    private void changeZone2(boolean zone2) throws DaikinAirbaseCommunicationException {
+        ZoneInfo info = webTargets.getZoneInfo();
+        info.zone2 = zone2;
+        webTargets.setZoneInfo(info);
+    }
+
+    private void changeZone3(boolean zone3) throws DaikinAirbaseCommunicationException {
+        ZoneInfo info = webTargets.getZoneInfo();
+        info.zone3 = zone3;
+        webTargets.setZoneInfo(info);
+    }
+
+    private void changeZone4(boolean zone4) throws DaikinAirbaseCommunicationException {
+        ZoneInfo info = webTargets.getZoneInfo();
+        info.zone4 = zone4;
+        webTargets.setZoneInfo(info);
+    }
+
+    private void changeZone5(boolean zone5) throws DaikinAirbaseCommunicationException {
+        ZoneInfo info = webTargets.getZoneInfo();
+        info.zone5 = zone5;
+        webTargets.setZoneInfo(info);
+    }
+
+    private void changeZone6(boolean zone6) throws DaikinAirbaseCommunicationException {
+        ZoneInfo info = webTargets.getZoneInfo();
+        info.zone6 = zone6;
+        webTargets.setZoneInfo(info);
+    }
+
+    private void changeZone7(boolean zone7) throws DaikinAirbaseCommunicationException {
+        ZoneInfo info = webTargets.getZoneInfo();
+        info.zone7 = zone7;
+        webTargets.setZoneInfo(info);
+    }
+
+    private void changeZone8(boolean zone8) throws DaikinAirbaseCommunicationException {
+        ZoneInfo info = webTargets.getZoneInfo();
+        info.zone8 = zone8;
+        webTargets.setZoneInfo(info);
+    }
+
 }
