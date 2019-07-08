@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -151,8 +152,10 @@ public class DaikinAirbaseAcUnitHandler extends BaseThingHandler {
                 break;
         }
 
-        logger.warn("Received command of wrong type for thing '{}' on channel {}", thing.getUID().getAsString(),
-                channelUID.getId());
+        if (RefreshType.REFRESH != command) {
+            logger.warn("Received command {} of wrong type for thing '{}' on channel {}", command, thing.getUID().getAsString(),
+                    channelUID.getId());
+        } 
     }
 
     @Override
