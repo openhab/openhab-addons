@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.vektiva.internal;
 
-import static org.openhab.binding.vektiva.VektivaBindingConstants.THING_TYPE_SMARWI;
+import static org.openhab.binding.vektiva.internal.VektivaBindingConstants.THING_TYPE_SMARWI;
 
 import java.util.Collections;
 import java.util.Set;
@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.eclipse.smarthome.io.net.http.WebSocketFactory;
-import org.openhab.binding.vektiva.handler.VektivaSmarwiHandler;
+import org.openhab.binding.vektiva.internal.handler.VektivaSmarwiHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 

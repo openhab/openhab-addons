@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vektiva;
+package org.openhab.binding.vektiva.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -39,4 +39,7 @@ public class VektivaBindingConstants {
 
     // response
     public static final String RESPONSE_OK = "OK";
+
+    // constants
+    public static final String NA = "N/A";
 }

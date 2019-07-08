@@ -15,7 +15,7 @@ package org.openhab.binding.vektiva.internal.net;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
-import org.openhab.binding.vektiva.handler.VektivaSmarwiHandler;
+import org.openhab.binding.vektiva.internal.handler.VektivaSmarwiHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

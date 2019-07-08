@@ -10,16 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.vektiva.handler;
+package org.openhab.binding.vektiva.internal.handler;
 
-import static org.openhab.binding.vektiva.VektivaBindingConstants.*;
+import static org.openhab.binding.vektiva.internal.VektivaBindingConstants.*;
 
+import java.io.IOException;
 import java.net.URI;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -128,7 +132,7 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             ContentResponse resp = httpClient.newRequest(url).method(HttpMethod.GET).send();
             logger.trace("Response: {}", resp.getContentAsString());
             if (resp.getStatus() == 200) {
-                if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                if (ThingStatus.ONLINE != getThing().getStatus()) {
                     updateStatus(ThingStatus.ONLINE);
                 }
             } else {
@@ -138,6 +142,7 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             logger.debug("API execution has been interrupted", e);
             updateStatus(ThingStatus.OFFLINE);
+            Thread.currentThread().interrupt();
         } catch (TimeoutException e) {
             logger.debug("Timeout during API execution", e);
             updateStatus(ThingStatus.OFFLINE);
@@ -180,57 +185,52 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             }
             // reconnect web socket if not connected
             if (config.useWebSockets && (session == null || !session.isOpen())
-                    && ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                    && ThingStatus.ONLINE == getThing().getStatus()) {
                 logger.debug("Initializing WebSocket session");
                 initializeWebSocketSession();
+                return;
             }
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "exception during status getting");
+        } catch (InterruptedException e) {
+            logger.debug("API execution has been interrupted", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "exception during status update");
+            Thread.currentThread().interrupt();
+        } catch (TimeoutException e) {
+            logger.debug("Timeout during status update", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "exception during status update");
+        } catch (ExecutionException e) {
             logger.debug("Exception during status update", e);
-            session = null;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "exception during status update");
         }
+        session = null;
     }
 
     public synchronized void processStatusResponse(String content) {
-        if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
+        if (ThingStatus.ONLINE != getThing().getStatus()) {
             updateStatus(ThingStatus.ONLINE);
         }
-        String[] values = content.split("\n");
 
-        updateProperty("type", getPropertyValue(values, "t"));
-        updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, getPropertyValue(values, "fw"));
-        updateProperty("rssi", getPropertyValue(values, "rssi"));
-        updateProperty("name", getPropertyValue(values, "cid"));
-        updateProperty("status", getPropertyValue(values, "s"));
-        updateProperty("error", getPropertyValue(values, "e"));
-        updateProperty("ok", getPropertyValue(values, "ok"));
-        updateProperty("ro", getPropertyValue(values, "ro"));
-        updateProperty("fix", getPropertyValue(values, "fix"));
+        Map<String, String> values = Stream.of(content.split("\n")).map(s -> s.split(":"))
+                .filter(s -> s.length == 2).collect(Collectors.toMap(s -> s[0], s -> s[1]));
 
-        if ("1".equals(getPropertyValue(values, "ro"))) {
+        updateProperty("type", values.getOrDefault("t", NA));
+        updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, values.getOrDefault("fw", NA));
+        updateProperty("rssi", values.getOrDefault("rssi", NA));
+        updateProperty("name", values.getOrDefault("cid", NA));
+        updateProperty("status", values.getOrDefault("s", NA));
+        updateProperty("error", values.getOrDefault("e", NA));
+        updateProperty("ok", values.getOrDefault("ok", NA));
+        updateProperty("ro", values.getOrDefault("ro", NA));
+        updateProperty("fix", values.getOrDefault("fix", NA));
+
+        if ("1".equals(values.getOrDefault("ro", NA))) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Online but not ready!");
         }
 
-        int position = getPropertyValue(values, "pos").equals("o") ? 0 : 100;
+        int position = values.getOrDefault("pos", NA).equals("o") ? 0 : 100;
         if (position == 0 && lastPosition != -1) {
             position = lastPosition;
         }
         updateState(CHANNEL_CONTROL, new PercentType(position));
-    }
-
-    private String getPropertyValue(String[] values, String property) {
-        for (String val : values) {
-            String[] keyVal = val.split(":");
-            if (keyVal.length != 2) {
-                continue;
-            }
-            String key = keyVal[0];
-            String value = keyVal[1];
-            if (property.equals(key)) {
-                return value;
-            }
-        }
-        return "N/A";
     }
 
     private @Nullable Session createSession() {
@@ -244,10 +244,19 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             Future<Session> fut = webSocketClient.connect(socket, uri);
             // Wait for Connect
             return fut.get();
-        } catch (Exception ex) {
-            logger.debug("Cannot create websocket client/session", ex);
+        } catch (IOException ex) {
+            logger.debug("Cannot connect websocket client", ex);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Cannot create websocket client/session");
+                    "Cannot connect websocket client");
+        } catch (InterruptedException ex) {
+            logger.debug("Cannot create websocket session", ex);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Cannot create websocket session");
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException ex) {
+            logger.debug("Cannot create websocket session", ex);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Cannot create websocket session");
         }
         return null;
     }
