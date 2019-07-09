@@ -32,7 +32,7 @@ public class LxControlInfoOnlyAnalogTest extends LxControlTest {
 
     @Test
     public void testControlCreation() {
-        testControlCreation(LxControlInfoOnlyAnalog.class, 1, 0, 1, 1, 1);
+        testControlCreation(LxControlInfoOnlyAnalog.class, 2, 0, 1, 1, 1);
     }
 
     @Test

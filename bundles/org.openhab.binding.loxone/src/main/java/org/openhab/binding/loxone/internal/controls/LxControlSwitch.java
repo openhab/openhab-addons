@@ -74,6 +74,8 @@ class LxControlSwitch extends LxControl {
         LxCategory category = getCategory();
         if (category != null && category.getType() == LxCategory.CategoryType.LIGHTS) {
             tags.add("Lighting");
+        } else {
+            tags.add("Switchable");
         }
         addChannel("Switch", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_SWITCH), defaultChannelLabel,
                 "Switch", tags, this::handleSwitchCommands, this::getSwitchState);

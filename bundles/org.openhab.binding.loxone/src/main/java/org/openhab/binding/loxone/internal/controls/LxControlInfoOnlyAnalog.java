@@ -17,6 +17,7 @@ import static org.openhab.binding.loxone.internal.LxBindingConstants.*;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.StateDescription;
+import org.openhab.binding.loxone.internal.types.LxCategory;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -54,6 +55,10 @@ class LxControlInfoOnlyAnalog extends LxControl {
     @Override
     public void initialize(LxControlConfig config) {
         super.initialize(config);
+        LxCategory category = getCategory();
+        if (category != null && category.getType() == LxCategory.CategoryType.TEMPERATURE) {
+            tags.add("CurrentTemperature");
+        }
         ChannelUID cid = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_ANALOG),
                 defaultChannelLabel, "Analog virtual state", tags, null, () -> getStateDecimalValue(STATE_VALUE));
         String format;

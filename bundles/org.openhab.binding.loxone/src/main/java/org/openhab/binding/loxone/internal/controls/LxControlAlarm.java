@@ -38,7 +38,7 @@ import org.openhab.binding.loxone.internal.types.LxUuid;
  * @author Michael Mattan - Initial contribution
  *
  */
-public class LxControlAlarm extends LxControl {
+class LxControlAlarm extends LxControl {
 
     static class Factory extends LxControlInstance {
         @Override

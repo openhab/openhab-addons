@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,7 +58,7 @@ public class LxControlLightControllerV2Test extends LxControlTest {
 
     @Test
     public void testChannels() {
-        testChannel("Number");
+        testChannel("Number", Collections.singleton("Scene"));
     }
 
     @Test
@@ -231,7 +232,8 @@ public class LxControlLightControllerV2Test extends LxControlTest {
         }
         assertNotNull(min);
         assertNotNull(max);
-        testChannel("Number", null, new BigDecimal(min), new BigDecimal(max), BigDecimal.ONE, null, false, options);
+        testChannel("Number", null, new BigDecimal(min), new BigDecimal(max), BigDecimal.ONE, null, false, options,
+                Collections.singleton("Scene"));
     }
 
     private void testMood(String name, String id, boolean isStatic) {
@@ -244,7 +246,7 @@ public class LxControlLightControllerV2Test extends LxControlTest {
             assertEquals(0, mood.getChannels().size());
         } else {
             assertEquals(1, mood.getChannels().size());
-            testChannel(mood, "Switch");
+            testChannel(mood, "Switch", Collections.singleton("Lighting"));
         }
     }
 
