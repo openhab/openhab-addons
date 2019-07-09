@@ -22,6 +22,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
@@ -199,8 +200,9 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
     }
 
     @Override
-    public void reportError(@Nullable ThingStatusDetail statusDetail, @Nullable String message, @Nullable Throwable e) {
-        logger.info("Error was reported: {}", message, e);
+    public void reportError(@NonNull ThingStatusDetail statusDetail, @Nullable String message, @Nullable Throwable e) {
+        logger.debug("Error was reported: {}", message, e);
+        updateStatus(ThingStatus.OFFLINE, statusDetail, message);
     }
 
     /**
