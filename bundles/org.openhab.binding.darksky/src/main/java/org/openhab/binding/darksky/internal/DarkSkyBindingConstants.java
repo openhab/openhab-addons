@@ -69,7 +69,9 @@ public class DarkSkyBindingConstants {
     public static final String CHANNEL_VISIBILITY = "visibility";
     public static final String CHANNEL_RAIN = "rain";
     public static final String CHANNEL_SNOW = "snow";
+    public static final String CHANNEL_PRECIPITATION_INTENSITY = "precip-intensity";
     public static final String CHANNEL_PRECIPITATION_PROBABILITY = "precip-probability";
+    public static final String CHANNEL_PRECIPITATION_TYPE = "precip-type";
     public static final String CHANNEL_UVINDEX = "uvindex";
     public static final String CHANNEL_OZONE = "ozone";
     public static final String CHANNEL_SUNRISE = "sunrise";
