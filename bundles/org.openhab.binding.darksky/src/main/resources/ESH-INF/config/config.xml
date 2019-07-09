@@ -83,6 +83,11 @@
 			<description>Number of days for daily forecast.</description>
 			<default>8</default>
 		</parameter>
+		<parameter name="numberOfAlerts" type="integer" min="0" max="8" step="1">
+			<label>Number of Alerts</label>
+			<description>Number of alerts to be shown.</description>
+			<default>0</default>
+		</parameter>
 	</config-description>
 
 	<config-description uri="channel-type:darksky:sunrise-sunset-event">

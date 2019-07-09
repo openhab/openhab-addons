@@ -17,6 +17,7 @@ If your system language is supported by the Dark Sky API it will be used as defa
 The second thing `weather-and-forecast` supports the [current weather](https://darksky.net/dev/docs#forecast-request), hour-by-hour forecast for the next 48 hours and day-by-day forecast for the next week for a specific location.
 It requires coordinates of the location of your interest.
 You can add as many `weather-and-forecast` things for different locations to your setup as you like to observe.
+Severe [weather alerts](https://darksky.net/dev/docs/sources) are available in the USA, Canada, Iceland, European Union member nations, and Israel.
 
 ## Discovery
 
@@ -35,13 +36,14 @@ Once the system location will be changed, the background discovery updates the c
 
 ### Current Weather And Forecast
 
-| Parameter      | Description                                                                                                                    |
-|----------------|--------------------------------------------------------------------------------------------------------------------------------|
-| location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                   |
+| Parameter      | Description                                                                                                                   |
+|----------------|-------------------------------------------------------------------------------------------------------------------------------|
+| location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                  |
 | forecastHours  | Number of hours for hourly forecast. Optional, the default value is 24 (min="0", max="48", step="1").                         |
 | forecastDays   | Number of days for daily forecast (including todays forecast). Optional, the default value is 8 (min="0", max="8", step="1"). |
+| numberOfAlerts | Number of alerts to be shown. Optional, the default value is 0 (min="0", step="1").                                           |
 
-Once the parameters `forecastHours` or `forecastDays` will be changed, the available channel groups on the thing will be created or removed accordingly.
+Once one of the parameters `forecastHours`, `forecastDays` or `numberOfAlerts` will be changed, the available channel groups on the thing will be created or removed accordingly.
 
 ## Channels
 
@@ -118,6 +120,17 @@ Once the parameters `forecastHours` or `forecastDays` will be changed, the avail
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | uvindex            | Number               | Forecasted UV index.                                 |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | ozone              | Number:ArealDensity  | Forecasted ozone.                                    |
 
+### Severe Weather Alerts
+
+| Channel Group ID      | Channel ID  | Item Type | Description                                                                                  |
+|-----------------------|-------------|-----------|----------------------------------------------------------------------------------------------|
+| alerts1, alerts2, ... | title       | String    | A brief description of the alert.                                                            |
+| alerts1, alerts2, ... | description | String    | A detailed description of the alert.                                                         |
+| alerts1, alerts2, ... | severity    | String    | The severity of the alert.                                                                   |
+| alerts1, alerts2, ... | issued      | DateTime  | The time at which the alert was issued.                                                      |
+| alerts1, alerts2, ... | expires     | DateTime  | The time at which the alert will expire.                                                     |
+| alerts1, alerts2, ... | uri         | String    | An external URI that one may refer to for detailed information about the alert. **Advanced** |
+
 ## Trigger Channels
 
 ### Current Weather
@@ -151,7 +164,7 @@ demo.things
 
 ```java
 Bridge darksky:weather-api:api "Dark Sky Account" [apikey="AAA", refreshInterval=30, language="de"] {
-    Thing weather-and-forecast local "Local Weather And Forecast" [location="XXX,YYY", forecastHours=0, forecastDays=8] {
+    Thing weather-and-forecast local "Local Weather And Forecast" [location="XXX,YYY", forecastHours=0, forecastDays=8, numberOfAlerts=1] {
         Channels:
             Type sunset-event : current#sunset-event [
                 earliest="18:00",
@@ -213,6 +226,12 @@ Image localDailyForecastDay2ConditionIcon "Icon" { channel="darksky:weather-and-
 Number:Temperature localDailyForecastDay2MinTemperature "Minimum temperature in 2 days [%.1f %unit%]" <temperature> { channel="darksky:weather-and-forecast:api:local:forecastDay2#min-temperature" }
 Number:Temperature localDailyForecastDay2MaxTemperature "Maximum temperature in 2 days [%.1f %unit%]" <temperature> { channel="darksky:weather-and-forecast:api:local:forecastDay2#max-temperature" }
 ...
+
+String localAlert1Title "Weather warning! [%s]" <error> { channel="darksky:weather-and-forecast:api:local:alert1#title" }
+String localAlert1Description "Description [%s]" <error> { channel="darksky:weather-and-forecast:api:local:alert1#description" }
+String localAlert1Severity "Severity [%s]" <error> { channel="darksky:weather-and-forecast:api:local:alert1#severity" }
+DateTime localAlert1Issued "Issued [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM]" <time> { channel="darksky:weather-and-forecast:api:local:alert1#issued" }
+DateTime localAlert1Expires "Expires [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM]" <time> { channel="darksky:weather-and-forecast:api:local:alert1#expires" }
 
 String miamiCurrentCondition "Current condition in Miami [%s]" <sun_clouds> { channel="darksky:weather-and-forecast:api:miami:current#condition" }
 Image miamiCurrentConditionIcon "Icon" { channel="darksky:weather-and-forecast:api:miami:current#icon" }
@@ -290,6 +309,13 @@ sitemap demo label="Dark Sky" {
         Text item=localDailyForecastDay2MinTemperature
         Text item=localDailyForecastDay2MaxTemperature
         ...
+    }
+    Frame label="Severe weather alerts" {
+        Text item=localAlert1Title
+        Text item=localAlert1Description
+        Text item=localAlert1Severity
+        Text item=localAlert1Issued
+        Text item=localAlert1Expires
     }
     Frame label="Current weather in Miami" {
         Text item=miamiCurrentCondition

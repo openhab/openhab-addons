@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.darksky.internal.model;
 
+import java.util.List;
+
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link DarkSkyJsonWeatherData} is the Java class used to map the JSON response to an Dark Sky request.
  *
@@ -24,6 +28,7 @@ public class DarkSkyJsonWeatherData {
     private DarkSkyCurrentlyData currently;
     private DarkSkyHourlyData hourly;
     private DarkSkyDailyData daily;
+    private @Nullable List<AlertsData> alerts;
     private int offset;
 
     public double getLatitude() {
@@ -74,11 +79,29 @@ public class DarkSkyJsonWeatherData {
         this.daily = daily;
     }
 
+    public @Nullable List<AlertsData> getAlerts() {
+        return alerts;
+    }
+
+    public void setAlerts(List<AlertsData> alerts) {
+        this.alerts = alerts;
+    }
+
     public int getOffset() {
         return offset;
     }
 
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+    public class AlertsData {
+        public String title;
+        public int time;
+        public int expires;
+        public String description;
+        public String severity;
+        public String uri;
+        public List<String> regions;
     }
 }
