@@ -28,18 +28,22 @@ public class LxCategory extends LxContainer {
      * @author Pawel Pieczul - initial contribution
      */
     public enum CategoryType {
-    /**
-     * Category for lights
-     */
-    LIGHTS,
-    /**
-     * Category for shading / rollershutter / blinds
-     */
-    SHADING,
-    /**
-     * Unknown category
-     */
-    UNDEFINED
+        /**
+         * Category for lights
+         */
+        LIGHTS,
+        /**
+         * Category for shading / rollershutter / blinds
+         */
+        SHADING,
+        /**
+         * Category for temperatures
+         */
+        TEMPERATURE,
+        /**
+         * Unknown category
+         */
+        UNDEFINED
     }
 
     private String type; // deserialized from JSON
@@ -57,6 +61,8 @@ public class LxCategory extends LxContainer {
                 catType = CategoryType.LIGHTS;
             } else if (tl.equals("shading")) {
                 catType = CategoryType.SHADING;
+            } else if (tl.equals("indoortemperature")) {
+                catType = CategoryType.TEMPERATURE;
             } else {
                 catType = CategoryType.UNDEFINED;
             }

@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -45,9 +48,10 @@ public class LxControlJalousieTest extends LxControlTest {
 
     @Test
     public void testChannels() {
-        testChannel("Rollershutter");
-        testChannel("Switch", SHADE_CHANNEL);
-        testChannel("Switch", AUTO_SHADE_CHANNEL);
+        testChannel("Rollershutter", Collections.singleton("Blinds"));
+        Set<String> tags = Collections.singleton("Switchable");
+        testChannel("Switch", SHADE_CHANNEL, tags);
+        testChannel("Switch", AUTO_SHADE_CHANNEL, tags);
     }
 
     @Test
