@@ -425,8 +425,14 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                             PRECIP_TYPE_SNOW.equals(currentData.getPrecipType()) ? currentData.getPrecipIntensity() : 0,
                             MILLI(METRE));
                     break;
+                case CHANNEL_PRECIPITATION_INTENSITY:
+                    state = getQuantityTypeState(currentData.getPrecipIntensity(), MILLI(METRE));
+                    break;
                 case CHANNEL_PRECIPITATION_PROBABILITY:
                     state = getQuantityTypeState(currentData.getPrecipProbability() * 100, PERCENT);
+                    break;
+                case CHANNEL_PRECIPITATION_TYPE:
+                    state = getStringTypeState(currentData.getPrecipType());
                     break;
                 case CHANNEL_UVINDEX:
                     state = getDecimalTypeState(currentData.getUvIndex());
@@ -508,8 +514,14 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                                     : 0,
                             MILLI(METRE));
                     break;
+                case CHANNEL_PRECIPITATION_INTENSITY:
+                    state = getQuantityTypeState(forecastData.getPrecipIntensity(), MILLI(METRE));
+                    break;
                 case CHANNEL_PRECIPITATION_PROBABILITY:
                     state = getQuantityTypeState(forecastData.getPrecipProbability() * 100, PERCENT);
+                    break;
+                case CHANNEL_PRECIPITATION_TYPE:
+                    state = getStringTypeState(forecastData.getPrecipType());
                     break;
                 case CHANNEL_UVINDEX:
                     state = getDecimalTypeState(forecastData.getUvIndex());
@@ -589,8 +601,14 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                                     : 0,
                             MILLI(METRE));
                     break;
+                case CHANNEL_PRECIPITATION_INTENSITY:
+                    state = getQuantityTypeState(forecastData.getPrecipIntensity(), MILLI(METRE));
+                    break;
                 case CHANNEL_PRECIPITATION_PROBABILITY:
                     state = getQuantityTypeState(forecastData.getPrecipProbability() * 100, PERCENT);
+                    break;
+                case CHANNEL_PRECIPITATION_TYPE:
+                    state = getStringTypeState(forecastData.getPrecipType());
                     break;
                 case CHANNEL_UVINDEX:
                     state = getDecimalTypeState(forecastData.getUvIndex());
