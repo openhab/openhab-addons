@@ -63,7 +63,9 @@ Once the parameters `forecastHours` or `forecastDays` will be changed, the avail
 | current          | visibility         | Number:Length        | Current visibility.                                                     |
 | current          | rain               | Number:Length        | Rain volume of the last hour.                                           |
 | current          | snow               | Number:Length        | Snow volume of the last hour.                                           |
+| current          | precip-intensity   | Number:Length        | Current precipitation intensity.                                        |
 | current          | precip-probability | Number:Dimensionless | Current precipitation probability.                                      |
+| current          | precip-type        | String               | Current precipitation type (Rain, Snow or Sleet).                       |
 | current          | uvindex            | Number               | Current UV index.                                                       |
 | current          | ozone              | Number:ArealDensity  | Current ozone.                                                          |
 
@@ -85,7 +87,9 @@ Once the parameters `forecastHours` or `forecastDays` will be changed, the avail
 | forecastHours01, forecastHours02, ... forecastHours48 | visibility         | Number:Length        | Forecasted visibility.                               |
 | forecastHours01, forecastHours02, ... forecastHours48 | rain               | Number:Length        | Expected rain volume for the next hour.              |
 | forecastHours01, forecastHours02, ... forecastHours48 | snow               | Number:Length        | Expected snow volume for the next hour.              |
+| forecastHours01, forecastHours02, ... forecastHours48 | precip-intensity   | Number:Length        | Forecasted precipitation intensity.                  |
 | forecastHours01, forecastHours02, ... forecastHours48 | precip-probability | Number:Dimensionless | Forecasted precipitation probability.                |
+| forecastHours01, forecastHours02, ... forecastHours48 | precip-type        | String               | Forecasted precipitation type (Rain, Snow or Sleet). |
 | forecastHours01, forecastHours02, ... forecastHours48 | uvindex            | Number               | Forecasted UV index.                                 |
 | forecastHours01, forecastHours02, ... forecastHours48 | ozone              | Number:ArealDensity  | Forecasted ozone.                                    |
 
@@ -108,7 +112,9 @@ Once the parameters `forecastHours` or `forecastDays` will be changed, the avail
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | visibility         | Number:Length        | Forecasted visibility.                               |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | rain               | Number:Length        | Expected rain volume of a day.                       |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | snow               | Number:Length        | Expected snow volume of a day.                       |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | precip-intensity   | Number:Length        | Forecasted precipitation intensity.                  |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | precip-probability | Number:Dimensionless | Forecasted precipitation probability.                |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | precip-type        | String               | Forecasted precipitation type (Rain, Snow or Sleet). |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | uvindex            | Number               | Forecasted UV index.                                 |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | ozone              | Number:ArealDensity  | Forecasted ozone.                                    |
 
@@ -173,7 +179,9 @@ Number:Dimensionless localCurrentCloudiness "Current cloudiness [%d %unit%]" <cl
 Number:Length localCurrentVisibility "Current visibility [%.1f %unit%]" <none> { channel="darksky:weather-and-forecast:api:local:current#visibility" }
 Number:Length localCurrentRainVolume "Current rain volume [%.1f %unit%]" <rain> { channel="darksky:weather-and-forecast:api:local:current#rain" }
 Number:Length localCurrentSnowVolume "Current snow volume [%.1f %unit%]" <snow> { channel="darksky:weather-and-forecast:api:local:current#snow" }
+Number:Length localCurrentPrecipitationIntensity "Current precipitation intensity [%.2f %unit%]" <rain> { channel="darksky:weather-and-forecast:api:local:current#precip-intensity" }
 Number:Dimensionless localCurrentPrecipitationProbability "Current precipitation probability [%d %unit%]" <rain> { channel="darksky:weather-and-forecast:api:local:current#precip-probability" }
+String localCurrentPrecipitationType "Current precipitation type [%s]" <rain> { channel="darksky:weather-and-forecast:api:local:current#precip-type" }
 Number localCurrentUVIndex "Current precipitation probability [%d]" <none> { channel="darksky:weather-and-forecast:api:local:current#uvindex" }
 Number:ArealDensity localCurrentOzone "Current ozone [%.1f %unit%]" <none> { channel="darksky:weather-and-forecast:api:local:current#ozone" }
 DateTime localSunrise "Sunrise [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <sun> { channel="darksky:weather-and-forecast:api:local:current#sunrise" }
@@ -245,7 +253,9 @@ sitemap demo label="Dark Sky" {
         Text item=localCurrentVisibility
         Text item=localCurrentRainVolume
         Text item=localCurrentSnowVolume
+        Text item=localCurrentPrecipitationIntensity
         Text item=localCurrentPrecipitationProbability
+        Text item=localCurrentPrecipitationType
         Text item=localCurrentUVIndex
         Text item=localCurrentOzone
         Text item=localSunrise
