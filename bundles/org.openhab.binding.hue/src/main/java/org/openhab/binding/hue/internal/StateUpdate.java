@@ -196,4 +196,27 @@ public class StateUpdate extends ConfigUpdate {
         return this;
     }
 
+    /**
+     * Turn sensor flag on or off.
+     *
+     * @param flag on if true, off otherwise
+     * @return this object for chaining calls
+     */
+    
+    public StateUpdate setFlag(boolean flag) {
+        commands.add(new Command("flag", flag));
+        return this;
+    }
+    
+    /**
+     * Set status of sensor.
+     *
+     * @param status status 
+     * @return this object for chaining calls
+     */
+    public StateUpdate setStatus(int status) {
+        commands.add(new Command("status", status));
+        return this;
+    }
+    
 }

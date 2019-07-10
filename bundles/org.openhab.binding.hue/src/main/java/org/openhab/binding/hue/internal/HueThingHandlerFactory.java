@@ -41,6 +41,7 @@ import org.openhab.binding.hue.internal.handler.sensors.LightLevelHandler;
 import org.openhab.binding.hue.internal.handler.sensors.PresenceHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TapSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TemperatureHandler;
+import org.openhab.binding.hue.internal.handler.sensors.ClipHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
@@ -60,7 +61,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
             Stream.of(HueBridgeHandler.SUPPORTED_THING_TYPES.stream(), HueLightHandler.SUPPORTED_THING_TYPES.stream(),
                     DimmerSwitchHandler.SUPPORTED_THING_TYPES.stream(), TapSwitchHandler.SUPPORTED_THING_TYPES.stream(),
                     PresenceHandler.SUPPORTED_THING_TYPES.stream(), TemperatureHandler.SUPPORTED_THING_TYPES.stream(),
-                    LightLevelHandler.SUPPORTED_THING_TYPES.stream()).flatMap(i -> i).collect(Collectors.toSet()));
+                    LightLevelHandler.SUPPORTED_THING_TYPES.stream(), ClipHandler.SUPPORTED_THING_TYPES.stream()).flatMap(i -> i).collect(Collectors.toSet()));
 
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
@@ -76,7 +77,8 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
                 || TapSwitchHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)
                 || PresenceHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)
                 || TemperatureHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)
-                || LightLevelHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+                || LightLevelHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)
+                || ClipHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             ThingUID hueSensorUID = getSensorUID(thingTypeUID, thingUID, configuration, bridgeUID);
             return super.createThing(thingTypeUID, configuration, hueSensorUID, bridgeUID);
         }
@@ -133,6 +135,8 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
             return new TemperatureHandler(thing);
         } else if (LightLevelHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new LightLevelHandler(thing);
+        } else if (ClipHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            return new ClipHandler(thing);            
         } else {
             return null;
         }

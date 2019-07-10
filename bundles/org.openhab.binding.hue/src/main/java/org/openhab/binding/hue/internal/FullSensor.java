@@ -32,6 +32,8 @@ public class FullSensor extends FullHueObject {
     public static final String STATE_LIGHT_LEVEL = "lightlevel";
     public static final String STATE_DARK = "dark";
     public static final String STATE_DAYLIGHT = "daylight";
+    public static final String STATE_STATUS = "status";
+    public static final String STATE_FLAG = "flag";
 
     public static final String CONFIG_REACHABLE = "reachable";
     public static final String CONFIG_BATTERY = "battery";
