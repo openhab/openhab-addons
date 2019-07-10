@@ -12,19 +12,6 @@
  */
 package org.openhab.binding.vektiva.internal.handler;
 
-import static org.openhab.binding.vektiva.internal.VektivaBindingConstants.*;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -33,6 +20,9 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -44,6 +34,15 @@ import org.openhab.binding.vektiva.internal.config.VektivaSmarwiConfiguration;
 import org.openhab.binding.vektiva.internal.net.VektivaSmarwiSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.Map;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.openhab.binding.vektiva.internal.VektivaBindingConstants.*;
 
 /**
  * The {@link VektivaSmarwiHandler} is responsible for handling commands, which are
@@ -76,7 +75,7 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
+        if (CHANNEL_STATUS.equals(channelUID.getId()) && command instanceof RefreshType) {
             checkStatus();
             return;
         }
@@ -113,16 +112,16 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
     }
 
     private String getSmarwiCommand(Command command) {
-        switch (command.toString()) {
-            case "UP":
-                return COMMAND_OPEN;
-            case "DOWN":
-                return COMMAND_CLOSE;
-            case "STOP":
-                return COMMAND_STOP;
-            default:
-                return command.toString();
+        if (UpDownType.UP.equals(command)) {
+            return COMMAND_OPEN;
         }
+        if (UpDownType.DOWN.equals(command)) {
+            return COMMAND_CLOSE;
+        }
+        if (StopMoveType.STOP.equals(command)) {
+            return COMMAND_STOP;
+        }
+        return command.toString();
     }
 
     private @Nullable String sendCommand(String cmd) {
@@ -130,7 +129,8 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
 
         try {
             ContentResponse resp = httpClient.newRequest(url).method(HttpMethod.GET).send();
-            logger.trace("Response: {}", resp.getContentAsString());
+            final String response = resp.getContentAsString();
+            logger.trace("Response: {}", response);
             if (resp.getStatus() == 200) {
                 if (ThingStatus.ONLINE != getThing().getStatus()) {
                     updateStatus(ThingStatus.ONLINE);
@@ -138,17 +138,17 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
-            return resp.getContentAsString();
+            return response;
         } catch (InterruptedException e) {
             logger.debug("API execution has been interrupted", e);
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "API execution has been interrupted");
             Thread.currentThread().interrupt();
         } catch (TimeoutException e) {
             logger.debug("Timeout during API execution", e);
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Timeout during API execution");
         } catch (ExecutionException e) {
             logger.debug("Exception during API execution", e);
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Exception during API execution: " + e.getMessage());
         }
         return null;
     }
@@ -176,9 +176,10 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
 
         try {
             ContentResponse resp = httpClient.newRequest(url).method(HttpMethod.GET).send();
-            logger.debug("status values: {}", resp.getContentAsString());
+            final String response = resp.getContentAsString();
+            logger.debug("status values: {}", response);
             if (resp.getStatus() == 200) {
-                processStatusResponse(resp.getContentAsString());
+                processStatusResponse(response);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "got response code: " + resp.getStatus());
@@ -192,14 +193,14 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             }
         } catch (InterruptedException e) {
             logger.debug("API execution has been interrupted", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "exception during status update");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "API execution has been interrupted");
             Thread.currentThread().interrupt();
         } catch (TimeoutException e) {
             logger.debug("Timeout during status update", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "exception during status update");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Timeout during status update");
         } catch (ExecutionException e) {
             logger.debug("Exception during status update", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "exception during status update");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Exception during status update: " + e.getMessage());
         }
         session = null;
     }
@@ -212,18 +213,22 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
         Map<String, String> values = Stream.of(content.split("\n")).map(s -> s.split(":"))
                 .filter(s -> s.length == 2).collect(Collectors.toMap(s -> s[0], s -> s[1]));
 
-        updateProperty("type", values.getOrDefault("t", NA));
+        updateProperty("Product type", values.getOrDefault("t", NA));
         updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, values.getOrDefault("fw", NA));
-        updateProperty("rssi", values.getOrDefault("rssi", NA));
-        updateProperty("name", values.getOrDefault("cid", NA));
-        updateProperty("status", values.getOrDefault("s", NA));
-        updateProperty("error", values.getOrDefault("e", NA));
-        updateProperty("ok", values.getOrDefault("ok", NA));
-        updateProperty("ro", values.getOrDefault("ro", NA));
-        updateProperty("fix", values.getOrDefault("fix", NA));
+        updateProperty("Wifi signal", values.getOrDefault("rssi", NA));
+        updateProperty("Product name", values.getOrDefault("cid", NA));
+
+        String statusMessage = "Stopped";
+        if (!"250".equals(values.getOrDefault("s", NA))) {
+            statusMessage = "Moving";
+        }
 
         if ("1".equals(values.getOrDefault("ro", NA))) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Online but not ready!");
+            statusMessage = "Not ready";
+        }
+
+        if ("10".equals(values.getOrDefault("e", NA))) {
+            statusMessage = "Blocked";
         }
 
         int position = values.getOrDefault("pos", NA).equals("o") ? 0 : 100;
@@ -231,6 +236,7 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             position = lastPosition;
         }
         updateState(CHANNEL_CONTROL, new PercentType(position));
+        updateState(CHANNEL_STATUS, new StringType(statusMessage));
     }
 
     private @Nullable Session createSession() {

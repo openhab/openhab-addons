@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Vektiva Binding</name>
-	<description>This is the binding for Vektiva products.</description>
+	<description>This is the binding for Vektiva products controlled by local API.</description>
 	<author>Ondrej Pecta</author>
 
 </binding:binding>

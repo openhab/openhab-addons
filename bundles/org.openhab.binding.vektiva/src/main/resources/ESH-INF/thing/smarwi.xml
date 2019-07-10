@@ -11,6 +11,7 @@
 
 		<channels>
 			<channel id="control" typeId="control" />
+			<channel id="status" typeId="status" />
 		</channels>
 
 		<config-description>
@@ -40,6 +41,14 @@
 		<item-type>Rollershutter</item-type>
 		<label>Control</label>
 		<description>Control channel for Smarwi thing.</description>
+	</channel-type>
+
+	<!-- Status Channel Type -->
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Status of the Smarwi device (Stopped, Moving, Not ready, Blocked).</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

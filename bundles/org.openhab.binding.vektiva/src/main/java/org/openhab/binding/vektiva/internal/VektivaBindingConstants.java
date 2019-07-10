@@ -31,6 +31,7 @@ public class VektivaBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_CONTROL = "control";
+    public static final String CHANNEL_STATUS = "status";
 
     // commands
     public static final String COMMAND_OPEN = "open";

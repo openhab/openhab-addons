@@ -22,8 +22,12 @@ If you are running 203.2.4 or newer firmware you can enable the websockets suppo
 
 ## Channels
 
-The only exposed channel is named _control_ and is of type _Rollershutter_.
-It reacts to standard roller shutter commands _UP/DOWN/STOP_. The percentual closure (dimmer) is also supported - you can partially open window, but thing state is only open/close.
+The exposed channels are :
+
+| name | type | descripton |
+| --- |:---:|:-----:|
+| control |  Rollershutter | It reacts to standard roller shutter commands _UP/DOWN/STOP_. The percentual closure (dimmer) is also supported - you can partially open window, but thing state is only open/close. |
+| status | String | Shows the window status (Stopped, Moving, Not ready, Blocked) |
 
 ## Full Example
 
@@ -38,6 +42,7 @@ Thing vektiva:smarwi:5d43c74f [ ip="192.168.1.22", refreshInterval=30 ]
 ```
 Rollershutter Smarwi "Smarwi [%d %%]" { channel="vektiva:smarwi:5d43c74f:control" }
 Dimmer SmarwiD "Smarwi [%.1f]" { channel="vektiva:smarwi:5d43c74f:control" }
+String SmarwiStatus "Smarwi status [%s]" { channel="vektiva:smarwi:5d43c74f:status" }
 ```
 
 *.sitemap
@@ -45,6 +50,7 @@ Dimmer SmarwiD "Smarwi [%.1f]" { channel="vektiva:smarwi:5d43c74f:control" }
 ```
 Default item=Smarwi
 Default item=SmarwiD
+Default item=SmarwiStatus
 ```
 
 ## Note
