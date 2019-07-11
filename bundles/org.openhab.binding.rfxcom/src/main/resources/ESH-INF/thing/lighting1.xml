@@ -17,6 +17,7 @@
 
 		<channels>
 			<channel id="command" typeId="command" />
+			<channel id="commandString" typeId="commandString" />
 			<channel id="contact" typeId="contact" />
 			<channel id="signalLevel" typeId="system.signal-strength" />
 		</channels>
