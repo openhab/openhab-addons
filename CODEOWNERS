@@ -115,6 +115,7 @@
 /bundles/org.openhab.binding.openuv/ @clinique
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /bundles/org.openhab.binding.orvibo/ @tavalin
+/bundles/org.openhab.binding.paradoxalarm/ @theater
 /bundles/org.openhab.binding.pentair/ @jsjames
 /bundles/org.openhab.binding.phc/ @gnlpfjh
 /bundles/org.openhab.binding.pioneeravr/ @Stratehm

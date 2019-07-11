@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="paradoxalarm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="partition">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ip150" />
+		</supported-bridge-type-refs>
+
+		<label>Paradox Partition</label>
+		<description>Paradox Partition</description>
+
+		<channels>
+			<channel id="label" typeId="partitionLabel" />
+			<channel id="state" typeId="state" />
+			<channel id="additionalStates" typeId="additionalState" />
+		</channels>
+
+		<config-description>
+			<parameter name="id" type="integer" min="1" max="8" required="true">
+				<label>Partition Id</label>
+				<description>This is the partition ID of the Paradox partition (1-8 for Evo)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="partitionLabel">
+		<item-type>String</item-type>
+		<label>Partition Label</label>
+		<description>Label of partition</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>Partition State</label>
+		<description>State of partition</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+	<channel-type id="additionalState">
+		<item-type>String</item-type>
+		<label>Partition Additional States</label>
+		<description>Additional states provided by panel</description>
+		<state readOnly="true" pattern="%s" />
+	</channel-type>
+
+</thing:thing-descriptions>
