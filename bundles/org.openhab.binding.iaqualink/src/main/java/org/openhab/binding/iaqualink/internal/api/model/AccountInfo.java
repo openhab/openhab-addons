@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.iaqualink.internal.api.model;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Account Info Object
  *
@@ -22,43 +20,41 @@ import com.google.gson.annotations.SerializedName;
  */
 public class AccountInfo {
 
-    @SerializedName("id")
     private Integer id;
-    @SerializedName("email")
+
     private String email;
-    @SerializedName("created_at")
+
     private String createdAt;
-    @SerializedName("updated_at")
+
     private String updatedAt;
-    @SerializedName("time_zone")
+
     private Object timeZone;
-    @SerializedName("first_name")
+
     private String firstName;
-    @SerializedName("last_name")
+
     private String lastName;
-    @SerializedName("address_1")
+
     private String address1;
-    @SerializedName("address_2")
+
     private String address2;
-    @SerializedName("city")
+
     private String city;
-    @SerializedName("state")
+
     private String state;
-    @SerializedName("postal_code")
+
     private String postalCode;
-    @SerializedName("country")
+
     private String country;
-    @SerializedName("phone")
+
     private String phone;
-    @SerializedName("opt_in_1")
+
     private Boolean optIn1;
-    @SerializedName("opt_in_2")
+
     private Boolean optIn2;
-    @SerializedName("authentication_token")
+
     private String authenticationToken;
-    @SerializedName("role")
+
     private String role;
-    @SerializedName("session_id")
 
     private String sessionId;
 

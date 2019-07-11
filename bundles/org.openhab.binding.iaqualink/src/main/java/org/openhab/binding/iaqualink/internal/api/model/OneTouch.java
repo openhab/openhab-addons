@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.iaqualink.internal.api.model;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * OneTouch Macros.
  *
@@ -22,13 +20,12 @@ import com.google.gson.annotations.SerializedName;
  */
 public class OneTouch {
 
-    @SerializedName("status")
     private String status;
-    @SerializedName("state")
+
     private String state;
-    @SerializedName("label")
+
     private String label;
-    @SerializedName("name")
+
     private String name;
 
     public String getStatus() {

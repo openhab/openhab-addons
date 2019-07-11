@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.iaqualink.internal.api.model;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Object used to login to service.
  *
@@ -22,11 +20,10 @@ import com.google.gson.annotations.SerializedName;
  */
 public class SignIn {
 
-    @SerializedName("api_key")
     private String apiKey;
-    @SerializedName("email")
+
     private String email;
-    @SerializedName("password")
+
     private String password;
 
     public SignIn(String apiKey, String email, String password) {

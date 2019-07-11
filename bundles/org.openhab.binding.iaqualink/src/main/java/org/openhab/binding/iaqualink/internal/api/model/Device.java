@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.iaqualink.internal.api.model;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Device refers to a iAqualink Pool Controller.
  *
@@ -22,29 +20,28 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Device {
 
-    @SerializedName("id")
     private Integer id;
-    @SerializedName("serial_number")
+
     private String serialNumber;
-    @SerializedName("created_at")
+
     private String createdAt;
-    @SerializedName("updated_at")
+
     private String updatedAt;
-    @SerializedName("name")
+
     private String name;
-    @SerializedName("device_type")
+
     private String deviceType;
-    @SerializedName("owner_id")
+
     private Object ownerId;
-    @SerializedName("updating")
+
     private Boolean updating;
-    @SerializedName("firmware_version")
+
     private Object firmwareVersion;
-    @SerializedName("target_firmware_version")
+
     private Object targetFirmwareVersion;
-    @SerializedName("update_firmware_start_at")
+
     private Object updateFirmwareStartAt;
-    @SerializedName("last_activity_at")
+
     private Object lastActivityAt;
 
     public Integer getId() {

@@ -14,8 +14,6 @@ package org.openhab.binding.iaqualink.internal.api.model;
 
 import java.util.Map;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * {@link Home} refers to the "Home" screen of a pool controller.
  *
@@ -24,48 +22,46 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Home {
 
-    @SerializedName("status")
-
     private String status;
-    @SerializedName("response")
+
     private String response;
-    @SerializedName("system_type")
+
     private String systemType;
-    @SerializedName("temp_scale")
+
     private String tempScale;
-    @SerializedName("spa_temp")
+
     private String spaTemp;
-    @SerializedName("pool_temp")
+
     private String poolTemp;
-    @SerializedName("air_temp")
+
     private String airTemp;
-    @SerializedName("spa_set_point")
+
     private String spaSetPoint;
-    @SerializedName("pool_set_point")
+
     private String poolSetPoint;
-    @SerializedName("cover_pool")
+
     private String coverPool;
-    @SerializedName("freeze_protection")
+
     private String freezeProtection;
-    @SerializedName("spa_pump")
+
     private String spaPump;
-    @SerializedName("pool_pump")
+
     private String poolPump;
-    @SerializedName("spa_heater")
+
     private String spaHeater;
-    @SerializedName("pool_heater")
+
     private String poolHeater;
-    @SerializedName("solar_heater")
+
     private String solarHeater;
-    @SerializedName("spa_salinity")
+
     private String spaSalinity;
-    @SerializedName("pool_salinity")
+
     private String poolSalinity;
-    @SerializedName("orp")
+
     private String orp;
-    @SerializedName("ph")
+
     private String ph;
-    @SerializedName("serializedMap")
+
     private Map<String, String> serializedMap;
 
     public String getStatus() {

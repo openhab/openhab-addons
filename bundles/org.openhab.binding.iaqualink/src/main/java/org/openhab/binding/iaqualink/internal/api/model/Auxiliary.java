@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.iaqualink.internal.api.model;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Auxiliary devices.
  *
@@ -22,17 +20,16 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Auxiliary {
 
-    @SerializedName("state")
     private String state;
-    @SerializedName("label")
+
     private String label;
-    @SerializedName("icon")
+
     private String icon;
-    @SerializedName("type")
+
     private String type;
-    @SerializedName("subtype")
+
     private String subtype;
-    @SerializedName("name")
+
     private String name;
 
     public String getState() {

@@ -36,6 +36,7 @@ import org.openhab.binding.iaqualink.internal.api.model.SignIn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -75,8 +76,10 @@ public class IAqualinkClient {
 
     private Gson gson = new GsonBuilder().registerTypeAdapter(Home.class, new HomeDeserializer())
             .registerTypeAdapter(OneTouch[].class, new OneTouchDeserializer())
-            .registerTypeAdapter(Auxiliary[].class, new AuxDeserializer()).create();
-    private Gson gsonInternal = new GsonBuilder().create();
+            .registerTypeAdapter(Auxiliary[].class, new AuxDeserializer())
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+    private Gson gsonInternal = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .create();
     private HttpClient httpClient;
 
     @SuppressWarnings("serial")
@@ -339,7 +342,7 @@ public class IAqualinkClient {
                         serializedMap.add(entry.getKey(), entry.getValue());
                     });
                 });
-                home.add("serializedMap", serializedMap);
+                home.add("serialized_map", serializedMap);
                 return gsonInternal.fromJson(home, Home.class);
             }
             throw new JsonParseException("Invalid structure for Home class");
