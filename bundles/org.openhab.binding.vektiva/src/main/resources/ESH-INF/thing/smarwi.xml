@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="vektiva"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Smarwi Thing -->
+	<thing-type id="smarwi">
+		<label>Vektiva Smarwi Thing</label>
+		<description>Smarwi thing for Vektiva Binding</description>
+
+		<channels>
+			<channel id="control" typeId="control" />
+			<channel id="status" typeId="status" />
+		</channels>
+
+		<config-description>
+			<parameter name="ip" type="text" required="true">
+				<label>Smarwi IP address</label>
+				<context>network-address</context>
+				<description>IP address of the Smarwi thing on the local network.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="true" min="5">
+				<label>Refresh Interval</label>
+				<description>The refresh interval to poll Smarwi thing (in s).</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="useWebSockets" type="boolean" required="true">
+				<label>Use WebSockets feature for faster state update.</label>
+				<description>Enable web sockets technology. FW 203.2.4+ required</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- Control Channel Type -->
+	<channel-type id="control">
+		<item-type>Rollershutter</item-type>
+		<label>Control</label>
+		<description>Control channel for Smarwi thing.</description>
+	</channel-type>
+
+	<!-- Status Channel Type -->
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Status of the Smarwi device (Stopped, Moving, Not ready, Blocked).</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
