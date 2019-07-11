@@ -402,13 +402,17 @@ public class IAqualinkHandler extends BaseThingHandler {
      * @param value
      * @return {@link State}
      */
-    private State toState(@Nullable String type, String value) throws NumberFormatException {
+    private State toState(@Nullable String type, String value) {
         if (StringUtils.isBlank(value)) {
             return UnDefType.UNDEF;
         } else if ("Number".equals(type) || "Dimmer".equals(type)) {
             return new DecimalType(value);
         } else if ("Switch".equals(type)) {
-            return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
+            try {
+                return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
+            } catch (NumberFormatException e) {
+                return UnDefType.UNDEF;
+            }
         } else {
             return StringType.valueOf(value);
         }
