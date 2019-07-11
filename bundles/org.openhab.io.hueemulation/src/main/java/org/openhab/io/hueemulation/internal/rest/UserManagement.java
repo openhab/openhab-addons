@@ -69,7 +69,6 @@ import io.swagger.annotations.ApiResponses;
 @NonNullByDefault
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class UserManagement extends DefaultAbstractManagedProvider<HueUserAuthWithSecrets, String> {
     private final Logger logger = LoggerFactory.getLogger(UserManagement.class);
 
