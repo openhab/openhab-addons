@@ -297,6 +297,44 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="intlkeypad">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>International seeTouch Keypad</label>
+		<description>Lutron International seeTouch keypad (HomeWorks QS Only)</description>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of keypad in the Lutron lighting system</description>
+			</parameter>
+			<parameter name="model" type="text">
+				<label>Keypad Model</label>
+				<description>Keypad/faceplate model number without the system prefix</description>
+				<options>
+					<option value="2B">2B</option>
+					<option value="3B">3B</option>
+					<option value="4B">4B</option>
+					<option value="5BRL">5BRL</option>
+					<option value="6BRL">6BRL</option>
+					<option value="7BRL">7BRL</option>
+					<option value="8BRL">8BRL</option>
+					<option value="10BRL">10BRL</option>
+					<option value="Generic">Generic</option>
+				</options>
+				<default>Generic</default>
+			</parameter>
+			<parameter name="autorelease" type="boolean">
+				<label>Auto-release</label>
+				<description>Automatically release pressed buttons</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
 	<thing-type id="pico">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
