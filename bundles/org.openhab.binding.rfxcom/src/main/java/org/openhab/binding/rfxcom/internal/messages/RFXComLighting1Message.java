@@ -231,7 +231,7 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighti
                 break;
 
             case CHANNEL_COMMAND_STRING:
-                command = RFXComLighting1Message.Commands.valueOf(type.toString().toUpperCase());
+                command = Commands.valueOf(type.toString().toUpperCase());
                 break;
 
             default:
