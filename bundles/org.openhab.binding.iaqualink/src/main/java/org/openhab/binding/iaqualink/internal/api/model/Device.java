@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.iaqualink.internal.api.model;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -24,40 +23,28 @@ import com.google.gson.annotations.SerializedName;
 public class Device {
 
     @SerializedName("id")
-    @Expose
     private Integer id;
     @SerializedName("serial_number")
-    @Expose
     private String serialNumber;
     @SerializedName("created_at")
-    @Expose
     private String createdAt;
     @SerializedName("updated_at")
-    @Expose
     private String updatedAt;
     @SerializedName("name")
-    @Expose
     private String name;
     @SerializedName("device_type")
-    @Expose
     private String deviceType;
     @SerializedName("owner_id")
-    @Expose
     private Object ownerId;
     @SerializedName("updating")
-    @Expose
     private Boolean updating;
     @SerializedName("firmware_version")
-    @Expose
     private Object firmwareVersion;
     @SerializedName("target_firmware_version")
-    @Expose
     private Object targetFirmwareVersion;
     @SerializedName("update_firmware_start_at")
-    @Expose
     private Object updateFirmwareStartAt;
     @SerializedName("last_activity_at")
-    @Expose
     private Object lastActivityAt;
 
     public Integer getId() {

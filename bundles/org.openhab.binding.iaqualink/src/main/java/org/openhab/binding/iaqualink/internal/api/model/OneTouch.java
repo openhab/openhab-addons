@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.iaqualink.internal.api.model;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -24,16 +23,12 @@ import com.google.gson.annotations.SerializedName;
 public class OneTouch {
 
     @SerializedName("status")
-    @Expose
     private String status;
     @SerializedName("state")
-    @Expose
     private String state;
     @SerializedName("label")
-    @Expose
     private String label;
     @SerializedName("name")
-    @Expose
     private String name;
 
     public String getStatus() {

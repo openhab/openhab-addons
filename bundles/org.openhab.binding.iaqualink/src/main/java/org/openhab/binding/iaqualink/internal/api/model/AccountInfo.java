@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.iaqualink.internal.api.model;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -24,61 +23,43 @@ import com.google.gson.annotations.SerializedName;
 public class AccountInfo {
 
     @SerializedName("id")
-    @Expose
     private Integer id;
     @SerializedName("email")
-    @Expose
     private String email;
     @SerializedName("created_at")
-    @Expose
     private String createdAt;
     @SerializedName("updated_at")
-    @Expose
     private String updatedAt;
     @SerializedName("time_zone")
-    @Expose
     private Object timeZone;
     @SerializedName("first_name")
-    @Expose
     private String firstName;
     @SerializedName("last_name")
-    @Expose
     private String lastName;
     @SerializedName("address_1")
-    @Expose
     private String address1;
     @SerializedName("address_2")
-    @Expose
     private String address2;
     @SerializedName("city")
-    @Expose
     private String city;
     @SerializedName("state")
-    @Expose
     private String state;
     @SerializedName("postal_code")
-    @Expose
     private String postalCode;
     @SerializedName("country")
-    @Expose
     private String country;
     @SerializedName("phone")
-    @Expose
     private String phone;
     @SerializedName("opt_in_1")
-    @Expose
     private Boolean optIn1;
     @SerializedName("opt_in_2")
-    @Expose
     private Boolean optIn2;
     @SerializedName("authentication_token")
-    @Expose
     private String authenticationToken;
     @SerializedName("role")
-    @Expose
     private String role;
     @SerializedName("session_id")
-    @Expose
+
     private String sessionId;
 
     public Integer getId() {
@@ -232,5 +213,4 @@ public class AccountInfo {
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
-
 }

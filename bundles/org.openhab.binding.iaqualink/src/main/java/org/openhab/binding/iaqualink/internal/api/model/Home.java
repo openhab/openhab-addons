@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.iaqualink.internal.api.model;
 
-import com.google.gson.annotations.Expose;
+import java.util.Map;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -24,65 +25,48 @@ import com.google.gson.annotations.SerializedName;
 public class Home {
 
     @SerializedName("status")
-    @Expose
+
     private String status;
     @SerializedName("response")
-    @Expose
     private String response;
     @SerializedName("system_type")
-    @Expose
     private String systemType;
     @SerializedName("temp_scale")
-    @Expose
     private String tempScale;
     @SerializedName("spa_temp")
-    @Expose
     private String spaTemp;
     @SerializedName("pool_temp")
-    @Expose
     private String poolTemp;
     @SerializedName("air_temp")
-    @Expose
     private String airTemp;
     @SerializedName("spa_set_point")
-    @Expose
     private String spaSetPoint;
     @SerializedName("pool_set_point")
-    @Expose
     private String poolSetPoint;
     @SerializedName("cover_pool")
-    @Expose
     private String coverPool;
     @SerializedName("freeze_protection")
-    @Expose
     private String freezeProtection;
     @SerializedName("spa_pump")
-    @Expose
     private String spaPump;
     @SerializedName("pool_pump")
-    @Expose
     private String poolPump;
     @SerializedName("spa_heater")
-    @Expose
     private String spaHeater;
     @SerializedName("pool_heater")
-    @Expose
     private String poolHeater;
     @SerializedName("solar_heater")
-    @Expose
     private String solarHeater;
     @SerializedName("spa_salinity")
-    @Expose
     private String spaSalinity;
     @SerializedName("pool_salinity")
-    @Expose
     private String poolSalinity;
     @SerializedName("orp")
-    @Expose
     private String orp;
     @SerializedName("ph")
-    @Expose
     private String ph;
+    @SerializedName("serializedMap")
+    private Map<String, String> serializedMap;
 
     public String getStatus() {
         return status;
@@ -244,4 +228,7 @@ public class Home {
         this.ph = ph;
     }
 
+    public Map<String, String> getSerilaizedMap() {
+        return serializedMap;
+    }
 }

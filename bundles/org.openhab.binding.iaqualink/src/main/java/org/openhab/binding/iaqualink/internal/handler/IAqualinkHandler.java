@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -52,9 +53,6 @@ import org.openhab.binding.iaqualink.internal.config.IAqualinkConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-
 /**
  *
  * iAquaLink Control Binding
@@ -81,7 +79,7 @@ public class IAqualinkHandler extends BaseThingHandler {
     /**
      * Minimum amount of time we can poll after a command
      */
-    private static final int COMMAND_REFRESH_SECONDS = 2;
+    private static final int COMMAND_REFRESH_SECONDS = 3;
 
     /**
      * Default iAqulink key used by existing clients in the marketplace
@@ -101,20 +99,18 @@ public class IAqualinkHandler extends BaseThingHandler {
     /**
      * fixed API key provided by iAqualink clients (Android, IOS), unknown if this will change in the future.
      */
-    @Nullable
-    private String apiKey;
+
+    private @Nullable String apiKey;
 
     /**
      * Optional serial number of the pool controller to connect to, only useful if you have more then one controller
      */
-    @Nullable
-    private String serialNumber;
+    private @Nullable String serialNumber;
 
     /**
      * Server issued sessionId
      */
-    @Nullable
-    private String sessionId;
+    private @Nullable String sessionId;
 
     /**
      * When we first connect we will dynamically create channels based on what the controller is configured for
@@ -124,8 +120,7 @@ public class IAqualinkHandler extends BaseThingHandler {
     /**
      * Future to poll for updated
      */
-    @Nullable
-    private ScheduledFuture<?> pollFuture;
+    private @Nullable ScheduledFuture<?> pollFuture;
 
     /**
      * The client interface to the iAqualink Service
@@ -160,7 +155,6 @@ public class IAqualinkHandler extends BaseThingHandler {
         stateMap.remove(channelUID.getId());
     }
 
-    @SuppressWarnings("null") // stateMap.remove can return null, which confuses the compiler
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand channel: {} command: {}", channelUID, command);
@@ -174,36 +168,49 @@ public class IAqualinkHandler extends BaseThingHandler {
 
         String channelName = channelUID.getIdWithoutGroup();
         // remove the current state to ensure we send an update
-        State oldState = stateMap.remove(channelUID.getAsString());
+        stateMap.remove(channelUID.getAsString());
         try {
             if (command instanceof RefreshType) {
                 stateMap.clear();
-            } else if (channelName.startsWith("onetouch_")) {
-                if (oldState == null || !oldState.toString().equals(command.toString())) {
-                    client.oneTouchCommand(serialNumber, sessionId, "set_" + channelName);
-                }
-            } else if (channelName.endsWith("heater") || channelName.endsWith("pump")) {
-                if (oldState == null || !oldState.toString().equals(command.toString())) {
-                    client.homeScreenCommand(serialNumber, sessionId, "set_" + channelName);
-                }
-            } else if (channelName.startsWith("aux_")) {
-                if (command instanceof OnOffType) {
-                    if (oldState == null || !oldState.toString().equals(command.toString())) {
-                        client.auxCommand(serialNumber, sessionId, "set_" + channelName);
-                    }
-                }
-                if (command instanceof DecimalType) {
+            } else if (command instanceof DecimalType) {
+                if ("spa_set_point".equals(channelName)) {
+                    client.setSpaTemp(serialNumber, sessionId, ((DecimalType) command).intValue());
+                } else if ("pool_set_point".equals(channelName)) {
+                    client.setPoolTemp(serialNumber, sessionId, ((DecimalType) command).intValue());
+                } else if (channelName.startsWith("aux_")) {
                     client.auxCommand(serialNumber, sessionId, "set_" + channelName,
                             ((DecimalType) command).intValue());
                 }
-            } else if ("spa_set_point".equals(channelName) && command instanceof DecimalType) {
-                client.setSpaTemp(serialNumber, sessionId, ((DecimalType) command).intValue());
-            } else if ("pool_set_point".equals(channelName) && command instanceof DecimalType) {
-                client.setPoolTemp(serialNumber, sessionId, ((DecimalType) command).intValue());
+            } else if (command instanceof OnOffType) {
+                // these are toggle commands and require we have the current state to turn on/off
+                if (channelName.startsWith("onetouch_")) {
+                    OneTouch[] ota = client.getOneTouch(serialNumber, sessionId);
+                    Optional<OneTouch> optional = Arrays.stream(ota).filter(o -> o.getName().equals(channelName))
+                            .findFirst();
+                    if (optional.isPresent()) {
+                        if (toState("Switch", optional.get().getState()) != command) {
+                            logger.debug("Sending command {} to {}", command, channelName);
+                            client.oneTouchCommand(serialNumber, sessionId, "set_" + channelName);
+                        }
+                    }
+                } else if (channelName.endsWith("heater") || channelName.endsWith("pump")) {
+                    String value = client.getHome(serialNumber, sessionId).getSerilaizedMap().get(channelName);
+                    if (toState("Switch", value) != command) {
+                        logger.debug("Sending command {} to {}", command, channelName);
+                        client.homeScreenCommand(serialNumber, sessionId, "set_" + channelName);
+                    }
+                } else if (channelName.startsWith("aux_")) {
+                    Auxiliary[] auxs = client.getAux(serialNumber, sessionId);
+                    Optional<Auxiliary> optional = Arrays.stream(auxs).filter(o -> o.getName().equals(channelName))
+                            .findFirst();
+                    if (optional.isPresent()) {
+                        if (toState("Switch", optional.get().getState()) != command) {
+                            client.auxCommand(serialNumber, sessionId, "set_" + channelName);
+                        }
+                    }
+                }
             }
             initPolling(COMMAND_REFRESH_SECONDS);
-        } catch (InterruptedException e) {
-            logger.debug("command interupted", e);
         } catch (IOException e) {
             logger.debug("Exception executing command", e);
             initPolling(COMMAND_REFRESH_SECONDS);
@@ -273,7 +280,7 @@ public class IAqualinkHandler extends BaseThingHandler {
 
             initPolling(0);
 
-        } catch (InterruptedException | IOException e) {
+        } catch (IOException e) {
             logger.debug("Could not connect to service");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (NotAuthorizedException e) {
@@ -288,13 +295,7 @@ public class IAqualinkHandler extends BaseThingHandler {
      */
     private synchronized void initPolling(int initalDelay) {
         clearPolling();
-        pollFuture = scheduler.scheduleWithFixedDelay(() -> {
-            try {
-                pollController();
-            } catch (Exception e) {
-                logger.debug("Exception during poll", e);
-            }
-        }, initalDelay, refresh, TimeUnit.SECONDS);
+        pollFuture = scheduler.scheduleWithFixedDelay(this::pollController, initalDelay, refresh, TimeUnit.SECONDS);
     }
 
     /**
@@ -302,37 +303,52 @@ public class IAqualinkHandler extends BaseThingHandler {
      */
     private void clearPolling() {
         ScheduledFuture<?> localFuture = pollFuture;
-        if (localFuture != null && !localFuture.isCancelled()) {
-            logger.trace("Canceling future");
-            localFuture.cancel(true);
+        if (isFutureValid(localFuture)) {
+            if (localFuture != null) {
+                localFuture.cancel(false);
+            }
         }
+    }
+
+    private boolean isFutureValid(@Nullable ScheduledFuture<?> future) {
+        return future != null && !future.isCancelled();
     }
 
     /**
      * Poll the controller for updates.
      */
     private void pollController() {
+        ScheduledFuture<?> localFuture = pollFuture;
         try {
+            Map<String, String> map = client.getHome(serialNumber, sessionId).getSerilaizedMap();
+            if (!isFutureValid(localFuture)) {
+                return;
+            }
 
-            JsonElement home = client.getHomeJson(serialNumber, sessionId);
-            JsonArray homeScreen = home.getAsJsonObject().getAsJsonArray("home_screen");
-            if (homeScreen != null) {
-                homeScreen.forEach(element -> {
-                    element.getAsJsonObject().entrySet().forEach(entry -> {
-                        updatedState(entry.getKey(), entry.getValue().getAsString());
-                        if (entry.getKey().endsWith("_heater")) {
-                            updatedState(entry.getKey() + "_status", entry.getValue().getAsString());
-                        }
-                    });
+            if (map != null) {
+                map.forEach((k, v) -> {
+                    updatedState(k, v);
+                    if (k.endsWith("_heater")) {
+                        updatedState(k + "_status", v);
+                    }
                 });
             }
 
             OneTouch[] oneTouches = client.getOneTouch(serialNumber, sessionId);
+
+            if (!isFutureValid(localFuture)) {
+                return;
+            }
+
             for (OneTouch ot : oneTouches) {
                 updatedState(ot.getName(), ot.getState());
             }
 
             Auxiliary[] auxes = client.getAux(serialNumber, sessionId);
+            if (!isFutureValid(localFuture)) {
+                return;
+            }
+
             for (Auxiliary aux : auxes) {
                 updatedState(aux.getName(), aux.getState());
             }
@@ -347,12 +363,12 @@ public class IAqualinkHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
 
-        } catch (InterruptedException e) {
-            logger.debug("polling interupted", e);
         } catch (IOException e) {
+            // poller will continue to run, set offline until next run
             logger.debug("Exception polling", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (NotAuthorizedException e) {
+            // if are creds are not valid, we need to try re authorizing again
             logger.debug("Authorization Exception during polling", e);
             clearPolling();
             configure();
@@ -413,11 +429,12 @@ public class IAqualinkHandler extends BaseThingHandler {
                     channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), aux.getName()), "Dimmer")
                             .withType(IAqualinkBindingConstants.CHANNEL_TYPE_UID_AUX_DIMMER).withLabel(aux.getLabel())
                             .build();
+                    break;
                 case "2":
                     channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), aux.getName()), "Number")
                             .withType(IAqualinkBindingConstants.CHANNEL_TYPE_UID_AUX_NUMBER).withLabel(aux.getLabel())
                             .build();
-
+                    break;
                 default:
                     channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), aux.getName()), "Switch")
                             .withType(IAqualinkBindingConstants.CHANNEL_TYPE_UID_AUX_SWITCH).withLabel(aux.getLabel())
