@@ -96,6 +96,7 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
             socket.closeSocket();
             socket.removeSpeedTestListener(this);
             socket = null;
+            speedTestSocket = null;
             logger.debug("Network speedtest finished");
         }
     }
