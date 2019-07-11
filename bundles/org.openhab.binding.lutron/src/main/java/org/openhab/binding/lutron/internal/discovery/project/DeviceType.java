@@ -19,6 +19,7 @@ package org.openhab.binding.lutron.internal.discovery.project;
  */
 public enum DeviceType {
     HYBRID_SEETOUCH_KEYPAD,
+    INTERNATIONAL_SEETOUCH_KEYPAD,
     MAIN_REPEATER,
     MOTION_SENSOR,
     PICO_KEYPAD,
