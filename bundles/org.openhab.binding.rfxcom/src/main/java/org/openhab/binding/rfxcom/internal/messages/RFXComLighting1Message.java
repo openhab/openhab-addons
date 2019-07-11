@@ -16,8 +16,10 @@ import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
@@ -158,14 +160,15 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighti
                     case ON:
                     case GROUP_ON:
                     case BRIGHT:
-                        return OnOffType.ON;
-
                     case CHIME:
                         return OnOffType.ON;
 
                     default:
                         throw new RFXComUnsupportedChannelException("Can't convert " + command + " for " + channelId);
                 }
+
+            case CHANNEL_COMMAND_STRING:
+                return command == null ? UnDefType.UNDEF : StringType.valueOf(command.toString());
 
             case CHANNEL_CONTACT:
                 switch (command) {
@@ -177,8 +180,6 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighti
                     case ON:
                     case GROUP_ON:
                     case BRIGHT:
-                        return OpenClosedType.OPEN;
-
                     case CHIME:
                         return OpenClosedType.OPEN;
 
@@ -227,6 +228,10 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighti
                 } else {
                     throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
                 }
+                break;
+
+            case CHANNEL_COMMAND_STRING:
+                command = Commands.valueOf(type.toString().toUpperCase());
                 break;
 
             default:
