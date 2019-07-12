@@ -51,6 +51,7 @@ public class TeleinfoBindingConstants {
     public static final ThingTypeUID THING_BASE_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
             "base_electricitymeter");
     public static final String THING_BASE_ELECTRICITY_METER_PROPERTY_ADCO = THING_HCHP_ELECTRICITY_METER_PROPERTY_ADCO;
+    public static final String THING_BASE_ELECTRICITY_METER_CHANNEL_BASE = "base";
 
     public static final ThingTypeUID THING_EJP_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
             "ejp_electricitymeter");

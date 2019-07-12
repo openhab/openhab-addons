@@ -30,7 +30,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.teleinfo.internal.reader.Frame;
-import org.openhab.binding.teleinfo.internal.reader.FrameOptionHeuresCreuses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,41 +82,30 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
-
+        // no commands supported
     }
 
-    @Override
-    public void onFrameReceived(@NonNull TeleinfoAbstractControllerHandler controllerHandler, @NonNull Frame frame) {
-        logger.debug("Receiving frame");
-        String adco = getThing().getProperties().get(THING_HCHP_ELECTRICITY_METER_PROPERTY_ADCO);
-        if (adco.equalsIgnoreCase(frame.getADCO())) {
-            // update common channels
-            updateState(CHANNEL_ISOUSC, new DecimalType(frame.getIntensiteSouscrite()));
-            updateState(CHANNEL_PTEC, new StringType(frame.getPeriodeTarifaireEnCours().name()));
-            if (frame.getIntensiteMaximale() == null) {
-                updateState(CHANNEL_IMAX, UnDefType.NULL);
-            } else {
-                updateState(CHANNEL_IMAX, new DecimalType(frame.getIntensiteMaximale()));
-            }
-
-            if (frame.getAvertissementDepassementPuissanceSouscrite() == null) {
-                updateState(CHANNEL_ADPS, UnDefType.NULL);
-            } else {
-                updateState(CHANNEL_ADPS, new DecimalType(frame.getAvertissementDepassementPuissanceSouscrite()));
-            }
-            updateState(CHANNEL_PAPP, new DecimalType(frame.getPuissanceApparente()));
-            updateState(CHANNEL_IINST, new DecimalType(frame.getIntensiteInstantanee()));
-            updateState(CHANNEL_LAST_UPDATE, new DateTimeType());
+    protected void updateStatesForCommonChannels(@NonNull Frame frame) {
+        // update common channels
+        updateState(CHANNEL_ISOUSC, new DecimalType(frame.getIntensiteSouscrite()));
+        updateState(CHANNEL_PTEC, new StringType(frame.getPeriodeTarifaireEnCours().name()));
+        if (frame.getIntensiteMaximale() == null) {
+            updateState(CHANNEL_IMAX, UnDefType.NULL);
+        } else {
+            updateState(CHANNEL_IMAX, new DecimalType(frame.getIntensiteMaximale()));
         }
 
-        if (adco.equalsIgnoreCase(frame.getADCO())) {
-            FrameOptionHeuresCreuses hcFrame = (FrameOptionHeuresCreuses) frame;
-
-            BigDecimal powerFactor = (BigDecimal) getThing().getChannel(CHANNEL_CURRENT_POWER).getConfiguration()
-                    .get(CHANNEL_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
-            updateState(CHANNEL_CURRENT_POWER,
-                    new DecimalType(hcFrame.getIntensiteInstantanee() * powerFactor.intValue()));
+        if (frame.getAvertissementDepassementPuissanceSouscrite() == null) {
+            updateState(CHANNEL_ADPS, UnDefType.NULL);
+        } else {
+            updateState(CHANNEL_ADPS, new DecimalType(frame.getAvertissementDepassementPuissanceSouscrite()));
         }
+        updateState(CHANNEL_PAPP, new DecimalType(frame.getPuissanceApparente()));
+        updateState(CHANNEL_IINST, new DecimalType(frame.getIntensiteInstantanee()));
+        updateState(CHANNEL_LAST_UPDATE, new DateTimeType());
+
+        BigDecimal powerFactor = (BigDecimal) getThing().getChannel(CHANNEL_CURRENT_POWER).getConfiguration()
+                .get(CHANNEL_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
+        updateState(CHANNEL_CURRENT_POWER, new DecimalType(frame.getIntensiteInstantanee() * powerFactor.intValue()));
     }
 }

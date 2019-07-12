@@ -37,8 +37,6 @@ import org.openhab.binding.teleinfo.internal.serial.TeleinfoSerialControllerHand
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link TeleinfoThingHandlerFactory} is responsible for creating things and thing
@@ -50,10 +48,8 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.teleinfo", service = ThingHandlerFactory.class)
 public class TeleinfoThingHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(THING_TYPE_SERIAL_CONTROLLER, THING_HCHP_ELECTRICITY_METER_TYPE_UID).collect(Collectors.toSet());
-
-    private Logger logger = LoggerFactory.getLogger(TeleinfoThingHandlerFactory.class);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_SERIAL_CONTROLLER,
+            THING_HCHP_ELECTRICITY_METER_TYPE_UID, THING_BASE_ELECTRICITY_METER_TYPE_UID).collect(Collectors.toSet());
 
     private @NonNullByDefault({}) SerialPortManager serialPortManager;
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
@@ -92,7 +88,7 @@ public class TeleinfoThingHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (THING_BASE_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
-            throw new IllegalStateException("NOT YET IMPLEMENTED");
+            return new TeleinfoBaseElectricityMeterHandler(thing);
         } else if (THING_HCHP_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {
             return new TeleinfoHchpElectricityMeterHandler(thing);
         } else if (THING_TEMPO_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {

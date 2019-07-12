@@ -21,18 +21,17 @@ public class FrameOptionBase extends Frame {
 
     private static final long serialVersionUID = 5560141193379363335L;
 
-    private Integer indexBase; // BASE : Index si option = base (en Wh)
+    private int indexBase; // BASE : Index si option = base (en Wh)
 
     public FrameOptionBase() {
         // default constructor
     }
 
-    public Integer getIndexBase() {
+    public int getIndexBase() {
         return indexBase;
     }
 
-    public void setIndexBase(Integer indexBase) {
+    public void setIndexBase(int indexBase) {
         this.indexBase = indexBase;
     }
-
 }
