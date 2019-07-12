@@ -33,6 +33,7 @@ This binding currently supports the following thing types:
 * **pico** - Pico Keypad
 * **virtualkeypad** - Repeater virtual keypad
 * **vcrx** - Visor control receiver module (VCRX)
+* **qsio** - HomeWorks QS IO Interface
 * **cco** - Contact closure output module or VCRX CCO
 * **shade** - Lutron shade or motorized drape
 * **greenmode** - Green Mode subsystem
@@ -114,9 +115,9 @@ Example:
 Thing lutron:occupancysensor:shopsensor (lutron:ipbridge:radiora2) [ integrationId=7 ]
 ```
 
-### SeeTouch and Hybrid SeeTouch Keypads
+### seeTouch and Hybrid seeTouch Keypads
 
-SeeTouch and Hybrid SeeTouch keypads are interfaced with using the **keypad** thing.
+seeTouch and Hybrid seeTouch keypads are interfaced with using the **keypad** thing.
 In addition to the usual `integrationID` parameter, it accepts `model` and `autorelease` parameters.
 The `model` parameter should be set to the Lutron keypad model number.
 This will cause the handler to create only the appropriate channels for that particular keypad model.
@@ -152,9 +153,9 @@ Example:
 Thing lutron:keypad:entrykeypad (lutron:ipbridge:radiora2) [ integrationId=10, model="W7B" autorelease="true" ]
 ```
 
-### Tabletop SeeTouch Keypads
+### Tabletop seeTouch Keypads
 
-Tabletop SeeTouch keypads use the **ttkeypad** thing.
+Tabletop seeTouch keypads use the **ttkeypad** thing.
 It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same channel types as the **keypad** thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
@@ -169,9 +170,9 @@ Example:
 Thing lutron:ttkeypad:bedroomkeypad (lutron:ipbridge:radiora2) [ integrationId=11, model="T10RL" autorelease="true" ]
 ```
 
-### International SeeTouch Keypads (Homeworks QS)
+### International seeTouch Keypads (Homeworks QS)
 
-International SeeTouch keypads used in the Homeworks QS system use the **intlkeypad** thing.
+International seeTouch keypads used in the Homeworks QS system use the **intlkeypad** thing.
 It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same button and led channel types as the **keypad** thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
@@ -225,7 +226,7 @@ Thing lutron:virtualkeypad:repeaterbuttons (lutron:ipbridge:radiora2) [ integrat
 
 ### VCRX Modules
 
-The Lutron VCRX appears to OpenHAB as multiple devices.
+The Lutron VCRX appears to openHAB as multiple devices.
 The 6 buttons (which can be activated remotely by HomeLink remote controls), 6 corresponding LEDs, and 4 contact closure inputs (CCIs) are handled by the **vcrx** thing, which behaves like a keypad.
 The contact closure outputs (CCOs) have their own integration IDs and are handled by the **cco** thing (see below).
 
@@ -234,13 +235,32 @@ Supplying a model is not required, as there is only one model.
 
 To support the contact closure inputs, CCI channels named *cci[n]* are created with item type Contact and category Switch.
 They are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
-They present OPEN/CLOSED states but do not accept commands as Contact items are read-only in OpenHAB.
+They present OPEN/CLOSED states but do not accept commands as Contact items are read-only in openHAB.
 Note that the `autorelease` option **does not** apply to CCI channels.
 
 Example:
 
 ```
 Thing lutron:vcrx:vcrx1 (lutron:ipbridge:radiora2) [ integrationId=13, autorelease="true" ]
+```
+
+### QS IO Interface (HomeWorks QS)
+
+The Lutron QS IO Interface (QSE-IO) appears to openHAB as multiple devices.
+The 5 contact closure inputs (CCIs) are handled by the **qsio** thing.
+The 5 contact closure outputs (CCOs) are handled by the **cco** thing (see below).
+The only configuration option is `integrationId`
+
+To support the contact closure inputs, CCI channels named *cci[n]* are created with item type Contact and category Switch.
+They are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
+They present OPEN/CLOSED states but do not accept commands as Contact items are read-only in openHAB.
+
+Some functionality may depend on QSE-IO DIP switch settings. See the Lutron documentation for more information.
+
+Example:
+
+```
+Thing lutron:qsio:sensorinputs (lutron:ipbridge:homeworks) [ integrationId=42 ]
 ```
 
 ### CCO Modules
@@ -263,7 +283,7 @@ Sending an OFF command does nothing.
 Because of limitations in RadioRA 2, you cannot monitor the state of a pulsed CCO.
 Therefore, the channel state will only transition OFF->ON->OFF when you send a ON command.
 
-For maintained CCOs, sending ON and OFF commands works as expected, and the channel state updates as expected when either OpenHAB commands or external events change the CCO device state.
+For maintained CCOs, sending ON and OFF commands works as expected, and the channel state updates as expected when either openHAB commands or external events change the CCO device state.
 
 Example:
 
