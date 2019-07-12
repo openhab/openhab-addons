@@ -12,11 +12,12 @@
  */
 package org.openhab.binding.teleinfo.internal.handler;
 
-import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.ERROR_OFFLINE_CONTROLLER_OFFLINE;
+import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -27,7 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.teleinfo.internal.reader.Frame;
 import org.openhab.binding.teleinfo.internal.reader.FrameOptionHeuresCreuses;
 import org.slf4j.Logger;
@@ -89,28 +90,34 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
     @Override
     public void onFrameReceived(@NonNull TeleinfoAbstractControllerHandler controllerHandler, @NonNull Frame frame) {
         logger.debug("Receiving frame");
-        String adco = getThing().getProperties()
-                .get(TeleinfoBindingConstants.THING_HCHP_ELECTRICITY_METER_PROPERTY_ADCO);
+        String adco = getThing().getProperties().get(THING_HCHP_ELECTRICITY_METER_PROPERTY_ADCO);
         if (adco.equalsIgnoreCase(frame.getADCO())) {
             // update common channels
-            updateState(TeleinfoBindingConstants.CHANNEL_ISOUSC, new DecimalType(frame.getIntensiteSouscrite()));
-            updateState(TeleinfoBindingConstants.CHANNEL_PTEC,
-                    new StringType(frame.getPeriodeTarifaireEnCours().name()));
-            updateState(TeleinfoBindingConstants.CHANNEL_IMAX, new DecimalType(frame.getIntensiteMaximale()));
-            updateState(TeleinfoBindingConstants.CHANNEL_PAPP, new DecimalType(frame.getPuissanceApparente()));
-            updateState(TeleinfoBindingConstants.CHANNEL_IINST, new DecimalType(frame.getIntensiteInstantanee()));
+            updateState(CHANNEL_ISOUSC, new DecimalType(frame.getIntensiteSouscrite()));
+            updateState(CHANNEL_PTEC, new StringType(frame.getPeriodeTarifaireEnCours().name()));
+            if (frame.getIntensiteMaximale() == null) {
+                updateState(CHANNEL_IMAX, UnDefType.NULL);
+            } else {
+                updateState(CHANNEL_IMAX, new DecimalType(frame.getIntensiteMaximale()));
+            }
+
+            if (frame.getAvertissementDepassementPuissanceSouscrite() == null) {
+                updateState(CHANNEL_ADPS, UnDefType.NULL);
+            } else {
+                updateState(CHANNEL_ADPS, new DecimalType(frame.getAvertissementDepassementPuissanceSouscrite()));
+            }
+            updateState(CHANNEL_PAPP, new DecimalType(frame.getPuissanceApparente()));
+            updateState(CHANNEL_IINST, new DecimalType(frame.getIntensiteInstantanee()));
+            updateState(CHANNEL_LAST_UPDATE, new DateTimeType());
         }
 
         if (adco.equalsIgnoreCase(frame.getADCO())) {
             FrameOptionHeuresCreuses hcFrame = (FrameOptionHeuresCreuses) frame;
 
-            BigDecimal powerFactor = (BigDecimal) getThing().getChannel(TeleinfoBindingConstants.CHANNEL_CURRENT_POWER)
-                    .getConfiguration()
-                    .get(TeleinfoBindingConstants.CHANNEL_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
-            updateState(TeleinfoBindingConstants.CHANNEL_CURRENT_POWER,
+            BigDecimal powerFactor = (BigDecimal) getThing().getChannel(CHANNEL_CURRENT_POWER).getConfiguration()
+                    .get(CHANNEL_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
+            updateState(CHANNEL_CURRENT_POWER,
                     new DecimalType(hcFrame.getIntensiteInstantanee() * powerFactor.intValue()));
         }
-
     }
-
 }
