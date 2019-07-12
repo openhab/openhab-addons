@@ -27,34 +27,37 @@ public class TeleinfoBindingConstants {
     private static final String BINDING_ID = "teleinfo";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SERIAL_CONTROLLER = new ThingTypeUID(BINDING_ID, "serialController");
+    public static final ThingTypeUID THING_TYPE_SERIAL_CONTROLLER = new ThingTypeUID(BINDING_ID, "serialcontroller");
     // public static final ThingTypeUID THING_TYPE_REMOTE_IP = new ThingTypeUID(BINDING_ID, "remoteip");
 
     // List of all Channel ids
     public static final String CHANNEL_ISOUSC = "isousc";
-    public static final String CHANNEL_HCHC = "hchc";
-    public static final String CHANNEL_HCHP = "hchp";
     public static final String CHANNEL_PTEC = "ptec";
     public static final String CHANNEL_IMAX = "imax";
+    public static final String CHANNEL_ADPS = "adps";
     public static final String CHANNEL_PAPP = "papp";
     public static final String CHANNEL_IINST = "iinst";
-    public static final String CHANNEL_CURRENT_POWER = "currentpower";
+    public static final String CHANNEL_LAST_UPDATE = "lastUpdate";
+    public static final String CHANNEL_CURRENT_POWER = "currentPower";
     public static final String CHANNEL_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR = "powerFactor";
 
     public static final ThingTypeUID THING_HCHP_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            "hchpElectricityMeter");
+            "hchp_electricitymeter");
     public static final String THING_HCHP_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
+    public static final String THING_HCHP_ELECTRICITY_METER_CHANNEL_HCHC = "hchc";
+    public static final String THING_HCHP_ELECTRICITY_METER_CHANNEL_HCHP = "hchp";
+    public static final String THING_HCHP_ELECTRICITY_METER_CHANNEL_HHPHC = "hhphc";
 
     public static final ThingTypeUID THING_BASE_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            "baseElectricityMeter");
+            "base_electricitymeter");
     public static final String THING_BASE_ELECTRICITY_METER_PROPERTY_ADCO = THING_HCHP_ELECTRICITY_METER_PROPERTY_ADCO;
 
     public static final ThingTypeUID THING_EJP_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            "ejpElectricityMeter");
+            "ejp_electricitymeter");
     public static final String THING_EJP_ELECTRICITY_METER_PROPERTY_ADCO = THING_HCHP_ELECTRICITY_METER_PROPERTY_ADCO;
 
     public static final ThingTypeUID THING_TEMPO_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            "tempoElectricityMeter");
+            "tempo_electricitymeter");
     public static final String THING_TEMPO_ELECTRICITY_METER_PROPERTY_ADCO = THING_HCHP_ELECTRICITY_METER_PROPERTY_ADCO;
 
     public final static String ERROR_OFFLINE_SERIAL_NOT_FOUND = "@text/teleinfo.thingstate.serial_notfound";

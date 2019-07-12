@@ -20,5 +20,5 @@ package org.openhab.binding.teleinfo.internal.serial;
 public class TeleinfoSerialControllerConfiguration {
 
     public String serialport;
-    // public int pollingInterval;
+
 }

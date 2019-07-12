@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
  
-    <bridge-type id="serialController">
+    <bridge-type id="serialcontroller">
 		<label>Teleinfo Serial Controller</label>
 		<description>Teleinfo USB Stick with Serial Interface</description>
 
@@ -14,12 +14,6 @@
 				<context>serial-port</context>
 				<description>Serial port of Teleinfo device (e.g.: /dev/ttyUSB0 on Linux, COM1 on Windows)</description>
 			</parameter>
-<!-- 			<parameter name="pollingInterval" type="integer" required="false" min="10" max="86400"> -->
-<!-- 				<label>Polling Interval</label> -->
-<!-- 				<description>Interval in seconds to poll Teleinfo data</description> -->
-<!-- 				<default>60</default> -->
-<!-- 				<unitLabel>second</unitLabel> -->
-<!-- 			</parameter> -->
 		</config-description>
 	</bridge-type>
 

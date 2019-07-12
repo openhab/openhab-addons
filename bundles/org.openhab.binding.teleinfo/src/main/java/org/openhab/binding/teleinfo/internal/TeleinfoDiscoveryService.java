@@ -42,15 +42,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
-// @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.teleinfo")
+// @Component(service = DiscoveryService.class, immediate = false, configurationPid = "discovery.teleinfo")
 public class TeleinfoDiscoveryService extends AbstractDiscoveryService implements TeleinfoControllerHandlerListener {
 
-    private final Logger logger = LoggerFactory.getLogger(TeleinfoDiscoveryService.class);
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
             .of(THING_HCHP_ELECTRICITY_METER_TYPE_UID, THING_BASE_ELECTRICITY_METER_TYPE_UID,
                     THING_TEMPO_ELECTRICITY_METER_TYPE_UID, THING_EJP_ELECTRICITY_METER_TYPE_UID)
             .collect(Collectors.toSet());
 
+    private final Logger logger = LoggerFactory.getLogger(TeleinfoDiscoveryService.class);
     private final TeleinfoAbstractControllerHandler controllerHandler;
 
     public TeleinfoDiscoveryService(TeleinfoAbstractControllerHandler controllerHandler, int timeout) {
@@ -96,17 +96,17 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService implement
 
     @Override
     public void onFrameReceived(@NonNull TeleinfoAbstractControllerHandler controllerHandler, @NonNull Frame frame) {
-        onElectricityMeterDiscovered(frame);
+        detectNewElectricityMeterFromReceivedFrame(frame);
     }
 
-    private void onElectricityMeterDiscovered(final Frame frameSample) {
+    private void detectNewElectricityMeterFromReceivedFrame(final Frame frameSample) {
+        logger.debug("New eletricity meter detection from frame {}", frameSample.getId());
         ThingUID thingUID = getThingUID(frameSample);
-        logger.debug("Electricity meter discovered: {}", thingUID);
 
         final Map<String, Object> properties = getThingProperties(thingUID.getThingTypeUID(), frameSample);
         final String representationProperty = getRepresentationProperty(thingUID.getThingTypeUID(), frameSample);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withLabel(frameSample.getADCO()).withThingType(getThingTypeUID(frameSample))
+                .withLabel("ADCO " + frameSample.getADCO()).withThingType(getThingTypeUID(frameSample))
                 .withBridge(controllerHandler.getThing().getUID()).withRepresentationProperty(representationProperty)
                 .build();
 

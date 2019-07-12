@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.teleinfo.internal.handler;
 
+import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants;
 import org.openhab.binding.teleinfo.internal.reader.Frame;
 import org.openhab.binding.teleinfo.internal.reader.FrameOptionHeuresCreuses;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link TeleinfoHchpElectricityMeterHandler} class defines a handler for a HCHP Electricity Meters thing.
@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
  * @author Nicolas SIBERIL - Initial contribution
  */
 public class TeleinfoHchpElectricityMeterHandler extends TeleinfoAbstractElectricityMeterHandler {
-    private final Logger logger = LoggerFactory.getLogger(TeleinfoHchpElectricityMeterHandler.class);
 
     public TeleinfoHchpElectricityMeterHandler(Thing thing) {
         super(thing);
@@ -37,13 +36,13 @@ public class TeleinfoHchpElectricityMeterHandler extends TeleinfoAbstractElectri
     public void onFrameReceived(@NonNull TeleinfoAbstractControllerHandler controllerHandler, @NonNull Frame frame) {
         super.onFrameReceived(controllerHandler, frame);
 
-        String adco = getThing().getProperties()
-                .get(TeleinfoBindingConstants.THING_HCHP_ELECTRICITY_METER_PROPERTY_ADCO);
+        String adco = getThing().getProperties().get(THING_HCHP_ELECTRICITY_METER_PROPERTY_ADCO);
         if (adco.equalsIgnoreCase(frame.getADCO())) {
             FrameOptionHeuresCreuses hcFrame = (FrameOptionHeuresCreuses) frame;
 
-            updateState(TeleinfoBindingConstants.CHANNEL_HCHC, new DecimalType(hcFrame.getIndexHeuresCreuses()));
-            updateState(TeleinfoBindingConstants.CHANNEL_HCHP, new DecimalType(hcFrame.getIndexHeuresPleines()));
+            updateState(THING_HCHP_ELECTRICITY_METER_CHANNEL_HCHC, new DecimalType(hcFrame.getIndexHeuresCreuses()));
+            updateState(THING_HCHP_ELECTRICITY_METER_CHANNEL_HCHP, new DecimalType(hcFrame.getIndexHeuresPleines()));
+            updateState(THING_HCHP_ELECTRICITY_METER_CHANNEL_HHPHC, new StringType(hcFrame.getGroupeHoraire().name()));
         }
 
     }
