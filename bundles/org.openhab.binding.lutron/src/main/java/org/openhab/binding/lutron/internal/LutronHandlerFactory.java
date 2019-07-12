@@ -40,6 +40,7 @@ import org.openhab.binding.lutron.internal.handler.OccupancySensorHandler;
 import org.openhab.binding.lutron.internal.handler.PicoKeypadHandler;
 import org.openhab.binding.lutron.internal.handler.PulsedCcoHandler;
 import org.openhab.binding.lutron.internal.handler.IntlKeypadHandler;
+import org.openhab.binding.lutron.internal.handler.QSIOHandler;
 import org.openhab.binding.lutron.internal.handler.ShadeHandler;
 import org.openhab.binding.lutron.internal.handler.SwitchHandler;
 import org.openhab.binding.lutron.internal.handler.TabletopKeypadHandler;
@@ -69,7 +70,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             .unmodifiableSet(Stream.of(THING_TYPE_DIMMER, THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR,
                     THING_TYPE_KEYPAD, THING_TYPE_TTKEYPAD, THING_TYPE_INTLKEYPAD, THING_TYPE_PICO, THING_TYPE_VIRTUALKEYPAD, THING_TYPE_VCRX,
                     THING_TYPE_CCO_PULSED, THING_TYPE_CCO_MAINTAINED, THING_TYPE_SHADE, THING_TYPE_TIMECLOCK,
-                    THING_TYPE_GREENMODE).collect(Collectors.toSet()));
+                    THING_TYPE_GREENMODE, THING_TYPE_QSIO).collect(Collectors.toSet()));
 
     // Used by the HwDiscoveryService
     public static final Set<ThingTypeUID> HW_DISCOVERABLE_DEVICE_TYPES_UIDS = Collections
@@ -125,6 +126,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new TimeclockHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_GREENMODE)) {
             return new GreenModeHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_QSIO)) {
+            return new QSIOHandler(thing);
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_PRGBRIDGE)) {
             return new PrgBridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_GRAFIKEYE)) {

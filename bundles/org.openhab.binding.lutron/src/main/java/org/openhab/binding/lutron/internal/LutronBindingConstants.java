@@ -45,6 +45,7 @@ public class LutronBindingConstants {
     public static final ThingTypeUID THING_TYPE_CCO_MAINTAINED = new ThingTypeUID(BINDING_ID, "ccomaintained");
     public static final ThingTypeUID THING_TYPE_TIMECLOCK = new ThingTypeUID(BINDING_ID, "timeclock");
     public static final ThingTypeUID THING_TYPE_GREENMODE = new ThingTypeUID(BINDING_ID, "greenmode");
+    public static final ThingTypeUID THING_TYPE_QSIO = new ThingTypeUID(BINDING_ID, "qsio");
 
     // List of all Channel ids
     public static final String CHANNEL_LIGHTLEVEL = "lightlevel";

@@ -411,6 +411,22 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="qsio">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>QS IO Interface</label>
+		<description>Lutron QS IO Interface</description>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of QS IO Interface in the HomeWorks QS system</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<thing-type id="timeclock">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
