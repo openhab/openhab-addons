@@ -279,7 +279,6 @@ public class TeleinfoInputStream extends InputStream {
         FrameOptionBase frame = new FrameOptionBase();
         setCommonFrameFields(frame, frameValues);
         frame.setIndexBase(getRequiredLabelValue(Label.BASE, Integer.class, frameValues));
-        // FIXME TBD
 
         logger.trace("buildFrameOptionBase(Map<Label, Object>) [end]");
         return frame;
