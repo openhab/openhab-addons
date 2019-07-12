@@ -117,9 +117,9 @@ public class TeleinfoInputStream extends InputStream {
      *
      * @return the next frame or null if end of stream
      * @throws InvalidFrameException if the read data from
-     * @throws TimeoutException      if the delay to read a complete frame is expired (33,4 ms) or if the delay to find
-     *                                   the
-     *                                   header of next frame is expired (33,4 ms)
+     * @throws TimeoutException if the delay to read a complete frame is expired (33,4 ms) or if the delay to find
+     *             the
+     *             header of next frame is expired (33,4 ms)
      * @throws IOException
      */
     public synchronized Frame readNextFrame() throws InvalidFrameException, TimeoutException, IOException {
@@ -198,7 +198,6 @@ public class TeleinfoInputStream extends InputStream {
                     }
                     try {
                         Object value = converter.convert(valueString);
-                        // FIXME checks constraints value
 
                         frameValues.put(label, value);
                     } catch (ConvertionException e) {
@@ -218,7 +217,7 @@ public class TeleinfoInputStream extends InputStream {
             Map<Label, Object> frameValues = nextFrameFuture.get(Long.MAX_VALUE, TimeUnit.MICROSECONDS); // FIXME
 
             // build the frame from map values
-            Frame frame = null;
+            final Frame frame;
 
             String optionTarif = (String) frameValues.get(Label.OPTARIF);
             switch (optionTarif) {
