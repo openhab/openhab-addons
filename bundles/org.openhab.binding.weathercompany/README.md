@@ -18,34 +18,34 @@ and locale are set in the openHAB configuration.
 
 The following configuration parameters are available on the Weather thing:
 
-- **API Key** (required):
+**API Key** (required):
 Get the API key from your Weather Underground PWS page.
 Old Weather Underground API keys will not work with this binding.
 
-- **Location Type** (required):
+**Location Type** (required):
 The following location types are available:
 
   - Postal Code
   - Geocode
   - IATA Code
 
-- **Postal Code** (required for Location Type Postal Code):
+**Postal Code** (required for Location Type Postal Code):
 Available for the following countries: US, UK, DE, FR, IT, CA.
 The format is a concatenation of the postal code and the 2-character country code (e.g. 10001:US, W6C:CA).
 
-- **Geocode** (required for Location Type Geocode):
+**Geocode** (required for Location Type Geocode):
 Specify latitude and longitude of the location for which the forecast is desired (e.g. 25.762272,-80.216425).
 
-- **IATA Code** (required when Location Type is IATA Code):
+**IATA Code** (required when Location Type is IATA Code):
 Three character airport code (e.g. BWI, FCO).
 
-- **Langauge** (required):
+**Langauge** (required):
 Supports full list of TWC-supported languages.
 
-- **Station ID** (optional):
+**Station ID** (optional):
 Enter your PWS station Id if you want to populate the PWS current observations channels.
 
-- **Forecast Refresh Interval** (required):
+**Forecast Refresh Interval** (required):
 Default to 30 minutes.
 Minimum is 2 minutes.
 

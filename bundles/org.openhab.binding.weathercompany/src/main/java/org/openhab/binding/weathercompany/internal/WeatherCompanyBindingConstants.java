@@ -48,6 +48,9 @@ public class WeatherCompanyBindingConstants {
     public static final String CONFIG_LANGUAGE_DEFAULT = "en-US";
     public static final String CONFIG_PWS_STATION_ID = "pwsStationId";
 
+    // Used to sanitize the API key in the URL in debug log messages
+    public static final String REPLACE_API_KEY = "XXXXXXXXXXXXXXXXXXXXX";
+
     // Channel group pwsObservations
     public static final String CH_GROUP_PWS_OBSERVATIONS = "pwsObservations";
 

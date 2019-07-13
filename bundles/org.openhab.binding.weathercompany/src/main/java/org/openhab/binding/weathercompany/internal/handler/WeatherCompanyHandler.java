@@ -60,6 +60,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.weathercompany.internal.config.WeatherCompanyConfig;
@@ -92,30 +93,33 @@ public class WeatherCompanyHandler extends BaseThingHandler {
     // Personal Weather Station observations URL
     private static final String BASE_PWS_URL = "https://api.weather.com/v2/pws/observations/current";
 
-    public static final int WEATHER_COMPANY_API_TIMEOUT = 10000;
-    public static final int REFRESH_JOB_INITIAL_DELAY = 3;
-
-    // Used to sanitize the API key in the URL in debug log messages
-    private static final String REPLACE_API_KEY = "XXXXXXXXXXXXXXXXXXXXX";
+    private static final int WEATHER_COMPANY_API_TIMEOUT_SECONDS = 10;
+    private static final int REFRESH_JOB_INITIAL_DELAY_SECONDS = 30;
 
     private final Logger logger = LoggerFactory.getLogger(WeatherCompanyHandler.class);
 
     private final Gson gson = new GsonBuilder().serializeNulls().create();
 
     // Provided by handler factory
-    private @NonNullByDefault({}) TimeZoneProvider timeZoneProvider;
-    private @NonNullByDefault({}) HttpClient httpClient;
-    private @NonNullByDefault({}) SystemOfUnits systemOfUnits;
+    private TimeZoneProvider timeZoneProvider;
+    private HttpClient httpClient;
+    private SystemOfUnits systemOfUnits;
 
     // Thing configuration
-    private @NonNullByDefault({}) WeatherCompanyConfig config;
+    private @Nullable String apiKey;
+    private @Nullable String locationType;
+    private @Nullable String postalCode;
+    private @Nullable String geocode;
+    private @Nullable String iataCode;
+    private @Nullable String language;
+    private @Nullable String pwsStationId;
+    private int refreshIntervalSeconds;
 
     private @Nullable String forecastUrl;
     private @Nullable String pwsUrl;
 
     // Job to update the forecast and PWS observations
     private @Nullable Future<?> refreshJob;
-    private int refreshInterval;
 
     private Runnable refreshRunnable = new Runnable() {
         @Override
@@ -135,20 +139,19 @@ public class WeatherCompanyHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
+        updateStatus(ThingStatus.OFFLINE);
 
         // Get the configuration
-        config = getConfigAs(WeatherCompanyConfig.class);
-        // logger.debug("Handler: Config: apiKey={}", config.apiKey);
-        logger.debug("Handler: Config: locationType={}", config.locationType);
-        logger.debug("Handler: Config: postalCode={}", config.postalCode);
-        logger.debug("Handler: Config: geocode={}", config.geocode);
-        logger.debug("Handler: Config: language={}", config.language);
-        logger.debug("Handler: Config: pwsStationId={}", config.pwsStationId);
-        logger.debug("Handler: Config: refreshInterval={} minutes", config.refreshInterval);
-
-        // Set the frequency with which the forecast will be refreshed
-        refreshInterval = getRefreshIntervalSeconds();
+        WeatherCompanyConfig config = getConfigAs(WeatherCompanyConfig.class);
+        logger.debug("Configuration: {}", config.toString());
+        apiKey = config.apiKey;
+        locationType = config.locationType;
+        postalCode = config.postalCode;
+        geocode = config.geocode;
+        iataCode = config.iataCode;
+        language = config.language;
+        pwsStationId = config.pwsStationId;
+        refreshIntervalSeconds = config.refreshInterval * 60;
 
         // Construct the URL for querying the forecast
         forecastUrl = buildForecastUrl();
@@ -168,57 +171,71 @@ public class WeatherCompanyHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // Handler doesn't handle any commands
+        if (channelUID.getId().equals(CH_GROUP_FORECAST_DAY + "0" + "#" + CH_VALID_TIME_LOCAL)) {
+            if (RefreshType.REFRESH.equals(command)) {
+                logger.debug("Running job to refresh channels");
+                scheduler.schedule(refreshRunnable, 0, TimeUnit.SECONDS);
+            }
+        }
     }
 
     /*
-     * Build the URL for requesting the 5-day forecast
+     * Build the URL for requesting the 5-day forecast. It's important to request
+     * the desired language AND units so that the forecast narrative contains
+     * the consistent language and units (e.g. wind gusts to 30 mph).
      */
     private String buildForecastUrl() {
         StringBuilder sb = new StringBuilder(BASE_FORECAST_URL);
         // Set response type as JSON
         sb.append("?format=json");
         // Set language from config
-        sb.append("&language=").append(config.language);
+        sb.append("&language=").append(language);
         // Set API key from config
-        sb.append("&apiKey=").append(config.apiKey);
+        sb.append("&apiKey=").append(apiKey);
         // Set the units to Imperial or Metric
         sb.append("&units=").append(getUnitsQueryString());
         // Set the location from config
         sb.append(getLocationQueryString());
         String url = sb.toString();
-        logger.debug("Forecast URL is {}", url.replace(config.apiKey, REPLACE_API_KEY));
+        logger.debug("Forecast URL is {}", url.replace(apiKey, REPLACE_API_KEY));
         return url.toString();
     }
 
     private String getLocationQueryString() {
         boolean validConfig = true;
         StringBuilder sb = new StringBuilder();
-        switch (config.locationType) {
+        String location;
+        switch (locationType) {
             case CONFIG_LOCATION_TYPE_POSTAL_CODE:
-                if (StringUtils.trimToNull(config.postalCode) == null) {
+                location = StringUtils.trimToNull(postalCode);
+                if (location == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Postal code is not set");
                     validConfig = false;
                 } else {
-                    sb.append("&postalKey=").append(config.postalCode.replace(" ", ""));
+                    sb.append("&postalKey=").append(location.replace(" ", ""));
                 }
                 break;
             case CONFIG_LOCATION_TYPE_GEOCODE:
-                if (StringUtils.trimToNull(config.geocode) == null) {
+                location = StringUtils.trimToNull(geocode);
+                if (location == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Geocode is not set");
                     validConfig = false;
                 } else {
-                    sb.append("&geocode=").append(config.geocode.replace(" ", ""));
+                    sb.append("&geocode=").append(location.replace(" ", ""));
                 }
                 break;
             case CONFIG_LOCATION_TYPE_IATA_CODE:
-                if (StringUtils.trimToNull(config.iataCode) == null) {
+                location = StringUtils.trimToNull(iataCode);
+                if (location == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IATA code is not set");
                     validConfig = false;
                 } else {
-                    sb.append("&iataCode=").append(config.iataCode.replace(" ", "").toUpperCase());
+                    sb.append("&iataCode=").append(location.replace(" ", "").toUpperCase());
                 }
                 break;
+            default:
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Location Type is not set");
+                validConfig = false;
         }
         if (validConfig) {
             updateStatus(ThingStatus.ONLINE);
@@ -237,7 +254,7 @@ public class WeatherCompanyHandler extends BaseThingHandler {
      * Build the URL for requesting the PWS current observations
      */
     private @Nullable String buildPwsUrl() {
-        if (StringUtils.isEmpty(config.pwsStationId)) {
+        if (StringUtils.isEmpty(pwsStationId)) {
             return null;
         }
         StringBuilder sb = new StringBuilder(BASE_PWS_URL);
@@ -246,11 +263,11 @@ public class WeatherCompanyHandler extends BaseThingHandler {
         // Set response type as JSON
         sb.append("&format=json");
         // Set PWS station Id from config
-        sb.append("&stationId=").append(config.pwsStationId);
+        sb.append("&stationId=").append(pwsStationId);
         // Set API key from config
-        sb.append("&apiKey=").append(config.apiKey);
+        sb.append("&apiKey=").append(apiKey);
         String url = sb.toString();
-        logger.debug("PWS observations URL is {}", url.replace(config.apiKey, REPLACE_API_KEY));
+        logger.debug("PWS observations URL is {}", url.replace(apiKey, REPLACE_API_KEY));
         return url;
     }
 
@@ -261,7 +278,7 @@ public class WeatherCompanyHandler extends BaseThingHandler {
         return systemOfUnits instanceof ImperialUnits ? true : false;
     }
 
-    private void refreshForecast() {
+    private synchronized void refreshForecast() {
         if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
             logger.debug("Handler: Can't refresh forecast because thing configuration is incomplete");
             return;
@@ -275,13 +292,11 @@ public class WeatherCompanyHandler extends BaseThingHandler {
             logger.trace("Handler: Parsing forecast response: {}", response);
             Forecast forecast = gson.fromJson(response, Forecast.class);
             logger.debug("Handler: Successfully parsed daily forecast response object");
-            if (thing.getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-            }
+            updateStatus(ThingStatus.ONLINE);
             updateDailyForecast(forecast);
             updateDaypartForecast(forecast.daypart);
         } catch (JsonSyntaxException e) {
-            logger.debug("Handler: Error parsing daily forecast response object: {}", e.getMessage(), e);
+            logger.debug("Handler: Error parsing daily forecast response object", e);
             markThingOffline("Error parsing daily forecast");
             return;
         }
@@ -376,29 +391,20 @@ public class WeatherCompanyHandler extends BaseThingHandler {
         URL url = FrameworkUtil.getBundle(getClass()).getResource(iconPath);
         logger.trace("Path to icon image resource is: {}", url);
         if (url != null) {
-            ByteArrayOutputStream out = null;
-            try {
+            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
                 InputStream is = url.openStream();
-                out = new ByteArrayOutputStream();
                 BufferedImage image = ImageIO.read(is);
                 ImageIO.write(image, "png", out);
                 out.flush();
                 data = out.toByteArray();
             } catch (IOException e) {
                 logger.debug("I/O exception occurred getting image data: {}", e.getMessage(), e);
-            } finally {
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (IOException e) {
-                    }
-                }
             }
         }
         return data;
     }
 
-    private void refreshPwsObservations() {
+    private synchronized void refreshPwsObservations() {
         if (thing.getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
             logger.debug("Handler: Can't refresh PWS observations because thing configuration is incomplete");
             return;
@@ -524,6 +530,7 @@ public class WeatherCompanyHandler extends BaseThingHandler {
             return null;
         }
         Request request = httpClient.newRequest(url);
+        request.timeout(WEATHER_COMPANY_API_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.method(HttpMethod.GET);
         request.header(HttpHeader.ACCEPT, "application/json");
         request.header(HttpHeader.ACCEPT_ENCODING, "gzip");
@@ -622,7 +629,7 @@ public class WeatherCompanyHandler extends BaseThingHandler {
     }
 
     private ZoneId getZoneId() {
-        return timeZoneProvider != null ? timeZoneProvider.getTimeZone() : ZoneId.systemDefault();
+        return timeZoneProvider.getTimeZone();
     }
 
     /*
@@ -630,10 +637,10 @@ public class WeatherCompanyHandler extends BaseThingHandler {
      * observations on the refresh interval set in the thing config
      */
     private void scheduleRefreshJob() {
-        logger.debug("Handler: Scheduling forecast refresh job in {} seconds", REFRESH_JOB_INITIAL_DELAY);
+        logger.debug("Handler: Scheduling forecast refresh job in {} seconds", REFRESH_JOB_INITIAL_DELAY_SECONDS);
         cancelRefreshJob();
-        refreshJob = scheduler.scheduleWithFixedDelay(refreshRunnable, REFRESH_JOB_INITIAL_DELAY, refreshInterval,
-                TimeUnit.SECONDS);
+        refreshJob = scheduler.scheduleWithFixedDelay(refreshRunnable, REFRESH_JOB_INITIAL_DELAY_SECONDS,
+                refreshIntervalSeconds, TimeUnit.SECONDS);
     }
 
     private void cancelRefreshJob() {
@@ -641,10 +648,6 @@ public class WeatherCompanyHandler extends BaseThingHandler {
             refreshJob.cancel(true);
             logger.debug("Handler: Canceling forecast refresh job");
         }
-    }
-
-    private int getRefreshIntervalSeconds() {
-        return config.refreshInterval * 60;
     }
 
     /*
