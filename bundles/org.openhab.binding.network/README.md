@@ -42,7 +42,7 @@ Please note: things discovered by the network binding will be provided with a ti
 network:pingdevice:one_device [ hostname="192.168.0.64" ]
 network:pingdevice:second_device [ hostname="192.168.0.65", retry=1, timeout=5000, refreshInterval=60000 ]
 network:servicedevice:important_server [ hostname="192.168.0.62", port=1234 ]
-network:speedtest:local "SpeedTest 50Mo" @ "Internet" [refreshInterval=20, uploadSize=1000000, url="http://1.testdebit.info:8080/", fileName="50M.iso"]
+network:speedtest:local "SpeedTest 50Mo" @ "Internet" [refreshInterval=20, uploadSize=1000000, url="https://bouygues.testdebit.info/", fileName="50M.iso"]
 ```
 
 Use the following options for a **network:pingdevice**:
@@ -172,7 +172,7 @@ demo.things:
 
 ```xtend
 Thing network:pingdevice:devicename [ hostname="192.168.0.42" ]
-Thing network:speedtest:local "SpeedTest 50Mo" @ "Internet" [url="http://1.testdebit.info:8080/", fileName="50M.iso"]
+Thing network:speedtest:local "SpeedTest 50Mo" @ "Internet" [url="https://bouygues.testdebit.info/", fileName="50M.iso"]
 ```
 
 demo.items:
@@ -182,9 +182,9 @@ Switch MyDevice { channel="network:pingdevice:devicename:online" }
 Number:Time MyDeviceResponseTime { channel="network:pingdevice:devicename:latency" }
 
 String Speedtest_Running "Test running ... [%s]" {channel="network:speedtest:local:isRunning"}
-Number:Dimensionless Speedtest_Progress "Test progress"  {channel="network:speedtest:local:progress"}
-Number Speedtest_ResultDown "Downlink [%.2f Mbit/s]"  {channel="network:speedtest:local:rateDown"}
-Number Speedtest_ResultUp "Uplink [%.2f Mbit/s]" {channel="network:speedtest:local:rateUp"}
+Number:Dimensionless Speedtest_Progress "Test progress [%d %unit%]"  {channel="network:speedtest:local:progress"}
+Number:DataTransferRate Speedtest_ResultDown "Downlink [%.2f %unit%]"  {channel="network:speedtest:local:rateDown"}
+Number:DataTransferRate Speedtest_ResultUp "Uplink [%.2f %unit%]" {channel="network:speedtest:local:rateUp"}
 DateTime Speedtest_Start "Test Start [%1$tH:%1$tM]" <time> {channel="network:speedtest:local:testStart"}
 DateTime Speedtest_LUD "Timestamp [%1$tH:%1$tM]" <time> {channel="network:speedtest:local:testEnd"}
 
