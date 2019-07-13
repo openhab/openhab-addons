@@ -40,10 +40,10 @@ public class EventSubscribedJson {
     }
 
     public boolean isMethodSubscribe() {
-        return "subscribe".equals(method) ? true : false;
+        return "subscribe".equals(method);
     }
 
     public boolean isMethodUnsubscribe() {
-        return "unsubscribe".equals(method) ? true : false;
+        return "unsubscribe".equals(method);
     }
 }

@@ -25,21 +25,20 @@ public interface ProcessorInterface {
     /*
      * Set the channel group Id for the station
      */
-    public abstract void setChannelGroupId();
+    public void setChannelGroupId();
 
     /*
      * Set the number of remote sensors supported by the station
      */
-    public abstract void setNumberOfSensors();
+    public void setNumberOfSensors();
 
     /*
      * Updates the info channels (i.e. name and location) for a station
      */
-    public abstract void processInfoUpdate(AmbientWeatherStationHandler handler, String station, String name,
-            String location);
+    public void processInfoUpdate(AmbientWeatherStationHandler handler, String station, String name, String location);
 
     /*
      * Updates the weather data channels for a station
      */
-    public abstract void processWeatherData(AmbientWeatherStationHandler handler, String station, String jsonData);
+    public void processWeatherData(AmbientWeatherStationHandler handler, String station, String jsonData);
 }

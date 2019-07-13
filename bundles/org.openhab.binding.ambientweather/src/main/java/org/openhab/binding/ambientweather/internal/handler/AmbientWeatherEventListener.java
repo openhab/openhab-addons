@@ -294,7 +294,6 @@ public class AmbientWeatherEventListener {
             }
         } catch (JsonSyntaxException e) {
             logger.debug("Listener: Exception parsing subscribed.devices: {}", e.getMessage());
-            return;
         }
     }
 
@@ -310,7 +309,6 @@ public class AmbientWeatherEventListener {
             }
         } catch (JsonSyntaxException e) {
             logger.info("Listener: Exception parsing subscribed event: {}", e.getMessage());
-            return;
         }
     }
 

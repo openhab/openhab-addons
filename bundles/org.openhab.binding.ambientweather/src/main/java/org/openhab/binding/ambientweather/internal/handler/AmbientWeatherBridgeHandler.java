@@ -87,30 +87,25 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Bridge: Querying list of devices from ambient weather service");
                 response = HttpUtil.executeUrl("GET", url, DEVICES_API_TIMEOUT);
                 logger.trace("Bridge: Response = {}", response);
-            } catch (IOException e) {
-                // executeUrl throws IOException when it gets a Not Authorized (401) response
-                logger.debug("Bridge: Got IOException: {}", e.getMessage());
-                updateThingStatus(e.getMessage(), "Invalid API or application key");
-                rescheduleValidateKeysJob();
-                return;
-            } catch (IllegalArgumentException e) {
-                logger.debug("Bridge: Got IllegalArgumentException: {}", e.getMessage());
-                updateThingStatus(e.getMessage(), "Unable to get devices");
-                rescheduleValidateKeysJob();
-                return;
-            }
-            try {
                 // Got a response so the keys are good
                 DeviceJson[] stations = gson.fromJson(response, DeviceJson[].class);
                 logger.debug("Bridge: Application and API keys are valid with {} stations", stations.length);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Connecting to service");
                 // Start up the real-time API listener
                 listener.start(applicationKey, apiKey, gson);
+            } catch (IOException e) {
+                // executeUrl throws IOException when it gets a Not Authorized (401) response
+                logger.debug("Bridge: Got IOException: {}", e.getMessage());
+                setThingOfflineWithCommError(e.getMessage(), "Invalid API or application key");
+                rescheduleValidateKeysJob();
+            } catch (IllegalArgumentException e) {
+                logger.debug("Bridge: Got IllegalArgumentException: {}", e.getMessage());
+                setThingOfflineWithCommError(e.getMessage(), "Unable to get devices");
+                rescheduleValidateKeysJob();
             } catch (JsonSyntaxException e) {
                 logger.debug("Bridge: Got JsonSyntaxException: {}", e.getMessage());
-                updateThingStatus(e.getMessage(), "Error parsing json response");
+                setThingOfflineWithCommError(e.getMessage(), "Error parsing json response");
                 rescheduleValidateKeysJob();
-                return;
             }
         }
     };
@@ -124,7 +119,7 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         // If there are keys in the config, schedule the job to validate them
-        if (haveApplicationKey() && haveApiKey()) {
+        if (hasApplicationKey() && hasApiKey()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Awaiting key validation");
             scheduleValidateKeysJob();
         }
@@ -133,7 +128,7 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
     /*
      * Check if an application key has been provided in the thing config
      */
-    private boolean haveApplicationKey() {
+    private boolean hasApplicationKey() {
         String configApplicationKey = getConfigAs(BridgeConfig.class).applicationKey;
         if (StringUtils.isEmpty(configApplicationKey)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing application key");
@@ -146,7 +141,7 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
     /*
      * Check if an API key has been provided in the thing config
      */
-    private boolean haveApiKey() {
+    private boolean hasApiKey() {
         String configApiKey = getConfigAs(BridgeConfig.class).apiKey;
         if (StringUtils.isEmpty(configApiKey)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing API key");
@@ -156,7 +151,7 @@ public class AmbientWeatherBridgeHandler extends BaseBridgeHandler {
         return true;
     }
 
-    public void updateThingStatus(String errorDetail, String statusDescription) {
+    public void setThingOfflineWithCommError(String errorDetail, String statusDescription) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, statusDescription);
     }
 
