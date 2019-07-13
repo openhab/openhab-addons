@@ -26,7 +26,7 @@
 				<default>30</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="useWebSockets" type="boolean" required="true">
+			<parameter name="useWebSockets" type="boolean">
 				<label>Use WebSockets feature for faster state update.</label>
 				<description>Enable web sockets technology. FW 203.2.4+ required</description>
 				<default>false</default>

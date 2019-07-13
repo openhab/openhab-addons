@@ -81,11 +81,13 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
         }
 
         if (CHANNEL_CONTROL.equals(channelUID.getId())) {
-            logger.debug("Received command: {}", command);
+            logger.trace("Received command: {}", command);
             String cmd = getSmarwiCommand(command);
             if (COMMAND_OPEN.equals(cmd) || COMMAND_CLOSE.equals(cmd) || COMMAND_STOP.equals(cmd)) {
-                if (RESPONSE_OK.equals(sendCommand(cmd))) {
+                if (RESPONSE_OK.equals(sendCommand(cmd)) && !COMMAND_STOP.equals(cmd)) {
                     lastPosition = COMMAND_OPEN.equals(cmd) ? 0 : 100;
+                } else {
+                    lastPosition = -1;
                 }
             }
             if (command instanceof PercentType) {
