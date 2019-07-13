@@ -729,10 +729,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 } else {
                     updateChannelState(channel);
                 }
-            } catch (RotelException | InterruptedException e) {
+            } catch (RotelException e) {
                 logger.debug("Command {} from channel {} failed: {}", command, channel, e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Sending command failed");
                 closeConnection();
+                scheduleReconnectJob();
+            } catch (InterruptedException e) {
+                logger.debug("Command {} from channel {} interrupted: {}", command, channel, e.getMessage());
             }
         }
     }
