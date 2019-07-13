@@ -44,6 +44,7 @@
     <module>org.openhab.binding.allplay</module>
     <module>org.openhab.binding.amazondashbutton</module>
     <module>org.openhab.binding.amazonechocontrol</module>
+    <module>org.openhab.binding.ambientweather</module>
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.autelis</module>
