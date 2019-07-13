@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 import org.openhab.binding.vektiva.internal.handler.VektivaSmarwiHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -54,6 +55,12 @@ public class VektivaHandlerFactory extends BaseThingHandlerFactory {
      */
     private @NonNullByDefault({}) WebSocketClient webSocketClient;
 
+    @Activate
+    public VektivaHandlerFactory(@Reference HttpClientFactory httpClientFactory, @Reference WebSocketFactory webSocketFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.webSocketClient = webSocketFactory.getCommonWebSocketClient();
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -69,23 +76,4 @@ public class VektivaHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
-    }
-
-    @Reference
-    protected void setWebSocketFactory(WebSocketFactory webSocketFactory) {
-        this.webSocketClient = webSocketFactory.getCommonWebSocketClient();
-    }
-
-    protected void unsetWebSocketFactory(WebSocketFactory webSocketFactory) {
-        this.webSocketClient = null;
-    }
-
 }
