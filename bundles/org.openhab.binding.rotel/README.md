@@ -1,6 +1,6 @@
 # Rotel Binding
 
-This binding can be used to control Rotel audio devices.
+This binding can be used to control a Rotel audio device like a surround processor, a surround receiver, a stereo preamplifier, an integrated amplifier, a CD player or a tuner.
 
 The binding supports different kinds of connections:
 

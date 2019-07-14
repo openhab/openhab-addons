@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>Rotel Binding</name>
-	<description>The Rotel binding controls a Rotel audio device using a RS232 HEX protocol.</description>
+	<description>The Rotel binding controls a Rotel audio device like a surround processor, a surround receiver, a stereo preamplifier, an integrated amplifier, a CD player or a tuner.</description>
 	<author>Laurent Garnier</author>
 
 </binding:binding>
