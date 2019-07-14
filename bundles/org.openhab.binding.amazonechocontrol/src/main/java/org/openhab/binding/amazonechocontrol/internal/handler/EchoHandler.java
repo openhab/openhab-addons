@@ -778,8 +778,8 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
             this.ignoreVolumeChange = scheduler.schedule(this::stopIgnoreVolumeChange, 2000, TimeUnit.MILLISECONDS);
         }
         if (text.startsWith("<speak>") && text.endsWith("</speak>")) {
-            String plainText = text.replaceAll("<[^>]+>", "");
-            connection.sendAnnouncement(device, text, plainText, null, textToSpeechVolume, lastKnownVolume);
+            String bodyText = text.replaceAll("<[^>]+>", "");
+            connection.sendAnnouncement(device, text, bodyText, null, textToSpeechVolume, lastKnownVolume);
         } else {
             connection.textToSpeech(device, text, textToSpeechVolume, lastKnownVolume);
         }
