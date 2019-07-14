@@ -1097,8 +1097,8 @@ public class Connection {
         executeSequenceCommand(null, "Alexa.Notifications.SendMobilePush", parameters);
     }
 
-    public void sendAnnouncement(Device device, String text, @Nullable String bodyText, @Nullable String title,
-            int ttsVolume, int standardVolume) throws IOException, URISyntaxException {
+    public void sendAnnouncement(Device device, String text, String bodyText, @Nullable String title, int ttsVolume,
+            int standardVolume) throws IOException, URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("expireAfter", "PT5S");
         JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
