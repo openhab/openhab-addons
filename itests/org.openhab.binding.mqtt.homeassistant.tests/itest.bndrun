@@ -64,8 +64,6 @@ Fragment-Host: org.openhab.binding.mqtt.homeassistant
 	osgi.enroute.junit.wrapper;version='[4.12.0,4.12.1)',\
 	slf4j.api;version='[1.7.25,1.7.26)',\
 	slf4j.simple;version='[1.7.21,1.7.22)',\
-	tec.uom.lib.uom-lib-common;version='[1.0.2,1.0.3)',\
-	tec.uom.se;version='[1.0.8,1.0.9)',\
 	com.h2database.mvstore;version='[1.4.199,1.4.200)',\
 	io.netty.buffer;version='[4.1.34,4.1.35)',\
 	io.netty.codec;version='[4.1.34,4.1.35)',\
@@ -76,4 +74,6 @@ Fragment-Host: org.openhab.binding.mqtt.homeassistant
 	io.netty.transport;version='[4.1.34,4.1.35)',\
 	org.apache.servicemix.bundles.commons-codec;version='[1.3.0,1.3.1)',\
 	org.openhab.io.mqttembeddedbroker;version='[2.5.0,2.5.1)',\
-	io.moquette.moquette-broker;version='[0.12.1,0.12.2)'
+	io.moquette.moquette-broker;version='[0.12.1,0.12.2)',\
+	tec.uom.lib.uom-lib-common;version='[1.0.3,1.0.4)',\
+	tec.uom.se;version='[1.0.10,1.0.11)'

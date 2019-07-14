@@ -43,8 +43,6 @@ Fragment-Host: org.openhab.binding.systeminfo
 	org.osgi.service.event;version='[1.4.0,1.4.1)',\
 	osgi.enroute.hamcrest.wrapper;version='[1.3.0,1.3.1)',\
 	osgi.enroute.junit.wrapper;version='[4.12.0,4.12.1)',\
-	tec.uom.lib.uom-lib-common;version='[1.0.2,1.0.3)',\
-	tec.uom.se;version='[1.0.8,1.0.9)',\
 	org.apache.servicemix.bundles.xstream;version='[1.4.7,1.4.8)',\
 	org.openhab.core.binding.xml;version='[2.5.0,2.5.1)',\
 	org.openhab.core.config.xml;version='[2.5.0,2.5.1)',\
@@ -63,4 +61,6 @@ Fragment-Host: org.openhab.binding.systeminfo
 	org.eclipse.equinox.event;version='[1.4.300,1.4.301)',\
 	slf4j.api;version='[1.7.25,1.7.26)',\
 	ch.qos.logback.core;version='[1.2.3,1.2.4)',\
-	slf4j.simple;version='[1.7.21,1.7.22)'
+	slf4j.simple;version='[1.7.21,1.7.22)',\
+	tec.uom.lib.uom-lib-common;version='[1.0.3,1.0.4)',\
+	tec.uom.se;version='[1.0.10,1.0.11)'
