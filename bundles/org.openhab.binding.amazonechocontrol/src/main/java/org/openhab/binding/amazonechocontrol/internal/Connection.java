@@ -1452,14 +1452,7 @@ public class Connection {
         } else {
             content.display.title = title;
         }
-        content.display.body = text;
-        if (text.startsWith("<speak>") && text.endsWith("</speak>")) {
-            content.speak.type = "ssml";
-            String plainText = text.replaceAll("<[^>]+>", "");
-            content.display.body = plainText;
-        } else {
-            content.display.body = text;
-        }
+        content.display.body = bodyText;
         content.speak.value = text;
 
         contentArray[0] = content;
