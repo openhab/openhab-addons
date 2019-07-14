@@ -159,7 +159,7 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                 case INTERNATIONAL_SEETOUCH_KEYPAD:
                     notifyDiscovery(THING_TYPE_INTLKEYPAD, device.getIntegrationId(), label);
                     break;
-                
+
                 case SEETOUCH_TABLETOP_KEYPAD:
                     notifyDiscovery(THING_TYPE_TTKEYPAD, device.getIntegrationId(), label);
                     break;
@@ -167,7 +167,7 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                 case PICO_KEYPAD:
                     notifyDiscovery(THING_TYPE_PICO, device.getIntegrationId(), label);
                     break;
-                    
+
                 case VISOR_CONTROL_RECEIVER:
                     notifyDiscovery(THING_TYPE_VCRX, device.getIntegrationId(), label);
                     break;
@@ -175,9 +175,13 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                 case MAIN_REPEATER:
                     notifyDiscovery(THING_TYPE_VIRTUALKEYPAD, device.getIntegrationId(), label);
                     break;
-                    
+
                 case QS_IO_INTERFACE:
                     notifyDiscovery(THING_TYPE_QSIO, device.getIntegrationId(), label);
+                    break;
+
+                case GRAFIK_EYE_QS:
+                    notifyDiscovery(THING_TYPE_GRAFIKEYEKEYPAD, device.getIntegrationId(), label);
                     break;
             }
         } else {
