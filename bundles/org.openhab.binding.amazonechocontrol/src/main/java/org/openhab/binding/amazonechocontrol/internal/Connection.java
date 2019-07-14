@@ -1109,6 +1109,9 @@ public class Connection {
             content.display.title = title;
         }
         content.display.body = bodyText;
+        if (text.startsWith("<speak>") && text.endsWith("</speak>")) {
+            content.speak.type = "ssml";
+        }
         content.speak.value = text;
 
         contentArray[0] = content;
