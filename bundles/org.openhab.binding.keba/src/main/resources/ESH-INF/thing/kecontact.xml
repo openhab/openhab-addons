@@ -54,6 +54,7 @@
 			<channel id="sessionrfidclass" typeId="sessionrfidclass" />
 			<channel id="sessionid" typeId="sessionid" />
 			<channel id="setenergylimit" typeId="setenergylimit" />
+			<channel id="authenticate" typeId="authenticate" />
 		</channels>
 
 		<config-description>
@@ -252,4 +253,10 @@
 		<description>An energy limit for an already running or the next charging session.</description>
 		<state pattern="%d Wh" readOnly="false"></state>
 	</channel-type>
+	<channel-type id="authenticate">
+		<item-type>String</item-type>
+		<label>Authenticate</label>
+		<description>Authenticate and start a charging session</description>
+		<state readOnly="false"></state>
+	</channel-type>	
 </thing:thing-descriptions>
