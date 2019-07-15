@@ -63,7 +63,7 @@ Minimum is 2 minutes.
 | pwsObservations              | currentTemperatureWindChill     | Number:Temperature      | Current wind chill temperature           |
 | pwsObservations              | currentHumidity                 | Number:Dimensionless    | Current relative humidity                |
 | pwsObservations              | currentPressure                 | Number:Pressure         | Current atmospheric pressure             |
-| pwsObservations              | currentPrecipitationRate        | Number                  | Current precipitation rate               |
+| pwsObservations              | currentPrecipitationRate        | Number:Speed            | Current precipitation rate               |
 | pwsObservations              | currentPrecipitationTotal       | Number:Length           | Current precipitation total              |
 | pwsObservations              | currentSolarRadiation           | Number:Intensity        | Current solar radiation                  |
 | pwsObservations              | currentUv                       | Number                  | Current UV index                         |
@@ -220,8 +220,15 @@ Number:Pressure             WC_PWS_Pressure
                             <pressure>
                             { channel="weathercompany:weather:local:pwsObservations#currentPressure" }
 
-Number                      WC_PWS_PrecipitationRate
-                            "Precipitation Rate [%.2f in/hr]"
+// Use this for SI units
+Number:Speed                WC_PWS_PrecipitationRate
+                            "Precipitation Rate [%.1f mm/h]"
+                            <rain>
+                            { channel="weathercompany:weather:local:pwsObservations#currentPrecipitationRate" }
+
+// Use this for Imperial units
+Number:Speed                WC_PWS_PrecipitationRate
+                            "Precipitation Rate [%.2f in/h]"
                             <rain>
                             { channel="weathercompany:weather:local:pwsObservations#currentPrecipitationRate" }
 

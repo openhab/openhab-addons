@@ -443,7 +443,7 @@ public class WeatherCompanyHandler extends BaseThingHandler {
         updatePws(CH_PWS_TEMP_DEW_POINT, undefOrQuantity(obs.imperial.dewpt, ImperialUnits.FAHRENHEIT));
         updatePws(CH_PWS_HUMIDITY, undefOrQuantity(obs.humidity, SmartHomeUnits.PERCENT));
         updatePws(CH_PWS_PRESSURE, undefOrQuantity(obs.imperial.pressure, ImperialUnits.INCH_OF_MERCURY));
-        updatePws(CH_PWS_PRECIPTATION_RATE, undefOrDecimal(obs.imperial.precipRate));
+        updatePws(CH_PWS_PRECIPTATION_RATE, undefOrQuantity(obs.imperial.precipRate, SmartHomeUnits.INCHES_PER_HOUR));
         updatePws(CH_PWS_PRECIPITATION_TOTAL, undefOrQuantity(obs.imperial.precipTotal, ImperialUnits.INCH));
         updatePws(CH_PWS_WIND_SPEED, undefOrQuantity(obs.imperial.windSpeed, ImperialUnits.MILES_PER_HOUR));
         updatePws(CH_PWS_WIND_GUST, undefOrQuantity(obs.imperial.windGust, ImperialUnits.MILES_PER_HOUR));

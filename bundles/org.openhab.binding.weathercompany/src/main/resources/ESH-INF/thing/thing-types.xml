@@ -336,11 +336,11 @@
 	</channel-type>
 
 	<channel-type id="precipitationRate">
-		<item-type>Number</item-type>
+		<item-type>Number:Speed</item-type>
 		<label>Precipitation Rate</label>
 		<description>Precipitation rate</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.7f %unit%" />
 	</channel-type>
 
 	<channel-type id="precipitationSnow">
