@@ -449,15 +449,15 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                 case CHANNEL_RAIN:
                     state = getQuantityTypeState(
                             PRECIP_TYPE_RAIN.equals(currentData.getPrecipType()) ? currentData.getPrecipIntensity() : 0,
-                            MILLI(METRE));
+                            MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_SNOW:
                     state = getQuantityTypeState(
                             PRECIP_TYPE_SNOW.equals(currentData.getPrecipType()) ? currentData.getPrecipIntensity() : 0,
-                            MILLI(METRE));
+                            MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_PRECIPITATION_INTENSITY:
-                    state = getQuantityTypeState(currentData.getPrecipIntensity(), MILLI(METRE));
+                    state = getQuantityTypeState(currentData.getPrecipIntensity(), MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_PRECIPITATION_PROBABILITY:
                     state = getQuantityTypeState(currentData.getPrecipProbability() * 100, PERCENT);
@@ -537,16 +537,16 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                     state = getQuantityTypeState(
                             PRECIP_TYPE_RAIN.equals(forecastData.getPrecipType()) ? forecastData.getPrecipIntensity()
                                     : 0,
-                            MILLI(METRE));
+                            MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_SNOW:
                     state = getQuantityTypeState(
                             PRECIP_TYPE_SNOW.equals(forecastData.getPrecipType()) ? forecastData.getPrecipIntensity()
                                     : 0,
-                            MILLI(METRE));
+                            MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_PRECIPITATION_INTENSITY:
-                    state = getQuantityTypeState(forecastData.getPrecipIntensity(), MILLI(METRE));
+                    state = getQuantityTypeState(forecastData.getPrecipIntensity(), MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_PRECIPITATION_PROBABILITY:
                     state = getQuantityTypeState(forecastData.getPrecipProbability() * 100, PERCENT);
@@ -624,16 +624,16 @@ public class DarkSkyWeatherAndForecastHandler extends BaseThingHandler {
                     state = getQuantityTypeState(
                             PRECIP_TYPE_RAIN.equals(forecastData.getPrecipType()) ? forecastData.getPrecipIntensity()
                                     : 0,
-                            MILLI(METRE));
+                            MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_SNOW:
                     state = getQuantityTypeState(
                             PRECIP_TYPE_SNOW.equals(forecastData.getPrecipType()) ? forecastData.getPrecipIntensity()
                                     : 0,
-                            MILLI(METRE));
+                            MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_PRECIPITATION_INTENSITY:
-                    state = getQuantityTypeState(forecastData.getPrecipIntensity(), MILLI(METRE));
+                    state = getQuantityTypeState(forecastData.getPrecipIntensity(), MILLIMETRE_PER_HOUR);
                     break;
                 case CHANNEL_PRECIPITATION_PROBABILITY:
                     state = getQuantityTypeState(forecastData.getPrecipProbability() * 100, PERCENT);

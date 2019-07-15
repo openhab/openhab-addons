@@ -63,9 +63,9 @@ Once one of the parameters `forecastHours`, `forecastDays` or `numberOfAlerts` w
 | current          | gust-speed         | Number:Speed         | Current gust speed. **Advanced**                                        |
 | current          | cloudiness         | Number:Dimensionless | Current cloudiness.                                                     |
 | current          | visibility         | Number:Length        | Current visibility.                                                     |
-| current          | rain               | Number:Length        | Rain volume of the last hour.                                           |
-| current          | snow               | Number:Length        | Snow volume of the last hour.                                           |
-| current          | precip-intensity   | Number:Length        | Current precipitation intensity.                                        |
+| current          | rain               | Number:Speed         | Rain volume of the last hour.                                           |
+| current          | snow               | Number:Speed         | Snow volume of the last hour.                                           |
+| current          | precip-intensity   | Number:Speed         | Current precipitation intensity.                                        |
 | current          | precip-probability | Number:Dimensionless | Current precipitation probability.                                      |
 | current          | precip-type        | String               | Current precipitation type (Rain, Snow or Sleet).                       |
 | current          | uvindex            | Number               | Current UV index.                                                       |
@@ -87,9 +87,9 @@ Once one of the parameters `forecastHours`, `forecastDays` or `numberOfAlerts` w
 | forecastHours01, forecastHours02, ... forecastHours48 | gust-speed         | Number:Speed         | Forecasted gust speed. **Advanced**                  |
 | forecastHours01, forecastHours02, ... forecastHours48 | cloudiness         | Number:Dimensionless | Forecasted cloudiness.                               |
 | forecastHours01, forecastHours02, ... forecastHours48 | visibility         | Number:Length        | Forecasted visibility.                               |
-| forecastHours01, forecastHours02, ... forecastHours48 | rain               | Number:Length        | Expected rain volume for the next hour.              |
-| forecastHours01, forecastHours02, ... forecastHours48 | snow               | Number:Length        | Expected snow volume for the next hour.              |
-| forecastHours01, forecastHours02, ... forecastHours48 | precip-intensity   | Number:Length        | Forecasted precipitation intensity.                  |
+| forecastHours01, forecastHours02, ... forecastHours48 | rain               | Number:Speed         | Expected rain volume for the next hour.              |
+| forecastHours01, forecastHours02, ... forecastHours48 | snow               | Number:Speed         | Expected snow volume for the next hour.              |
+| forecastHours01, forecastHours02, ... forecastHours48 | precip-intensity   | Number:Speed         | Forecasted precipitation intensity.                  |
 | forecastHours01, forecastHours02, ... forecastHours48 | precip-probability | Number:Dimensionless | Forecasted precipitation probability.                |
 | forecastHours01, forecastHours02, ... forecastHours48 | precip-type        | String               | Forecasted precipitation type (Rain, Snow or Sleet). |
 | forecastHours01, forecastHours02, ... forecastHours48 | uvindex            | Number               | Forecasted UV index.                                 |
@@ -112,9 +112,9 @@ Once one of the parameters `forecastHours`, `forecastDays` or `numberOfAlerts` w
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | gust-speed         | Number:Speed         | Forecasted gust speed. **Advanced**                  |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | cloudiness         | Number:Dimensionless | Forecasted cloudiness.                               |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | visibility         | Number:Length        | Forecasted visibility.                               |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | rain               | Number:Length        | Expected rain volume of a day.                       |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | snow               | Number:Length        | Expected snow volume of a day.                       |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | precip-intensity   | Number:Length        | Forecasted precipitation intensity.                  |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | rain               | Number:Speed         | Expected rain volume of a day.                       |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | snow               | Number:Speed         | Expected snow volume of a day.                       |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | precip-intensity   | Number:Speed         | Forecasted precipitation intensity.                  |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | precip-probability | Number:Dimensionless | Forecasted precipitation probability.                |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | precip-type        | String               | Forecasted precipitation type (Rain, Snow or Sleet). |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7 | uvindex            | Number               | Forecasted UV index.                                 |
@@ -190,9 +190,9 @@ Number:Speed localCurrentWindSpeed "Current wind speed [%.1f km/h]" <wind> { cha
 Number:Angle localCurrentWindDirection "Current wind direction [%d %unit%]" <wind> { channel="darksky:weather-and-forecast:api:local:current#wind-direction" }
 Number:Dimensionless localCurrentCloudiness "Current cloudiness [%d %unit%]" <clouds> { channel="darksky:weather-and-forecast:api:local:current#cloudiness" }
 Number:Length localCurrentVisibility "Current visibility [%.1f %unit%]" <none> { channel="darksky:weather-and-forecast:api:local:current#visibility" }
-Number:Length localCurrentRainVolume "Current rain volume [%.1f %unit%]" <rain> { channel="darksky:weather-and-forecast:api:local:current#rain" }
-Number:Length localCurrentSnowVolume "Current snow volume [%.1f %unit%]" <snow> { channel="darksky:weather-and-forecast:api:local:current#snow" }
-Number:Length localCurrentPrecipitationIntensity "Current precipitation intensity [%.2f %unit%]" <rain> { channel="darksky:weather-and-forecast:api:local:current#precip-intensity" }
+Number:Speed localCurrentRainVolume "Current rain volume [%.2f mm/h]" <rain> { channel="darksky:weather-and-forecast:api:local:current#rain" }
+Number:Speed localCurrentSnowVolume "Current snow volume [%.2f mm/h]" <snow> { channel="darksky:weather-and-forecast:api:local:current#snow" }
+Number:Speed localCurrentPrecipitationIntensity "Current precipitation intensity [%.2f mm/h]" <rain> { channel="darksky:weather-and-forecast:api:local:current#precip-intensity" }
 Number:Dimensionless localCurrentPrecipitationProbability "Current precipitation probability [%d %unit%]" <rain> { channel="darksky:weather-and-forecast:api:local:current#precip-probability" }
 String localCurrentPrecipitationType "Current precipitation type [%s]" <rain> { channel="darksky:weather-and-forecast:api:local:current#precip-type" }
 Number localCurrentUVIndex "Current precipitation probability [%d]" <none> { channel="darksky:weather-and-forecast:api:local:current#uvindex" }
@@ -210,8 +210,8 @@ Number:Dimensionless localDailyForecastTodayHumidity "Atmospheric humidity for t
 Number:Speed localDailyForecastTodayWindSpeed "Wind speed for today [%.1f km/h]" <wind> { channel="darksky:weather-and-forecast:api:local:forecastToday#wind-speed" }
 Number:Angle localDailyForecastTodayWindDirection "Wind direction for today [%d %unit%]" <wind> { channel="darksky:weather-and-forecast:api:local:forecastToday#wind-direction" }
 Number:Dimensionless localDailyForecastTodayCloudiness "Cloudiness for today [%d %unit%]" <clouds> { channel="darksky:weather-and-forecast:api:local:forecastToday#cloudiness" }
-Number:Length localDailyForecastTodayRainVolume "Rain volume for today [%.1f %unit%]" <rain> { channel="darksky:weather-and-forecast:api:local:forecastToday#rain" }
-Number:Length localDailyForecastTodaySnowVolume "Snow volume for today [%.1f %unit%]" <snow> { channel="darksky:weather-and-forecast:api:local:forecastToday#snow" }
+Number:Speed localDailyForecastTodayRainVolume "Rain volume for today [%.2f mm/h]" <rain> { channel="darksky:weather-and-forecast:api:local:forecastToday#rain" }
+Number:Speed localDailyForecastTodaySnowVolume "Snow volume for today [%.2f mm/h]" <snow> { channel="darksky:weather-and-forecast:api:local:forecastToday#snow" }
 
 DateTime localDailyForecastTomorrowTimestamp "Timestamp of forecast [%1$tY-%1$tm-%1$td]" <time> { channel="darksky:weather-and-forecast:api:local:forecastTomorrow#time-stamp" }
 String localDailyForecastTomorrowCondition "Condition for tomorrow [%s]" <sun_clouds> { channel="darksky:weather-and-forecast:api:local:forecastTomorrow#condition" }

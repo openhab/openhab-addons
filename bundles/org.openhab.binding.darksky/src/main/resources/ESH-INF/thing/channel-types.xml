@@ -261,49 +261,49 @@
 	</channel-type>
 
 	<channel-type id="rain">
-		<item-type>Number:Length</item-type>
+		<item-type>Number:Speed</item-type>
 		<label>Rain</label>
 		<description>Rain volume for the last 3 hours.</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f mm/h" />
 	</channel-type>
 
 	<channel-type id="forecasted-rain">
-		<item-type>Number:Length</item-type>
+		<item-type>Number:Speed</item-type>
 		<label>Forecasted Rain</label>
 		<description>Forecasted rain volume for the next 3 hours.</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f mm/h" />
 	</channel-type>
 
 	<channel-type id="snow">
-		<item-type>Number:Length</item-type>
+		<item-type>Number:Speed</item-type>
 		<label>Snow</label>
 		<description>Snow volume for the last 3 hours.</description>
 		<category>Snow</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f mm/h" />
 	</channel-type>
 
 	<channel-type id="forecasted-snow">
-		<item-type>Number:Length</item-type>
+		<item-type>Number:Speed</item-type>
 		<label>Forecasted Snow</label>
 		<description>Forecasted snow volume for the next 3 hours.</description>
 		<category>Snow</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f mm/h" />
 	</channel-type>
 
 	<channel-type id="precip-intensity">
-		<item-type>Number:Length</item-type>
+		<item-type>Number:Speed</item-type>
 		<label>Precipitation Intensity</label>
 		<description>Current precipitation intensity.</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f mm/h" />
 	</channel-type>
 
 	<channel-type id="forecasted-precip-intensity">
-		<item-type>Number:Length</item-type>
+		<item-type>Number:Speed</item-type>
 		<label>Forecasted Precipitation Intensity</label>
 		<description>Forecasted precipitation intensity.</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f mm/h" />
 	</channel-type>
 
 	<channel-type id="precip-probability">
