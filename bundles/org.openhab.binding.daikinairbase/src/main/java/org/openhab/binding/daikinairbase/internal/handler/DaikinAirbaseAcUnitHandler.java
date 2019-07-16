@@ -292,50 +292,58 @@ public class DaikinAirbaseAcUnitHandler extends BaseThingHandler {
 
     private void changeZone1(boolean zone1) throws DaikinAirbaseCommunicationException {
         ZoneInfo info = webTargets.getZoneInfo();
+        ModelInfo modelInfo = webTargets.getModelInfo();
         info.zone1 = zone1;
-        webTargets.setZoneInfo(info);
+        webTargets.setZoneInfo(info, modelInfo);
     }
 
     private void changeZone2(boolean zone2) throws DaikinAirbaseCommunicationException {
         ZoneInfo info = webTargets.getZoneInfo();
+        ModelInfo modelInfo = webTargets.getModelInfo();
         info.zone2 = zone2;
-        webTargets.setZoneInfo(info);
+        webTargets.setZoneInfo(info, modelInfo);
     }
 
     private void changeZone3(boolean zone3) throws DaikinAirbaseCommunicationException {
         ZoneInfo info = webTargets.getZoneInfo();
+        ModelInfo modelInfo = webTargets.getModelInfo();
         info.zone3 = zone3;
-        webTargets.setZoneInfo(info);
+        webTargets.setZoneInfo(info, modelInfo);
     }
 
     private void changeZone4(boolean zone4) throws DaikinAirbaseCommunicationException {
         ZoneInfo info = webTargets.getZoneInfo();
+        ModelInfo modelInfo = webTargets.getModelInfo();
         info.zone4 = zone4;
-        webTargets.setZoneInfo(info);
+        webTargets.setZoneInfo(info, modelInfo);
     }
 
     private void changeZone5(boolean zone5) throws DaikinAirbaseCommunicationException {
         ZoneInfo info = webTargets.getZoneInfo();
+        ModelInfo modelInfo = webTargets.getModelInfo();
         info.zone5 = zone5;
-        webTargets.setZoneInfo(info);
+        webTargets.setZoneInfo(info, modelInfo);
     }
 
     private void changeZone6(boolean zone6) throws DaikinAirbaseCommunicationException {
         ZoneInfo info = webTargets.getZoneInfo();
+        ModelInfo modelInfo = webTargets.getModelInfo();
         info.zone6 = zone6;
-        webTargets.setZoneInfo(info);
+        webTargets.setZoneInfo(info, modelInfo);
     }
 
     private void changeZone7(boolean zone7) throws DaikinAirbaseCommunicationException {
         ZoneInfo info = webTargets.getZoneInfo();
+        ModelInfo modelInfo = webTargets.getModelInfo();
         info.zone7 = zone7;
-        webTargets.setZoneInfo(info);
+        webTargets.setZoneInfo(info, modelInfo);
     }
 
     private void changeZone8(boolean zone8) throws DaikinAirbaseCommunicationException {
         ZoneInfo info = webTargets.getZoneInfo();
+        ModelInfo modelInfo = webTargets.getModelInfo();
         info.zone8 = zone8;
-        webTargets.setZoneInfo(info);
+        webTargets.setZoneInfo(info, modelInfo);
     }
 
 }

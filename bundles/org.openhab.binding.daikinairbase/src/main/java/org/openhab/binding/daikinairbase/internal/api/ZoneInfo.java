@@ -88,7 +88,6 @@ public class ZoneInfo {
             .append(zone7 ? "1" : "0")
             .append("%3b")
             .append(zone8 ? "1" : "0");
-
         params.put("zone_name", zonenames);
         params.put("zone_onoff", onoffstring.toString());
 

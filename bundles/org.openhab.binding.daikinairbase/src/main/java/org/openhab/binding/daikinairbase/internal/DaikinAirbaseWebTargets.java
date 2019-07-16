@@ -86,9 +86,13 @@ public class DaikinAirbaseWebTargets {
         return ZoneInfo.parse(response);
     }
 
-    public void setZoneInfo(ZoneInfo info) throws DaikinAirbaseCommunicationException {
-        Map<String, String> queryParams = info.getParamString();
-        invoke(setZoneInfoUri, queryParams);
+    public void setZoneInfo(ZoneInfo zoneinfo, ModelInfo modelinfo) throws DaikinAirbaseCommunicationException {
+        int count=0;
+        count = (zoneinfo.zone1 ? 1 : 0) + (zoneinfo.zone2 ? 1 : 0) + (zoneinfo.zone3 ? 1 : 0) + (zoneinfo.zone4 ? 1 : 0) + (zoneinfo.zone5 ? 1 : 0) + (zoneinfo.zone6 ? 1 : 0) + (zoneinfo.zone7 ? 1 : 0) + (zoneinfo.zone8 ? 1 : 0) + modelinfo.commonzone;
+        logger.debug("Number of open zones: \"{}\"", count);
+
+        Map<String, String> queryParams = zoneinfo.getParamString();
+        if (count >= 1) invoke(setZoneInfoUri, queryParams);
     }
 
     private String invoke(String uri) throws DaikinAirbaseCommunicationException {
