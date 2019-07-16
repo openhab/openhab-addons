@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.heliosventiremote.internal;
+package org.openhab.binding.heliosventilation.internal;
 
-import static org.openhab.binding.heliosventiremote.internal.HeliosVentiRemoteBindingConstants.THING_TYPE_HELIOS_VENTILATION;
+import static org.openhab.binding.heliosventilation.internal.HeliosVentilationBindingConstants.THING_TYPE_HELIOS_VENTILATION;
 
 import java.util.Collections;
 import java.util.Set;
@@ -31,20 +31,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HeliosVentiRemoteHandlerFactory} is responsible for creating things and thing
+ * The {@link HeliosVentilationHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Raphael Mack - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.heliosventiremote", service = ThingHandlerFactory.class)
-public class HeliosVentiRemoteHandlerFactory extends BaseThingHandlerFactory {
+@Component(configurationPid = "binding.heliosventilation", service = ThingHandlerFactory.class)
+public class HeliosVentilationHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(THING_TYPE_HELIOS_VENTILATION);
 
     private @NonNullByDefault({}) SerialPortManager serialPortManager;
-    private final Logger logger = LoggerFactory.getLogger(HeliosVentiRemoteHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(HeliosVentilationHandlerFactory.class);
 
     @Reference
     protected void setSerialPortManager(final SerialPortManager serialPortManager) {
@@ -65,7 +65,7 @@ public class HeliosVentiRemoteHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_HELIOS_VENTILATION.equals(thingTypeUID)) {
-            return new HeliosVentiRemoteHandler(thing, serialPortManager);
+            return new HeliosVentilationHandler(thing, serialPortManager);
         }
 
         return null;

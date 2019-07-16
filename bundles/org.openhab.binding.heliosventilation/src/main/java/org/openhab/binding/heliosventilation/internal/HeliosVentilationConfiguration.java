@@ -10,14 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.heliosventiremote.internal;
+package org.openhab.binding.heliosventilation.internal;
 
 /**
- * The {@link HeliosVentiRemoteConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link HeliosVentilationConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Raphael Mack - Initial contribution
  */
-public class HeliosVentiRemoteConfiguration {
+public class HeliosVentilationConfiguration {
 
     public static final String SERIAL_PORT = "serialPort";
     public static final String POLL_PERIOD = "pollPeriod";

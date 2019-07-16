@@ -1,4 +1,4 @@
-# HeliosVentiRemote Binding
+# HeliosVentilation Binding
 
 This is the binding for Helios Ventilation Systems KWL EC 200/300/500 Pro. It requires a connection to the RS485 bus used by the original remote controls KWL-FB (9417) and does not use the Modbus/TCP interface of the newer EasyControl devices.
 
