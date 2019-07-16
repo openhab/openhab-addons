@@ -48,10 +48,11 @@ import org.slf4j.LoggerFactory;
 public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(ParadoxAlarmHandlerFactory.class);
-    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays
-            .asList(COMMUNICATOR_THING_TYPE_UID, PANEL_THING_TYPE_UID, PARTITION_THING_TYPE_UID, ZONE_THING_TYPE_UID));
+        .asList(COMMUNICATOR_THING_TYPE_UID, PANEL_THING_TYPE_UID, PARTITION_THING_TYPE_UID, ZONE_THING_TYPE_UID));
+
+    private Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -86,7 +87,7 @@ public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
     private void registerDiscoveryService(ParadoxIP150BridgeHandler paradoxIP150BridgeHandler) {
         ParadoxDiscoveryService discoveryService = new ParadoxDiscoveryService(paradoxIP150BridgeHandler);
         ServiceRegistration<?> serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
-                discoveryService, new Hashtable<>());
+            discoveryService, new Hashtable<>());
         this.discoveryServiceRegs.put(paradoxIP150BridgeHandler.getThing().getUID(), serviceRegistration);
     }
 
