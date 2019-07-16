@@ -9,8 +9,8 @@
     <version>2.5.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.openhab.binding.heliosventiremote</artifactId>
+  <artifactId>org.openhab.binding.heliosventilation</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: HeliosVentiRemote Binding</name>
+  <name>openHAB Add-ons :: Bundles :: HeliosVentilation Binding</name>
 
 </project>

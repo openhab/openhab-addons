@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.heliosventiremote.internal;
+package org.openhab.binding.heliosventilation.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -18,12 +18,12 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 
 /**
- * The {@link HeliosVentiRemoteVariable} is a description of a variable in the Helios ventilation system.
+ * The {@link HeliosVentilationVariable} is a description of a variable in the Helios ventilation system.
  *
  * @author Raphael Mack - Initial contribution
  */
 @NonNullByDefault
-public class HeliosVentiRemoteVariable {
+public class HeliosVentilationVariable {
     public enum type {
         Temperature,
         Fanspeed,
@@ -55,7 +55,7 @@ public class HeliosVentiRemoteVariable {
 
     private ChannelUID channelUID;
 
-    public HeliosVentiRemoteVariable(Thing thing, String name, byte address, boolean writable, type datatype) {
+    public HeliosVentilationVariable(Thing thing, String name, byte address, boolean writable, type datatype) {
         this.datatype = datatype;
         this.writable = writable;
         this.name = name;

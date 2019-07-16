@@ -10,21 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.heliosventiremote.internal;
+package org.openhab.binding.heliosventilation.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link HeliosVentiRemoteBindingConstants} class defines common constants, which are
+ * The {@link HeliosVentilationBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Raphael Mack - Initial contribution
  */
 @NonNullByDefault
-public class HeliosVentiRemoteBindingConstants {
+public class HeliosVentilationBindingConstants {
 
-    public static final String BINDING_ID = "heliosventiremote";
+    public static final String BINDING_ID = "heliosventilation";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_HELIOS_VENTILATION = new ThingTypeUID(BINDING_ID, "heliosVentilation");

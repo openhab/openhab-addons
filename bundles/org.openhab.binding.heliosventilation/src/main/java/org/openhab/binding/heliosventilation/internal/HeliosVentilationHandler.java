@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.heliosventiremote.internal;
+package org.openhab.binding.heliosventilation.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,13 +46,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HeliosVentiRemoteHandler} is responsible for handling commands, which are
+ * The {@link HeliosVentilationHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Raphael Mack - Initial contribution
  */
 @NonNullByDefault
-public class HeliosVentiRemoteHandler extends BaseThingHandler implements SerialPortEventListener {
+public class HeliosVentilationHandler extends BaseThingHandler implements SerialPortEventListener {
     private static final int BUSMEMBER_MAINBOARD = 0x11;
     private static final int BUSMEMBER_SLAVEBOARDS = 0x10;
     private static final byte BUSMEMBER_CONTROLBOARDS = (byte) 0x20;
@@ -60,12 +60,12 @@ public class HeliosVentiRemoteHandler extends BaseThingHandler implements Serial
                                                         // BUSMEMBER_REC_MASK
     private static final int BUSMEMBER_ME = 0x2F; // used as sender when communicating with the helios system
 
-    private static final HashMap<Byte, HeliosVentiRemoteVariable> variables = new HashMap();
+    private static final HashMap<Byte, HeliosVentilationVariable> variables = new HashMap();
     private static final int POLL_OFFLINE_THRESHOLD = 3;
 
-    private final Logger logger = LoggerFactory.getLogger(HeliosVentiRemoteHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(HeliosVentilationHandler.class);
 
-    private @Nullable HeliosVentiRemoteConfiguration config;
+    private @Nullable HeliosVentilationConfiguration config;
 
     private @NonNullByDefault({}) SerialPortManager serialPortManager;
 
@@ -80,78 +80,78 @@ public class HeliosVentiRemoteHandler extends BaseThingHandler implements Serial
     private @Nullable ScheduledFuture<?> pollingTask;
     private int pollCounter;
 
-    public HeliosVentiRemoteHandler(Thing thing, final SerialPortManager serialPortManager) {
+    public HeliosVentilationHandler(Thing thing, final SerialPortManager serialPortManager) {
         super(thing);
         this.serialPortManager = serialPortManager;
         serialPortName = "";
 
         // Read-only
         variables.put((byte) 0x32,
-                new HeliosVentiRemoteVariable(thing, HeliosVentiRemoteBindingConstants.CHANNEL_OUTSIDE_TEMP,
-                        (byte) 0x32, false, HeliosVentiRemoteVariable.type.Temperature));
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_OUTSIDE_TEMP,
+                        (byte) 0x32, false, HeliosVentilationVariable.type.Temperature));
         variables.put((byte) 0x33,
-                new HeliosVentiRemoteVariable(thing, HeliosVentiRemoteBindingConstants.CHANNEL_OUTGOING_TEMP,
-                        (byte) 0x33, false, HeliosVentiRemoteVariable.type.Temperature));
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_OUTGOING_TEMP,
+                        (byte) 0x33, false, HeliosVentilationVariable.type.Temperature));
         variables.put((byte) 0x34,
-                new HeliosVentiRemoteVariable(thing, HeliosVentiRemoteBindingConstants.CHANNEL_EXTRACT_TEMP,
-                        (byte) 0x34, false, HeliosVentiRemoteVariable.type.Temperature));
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_EXTRACT_TEMP,
+                        (byte) 0x34, false, HeliosVentilationVariable.type.Temperature));
         variables.put((byte) 0x35,
-                new HeliosVentiRemoteVariable(thing, HeliosVentiRemoteBindingConstants.CHANNEL_SUPPLY_TEMP, (byte) 0x35,
-                        false, HeliosVentiRemoteVariable.type.Temperature));
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_SUPPLY_TEMP, (byte) 0x35,
+                        false, HeliosVentilationVariable.type.Temperature));
 
         // writable
         variables.put((byte) 0xAF,
-                new HeliosVentiRemoteVariable(thing, HeliosVentiRemoteBindingConstants.CHANNEL_BYPASS_TEMP, (byte) 0xAF,
-                        true, HeliosVentiRemoteVariable.type.Temperature));
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_BYPASS_TEMP, (byte) 0xAF,
+                        true, HeliosVentilationVariable.type.Temperature));
         variables.put((byte) 0xAE,
-                new HeliosVentiRemoteVariable(thing, HeliosVentiRemoteBindingConstants.CHANNEL_RH_LIMIT, (byte) 0xAE,
-                        true, HeliosVentiRemoteVariable.type.BytePercent));
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_RH_LIMIT, (byte) 0xAE,
+                        true, HeliosVentilationVariable.type.BytePercent));
 
         variables.put((byte) 0xB2,
-                new HeliosVentiRemoteVariable(thing, HeliosVentiRemoteBindingConstants.CHANNEL_HYSTERESIS, (byte) 0xB2,
-                        true, HeliosVentiRemoteVariable.type.Temperature));
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_HYSTERESIS, (byte) 0xB2,
+                        true, HeliosVentilationVariable.type.Temperature));
         variables.put((byte) 0xA9,
-                new HeliosVentiRemoteVariable(thing, HeliosVentiRemoteBindingConstants.CHANNEL_MIN_FANSPEED,
-                        (byte) 0xA9, true, HeliosVentiRemoteVariable.type.Fanspeed));
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_MIN_FANSPEED,
+                        (byte) 0xA9, true, HeliosVentilationVariable.type.Fanspeed));
         variables.put((byte) 0xA5,
-                new HeliosVentiRemoteVariable(thing, HeliosVentiRemoteBindingConstants.CHANNEL_MAX_FANSPEED,
-                        (byte) 0xA5, true, HeliosVentiRemoteVariable.type.Fanspeed));
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_MAX_FANSPEED,
+                        (byte) 0xA5, true, HeliosVentilationVariable.type.Fanspeed));
 
         variables.put((byte) 0x29,
-                new HeliosVentiRemoteVariable(thing, HeliosVentiRemoteBindingConstants.CHANNEL_FANSPEED, (byte) 0x29,
-                        true, HeliosVentiRemoteVariable.type.Fanspeed));
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_FANSPEED, (byte) 0x29,
+                        true, HeliosVentilationVariable.type.Fanspeed));
 
         /*
          * not yet supported
          * variables.put((byte) 0xB1,
-         * new HeliosVentiRemoteVariable(thing, "DC_fan_outgoing", true, HeliosVentiRemoteVariable.type.Percent)); // in
+         * new HeliosVentilationVariable(thing, "DC_fan_outgoing", true, HeliosVentilationVariable.type.Percent)); // in
          *
          * variables.put((byte) 0xB0,
-         * new HeliosVentiRemoteVariable(thing, "DC_fan_supply", true, HeliosVentiRemoteVariable.type.Percent)); // in %
+         * new HeliosVentilationVariable(thing, "DC_fan_supply", true, HeliosVentilationVariable.type.Percent)); // in %
          *
-         * variables.put((byte) 0xAA, new HeliosVentiRemoteVariable(thing, "adjust_interval", true,
-         * HeliosVentiRemoteVariable.type.Number); // bit 0-4: adjust interval; bit 4: RH level setting: 1 = auto 0
+         * variables.put((byte) 0xAA, new HeliosVentilationVariable(thing, "adjust_interval", true,
+         * HeliosVentilationVariable.type.Number); // bit 0-4: adjust interval; bit 4: RH level setting: 1 = auto 0
          * = manual; bit 5: 1 = boost, 0 = fireplace; bit 6: radiator type: 1 = water 0 = electric; bit 7: cascade on
          *
          * variables.put((byte) 0xA8,
-         * new HeliosVentiRemoteVariable(thing, "supply_stop_temp", (byte) 0xA8, true,
-         * HeliosVentiRemoteVariable.type.Temperature));
+         * new HeliosVentilationVariable(thing, "supply_stop_temp", (byte) 0xA8, true,
+         * HeliosVentilationVariable.type.Temperature));
          *
          * variables.put((byte) 0xA7,
-         * new HeliosVentiRemoteVariable(thing, "preheat_temp", (byte) 0xA7, true,
-         * HeliosVentiRemoteVariable.type.Temperature));
+         * new HeliosVentilationVariable(thing, "preheat_temp", (byte) 0xA7, true,
+         * HeliosVentilationVariable.type.Temperature));
          *
          * variables.put((byte) 0xA6,
-         * new HeliosVentiRemoteVariable(thing, "maintenance_interval", true, HeliosVentiRemoteVariable.type.Number));
+         * new HeliosVentilationVariable(thing, "maintenance_interval", true, HeliosVentilationVariable.type.Number));
          * // in months
          *
          * variables.put((byte) 0xA4,
-         * new HeliosVentiRemoteVariable(thing, "set_temp", true, HeliosVentiRemoteVariable.type.Temperature));
+         * new HeliosVentilationVariable(thing, "set_temp", true, HeliosVentilationVariable.type.Temperature));
          */
 
         /*
-         * variables.put((byte) 0xA3, new HeliosVentiRemoteVariable(thing, "state", (byte) 0xA3, true,
-         * HeliosVentiRemoteVariable.type.Number));
+         * variables.put((byte) 0xA3, new HeliosVentilationVariable(thing, "state", (byte) 0xA3, true,
+         * HeliosVentilationVariable.type.Number));
          * This byte has a bit level interpretation and contains state and reset_maintenance
          * variables.put((byte) 0xA3, "reset_maintenance");
          *
@@ -169,7 +169,7 @@ public class HeliosVentiRemoteHandler extends BaseThingHandler implements Serial
         }
 
         if (command instanceof RefreshType) {
-            logger.debug("Refreshing HeliosVentiRemote data for {}", channelUID);
+            logger.debug("Refreshing HeliosVentilation data for {}", channelUID);
             variables.values().forEach((v) -> {
                 ChannelUID tmp = v.channelUID();
                 if (tmp.equals(channelUID)) {
@@ -203,8 +203,8 @@ public class HeliosVentiRemoteHandler extends BaseThingHandler implements Serial
 
     @Override
     public void initialize() {
-        logger.debug("Initializing HeliosVentiRemote...");
-        config = getConfigAs(HeliosVentiRemoteConfiguration.class);
+        logger.debug("Initializing HeliosVentilation...");
+        config = getConfigAs(HeliosVentilationConfiguration.class);
         serialPortName = config.serialPort;
         pollPeriod = config.pollPeriod.intValue();
 
@@ -229,7 +229,7 @@ public class HeliosVentiRemoteHandler extends BaseThingHandler implements Serial
     }
 
     private void connect() {
-        logger.debug("HeliosVentiRemote: connecting");
+        logger.debug("HeliosVentilation: connecting");
         // parse ports and if the port is found, initialize the reader
         portId = serialPortManager.getIdentifier(serialPortName);
         if (portId == null) {
@@ -306,7 +306,7 @@ public class HeliosVentiRemoteHandler extends BaseThingHandler implements Serial
      * Method for polling the RS485 Helios RemoteContol bus
      */
     public synchronized void polling() {
-        logger.trace("HeliosVentiRemote Polling data for '{}'", getThing().getUID());
+        logger.trace("HeliosVentilation Polling data for '{}'", getThing().getUID());
         pollCounter++;
         if (pollCounter > POLL_OFFLINE_THRESHOLD) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.GONE, "No data received!");
@@ -337,7 +337,7 @@ public class HeliosVentiRemoteHandler extends BaseThingHandler implements Serial
         serialPort = null;
     }
 
-    private void poll(HeliosVentiRemoteVariable v) {
+    private void poll(HeliosVentilationVariable v) {
         byte txFrame[] = { 0x01, BUSMEMBER_ME, BUSMEMBER_MAINBOARD, 0x00, v.address(), 0x00 };
         txFrame[5] = (byte) checksum(txFrame);
 
@@ -350,7 +350,7 @@ public class HeliosVentiRemoteHandler extends BaseThingHandler implements Serial
     private void tx(byte[] txFrame) {
         try {
             if (outputStream != null) {
-                logger.trace("HeliosVentiRemote: Write to serial port: {}",
+                logger.trace("HeliosVentilation: Write to serial port: {}",
                         String.format("%02x %02x %02x %02x", txFrame[1], txFrame[2], txFrame[3], txFrame[4]));
 
                 outputStream.write(txFrame);
@@ -417,13 +417,13 @@ public class HeliosVentiRemoteHandler extends BaseThingHandler implements Serial
                         // check checksum
                         int sum = checksum(frame);
                         if (sum == (frame[5] & 0xff)) {
-                            logger.trace("HeliosVentiRemote: Read from serial port: {}",
+                            logger.trace("HeliosVentilation: Read from serial port: {}",
                                     String.format("%02x %02x %02x %02x", frame[1], frame[2], frame[3], frame[4]));
                             interpretFrame(frame);
 
                         } else {
                             logger.trace(
-                                    "HeliosVentiRemote: Read frame with not matching checksum from serial port: {}",
+                                    "HeliosVentilation: Read frame with not matching checksum from serial port: {}",
                                     String.format("%02x %02x %02x %02x %02x %02x (expected %02x)", frame[0], frame[1],
                                             frame[2], frame[3], frame[4], frame[5], sum));
 
@@ -466,7 +466,7 @@ public class HeliosVentiRemoteHandler extends BaseThingHandler implements Serial
             byte var = frame[3];
             byte val = frame[4];
             if (variables.containsKey(var)) {
-                HeliosVentiRemoteVariable variable = variables.get(var);
+                HeliosVentilationVariable variable = variables.get(var);
                 String t = variable.asString(val);
                 logger.trace("Received {} = {}", variable, t);
                 updateChannelFor(variable, val);
@@ -486,13 +486,13 @@ public class HeliosVentiRemoteHandler extends BaseThingHandler implements Serial
      * @param variable
      * @param val
      */
-    private void updateChannelFor(HeliosVentiRemoteVariable variable, byte val) {
+    private void updateChannelFor(HeliosVentilationVariable variable, byte val) {
         String channelId;
         channelId = variable.getName();
 
         if (thing.getChannel(channelId) == null) {
             ThingBuilder thingBuilder = editThing();
-            ChannelTypeUID channelTypeUID = new ChannelTypeUID(HeliosVentiRemoteBindingConstants.BINDING_ID, "Number");
+            ChannelTypeUID channelTypeUID = new ChannelTypeUID(HeliosVentilationBindingConstants.BINDING_ID, "Number");
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
 
             Channel channel = ChannelBuilder.create(channelUID, "Number").withType(channelTypeUID).withLabel(channelId)
