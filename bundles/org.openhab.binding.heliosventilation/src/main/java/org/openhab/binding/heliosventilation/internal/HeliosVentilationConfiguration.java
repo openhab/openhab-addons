@@ -12,25 +12,25 @@
  */
 package org.openhab.binding.heliosventilation.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * The {@link HeliosVentilationConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Raphael Mack - Initial contribution
  */
-@NonNullByDefault
 public class HeliosVentilationConfiguration {
+
+    public static final String SERIAL_PORT = "serialPort";
+    public static final String POLL_PERIOD = "pollPeriod";
 
     /**
      * Port name for a serial connection to RS485 bus. Valid values are e.g. COM1 for Windows and /dev/ttyS0 or
      * /dev/ttyUSB0 for Linux.
      */
-    public String serialPort = "";
+    public String serialPort;
 
     /**
      * The Panel Poll Period. Default is 60 sec. = 1 minute;
      */
-    public int pollPeriod = 60;
+    public Integer pollPeriod;
 
 }
