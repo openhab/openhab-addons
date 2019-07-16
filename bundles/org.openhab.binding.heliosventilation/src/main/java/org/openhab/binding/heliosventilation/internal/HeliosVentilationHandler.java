@@ -15,7 +15,6 @@ package org.openhab.binding.heliosventilation.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledFuture;
@@ -25,16 +24,17 @@ import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
@@ -59,77 +59,202 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
     private static final int BUSMEMBER_REC_MASK = 0xF0; // interpreting frames delivered to BUSMEMBER_ME &
                                                         // BUSMEMBER_REC_MASK
     private static final int BUSMEMBER_ME = 0x2F; // used as sender when communicating with the helios system
+
+    private static final HashMap<Byte, HeliosVentilationVariable> variables = new HashMap();
     private static final int POLL_OFFLINE_THRESHOLD = 3;
 
-    /** Logger Instance */
-    private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final Logger logger = LoggerFactory.getLogger(HeliosVentilationHandler.class);
 
-    private @NonNullByDefault({}) HeliosVentilationConfiguration config;
+    private @Nullable HeliosVentilationConfiguration config;
 
-    private SerialPortManager serialPortManager;
+    private @NonNullByDefault({}) SerialPortManager serialPortManager;
 
+    private String serialPortName;
+    private @Nullable SerialPortIdentifier portId;
     private @Nullable SerialPort serialPort;
     private @Nullable InputStream inputStream;
     private @Nullable OutputStream outputStream;
 
+    // Polling variables
+    public int pollPeriod = 0;
     private @Nullable ScheduledFuture<?> pollingTask;
     private int pollCounter;
-
-    /**
-     * store received data for read-modify-write operations on bitlevel
-     */
-    private HashMap<Byte, Byte> memory = new HashMap<Byte, Byte>();
 
     public HeliosVentilationHandler(Thing thing, final SerialPortManager serialPortManager) {
         super(thing);
         this.serialPortManager = serialPortManager;
+        serialPortName = "";
+
+        // Read-only
+        variables.put((byte) 0x32,
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_OUTSIDE_TEMP,
+                        (byte) 0x32, false, HeliosVentilationVariable.type.Temperature));
+        variables.put((byte) 0x33,
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_OUTGOING_TEMP,
+                        (byte) 0x33, false, HeliosVentilationVariable.type.Temperature));
+        variables.put((byte) 0x34,
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_EXTRACT_TEMP,
+                        (byte) 0x34, false, HeliosVentilationVariable.type.Temperature));
+        variables.put((byte) 0x35,
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_SUPPLY_TEMP, (byte) 0x35,
+                        false, HeliosVentilationVariable.type.Temperature));
+
+        // writable
+        variables.put((byte) 0xAF,
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_BYPASS_TEMP, (byte) 0xAF,
+                        true, HeliosVentilationVariable.type.Temperature));
+        variables.put((byte) 0xAE,
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_RH_LIMIT, (byte) 0xAE,
+                        true, HeliosVentilationVariable.type.BytePercent));
+
+        variables.put((byte) 0xB2,
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_HYSTERESIS, (byte) 0xB2,
+                        true, HeliosVentilationVariable.type.Temperature));
+        variables.put((byte) 0xA9,
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_MIN_FANSPEED,
+                        (byte) 0xA9, true, HeliosVentilationVariable.type.Fanspeed));
+        variables.put((byte) 0xA5,
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_MAX_FANSPEED,
+                        (byte) 0xA5, true, HeliosVentilationVariable.type.Fanspeed));
+
+        variables.put((byte) 0x29,
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_FANSPEED, (byte) 0x29,
+                        true, HeliosVentilationVariable.type.Fanspeed));
+
+        /*
+         * not yet supported
+         * variables.put((byte) 0xB1,
+         * new HeliosVentilationVariable(thing, "DC_fan_outgoing", true, HeliosVentilationVariable.type.Percent)); // in
+         *
+         * variables.put((byte) 0xB0,
+         * new HeliosVentilationVariable(thing, "DC_fan_supply", true, HeliosVentilationVariable.type.Percent)); // in %
+         *
+         * variables.put((byte) 0xAA, new HeliosVentilationVariable(thing, "adjust_interval", true,
+         * HeliosVentilationVariable.type.Number); // bit 0-4: adjust interval; bit 4: RH level setting: 1 = auto 0
+         * = manual; bit 5: 1 = boost, 0 = fireplace; bit 6: radiator type: 1 = water 0 = electric; bit 7: cascade on
+         *
+         * variables.put((byte) 0xA8,
+         * new HeliosVentilationVariable(thing, "supply_stop_temp", (byte) 0xA8, true,
+         * HeliosVentilationVariable.type.Temperature));
+         *
+         * variables.put((byte) 0xA7,
+         * new HeliosVentilationVariable(thing, "preheat_temp", (byte) 0xA7, true,
+         * HeliosVentilationVariable.type.Temperature));
+         *
+         * variables.put((byte) 0xA6,
+         * new HeliosVentilationVariable(thing, "maintenance_interval", true, HeliosVentilationVariable.type.Number));
+         * // in months
+         *
+         * variables.put((byte) 0xA4,
+         * new HeliosVentilationVariable(thing, "set_temp", true, HeliosVentilationVariable.type.Temperature));
+         */
+
+        /*
+         * variables.put((byte) 0xA3, new HeliosVentilationVariable(thing, "state", (byte) 0xA3, true,
+         * HeliosVentilationVariable.type.Number));
+         * This byte has a bit level interpretation and contains state and reset_maintenance
+         * variables.put((byte) 0xA3, "reset_maintenance");
+         *
+         * "power_state", 0xA3, bit 0
+         * "co2_state", 0xA3, bit 1
+         * "rh_state", 0xA3, bit 2
+         * "bypass_disabled", 0xA3, bit 3
+         */
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (!isConnected()) {
+            connect(); // let's try to reconnect if the connection failed or was never established before
+        }
+
+        if (command instanceof RefreshType) {
+            logger.debug("Refreshing HeliosVentilation data for {}", channelUID);
+            variables.values().forEach((v) -> {
+                ChannelUID tmp = v.channelUID();
+                if (tmp.equals(channelUID)) {
+                    poll(v);
+                }
+            });
+        } else if (command instanceof DecimalType) {
+            variables.values().forEach((v) -> {
+                ChannelUID tmp = v.channelUID();
+                if (tmp.equals(channelUID)) {
+                    if (v.isWritable()) {
+                        byte txFrame[] = { 0x01, BUSMEMBER_ME, BUSMEMBER_CONTROLBOARDS, v.address(), 0x00, 0x00 };
+                        txFrame[4] = v.getTransmitDataFor((DecimalType) command);
+                        txFrame[5] = (byte) checksum(txFrame);
+                        logger.debug("*********************************...");
+
+                        tx(txFrame);
+                        txFrame[2] = BUSMEMBER_SLAVEBOARDS;
+                        txFrame[5] = (byte) checksum(txFrame);
+
+                        tx(txFrame);
+                        txFrame[2] = BUSMEMBER_MAINBOARD;
+                        txFrame[5] = (byte) checksum(txFrame);
+                        tx(txFrame);
+                    }
+                }
+            });
+        }
+
     }
 
     @Override
     public void initialize() {
+        logger.debug("Initializing HeliosVentilation...");
         config = getConfigAs(HeliosVentilationConfiguration.class);
+        serialPortName = config.serialPort;
+        pollPeriod = config.pollPeriod.intValue();
 
-        logger.debug("Serial Port: {}, 9600 baud, PollPeriod: {}", config.serialPort, config.pollPeriod);
+        logger.debug("   Serial Port: {},", serialPortName);
+        logger.debug("   Baud:        {},", 9600);
+        logger.debug("   PollPeriod:  {},", pollPeriod);
 
-        if (config.serialPort.length() < 1) {
+        if (serialPortName == null || serialPortName.length() < 1) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
             return;
         } else {
             updateStatus(ThingStatus.UNKNOWN);
-            if (this.config.pollPeriod > 0) {
+            if (this.pollPeriod > 0) {
                 startPolling();
             }
         }
 
-        scheduler.execute(this::connect);
+        scheduler.execute(() -> {
+            connect();
+        });
+
     }
 
-    private synchronized void connect() {
-        logger.debug("HeliosVentilation: connecting...");
+    private void connect() {
+        logger.debug("HeliosVentilation: connecting");
         // parse ports and if the port is found, initialize the reader
-        SerialPortIdentifier portId = serialPortManager.getIdentifier(config.serialPort);
+        portId = serialPortManager.getIdentifier(serialPortName);
         if (portId == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Port " + config.serialPort + " is not known!");
+                    "Port " + serialPortName + " is not known!");
             serialPort = null;
             IOUtils.closeQuietly(inputStream);
             IOUtils.closeQuietly(outputStream);
         } else if (!isConnected()) {
             // initialize serial port
             try {
-                SerialPort serial = portId.open(getThing().getUID().toString(), 2000);
-                serial.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-                serial.addEventListener(this);
+                serialPort = portId.open(getThing().getUID().toString(), 2000);
+                serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                        SerialPort.PARITY_NONE);
+                serialPort.addEventListener(this);
 
                 IOUtils.closeQuietly(inputStream);
                 IOUtils.closeQuietly(outputStream);
-                inputStream = serial.getInputStream();
-                outputStream = serial.getOutputStream();
+                inputStream = serialPort.getInputStream();
+                outputStream = serialPort.getOutputStream();
 
                 // activate the DATA_AVAILABLE notifier
-                serial.notifyOnDataAvailable(true);
-                serialPort = serial;
+                serialPort.notifyOnDataAvailable(true);
                 updateStatus(ThingStatus.UNKNOWN);
+
             } catch (final IOException ex) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error!");
             } catch (PortInUseException e) {
@@ -154,25 +279,25 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
     /**
      * Start the polling task.
      */
-    public synchronized void startPolling() {
-        final ScheduledFuture<?> task = pollingTask;
-        if (task != null && task.isCancelled()) {
-            task.cancel(true);
-        }
-        if (config.pollPeriod > 0) {
-            pollingTask = scheduler.scheduleWithFixedDelay(this::polling, 10, config.pollPeriod, TimeUnit.SECONDS);
-        } else {
-            pollingTask = null;
+    public void startPolling() {
+        if (pollingTask == null || pollingTask.isCancelled()) {
+            if (pollPeriod > 0) {
+                pollingTask = scheduler.scheduleWithFixedDelay(this::polling, 0, pollPeriod, TimeUnit.SECONDS);
+            } else if (pollingTask != null) {
+                if (!pollingTask.isCancelled()) {
+                    pollingTask.cancel(true);
+                }
+                pollingTask = null;
+            }
         }
     }
 
     /**
      * Stop the polling task.
      */
-    public synchronized void stopPolling() {
-        final ScheduledFuture<?> task = pollingTask;
-        if (task != null && !task.isCancelled()) {
-            task.cancel(true);
+    public void stopPolling() {
+        if (pollingTask != null && !pollingTask.isCancelled()) {
+            pollingTask.cancel(true);
             pollingTask = null;
         }
     }
@@ -181,9 +306,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
      * Method for polling the RS485 Helios RemoteContol bus
      */
     public synchronized void polling() {
-        if(logger.isTraceEnabled()){
-            logger.trace("HeliosVentilation Polling data for '{}'", getThing().getUID());
-        }
+        logger.trace("HeliosVentilation Polling data for '{}'", getThing().getUID());
         pollCounter++;
         if (pollCounter > POLL_OFFLINE_THRESHOLD) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.GONE, "No data received!");
@@ -194,22 +317,18 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
             connect(); // let's try to reconnect if the connection failed or was never established before
         }
 
-        HeliosVentilationBindingConstants.DATAPOINTS.values().forEach((v) -> {
-            if (isLinked(v.getName())) {
+        variables.values().forEach((v) -> {
+            ChannelUID channelUID = v.channelUID();
+            if (isLinked(channelUID)) {
                 poll(v);
             }
         });
     }
 
     private void disconnect() {
-        if (thing.getStatus() != ThingStatus.REMOVING) {
-            updateStatus(ThingStatus.OFFLINE);
-        }
-        synchronized (this) {
-            SerialPort serial = serialPort;
-            if (serial != null) {
-                serial.close();
-            }
+        updateStatus(ThingStatus.OFFLINE);
+        if (serialPort != null) {
+            serialPort.close();
         }
         IOUtils.closeQuietly(inputStream);
         IOUtils.closeQuietly(outputStream);
@@ -218,7 +337,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
         serialPort = null;
     }
 
-    private void poll(HeliosVentilationDataPoint v) {
+    private void poll(HeliosVentilationVariable v) {
         byte txFrame[] = { 0x01, BUSMEMBER_ME, BUSMEMBER_MAINBOARD, 0x00, v.address(), 0x00 };
         txFrame[5] = (byte) checksum(txFrame);
 
@@ -230,15 +349,11 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
      */
     private void tx(byte[] txFrame) {
         try {
-            OutputStream out = outputStream;
-            if (out != null) {
-                if(logger.isTraceEnabled()){
-                    logger.trace("HeliosVentilation: Write to serial port: {}",
-                            String.format("%02x %02x %02x %02x", txFrame[1], txFrame[2], txFrame[3], txFrame[4]));
-                }
+            if (outputStream != null) {
+                logger.trace("HeliosVentilation: Write to serial port: {}",
+                        String.format("%02x %02x %02x %02x", txFrame[1], txFrame[2], txFrame[3], txFrame[4]));
 
-                out.write(txFrame);
-                out.flush();
+                outputStream.write(txFrame);
                 // after each frame we have to wait.
                 // 30 ms is taken from what we roughly see the original remote control is doing
                 Thread.sleep(30);
@@ -276,47 +391,45 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                         // ignore interruption
                     }
                     byte frame[] = { 0, 0, 0, 0, 0, 0 };
-                    InputStream in = inputStream;
-                    if (in != null) {
+                    do {
+                        int cnt = 0;
+                        int c;
+
                         do {
-                            int cnt = 0;
-                            int c;
-                            do {
-                                c = in.read();
-                                if (cnt > 0 || c == 0x01) {
-                                    frame[cnt] = (byte) c;
-                                    cnt++;
-                                }
-
-                                if (cnt < 6 && in.available() < 1) {
-                                    // frame not yet complete but no input available, let's wait a little to merge
-                                    // interrupted transmissions
-                                    try {
-                                        Thread.sleep(10);
-                                    } catch (InterruptedException e) {
-                                        // ignore interruption
-                                    }
-                                }
-                            } while (in.available() > 0 && (c != -1) && cnt < 6);
-                            int sum = checksum(frame);
-                            if (sum == (frame[5] & 0xff)) {
-                                if(logger.isTraceEnabled()){
-                                    logger.trace("HeliosVentilation: Read from serial port: {}",
-                                            String.format("%02x %02x %02x %02x", frame[1], frame[2], frame[3], frame[4]));
-                                }
-                                interpretFrame(frame);
-
-                            } else {
-                                if(logger.isTraceEnabled()){
-                                    logger.trace(
-                                            "HeliosVentilation: Read frame with not matching checksum from serial port: {}",
-                                            String.format("%02x %02x %02x %02x %02x %02x (expected %02x)", frame[0],
-                                                    frame[1], frame[2], frame[3], frame[4], frame[5], sum));
-                                }
+                            c = inputStream.read();
+                            if (cnt > 0 || c == 0x01) {
+                                frame[cnt] = (byte) c;
+                                cnt++;
                             }
 
-                        } while (in.available() > 0);
-                    }
+                            if (cnt < 6 && inputStream.available() < 1) {
+                                // frame not yet complete but no input available, let's wait a little to merge
+                                // interrupted transmissions
+                                try {
+                                    Thread.sleep(10);
+                                } catch (InterruptedException e) {
+                                    // ignore interruption
+                                }
+                            }
+                        } while (inputStream.available() > 0 && (c != -1) && cnt < 6);
+
+                        // handle frame
+                        // check checksum
+                        int sum = checksum(frame);
+                        if (sum == (frame[5] & 0xff)) {
+                            logger.trace("HeliosVentilation: Read from serial port: {}",
+                                    String.format("%02x %02x %02x %02x", frame[1], frame[2], frame[3], frame[4]));
+                            interpretFrame(frame);
+
+                        } else {
+                            logger.trace(
+                                    "HeliosVentilation: Read frame with not matching checksum from serial port: {}",
+                                    String.format("%02x %02x %02x %02x %02x %02x (expected %02x)", frame[0], frame[1],
+                                            frame[2], frame[3], frame[4], frame[5], sum));
+
+                        }
+
+                    } while (inputStream.available() > 0);
 
                 } catch (IOException e1) {
                     logger.debug("Error reading from serial port: {}", e1.getMessage(), e1);
@@ -325,52 +438,6 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
             default:
                 break;
         }
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            scheduler.execute(this::polling);
-        } else if (command instanceof DecimalType || command instanceof QuantityType || command instanceof OnOffType) {
-            scheduler.execute(() -> update(channelUID, command));
-        }
-    }
-
-    /**
-     * Update the variable corresponding to given channel/command
-     *
-     * @param channelUID UID of the channel to update
-     * @param command data element to write
-     *
-     */
-    public void update(ChannelUID channelUID, Command command) {
-        HeliosVentilationBindingConstants.DATAPOINTS.values().forEach((outer) -> {
-            HeliosVentilationDataPoint v = outer;
-            do {
-                if (channelUID.getThingUID().equals(thing.getUID()) && v.getName().equals(channelUID.getId())) {
-                    if (v.isWritable()) {
-                        byte txFrame[] = { 0x01, BUSMEMBER_ME, BUSMEMBER_CONTROLBOARDS, v.address(), 0x00, 0x00 };
-                        txFrame[4] = v.getTransmitDataFor((State) command);
-                        if (v.requiresReadModifyWrite()) {
-                            txFrame[4] |= memory.get(v.address()) & ~v.bitMask();
-                            memory.put(v.address(), txFrame[4]);
-                        }
-                        txFrame[5] = (byte) checksum(txFrame);
-                        tx(txFrame);
-
-                        txFrame[2] = BUSMEMBER_SLAVEBOARDS;
-                        txFrame[5] = (byte) checksum(txFrame);
-                        tx(txFrame);
-
-                        txFrame[2] = BUSMEMBER_MAINBOARD;
-                        txFrame[5] = (byte) checksum(txFrame);
-                        tx(txFrame);
-                    }
-                }
-                v = v.link();
-            } while (v != null);
-        });
-
     }
 
     /**
@@ -389,7 +456,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
     }
 
     /**
-     * interpret a frame, which is already validated to be in correct format with valid checksum
+     * interpret a frame, which is already validated to be in correct format
      *
      * @param frame 6 bytes long data with 0x01, sender, receiver, address, value, checksum
      */
@@ -398,31 +465,46 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
             // something to read for us
             byte var = frame[3];
             byte val = frame[4];
-            if (HeliosVentilationBindingConstants.DATAPOINTS.containsKey(var)) {
-                HeliosVentilationDataPoint datapoint = HeliosVentilationBindingConstants.DATAPOINTS.get(var);
-                if (datapoint.requiresReadModifyWrite()) {
-                    memory.put(var, val);
-                }
-                do {
-                    if(logger.isTraceEnabled()){
-                        String t = datapoint.asString(val);
-                        logger.trace("Received {} = {}", datapoint, t);
-                    }
-                    if (thing.getStatus() != ThingStatus.REMOVING) {
-                        // plausible data received, so the thing is online
-                        updateStatus(ThingStatus.ONLINE);
-                        pollCounter = 0;
-
-                        updateState(datapoint.getName(), datapoint.asState(val));
-                    }
-                    datapoint = datapoint.link();
-                } while (datapoint != null);
+            if (variables.containsKey(var)) {
+                HeliosVentilationVariable variable = variables.get(var);
+                String t = variable.asString(val);
+                logger.trace("Received {} = {}", variable, t);
+                updateChannelFor(variable, val);
+                // plausible data received, so the thing is online
+                updateStatus(ThingStatus.ONLINE);
+                pollCounter = 0;
 
             } else {
-                if(logger.isTraceEnabled()){
-                    logger.trace("Received unkown data @{} = {}", String.format("%02X ", var), String.format("%02X ", val));
-                }
+                logger.trace("Received unkown data @{} = {}", String.format("%02X ", var), String.format("%02X ", val));
             }
         }
     }
+
+    /**
+     * update the channel for the given variable
+     *
+     * @param variable
+     * @param val
+     */
+    private void updateChannelFor(HeliosVentilationVariable variable, byte val) {
+        String channelId;
+        channelId = variable.getName();
+
+        if (thing.getChannel(channelId) == null) {
+            ThingBuilder thingBuilder = editThing();
+            ChannelTypeUID channelTypeUID = new ChannelTypeUID(HeliosVentilationBindingConstants.BINDING_ID, "Number");
+            ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
+
+            Channel channel = ChannelBuilder.create(channelUID, "Number").withType(channelTypeUID).withLabel(channelId)
+                    .build();
+
+            thingBuilder.withChannel(channel).withLabel(thing.getLabel());
+
+            updateThing(thingBuilder.build());
+        }
+
+        Channel channel = getThing().getChannel(channelId);
+        updateState(channelId, variable.asDecimal(val));
+    }
+
 }
