@@ -113,7 +113,7 @@ Group item=marantz_input label="Receiver" icon="receiver" {
     Default   item=marantz_power
     Default   item=marantz_mute      visibility=[marantz_power==ON]
     Setpoint  item=marantz_volume    label="Volume [%.1f]" minValue=0 maxValue=40 step=0.5  visibility=[marantz_power==ON]
-    Default   item-marantz_volumeDB  visibility=[marantz_power==ON]
+    Default   item=marantz_volumeDB  visibility=[marantz_power==ON]
     Selection item=marantz_input     mappings=[TV=TV,MPLAY=Kodi]  visibility=[marantz_power==ON]
     Default   item=marantz_surround  visibility=[marantz_power==ON]
 }
