@@ -961,7 +961,10 @@ public class Connection {
                     }
                 }
             }
-            smartHomeDeviceArray.add(shd);
+
+            if (!shd.manufacturerName.contains("Amazon") && !shd.friendlyDescription.contains("Amazon")) {
+                smartHomeDeviceArray.add(shd);
+            }
         }
 
         List<SmartHomeGroup> groups = this.getSmarthomeDeviceGroups();
@@ -1115,7 +1118,7 @@ public class Connection {
                         color = capabilityObject.getAsJsonObject().get("value").getAsJsonObject().get("name")
                                 .getAsString();
                     } catch (Exception e) {
-                        logger.error("getting bulb color failed {}", e);
+                        logger.debug("getting bulb color failed {}", e);
                     }
                 }
             }
@@ -1219,7 +1222,7 @@ public class Connection {
             capabilities = jobject.getAsJsonObject().get("deviceStates").getAsJsonArray().get(0).getAsJsonObject()
                     .get("capabilityStates").getAsJsonArray();
         } catch (Exception e) {
-            logger.error("getting capabilities failed {}", e);
+            logger.debug("getting capabilities failed {}", e);
         }
 
         if (capabilities != null) {
