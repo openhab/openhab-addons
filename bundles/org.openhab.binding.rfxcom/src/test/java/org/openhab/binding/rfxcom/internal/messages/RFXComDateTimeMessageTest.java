@@ -37,7 +37,8 @@ public class RFXComDateTimeMessageTest {
         assertEquals("Date time", "2003-04-29T13:21:10", msg.dateTime);
         assertEquals("Signal Level", 2, RFXComTestHelper.getActualIntValue(msg, CHANNEL_SIGNAL_LEVEL));
 
-        assertEquals("Converted value", DateTimeType.valueOf("2003-04-29T13:21:10"), msg.convertToState(CHANNEL_DATE_TIME));
+        assertEquals("Converted value", DateTimeType.valueOf("2003-04-29T13:21:10"),
+                msg.convertToState(CHANNEL_DATE_TIME));
 
         byte[] decoded = msg.decodeMessage();
 

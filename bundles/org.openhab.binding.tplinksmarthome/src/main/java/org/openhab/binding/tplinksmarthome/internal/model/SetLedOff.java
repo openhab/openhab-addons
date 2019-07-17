@@ -22,7 +22,7 @@ import com.google.gson.annotations.Expose;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-public class SetLedOff implements HasErrorResponse {
+public class SetLedOff extends ContextState implements HasErrorResponse {
 
     public static class LedOff extends ErrorResponse {
         @Expose

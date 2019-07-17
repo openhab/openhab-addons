@@ -44,6 +44,8 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.http.HttpService;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link AmazonEchoControlHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -62,7 +64,9 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
     StorageService storageService;
     @Nullable
     BindingServlet bindingServlet;
-
+    @Nullable
+    Gson gson;
+    
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -99,11 +103,17 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
         if (storageService == null) {
             return null;
         }
+        Gson gson = this.gson;
+        if (gson == null)
+        {
+            gson = new Gson();
+            this.gson = gson;
+        }
 
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
             Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
                     String.class.getClassLoader());
-            AccountHandler bridgeHandler = new AccountHandler((Bridge) thing, httpService, storage);
+            AccountHandler bridgeHandler = new AccountHandler((Bridge) thing, httpService, storage, gson);
             registerDiscoveryService(bridgeHandler);
             BindingServlet bindingServlet = this.bindingServlet;
             if (bindingServlet != null) {
@@ -122,7 +132,7 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
             return new SmartHomeDeviceHandler(thing, storage);
         }
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new EchoHandler(thing);
+            return new EchoHandler(thing, gson);
         }
         return null;
     }
@@ -136,7 +146,7 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
         AmazonEchoDiscovery discoveryService = new AmazonEchoDiscovery(bridgeHandler);
         discoveryService.activate();
         this.discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     @Override

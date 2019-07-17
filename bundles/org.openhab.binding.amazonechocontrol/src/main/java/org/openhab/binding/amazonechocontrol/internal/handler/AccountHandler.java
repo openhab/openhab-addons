@@ -97,11 +97,12 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     private String currentFlashBriefingJson = "";
     private final HttpService httpService;
     private @Nullable AccountServlet accountServlet;
-    private final Gson gson = new Gson();
+    private final Gson gson;
     int checkDataCounter;
 
-    public AccountHandler(Bridge bridge, HttpService httpService, Storage<String> stateStorage) {
+    public AccountHandler(Bridge bridge, HttpService httpService, Storage<String> stateStorage, Gson gson) {
         super(bridge);
+        this.gson = gson;
         this.httpService = httpService;
         this.stateStorage = stateStorage;
     }
@@ -113,11 +114,11 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         synchronized (synchronizeConnection) {
             Connection connection = this.connection;
             if (connection == null) {
-                this.connection = new Connection(null);
+                this.connection = new Connection(null, gson);
             }
         }
         if (this.accountServlet == null) {
-            this.accountServlet = new AccountServlet(httpService, this.getThing().getUID().getId(), this);
+            this.accountServlet = new AccountServlet(httpService, this.getThing().getUID().getId(), this, gson);
         }
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
@@ -604,7 +605,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
         Connection currentConnection = connection;
         if (currentConnection == null) {
-            return new ArrayList<Device>();
+            return new ArrayList<>();
         }
 
         List<Device> devices = null;
@@ -646,7 +647,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         if (devices != null) {
             return devices;
         }
-        return new ArrayList<Device>();
+        return new ArrayList<>();
     }
 
     public void setEnabledFlashBriefingsJson(String flashBriefingJson) {

@@ -3,6 +3,7 @@
 .DS_Store
 *.iml
 npm-debug.log
+.build.log
 
 .metadata/
 bin/
@@ -16,3 +17,6 @@ xtend-gen/
 bundles/**/src/main/history
 features/**/src/main/history
 features/**/src/main/feature
+
+.vscode
+.factorypath

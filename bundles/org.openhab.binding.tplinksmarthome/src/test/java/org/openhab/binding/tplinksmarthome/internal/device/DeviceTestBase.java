@@ -22,8 +22,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Before;
 import org.mockito.Mock;
 import org.openhab.binding.tplinksmarthome.internal.Connection;
@@ -36,28 +37,31 @@ import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-public class DeviceTestBase {
+@NonNullByDefault
+public class DeviceTestBase<T extends SmartHomeDevice> {
 
-    @NonNull
+    protected final T device;
     protected final Connection connection;
-    @NonNull
     protected final TPLinkSmartHomeConfiguration configuration = new TPLinkSmartHomeConfiguration();
-    protected DeviceState deviceState;
+    protected @NonNullByDefault({}) DeviceState deviceState;
 
     private final String deviceStateFilename;
 
     @Mock
-    private Socket socket;
+    private @NonNullByDefault({}) Socket socket;
     @Mock
-    private OutputStream outputStream;
+    private @NonNullByDefault({}) OutputStream outputStream;
 
     /**
      * Constructor.
      *
+     * @param device Device under test
      * @param deviceStateFilename name of the file to read the device state json from to use in tests
+     *
      * @throws IOException exception in case device not reachable
      */
-    public DeviceTestBase(@NonNull String deviceStateFilename) throws IOException {
+    protected DeviceTestBase(T device, String deviceStateFilename) throws IOException {
+        this.device = device;
         this.deviceStateFilename = deviceStateFilename;
         configuration.ipAddress = "localhost";
         configuration.refresh = 30;
@@ -68,6 +72,7 @@ public class DeviceTestBase {
                 return socket;
             };
         };
+        device.initialize(connection, configuration);
     }
 
     @Before
@@ -84,7 +89,7 @@ public class DeviceTestBase {
      * @param responseFilenames names of the files to read that contains the answer. It's the unencrypted json string
      * @throws IOException exception in case device not reachable
      */
-    protected void setSocketReturnAssert(@NonNull String... responseFilenames) throws IOException {
+    protected void setSocketReturnAssert(String... responseFilenames) throws IOException {
         AtomicInteger index = new AtomicInteger();
 
         doAnswer(i -> {
@@ -103,15 +108,21 @@ public class DeviceTestBase {
      * @param filenames names of the files containing the reference json
      * @throws IOException exception in case device not reachable
      */
-    protected void assertInput(@NonNull String... filename) throws IOException {
+    protected void assertInput(String... filenames) throws IOException {
+        assertInput(Function.identity(), Function.identity(), filenames);
+    }
+
+    protected void assertInput(Function<String, String> jsonProcessor, Function<String, String> expectedProcessor,
+            String... filenames) throws IOException {
         AtomicInteger index = new AtomicInteger();
 
         doAnswer(arg -> {
-            String json = ModelTestUtil.readJson(filename[index.get()]);
+            String json = jsonProcessor.apply(ModelTestUtil.readJson(filenames[index.get()]));
 
             byte[] input = (byte[]) arg.getArguments()[0];
             try (ByteArrayInputStream inputStream = new ByteArrayInputStream(input)) {
-                assertEquals(filename[index.get()], json, CryptUtil.decryptWithLength(inputStream));
+                String expectedString = expectedProcessor.apply(CryptUtil.decryptWithLength(inputStream));
+                assertEquals(filenames[index.get()], json, expectedString);
             }
             index.incrementAndGet();
             return null;

@@ -15,8 +15,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.cups4j</groupId>
-      <artifactId>cups4j</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>org.cups4j.cups4j</artifactId>
       <version>0.7.6</version>
       <scope>provided</scope>
     </dependency>

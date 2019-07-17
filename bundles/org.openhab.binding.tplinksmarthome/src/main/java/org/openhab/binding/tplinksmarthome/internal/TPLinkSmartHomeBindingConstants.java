@@ -29,7 +29,7 @@ public final class TPLinkSmartHomeBindingConstants {
 
     public static final String BINDING_ID = "tplinksmarthome";
 
-    // List of all channel ids
+    // List of all switch channel ids
     public static final String CHANNEL_SWITCH = "switch";
 
     // List of all plug channel ids
@@ -59,6 +59,10 @@ public final class TPLinkSmartHomeBindingConstants {
 
     // List of all misc channel ids
     public static final String CHANNEL_RSSI = "rssi";
+
+    // List of all group channel ids
+    public static final String CHANNEL_SWITCH_GROUP = "group";
+    public static final String CHANNEL_OUTLET_GROUP_PREFIX = "outlet";
 
     // List of configuration keys
     public static final String CONFIG_IP = "ipAddress";

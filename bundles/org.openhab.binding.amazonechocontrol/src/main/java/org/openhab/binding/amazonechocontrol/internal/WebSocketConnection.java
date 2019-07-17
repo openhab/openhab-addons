@@ -82,7 +82,7 @@ public class WebSocketConnection {
             }
 
             String deviceSerial = "";
-            List<HttpCookie> cookiesForWs = new ArrayList<HttpCookie>();
+            List<HttpCookie> cookiesForWs = new ArrayList<>();
             for (HttpCookie cookie : sessionCookies) {
                 if (cookie.getName().equals("ubid-acbde")) {
                     deviceSerial = cookie.getValue();

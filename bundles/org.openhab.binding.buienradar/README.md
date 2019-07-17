@@ -1,12 +1,17 @@
 # Buienradar Binding
 
-The Buienradar Binding periodically (5 minute intervals) retrieves rainfall predictions from the Dutch buienradar.nl webservice API.
+The Buienradar Binding periodically (5 minute intervals) retrieves rainfall predictions from the Dutch 
+[buienradar.nl webservice API.](https://www.buienradar.nl/overbuienradar/gratis-weerdata).
 
-This allows us to warn of upcoming rainfal when there are still open windows, or prevents watering the outside plants needlessly. 
+Using the binding, we can 
+
+* warn of upcoming rainfall when there are open windows or doors
+* prevent watering the outside plants needlessly,
+* warn when we are about to leave the house.
 
 ## Supported Things
 
-The webservice supports one thing, which can be added manually via the web interface. The thing needs longitude and latitude of the location which needs forecasts.
+The binding supports one thing, which can be added manually via the web interface. The thing needs longitude and latitude of the location which needs forecasts.
 
 ## Discovery
 
@@ -49,4 +54,21 @@ Number RAIN_110MIN "Rain 110 min." (Rain) {channel="buienradar:rain_forecast:hom
 Number RAIN_115MIN "Rain 115 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_115" }
 Number RAIN_120MIN "Rain 120 min." (Rain) {channel="buienradar:rain_forecast:home:forecast_120" }
 ```
+
+## Example data visualisation
+
+In this example we use the 'Discrete' plugin of Grafana to visualize the predictions. Mappings are made according to precipitation intensity (light, medium, heavy) and those categories are given appropriate colors.
+
+![Z-Way Binding](doc/img/grafana-dashboard.png)
+
+The mappings are as follows:
+
+* 0 – 0.01: None (rgba(204, 204, 204, 0))
+* 0.01 – 1: Very light (#badff4)
+* 1 – 5: Light (#6ed0e0)
+* 5 – 20: Medium (#1f78c1)
+* 20 – 50: Heavy (#ef843c)
+* 50 – 80: Very heavy (#e24d42)
+* 80 – 100: Extremely heavy (#890f02)
+
 
