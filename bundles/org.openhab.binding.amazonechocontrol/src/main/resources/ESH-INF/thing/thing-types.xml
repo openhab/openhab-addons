@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+<thing:thing-descriptions xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bindingId="amazonechocontrol"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="account">
 		<label>Amazon Account</label>
 		<description>Amazon Account where the amazon echo devices are registered.</description>
+		<config-description>
+            <parameter name="pollingIntervalSmartHome" type="integer">
+                <default>20</default>
+                <description>Defines the time in seconds for openhab to pull the state of the bulbs.</description></parameter>
+            <parameter name="discoverSmartHome" type="boolean">
+                <default>true</default>
+                <description>Defines if openhab should discover your bulbs connected to the Amazon Echo.</description></parameter>
+        </config-description>
 	</bridge-type>
 	<thing-type id="echo">
 		<supported-bridge-type-refs>
@@ -27,14 +34,17 @@
 			<channel id="title" typeId="title" />
 			<channel id="subtitle1" typeId="subtitle1" />
 			<channel id="subtitle2" typeId="subtitle2" />
-			<channel id="providerDisplayName" typeId="providerDisplayName" />
+			<channel id="providerDisplayName"
+				typeId="providerDisplayName" />
 			<channel id="musicProviderId" typeId="musicProviderId" />
-			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
+			<channel id="playMusicVoiceCommand"
+				typeId="playMusicVoiceCommand" />
 			<channel id="startCommand" typeId="startCommand" />
 			<channel id="radioStationId" typeId="radioStationId" />
 			<channel id="radio" typeId="radio" />
 			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
-			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
+			<channel id="amazonMusicPlayListId"
+				typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
@@ -47,7 +57,8 @@
 			<channel id="startRoutine" typeId="startRoutine" />
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
-			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
+			<channel id="bluetoothDeviceName"
+				typeId="bluetoothDeviceName" />
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
 			<channel id="notificationVolume" typeId="notificationVolume" />
 			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
@@ -80,15 +91,19 @@
 			<channel id="title" typeId="title" />
 			<channel id="subtitle1" typeId="subtitle1" />
 			<channel id="subtitle2" typeId="subtitle2" />
-			<channel id="providerDisplayName" typeId="providerDisplayName" />
+			<channel id="providerDisplayName"
+				typeId="providerDisplayName" />
 			<channel id="musicProviderId" typeId="musicProviderId" />
-			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
+			<channel id="playMusicVoiceCommand"
+				typeId="playMusicVoiceCommand" />
 			<channel id="startCommand" typeId="startCommand" />
 			<channel id="radioStationId" typeId="radioStationId" />
 			<channel id="radio" typeId="radio" />
 			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
-			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
+			<channel id="amazonMusicPlayListId"
+				typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
+			<channel id="announcement" typeId="announcement" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
@@ -100,7 +115,8 @@
 			<channel id="startRoutine" typeId="startRoutine" />
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
-			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
+			<channel id="bluetoothDeviceName"
+				typeId="bluetoothDeviceName" />
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
 			<channel id="notificationVolume" typeId="notificationVolume" />
 			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
@@ -133,15 +149,19 @@
 			<channel id="title" typeId="title" />
 			<channel id="subtitle1" typeId="subtitle1" />
 			<channel id="subtitle2" typeId="subtitle2" />
-			<channel id="providerDisplayName" typeId="providerDisplayName" />
+			<channel id="providerDisplayName"
+				typeId="providerDisplayName" />
 			<channel id="musicProviderId" typeId="musicProviderId" />
-			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
+			<channel id="playMusicVoiceCommand"
+				typeId="playMusicVoiceCommand" />
 			<channel id="startCommand" typeId="startCommand" />
 			<channel id="radioStationId" typeId="radioStationId" />
 			<channel id="radio" typeId="radio" />
 			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
-			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
+			<channel id="amazonMusicPlayListId"
+				typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
+			<channel id="announcement" typeId="announcement" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
 			<channel id="remind" typeId="remind" />
@@ -153,7 +173,8 @@
 			<channel id="startRoutine" typeId="startRoutine" />
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
-			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
+			<channel id="bluetoothDeviceName"
+				typeId="bluetoothDeviceName" />
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
 			<channel id="notificationVolume" typeId="notificationVolume" />
 			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
@@ -182,11 +203,13 @@
 			<channel id="title" typeId="title" />
 			<channel id="subtitle1" typeId="subtitle1" />
 			<channel id="subtitle2" typeId="subtitle2" />
-			<channel id="providerDisplayName" typeId="providerDisplayName" />
+			<channel id="providerDisplayName"
+				typeId="providerDisplayName" />
 			<channel id="radioStationId" typeId="radioStationId" />
 			<channel id="radio" typeId="radio" />
 			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
-			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
+			<channel id="amazonMusicPlayListId"
+				typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
 		</channels>
 		<representation-property>serialNumber</representation-property>
@@ -208,6 +231,32 @@
 			<channel id="save" typeId="save" />
 			<channel id="active" typeId="active" />
 			<channel id="playOnDevice" typeId="playOnDevice" />
+		</channels>
+	</thing-type>
+	<thing-type id="light">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+		<label>Amazon Echo Light</label>
+		<description>Represents a light in your amazon account</description>
+		<channels>
+			<channel typeId="lightState" id="lightState"></channel>
+			<channel typeId="lightBrightness" id="lightBrightness"></channel>
+			<channel typeId="lightColor" id="lightColor"></channel>
+			<channel typeId="whiteTemperature" id="whiteTemperature"></channel>
+		</channels>
+	</thing-type>
+	<thing-type id="lightGroup">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+		<label>Amazon Echo Light Group</label>
+		<description>Group of light bulbs in your amazon account</description>
+		<channels>
+			<channel typeId="lightState" id="lightState"></channel>
+			<channel typeId="lightBrightness" id="lightBrightness"></channel>
+			<channel typeId="lightColor" id="lightColor"></channel>
+			<channel typeId="whiteTemperature" id="whiteTemperature"></channel>
 		</channels>
 	</thing-type>
 	<channel-type id="save">
@@ -267,7 +316,8 @@
 		<label>Amazon Music Play List Id</label>
 		<description>Amazon Music play list id (Write only, no current state)</description>
 	</channel-type>
-	<channel-type id="amazonMusicPlayListIdLastUsed" advanced="true">
+	<channel-type id="amazonMusicPlayListIdLastUsed"
+		advanced="true">
 		<item-type>String</item-type>
 		<label>Amazon Music Last Selected Playlist Id</label>
 		<description>Id of the playlist which was started with openHAB</description>
@@ -365,6 +415,11 @@
 		<label>Music Voice Command</label>
 		<description>Voice command as text. E.g. 'Yesterday from the Beatles' (Write only)</description>
 	</channel-type>
+	<channel-type id="announcement" advanced="true">
+		<item-type>String</item-type>
+		<label>Announcement</label>
+		<description>Display the announcement message on the display (Write only). See in the tutorial section of the binding description to learn how it's possible to set the title and turn off the sound.</description>
+	</channel-type>
 	<channel-type id="textToSpeech" advanced="true">
 		<item-type>String</item-type>
 		<label>Speak</label>
@@ -426,6 +481,7 @@
 		<description>Ascending alarm up to the configured volume</description>
 		<state readOnly="false" />
 	</channel-type>
+
 	<channel-type id="nextReminder" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Next Reminder</label>
@@ -449,5 +505,53 @@
 		<label>Next Timer</label>
 		<description>Next timer</description>
 		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="lightState" advanced="false">
+		<item-type>Switch</item-type>
+		<label>State of your bulb</label>
+		<description>State (ON/OFF) of a light</description>
+	</channel-type>
+	<channel-type id="lightColor" advanced="false">
+		<item-type>String</item-type>
+		<label>Color of your bulb</label>
+		<description>The color of a smart bulb</description>
+		<state pattern="String" readOnly="false">
+			<options>
+				<option value="red">Red</option>
+				<option value="crimson">Crimson</option>
+				<option value="salmon">Salmon</option>
+				<option value="orange">Orange</option>
+				<option value="gold">Gold</option>
+				<option value="yellow">Yellow</option>
+				<option value="green">Green</option>
+				<option value="turquoise">Turquoise</option>
+				<option value="cyan">Cyan</option>
+				<option value="sky_blue">Sky blue</option>
+				<option value="blue">Blue</option>
+				<option value="purple">Purple</option>
+				<option value="magenta">Magenta</option>
+				<option value="pink">Pink</option>
+				<option value="lavender">Lavender</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="whiteTemperature" advanced="false">
+		<item-type>String</item-type>
+		<label>White temperature</label>
+		<description>The temperature of white</description>
+		<state pattern="String" readOnly="false">
+			<options>
+				<option value="warm_white">Warm white</option>
+				<option value="soft_white">Soft white</option>
+				<option value="white">white</option>
+				<option value="daylight_white">Daylight white</option>
+				<option value="cool_white">Cool white</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="lightBrightness" advanced="false">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>The brightness of the light</description>
 	</channel-type>
 </thing:thing-descriptions>

@@ -16,12 +16,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * @author Lukas Knoeller - Contributor
+ * @author Lukas Knoeller
  */
 @NonNullByDefault
 public class JsonSmartHomeDevices {
 
-    public class SmartHomeDevice {
+    public static class SmartHomeDevice {
         public @Nullable String applianceId;
         public @Nullable String manufacturerName;
         public @Nullable String friendlyDescription;
@@ -36,7 +36,7 @@ public class JsonSmartHomeDevices {
         public boolean colorTemperature = false;
 
         public SmartHomeDevice(String applianceId, String manufacturerName, String friendlyDescription,
-                String friendlyName, String reachability, String entityId, JsonSmartHomeDeviceAlias[] alias,
+                @Nullable String friendlyName, String reachability, String entityId, JsonSmartHomeDeviceAlias[] alias,
                 SmartHomeDevice[] groupDevices) {
             this.applianceId = applianceId;
             this.manufacturerName = manufacturerName;
@@ -46,6 +46,9 @@ public class JsonSmartHomeDevices {
             this.entityId = entityId;
             this.alias = alias;
             this.groupDevices = groupDevices;
+        }
+
+        public SmartHomeDevice() {
         }
     }
 

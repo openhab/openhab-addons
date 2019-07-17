@@ -92,7 +92,7 @@ public class SensorTests {
     }
 
     @Test
-    public void renameSensor() throws IOException {
+    public void renameSensor() {
 
         assertThat(cs.ds.sensors.get("switch1").name, is("name1"));
 
@@ -107,7 +107,7 @@ public class SensorTests {
     }
 
     @Test
-    public void allAndSingleSensor() throws InterruptedException, ExecutionException, TimeoutException, IOException {
+    public void allAndSingleSensor() {
         Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/sensors").request().get();
         assertEquals(200, response.getStatus());
 

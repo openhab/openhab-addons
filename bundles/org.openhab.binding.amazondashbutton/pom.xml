@@ -21,14 +21,14 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.pcap4j</groupId>
-      <artifactId>pcap4j-core</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>org.pcap4j.pcap4j-core</artifactId>
       <version>1.6.6</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.pcap4j</groupId>
-      <artifactId>pcap4j-packetfactory-static</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>org.pcap4j.pcap4j-packetfactory-static</artifactId>
       <version>1.6.6</version>
       <scope>provided</scope>
     </dependency>

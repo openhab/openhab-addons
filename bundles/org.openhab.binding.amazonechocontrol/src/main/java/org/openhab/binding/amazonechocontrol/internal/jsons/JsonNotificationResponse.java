@@ -30,6 +30,10 @@ public class JsonNotificationResponse {
     public @Nullable String id;
     public @Nullable String status;
     public @Nullable String type;
+    public long remainingTime;
+    public @Nullable String recurringPattern;
+    public @Nullable String originalDate;
+    public @Nullable String originalTime;
 }
 
 /*

@@ -33,9 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Lukas Knoeller
- *
  */
 
 public class DeviceHandler extends BaseThingHandler {
@@ -64,7 +62,7 @@ public class DeviceHandler extends BaseThingHandler {
         if (bridge != null) {
             AccountHandler account = (AccountHandler) bridge.getHandler();
             if (account != null) {
-                // TODO
+                updateSmartHomeDevices();
             }
         }
     }
@@ -73,7 +71,7 @@ public class DeviceHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Command {} received from channel '{}'", command, channelUID);
         if (command instanceof RefreshType) {
-            // updateSmartHomeDevices();
+            updateSmartHomeDevices();
         }
     }
 

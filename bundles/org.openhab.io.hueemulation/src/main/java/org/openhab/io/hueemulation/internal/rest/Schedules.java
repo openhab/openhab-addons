@@ -232,7 +232,7 @@ public class Schedules implements RegistryChangeListener<Rule> {
     @ApiOperation(value = "Return all schedules")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
     public Response getSchedulesApi(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username) throws IOException {
+            @PathParam("username") @ApiParam(value = "username") String username) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }

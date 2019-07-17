@@ -25,6 +25,22 @@
 			</description>
 			<default>1000</default>
 		</parameter>
+		<parameter name="protocol" type="text" required="true">
+			<label>Remote control protocol</label>
+			<description>The type of remote control protocol. This depends on the age of the TV.</description>
+			<options>
+				<option value="None">None</option>
+				<option value="Legacy">Legacy (Before 2014)</option>
+				<option value="WebSocket">Websocket (2016 and later TV's)</option>
+				<option value="SecureWebSocket">Secure websocket (2016 and later TV's)</option>
+			</options>
+			<default>None</default>
+		</parameter>
+		<parameter name="webSocketToken" type="text" readOnly="true">
+			<label>Websocket Token</label>
+			<description>Security token for secure websocket connection</description>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

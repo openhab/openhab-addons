@@ -45,13 +45,16 @@ public class AmazonEchoControlBindingConstants {
     public static final ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "light");
     public static final ThingTypeUID THING_TYPE_LIGHT_GROUP = new ThingTypeUID(BINDING_ID, "lightGroup");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_ACCOUNT, THING_TYPE_ECHO, THING_TYPE_ECHO_SPOT, THING_TYPE_ECHO_SHOW,
                     THING_TYPE_ECHO_WHA, THING_TYPE_FLASH_BRIEFING_PROFILE, THING_TYPE_LIGHT, THING_TYPE_LIGHT_GROUP));
 
     // List of all Channel ids
     public static final String CHANNEL_PLAYER = "player";
     public static final String CHANNEL_VOLUME = "volume";
+    public static final String CHANNEL_EQUALIZER_TREBLE = "equalizerTreble";
+    public static final String CHANNEL_EQUALIZER_MIDRANGE = "equalizerMidrange";
+    public static final String CHANNEL_EQUALIZER_BASS = "equalizerBass";
     public static final String CHANNEL_ERROR = "error";
     public static final String CHANNEL_SHUFFLE = "shuffle";
     public static final String CHANNEL_LOOP = "loop";
@@ -86,6 +89,10 @@ public class AmazonEchoControlBindingConstants {
     public static final String CHANNEL_LIGHT_COLOR = "lightColor";
     public static final String CHANNEL_LIGHT_WHITE_TEMPERATURE = "whiteTemperature";
     public static final String CHANNEL_LIGHT_BRIGHTNESS = "lightBrightness";
+    public static final String CHANNEL_NEXT_REMINDER = "nextReminder";
+    public static final String CHANNEL_NEXT_ALARM = "nextAlarm";
+    public static final String CHANNEL_NEXT_MUSIC_ALARM = "nextMusicAlarm";
+    public static final String CHANNEL_NEXT_TIMER = "nextTimer";
 
     public static final String CHANNEL_SAVE = "save";
     public static final String CHANNEL_ACTIVE = "active";
