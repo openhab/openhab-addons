@@ -265,15 +265,6 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
 
     public List<SmartHomeDevice> updateSmartHomeDevices() {
 
-        /*
-         * Configuration config = accountHandler.getThing().getConfiguration();
-         * boolean discoverSmartHome = (boolean) config.getProperties().get("discoverSmartHome");
-         * 
-         * if (discoverSmartHome == false) {
-         * return new ArrayList<SmartHomeDevice>();
-         * }
-         */
-
         Connection currentConnection = connection;
         if (currentConnection == null) {
             return new ArrayList<SmartHomeDevice>();
