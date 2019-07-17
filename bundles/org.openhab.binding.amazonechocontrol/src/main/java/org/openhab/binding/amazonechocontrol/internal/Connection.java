@@ -52,8 +52,8 @@ import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
@@ -66,10 +66,10 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Payload;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Trigger;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonColorTemperature;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonColors;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBootstrapResult;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBootstrapResult.Authentication;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonColorTemperature;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonColors;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState.DeviceNotificationState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices;
@@ -127,15 +127,14 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class Connection {
-    
+
     private static final String THING_THREADPOOL_NAME = "thingHandler";
 
-    protected final ScheduledExecutorService scheduler = ThreadPoolManager
-            .getScheduledPool(THING_THREADPOOL_NAME);
-    
+    protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(THING_THREADPOOL_NAME);
+
     private static final long expiresIn = 432000; // five days
     private static final Pattern charsetPattern = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
-  
+
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
 
     private final CookieManager cookieManager = new CookieManager();
@@ -386,8 +385,8 @@ public class Connection {
 
         if (intVersion > 5) {
             String accountCustomerId = scanner.nextLine();
-            // Note: version 5 have wrong customer id serialized. 
-            // Only use it, if it at least version 6 of serialization 
+            // Note: version 5 have wrong customer id serialized.
+            // Only use it, if it at least version 6 of serialization
             if (intVersion > 6) {
                 if (!StringUtils.equals(accountCustomerId, "null")) {
                     this.accountCustomerId = accountCustomerId;
@@ -463,8 +462,7 @@ public class Connection {
                     }
                     return authentication;
                 }
-            }
-            catch (JsonSyntaxException | IllegalStateException e) {
+            } catch (JsonSyntaxException | IllegalStateException e) {
                 logger.info("No valid json received {}", e);
                 return null;
             }
@@ -520,12 +518,12 @@ public class Connection {
 
     public HttpsURLConnection makeRequest(String verb, String url, @Nullable String postData, boolean json,
             boolean autoredirect, @Nullable Map<String, String> customHeaders, int badRequestRepeats)
-                    throws IOException, URISyntaxException {
+            throws IOException, URISyntaxException {
         String currentUrl = url;
         int redirectCounter = 0;
         while (true) // loop for handling redirect and bad request, using automatic redirect is not possible,
-            // because
-            // all response headers must be catched
+        // because
+        // all response headers must be catched
         {
             int code;
             HttpsURLConnection connection = null;
@@ -637,13 +635,12 @@ public class Connection {
                     scheduler.schedule(() -> {
                         logger.debug("Retry call to {}", url);
                         try {
-                            makeRequest(verb, url, postData, json,
-                            autoredirect, customHeaders, badRequestRepeats - 1);
+                            makeRequest(verb, url, postData, json, autoredirect, customHeaders, badRequestRepeats - 1);
                         } catch (IOException | URISyntaxException e) {
                             logger.debug("Repeat fails {}", e);
                         }
                     }, 500, TimeUnit.MILLISECONDS);
-                    return connection;                   
+                    return connection;
                 }
                 if (code == 200) {
                     logger.debug("Call to {} succeeded", url);
@@ -772,9 +769,9 @@ public class Connection {
         String cookiesBase64 = Base64.getEncoder().encodeToString(cookiesJson.getBytes());
 
         String exchangePostData = "di.os.name=iOS&app_version=2.2.223830.0&domain=." + getAmazonSite()
-        + "&source_token=" + URLEncoder.encode(this.refreshToken, "UTF8")
-        + "&requested_token_type=auth_cookies&source_token_type=refresh_token&di.hw.version=iPhone&di.sdk.version=6.10.0&cookies="
-        + cookiesBase64 + "&app_name=Amazon%20Alexa&di.os.version=11.4.1";
+                + "&source_token=" + URLEncoder.encode(this.refreshToken, "UTF8")
+                + "&requested_token_type=auth_cookies&source_token_type=refresh_token&di.hw.version=iPhone&di.sdk.version=6.10.0&cookies="
+                + cookiesBase64 + "&app_name=Amazon%20Alexa&di.os.version=11.4.1";
 
         HashMap<String, String> exchangeTokenHeader = new HashMap<>();
         exchangeTokenHeader.put("Cookie", "");
@@ -1116,7 +1113,7 @@ public class Connection {
                         color = capabilityObject.getAsJsonObject().get("value").getAsJsonObject().get("name")
                                 .getAsString();
                     } catch (Exception e) {
-                        logger.error("getting bulb color failed {}", e);
+                        logger.debug("getting bulb color failed {}", e);
                     }
                 }
             }
@@ -1321,7 +1318,7 @@ public class Connection {
                     + ", \"entityType\": \"APPLIANCE\", \"parameters\": { \"action\": " + "\"" + action + "\""
                     + ", \"brightness\": \"" + brightness + "\" }}]}";
         }
-        makeRequest("PUT", url, requestBody, true, true, null);
+        makeRequest("PUT", url, requestBody, true, true, null, 0);
     }
 
     public void notificationVolume(Device device, int volume) throws IOException, URISyntaxException {
@@ -1389,10 +1386,10 @@ public class Connection {
         } else {
             makeRequest("POST",
                     alexaServer + "/api/tunein/queue-and-play?deviceSerialNumber=" + device.serialNumber
-                    + "&deviceType=" + device.deviceType + "&guideId=" + stationId
-                    + "&contentType=station&callSign=&mediaOwnerCustomerId="
-                    + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
-                            : this.accountCustomerId),
+                            + "&deviceType=" + device.deviceType + "&guideId=" + stationId
+                            + "&contentType=station&callSign=&mediaOwnerCustomerId="
+                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                                    : this.accountCustomerId),
                     "", true, true, null, 0);
         }
     }
@@ -1404,10 +1401,10 @@ public class Connection {
             String command = "{\"trackId\":\"" + trackId + "\",\"playQueuePrime\":true}";
             makeRequest("POST",
                     alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
-                    + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
-                    + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
-                            : this.accountCustomerId)
-                    + "&shuffle=false",
+                            + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
+                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                                    : this.accountCustomerId)
+                            + "&shuffle=false",
                     command, true, true, null, 0);
         }
     }
@@ -1420,10 +1417,10 @@ public class Connection {
             String command = "{\"playlistId\":\"" + playListId + "\",\"playQueuePrime\":true}";
             makeRequest("POST",
                     alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
-                    + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
-                    + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
-                            : this.accountCustomerId)
-                    + "&shuffle=false",
+                            + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
+                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                                    : this.accountCustomerId)
+                            + "&shuffle=false",
                     command, true, true, null, 0);
         }
     }
@@ -1495,7 +1492,7 @@ public class Connection {
 
     private void executeSequenceCommandWithVolume(@Nullable Device device, String command,
             @Nullable Map<String, Object> parameters, int ttsVolume, int standardVolume)
-                    throws IOException, URISyntaxException {
+            throws IOException, URISyntaxException {
         if (ttsVolume != 0) {
 
             JsonArray nodesToExecute = new JsonArray();
@@ -1818,5 +1815,5 @@ public class Connection {
         String postData = gson.toJson(settings);
         makeRequest("POST", alexaServer + "/api/equalizer/" + device.serialNumber + "/" + device.deviceType, postData,
                 true, true, null, 0);
-    }   
+    }
 }
