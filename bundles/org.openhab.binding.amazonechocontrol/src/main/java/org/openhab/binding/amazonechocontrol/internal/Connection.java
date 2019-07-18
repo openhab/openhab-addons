@@ -86,6 +86,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonExchangeTokenRes
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMusicProvider;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNetworkDetails;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationRequest;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
@@ -925,7 +926,42 @@ public class Connection {
         return new WakeWord[0];
     }
 
+    private List<String> getSmarthomeDeviceListX() throws IOException, URISyntaxException {
+        try {
+            String json = makeRequestAndReturnString(alexaServer + "/api/phoenix");
+            logger.debug("getSmartHomeDevices result: {}", json);
+
+            JsonNetworkDetails networkDetails = parseJson(json, JsonNetworkDetails.class);
+            Object jsonObject = gson.fromJson(networkDetails.networkDetail, Object.class);
+            List<String> result = new ArrayList<>();
+            searchSmartHomeDevicesRecursive(jsonObject, result);
+            return result;
+        } catch (Exception e) {
+            logger.warn("getSmartHomeDevices fails: {}", e.getMessage());
+            throw e;
+        }
+    }
+
+    private void searchSmartHomeDevicesRecursive(@Nullable Object jsonNode, List<String> result) {
+        if (jsonNode instanceof Map) {
+            @SuppressWarnings("rawtypes")
+            Map map = (Map) jsonNode;
+            if (map.containsKey("entityId") && map.containsKey("friendlyName") && map.containsKey("actions")) {
+                // device node found, create type element and add it to the results
+                JsonElement element = gson.toJsonTree(jsonNode);
+                result.add(element.toString());
+            } else {
+                for (Object key : map.keySet()) {
+                    Object value = map.get(key);
+                    searchSmartHomeDevicesRecursive(value, result);
+                }
+            }
+        }
+    }
+
     public List<SmartHomeDevice> getSmarthomeDeviceList() throws IOException, URISyntaxException {
+        List<String> test = getSmarthomeDeviceListX();
+
         JsonObject json = new JsonParser().parse(getSmarthomeDeviceListJson()).getAsJsonObject();
         JsonObject smartHomeDevices = json.get("networkDetail").getAsJsonObject().get("locationDetails")
                 .getAsJsonObject().get("locationDetails").getAsJsonObject().get("Default_Location").getAsJsonObject()
