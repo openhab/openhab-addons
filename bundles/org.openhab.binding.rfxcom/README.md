@@ -154,11 +154,13 @@ This binding currently supports following channel types:
 |-----------------|---------------|------------------------------------------------------------------------------------|
 | chimesound      | Number        | Id of the chime sound                                                              |
 | command         | Switch        | Command channel.                                                                   |
-| commandId       | String        | Id of the command.                                                                 |
+ | commandId       | Number        | Id of the command (between 0 and 255).                                             |
+| commandString   | String        | Id of the command.                                                                 |
 | contact         | Contact       | Contact channel.                                                                   |
 | datetime        | DateTime      | DateTime channel.                                                                  |
 | dimminglevel    | Dimmer        | Dimming level channel.                                                             |
 | forecast        | String        | Weather forecast from device: NO\_INFO\_AVAILABLE/SUNNY/PARTLY\_CLOUDY/CLOUDY/RAIN |
+| tempcontrol     | Rollershutter | Global control for temperature also setting ON, OFF, UP, DOWN                      |
 | humidity        | Number        | Relative humidity level in percentages.                                            |
 | humiditystatus  | String        | Current humidity status: NORMAL/COMFORT/DRY/WET                                    |
 | instantamp      | Number        | Instant current in Amperes.                                                        |
@@ -964,10 +966,31 @@ A Thermostat3 device.
 
 #### Channels
 
-| Name        | Channel Type                        | Item Type | Remarks  |
-|-------------|-------------------------------------|-----------|----------|
-| command     | [command](#channels)                | Switch    |          |
-| signalLevel | [system.signal-strength](#channels) | Number    |          |
+| Name              | Channel Type                        | Item Type     | Remarks  |
+|-------------------|-------------------------------------|---------------|----------|
+| command           | [command](#channels)                | Switch        |          |
+| command2nd        | [command](#channels)                | Switch        |          |
+| control\*         | [tempcontrol](#channels)            | Rollershutter |          |
+| commandString\*\* | [commandString](#channels)          | String        |          |
+| signalLevel       | [system.signal-strength](#channels) | Number        |          |
+
+\* `control` supports:
+
+* UP
+* DOWN
+* STOP
+
+\*\* `commandString` supports:
+
+* OFF
+* ON
+* UP
+* DOWN
+* RUN_UP
+* RUN_DOWN
+* SECOND_ON
+* SECOND_OFF
+* STOP
 
 #### Configuration Options
 
@@ -981,6 +1004,8 @@ A Thermostat3 device.
         *   MERTIK\_\_G6R\_H4TB\_\_G6_H4T\_\_G6R\_H4T21\_Z22 - Mertik (G6R H4TB, G6R H4T, or G6R H4T21\-Z22)
         *   MERTIK\_\_G6R\_H4TD\_\_G6R\_H4T16 - Mertik (G6R H4TD or G6R H4T16)
         *   MERTIK\_\_G6R\_H4S\_TRANSMIT\_ONLY - Mertik (G6R H4S \- transmit only)
+
+#### Examples
 
 
 ### undecoded - RFXCOM Undecoded RF Messages

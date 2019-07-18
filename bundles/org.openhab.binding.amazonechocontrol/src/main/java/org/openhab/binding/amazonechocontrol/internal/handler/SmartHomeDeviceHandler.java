@@ -15,6 +15,7 @@ package org.openhab.binding.amazonechocontrol.internal.handler;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -42,9 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Lukas Knoeller
- *
  */
 
 public class SmartHomeDeviceHandler extends BaseThingHandler {
@@ -122,7 +122,12 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                     }
                 }
             };
-            updateStateJob = scheduler.scheduleWithFixedDelay(runnable, 0, 30, TimeUnit.SECONDS);
+
+            Configuration config = accountHandler.getThing().getConfiguration();
+
+            updateStateJob = scheduler.scheduleWithFixedDelay(runnable, 0,
+                    ((BigDecimal) config.getProperties().get("pollingIntervalSmartHome")).longValue(),
+                    TimeUnit.SECONDS);
         }
     }
 
@@ -142,15 +147,11 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         if (accountHandler == null) {
             return;
         }
-        int waitForUpdate = -1;
 
         try {
             Map<String, String> props = this.thing.getProperties();
             String entityId = props.get(DEVICE_PROPERTY_LIGHT_ENTITY_ID);
             String channelId = channelUID.getId();
-            if (command instanceof RefreshType) {
-                waitForUpdate = 0;
-            }
             if (channelId.equals(CHANNEL_LIGHT_STATE)) {
                 if (command instanceof OnOffType) {
                     connection = accountHandler.findConnection();
@@ -170,7 +171,6 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                             }
                         }
                     }
-                    waitForUpdate = 1;
                 }
             }
             if (channelId.equals(CHANNEL_LIGHT_COLOR)) {
@@ -218,16 +218,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                                     ((PercentType) command).floatValue() / 100);
                         }
                     }
-                    waitForUpdate = 1;
                 }
-            }
-
-            if (waitForUpdate < 0) {
-                return;
-            }
-
-            if (command instanceof RefreshType) {
-                waitForUpdate = 0;
             }
 
         } catch (Exception e) {
@@ -273,6 +264,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
     }
 
     public List<SmartHomeDevice> updateSmartHomeDevices() {
+
         Connection currentConnection = connection;
         if (currentConnection == null) {
             return new ArrayList<SmartHomeDevice>();

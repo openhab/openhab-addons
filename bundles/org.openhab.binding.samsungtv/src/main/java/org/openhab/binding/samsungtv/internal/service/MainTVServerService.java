@@ -55,7 +55,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     public static final String SERVICE_NAME = "MainTVServer2";
     private static final List<String> SUPPORTEDCOMMANDS = Arrays.asList(SOURCE_NAME, BROWSER_URL, STOP_BROWSER);
 
-    private Logger logger = LoggerFactory.getLogger(MainTVServerService.class);
+    private final Logger logger = LoggerFactory.getLogger(MainTVServerService.class);
 
     private UpnpIOService service;
 

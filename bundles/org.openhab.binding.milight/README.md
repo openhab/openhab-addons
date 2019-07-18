@@ -19,7 +19,7 @@ RGB/White from 2014 and the new generation RGB/White from 2016 as well as RGB/Co
 | RGB/Cold,Warmwhite |                |   ✓   |   ✓   |
 
 Please note that LD382, LD382A, LD686 RGB stripes and bulbs are supported by the
-[WifiLed Binding](https://github.com/openhab/openhab2-addons/blob/master/addons/binding/org.openhab.binding.wifiled/README.md).
+[WifiLed Binding](https://www.openhab.org/addons/bindings/wifiled/).
 
 ## Discovery
 

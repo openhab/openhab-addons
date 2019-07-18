@@ -33,14 +33,14 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-core</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.amazonaws.aws-java-sdk-core</artifactId>
       <version>1.11.490</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-polly</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.amazonaws.aws-java-sdk-polly</artifactId>
       <version>1.11.490</version>
       <scope>provided</scope>
     </dependency>

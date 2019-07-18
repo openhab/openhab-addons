@@ -58,6 +58,13 @@
     </snapshotRepository>
   </distributionManagement>
 
+  <repositories>
+    <repository>
+      <id>osgiify</id>
+      <url>https://dl.bintray.com/openhab/mvn/openhab-osgiify</url>
+    </repository>
+  </repositories>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -67,7 +74,7 @@
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
     <bnd.version>4.2.0</bnd.version>
-    <karaf.version>4.2.4</karaf.version>
+    <karaf.version>4.2.6</karaf.version>
     <sat.version>0.6.1</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
 

@@ -96,16 +96,24 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
         State currentState = getCurrentStateFunc.apply(channelId);
 
         if (currentState != null) {
-            int direction = getDB_1() == MoveUp ? -1 : 1;
             int duration = ((getDB_3Value() << 8) + getDB_2Value()) / 10; // => Time in DB3 and DB2 is given
                                                                           // in ms
 
-            PercentType current = currentState.as(PercentType.class);
-            if (config != null && current != null) {
+            if (config != null) {
                 EnOceanChannelRollershutterConfig c = config.as(EnOceanChannelRollershutterConfig.class);
-                if (c.shutTime != -1 && c.shutTime != 0) {
-                    return new PercentType(Math.min(100, (Math.max(0, current.intValue()
-                            + direction * ((duration * PercentType.HUNDRED.intValue()) / c.shutTime)))));
+                if (duration == c.shutTime) {
+                    return getDB_1() == MoveUp ? PercentType.ZERO : PercentType.HUNDRED;
+                } else {
+                    PercentType current = PercentType.ZERO;
+                    if (currentState instanceof PercentType) {
+                        current = currentState.as(PercentType.class);
+                    }
+
+                    int direction = getDB_1() == MoveUp ? -1 : 1;
+                    if (c.shutTime != -1 && c.shutTime != 0) {
+                        return new PercentType(Math.min(100, (Math.max(0, current.intValue()
+                                + direction * ((duration * PercentType.HUNDRED.intValue()) / c.shutTime)))));
+                    }
                 }
             }
         }

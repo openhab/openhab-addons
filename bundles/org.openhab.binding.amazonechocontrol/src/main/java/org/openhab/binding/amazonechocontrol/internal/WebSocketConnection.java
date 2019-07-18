@@ -82,7 +82,7 @@ public class WebSocketConnection {
             }
 
             String deviceSerial = "";
-            List<HttpCookie> cookiesForWs = new ArrayList<HttpCookie>();
+            List<HttpCookie> cookiesForWs = new ArrayList<>();
             for (HttpCookie cookie : sessionCookies) {
                 if (cookie.getName().equals("ubid-acbde")) {
                     deviceSerial = cookie.getValue();
@@ -149,7 +149,18 @@ public class WebSocketConnection {
         Session session = this.session;
         this.session = null;
         if (session != null) {
-            session.close();
+            try {
+                session.close();
+            } catch (Exception e) {
+                logger.debug("Closing sessing failed {}", e);
+            }
+        }
+        try {
+            webSocketClient.stop();
+        } catch (InterruptedException e) {
+            // Just ignore
+        } catch (Exception e) {
+            logger.debug("Stopping websocket failed {}", e);
         }
         webSocketClient.destroy();
     }

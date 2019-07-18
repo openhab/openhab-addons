@@ -194,6 +194,22 @@ public class Sun extends RiseSet implements Planet {
     }
 
     /**
+     * Sets the rise range.
+     */
+    public void setRise(Range rise) {
+        super.setRise(rise);
+        ranges.put(SunPhaseName.SUN_RISE, rise);
+    }
+
+    /**
+     * Sets the set range.
+     */
+    public void setSet(Range set) {
+        super.setSet(set);
+        ranges.put(SunPhaseName.SUN_SET, set);
+    }
+
+    /**
      * Returns the sun position.
      */
     public Position getPosition() {

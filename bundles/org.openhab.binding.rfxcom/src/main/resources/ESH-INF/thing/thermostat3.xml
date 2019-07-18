@@ -16,6 +16,9 @@
 
 		<channels>
 			<channel id="command" typeId="command" />
+			<channel id="command2nd" typeId="command" />
+			<channel id="control" typeId="tempcontrol" />
+			<channel id="commandString" typeId="commandString" />
 			<channel id="signalLevel" typeId="system.signal-strength" />
 		</channels>
 

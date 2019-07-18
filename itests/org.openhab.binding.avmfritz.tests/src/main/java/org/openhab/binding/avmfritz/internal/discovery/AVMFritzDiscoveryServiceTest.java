@@ -31,6 +31,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openhab.binding.avmfritz.internal.ahamodel.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.ahamodel.DeviceListModel;
@@ -42,6 +43,7 @@ import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@Ignore
 public class AVMFritzDiscoveryServiceTest extends AVMFritzThingHandlerOSGiTest {
 
     private static final ThingUID BRIGE_THING_ID = new ThingUID("avmfritz:fritzbox:1");

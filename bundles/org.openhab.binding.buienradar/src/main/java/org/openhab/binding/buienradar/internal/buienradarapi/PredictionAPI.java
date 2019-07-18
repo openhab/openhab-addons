@@ -14,6 +14,7 @@ package org.openhab.binding.buienradar.internal.buienradarapi;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.PointType;
@@ -25,5 +26,6 @@ import org.eclipse.smarthome.core.library.types.PointType;
  */
 @NonNullByDefault
 public interface PredictionAPI {
-    List<Prediction> getPredictions(PointType location) throws IOException;
+
+    Optional<List<Prediction>> getPredictions(PointType location) throws IOException;
 }

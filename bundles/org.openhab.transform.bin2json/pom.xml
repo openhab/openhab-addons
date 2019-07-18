@@ -15,8 +15,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.igormaznitsa</groupId>
-      <artifactId>jbbp</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.igormaznitsa.jbbp</artifactId>
       <version>1.4.1</version>
       <scope>provided</scope>
     </dependency>

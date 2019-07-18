@@ -12,21 +12,71 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.handler;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_AMAZON_MUSIC;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_AMAZON_MUSIC_TRACK_ID;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_ASCENDING_ALARM;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_BLUETOOTH;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_BLUETOOTH_DEVICE_NAME;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_BLUETOOTH_MAC;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_EQUALIZER_BASS;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_EQUALIZER_MIDRANGE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_EQUALIZER_TREBLE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_IMAGE_URL;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_LAST_VOICE_COMMAND;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_MEDIA_LENGTH;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_MEDIA_PROGRESS;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_MEDIA_PROGRESS_TIME;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_MUSIC_PROVIDER_ID;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NEXT_ALARM;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NEXT_MUSIC_ALARM;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NEXT_REMINDER;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NEXT_TIMER;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NOTIFICATION_VOLUME;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PLAYER;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PLAY_ALARM_SOUND;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PLAY_MUSIC_VOICE_COMMAND;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PLAY_ON_DEVICE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PROVIDER_DISPLAY_NAME;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_RADIO;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_RADIO_STATION_ID;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_REMIND;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_SHUFFLE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_START_COMMAND;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_START_ROUTINE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_SUBTITLE1;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_SUBTITLE2;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TEXT_TO_SPEECH;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TEXT_TO_SPEECH_VOLUME;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TITLE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_VOLUME;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_SERIAL_NUMBER;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.FLASH_BRIEFING_COMMAND_PREFIX;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Hashtable;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.measure.quantity.Time;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
@@ -45,18 +95,25 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
+import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.HttpException;
+import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandler;
+import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandlerAnnouncement;
+import org.openhab.binding.amazonechocontrol.internal.channelhandler.IAmazonThingHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity.Description;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm.AscendingAlarmModel;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.BluetoothState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates.PairedDevice;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushNotificationChange;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonCommandPayloadPushVolumeChange;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState.DeviceNotificationState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonEqualizer;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState.QueueEntry;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMusicProvider;
@@ -81,11 +138,12 @@ import com.google.gson.Gson;
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
-public class EchoHandler extends BaseThingHandler {
+public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
-    private Gson gson = new Gson();
+    private Gson gson;
     private @Nullable Device device;
+    private Set<String> capabilities = new HashSet<>();
     private @Nullable AccountHandler account;
     private @Nullable ScheduledFuture<?> updateStateJob;
     private @Nullable ScheduledFuture<?> ignoreVolumeChange;
@@ -100,6 +158,7 @@ public class EchoHandler extends BaseThingHandler {
     private boolean isPaused = false;
     private int lastKnownVolume = 25;
     private int textToSpeechVolume = 0;
+    private @Nullable JsonEqualizer lastKnownEqualizer = null;
     private @Nullable BluetoothState bluetoothState;
     private boolean disableUpdate = false;
     private boolean updateRemind = true;
@@ -113,6 +172,7 @@ public class EchoHandler extends BaseThingHandler {
     private @Nullable JsonPlaylists playLists;
     private @Nullable JsonNotificationSound @Nullable [] alarmSounds;
     private @Nullable List<JsonMusicProvider> musicProviders;
+    private List<ChannelHandler> channelHandlers = new ArrayList<>();
 
     private @Nullable JsonNotificationResponse currentNotification;
     private @Nullable ScheduledFuture<?> currentNotifcationUpdateTimer;
@@ -121,8 +181,10 @@ public class EchoHandler extends BaseThingHandler {
     long mediaStartMs;
     String lastSpokenText = "";
 
-    public EchoHandler(Thing thing) {
+    public EchoHandler(Thing thing, Gson gson) {
         super(thing);
+        this.gson = gson;
+        channelHandlers.add(new ChannelHandlerAnnouncement(this, this.gson));
     }
 
     @Override
@@ -149,6 +211,10 @@ public class EchoHandler extends BaseThingHandler {
             return false;
         }
         this.device = device;
+        String[] capabilities = device.capabilities;
+        if (capabilities != null) {
+            this.capabilities = Stream.of(capabilities).filter(Objects::nonNull).collect(Collectors.toSet());
+        }
         if (!device.online) {
             updateStatus(ThingStatus.OFFLINE);
             return false;
@@ -244,8 +310,14 @@ public class EchoHandler extends BaseThingHandler {
                 return;
             }
 
-            // Player commands
             String channelId = channelUID.getId();
+            for (ChannelHandler channelHandler : channelHandlers) {
+                if (channelHandler.tryHandleCommand(device, connection, channelId, command)) {
+                    return;
+                }
+            }
+
+            // Player commands
             if (channelId.equals(CHANNEL_PLAYER)) {
                 if (command == PlayPauseType.PAUSE || command == OnOffType.OFF) {
                     connection.command(device, "{\"type\":\"PauseCommand\"}");
@@ -356,7 +428,7 @@ public class EchoHandler extends BaseThingHandler {
                                 + ",\"contentFocusClientId\":\"Default\"}");
 
                     } else {
-                        Map<String, Object> parameters = new Hashtable<String, Object>();
+                        Map<String, Object> parameters = new HashMap<>();
                         parameters.put("value", volume);
                         connection.executeSequenceCommand(device, "Alexa.DeviceControls.Volume", parameters);
                     }
@@ -366,6 +438,14 @@ public class EchoHandler extends BaseThingHandler {
                 }
 
             }
+            // equalizer commands
+            if (channelId.equals(CHANNEL_EQUALIZER_BASS) || channelId.equals(CHANNEL_EQUALIZER_MIDRANGE)
+                    || channelId.equals(CHANNEL_EQUALIZER_TREBLE)) {
+                if (handleEqualizerCommands(channelId, command, connection, device)) {
+                    waitForUpdate = -1;
+                }
+            }
+
             // shuffle command
             if (channelId.equals(CHANNEL_SHUFFLE)) {
                 if (command instanceof OnOffType) {
@@ -638,6 +718,7 @@ public class EchoHandler extends BaseThingHandler {
             };
             if (command instanceof RefreshType) {
                 waitForUpdate = 0;
+                account.forceCheckData();
             }
             if (waitForUpdate == 0) {
                 doRefresh.run();
@@ -651,6 +732,41 @@ public class EchoHandler extends BaseThingHandler {
         }
     }
 
+    private boolean handleEqualizerCommands(String channelId, Command command, Connection connection, Device device)
+            throws URISyntaxException {
+        if (command instanceof RefreshType) {
+            this.lastKnownEqualizer = null;
+        }
+        if (command instanceof DecimalType) {
+            DecimalType value = (DecimalType) command;
+            if (this.lastKnownEqualizer == null) {
+                updateEqualizerState();
+            }
+            JsonEqualizer lastKnownEqualizer = this.lastKnownEqualizer;
+            if (lastKnownEqualizer != null) {
+                JsonEqualizer newEqualizerSetting = lastKnownEqualizer.createClone();
+                if (channelId.equals(CHANNEL_EQUALIZER_BASS)) {
+                    newEqualizerSetting.bass = value.intValue();
+                }
+                if (channelId.equals(CHANNEL_EQUALIZER_MIDRANGE)) {
+                    newEqualizerSetting.mid = value.intValue();
+                }
+                if (channelId.equals(CHANNEL_EQUALIZER_TREBLE)) {
+                    newEqualizerSetting.treble = value.intValue();
+                }
+                try {
+                    connection.SetEqualizer(device, newEqualizerSetting);
+                    return true;
+                } catch (HttpException | IOException | ConnectionException e) {
+                    logger.debug("Update equalizer failed {}", e);
+                    this.lastKnownEqualizer = null;
+                }
+
+            }
+        }
+        return false;
+    }
+
     private void startTextToSpeech(Connection connection, Device device, String text)
             throws IOException, URISyntaxException {
         if (textToSpeechVolume != 0) {
@@ -661,7 +777,12 @@ public class EchoHandler extends BaseThingHandler {
             }
             this.ignoreVolumeChange = scheduler.schedule(this::stopIgnoreVolumeChange, 2000, TimeUnit.MILLISECONDS);
         }
-        connection.textToSpeech(device, text, textToSpeechVolume, lastKnownVolume);
+        if (text.startsWith("<speak>") && text.endsWith("</speak>")) {
+            String bodyText = text.replaceAll("<[^>]+>", "");
+            connection.sendAnnouncement(device, text, bodyText, null, textToSpeechVolume, lastKnownVolume);
+        } else {
+            connection.textToSpeech(device, text, textToSpeechVolume, lastKnownVolume);
+        }
     }
 
     private void stopCurrentNotification() {
@@ -724,7 +845,7 @@ public class EchoHandler extends BaseThingHandler {
             @Nullable JsonNotificationSound @Nullable [] alarmSounds,
             @Nullable List<JsonMusicProvider> musicProviders) {
         try {
-            this.logger.debug("Handle updateState {}", this.getThing().getUID().getAsString());
+            this.logger.debug("Handle updateState {}", this.getThing().getUID());
 
             if (deviceNotificationState != null) {
                 noticationVolumeLevel = deviceNotificationState.volumeLevel;
@@ -742,21 +863,25 @@ public class EchoHandler extends BaseThingHandler {
                 this.musicProviders = musicProviders;
             }
             if (!setDeviceAndUpdateThingState(accountHandler, device, null)) {
-                this.logger.debug("Handle updateState {} aborted: Not online", this.getThing().getUID().getAsString());
+                this.logger.debug("Handle updateState {} aborted: Not online", this.getThing().getUID());
                 return;
             }
             if (device == null) {
-                this.logger.debug("Handle updateState {} aborted: No device", this.getThing().getUID().getAsString());
+                this.logger.debug("Handle updateState {} aborted: No device", this.getThing().getUID());
                 return;
             }
 
             if (this.disableUpdate) {
-                this.logger.debug("Handle updateState {} aborted: Disabled", this.getThing().getUID().getAsString());
+                this.logger.debug("Handle updateState {} aborted: Disabled", this.getThing().getUID());
                 return;
             }
             Connection connection = this.findConnection();
             if (connection == null) {
                 return;
+            }
+
+            if (this.lastKnownEqualizer == null) {
+                updateEqualizerState();
             }
 
             PlayerInfo playerInfo = null;
@@ -789,6 +914,13 @@ public class EchoHandler extends BaseThingHandler {
                             }
                             if (StringUtils.startsWith(musicProviderId, "TUNEIN")) {
                                 musicProviderId = "TUNEIN";
+                            }
+                            if (StringUtils.startsWithIgnoreCase(musicProviderId, "iHeartRadio")) {
+                                musicProviderId = "I_HEART_RADIO";
+                            }
+                            if (StringUtils.containsIgnoreCase(musicProviderId, "Apple")
+                                    && StringUtils.containsIgnoreCase(musicProviderId, "Music")) {
+                                musicProviderId = "APPLE_MUSIC";
                             }
                         }
                     }
@@ -1052,11 +1184,49 @@ public class EchoHandler extends BaseThingHandler {
             }
 
         } catch (Exception e) {
-            this.logger.debug("Handle updateState {} failed: {}", this.getThing().getUID().getAsString(), e);
+            this.logger.debug("Handle updateState {} failed: {}", this.getThing().getUID(), e);
 
             disableUpdate = false;
             throw e; // Rethrow same exception
         }
+    }
+
+    private void updateEqualizerState() {
+        if (!this.capabilities.contains("SOUND_SETTINGS")) {
+            return;
+        }
+
+        Connection connection = findConnection();
+        if (connection == null) {
+            return;
+        }
+        Device device = findDevice();
+        if (device == null) {
+            return;
+        }
+        Integer bass;
+        Integer midrange;
+        Integer treble;
+        try {
+            JsonEqualizer equalizer = connection.getEqualizer(device);
+            bass = equalizer.bass;
+            midrange = equalizer.mid;
+            treble = equalizer.treble;
+            this.lastKnownEqualizer = equalizer;
+        } catch (IOException | URISyntaxException | HttpException | ConnectionException e) {
+            logger.debug("Get equalizer failes {}", e);
+            return;
+        }
+        if (bass != null) {
+            updateState(CHANNEL_EQUALIZER_BASS, new DecimalType(bass));
+        }
+        if (midrange != null) {
+            updateState(CHANNEL_EQUALIZER_MIDRANGE, new DecimalType(midrange));
+        }
+        if (treble != null) {
+            updateState(CHANNEL_EQUALIZER_TREBLE, new DecimalType(treble));
+        }
+
     }
 
     private void updateMediaProgress() {
@@ -1092,9 +1262,15 @@ public class EchoHandler extends BaseThingHandler {
     }
 
     public void handlePushActivity(Activity pushActivity) {
+        if ("DISCARDED_NON_DEVICE_DIRECTED_INTENT".equals(pushActivity.activityStatus)) {
+            return;
+        }
         Description description = pushActivity.ParseDescription();
         if (StringUtils.isEmpty(description.firstUtteranceId)
                 || StringUtils.startsWithIgnoreCase(description.firstUtteranceId, "TextClient:")) {
+            return;
+        }
+        if (StringUtils.isEmpty(description.firstStreamId)) {
             return;
         }
         String spokenText = description.summary;
@@ -1141,7 +1317,7 @@ public class EchoHandler extends BaseThingHandler {
                 }
                 break;
             case "PUSH_EQUALIZER_STATE_CHANGE":
-                // Currently ignored
+                updateEqualizerState();
                 break;
             default:
                 AccountHandler account = this.account;
@@ -1151,5 +1327,73 @@ public class EchoHandler extends BaseThingHandler {
                     updateState(account, device, null, null, null, null, null, null);
                 }
         }
+    }
+
+    public void updateNotifications(ZonedDateTime currentTime, ZonedDateTime now,
+            @Nullable JsonCommandPayloadPushNotificationChange pushPayload, JsonNotificationResponse[] notifications) {
+        Device device = this.device;
+        if (device == null) {
+            return;
+        }
+
+        ZonedDateTime nextReminder = null;
+        ZonedDateTime nextAlarm = null;
+        ZonedDateTime nextMusicAlarm = null;
+        ZonedDateTime nextTimer = null;
+        for (JsonNotificationResponse notification : notifications) {
+            if (StringUtils.equals(notification.deviceSerialNumber, device.serialNumber)) {
+                // notification for this device
+                if (StringUtils.equals(notification.status, "ON")) {
+                    if ("Reminder".equals(notification.type)) {
+                        String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
+                        ZonedDateTime alarmTime = ZonedDateTime
+                                .parse(notification.originalDate + "T" + notification.originalTime + offset);
+                        if (StringUtils.isNotBlank(notification.recurringPattern) && alarmTime.isBefore(now)) {
+                            continue; // Ignore recurring entry if alarm time is before now
+                        }
+                        if (nextReminder == null || alarmTime.isBefore(nextReminder)) {
+                            nextReminder = alarmTime;
+                        }
+                    } else if ("Timer".equals(notification.type)) {
+                        // use remaining time
+                        ZonedDateTime alarmTime = currentTime.plus(notification.remainingTime, ChronoUnit.MILLIS);
+                        if (nextTimer == null || alarmTime.isBefore(nextTimer)) {
+                            nextTimer = alarmTime;
+                        }
+                    } else if ("Alarm".equals(notification.type)) {
+                        String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
+                        ZonedDateTime alarmTime = ZonedDateTime
+                                .parse(notification.originalDate + "T" + notification.originalTime + offset);
+                        if (StringUtils.isNotBlank(notification.recurringPattern) && alarmTime.isBefore(now)) {
+                            continue; // Ignore recurring entry if alarm time is before now
+                        }
+                        if (nextAlarm == null || alarmTime.isBefore(nextAlarm)) {
+                            nextAlarm = alarmTime;
+                        }
+                    } else if ("MusicAlarm".equals(notification.type)) {
+                        String offset = ZoneId.systemDefault().getRules().getOffset(Instant.now()).toString();
+                        ZonedDateTime alarmTime = ZonedDateTime
+                                .parse(notification.originalDate + "T" + notification.originalTime + offset);
+                        if (StringUtils.isNotBlank(notification.recurringPattern) && alarmTime.isBefore(now)) {
+                            continue; // Ignore recurring entry if alarm time is before now
+                        }
+                        if (nextMusicAlarm == null || alarmTime.isBefore(nextMusicAlarm)) {
+                            nextMusicAlarm = alarmTime;
+                        }
+                    }
+                }
+            }
+        }
+
+        updateState(CHANNEL_NEXT_REMINDER, nextReminder == null ? UnDefType.UNDEF : new DateTimeType(nextReminder));
+        updateState(CHANNEL_NEXT_ALARM, nextAlarm == null ? UnDefType.UNDEF : new DateTimeType(nextAlarm));
+        updateState(CHANNEL_NEXT_MUSIC_ALARM,
+                nextMusicAlarm == null ? UnDefType.UNDEF : new DateTimeType(nextMusicAlarm));
+        updateState(CHANNEL_NEXT_TIMER, nextTimer == null ? UnDefType.UNDEF : new DateTimeType(nextTimer));
+    }
+
+    @Override
+    public void updateChannelState(String channelId, State state) {
+        updateState(channelId, state);
     }
 }

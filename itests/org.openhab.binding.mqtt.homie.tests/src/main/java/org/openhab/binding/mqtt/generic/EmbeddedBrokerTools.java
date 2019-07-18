@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class EmbeddedBrokerTools {
-    final Logger logger = LoggerFactory.getLogger(EmbeddedBrokerTools.class);
+    private final Logger logger = LoggerFactory.getLogger(EmbeddedBrokerTools.class);
     public @Nullable MqttBrokerConnection embeddedConnection = null;
 
     /**

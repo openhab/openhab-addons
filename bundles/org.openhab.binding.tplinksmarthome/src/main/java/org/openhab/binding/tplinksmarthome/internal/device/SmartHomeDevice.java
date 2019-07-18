@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.tplinksmarthome.internal.Commands;
@@ -32,7 +33,9 @@ import org.openhab.binding.tplinksmarthome.internal.model.HasErrorResponse;
 @NonNullByDefault
 public abstract class SmartHomeDevice {
 
-    protected Commands commands = new Commands();
+    protected final Commands commands = new Commands();
+    protected @NonNullByDefault({}) Connection connection;
+    protected @NonNullByDefault({}) TPLinkSmartHomeConfiguration configuration;
 
     /**
      * Checks if the response object contains errors and if so throws an {@link IOException} when an error code was set.
@@ -41,11 +44,22 @@ public abstract class SmartHomeDevice {
      * @throws IOException if an error code was set in the response object
      */
     protected void checkErrors(@Nullable HasErrorResponse response) throws IOException {
-        ErrorResponse errorResponse = response == null ? null : response.getErrorResponse();
+        final ErrorResponse errorResponse = response == null ? null : response.getErrorResponse();
 
         if (errorResponse != null && errorResponse.getErrorCode() != 0) {
             throw new IOException("Error (" + errorResponse.getErrorCode() + "): " + errorResponse.getErrorMessage());
         }
+    }
+
+    /**
+     * Sets connection and configuration values.
+     *
+     * @param connection The connection to the device
+     * @param configuration The global configuration
+     */
+    public void initialize(Connection connection, TPLinkSmartHomeConfiguration configuration) {
+        this.connection = connection;
+        this.configuration = configuration;
     }
 
     /**
@@ -56,23 +70,27 @@ public abstract class SmartHomeDevice {
     /**
      * Handle the command for the given channel
      *
-     * @param channelID The channel the command is for
-     * @param connection The connection to the device
+     * @param channelUID The channel the command is for
      * @param command The command to be send to the device
-     * @param configuration The global configuration
      * @return Returns true if the commands successfully was send to the device
      * @throws IOException In case of communications error or the device returned an error
      */
-    public abstract boolean handleCommand(String channelID, Connection connection, Command command,
-            TPLinkSmartHomeConfiguration configuration) throws IOException;
+    public abstract boolean handleCommand(ChannelUID channelUID, Command command) throws IOException;
 
     /**
      * Returns the {@link State} value for the given value extracted from the deviceState data.
      *
-     * @param channelId channel to get state for
+     * @param channelUid channel to get state for
      * @param deviceState state object containing the state
      * @return {@link State} value for the given channel
      */
-    public abstract State updateChannel(String channelId, DeviceState deviceState);
+    public abstract State updateChannel(ChannelUID channelUid, DeviceState deviceState);
 
+    /**
+     * Called with the new device state after the new device state is retrieved from the device.
+     *
+     * @param deviceState new device state
+     */
+    public void refreshedDeviceState(@Nullable DeviceState deviceState) {
+    }
 }
