@@ -25,7 +25,10 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -94,11 +97,13 @@ public class WeatherCompanyHandler extends BaseThingHandler {
     private static final String BASE_PWS_URL = "https://api.weather.com/v2/pws/observations/current";
 
     private static final int WEATHER_COMPANY_API_TIMEOUT_SECONDS = 10;
-    private static final int REFRESH_JOB_INITIAL_DELAY_SECONDS = 30;
+    private static final int REFRESH_JOB_INITIAL_DELAY_SECONDS = 2;
 
     private final Logger logger = LoggerFactory.getLogger(WeatherCompanyHandler.class);
 
     private final Gson gson = new GsonBuilder().serializeNulls().create();
+
+    private final Map<String, State> weatherDataCache = Collections.synchronizedMap(new HashMap<>());
 
     // Provided by handler factory
     private TimeZoneProvider timeZoneProvider;
@@ -159,6 +164,8 @@ public class WeatherCompanyHandler extends BaseThingHandler {
         // Construct the URL for querying the PWS observations
         pwsUrl = buildPwsUrl();
 
+        weatherDataCache.clear();
+
         // Schedule the job to refresh the forecast
         scheduleRefreshJob();
     }
@@ -171,10 +178,10 @@ public class WeatherCompanyHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(CH_GROUP_FORECAST_DAY + "0" + "#" + CH_VALID_TIME_LOCAL)) {
-            if (RefreshType.REFRESH.equals(command)) {
-                logger.debug("Running job to refresh channels");
-                scheduler.schedule(refreshRunnable, 0, TimeUnit.SECONDS);
+        if (command.equals(RefreshType.REFRESH)) {
+            State state = weatherDataCache.get(channelUID.getId());
+            if (state != null) {
+                updateChannel(channelUID.getId(), state);
             }
         }
     }
@@ -479,6 +486,7 @@ public class WeatherCompanyHandler extends BaseThingHandler {
         // Only update channel if it's linked
         if (isLinked(channelId)) {
             updateState(channelId, state);
+            weatherDataCache.put(channelId, state);
         }
     }
 
