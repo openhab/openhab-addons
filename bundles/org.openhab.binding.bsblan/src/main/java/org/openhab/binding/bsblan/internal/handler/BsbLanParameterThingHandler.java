@@ -163,7 +163,8 @@ public class BsbLanParameterThingHandler extends BsbLanBaseThingHandler {
     }
 
     void updateStringValueChannel(BsbLanApiParameter parameter) {
-        State state = new StringType(parameter.getValue());
+        String value = parameter.getValue();
+        State state = new StringType(value);
         updateState(BsbLanBindingConstants.Channels.Parameter.StringValue, state);
     }
 
