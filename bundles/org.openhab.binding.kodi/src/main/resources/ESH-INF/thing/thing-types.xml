@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	
+		
 	<!-- Kodi Thing Type -->
 	<thing-type id="kodi">
 		<label>Kodi Mediacenter</label>
@@ -477,18 +477,18 @@
 	</channel-type>
 	<channel-type id="id" advanced="true">
 		<item-type>Number</item-type>
-		<label>id</label>
+		<label>Id</label>
 		<description>id in kodi database</description>
 		<state readOnly="true" pattern="%d" />
 	</channel-type>
 	<channel-type id="enabled">
 		<item-type>Switch</item-type>
-		<label>enabled</label>
+		<label>Enabled</label>
 		<description>enabled</description>
 	</channel-type>
 	<channel-type id="channels" advanced="true">
 		<item-type>Number</item-type>
-		<label>channels</label>
+		<label>Channels</label>
 		<description>Channels</description>
 		<state readOnly="true" pattern="%d" />
 	</channel-type>
@@ -506,7 +506,7 @@
 	</channel-type>
 	<channel-type id="index" advanced="true">
 		<item-type>Number</item-type>
-		<label>index</label>
+		<label>Index</label>
 		<description>stream index</description>
 		<state pattern="%d" />
 	</channel-type>

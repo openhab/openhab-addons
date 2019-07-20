@@ -22,8 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class KodiSubtitle {
     private int index;
-    private @NonNullByDefault({}) String language;
-    private @NonNullByDefault({}) String name;
+    private String language = "";
+    private String name = "";
 
     public int getIndex() {
         return index;
