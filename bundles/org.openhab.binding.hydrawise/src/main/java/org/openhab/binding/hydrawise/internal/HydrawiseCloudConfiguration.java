@@ -28,4 +28,6 @@ public class HydrawiseCloudConfiguration {
      * refresh interval in seconds.
      */
     public Integer refresh;
+
+    public Integer controllerId;
 }

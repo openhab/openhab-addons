@@ -15,9 +15,12 @@ package org.openhab.binding.hydrawise.internal;
 import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.*;
 
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +46,7 @@ import org.openhab.binding.hydrawise.internal.api.HydrawiseCloudApiClient;
 import org.openhab.binding.hydrawise.internal.api.HydrawiseCommandException;
 import org.openhab.binding.hydrawise.internal.api.HydrawiseConnectionException;
 import org.openhab.binding.hydrawise.internal.api.model.Controller;
+import org.openhab.binding.hydrawise.internal.api.model.CustomerDetailsResponse;
 import org.openhab.binding.hydrawise.internal.api.model.Relay;
 import org.openhab.binding.hydrawise.internal.api.model.Running;
 import org.openhab.binding.hydrawise.internal.api.model.StatusScheduleResponse;
@@ -84,6 +88,12 @@ public class HydrawiseHandler extends BaseThingHandler {
 
     private Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<>());
     private Map<String, Relay> relayMap = Collections.synchronizedMap(new HashMap<>());
+    /**
+     * Matches x days x hours x hours x minutes ago | Not scheduled
+     */
+    // private static final Pattern LAST_RUN_PATTERN = Pattern
+    // .compile("(^Not scheduled)?((\\d{1,2}) days)?\\s?((\\d{1,2}) hours)?\\s?((\\d{1,2}) minutes)?");
+    private static long MAX_RUN_TIME = 157680000;
 
     HydrawiseCloudApiClient client;
     int controllerId;
@@ -169,27 +179,67 @@ public class HydrawiseHandler extends BaseThingHandler {
 
     private void configure() {
         clearPolling();
+
         stateMap.clear();
         relayMap.clear();
-        HydrawiseCloudConfiguration configuration = getConfig().as(HydrawiseCloudConfiguration.class);
-        String confApiKey = configuration.apiKey;
 
-        if (StringUtils.isBlank(confApiKey)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API Key not be empty");
+        HydrawiseCloudConfiguration configuration = getConfig().as(HydrawiseCloudConfiguration.class);
+
+        if (StringUtils.isBlank(configuration.apiKey)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API Key connot be empty");
             return;
         }
 
         this.refresh = configuration.refresh.intValue() > MIN_REFRESH_SECONDS ? configuration.refresh.intValue()
                 : MIN_REFRESH_SECONDS;
 
+        Controller controller = null;
         try {
-            client = new HydrawiseCloudApiClient(confApiKey, httpClient);
-            Controller controller = client.getCustomerDetails().getControllers().get(0);
+            client = new HydrawiseCloudApiClient(configuration.apiKey, httpClient);
+            CustomerDetailsResponse customerDetails = client.getCustomerDetails();
+            List<Controller> controllers = customerDetails.getControllers();
+
+            if (controllers.size() == 0) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "No controllers found on account");
+                return;
+            }
+
+            // try and use ID from user configuration
+            if (configuration.controllerId != null) {
+                controller = getController(configuration.controllerId.intValue(), controllers);
+                if (controller == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "No controller found for id " + configuration.controllerId);
+                    return;
+                }
+            } else {
+                // try and use ID from saved property
+                if (StringUtils.isNotBlank(getThing().getProperties().get(PROPERTY_CONTROLLER_ID))) {
+                    try {
+                        controller = getController(
+                                Integer.parseInt(getThing().getProperties().get(PROPERTY_CONTROLLER_ID)), controllers);
+
+                    } catch (NumberFormatException e) {
+                        logger.debug("Can not parse property vaue {}",
+                                getThing().getProperties().get(PROPERTY_CONTROLLER_ID));
+                    }
+
+                }
+                // use current controller ID
+                if (controller == null) {
+                    controller = getController(customerDetails.getControllerId(), controllers);
+                }
+            }
+
+            if (controller == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No controller found");
+                return;
+            }
             controllerId = controller.getControllerId().intValue();
-            updateController(controller);
+            updateControllerProperties(controller);
             logger.debug("Controller id {}", controllerId);
             initPolling(0);
-
         } catch (HydrawiseConnectionException e) {
             logger.debug("Could not connect to service");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -228,31 +278,78 @@ public class HydrawiseHandler extends BaseThingHandler {
      * Poll the controller for updates.
      */
     private void pollController() {
-        // ScheduledFuture<?> localFuture = pollFuture;
+        ScheduledFuture<?> localFuture = pollFuture;
 
         try {
+            List<Controller> controllers = client.getCustomerDetails().getControllers();
+            Controller controller = getController(controllerId, controllers);
+
+            if (!isFutureValid(localFuture)) {
+                return;
+            }
+
+            if (controller != null && !controller.getOnline()) {
+                logger.debug("Controller is offline");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Controller is offline");
+                return;
+            }
+
             StatusScheduleResponse status = client.getStatusSchedule(controllerId);
+            if (!isFutureValid(localFuture)) {
+                return;
+            }
+
             logger.debug("Controller {} last contact {} seconds ago, {} total zones", status.getControllerId(),
                     status.getLastContact(), status.getRelays().size());
+            ZonedDateTime now = ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS);
             status.getRelays().forEach(r -> {
                 String group = "zone" + r.getRelayNumber();
                 relayMap.put(group, r);
                 logger.trace("Updateing Zone {} {} ", group, r.getName());
-                updateState(group, CHANNEL_ZONE_TIME,
+                updateGroupState(group, CHANNEL_ZONE_NAME, new StringType(r.getName()));
+                updateGroupState(group, CHANNEL_ZONE_TYPE, new DecimalType(r.getType()));
+                updateGroupState(group, CHANNEL_ZONE_TIME,
                         r.getRunTimeSeconds() != null ? new DecimalType(r.getRunTimeSeconds()) : UnDefType.UNDEF);
-                updateState(group, CHANNEL_ZONE_ICON, new StringType(r.getIcon()));
-                updateState(group, CHANNEL_ZONE_LAST_WATER, new StringType(r.getLastwater()));
-                ZonedDateTime time = ZonedDateTime.now();
-                updateState(group, CHANNEL_ZONE_NEXT_RUN_TIME_TIME, new DateTimeType(time.plusSeconds(r.getTime())));
+                updateGroupState(group, CHANNEL_ZONE_ICON, new StringType(BASE_IMAGE_URL + r.getIcon()));
+                // Matcher matcher = LAST_RUN_PATTERN.matcher(r.getLastwater());
+                // if (matcher.lookingAt()) {
+                // String na = matcher.group(1);
+                // String days = matcher.group(3);
+                // String hours = matcher.group(5);
+                // String mins = matcher.group(7);
+                // if (StringUtils.isNotBlank(na)) {
+                // updateGroupState(group, CHANNEL_ZONE_LAST_WATER, UnDefType.UNDEF);
+                // } else {
+                // ZonedDateTime lastTime = now;
+                // if (StringUtils.isNotBlank(days)) {
+                // lastTime = lastTime.minus(Integer.parseInt(days), ChronoUnit.DAYS);
+                // }
+                // if (StringUtils.isNotBlank(hours)) {
+                // lastTime = lastTime.minus(Integer.parseInt(hours), ChronoUnit.HOURS);
+                // }
+                // if (StringUtils.isNotBlank(mins)) {
+                // lastTime = lastTime.minus(Integer.parseInt(mins), ChronoUnit.MINUTES);
+                // }
+                // updateGroupState(group, CHANNEL_ZONE_LAST_WATER, new DateTimeType(lastTime));
+                // }
+                // }
+                if (r.getTime() >= MAX_RUN_TIME) {
+                    updateGroupState(group, CHANNEL_ZONE_NEXT_RUN_TIME_TIME, UnDefType.UNDEF);
+                } else {
+                    updateGroupState(group, CHANNEL_ZONE_NEXT_RUN_TIME_TIME,
+                            new DateTimeType(now.plusSeconds(r.getTime()).truncatedTo(ChronoUnit.MINUTES)));
+                }
+
                 Optional<Running> running = status.getRunning().stream().filter(z -> z.getRelayId() == r.getRelayId())
                         .findAny();
                 if (running.isPresent()) {
-                    updateState(group, CHANNEL_ZONE_RUN, OnOffType.ON);
-                    updateState(group, CHANNEL_ZONE_TIME_LEFT, new DecimalType(running.get().getTimeLeft()));
+                    updateGroupState(group, CHANNEL_ZONE_RUN, OnOffType.ON);
+                    updateGroupState(group, CHANNEL_ZONE_TIME_LEFT, new DecimalType(running.get().getTimeLeft()));
+                    logger.debug("{} Time Left {}", r.getName(), running.get().getTimeLeft());
 
                 } else {
-                    updateState(group, CHANNEL_ZONE_RUN, OnOffType.OFF);
-                    updateState(group, CHANNEL_ZONE_TIME_LEFT, new DecimalType(0));
+                    updateGroupState(group, CHANNEL_ZONE_RUN, OnOffType.OFF);
+                    updateGroupState(group, CHANNEL_ZONE_TIME_LEFT, new DecimalType(0));
 
                 }
             });
@@ -273,22 +370,29 @@ public class HydrawiseHandler extends BaseThingHandler {
 
     }
 
-    private void updateController(Controller controller) {
-        updateState("system", CHANNEL_SYSTEM_LASTCONTACT, new DecimalType(controller.getLastContact()));
-        updateState("system", CHANNEL_SYSTEM_STATUS, new StringType(controller.getStatus()));
-        updateState("system", CHANNEL_SYSTEM_ONLINE,
-                controller.getOnline().booleanValue() ? OnOffType.ON : OnOffType.OFF);
+    private void updateControllerProperties(Controller controller) {
+        getThing().setProperty(PROPERTY_CONTROLLER_ID, String.valueOf(controller.getControllerId()));
+        getThing().setProperty(PROPERTY_NAME, controller.getName());
+        getThing().setProperty(PROPERTY_DESCRIPTION, controller.getDescription());
+        getThing().setProperty(PROPERTY_LOCATION, controller.getLatitude() + "," + controller.getLongitude());
+        getThing().setProperty(PROPERTY_ADDRESS, controller.getAddress());
     }
 
-    private void updateState(String group, String channelID, State state) {
+    private void updateGroupState(String group, String channelID, State state) {
         String channelName = group + "#" + channelID;
         State oldState = stateMap.put(channelName, state);
         if (!state.equals(oldState)) {
-            // logger.debug("updateState updating {} {}", channel, state);
-            // updateState(channel, state);
             ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), channelName);
             logger.debug("updateState updating {} {}", channelUID, state);
             updateState(channelUID, state);
+        }
+    }
+
+    private @Nullable Controller getController(int controllerId, List<Controller> controllers) {
+        try {
+            return controllers.stream().filter(c -> controllerId == c.getControllerId().intValue()).findAny().get();
+        } catch (NoSuchElementException e) {
+            return null;
         }
     }
 }

@@ -30,6 +30,8 @@ public class HydrawiseBindingConstants {
     public static final ThingTypeUID THING_TYPE_CLOUD = new ThingTypeUID(BINDING_ID, "cloud");
     public static final ThingTypeUID THING_TYPE_LOCAL = new ThingTypeUID(BINDING_ID, "local");
 
+    public static final String BASE_IMAGE_URL = "https://app.hydrawise.com/config/images/";
+
     public static final String CHANNEL_ZONE_RUN_CUSTOM = "runcustom";
     public static final String CHANNEL_ZONE_RUN = "run";
     public static final String CHANNEL_ZONE_STOP = "stop";
@@ -64,5 +66,11 @@ public class HydrawiseBindingConstants {
     public static final String CHANNEL_SYSTEM_LASTCONTACT_READABLE = "lastContactReadable";
     public static final String CHANNEL_SYSTEM_STATUS = "status";
     public static final String CHANNEL_SYSTEM_ONLINE = "online";
+
+    public static final String PROPERTY_CONTROLLER_ID = "controller";
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_DESCRIPTION = "description";
+    public static final String PROPERTY_LOCATION = "location";
+    public static final String PROPERTY_ADDRESS = "address";
 
 }

@@ -162,10 +162,15 @@
 				<label>API Key</label>
 				<description>API Key from https://app.hydrawise.com/config/account</description>
 			</parameter>
-			<parameter name="refresh" type="integer" required="false">
+			<parameter name="refresh" type="integer" required="true">
 				<label>Refresh interval</label>
 				<description>Specifies the refresh interval in seconds</description>
 				<default>30</default>
+			</parameter>
+			<parameter name="controllerId" type="integer" required="false">
+				<label>Optional Controller ID interval</label>
+				<description>Optional parameter to specify the Hydrawise controller ID if you have more then one associated with
+					your account.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -332,6 +337,11 @@
 			<parameter name="password" type="text" required="true">
 				<label>password</label>
 				<description>Password for local controller, found in the settings menu on the controller itself.</description>
+			</parameter>
+			<parameter name="refresh" type="integer" required="true">
+				<label>Refresh interval</label>
+				<description>Specifies the refresh interval in seconds</description>
+				<default>30</default>
 			</parameter>
 		</config-description>
 	</thing-type>
