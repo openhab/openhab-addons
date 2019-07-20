@@ -18,7 +18,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.bsblan.internal.api.models.BsbLanApiResponse;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterQueryResponse;
 import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
 import org.slf4j.Logger;
@@ -27,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
 
 /**
  * Utility class to call the BSB-LAN REST API.
@@ -35,7 +35,6 @@ import com.google.gson.JsonSyntaxException;
  */
 public class BsbLanApiCaller {
 
-    private static final int API_TIMEOUT = 10000;
     private final Logger logger = LoggerFactory.getLogger(BsbLanApiCaller.class);
     private final BsbLanBridgeConfiguration bridgeConfig;
     private final Gson gson;
@@ -46,18 +45,23 @@ public class BsbLanApiCaller {
     }
 
     public BsbLanApiParameterQueryResponse queryParameters(Set<Integer> parameterIds) {
-        String apiPath = String.format("/JQ={}", StringUtils.join(parameterIds, ","));
+        if (parameterIds.size() == 0) {
+            return null;
+        }
+        String apiPath = String.format("/JQ=%s", StringUtils.join(parameterIds, ","));
+
+        //Type type = new TypeToken<BsbLanApiParameterQueryResponse>(){}.getType();
         return makeRestCall(BsbLanApiParameterQueryResponse.class, "GET", apiPath);
     }
 
     /**
-     * @param type response class type
+     * @param responseType response class type
      * @param httpMethod to execute
-     * @param url to request
+     * @param apiPath to request
      * @return the object representation of the json response
      */
     @Nullable
-    private <T extends BsbLanApiResponse> T makeRestCall(Class<T> type, String httpMethod, String apiPath) {
+    private <T> T makeRestCall(Class<T> responseType, String httpMethod, String apiPath) {
         try {
             // build url
             StringBuilder url = new StringBuilder();
@@ -78,7 +82,7 @@ public class BsbLanApiCaller {
 
             logger.debug("apiResponse = {}", response);
 
-            T result = gson.fromJson(response, type);
+            T result = gson.fromJson(response, responseType);
             if (result == null) {
                 logger.debug("result null after json parsing (response = {})", response);
                 return null;

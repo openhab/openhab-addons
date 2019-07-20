@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bsblan.internal.api.models;
 
-import org.openhab.binding.bsblan.internal.api.models.BsbLanApiResponse;
 import java.util.HashMap;
 
 /**
@@ -21,18 +20,7 @@ import java.util.HashMap;
  *
  * @author Peter Schraffl - Initial contribution
  */
-public class BsbLanApiParameterQueryResponse extends BsbLanApiResponse {
+@SuppressWarnings("serial")
+public class BsbLanApiParameterQueryResponse extends HashMap<Integer, BsbLanApiParameter> {
 
-    private HashMap<String, BsbLanApiParameter> parameters;
-
-    public HashMap<String, BsbLanApiParameter> getParameters() {
-        if (parameters == null) {
-            parameters = new HashMap<String, BsbLanApiParameter>();
-        }
-        return parameters;
-    }
-
-    public void setParameters(HashMap<String, BsbLanApiParameter> parameters) {
-        this.parameters = parameters;
-    }
 }

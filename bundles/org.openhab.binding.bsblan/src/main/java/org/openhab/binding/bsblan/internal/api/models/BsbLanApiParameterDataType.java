@@ -12,30 +12,41 @@
  */
 package org.openhab.binding.bsblan.internal.api.models;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link BsbLanApiParameterDataType} reflects the dataType field used in parameter queries.
  *
  * @author Peter Schraffl - Initial contribution
  */
 public enum BsbLanApiParameterDataType {
+    @SerializedName("0")
     DT_VALS(0),    // plain value
+    @SerializedName("1")
     DT_ENUM(1),    // value (8/16 Bit) followed by space followed by text
+    @SerializedName("2")
     DT_BITS(2),    // bit value followed by bitmask followed by text
+    @SerializedName("3")
     DT_WDAY(3),    // weekday
+    @SerializedName("4")
     DT_HHMM(4),    // hour:minute
+    @SerializedName("5")
     DT_DTTM(5),    // date and time
+    @SerializedName("6")
     DT_DDMM(6),    // day and month
+    @SerializedName("7")
     DT_STRN(7),    // string
+    @SerializedName("8")
     DT_DWHM(8);    // PPS time (day of week, hour:minute)
 
-    private final int id;
-    BsbLanApiParameterDataType(int id)
+    private final int value;
+    BsbLanApiParameterDataType(int value)
     {
-        this.id = id;
+        this.value = value;
     }
 
     public int getValue()
     {
-        return id;
+        return value;
     }
 }

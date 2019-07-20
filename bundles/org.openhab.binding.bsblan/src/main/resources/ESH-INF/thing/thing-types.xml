@@ -17,7 +17,7 @@
 			<channel id="string-value" typeId="parameter_string_value" />
 			<channel id="switch-value" typeId="parameter_switch_value" />
 			<channel id="unit" typeId="parameter_unit" />
-			<channel id="desc" typeId="parameter_desc" />
+			<channel id="description" typeId="parameter_description" />
 			<channel id="datatype" typeId="parameter_datatype" />
 		</channels>
 
@@ -59,7 +59,7 @@
 		<description>Unit of the parameter</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="parameter_desc">
+	<channel-type id="parameter_description">
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>Description of the parameter</description>

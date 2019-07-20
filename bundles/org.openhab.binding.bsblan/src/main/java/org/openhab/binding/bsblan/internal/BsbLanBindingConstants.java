@@ -31,14 +31,19 @@ public class BsbLanBindingConstants {
     public static final ThingTypeUID THING_TYPE_PARAMETER = new ThingTypeUID(BINDING_ID, "parameter");
 
     // List of all Channel ids
-    public static final String ParameterName = "parameter_name";
-    public static final String ParameterNumberValue = "parameter_number_value";
-    public static final String ParameterStringValue = "parameter_string_value";
-    public static final String ParameterSwitchValue = "parameter_switch_value";
-    public static final String ParameterUnit = "parameter_unit";
-    public static final String ParameterDescription = "parameter_desc";
-    public static final String ParameterDataType = "parameter_datatype";
+    public class Channels {
+        public class Parameter {
+            public static final String Name = "name";
+            public static final String NumberValue = "number-value";
+            public static final String StringValue = "string-value";
+            public static final String SwitchValue = "switch-value";
+            public static final String Unit = "unit";
+            public static final String Description = "description";
+            public static final String DataType = "datatype";
+        }
+    }
 
     public static final int MIN_REFRESH_INTERVAL = 5;
     public static final int DEFAULT_REFRESH_INTERVAL = 60;
+    public static final int API_TIMEOUT = 10000;
 }

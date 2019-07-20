@@ -79,7 +79,7 @@ public class BsbLanParameterThingHandler extends BsbLanBaseThingHandler {
             return;
         }
 
-        BsbLanApiParameter parameter = data.getParameters().getOrDefault(parameterConfig.parameterId.toString(), null);
+        BsbLanApiParameter parameter = data.getOrDefault(parameterConfig.parameterId, null);
         if (parameter == null){
             // todo: add log entry - parameter not contained in response
             updateStatus(ThingStatus.OFFLINE);
@@ -93,31 +93,31 @@ public class BsbLanParameterThingHandler extends BsbLanBaseThingHandler {
         }
 
         switch (channelId) {
-            case BsbLanBindingConstants.ParameterName:
+            case BsbLanBindingConstants.Channels.Parameter.Name:
                 updateNameChannel(parameter);
                 break;
 
-            case BsbLanBindingConstants.ParameterDescription:
+            case BsbLanBindingConstants.Channels.Parameter.Description:
                 updateDescriptionChannel(parameter);
                 break;
 
-            case BsbLanBindingConstants.ParameterDataType:
+            case BsbLanBindingConstants.Channels.Parameter.DataType:
                 updateDatatypeChannel(parameter);
                 break;
 
-            case BsbLanBindingConstants.ParameterNumberValue:
+            case BsbLanBindingConstants.Channels.Parameter.NumberValue:
                 updateNumberValueChannel(parameter);
                 break;
 
-            case BsbLanBindingConstants.ParameterStringValue:
+            case BsbLanBindingConstants.Channels.Parameter.StringValue:
                 updateStringValueChannel(parameter);
                 break;
 
-            case BsbLanBindingConstants.ParameterSwitchValue:
+            case BsbLanBindingConstants.Channels.Parameter.SwitchValue:
                 updateSwitchValueChannel(parameter);
                 break;
 
-            case BsbLanBindingConstants.ParameterUnit:
+            case BsbLanBindingConstants.Channels.Parameter.Unit:
                 updateUnitChannel(parameter);
                 break;
 
@@ -129,33 +129,33 @@ public class BsbLanParameterThingHandler extends BsbLanBaseThingHandler {
     void updateNameChannel(BsbLanApiParameter parameter) {
         String value = parameter.getName();
         State state = new StringType(value);
-        updateState(BsbLanBindingConstants.ParameterName, state);
+        updateState(BsbLanBindingConstants.Channels.Parameter.Name, state);
     }
 
     void updateDescriptionChannel(BsbLanApiParameter parameter) {
         String value = parameter.getDescription();
         State state = new StringType(value);
-        updateState(BsbLanBindingConstants.ParameterDescription, state);
+        updateState(BsbLanBindingConstants.Channels.Parameter.Description, state);
     }
 
     void updateUnitChannel(BsbLanApiParameter parameter) {
         // String value = StringEscapeUtils.unescapeHtml4(parameter.getUnit());
         String value = parameter.getUnit();
         State state = new StringType(value);
-        updateState(BsbLanBindingConstants.ParameterUnit, state);
+        updateState(BsbLanBindingConstants.Channels.Parameter.Unit, state);
     }
 
     void updateDatatypeChannel(BsbLanApiParameter parameter) {
         int value = parameter.getDataType().getValue();
         State state = new DecimalType(value);
-        updateState(BsbLanBindingConstants.ParameterDataType, state);
+        updateState(BsbLanBindingConstants.Channels.Parameter.DataType, state);
     }
 
     void updateNumberValueChannel(BsbLanApiParameter parameter) {
         try {
             double value = Double.parseDouble(parameter.getValue());
             State state = new DecimalType(value);
-            updateState(BsbLanBindingConstants.ParameterNumberValue, state);
+            updateState(BsbLanBindingConstants.Channels.Parameter.NumberValue, state);
         }
         catch (NumberFormatException e) {
             // silently ignore - there is not "tryParse"
@@ -163,13 +163,13 @@ public class BsbLanParameterThingHandler extends BsbLanBaseThingHandler {
     }
 
     void updateStringValueChannel(BsbLanApiParameter parameter) {
-        State state = new DecimalType(parameter.getValue());
-        updateState(BsbLanBindingConstants.ParameterStringValue, state);
+        State state = new StringType(parameter.getValue());
+        updateState(BsbLanBindingConstants.Channels.Parameter.StringValue, state);
     }
 
     void updateSwitchValueChannel(BsbLanApiParameter parameter) {
         // treat "0" as OFF and everything else as ON
         State state = parameter.getValue() == "0" ?  OnOffType.OFF : OnOffType.ON;
-        updateState(BsbLanBindingConstants.ParameterSwitchValue, state);
+        updateState(BsbLanBindingConstants.Channels.Parameter.SwitchValue, state);
     }
 }
