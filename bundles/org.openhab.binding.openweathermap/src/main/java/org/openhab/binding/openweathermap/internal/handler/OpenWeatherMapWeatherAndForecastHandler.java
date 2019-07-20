@@ -298,6 +298,9 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     state = getQuantityTypeState(weatherData.getSnow() == null ? 0 : weatherData.getSnow().getVolume(),
                             MILLI(METRE));
                     break;
+                case CHANNEL_VISIBILITY:
+                    state = getQuantityTypeState(weatherData.getVisibility() * 0.001, KILO(METRE));
+                    break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
             updateState(channelUID, state);

@@ -95,6 +95,7 @@ Once the parameter `forecastDays` will be changed, the available channel groups 
 | current          | cloudiness     | Number:Dimensionless | Current cloudiness.                                                     |
 | current          | rain           | Number:Length        | Rain volume of the last hour.                                           |
 | current          | snow           | Number:Length        | Snow volume of the last hour.                                           |
+| current          | visibility     | Number:Length        | Current visibility.                                                     |
 
 **Attention**: Rain item is showing "1h" in the case when data are received from weather stations directly.
 The fact is that some METAR stations do not have precipitation indicators or do not measure precipitation conditions due to some other technical reasons.
