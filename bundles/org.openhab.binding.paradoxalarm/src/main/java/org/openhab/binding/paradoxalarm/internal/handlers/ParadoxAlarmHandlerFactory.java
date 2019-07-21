@@ -14,12 +14,9 @@ package org.openhab.binding.paradoxalarm.internal.handlers;
 
 import static org.openhab.binding.paradoxalarm.internal.handlers.ParadoxAlarmBindingConstants.*;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,9 +45,6 @@ import org.slf4j.LoggerFactory;
 public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(ParadoxAlarmHandlerFactory.class);
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays
-        .asList(COMMUNICATOR_THING_TYPE_UID, PANEL_THING_TYPE_UID, PARTITION_THING_TYPE_UID, ZONE_THING_TYPE_UID));
 
     private Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
@@ -87,7 +81,7 @@ public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
     private void registerDiscoveryService(ParadoxIP150BridgeHandler paradoxIP150BridgeHandler) {
         ParadoxDiscoveryService discoveryService = new ParadoxDiscoveryService(paradoxIP150BridgeHandler);
         ServiceRegistration<?> serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
-            discoveryService, new Hashtable<>());
+                discoveryService, new Hashtable<>());
         this.discoveryServiceRegs.put(paradoxIP150BridgeHandler.getThing().getUID(), serviceRegistration);
     }
 

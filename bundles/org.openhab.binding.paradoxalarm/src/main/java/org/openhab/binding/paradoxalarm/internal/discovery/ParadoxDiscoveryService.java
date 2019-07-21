@@ -24,7 +24,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeException;
-import org.openhab.binding.paradoxalarm.internal.handlers.ParadoxAlarmBindingConstants;
 import org.openhab.binding.paradoxalarm.internal.handlers.ParadoxIP150BridgeHandler;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxInformation;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
@@ -46,7 +45,7 @@ public class ParadoxDiscoveryService extends AbstractDiscoveryService {
     private ParadoxIP150BridgeHandler ip150BridgeHandler;
 
     public ParadoxDiscoveryService(ParadoxIP150BridgeHandler ip150BridgeHandler) {
-        super(ParadoxAlarmBindingConstants.SUPPORTED_THING_TYPES_UIDS, 15, false);
+        super(SUPPORTED_THING_TYPES_UIDS, 15, false);
         this.ip150BridgeHandler = ip150BridgeHandler;
     }
 
@@ -73,10 +72,9 @@ public class ParadoxDiscoveryService extends AbstractDiscoveryService {
             properties.put(PANEL_HARDWARE_VERSION_PROPERTY_NAME, panelInformation.getHardwareVersion());
 
             ThingUID bridgeUid = ip150BridgeHandler.getThing().getUID();
-            ThingUID thingUID = new ThingUID(PANEL_THING_TYPE_UID, ip150BridgeHandler.getThing().getUID(),
-                PARADOX_PANEL_THING_TYPE_ID);
+            ThingUID thingUID = new ThingUID(PANEL_THING_TYPE_UID, bridgeUid, PARADOX_PANEL_THING_TYPE_ID);
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withBridge(bridgeUid).withLabel("Paradox panel - " + panelInformation.getPanelType()).build();
+                    .withBridge(bridgeUid).withLabel("Paradox panel - " + panelInformation.getPanelType()).build();
             logger.debug("Panel DiscoveryResult={}", result);
             thingDiscovered(result);
         }
@@ -90,8 +88,8 @@ public class ParadoxDiscoveryService extends AbstractDiscoveryService {
 
             ThingUID thingUID = new ThingUID(PARTITION_THING_TYPE_UID, bridgeUid, thingId);
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUid)
-                .withLabel("Partition " + label).withProperty(PARTITION_THING_TYPE_ID, thingId)
-                .withProperty("id", partition.getId()).build();
+                    .withLabel("Partition " + label).withProperty(PARTITION_THING_TYPE_ID, thingId)
+                    .withProperty("id", partition.getId()).build();
             logger.debug("Partition DiscoveryResult={}", result);
 
             thingDiscovered(result);
@@ -106,8 +104,8 @@ public class ParadoxDiscoveryService extends AbstractDiscoveryService {
 
             ThingUID thingUID = new ThingUID(ZONE_THING_TYPE_UID, bridgeUid, thingId);
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUid)
-                .withLabel("Zone " + label).withProperty(ZONE_THING_TYPE_ID, thingId)
-                .withProperty("id", zone.getId()).build();
+                    .withLabel("Zone " + label).withProperty(ZONE_THING_TYPE_ID, thingId)
+                    .withProperty("id", zone.getId()).build();
             logger.debug("Zone DiscoveryResult={}", result);
 
             thingDiscovered(result);
