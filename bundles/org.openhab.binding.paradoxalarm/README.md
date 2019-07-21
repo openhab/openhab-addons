@@ -98,14 +98,14 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
     String partition1AdditionalStates “Floor1 MUC additional states: [%s]” (Partitions) { channel = “paradoxalarm:partition:ip150:partition1:additionalStates” }
 
 //ZONES
-    Contact CorridorFl1_PIR_state “Corridor Fl1 motion: [%s]” (PIRSensors) { channel = “paradoxalarm:zone:ip150:MotionSensor1:opened” }
-    Contact CorridorFl1_MUC_state “Corridor Fl1 window: [%s]” (Floor1MUC) { channel = “paradoxalarm:zone:ip150:MagneticSensorWindow1:opened” }
+    Contact CorridorFl1_PIR_state “Corridor Fl1 motion: [%s]” (PIRSensors) { channel = “paradoxalarm:zone:ip150:MotionSensor1:isOpened” }
+    Contact CorridorFl1_MUC_state “Corridor Fl1 window: [%s]” (Floor1MUC) { channel = “paradoxalarm:zone:ip150:MagneticSensorWindow1:isOpened” }
 ```
 
 ## Example sitemap configuration
 
 ```java
-   Text label="Security" icon="lock"{
+   Sitemap Paradox label="Security" icon="lock"{
         Frame label="Panel"{
             Text item=panelState valuecolor=[panelState=="Online"="green", panelState=="Offline"="red"]
             Text item=panelType
