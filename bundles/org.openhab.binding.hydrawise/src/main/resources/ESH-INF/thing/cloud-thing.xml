@@ -7,11 +7,45 @@
 	<!-- Sample Thing Type -->
 	<thing-type id="cloud">
 		<label>Hydrawise Cloud Thing</label>
-		<description>Hydrawise Cloud Thing</description>
+		<description>Hydrawise cloud connected irrigation system</description>
 
 		<!-- Until we have https://github.com/eclipse/smarthome/issues/1118 fixed, we need to list all possible channel groups. 
 			Once this is fixed we can dynamically add them to the thing and not list them here. -->
 		<channel-groups>
+			<channel-group id="sensor1" typeId="sensor">
+				<label>Sensor 1</label>
+				<description>Sensor 1</description>
+			</channel-group>
+			<channel-group id="sensor2" typeId="sensor">
+				<label>Sensor 2</label>
+				<description>Sensor 2</description>
+			</channel-group>
+			<channel-group id="sensor3" typeId="sensor">
+				<label>Sensor 3</label>
+				<description>Sensor 3</description>
+			</channel-group>
+			<channel-group id="sensor4" typeId="sensor">
+				<label>Sensor 4</label>
+				<description>Sensor 4</description>
+			</channel-group>
+
+			<channel-group id="forecastDay1" typeId="zone">
+				<label>Today's Weather</label>
+				<description>Today's weather forecast</description>
+			</channel-group>
+			<channel-group id="forecastDay2" typeId="zone">
+				<label>Day 2 Weather</label>
+				<description>Day 2 weather forecast</description>
+			</channel-group>
+			<channel-group id="forecastDay3" typeId="zone">
+				<label>Day 3 Weather</label>
+				<description>Day 3 weather forecast</description>
+			</channel-group>
+			<channel-group id="forecastDay4" typeId="zone">
+				<label>Day 4 Weather</label>
+				<description>Day 4 weather forecast</description>
+			</channel-group>
+
 			<channel-group id="zone1" typeId="zone">
 				<label>Zone 1</label>
 				<description>Sprinkler Zone 1</description>
@@ -170,14 +204,15 @@
 			<parameter name="controllerId" type="integer" required="false">
 				<label>Optional Controller ID interval</label>
 				<description>Optional parameter to specify the Hydrawise controller ID if you have more then one associated with
-					your account.</description>
+					your account.
+				</description>
 			</parameter>
 		</config-description>
 	</thing-type>
 
 	<thing-type id="local">
 		<label>Hydrawise Local Thing</label>
-		<description>Hydrawise Local Thing</description>
+		<description>Hydrawise local connected irrigation system</description>
 		<channel-groups>
 			<channel-group id="zone1" typeId="zone">
 				<label>Zone 1</label>

@@ -4,19 +4,13 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-<!-- 	<channel-group-type id="cloud-system">
-		<label>Cloud System Status</label>
-		<description>Hydrawise Cloud System Status</description>
-		<channels>
-			<channel id="lastContact" typeId="lastContact" />
-			<channel id="status" typeId="status" />
-			<channel id="online" typeId="online" />
-		</channels>
-	</channel-group-type> -->
+	<!-- <channel-group-type id="cloud-system"> <label>Cloud System Status</label> <description>Hydrawise Cloud System Status</description> 
+		<channels> <channel id="lastContact" typeId="lastContact" /> <channel id="status" typeId="status" /> <channel id="online" 
+		typeId="online" /> </channels> </channel-group-type> -->
 
 	<channel-group-type id="zone">
 		<label>Zone</label>
-		<description>Hydrawise Zone</description>
+		<description>Hydrawise zone</description>
 		<channels>
 			<channel id="name" typeId="name" />
 			<channel id="icon" typeId="icon" />
@@ -32,7 +26,7 @@
 
 	<channel-group-type id="sensor">
 		<label>Sensor</label>
-		<description>Hydrawise Sensor</description>
+		<description>Hydrawise sensor</description>
 		<channels>
 			<channel id="name" typeId="name" />
 			<channel id="input" typeId="input" />
@@ -44,6 +38,20 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="forecast">
+		<label>Weather Forecast</label>
+		<description>Hydrawise weather forecast</description>
+		<channels>
+			<channel id="temperaturehigh" typeId="temperaturehigh" />
+			<channel id="temperaturelow" typeId="temperaturelow" />
+			<channel id="conditions" typeId="conditions" />
+			<channel id="day" typeId="day" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="wind" typeId="wind" />
+			<channel id="icon" typeId="icon" />
+		</channels>
+	</channel-group-type>
+
 	<!-- Controller -->
 	<channel-type id="name">
 		<item-type>String</item-type>
@@ -52,62 +60,15 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="lastContact">
-		<item-type>DateTime</item-type>
-		<label>Last Contact</label>
-		<description>Last contact time of the controller</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="image">
-		<item-type>String</item-type>
-		<label>Controller Image</label>
-		<description>Image associated with controller</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<!-- <channel-type id="description"> <item-type>String</item-type> <label>Description</label> <description>Controller description</description> 
-		<state readOnly="true"></state> </channel-type> <channel-type id="location"> <item-type>Point</item-type> <label>Location</label> 
-		<description>Latitude and Longitude of controller</description> <state readOnly="true"></state> </channel-type> -->
-		
-	<channel-type id="status">
-		<item-type>String</item-type>
-		<label>Status</label>
-		<description>Controller status</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="statusIcon" advanced="true">
-		<item-type>String</item-type>
-		<label>Status Icon</label>
-		<description>Controller status icon</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="online">
-		<item-type>Switch</item-type>
-		<label>Online</label>
-		<description>Controller online status</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<!-- Zone / Relay -->
-
-	<!-- <channel-type id="relayId" advanced="true"> <item-type>Number</item-type> <label>Relay ID</label> <description>Zone 
-		unique id</description> <state readOnly="true"></state> </channel-type> <channel-type id="relay"> <item-type>Number</item-type> 
-		<label>Relay Number</label> <description>Controller status</description> <state readOnly="true"></state> </channel-type> -->
 	<channel-type id="icon">
 		<item-type>String</item-type>
 		<label>Icon</label>
-		<description>Relay Icon</description>
+		<description>Icon for this channel</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<!-- <channel-type id="lastwater">
-		<item-type>String</item-type>
-		<label>Last water</label>
-		<description>Relay last watering time</description>
-		<state readOnly="true"></state>
-	</channel-type> -->
+	<!-- <channel-type id="lastwater"> <item-type>String</item-type> <label>Last water</label> <description>Relay last watering 
+		time</description> <state readOnly="true"></state> </channel-type> -->
 
 	<channel-type id="time" advanced="true">
 		<item-type>Number</item-type>
@@ -130,7 +91,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="runTimeSeconds" advanced="true">
+	<channel-type id="runTimeSeconds">
 		<item-type>Number</item-type>
 		<label>Run Time Seconds</label>
 		<description>Relay run time in seconds</description>
@@ -156,7 +117,7 @@
 		<description>Run zone now for a custom duration of time in seconds</description>
 	</channel-type>
 
-	<channel-type id="timeleft" advanced="true">
+	<channel-type id="timeleft">
 		<item-type>Number</item-type>
 		<label>Time Left Seconds</label>
 		<description>Time left that relay will run for</description>
@@ -213,12 +174,64 @@
 		<description>Sensor off level</description>
 		<state readOnly="true"></state>
 	</channel-type>
-
-	<channel-type id="active" advanced="true">
-		<item-type>Number</item-type>
+	<channel-type id="active">
+		<item-type>Switch</item-type>
 		<label>Active</label>
 		<description>Sensor active</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
+	<!-- Weather Forecast -->
+	<channel-type id="temperaturehigh">
+		<item-type>Number:Temperature</item-type>
+		<label>High temperature</label>
+		<description>High temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="temperaturelow">
+		<item-type>Number:Temperature</item-type>
+		<label>Low Temperature</label>
+		<description>Low Temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="conditions">
+		<item-type>String</item-type>
+		<label>Conditions</label>
+		<description>Weather conditions</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="conditions">
+		<item-type>String</item-type>
+		<label>Conditions</label>
+		<description>Weather conditions</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="day">
+		<item-type>String</item-type>
+		<label>Day of Week</label>
+		<description>Day of week for the weather forecast</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>Humidity percentage</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%d%%" />
+	</channel-type>
+
+	<channel-type id="wind">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Speed</label>
+		<description>Wind speed</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
 </thing:thing-descriptions>

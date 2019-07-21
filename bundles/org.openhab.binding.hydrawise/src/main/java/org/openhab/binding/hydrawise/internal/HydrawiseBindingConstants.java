@@ -53,19 +53,27 @@ public class HydrawiseBindingConstants {
     public static final String CHANNEL_SENSOR_OFFTIMER = "offtimer";
     public static final String CHANNEL_SENSOR_OFFLEVEL = "offlevel";
     public static final String CHANNEL_SENSOR_ACTIVE = "active";
+    public static final String CHANNEL_FORECAST_TEMPERATURE_HIGH = "temperaturehigh";
+    public static final String CHANNEL_FORECAST_TEMPERATURE_LOW = "temperaturelow";
+    public static final String CHANNEL_FORECAST_CONDITIONS = "conditions";
+    public static final String CHANNEL_FORECAST_DAY = "day";
+    public static final String CHANNEL_FORECAST_HUMIDITY = "humidity";
+    public static final String CHANNEL_FORECAST_WIND = "wind";
+    public static final String CHANNEL_FORECAST_ICON = "icon";
+    /**
+     * <channel id="temperatureHigh" typeId="temperatureHigh" />
+     * <channel id="temperatureHigh" typeId="temperatureLow" />
+     * <channel id="conditions" typeId="conditions" />
+     * <channel id="day" typeId="day" />
+     * <channel id="humidity" typeId="humidity" />
+     * <channel id="wind" typeId="wind" />
+     * <channel id="icon" typeId="icon" />
+     */
 
-    // <channel id="name" typeId="name" />
-    // <channel id="lastContact" typeId="lastContact" />
-    // <channel id="description" typeId="description" />
-    // <channel id="location" typeId="location" />
-    // <channel id="lastContactReadable" typeId="lastContactReadable" />
-    // <channel id="status" typeId="status" />
-    // <channel id="online" typeId="online" />
-
-    public static final String CHANNEL_SYSTEM_LASTCONTACT = "lastContact";
-    public static final String CHANNEL_SYSTEM_LASTCONTACT_READABLE = "lastContactReadable";
-    public static final String CHANNEL_SYSTEM_STATUS = "status";
-    public static final String CHANNEL_SYSTEM_ONLINE = "online";
+    // public static final String CHANNEL_SYSTEM_LASTCONTACT = "lastContact";
+    // public static final String CHANNEL_SYSTEM_LASTCONTACT_READABLE = "lastContactReadable";
+    // public static final String CHANNEL_SYSTEM_STATUS = "status";
+    // public static final String CHANNEL_SYSTEM_ONLINE = "online";
 
     public static final String PROPERTY_CONTROLLER_ID = "controller";
     public static final String PROPERTY_NAME = "name";
