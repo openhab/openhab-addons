@@ -73,11 +73,11 @@
 	</channel-type>
 
 	<channel-type id="rainHourlyRate">
-		<item-type>Number</item-type>
+		<item-type>Number:Speed</item-type>
 		<label>Rain Fall Hourly Rate</label>
 		<description>Rain fall hourly rate</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.7f %unit%" />
 	</channel-type>
 
 	<channel-type id="rainDay">
