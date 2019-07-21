@@ -6,7 +6,7 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class StatusScheduleResponse extends Response {
+public class StatusScheduleResponse extends LocalScheduleResponse {
 
     @SerializedName("controller_id")
     @Expose
@@ -23,9 +23,6 @@ public class StatusScheduleResponse extends Response {
     @SerializedName("sensors")
     @Expose
     private List<Sensor> sensors = new LinkedList<Sensor>();
-    @SerializedName("running")
-    @Expose
-    private List<Running> running = new LinkedList<Running>();
     @SerializedName("message")
     @Expose
     private String message;
@@ -65,12 +62,6 @@ public class StatusScheduleResponse extends Response {
     @SerializedName("status_icon")
     @Expose
     private String statusIcon;
-    @SerializedName("name")
-    @Expose
-    private String name;
-    @SerializedName("relays")
-    @Expose
-    private List<Relay> relays = new LinkedList<Relay>();
 
     public Integer getControllerId() {
         return controllerId;
@@ -110,14 +101,6 @@ public class StatusScheduleResponse extends Response {
 
     public void setSensors(List<Sensor> sensors) {
         this.sensors = sensors;
-    }
-
-    public List<Running> getRunning() {
-        return running;
-    }
-
-    public void setRunning(List<Running> running) {
-        this.running = running;
     }
 
     public String getMessage() {
@@ -223,21 +206,4 @@ public class StatusScheduleResponse extends Response {
     public void setStatusIcon(String statusIcon) {
         this.statusIcon = statusIcon;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<Relay> getRelays() {
-        return relays;
-    }
-
-    public void setRelays(List<Relay> relays) {
-        this.relays = relays;
-    }
-
 }

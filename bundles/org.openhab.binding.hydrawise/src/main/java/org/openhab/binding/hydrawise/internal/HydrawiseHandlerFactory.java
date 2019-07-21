@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.hydrawise.internal;
 
-import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.THING_TYPE_CLOUD;
+import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,7 +40,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.hydrawise", service = ThingHandlerFactory.class)
 public class HydrawiseHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_CLOUD);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_CLOUD, THING_TYPE_LOCAL)
+            .collect(Collectors.toSet());
 
     private @NonNullByDefault({}) HttpClient httpClient;
 
@@ -53,7 +55,11 @@ public class HydrawiseHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_CLOUD.equals(thingTypeUID)) {
-            return new HydrawiseHandler(thing, httpClient);
+            return new HydrawiseCloudHandler(thing, httpClient);
+        }
+
+        if (THING_TYPE_LOCAL.equals(thingTypeUID)) {
+            return new HydrawiseLocalHandler(thing);
         }
 
         return null;
