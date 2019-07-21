@@ -70,7 +70,7 @@ public class Ws2902aProcessor extends AbstractProcessor {
         handler.updateQuantity(channelGroupId, CH_WIND_GUST_MAX_DAILY, data.maxdailygust, ImperialUnits.MILES_PER_HOUR);
         handler.updateQuantity(channelGroupId, CH_SOLAR_RADIATION, data.solarradiation, SmartHomeUnits.IRRADIANCE);
         handler.updateNumber(channelGroupId, CH_UV_INDEX, data.uv);
-        handler.updateNumber(channelGroupId, CH_RAIN_HOURLY_RATE, data.hourlyrainin);
+        handler.updateQuantity(channelGroupId, CH_RAIN_HOURLY_RATE, data.hourlyrainin, SmartHomeUnits.INCHES_PER_HOUR);
         handler.updateQuantity(channelGroupId, CH_RAIN_DAY, data.dailyrainin, ImperialUnits.INCH);
         handler.updateQuantity(channelGroupId, CH_RAIN_WEEK, data.weeklyrainin, ImperialUnits.INCH);
         handler.updateQuantity(channelGroupId, CH_RAIN_MONTH, data.monthlyrainin, ImperialUnits.INCH);
