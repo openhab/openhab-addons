@@ -15,6 +15,7 @@ package org.openhab.binding.hydrawise.internal.api;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+@NonNullByDefault
 public class HydrawiseLocalApiClient {
     private final Logger logger = LoggerFactory.getLogger(HydrawiseLocalApiClient.class);
 
@@ -44,9 +46,13 @@ public class HydrawiseLocalApiClient {
 
     private static final int TIMEOUT = 30;
     private HttpClient httpClient;
-    private Gson gson = new Gson();
-    private String localSetURL;
-    private String localGetURL;
+    private final Gson gson = new Gson();
+    private String localSetURL = "";
+    private String localGetURL = "";
+
+    public HydrawiseLocalApiClient(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
 
     /**
      * Initializes a Client to talk with the network local Hydrawise API
@@ -55,25 +61,18 @@ public class HydrawiseLocalApiClient {
      * @param username
      * @param password
      */
-    public HydrawiseLocalApiClient(String host, String username, String password) {
+    public HydrawiseLocalApiClient(String host, String username, String password, HttpClient httpClient) {
+        this.httpClient = httpClient;
+        setCredentials(host, username, password);
+    }
+
+    public void setCredentials(String host, String username, String password) {
         String url = "http://" + host;
         localSetURL = String.format(SET_LOCAL_DATA_URL, url);
         localGetURL = String.format(GET_LOCAL_DATA_URL, url);
-        httpClient = new HttpClient();
         AuthenticationStore auth = httpClient.getAuthenticationStore();
         URI uri = URI.create(url);
         auth.addAuthenticationResult(new BasicAuthentication.BasicResult(uri, username, password));
-    }
-
-    public void stopClient() {
-        if (httpClient != null && httpClient.isStarted()) {
-            try {
-                httpClient.getAuthenticationStore().clearAuthentications();
-                httpClient.stop();
-            } catch (Exception e) {
-                logger.error("Could not stop http client", e);
-            }
-        }
     }
 
     /**
@@ -187,12 +186,9 @@ public class HydrawiseLocalApiClient {
     }
 
     private String doGet(String url) throws HydrawiseConnectionException, HydrawiseAuthenticationException {
-        logger.debug("Getting {}", url);
+        logger.trace("Getting {}", url);
         ContentResponse response;
         try {
-            if (!httpClient.isStarted()) {
-                httpClient.start();
-            }
             response = httpClient.newRequest(url).method(HttpMethod.GET).timeout(TIMEOUT, TimeUnit.SECONDS).send();
         } catch (Exception e) {
             throw new HydrawiseConnectionException(e);
@@ -207,5 +203,4 @@ public class HydrawiseLocalApiClient {
         logger.trace("Response: {}", stringResponse);
         return stringResponse;
     }
-
 }

@@ -4,10 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- <channel-group-type id="cloud-system"> <label>Cloud System Status</label> <description>Hydrawise Cloud System Status</description> 
-		<channels> <channel id="lastContact" typeId="lastContact" /> <channel id="status" typeId="status" /> <channel id="online" 
-		typeId="online" /> </channels> </channel-group-type> -->
-
 	<channel-group-type id="zone">
 		<label>Zone</label>
 		<description>Hydrawise zone</description>
@@ -66,9 +62,6 @@
 		<description>Icon for this channel</description>
 		<state readOnly="true"></state>
 	</channel-type>
-
-	<!-- <channel-type id="lastwater"> <item-type>String</item-type> <label>Last water</label> <description>Relay last watering 
-		time</description> <state readOnly="true"></state> </channel-type> -->
 
 	<channel-type id="time" advanced="true">
 		<item-type>Number</item-type>

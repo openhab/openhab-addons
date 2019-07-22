@@ -11,6 +11,7 @@ import javax.measure.quantity.Speed;
 import javax.measure.quantity.Temperature;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -32,17 +33,23 @@ import org.openhab.binding.hydrawise.internal.api.model.StatusScheduleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@NonNullByDefault
 public class HydrawiseCloudHandler extends HydrawiseHandler {
     private final Logger logger = LoggerFactory.getLogger(HydrawiseCloudHandler.class);
-    HydrawiseCloudApiClient client;
+    private HydrawiseCloudApiClient client;
     int controllerId;
-    HttpClient httpClient;
+    /**
+     * 74.2 F
+     */
     private static final Pattern TEMPERATURE_PATTERN = Pattern.compile("^(\\d{1,3}.?\\d?)\\s([C,F])");
+    /**
+     * 9 mph
+     */
     private static final Pattern WIND_SPEED_PATTERN = Pattern.compile("^(\\d{1,3})\\s([a-z]{3})");
 
     public HydrawiseCloudHandler(Thing thing, HttpClient httpClient) {
         super(thing);
-        this.httpClient = httpClient;
+        this.client = new HydrawiseCloudApiClient(httpClient);
     }
 
     @Override
@@ -55,8 +62,10 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
         this.refresh = configuration.refresh.intValue() > MIN_REFRESH_SECONDS ? configuration.refresh.intValue()
                 : MIN_REFRESH_SECONDS;
 
-        client = new HydrawiseCloudApiClient(configuration.apiKey, httpClient);
+        client.setApiKey(configuration.apiKey);
+
         CustomerDetailsResponse customerDetails = client.getCustomerDetails();
+
         List<Controller> controllers = customerDetails.getControllers();
         if (controllers.size() == 0) {
             throw new NotConfiguredException("No controllers found on account");
@@ -94,7 +103,6 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
         controllerId = controller.getControllerId().intValue();
         updateControllerProperties(controller);
         logger.debug("Controller id {}", controllerId);
-
     }
 
     /**
@@ -114,25 +122,30 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
         updateSensors(status);
         updateForecast(status);
         updateZones(status);
-
     }
 
     @Override
-    protected void sendRunCommand(int seconds, Relay relay)
+    protected void sendRunCommand(int seconds, @Nullable Relay relay)
             throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException {
-        client.runRelay(seconds, relay.getRelayId());
+        if (relay != null) {
+            client.runRelay(seconds, relay.getRelayId());
+        }
     }
 
     @Override
-    protected void sendRunCommand(Relay relay)
+    protected void sendRunCommand(@Nullable Relay relay)
             throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException {
-        client.runRelay(relay.getRelayId());
+        if (relay != null) {
+            client.runRelay(relay.getRelayId());
+        }
     }
 
     @Override
-    protected void sendStopCommand(Relay relay)
+    protected void sendStopCommand(@Nullable Relay relay)
             throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException {
-        client.stopRelay(relay.getRelayId());
+        if (relay != null) {
+            client.stopRelay(relay.getRelayId());
+        }
 
     }
 
@@ -185,40 +198,6 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
             }
         }
     }
-
-    // private void updateZones(StatusScheduleResponse status) {
-    // ZonedDateTime now = ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-    // status.getRelays().forEach(r -> {
-    // String group = "zone" + r.getRelayNumber();
-    // relayMap.put(group, r);
-    // logger.trace("Updateing Zone {} {} ", group, r.getName());
-    // updateGroupState(group, CHANNEL_ZONE_NAME, new StringType(r.getName()));
-    // updateGroupState(group, CHANNEL_ZONE_TYPE, new DecimalType(r.getType()));
-    // updateGroupState(group, CHANNEL_ZONE_TIME,
-    // r.getRunTimeSeconds() != null ? new DecimalType(r.getRunTimeSeconds()) : UnDefType.UNDEF);
-    // updateGroupState(group, CHANNEL_ZONE_ICON, new StringType(BASE_IMAGE_URL + r.getIcon()));
-    //
-    // if (r.getTime() >= MAX_RUN_TIME) {
-    // updateGroupState(group, CHANNEL_ZONE_NEXT_RUN_TIME_TIME, UnDefType.UNDEF);
-    // } else {
-    // updateGroupState(group, CHANNEL_ZONE_NEXT_RUN_TIME_TIME,
-    // new DateTimeType(now.plusSeconds(r.getTime()).truncatedTo(ChronoUnit.MINUTES)));
-    // }
-    //
-    // Optional<Running> running = status.getRunning().stream().filter(z -> z.getRelayId() == r.getRelayId())
-    // .findAny();
-    // if (running.isPresent()) {
-    // updateGroupState(group, CHANNEL_ZONE_RUN, OnOffType.ON);
-    // updateGroupState(group, CHANNEL_ZONE_TIME_LEFT, new DecimalType(running.get().getTimeLeft()));
-    // logger.debug("{} Time Left {}", r.getName(), running.get().getTimeLeft());
-    //
-    // } else {
-    // updateGroupState(group, CHANNEL_ZONE_RUN, OnOffType.OFF);
-    // updateGroupState(group, CHANNEL_ZONE_TIME_LEFT, new DecimalType(0));
-    //
-    // }
-    // });
-    // }
 
     private void updateControllerProperties(Controller controller) {
         getThing().setProperty(PROPERTY_CONTROLLER_ID, String.valueOf(controller.getControllerId()));

@@ -59,7 +59,7 @@ public class HydrawiseHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (THING_TYPE_LOCAL.equals(thingTypeUID)) {
-            return new HydrawiseLocalHandler(thing);
+            return new HydrawiseLocalHandler(thing, httpClient);
         }
 
         return null;

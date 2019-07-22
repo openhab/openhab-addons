@@ -24,6 +24,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -53,13 +54,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dan Cunningham - Initial contribution
  */
-// @NonNullByDefault
+@NonNullByDefault
 public abstract class HydrawiseHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HydrawiseHandler.class);
+    private @Nullable ScheduledFuture<?> pollFuture;
+    private Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<>());
+    private Map<String, Relay> relayMap = Collections.synchronizedMap(new HashMap<>());
 
-    // private @Nullable HydrawiseConfiguration config;
-
+    private static long MAX_RUN_TIME = 157680000;
     /**
      * Minimum amount of time we can poll for updates
      */
@@ -78,42 +81,12 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
     /**
      * Future to poll for updated
      */
-    private @Nullable ScheduledFuture<?> pollFuture;
-
-    private Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<>());
-    protected Map<String, Relay> relayMap = Collections.synchronizedMap(new HashMap<>());
-    /**
-     * Matches x days x hours x hours x minutes ago | Not scheduled
-     */
-    // private static final Pattern LAST_RUN_PATTERN = Pattern
-    // .compile("(^Not scheduled)?((\\d{1,2}) days)?\\s?((\\d{1,2}) hours)?\\s?((\\d{1,2}) minutes)?");
-    // private static final Pattern TEMPERATURE_PATTERN = Pattern.compile("^(\\d{1,3}.?\\d?)\\s([C,F])");
-    // private static final Pattern WIND_SPEED_PATTERN = Pattern.compile("^(\\d{1,3})\\s([a-z]{3})");
-
-    protected static long MAX_RUN_TIME = 157680000;
-
-    // HydrawiseCloudApiClient client;
-    // int controllerId;
-    // HttpClient httpClient;
 
     public HydrawiseHandler(Thing thing) {
         super(thing);
     }
 
-    protected abstract void configure()
-            throws NotConfiguredException, HydrawiseConnectionException, HydrawiseAuthenticationException;
-
-    protected abstract void pollController() throws HydrawiseConnectionException, HydrawiseAuthenticationException;
-
-    protected abstract void sendRunCommand(int seconds, Relay relay)
-            throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException;
-
-    protected abstract void sendRunCommand(Relay relay)
-            throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException;
-
-    protected abstract void sendStopCommand(Relay relay)
-            throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException;
-
+    @SuppressWarnings({ "null", "unused" }) // compiler does not like relayMap.get can return null
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
@@ -187,72 +160,19 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
         stateMap.remove(channelUID.getId());
     }
 
-    private void configureInternal() {
-        clearPolling();
-        stateMap.clear();
-        relayMap.clear();
-        try {
-            configure();
-            initPolling(0);
-        } catch (NotConfiguredException e) {
-            logger.debug("Configuration error {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        } catch (HydrawiseConnectionException e) {
-            logger.debug("Could not connect to service");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } catch (HydrawiseAuthenticationException e) {
-            logger.debug("Credentials not valid");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Credentials not valid");
-        }
-    }
+    protected abstract void configure()
+            throws NotConfiguredException, HydrawiseConnectionException, HydrawiseAuthenticationException;
 
-    /**
-     * Starts/Restarts polling with an initial delay. This allows changes in the poll cycle for when commands are sent
-     * and we need to poll sooner then the next refresh cycle.
-     */
-    protected synchronized void initPolling(int initalDelay) {
-        clearPolling();
-        pollFuture = scheduler.scheduleWithFixedDelay(this::pollControllerInternal, initalDelay, refresh,
-                TimeUnit.SECONDS);
-    }
+    protected abstract void pollController() throws HydrawiseConnectionException, HydrawiseAuthenticationException;
 
-    /**
-     * Stops/clears this thing's polling future
-     */
-    protected void clearPolling() {
-        ScheduledFuture<?> localFuture = pollFuture;
-        if (isFutureValid(localFuture)) {
-            if (localFuture != null) {
-                localFuture.cancel(false);
-            }
-        }
-    }
+    protected abstract void sendRunCommand(int seconds, Relay relay)
+            throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException;
 
-    protected boolean isFutureValid(@Nullable ScheduledFuture<?> future) {
-        return future != null && !future.isCancelled();
-    }
+    protected abstract void sendRunCommand(Relay relay)
+            throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException;
 
-    /**
-     * Poll the controller for updates.
-     */
-    protected void pollControllerInternal() {
-        try {
-            pollController();
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-            }
-        } catch (HydrawiseConnectionException e) {
-            // poller will continue to run, set offline until next run
-            logger.debug("Exception polling", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } catch (HydrawiseAuthenticationException e) {
-            // if are creds are not valid, we need to try re authorizing again
-            logger.debug("Authorization Exception during polling", e);
-            clearPolling();
-            configureInternal();
-        }
-
-    }
+    protected abstract void sendStopCommand(Relay relay)
+            throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException;
 
     protected void updateZones(LocalScheduleResponse status) {
         ZonedDateTime now = ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS);
@@ -299,11 +219,76 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
         }
     }
 
+    @SuppressWarnings("serial")
     protected class NotConfiguredException extends Exception {
-
         NotConfiguredException(String message) {
             super(message);
         }
     }
 
+    private boolean isFutureValid(@Nullable ScheduledFuture<?> future) {
+        return future != null && !future.isCancelled();
+    }
+
+    private void configureInternal() {
+        clearPolling();
+        stateMap.clear();
+        relayMap.clear();
+        try {
+            configure();
+            initPolling(0);
+        } catch (NotConfiguredException e) {
+            logger.debug("Configuration error {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        } catch (HydrawiseConnectionException e) {
+            logger.debug("Could not connect to service");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (HydrawiseAuthenticationException e) {
+            logger.debug("Credentials not valid");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Credentials not valid");
+        }
+    }
+
+    /**
+     * Starts/Restarts polling with an initial delay. This allows changes in the poll cycle for when commands are sent
+     * and we need to poll sooner then the next refresh cycle.
+     */
+    private synchronized void initPolling(int initalDelay) {
+        clearPolling();
+        pollFuture = scheduler.scheduleWithFixedDelay(this::pollControllerInternal, initalDelay, refresh,
+                TimeUnit.SECONDS);
+    }
+
+    /**
+     * Stops/clears this thing's polling future
+     */
+    private void clearPolling() {
+        ScheduledFuture<?> localFuture = pollFuture;
+        if (isFutureValid(localFuture)) {
+            if (localFuture != null) {
+                localFuture.cancel(false);
+            }
+        }
+    }
+
+    /**
+     * Poll the controller for updates.
+     */
+    private void pollControllerInternal() {
+        try {
+            pollController();
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } catch (HydrawiseConnectionException e) {
+            // poller will continue to run, set offline until next run
+            logger.debug("Exception polling", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (HydrawiseAuthenticationException e) {
+            // if are creds are not valid, we need to try re authorizing again
+            logger.debug("Authorization Exception during polling", e);
+            clearPolling();
+            configureInternal();
+        }
+    }
 }

@@ -60,21 +60,6 @@ public class HydrawiseBindingConstants {
     public static final String CHANNEL_FORECAST_HUMIDITY = "humidity";
     public static final String CHANNEL_FORECAST_WIND = "wind";
     public static final String CHANNEL_FORECAST_ICON = "icon";
-    /**
-     * <channel id="temperatureHigh" typeId="temperatureHigh" />
-     * <channel id="temperatureHigh" typeId="temperatureLow" />
-     * <channel id="conditions" typeId="conditions" />
-     * <channel id="day" typeId="day" />
-     * <channel id="humidity" typeId="humidity" />
-     * <channel id="wind" typeId="wind" />
-     * <channel id="icon" typeId="icon" />
-     */
-
-    // public static final String CHANNEL_SYSTEM_LASTCONTACT = "lastContact";
-    // public static final String CHANNEL_SYSTEM_LASTCONTACT_READABLE = "lastContactReadable";
-    // public static final String CHANNEL_SYSTEM_STATUS = "status";
-    // public static final String CHANNEL_SYSTEM_ONLINE = "online";
-
     public static final String PROPERTY_CONTROLLER_ID = "controller";
     public static final String PROPERTY_NAME = "name";
     public static final String PROPERTY_DESCRIPTION = "description";

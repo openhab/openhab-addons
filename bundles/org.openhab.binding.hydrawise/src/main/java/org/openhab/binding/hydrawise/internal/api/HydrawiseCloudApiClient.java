@@ -14,6 +14,7 @@ package org.openhab.binding.hydrawise.internal.api;
 
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
@@ -34,6 +35,7 @@ import com.google.gson.GsonBuilder;
  * @author Dan Cunningham
  *
  */
+@NonNullByDefault
 public class HydrawiseCloudApiClient {
     private final Logger logger = LoggerFactory.getLogger(HydrawiseCloudApiClient.class);
 
@@ -49,7 +51,7 @@ public class HydrawiseCloudApiClient {
     private HttpClient httpClient;
     // private Gson gson = new
     // GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
-    private Gson gson = new GsonBuilder().create();
+    private final Gson gson = new GsonBuilder().create();
 
     /**
      * Initializes the API client with a HydraWise API key from a user's account
@@ -59,6 +61,15 @@ public class HydrawiseCloudApiClient {
     public HydrawiseCloudApiClient(String apiKey, HttpClient httpClient) {
         this.apiKey = apiKey;
         this.httpClient = httpClient;
+    }
+
+    public HydrawiseCloudApiClient(HttpClient httpClient) {
+        this.apiKey = "";
+        this.httpClient = httpClient;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 
     /**
@@ -263,7 +274,7 @@ public class HydrawiseCloudApiClient {
     }
 
     private String doGet(String url) throws HydrawiseConnectionException {
-        logger.debug("Getting {}", url);
+        logger.trace("Getting {}", url);
         ContentResponse response;
         try {
             response = httpClient.newRequest(url).method(HttpMethod.GET).timeout(TIMEOUT, TimeUnit.SECONDS).send();
