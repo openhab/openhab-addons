@@ -69,8 +69,12 @@ public class DaikinAirbaseAcUnitHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            handleCommandInternal(channelUID, command);
-
+            if (command == RefreshType.REFRESH) {
+                /* A refresh command means we just need to poll the Airbase for current state. */
+                    poll();
+            } else {
+                    handleCommandInternal(channelUID, command);
+            }
             poll();
         } catch (DaikinAirbaseCommunicationException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
@@ -151,11 +155,8 @@ public class DaikinAirbaseAcUnitHandler extends BaseThingHandler {
                 }
                 break;
         }
-
-        if (RefreshType.REFRESH != command) {
             logger.warn("Received command {} of wrong type for thing '{}' on channel {}", command, thing.getUID().getAsString(),
                     channelUID.getId());
-        } 
     }
 
     @Override
