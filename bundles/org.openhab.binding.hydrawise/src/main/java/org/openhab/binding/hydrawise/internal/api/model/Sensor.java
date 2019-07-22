@@ -2,37 +2,24 @@ package org.openhab.binding.hydrawise.internal.api.model;
 
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 public class Sensor {
 
-    @SerializedName("input")
-    @Expose
     private Integer input;
-    @SerializedName("type")
-    @Expose
+
     private Integer type;
-    @SerializedName("mode")
-    @Expose
+
     private Integer mode;
-    @SerializedName("timer")
-    @Expose
+
     private Integer timer;
-    @SerializedName("offtimer")
-    @Expose
+
     private Integer offtimer;
-    @SerializedName("name")
-    @Expose
+
     private String name;
-    @SerializedName("offlevel")
-    @Expose
+
     private Integer offlevel;
-    @SerializedName("active")
-    @Expose
+
     private Integer active;
-    @SerializedName("relays")
-    @Expose
+
     private List<Object> relays = null;
 
     /**

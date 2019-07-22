@@ -1,44 +1,23 @@
 package org.openhab.binding.hydrawise.internal.api.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 public class Forecast {
 
-    @SerializedName("temp_hi")
-    @Expose
     private String tempHi;
 
-    @SerializedName("temp_lo")
-    @Expose
     private String tempLo;
 
-    @SerializedName("conditions")
-    @Expose
     private String conditions;
 
-    @SerializedName("day")
-    @Expose
     private String day;
 
-    @SerializedName("pop")
-    @Expose
     private Integer pop;
 
-    @SerializedName("humidity")
-    @Expose
     private Integer humidity;
 
-    @SerializedName("wind")
-    @Expose
     private String wind;
 
-    @SerializedName("icon")
-    @Expose
     private String icon;
 
-    @SerializedName("icon_local")
-    @Expose
     private String iconLocal;
 
     /**

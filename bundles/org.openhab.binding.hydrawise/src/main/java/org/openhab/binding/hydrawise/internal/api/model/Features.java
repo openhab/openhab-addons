@@ -2,127 +2,84 @@ package org.openhab.binding.hydrawise.internal.api.model;
 
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 public class Features {
 
-    @SerializedName("plan_array")
-    @Expose
     private List<PlanArray> planArray = null;
-    @SerializedName("id")
-    @Expose
+
     private Object id;
-    @SerializedName("planType2")
-    @Expose
+
     private String planType2;
-    @SerializedName("planType2_key")
-    @Expose
+
     private String planType2Key;
-    @SerializedName("sku")
-    @Expose
+
     private Object sku;
-    @SerializedName("discount")
-    @Expose
+
     private String discount;
-    @SerializedName("cost")
-    @Expose
+
     private String cost;
-    @SerializedName("cost_us")
-    @Expose
+
     private String costUs;
-    @SerializedName("cost_au")
-    @Expose
+
     private String costAu;
-    @SerializedName("cost_eu")
-    @Expose
+
     private String costEu;
-    @SerializedName("cost_ca")
-    @Expose
+
     private String costCa;
-    @SerializedName("cost_uk")
-    @Expose
+
     private String costUk;
-    @SerializedName("active")
-    @Expose
+
     private String active;
-    @SerializedName("controller_qty")
-    @Expose
+
     private String controllerQty;
-    @SerializedName("rainfall")
-    @Expose
+
     private String rainfall;
-    @SerializedName("sms_qty")
-    @Expose
+
     private String smsQty;
-    @SerializedName("scheduled_reports")
-    @Expose
+
     private String scheduledReports;
-    @SerializedName("email_alerts")
-    @Expose
+
     private String emailAlerts;
-    @SerializedName("define_sensor")
-    @Expose
+
     private String defineSensor;
-    @SerializedName("add_user")
-    @Expose
+
     private String addUser;
-    @SerializedName("contractor")
-    @Expose
+
     private String contractor;
-    @SerializedName("description")
-    @Expose
+
     private Object description;
-    @SerializedName("sensor_pack")
-    @Expose
+
     private String sensorPack;
-    @SerializedName("filelimit")
-    @Expose
+
     private String filelimit;
-    @SerializedName("filetypeall")
-    @Expose
+
     private String filetypeall;
-    @SerializedName("plan_type")
-    @Expose
+
     private String planType;
-    @SerializedName("push_notification")
-    @Expose
+
     private String pushNotification;
-    @SerializedName("weather_qty")
-    @Expose
+
     private String weatherQty;
-    @SerializedName("weather_free_qty")
-    @Expose
+
     private String weatherFreeQty;
-    @SerializedName("reporting_days")
-    @Expose
+
     private String reportingDays;
-    @SerializedName("weather_hourly_updates")
-    @Expose
+
     private String weatherHourlyUpdates;
-    @SerializedName("free_enthusiast_plans")
-    @Expose
+
     private String freeEnthusiastPlans;
-    @SerializedName("visible")
-    @Expose
+
     private String visible;
-    @SerializedName("contractor_purchasable")
-    @Expose
+
     private Object contractorPurchasable;
-    @SerializedName("boc")
-    @Expose
+
     private Integer boc;
-    @SerializedName("expiry")
-    @Expose
+
     private Object expiry;
-    @SerializedName("start")
-    @Expose
+
     private Object start;
-    @SerializedName("customerplan_id")
-    @Expose
+
     private String customerplanId;
-    @SerializedName("sms_used")
-    @Expose
+
     private Integer smsUsed;
 
     /**

@@ -2,49 +2,32 @@ package org.openhab.binding.hydrawise.internal.api.model;
 
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 public class CustomerDetailsResponse extends Response {
 
-    @SerializedName("boc_topology_desired")
-    @Expose
     private BocTopologyDesired bocTopologyDesired;
-    @SerializedName("boc_topology_actual")
-    @Expose
+
     private BocTopologyActual bocTopologyActual;
-    @SerializedName("controllers")
-    @Expose
+
     private List<Controller> controllers = null;
-    @SerializedName("current_controller")
-    @Expose
+
     private String currentController;
-    @SerializedName("is_boc")
-    @Expose
+
     private Boolean isBoc;
-    @SerializedName("tandc")
-    @Expose
+
     private Integer tandc;
-    @SerializedName("controller_id")
-    @Expose
+
     private Integer controllerId;
-    @SerializedName("customer_id")
-    @Expose
+
     private Integer customerId;
-    @SerializedName("session_id")
-    @Expose
+
     private String sessionId;
-    @SerializedName("hardwareVersion")
-    @Expose
+
     private String hardwareVersion;
-    @SerializedName("device_id")
-    @Expose
+
     private Integer deviceId;
-    @SerializedName("tandc_version")
-    @Expose
+
     private Integer tandcVersion;
-    @SerializedName("features")
-    @Expose
+
     private Features features;
 
     /**

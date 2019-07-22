@@ -26,6 +26,7 @@ import org.openhab.binding.hydrawise.internal.api.model.StatusScheduleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -39,6 +40,8 @@ import com.google.gson.GsonBuilder;
 public class HydrawiseCloudApiClient {
     private final Logger logger = LoggerFactory.getLogger(HydrawiseCloudApiClient.class);
 
+    private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .create();
     private static final String BASE_URL = "https://app.hydrawise.com/api/v1/";
     private static final String STATUS_SCHEDUE_URL = BASE_URL
             + "statusschedule.php?api_key=%s&controller_id=%d&hours=168";
@@ -49,9 +52,6 @@ public class HydrawiseCloudApiClient {
     private static final int TIMEOUT = 30;
     private String apiKey;
     private HttpClient httpClient;
-    // private Gson gson = new
-    // GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
-    private final Gson gson = new GsonBuilder().create();
 
     /**
      * Initializes the API client with a HydraWise API key from a user's account

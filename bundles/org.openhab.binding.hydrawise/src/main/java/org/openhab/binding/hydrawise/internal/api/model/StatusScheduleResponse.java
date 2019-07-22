@@ -3,64 +3,42 @@ package org.openhab.binding.hydrawise.internal.api.model;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 public class StatusScheduleResponse extends LocalScheduleResponse {
 
-    @SerializedName("controller_id")
-    @Expose
     private Integer controllerId;
-    @SerializedName("customer_id")
-    @Expose
+
     private Integer customerId;
-    @SerializedName("user_id")
-    @Expose
+
     private Integer userId;
-    @SerializedName("nextpoll")
-    @Expose
+
     private Integer nextpoll;
-    @SerializedName("sensors")
-    @Expose
+
     private List<Sensor> sensors = new LinkedList<Sensor>();
-    @SerializedName("message")
-    @Expose
+
     private String message;
-    @SerializedName("obs_rain")
-    @Expose
+
     private String obsRain;
-    @SerializedName("obs_rain_week")
-    @Expose
+
     private String obsRainWeek;
-    @SerializedName("obs_maxtemp")
-    @Expose
+
     private String obsMaxtemp;
-    @SerializedName("obs_rain_upgrade")
-    @Expose
+
     private Integer obsRainUpgrade;
-    @SerializedName("obs_rain_text")
-    @Expose
+
     private String obsRainText;
-    @SerializedName("obs_currenttemp")
-    @Expose
+
     private String obsCurrenttemp;
-    @SerializedName("watering_time")
-    @Expose
+
     private String wateringTime;
-    @SerializedName("water_saving")
-    @Expose
+
     private Integer waterSaving;
-    @SerializedName("last_contact")
-    @Expose
+
     private String lastContact;
-    @SerializedName("forecast")
-    @Expose
+
     private List<Forecast> forecast = new LinkedList<Forecast>();
-    @SerializedName("status")
-    @Expose
+
     private String status;
-    @SerializedName("status_icon")
-    @Expose
+
     private String statusIcon;
 
     public Integer getControllerId() {

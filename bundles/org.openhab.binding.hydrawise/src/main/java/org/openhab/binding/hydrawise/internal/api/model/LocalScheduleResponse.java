@@ -3,22 +3,14 @@ package org.openhab.binding.hydrawise.internal.api.model;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 public class LocalScheduleResponse extends Response {
 
-    @SerializedName("running")
-    @Expose
     private List<Running> running = new LinkedList<Running>();
-    @SerializedName("relays")
-    @Expose
+
     private List<Relay> relays = new LinkedList<Relay>();
-    @SerializedName("name")
-    @Expose
+
     private String name;
-    @SerializedName("time")
-    @Expose
+
     private Integer time;
 
     /**

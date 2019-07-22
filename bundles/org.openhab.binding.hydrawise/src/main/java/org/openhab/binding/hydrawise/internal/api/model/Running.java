@@ -1,21 +1,13 @@
 package org.openhab.binding.hydrawise.internal.api.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 public class Running {
 
-    @SerializedName("relay")
-    @Expose
     private String relay;
-    @SerializedName("relay_id")
-    @Expose
+
     private String relayId;
-    @SerializedName("time_left")
-    @Expose
+
     private Integer timeLeft;
-    @SerializedName("run")
-    @Expose
+
     private String run;
 
     /**

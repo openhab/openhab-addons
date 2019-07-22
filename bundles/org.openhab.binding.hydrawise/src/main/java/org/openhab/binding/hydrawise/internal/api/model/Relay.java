@@ -1,41 +1,31 @@
 package org.openhab.binding.hydrawise.internal.api.model;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Relay {
-    @SerializedName("relay_id")
-    @Expose
+
     private Integer relayId;
-    @SerializedName("relay")
-    @Expose
+
     private Integer relay;
-    @SerializedName("name")
-    @Expose
+
     private String name;
-    @SerializedName("icon")
-    @Expose
+
     private String icon;
-    @SerializedName("lastwater")
-    @Expose
+
     private String lastwater;
-    @SerializedName("time")
-    @Expose
+
     private Integer time;
-    @SerializedName("type")
-    @Expose
+
     private Integer type;
+
     @SerializedName("run")
-    @Expose
     private String runTime;
+
     @SerializedName("run_seconds")
-    @Expose
     private Integer runTimeSeconds;
-    @SerializedName("nicetime")
-    @Expose
+
     private String nicetime;
-    @SerializedName("id")
-    @Expose
+
     private String id;
 
     /**
@@ -194,7 +184,7 @@ public class Relay {
 
     /**
      * Returns back the actual relay number when multiple controllers are chained.
-     * 
+     *
      * @return
      */
     public int getRelayNumber() {

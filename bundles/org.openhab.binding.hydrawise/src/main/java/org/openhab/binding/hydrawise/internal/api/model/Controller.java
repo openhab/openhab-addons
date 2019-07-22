@@ -2,73 +2,48 @@ package org.openhab.binding.hydrawise.internal.api.model;
 
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 public class Controller {
 
-    @SerializedName("name")
-    @Expose
     private String name;
-    @SerializedName("last_contact")
-    @Expose
+
     private Integer lastContact;
-    @SerializedName("serial_number")
-    @Expose
+
     private String serialNumber;
-    @SerializedName("controller_id")
-    @Expose
+
     private Integer controllerId;
-    @SerializedName("sw_version")
-    @Expose
+
     private String swVersion;
-    @SerializedName("hardware")
-    @Expose
+
     private String hardware;
-    @SerializedName("is_boc")
-    @Expose
+
     private Boolean isBoc;
-    @SerializedName("address")
-    @Expose
+
     private String address;
-    @SerializedName("timezone")
-    @Expose
+
     private String timezone;
-    @SerializedName("device_id")
-    @Expose
+
     private Integer deviceId;
-    @SerializedName("parent_device_id")
-    @Expose
+
     private Object parentDeviceId;
-    @SerializedName("image")
-    @Expose
+
     private String image;
-    @SerializedName("description")
-    @Expose
+
     private String description;
-    @SerializedName("customer_id")
-    @Expose
+
     private Integer customerId;
-    @SerializedName("latitude")
-    @Expose
+
     private Double latitude;
-    @SerializedName("longitude")
-    @Expose
+
     private Double longitude;
-    @SerializedName("last_contact_readable")
-    @Expose
+
     private String lastContactReadable;
-    @SerializedName("status")
-    @Expose
+
     private String status;
-    @SerializedName("status_icon")
-    @Expose
+
     private String statusIcon;
-    @SerializedName("online")
-    @Expose
+
     private Boolean online;
-    @SerializedName("tags")
-    @Expose
+
     private List<String> tags = null;
 
     /**

@@ -115,10 +115,7 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
         if (controller != null && !controller.getOnline()) {
             throw new HydrawiseConnectionException("Controller is offline");
         }
-
         StatusScheduleResponse status = client.getStatusSchedule(controllerId);
-        logger.debug("Controller {} last contact {} seconds ago, {} total zones", status.getControllerId(),
-                status.getLastContact(), status.getRelays().size());
         updateSensors(status);
         updateForecast(status);
         updateZones(status);

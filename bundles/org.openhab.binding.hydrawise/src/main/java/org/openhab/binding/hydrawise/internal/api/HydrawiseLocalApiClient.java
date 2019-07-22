@@ -26,11 +26,16 @@ import org.openhab.binding.hydrawise.internal.api.model.SetZoneResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @NonNullByDefault
 public class HydrawiseLocalApiClient {
     private final Logger logger = LoggerFactory.getLogger(HydrawiseLocalApiClient.class);
+
+    private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .create();
 
     /**
      * tcpdump -i any host 192.168.90.85 -s 65535 -w /tmp/out.pcap
@@ -46,7 +51,6 @@ public class HydrawiseLocalApiClient {
 
     private static final int TIMEOUT = 30;
     private HttpClient httpClient;
-    private final Gson gson = new Gson();
     private String localSetURL = "";
     private String localGetURL = "";
 
