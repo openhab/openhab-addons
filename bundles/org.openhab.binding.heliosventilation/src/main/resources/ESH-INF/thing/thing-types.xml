@@ -101,11 +101,11 @@
     </channel-type>
 
     <channel-type id="rh_limit" advanced="true">
-        <item-type>Dimmer</item-type>
+        <item-type>Number:Dimensionless</item-type>
         <label>RH limit</label>
         <description>Limit for relative humidity sensor.</description>
         <category>Humidity</category>
-        <state pattern="%f %%" min="0" max="100" readOnly="false" />
+        <state pattern="%f %unit%" min="0" max="100" readOnly="false" />
     </channel-type>
 
     <channel-type id="hysteresis" advanced="true">
