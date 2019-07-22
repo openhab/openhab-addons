@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
@@ -116,9 +117,10 @@ public class HeliosVentilationVariable {
         if (datatype == type.TEMPERATURE) {
             return new QuantityType<>(tempMap[val], SIUnits.CELSIUS);
         } else if (datatype == type.BYTE_PERCENT) {
-            return new DecimalType((val - BYTE_PERCENT_OFFSET) * 100.0 / (255 - BYTE_PERCENT_OFFSET));
+            return new QuantityType<>((int) ((val - BYTE_PERCENT_OFFSET) * 100.0 / (255 - BYTE_PERCENT_OFFSET)),
+                    SmartHomeUnits.PERCENT);
         } else if (datatype == type.PERCENT) {
-            return new DecimalType(val * 100);
+            return new QuantityType<>(val * 100, SmartHomeUnits.PERCENT);
         } else if (datatype == type.FANSPEED) {
             int i = 1;
             while (i < fanspeedMap.length && fanspeedMap[i] < val) {
@@ -150,7 +152,7 @@ public class HeliosVentilationVariable {
             }
             return String.format("%d", i);
         } else if (datatype == type.BYTE_PERCENT) {
-            return String.format("%d %%", (int) ((val - BYTE_PERCENT_OFFSET) * 100.0 / (256 - BYTE_PERCENT_OFFSET)));
+            return String.format("%d %%", (int) ((val - BYTE_PERCENT_OFFSET) * 100.0 / (255 - BYTE_PERCENT_OFFSET)));
         } else if (datatype == type.PERCENT) {
             return String.format("%d %%", val);
         } else if (datatype == type.HYSTERESIS) {
@@ -160,8 +162,10 @@ public class HeliosVentilationVariable {
         return "<unknown type>" + String.format("%02X ", b);
     }
 
-    public byte getTransmitDataFor(DecimalType value) {
+    public byte getTransmitDataFor(State val) {
         byte result = 0;
+        DecimalType value = val.as(DecimalType.class);
+
         if (datatype == type.TEMPERATURE) {
             int temp = (int) Math.round(value.doubleValue());
             int i = 0;
