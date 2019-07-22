@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mqtt.handler;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.CompletableFuture;
@@ -22,9 +22,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionState;
+import org.eclipse.smarthome.io.transport.mqtt.internal.client.MqttAsyncClientWrapper;
 
 import com.hivemq.client.mqtt.MqttClientState;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 
 /**
  * We need an extended MqttBrokerConnection to overwrite the protected `connectionCallbacks` with
@@ -54,8 +54,8 @@ public class MqttBrokerConnectionEx extends MqttBrokerConnection {
     }
 
     @Override
-    protected Mqtt3AsyncClient createClient() {
-        Mqtt3AsyncClient mockedClient = mock(Mqtt3AsyncClient.class);
+    protected MqttAsyncClientWrapper createClient() {
+        MqttAsyncClientWrapper mockedClient = mock(MqttAsyncClientWrapper.class);
         // connect
         doAnswer(i -> {
             if (!connectTimeout) {
@@ -64,7 +64,7 @@ public class MqttBrokerConnectionEx extends MqttBrokerConnection {
                 return CompletableFuture.completedFuture(null);
             }
             return new CompletableFuture<Boolean>();
-        }).when(mockedClient).connect(any());
+        }).when(mockedClient).connect(any(), anyInt(), any(), any());
         doAnswer(i -> {
             if (disconnectSuccess) {
                 connectionCallback.onDisconnected(new Throwable("disconnect called"));
@@ -82,7 +82,7 @@ public class MqttBrokerConnectionEx extends MqttBrokerConnection {
                 future.completeExceptionally(new Throwable("subscription failed"));
                 return future;
             }
-        }).when(mockedClient).subscribe(any(), any());
+        }).when(mockedClient).subscribe(any(), anyInt(), any());
         // unsubscribe
         doAnswer(i -> {
             if (unsubscribeSuccess) {
