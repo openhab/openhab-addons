@@ -27,17 +27,17 @@ public class HeliosVentilationBindingConstants {
     public static final String BINDING_ID = "heliosventilation";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_HELIOS_VENTILATION = new ThingTypeUID(BINDING_ID, "heliosVentilation");
+    public static final ThingTypeUID THING_TYPE_HELIOS_VENTILATION = new ThingTypeUID(BINDING_ID, "ventilation");
 
     // List of all Channel ids
     public static final String CHANNEL_OUTSIDE_TEMP = "outsideTemp";
     public static final String CHANNEL_OUTGOING_TEMP = "outgoingTemp";
     public static final String CHANNEL_EXTRACT_TEMP = "extractTemp";
     public static final String CHANNEL_SUPPLY_TEMP = "supplyTemp";
-    public static final String CHANNEL_BYPASS_TEMP = "bypass_temp";
-    public static final String CHANNEL_RH_LIMIT = "rh_limit";
+    public static final String CHANNEL_BYPASS_TEMP = "bypassTemp";
+    public static final String CHANNEL_RH_LIMIT = "rhLimit";
     public static final String CHANNEL_HYSTERESIS = "hysteresis";
     public static final String CHANNEL_FANSPEED = "fanspeed";
-    public static final String CHANNEL_MIN_FANSPEED = "min_fanspeed";
-    public static final String CHANNEL_MAX_FANSPEED = "max_fanspeed";
+    public static final String CHANNEL_MIN_FANSPEED = "minFanspeed";
+    public static final String CHANNEL_MAX_FANSPEED = "maxFanspeed";
 }
