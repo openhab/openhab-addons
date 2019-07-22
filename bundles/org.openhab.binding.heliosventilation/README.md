@@ -4,6 +4,7 @@ This is the binding for Helios Ventilation Systems KWL EC 200/300/500 Pro. It re
 
 For electrical connection it is recommended to use an USB-RS485 interface, but any RS485 interface that shows up as a serial port will do.Setup the device as described in https://www.openhab.org/docs/administration/serial.html.
 
+The binding will use the remote control address 15 for communication, so make sure that this is not assigned to a physically present remote control.
 
 ## Supported Things
 

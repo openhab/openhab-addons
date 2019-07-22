@@ -14,8 +14,12 @@ package org.openhab.binding.heliosventilation.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 
 /**
  * The {@link HeliosVentilationVariable} is a description of a variable in the Helios ventilation system.
@@ -25,12 +29,13 @@ import org.eclipse.smarthome.core.thing.Thing;
 @NonNullByDefault
 public class HeliosVentilationVariable {
     public enum type {
-        Temperature,
-        Fanspeed,
-        Bit,
-        BytePercent,
-        Percent,
-        Number
+        TEMPERATURE,
+        HYSTERESIS,
+        FANSPEED,
+        BIT,
+        BYTE_PERCENT,
+        PERCENT,
+        NUMBER
     }
 
     /**
@@ -53,6 +58,8 @@ public class HeliosVentilationVariable {
      */
     private static final int fanspeedMap[] = { 0, 1, 3, 7, 15, 31, 63, 127, 255 };
 
+    private static final int BYTE_PERCENT_OFFSET = 52;
+
     private ChannelUID channelUID;
 
     public HeliosVentilationVariable(Thing thing, String name, byte address, boolean writable, type datatype) {
@@ -67,64 +74,6 @@ public class HeliosVentilationVariable {
     private boolean writable;
     private type datatype;
     private byte address;
-
-    /**
-     * interpret the given byte b and return the value as string.
-     *
-     * @param b
-     * @return sting representation of byte value b in current datatype
-     */
-    public String asString(byte b) {
-        int val = b & 0xff;
-
-        if (datatype == type.Temperature) {
-            return String.format("%d °C", tempMap[val]);
-        } else if (datatype == type.Fanspeed) {
-            int i = 1;
-            while (i < fanspeedMap.length && fanspeedMap[i] < val) {
-                i++;
-            }
-            return String.format("%d", i);
-        } else if (datatype == type.BytePercent) {
-            return String.format("%d %%", val * 100 / 255);
-        } else if (datatype == type.Percent) {
-            return String.format("%d %%", val);
-        }
-
-        return "<unknown type>" + String.format("%02X ", b);
-    }
-
-    public byte getTransmitDataFor(DecimalType value) {
-        byte result = 0;
-        if (datatype == type.Temperature) {
-            int temp = (int) Math.round(value.doubleValue());
-            int i = 0;
-            while (i < tempMap.length && tempMap[i] < temp) {
-                i++;
-            }
-            result = (byte) i;
-        } else if (datatype == type.Fanspeed) {
-            int i = value.intValue();
-            if (i < 0) {
-                i = 0;
-            } else if (i > 8) {
-                i = 8;
-            }
-            result = (byte) fanspeedMap[i];
-        } else if (datatype == type.BytePercent) {
-            result = (byte) (Math.round(value.doubleValue() * 255.0 / 100));
-        } else if (datatype == type.Percent) {
-            double d = (Math.round(value.doubleValue() * 100.0));
-            if (d < 0.0) {
-                d = 0.0;
-            } else if (d > 100.0) {
-                d = 100.0;
-            }
-            result = (byte) d;
-        }
-
-        return result;
-    }
 
     /* @return the channelUID for this variable */
     public ChannelUID channelUID() {
@@ -156,22 +105,92 @@ public class HeliosVentilationVariable {
         return address;
     }
 
-    public DecimalType asDecimal(byte val) {
-        if (datatype == type.Temperature) {
-            return new DecimalType(tempMap[val & 0xff]);
-        } else if (datatype == type.BytePercent) {
-            return new DecimalType(val * 100.0 / 255.0);
-        } else if (datatype == type.Percent) {
-            return new DecimalType(val * 100.0);
-        } else if (datatype == type.Fanspeed) {
+    /**
+     * interpret the given byte b and return the value as State.
+     *
+     * @param b
+     * @return state representation of byte value b in current datatype
+     */
+    public State asState(byte b) {
+        int val = b & 0xff;
+        if (datatype == type.TEMPERATURE) {
+            return new QuantityType<>(tempMap[val], SIUnits.CELSIUS);
+        } else if (datatype == type.BYTE_PERCENT) {
+            return new DecimalType((val - BYTE_PERCENT_OFFSET) * 100.0 / (255 - BYTE_PERCENT_OFFSET));
+        } else if (datatype == type.PERCENT) {
+            return new DecimalType(val * 100);
+        } else if (datatype == type.FANSPEED) {
             int i = 1;
             while (i < fanspeedMap.length && fanspeedMap[i] < val) {
                 i++;
             }
             return new DecimalType(i);
+        } else if (datatype == type.HYSTERESIS) {
+            return new QuantityType<>(val / 3, SIUnits.CELSIUS);
         }
 
-        return new DecimalType(999.9);
+        return UnDefType.UNDEF;
     }
 
+    /**
+     * interpret the given byte b and return the value as string.
+     *
+     * @param b
+     * @return sting representation of byte value b in current datatype
+     */
+    public String asString(byte b) {
+        int val = b & 0xff;
+
+        if (datatype == type.TEMPERATURE) {
+            return String.format("%d °C", tempMap[val]);
+        } else if (datatype == type.FANSPEED) {
+            int i = 1;
+            while (i < fanspeedMap.length && fanspeedMap[i] < val) {
+                i++;
+            }
+            return String.format("%d", i);
+        } else if (datatype == type.BYTE_PERCENT) {
+            return String.format("%d %%", (int) ((val - BYTE_PERCENT_OFFSET) * 100.0 / (256 - BYTE_PERCENT_OFFSET)));
+        } else if (datatype == type.PERCENT) {
+            return String.format("%d %%", val);
+        } else if (datatype == type.HYSTERESIS) {
+            return String.format("%d °C", val / 3);
+        }
+
+        return "<unknown type>" + String.format("%02X ", b);
+    }
+
+    public byte getTransmitDataFor(DecimalType value) {
+        byte result = 0;
+        if (datatype == type.TEMPERATURE) {
+            int temp = (int) Math.round(value.doubleValue());
+            int i = 0;
+            while (i < tempMap.length && tempMap[i] < temp) {
+                i++;
+            }
+            result = (byte) i;
+        } else if (datatype == type.FANSPEED) {
+            int i = value.intValue();
+            if (i < 0) {
+                i = 0;
+            } else if (i > 8) {
+                i = 8;
+            }
+            result = (byte) fanspeedMap[i];
+        } else if (datatype == type.BYTE_PERCENT) {
+            result = (byte) ((value.doubleValue() / 100.0) * (255 - BYTE_PERCENT_OFFSET) + BYTE_PERCENT_OFFSET);
+        } else if (datatype == type.PERCENT) {
+            double d = (Math.round(value.doubleValue() * 100.0));
+            if (d < 0.0) {
+                d = 0.0;
+            } else if (d > 100.0) {
+                d = 100.0;
+            }
+            result = (byte) d;
+        } else if (datatype == type.HYSTERESIS) {
+            result = (byte) (value.intValue() * 3);
+        }
+
+        return result;
+    }
 }
