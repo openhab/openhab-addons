@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -12,21 +13,20 @@
   <artifactId>org.openhab.binding.telegram</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Telegram Binding</name>
-  
+
   <dependencies>
     <dependency>
-        <groupId>org.telegram</groupId>
-        <artifactId>telegrambots</artifactId>
+        <groupId>org.openhab.osgiify</groupId>
+        <artifactId>org.telegram.telegrambots</artifactId>
         <version>4.2</version>
         <scope>provided</scope>
     </dependency>
-	<dependency>
-	    <groupId>org.telegram</groupId>
-	    <artifactId>telegrambots-meta</artifactId>
-	    <version>4.2</version>
-	    <scope>provided</scope>
-	</dependency>
-      
+    <dependency>
+        <groupId>org.openhab.osgiify</groupId>
+        <artifactId>org.telegram.telegrambots-meta</artifactId>
+        <version>4.2</version>
+        <scope>provided</scope>
+    </dependency>
   </dependencies>
 
 </project>
