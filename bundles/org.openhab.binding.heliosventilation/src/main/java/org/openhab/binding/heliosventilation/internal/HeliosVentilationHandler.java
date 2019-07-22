@@ -24,6 +24,7 @@ import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -35,6 +36,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
@@ -173,15 +175,14 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                     poll(v);
                 }
             });
-        } else if (command instanceof DecimalType) {
+        } else if (command instanceof DecimalType || command instanceof QuantityType) {
             variables.values().forEach((v) -> {
                 ChannelUID tmp = v.channelUID();
                 if (tmp.equals(channelUID)) {
                     if (v.isWritable()) {
                         byte txFrame[] = { 0x01, BUSMEMBER_ME, BUSMEMBER_CONTROLBOARDS, v.address(), 0x00, 0x00 };
-                        txFrame[4] = v.getTransmitDataFor((DecimalType) command);
+                        txFrame[4] = v.getTransmitDataFor((State) command);
                         txFrame[5] = (byte) checksum(txFrame);
-                        logger.debug("*********************************...");
 
                         tx(txFrame);
                         txFrame[2] = BUSMEMBER_SLAVEBOARDS;
