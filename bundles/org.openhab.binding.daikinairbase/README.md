@@ -1,17 +1,20 @@
 # Daikin Airbase Binding
 
-The Daikin binding allows you to control your Daikin Airbase air conditioning units with openHAB. In order to do so, your Daikin air conditioning unit must have a BRP15B61 WiFi adapter (Also known as Airbase) installed.
+The Daikin binding allows you to control your Daikin Airbase air conditioning units with openHAB. 
+In order to do so, your Daikin air conditioning unit must have a BRP15B61 WiFi adapter (Also known as Airbase) installed.
 
 ## Supported Things
 
-Daikin air conditioning units with a BRP15B61 (also known as an Airbase)installed. 
+Daikin air conditioning units with a BRP15B61 (also known as an Airbase) installed. 
 
 ## Discovery
 
-This addon will broadcast messages on your local network looking for Daikin Airbase air conditioning units and adding them to the queue of new items discovered. You can also manually add a new item if you know the IP address.
+This binding broadcasts messages on the local network looking for Daikin Airbase air conditioning units and adding them to the Inbox. 
+You can also manually add a new item if you know the IP address.
 
 ## Thing Configuration
 
+daikinairbase:ac_unit:living_room_ac [ host="192.168.0.5", refresh=60 ]
 * host - The hostname of the Daikin air conditioner. Typically you'd use an IP address such as `192.168.0.5` for this field.
 * refresh - The frequency with which to refresh information from the Daikin air conditioner specified in seconds. Defaults to 60 seconds.
 
@@ -49,7 +52,7 @@ daikinairbase.items:
 
 ```
 Switch DaikinACUnit_Power { channel="daikinairbase:ac_unit:living_room_ac:power" }
-Number:Temperature DaikinACUnit_SetPoint { channel="daikinairbase:ac_unit:living_room_ac:setpoint" }
+Number:Temperature DaikinACUnit_SetPoint { channel="daikinairbase:ac_unit:living_room_ac:settemp" }
 String DaikinACUnit_Mode { channel="daikinairbase:ac_unit:living_room_ac:mode" }
 String DaikinACUnit_Fan { channel="daikinairbase:ac_unit:living_room_ac:fanspeed" }
 Number:Temperature DaikinACUnit_IndoorTemperature { channel="daikinairbase:ac_unit:living_room_ac:indoortemp" }
@@ -70,7 +73,7 @@ daikinairbase.sitemap:
 Switch item=DaikinACUnit_Power
 Setpoint item=DaikinACUnit_SetPoint visibility=[DaikinACUnit_Power==ON]
 Selection item=DaikinACUnit_Mode mappings=["AUTO"="Auto", "DEHUMIDIFIER"="Dehumidifier", "COLD"="Cold", "HEAT"="Heat", "FAN"="Fan"] visibility=[DaikinACUnit_Power==ON]
-Selection item=DaikinACUnit_Fan mappings=["AUTO"="Auto", LEVEL_1"="Level 1", "LEVEL_2"="Level 2", "LEVEL_3"="Level 3"] visibility=[DaikinACUnit_Power==ON]
+Selection item=DaikinACUnit_Fan mappings=["AUTO"="Auto", "LEVEL_1"="Level 1", "LEVEL_2"="Level 2", "LEVEL_3"="Level 3"] visibility=[DaikinACUnit_Power==ON]
 Text item=DaikinACUnit_IndoorTemperature
 Text item=DaikinACUnit_OutdoorTemperature
 Switch item=DaikinACUnit_Zone1 visibility=[DaikinACUnit_Power==ON]
