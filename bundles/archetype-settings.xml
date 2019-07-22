@@ -9,7 +9,7 @@
             <repositories>
                 <repository>
                     <id>archetype</id>
-                    <url>https://openhab.jfrog.io/openhab/webapp/#/builds/openHAB-Core/</url>
+                    <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
                 </repository>
             </repositories>
         </profile>
