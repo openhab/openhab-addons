@@ -102,9 +102,10 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
 
         String group = channelUID.getGroupId();
         String channelId = channelUID.getIdWithoutGroup();
+        boolean allCommand = CHANNEL_GROUP_ALLZONES.equals(group);
 
         Relay relay = relayMap.get(group);
-        if (relay == null) {
+        if (!allCommand && relay == null) {
             logger.debug("Zone not found {}", group);
             return;
         }
@@ -117,17 +118,25 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
                         logger.warn("Invalid command type for run custom {}", command.getClass().getName());
                         return;
                     }
-                    sendRunCommand(((DecimalType) command).intValue(), relay);
+                    if (allCommand) {
+
+                    } else {
+                        sendRunCommand(((DecimalType) command).intValue(), relay);
+                    }
                     break;
                 case CHANNEL_ZONE_RUN:
                     if (!(command instanceof OnOffType)) {
                         logger.warn("Invalid command type for run {}", command.getClass().getName());
                         return;
                     }
-                    if (command == OnOffType.ON) {
-                        sendRunCommand(relay);
+                    if (allCommand) {
+
                     } else {
-                        sendStopCommand(relay);
+                        if (command == OnOffType.ON) {
+                            sendRunCommand(relay);
+                        } else {
+                            sendStopCommand(relay);
+                        }
                     }
                     break;
             }
@@ -206,6 +215,10 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
                 updateGroupState(group, CHANNEL_ZONE_TIME_LEFT, new DecimalType(0));
 
             }
+
+            updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_RUN,
+                    status.getRunning().size() > 0 ? OnOffType.ON : OnOffType.OFF);
+
         });
     }
 

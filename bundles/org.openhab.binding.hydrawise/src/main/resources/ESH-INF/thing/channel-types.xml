@@ -19,6 +19,15 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="allzones">
+		<label>All Zones</label>
+		<description>Commands that control all Hydrawise zones</description>
+		<channels>
+			<channel id="runcustom" typeId="runcustom" />
+			<channel id="run" typeId="run" />
+		</channels>
+	</channel-group-type>
+	
 	<channel-group-type id="sensor">
 		<label>Sensor</label>
 		<description>Hydrawise sensor</description>
@@ -65,28 +74,28 @@
 	<channel-type id="time" advanced="true">
 		<item-type>Number</item-type>
 		<label>Start Time</label>
-		<description>Relay start time in seconds</description>
+		<description>Zone start time in seconds</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="type" advanced="true">
 		<item-type>Number</item-type>
 		<label>Type</label>
-		<description>Relay Type</description>
+		<description>Zone Type</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="runTime">
 		<item-type>String</item-type>
 		<label>Run Time</label>
-		<description>Relay run time string</description>
+		<description>Zone run time string</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="runTimeSeconds">
 		<item-type>Number</item-type>
 		<label>Run Time Seconds</label>
-		<description>Relay run time in seconds</description>
+		<description>Zone run time in seconds</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -99,20 +108,20 @@
 
 	<channel-type id="run">
 		<item-type>Switch</item-type>
-		<label>Run</label>
-		<description>Run or stop zone for the default time.</description>
+		<label>Run Zones</label>
+		<description>Run or stop zones for the default time.</description>
 	</channel-type>
 
 	<channel-type id="runcustom">
 		<item-type>Number</item-type>
-		<label>Run Zone in Seconds</label>
-		<description>Run zone now for a custom duration of time in seconds</description>
+		<label>Run Zones With Custom Duration </label>
+		<description>Run zones now for a custom duration of time in seconds</description>
 	</channel-type>
 
 	<channel-type id="timeleft">
 		<item-type>Number</item-type>
 		<label>Time Left Seconds</label>
-		<description>Time left that relay will run for</description>
+		<description>Time left that zone will run for</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

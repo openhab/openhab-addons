@@ -46,6 +46,8 @@
 				<description>Day 4 weather forecast</description>
 			</channel-group>
 
+			<channel-group id="allzones" typeId="allzones" />
+
 			<channel-group id="zone1" typeId="zone">
 				<label>Zone 1</label>
 				<description>Sprinkler Zone 1</description>
