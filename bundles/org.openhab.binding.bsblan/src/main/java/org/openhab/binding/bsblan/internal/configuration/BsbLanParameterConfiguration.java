@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bsblan.internal.configuration;
 
+import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetRequest;
+
 /**
  * The {@link BsbLanParameterConfiguration} is the class used to match the
  * thing configuration.
@@ -19,5 +21,9 @@ package org.openhab.binding.bsblan.internal.configuration;
  * @author Peter Schraffl - Initial contribution
  */
 public class BsbLanParameterConfiguration {
-    public Integer parameterId;
+    public Integer id;
+
+    public Integer setId;
+
+    public BsbLanApiParameterSetRequest.Type setType;
 }

@@ -23,6 +23,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 
 import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
+import org.openhab.binding.bsblan.internal.api.BsbLanApiCaller;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,17 +46,19 @@ public abstract class BsbLanBaseThingHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateChannel(channelUID.getId());
+        } else {
+            setChannel(channelUID.getId(), command);
         }
     }
 
     @Override
     public void initialize() {
         if (getBridgeHandler() == null) {
-            logger.debug("Initializing '{}'' service is only supported within a bridge", getDescription());
+            logger.debug("Initializing '{}': thing is only supported within a bridge", getDescription());
             updateStatus(ThingStatus.OFFLINE);
             return;
         }
-        logger.debug("Initializing '{}' service", getDescription());
+        logger.debug("Initializing '{}' thing", getDescription());
         getBridgeHandler().registerThing(this);
     }
 
@@ -83,12 +87,23 @@ public abstract class BsbLanBaseThingHandler extends BaseThingHandler {
         }
     }
 
+    protected BsbLanApiCaller getApiCaller() {
+        return new BsbLanApiCaller(getBridgeHandler().getBridgeConfiguration());
+    }
+
     /**
      * Update the channel from the last data
      *
      * @param channelId the id identifying the channel to be updated
      */
     protected abstract void updateChannel(String channelId);
+
+    /**
+     * Set new value for channe
+     *
+     * @param channelId the id identifying the channel to be updated
+     */
+    protected abstract void setChannel(String channelId, Command command);
 
     /**
      * return an internal description for logging

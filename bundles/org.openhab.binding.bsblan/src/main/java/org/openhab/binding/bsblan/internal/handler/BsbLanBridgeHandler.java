@@ -94,6 +94,10 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
         return cachedParameterQueryResponse;
     }
 
+    public BsbLanBridgeConfiguration getBridgeConfiguration() {
+        return bridgeConfig;
+    }
+
     /**
      * Start the job refreshing the data
      */

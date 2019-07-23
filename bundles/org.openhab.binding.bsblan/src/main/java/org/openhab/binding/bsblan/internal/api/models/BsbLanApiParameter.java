@@ -20,55 +20,91 @@ import com.google.gson.annotations.SerializedName;
  * @author Peter Schraffl - Initial contribution
  */
 public class BsbLanApiParameter {
+
+    public enum DataType {
+        @SerializedName("0")
+        DT_VALS(0),    // plain value
+        @SerializedName("1")
+        DT_ENUM(1),    // value (8/16 Bit) followed by space followed by text
+        @SerializedName("2")
+        DT_BITS(2),    // bit value followed by bitmask followed by text
+        @SerializedName("3")
+        DT_WDAY(3),    // weekday
+        @SerializedName("4")
+        DT_HHMM(4),    // hour:minute
+        @SerializedName("5")
+        DT_DTTM(5),    // date and time
+        @SerializedName("6")
+        DT_DDMM(6),    // day and month
+        @SerializedName("7")
+        DT_STRN(7),    // string
+        @SerializedName("8")
+        DT_DWHM(8);    // PPS time (day of week, hour:minute)
+    
+        private final int value;
+        DataType(int value)
+        {
+            this.value = value;
+        }
+    
+        public int getValue()
+        {
+            return value;
+        }
+    }
+
     @SerializedName("name")
     private String name;
+
     @SerializedName("value")
     private String value;
+
     @SerializedName("unit")
     private String unit;
+
     @SerializedName("desc")
     private String description;
+
     @SerializedName("dataType")
-    private BsbLanApiParameterDataType dataType;
+    private DataType dataType;
 
     public String getName() {
         return name;
     }
 
-    public String setName(String value) {
-        return name = value;
+    public void setName(String value) {
+        name = value;
     }
 
     public String getValue() {
         return value;
     }
 
-    public String setValue(String value) {
-        return this.value = value;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public String getUnit() {
         return unit;
     }
 
-    public String setUnit(String value) {
-        // todo: unescape HTML
-        return unit = value;
+    public void setUnit(String value) {
+        unit = value;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public String setDescription(String value) {
-        return description = value;
+    public void setDescription(String value) {
+        description = value;
     }
 
-    public BsbLanApiParameterDataType getDataType() {
+    public DataType getDataType() {
         return dataType;
     }
 
-    public BsbLanApiParameterDataType setDataType(BsbLanApiParameterDataType value) {
-        return dataType = value;
+    public void setDataType(DataType value) {
+        dataType = value;
     }
 }

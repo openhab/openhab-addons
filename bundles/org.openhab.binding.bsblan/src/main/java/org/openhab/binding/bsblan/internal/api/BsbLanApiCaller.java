@@ -12,19 +12,27 @@
  */
 package org.openhab.binding.bsblan.internal.api;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.IOException;
 import java.util.Set;
+import java.util.HashSet;
+import java.nio.charset.Charset;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterQueryResponse;
+import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetRequest;
+import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetResponse;
 import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.LongSerializationPolicy;
 
 import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
 
@@ -37,11 +45,15 @@ public class BsbLanApiCaller {
 
     private final Logger logger = LoggerFactory.getLogger(BsbLanApiCaller.class);
     private final BsbLanBridgeConfiguration bridgeConfig;
-    private final Gson gson;
 
     public BsbLanApiCaller(BsbLanBridgeConfiguration config) {
         bridgeConfig = config;
-        gson = new Gson();
+    }
+
+    public BsbLanApiParameterQueryResponse queryParameter(Integer parameterId) {
+        Set<Integer> parameters = new HashSet<Integer>();
+        parameters.add(parameterId);
+        return queryParameters(parameters);
     }
 
     public BsbLanApiParameterQueryResponse queryParameters(Set<Integer> parameterIds) {
@@ -50,8 +62,34 @@ public class BsbLanApiCaller {
         }
         String apiPath = String.format("/JQ=%s", StringUtils.join(parameterIds, ","));
 
-        //Type type = new TypeToken<BsbLanApiParameterQueryResponse>(){}.getType();
-        return makeRestCall(BsbLanApiParameterQueryResponse.class, "GET", apiPath);
+        return makeRestCall(BsbLanApiParameterQueryResponse.class, "GET", apiPath, "");
+    }
+
+    public BsbLanApiParameterSetResponse setParameter(Integer parameterId, String value, BsbLanApiParameterSetRequest.Type type) {
+        BsbLanApiParameterSetRequest request = new BsbLanApiParameterSetRequest();
+        request.setParameter(parameterId);
+        request.setValue(value);
+        request.setType(type);
+
+        Gson gson = new GsonBuilder()
+                .setLongSerializationPolicy(LongSerializationPolicy.STRING)
+                .create();
+
+        String content = gson.toJson(request);
+        return makeRestCall(BsbLanApiParameterSetResponse.class, "POST", "/JS", content);
+    }
+
+    private String createApiBaseUrl() {
+        StringBuilder url = new StringBuilder();
+        url.append("http://");
+        if (StringUtils.trimToNull(bridgeConfig.username) != null && StringUtils.trimToNull(bridgeConfig.password) != null) {
+            url.append(bridgeConfig.username + ":" + bridgeConfig.password + "@");
+        }
+        url.append(bridgeConfig.hostname);
+        if (StringUtils.trimToNull(bridgeConfig.passkey) != null) {
+            url.append("/" + bridgeConfig.passkey);
+        }
+        return url.toString();
     }
 
     /**
@@ -61,20 +99,19 @@ public class BsbLanApiCaller {
      * @return the object representation of the json response
      */
     @Nullable
-    private <T> T makeRestCall(Class<T> responseType, String httpMethod, String apiPath) {
+    private <T> T makeRestCall(Class<T> responseType, String httpMethod, String apiPath, String content) {
         try {
-            // build url
-            StringBuilder url = new StringBuilder();
-            url.append("http://");
-            if (StringUtils.trimToNull(bridgeConfig.username) != null && StringUtils.trimToNull(bridgeConfig.password) != null) {
-                url.append(bridgeConfig.username + ":" + bridgeConfig.password + "@");
+            String url = createApiBaseUrl() + apiPath;
+            logger.debug("api request url = '{}''", url);
+
+            InputStream contentStream = null;
+            String contentType = null;
+            if (StringUtils.trimToNull(content) != null) {
+                contentStream = new ByteArrayInputStream(content.getBytes(Charset.forName("UTF-8")));
+                contentType = "application/json";
             }
-            url.append(bridgeConfig.hostname);
-            url.append(apiPath);
 
-            logger.debug("URL = {}", url.toString());
-            String response = HttpUtil.executeUrl(httpMethod, url.toString(), API_TIMEOUT);
-
+            String response = HttpUtil.executeUrl(httpMethod, url, contentStream, contentType, API_TIMEOUT);
             if (response == null) {
                 logger.debug("no response returned");
                 return null;
@@ -82,6 +119,7 @@ public class BsbLanApiCaller {
 
             logger.debug("apiResponse = {}", response);
 
+            Gson gson = new Gson();
             T result = gson.fromJson(response, responseType);
             if (result == null) {
                 logger.debug("result null after json parsing (response = {})", response);

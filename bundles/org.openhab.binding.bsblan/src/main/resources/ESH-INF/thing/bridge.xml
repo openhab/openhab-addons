@@ -12,6 +12,10 @@
 				<label>Hostname</label>
 				<description>The hostname or IP address of the BSB-LAN device.</description>
 			</parameter>
+			<parameter name="passkey" type="text" required="false" groupName="network">
+				<label>Passkey</label>
+				<description>The passkey required to access the BSB-LAN device.</description>
+			</parameter>
 			<parameter name="username" type="text" required="false" groupName="network">
 				<label>Username</label>
 				<description>The username required to access the BSB-LAN device.</description>

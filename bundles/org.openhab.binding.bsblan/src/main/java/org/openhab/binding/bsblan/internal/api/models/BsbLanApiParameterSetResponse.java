@@ -15,12 +15,11 @@ package org.openhab.binding.bsblan.internal.api.models;
 import java.util.HashMap;
 
 /**
- * The {@link BsbLanApiParameterQueryResponse} reflects the response received
- * when querying parameters.
+ * The {@link BsbLanApiParameterSetResponse} reflects the response received
+ * when setting a parameter.
  *
  * @author Peter Schraffl - Initial contribution
  */
 @SuppressWarnings("serial")
-public class BsbLanApiParameterQueryResponse extends HashMap<Integer, BsbLanApiParameter> {
-
+public class BsbLanApiParameterSetResponse extends HashMap<Integer, BsbLanApiParameterSetStatus> {
 }

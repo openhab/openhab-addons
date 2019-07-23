@@ -20,6 +20,7 @@ package org.openhab.binding.bsblan.internal.configuration;
  */
 public class BsbLanBridgeConfiguration {
     public String hostname;
+    public String passkey;
     public String username;
     public String password;
     public Integer refreshInterval;
