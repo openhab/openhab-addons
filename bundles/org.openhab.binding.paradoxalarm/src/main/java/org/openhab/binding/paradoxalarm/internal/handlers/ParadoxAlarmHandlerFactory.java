@@ -14,18 +14,22 @@ package org.openhab.binding.paradoxalarm.internal.handlers;
 
 import static org.openhab.binding.paradoxalarm.internal.handlers.ParadoxAlarmBindingConstants.*;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.paradoxalarm.internal.discovery.ParadoxDiscoveryService;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +46,7 @@ public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(ParadoxAlarmHandlerFactory.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays
-            .asList(COMMUNICATOR_THING_TYPE_UID, PANEL_THING_TYPE_UID, PARTITION_THING_TYPE_UID, ZONE_THING_TYPE_UID));
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -55,7 +58,11 @@ public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (COMMUNICATOR_THING_TYPE_UID.equals(thingTypeUID)) {
             logger.debug("createHandler(): ThingHandler created for {}", thingTypeUID);
-            return new ParadoxIP150BridgeHandler((Bridge) thing);
+
+            ParadoxIP150BridgeHandler paradoxIP150BridgeHandler = new ParadoxIP150BridgeHandler((Bridge) thing);
+            registerDiscoveryService(paradoxIP150BridgeHandler);
+
+            return paradoxIP150BridgeHandler;
         } else if (PANEL_THING_TYPE_UID.equals(thingTypeUID)) {
             logger.debug("createHandler(): ThingHandler created for {}", thingTypeUID);
             return new ParadoxPanelHandler(thing);
@@ -69,5 +76,22 @@ public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
             logger.warn("Handler implementation not found for Thing: {}", thing.getLabel());
         }
         return null;
+    }
+
+    private void registerDiscoveryService(ParadoxIP150BridgeHandler paradoxIP150BridgeHandler) {
+        ParadoxDiscoveryService discoveryService = new ParadoxDiscoveryService(paradoxIP150BridgeHandler);
+        ServiceRegistration<?> serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
+            discoveryService, new Hashtable<>());
+        this.discoveryServiceRegs.put(paradoxIP150BridgeHandler.getThing().getUID(), serviceRegistration);
+    }
+
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof ParadoxIP150BridgeHandler) {
+            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
+            if (serviceReg != null) {
+                serviceReg.unregister();
+            }
+        }
     }
 }
