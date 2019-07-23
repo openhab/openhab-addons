@@ -21,11 +21,11 @@ The Cloud Thing type is the primary way most users will control and monitor thei
      
 ### Local Thing
 
-The Local Thing type uses an undocumented API that allows direct HTTP access to a irrigation system on the user's network.  This provides a limited subset of features compared to the Cloud Thing type limited to basic zone control.  Controlling zones through the local API will not be reported back to the cloud service and the official applications and reporting functionality will not reflect the locally controlled state. 
-    
-The Local thing can be useful when testing zones, as their is no delay when starting/stopping zones as compared to the cloud API which can take anywhere between 5-15 seconds.  
-    
-This is also useful if you wish to not use the cloud scheduling and control at all and rather use openHAB as the irrigation scheduling logic system. 
+The Local Thing type uses an undocumented API that allows direct HTTP access to a irrigation controller on the user's network.  This provides a subset of features compared to the Cloud Thing type limited to basic zone control.  Controlling zones through the local API will not be reported back to the cloud service and the Hydrawise mobile/web applications and reporting functionality will not reflect the locally controlled state. 
+
+Use Cases    
+* The Local thing can be useful when testing zones, as their is no delay when starting/stopping zones as compared to the cloud API which can take anywhere between 5-15 seconds.  
+* This is also useful if you wish to not use the cloud scheduling and control at all and rather use openHAB as the irrigation scheduling system.
 
 #### Local Thing Supported Channel Groups
 
