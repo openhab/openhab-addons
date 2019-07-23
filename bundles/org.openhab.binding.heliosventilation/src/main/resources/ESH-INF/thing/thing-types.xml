@@ -14,12 +14,16 @@
             <channel id="outgoingTemp" typeId="outgoing_temperature" />
             <channel id="extractTemp" typeId="extract_temperature" />
             <channel id="supplyTemp" typeId="supply_temperature" />
+            <channel id="setTemp" typeId="set_temperature" />
             <channel id="bypassTemp" typeId="bypass_temperature" />
             <channel id="minFanspeed" typeId="min_fanspeed" />
             <channel id="maxFanspeed" typeId="max_fanspeed" />
             <channel id="fanspeed" typeId="fanspeed" />
             <channel id="rhLimit" typeId="rh_limit" />
             <channel id="hysteresis" typeId="hysteresis" />
+            <channel id="DCFanExtract" typeId="dc_fan_extract" />
+            <channel id="DCFanSupply" typeId="dc_fan_Supply" />
+            
 		</channels>
 
         <config-description>
@@ -71,6 +75,15 @@
         <state pattern="%d %unit%" readOnly="true" />
     </channel-type>
 
+
+    <channel-type id="set_temperature" advanced="true">
+        <item-type>Number:Temperature</item-type>
+        <label>Temperature</label>
+        <description>Set temperature for the supply air. Not used in all ventilation systems.</description>
+        <category>Temperature</category>
+        <state pattern="%d %unit%" readOnly="false" />
+    </channel-type>
+
     <channel-type id="fanspeed" advanced="false">
         <item-type>Number</item-type>
         <label>Fanspeed</label>
@@ -105,6 +118,22 @@
         <label>RH limit</label>
         <description>Limit for relative humidity sensor.</description>
         <category>Humidity</category>
+        <state pattern="%f %unit%" min="0" max="100" readOnly="false" />
+    </channel-type>
+
+    <channel-type id="dc_fan_supply" advanced="true">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Supply Fan</label>
+        <description>Speed of the supply air fan (incoming air).</description>
+        <category>HVAC</category>
+        <state pattern="%f %unit%" min="0" max="100" readOnly="false" />
+    </channel-type>
+
+    <channel-type id="dc_fan_extract" advanced="true">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Extract Fan</label>
+        <description>Speed of the extract air fan (outgoing air).</description>
+        <category>HVAC</category>
         <state pattern="%f %unit%" min="0" max="100" readOnly="false" />
     </channel-type>
 

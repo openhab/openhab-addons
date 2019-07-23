@@ -34,10 +34,13 @@ public class HeliosVentilationBindingConstants {
     public static final String CHANNEL_OUTGOING_TEMP = "outgoingTemp";
     public static final String CHANNEL_EXTRACT_TEMP = "extractTemp";
     public static final String CHANNEL_SUPPLY_TEMP = "supplyTemp";
+    public static final String CHANNEL_SET_TEMP = "setTemp";
     public static final String CHANNEL_BYPASS_TEMP = "bypassTemp";
     public static final String CHANNEL_RH_LIMIT = "rhLimit";
     public static final String CHANNEL_HYSTERESIS = "hysteresis";
     public static final String CHANNEL_FANSPEED = "fanspeed";
     public static final String CHANNEL_MIN_FANSPEED = "minFanspeed";
     public static final String CHANNEL_MAX_FANSPEED = "maxFanspeed";
+    public static final String CHANNEL_DC_FAN_EXTRACT = "DCFanExtract";
+    public static final String CHANNEL_DC_FAN_SUPPLY = "DCFanSupply";
 }
