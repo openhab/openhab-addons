@@ -29,7 +29,7 @@ public abstract class Entity {
 
     public Entity(int id, String label) {
         this.id = id;
-        this.label = label;
+        this.label = label.trim();
         logger.debug("Creating entity with label: {} and ID: {}", label, id);
     }
 
