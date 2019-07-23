@@ -291,7 +291,8 @@ public class VehicleHandler extends BaseThingHandler {
             case FUEL_AMOUNT:
                 return new QuantityType<Volume>(status.fuelAmount, SmartHomeUnits.LITRE);
             case FUEL_LEVEL:
-                return new QuantityType<>(status.fuelAmountLevel, SmartHomeUnits.PERCENT);
+                return status.fuelAmountLevel != -1 ? new QuantityType<>(status.fuelAmountLevel, SmartHomeUnits.PERCENT)
+                        : UnDefType.UNDEF;
             case FUEL_CONSUMPTION:
                 return new DecimalType(status.averageFuelConsumption.floatValue() / 10);
             case ACTUAL_LOCATION:

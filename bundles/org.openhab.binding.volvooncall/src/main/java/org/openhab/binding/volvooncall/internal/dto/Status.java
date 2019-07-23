@@ -29,7 +29,7 @@ public class Status {
     public @NonNullByDefault({}) Integer distanceToEmpty;
     public @NonNullByDefault({}) OnOffType engineRunning;
     public @NonNullByDefault({}) Integer fuelAmount;
-    public @NonNullByDefault({}) Integer fuelAmountLevel;
+    public int fuelAmountLevel = -1;
     public @NonNullByDefault({}) Integer odometer;
     public @NonNullByDefault({}) String serviceWarningStatus;
     public @NonNullByDefault({}) Integer tripMeter1;
