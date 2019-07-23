@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.paradoxalarm.internal.handlers;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -25,22 +30,26 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class ParadoxAlarmBindingConstants {
 
-    private static final String BINDING_ID = "paradoxalarm";
+    public static final String BINDING_ID = "paradoxalarm";
 
-    private static final String PARADOX_COMMUNICATOR_THING_TYPE_ID = "ip150";
+    public static final String PARADOX_COMMUNICATOR_THING_TYPE_ID = "ip150";
 
-    private static final String PARADOX_PANEL_THING_TYPE_ID = "panel";
+    public static final String PARADOX_PANEL_THING_TYPE_ID = "panel";
 
-    private static final String PARTITION_THING_TYPE_ID = "partition";
+    public static final String PARTITION_THING_TYPE_ID = "partition";
 
-    private static final String ZONE_THING_TYPE_ID = "zone";
+    public static final String ZONE_THING_TYPE_ID = "zone";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID COMMUNICATOR_THING_TYPE_UID = new ThingTypeUID(BINDING_ID,
-            PARADOX_COMMUNICATOR_THING_TYPE_ID);
+        PARADOX_COMMUNICATOR_THING_TYPE_ID);
     public static final ThingTypeUID PANEL_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, PARADOX_PANEL_THING_TYPE_ID);
     public static final ThingTypeUID PARTITION_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, PARTITION_THING_TYPE_ID);
     public static final ThingTypeUID ZONE_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, ZONE_THING_TYPE_ID);
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+        Stream.of(COMMUNICATOR_THING_TYPE_UID, PANEL_THING_TYPE_UID, PARTITION_THING_TYPE_UID, ZONE_THING_TYPE_UID)
+            .collect(Collectors.toSet()));
 
     // List of all Channel UIDs
     public static final String IP150_COMMUNICATION_COMMAND_CHANNEL_UID = "communicationCommand";

@@ -64,7 +64,8 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
 
     private final Logger logger = LoggerFactory.getLogger(ParadoxIP150BridgeHandler.class);
 
-    private static IParadoxCommunicator communicator;
+    private IParadoxCommunicator communicator;
+
     private static ParadoxIP150BridgeConfiguration config;
     private @Nullable ScheduledFuture<?> refreshCacheUpdateSchedule;
 
@@ -268,6 +269,10 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler implements IDat
             String cancelingSuccessful = cancelingResult ? "successful" : "failed";
             logger.debug("Canceling schedule of {} is {}", schedule, cancelingSuccessful);
         }
+    }
+
+    public IParadoxCommunicator getCommunicator() {
+        return communicator;
     }
 
 }
