@@ -99,22 +99,30 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                         false, HeliosVentilationVariable.type.TEMPERATURE));
 
         // writable
+        variables.put((byte) 0xB2,
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_HYSTERESIS, (byte) 0xB2,
+                        true, HeliosVentilationVariable.type.HYSTERESIS));
+        variables.put((byte) 0xB1,
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_DC_FAN_EXTRACT,
+                        (byte) 0xB1, true, HeliosVentilationVariable.type.PERCENT));
+        variables.put((byte) 0xB0,
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_DC_FAN_SUPPLY,
+                        (byte) 0xB0, true, HeliosVentilationVariable.type.PERCENT));
         variables.put((byte) 0xAF,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_BYPASS_TEMP, (byte) 0xAF,
                         true, HeliosVentilationVariable.type.TEMPERATURE));
         variables.put((byte) 0xAE,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_RH_LIMIT, (byte) 0xAE,
                         true, HeliosVentilationVariable.type.BYTE_PERCENT));
-
-        variables.put((byte) 0xB2,
-                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_HYSTERESIS, (byte) 0xB2,
-                        true, HeliosVentilationVariable.type.HYSTERESIS));
         variables.put((byte) 0xA9,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_MIN_FANSPEED,
                         (byte) 0xA9, true, HeliosVentilationVariable.type.FANSPEED));
         variables.put((byte) 0xA5,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_MAX_FANSPEED,
                         (byte) 0xA5, true, HeliosVentilationVariable.type.FANSPEED));
+        variables.put((byte) 0xA4,
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_SET_TEMP, (byte) 0xA4,
+                        true, HeliosVentilationVariable.type.TEMPERATURE));
 
         variables.put((byte) 0x29,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_FANSPEED, (byte) 0x29,
@@ -122,12 +130,6 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
 
         /*
          * not yet supported
-         * variables.put((byte) 0xB1,
-         * new HeliosVentilationVariable(thing, "DC_fan_outgoing", true, HeliosVentilationVariable.type.Percent)); // in
-         *
-         * variables.put((byte) 0xB0,
-         * new HeliosVentilationVariable(thing, "DC_fan_supply", true, HeliosVentilationVariable.type.Percent)); // in %
-         *
          * variables.put((byte) 0xAA, new HeliosVentilationVariable(thing, "adjust_interval", true,
          * HeliosVentilationVariable.type.Number); // bit 0-4: adjust interval; bit 4: RH level setting: 1 = auto 0
          * = manual; bit 5: 1 = boost, 0 = fireplace; bit 6: radiator type: 1 = water 0 = electric; bit 7: cascade on
@@ -143,9 +145,6 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
          * variables.put((byte) 0xA6,
          * new HeliosVentilationVariable(thing, "maintenance_interval", true, HeliosVentilationVariable.type.Number));
          * // in months
-         *
-         * variables.put((byte) 0xA4,
-         * new HeliosVentilationVariable(thing, "set_temp", true, HeliosVentilationVariable.type.Temperature));
          */
 
         /*
