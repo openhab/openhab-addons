@@ -33,8 +33,7 @@ import com.google.gson.GsonBuilder;
 /**
  * Client for the Hydrawise API
  *
- * @author Dan Cunningham
- *
+ * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
 public class HydrawiseCloudApiClient {
@@ -54,20 +53,28 @@ public class HydrawiseCloudApiClient {
     private HttpClient httpClient;
 
     /**
-     * Initializes the API client with a HydraWise API key from a user's account
+     * Initializes the API client with a HydraWise API key from a user's account and the HTTPClient to use
      *
-     * @param apiKey
      */
     public HydrawiseCloudApiClient(String apiKey, HttpClient httpClient) {
         this.apiKey = apiKey;
         this.httpClient = httpClient;
     }
 
+    /**
+     * Initializes the API client with a HTTPClient to use
+     *
+     */
     public HydrawiseCloudApiClient(HttpClient httpClient) {
         this.apiKey = "";
         this.httpClient = httpClient;
     }
 
+    /**
+     * Set a new API key to use for requests
+     *
+     * @param apiKey
+     */
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }

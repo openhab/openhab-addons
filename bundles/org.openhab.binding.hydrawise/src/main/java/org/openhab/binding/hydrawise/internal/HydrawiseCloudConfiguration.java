@@ -29,5 +29,8 @@ public class HydrawiseCloudConfiguration {
      */
     public Integer refresh;
 
+    /**
+     * optional id of the controller to connect to
+     */
     public Integer controllerId;
 }

@@ -10,7 +10,6 @@
 		<channels>
 			<channel id="name" typeId="name" />
 			<channel id="icon" typeId="icon" />
-			<!-- <channel id="lastwater" typeId="lastwater" /> -->
 			<channel id="time" typeId="time" />
 			<channel id="type" typeId="type" />
 			<channel id="runcustom" typeId="runcustom" />

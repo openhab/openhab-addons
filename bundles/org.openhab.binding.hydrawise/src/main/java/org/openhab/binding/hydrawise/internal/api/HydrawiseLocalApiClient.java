@@ -30,6 +30,10 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/**
+ *
+ * @author Dan Cunningham - Initial contribution
+ */
 @NonNullByDefault
 public class HydrawiseLocalApiClient {
     private final Logger logger = LoggerFactory.getLogger(HydrawiseLocalApiClient.class);
@@ -37,15 +41,6 @@ public class HydrawiseLocalApiClient {
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
 
-    /**
-     * tcpdump -i any host 192.168.90.85 -s 65535 -w /tmp/out.pcap
-     * local commands
-     * /set_manual_data.php?period_id=998&action=suspend&relay_id=544997&relay=3&custom=1525417199&_=1525410369032
-     * HTTP/1.1
-     * http://192.168.90.85/get_sched_json.php?hours=720&cache=1&_=1525410369027
-     *
-     * 1525417199 looks like an epoch time
-     */
     private static final String GET_LOCAL_DATA_URL = "%s/get_sched_json.php?hours=720";
     private static final String SET_LOCAL_DATA_URL = "%s/set_manual_data.php?period_id=998";
 

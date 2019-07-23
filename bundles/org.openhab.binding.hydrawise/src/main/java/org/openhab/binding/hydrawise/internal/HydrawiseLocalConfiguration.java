@@ -19,8 +19,17 @@ package org.openhab.binding.hydrawise.internal;
  */
 public class HydrawiseLocalConfiguration {
 
+    /**
+     * Host or IP for local controller
+     */
     public String host;
+    /**
+     * User name (admin) for local controller
+     */
     public String username;
+    /**
+     * Password for local controller
+     */
     public String password;
 
     /**

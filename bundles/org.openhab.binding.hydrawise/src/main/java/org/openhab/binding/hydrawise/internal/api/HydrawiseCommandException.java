@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.hydrawise.internal.api;
 
+/**
+ * Thrown when command responses return a error message
+ *
+ * @author Dan Cunningham - Initial contribution
+ */
 @SuppressWarnings("serial")
 public class HydrawiseCommandException extends Exception {
     public HydrawiseCommandException(String message) {

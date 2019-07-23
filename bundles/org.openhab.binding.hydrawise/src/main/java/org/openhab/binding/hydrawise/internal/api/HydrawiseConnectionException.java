@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.hydrawise.internal.api;
 
+/**
+ * Thrown for connection issues to the hydrawise controller
+ *
+ * @author Dan Cunningham - Initial contribution
+ */
 @SuppressWarnings("serial")
 public class HydrawiseConnectionException extends Exception {
 

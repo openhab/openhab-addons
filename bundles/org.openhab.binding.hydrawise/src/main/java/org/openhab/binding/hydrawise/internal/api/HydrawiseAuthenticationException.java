@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.hydrawise.internal.api;
 
+/**
+ *
+ * @author Dan Cunningham - Initial contribution
+ */
 @SuppressWarnings("serial")
 public class HydrawiseAuthenticationException extends Exception {
 

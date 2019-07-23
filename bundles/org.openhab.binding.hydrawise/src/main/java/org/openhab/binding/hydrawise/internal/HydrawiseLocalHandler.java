@@ -1,6 +1,7 @@
 package org.openhab.binding.hydrawise.internal;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.hydrawise.internal.api.HydrawiseAuthenticationException;
@@ -11,6 +12,7 @@ import org.openhab.binding.hydrawise.internal.api.model.Relay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@NonNullByDefault
 public class HydrawiseLocalHandler extends HydrawiseHandler {
     private final Logger logger = LoggerFactory.getLogger(HydrawiseLocalHandler.class);
     HydrawiseLocalApiClient client;
