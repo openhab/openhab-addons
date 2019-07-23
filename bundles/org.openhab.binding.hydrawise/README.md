@@ -1,5 +1,7 @@
 # Hydrawise Binding
 
+![API Key](doc/logo.png)
+
 The Hydrawise binding allows monitoring and control of [Hunter Industries's](https://www.hunterindustries.com/) line of [Hydrawise](https://www.hydrawise.com) internet connected irrigation systems.
 
 ## Supported Things
@@ -44,7 +46,7 @@ Use Cases
 | refresh            | Integer | True     | Defaults to a 30 seconds polling rate                                              |
 | controllerId       | Integer | False    | Optional id of the controller if you have more then one registered to your account |
 
-To obtain your API key, log into your [Hydrawsie Account](https://app.hydrawise.com/config/login) and click on your account icon:
+To obtain your API key, log into your [Hydrawsie Account](https://app.hydrawise.com/config/login) and click on your account icon, then account details:
 
 ![Account](doc/settings.png)
 
