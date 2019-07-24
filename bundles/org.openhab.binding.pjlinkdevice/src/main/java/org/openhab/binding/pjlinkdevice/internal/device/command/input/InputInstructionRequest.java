@@ -25,7 +25,6 @@ public class InputInstructionRequest implements Request {
     protected InputInstructionCommand command;
 
     public InputInstructionRequest(InputInstructionCommand command) {
-        super();
         this.command = command;
     }
 

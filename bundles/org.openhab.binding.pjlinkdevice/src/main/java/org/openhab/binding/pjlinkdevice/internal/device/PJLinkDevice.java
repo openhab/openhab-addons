@@ -75,8 +75,6 @@ public class PJLinkDevice {
     private Instant socketCreatedOn;
 
     public PJLinkDevice(int tcpPort, InetAddress ipAddress, @Nullable String adminPassword, int timeout) {
-        super();
-
         this.tcpPort = tcpPort;
         this.ipAddress = ipAddress;
         this.adminPassword = adminPassword;

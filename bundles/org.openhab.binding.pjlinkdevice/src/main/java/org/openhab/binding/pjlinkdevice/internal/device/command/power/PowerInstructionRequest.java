@@ -25,7 +25,6 @@ public class PowerInstructionRequest implements Request {
     protected PowerInstructionCommand command;
 
     public PowerInstructionRequest(PowerInstructionCommand command) {
-        super();
         this.command = command;
     }
 

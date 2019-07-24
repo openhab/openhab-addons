@@ -25,7 +25,6 @@ public class MuteInstructionRequest implements Request {
     protected MuteInstructionCommand command;
 
     public MuteInstructionRequest(MuteInstructionCommand command) {
-        super();
         this.command = command;
     }
 

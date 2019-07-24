@@ -20,11 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ResponseException extends Exception {
     private static final long serialVersionUID = -3319800607314286998L;
-
-    public ResponseException() {
-        super();
-    }
-
     public ResponseException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
