@@ -33,9 +33,6 @@ public class PJLinkDeviceConfiguration {
     public int tcpPort;
 
     @Nullable
-    public String pjLinkClass;
-
-    @Nullable
     public String adminPassword;
 
     public int refresh;
