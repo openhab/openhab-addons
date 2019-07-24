@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.hydrawise.internal;
 
 import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.*;
@@ -33,6 +45,12 @@ import org.openhab.binding.hydrawise.internal.api.model.StatusScheduleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link HydrawiseCloudHandler} is responsible for handling commands, which are
+ * sent to one of the channels.
+ *
+ * @author Dan Cunningham - Initial contribution
+ */
 @NonNullByDefault
 public class HydrawiseCloudHandler extends HydrawiseHandler {
     private final Logger logger = LoggerFactory.getLogger(HydrawiseCloudHandler.class);
@@ -144,6 +162,24 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
             client.stopRelay(relay.getRelayId());
         }
 
+    }
+
+    @Override
+    protected void sendRunAllCommand()
+            throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException {
+        client.runAllRelays(controllerId);
+    }
+
+    @Override
+    protected void sendRunAllCommand(int seconds)
+            throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException {
+        client.runAllRelays(seconds, controllerId);
+    }
+
+    @Override
+    protected void sendStopAllCommand()
+            throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException {
+        client.stopAllRelays(controllerId);
     }
 
     private void updateSensors(StatusScheduleResponse status) {

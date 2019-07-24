@@ -95,9 +95,13 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
             return;
         }
 
+        // remove our cached state for this, will be safely updated on next poll
         stateMap.remove(channelUID.getAsString());
+
         if (command instanceof RefreshType) {
-            stateMap.clear();
+            // we already removed this from the cache
+            initPolling(COMMAND_REFRESH_SECONDS);
+            return;
         }
 
         String group = channelUID.getGroupId();
@@ -119,7 +123,7 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
                         return;
                     }
                     if (allCommand) {
-
+                        sendRunAllCommand(((DecimalType) command).intValue());
                     } else {
                         sendRunCommand(((DecimalType) command).intValue(), relay);
                     }
@@ -130,7 +134,11 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
                         return;
                     }
                     if (allCommand) {
-
+                        if (command == OnOffType.ON) {
+                            sendRunAllCommand();
+                        } else {
+                            sendStopAllCommand();
+                        }
                     } else {
                         if (command == OnOffType.ON) {
                             sendRunCommand(relay);
@@ -183,6 +191,15 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
     protected abstract void sendStopCommand(Relay relay)
             throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException;
 
+    protected abstract void sendRunAllCommand()
+            throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException;
+
+    protected abstract void sendRunAllCommand(int seconds)
+            throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException;
+
+    protected abstract void sendStopAllCommand()
+            throws HydrawiseCommandException, HydrawiseConnectionException, HydrawiseAuthenticationException;
+
     protected void updateZones(LocalScheduleResponse status) {
         ZonedDateTime now = ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         status.getRelays().forEach(r -> {
@@ -218,7 +235,6 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
 
             updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_RUN,
                     status.getRunning().size() > 0 ? OnOffType.ON : OnOffType.OFF);
-
         });
     }
 
@@ -299,7 +315,7 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (HydrawiseAuthenticationException e) {
             // if are creds are not valid, we need to try re authorizing again
-            logger.debug("Authorization Exception during polling", e);
+            logger.debug("Authorization exception during polling", e);
             clearPolling();
             configureInternal();
         }
