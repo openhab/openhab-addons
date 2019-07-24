@@ -86,7 +86,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     public void refresh() {
         // Do not poll if configuration is incomplete
         if (PJLinkDeviceHandler.this.getThing().getStatusInfo()
-                .getStatusDetail() != ThingStatusDetail.HANDLER_CONFIGURATION_PENDING) {
+                .getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR ) {
 
             PJLinkDeviceHandler.this.logger.debug("Polling device status...");
             if (PJLinkDeviceHandler.this.getConfiguration().refreshPower) {
