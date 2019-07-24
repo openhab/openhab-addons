@@ -34,7 +34,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Chris Carman - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.meteoblue")
 public class MeteoBlueHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
