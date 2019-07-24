@@ -148,7 +148,7 @@ public class PJLinkDevice {
                     this.authenticationRequired = false;
                     break;
                 case "PJLINK 1":
-                    logger.warn("Authentication needed");
+                    logger.debug("Authentication needed");
                     this.authenticationRequired = true;
                     if (this.adminPassword == null) {
                         this.closeSocket(socket);
@@ -166,7 +166,7 @@ public class PJLinkDevice {
                     }
                     break;
                 default:
-                    logger.warn("Cannot handle introduction response {}", header);
+                    logger.debug("Cannot handle introduction response {}", header);
                     throw new ResponseException("Invalid header: " + header);
             }
             return socket;
@@ -174,7 +174,7 @@ public class PJLinkDevice {
             throw e;
         } catch (IOException | ResponseException e) {
             // This should not happen and might be a user configuration issue, we log a warning message therefore.
-            logger.warn("Could not create a socket connection", e);
+            logger.debug("Could not create a socket connection", e);
             throw e;
         }
     }

@@ -119,7 +119,7 @@ public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryServ
             }
             return addressesToScan;
         } catch (SocketException e) {
-            logger.warn("Could not enumerate network interfaces", e);
+            logger.debug("Could not enumerate network interfaces", e);
         }
         return new HashSet<InetAddress>();
     }

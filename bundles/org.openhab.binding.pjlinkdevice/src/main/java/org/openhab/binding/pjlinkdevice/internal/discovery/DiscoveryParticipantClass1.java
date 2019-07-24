@@ -63,7 +63,7 @@ public class DiscoveryParticipantClass1 extends AbstractDiscoveryParticipant {
                 logger.info("Add address to scan: {}", addressToScan);
                 addressesToScan.add(InetAddress.getByName(addressToScan));
             } catch (UnknownHostException e) {
-                logger.warn("Unknown Host", e);
+                logger.debug("Unknown Host", e);
             }
         }
     }
@@ -81,21 +81,21 @@ public class DiscoveryParticipantClass1 extends AbstractDiscoveryParticipant {
 
                 try {
                     description = device.getFullDescription();
-                    logger.warn("got name {}", description);
+                    logger.debug("got name {}", description);
                 } catch (ResponseException e) {
-                    logger.warn("Could not find a name for PJLink device", e);
+                    logger.debug("Could not find a name for PJLink device", e);
                     // okay, no name
                 }
             } catch (AuthenticationException e) {
                 properties.put(PJLinkDeviceBindingConstants.PARAMETER_AUTHENTICATION_REQUIRED, true);
             }
-            logger.warn("Adding thing");
+            logger.debug("Adding thing");
             thingDiscovered(DiscoveryResultBuilder.create(createServiceUID(ip.getHostAddress(), tcpPort))
                     .withTTL(PJLinkDeviceBindingConstants.DISCOVERY_RESULT_TTL).withProperties(properties)
                     .withLabel(description).build());
-            logger.warn("Added thing");
+            logger.debug("Added thing");
         } catch (ResponseException | IOException e) {
-            logger.warn("No PJLinkDevice here {} {}", ip, e.getStackTrace());
+            logger.debug("No PJLinkDevice here {} {}", ip, e.getStackTrace());
             // no device here
         }
     }

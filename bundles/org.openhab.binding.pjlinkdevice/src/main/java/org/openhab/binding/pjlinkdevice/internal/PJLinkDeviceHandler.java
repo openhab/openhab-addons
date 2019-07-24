@@ -122,7 +122,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                     PowerQueryResponseValue.POWER_ON.equals(device.getPowerStatus().getResult()) ? OnOffType.ON
                                     : OnOffType.OFF);
                 } else {
-                    logger.warn("Received unknown power command" + command);
+                    logger.debug("Received unknown power command" + command);
                 }
             }
             if (channelUID.getId().equals(PJLinkDeviceBindingConstants.CHANNEL_INPUT)
