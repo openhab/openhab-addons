@@ -27,25 +27,25 @@
 				<label>Password</label>
 				<description>The password of the PJLink device.</description>
 			</parameter>
-			<parameter name="tcpPort" type="integer" required="true">
+			<parameter name="tcpPort" type="integer" min="0"  max="65535">
 				<default>4352</default>
 				<label>TCP Port</label>
 				<description>The TCP port of the PJLink device to control.</description>
 			</parameter>
-			<parameter name="refresh" type="integer" required="true" min="0">
+			<parameter name="refresh" type="integer" min="0">
 				<default>5</default>
 				<label>Refresh interval (s)</label>
 				<description>How often to poll the device state (in seconds). A value of zero will disable polling.</description>
 			</parameter>
-			<parameter name="refreshPower" type="boolean" required="true">
+			<parameter name="refreshPower" type="boolean">
 				<default>false</default>
 				<label>Enable polling for power state</label>
 			</parameter>
-			<parameter name="refreshMute" type="boolean" required="true">
+			<parameter name="refreshMute" type="boolean">
 				<default>false</default>
 				<label>Enable polling for mute state</label>
 			</parameter>
-			<parameter name="refreshInputChannel" type="boolean" required="true">
+			<parameter name="refreshInputChannel" type="boolean">
 				<default>false</default>
 				<label>Enable polling for selected input channel</label>
 			</parameter>
