@@ -55,8 +55,9 @@ public class Input {
         }
     }
 
-    public Input(String value) {
+    public Input(String value) throws ResponseException {
         this.value = value;
+        this.validate();
     }
 
     @Override

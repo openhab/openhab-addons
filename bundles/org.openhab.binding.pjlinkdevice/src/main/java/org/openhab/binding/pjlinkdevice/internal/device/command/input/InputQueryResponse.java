@@ -28,8 +28,6 @@ public class InputQueryResponse extends PrefixedResponse<Input> {
 
     @Override
     protected Input parse0(String responseWithoutPrefix) throws ResponseException {
-        Input result = new Input(responseWithoutPrefix);
-        result.validate();
-        return result;
+        return new Input(responseWithoutPrefix);
     }
 }
