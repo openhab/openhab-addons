@@ -60,7 +60,7 @@ public class DiscoveryParticipantClass1 extends AbstractDiscoveryParticipant {
         SubnetUtils utils = new SubnetUtils(i.getAddress().getHostAddress() + "/" + i.getNetworkPrefixLength());
         for (String addressToScan : utils.getInfo().getAllAddresses()) {
             try {
-                logger.info("Add address to scan: {}", addressToScan);
+                logger.debug("Add address to scan: {}", addressToScan);
                 addressesToScan.add(InetAddress.getByName(addressToScan));
             } catch (UnknownHostException e) {
                 logger.debug("Unknown Host", e);

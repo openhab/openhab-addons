@@ -144,7 +144,7 @@ public class PJLinkDevice {
             header = header.toUpperCase();
             switch (header.substring(0, "PJLINK x".length())) {
                 case "PJLINK 0":
-                    logger.info("Authentication not needed");
+                    logger.debug("Authentication not needed");
                     this.authenticationRequired = false;
                     break;
                 case "PJLINK 1":
@@ -214,10 +214,10 @@ public class PJLinkDevice {
         }
         String response = null;
         while ((response = getReader().readLine()) != null && response.isEmpty()) {
-            logger.info("Got empty string response for request '{}' from {}, waiting for another line", response,
+            logger.debug("Got empty string response for request '{}' from {}, waiting for another line", response,
                     fullCommand.replaceAll("\r", "\\\\r"), ipAddress.toString());
         }
-        logger.info("Got response '{}' for request '{}' from {}", response, fullCommand.replaceAll("\r", "\\\\r"),
+        logger.debug("Got response '{}' for request '{}' from {}", response, fullCommand.replaceAll("\r", "\\\\r"),
                 ipAddress.toString());
         if(response == null) {
             throw new ResponseException("Response to request '"+fullCommand.replaceAll("\r", "\\\\r")+"' was null");

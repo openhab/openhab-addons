@@ -70,9 +70,9 @@ public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryServ
 
                 synchronized (scannedIPcount) {
                     scannedIPcount += 1;
-                    logger.info("Scanned {} of {} IPs", scannedIPcount, addressesToScan.size());
+                    logger.debug("Scanned {} of {} IPs", scannedIPcount, addressesToScan.size());
                     if (scannedIPcount == addressesToScan.size()) {
-                        logger.info("Scan of {} IPs successful", scannedIPcount);
+                        logger.debug("Scan of {} IPs successful", scannedIPcount);
                         stopScan();
                     }
                 }
