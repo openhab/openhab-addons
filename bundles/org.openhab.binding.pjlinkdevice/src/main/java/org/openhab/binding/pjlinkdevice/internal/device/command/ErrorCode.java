@@ -36,7 +36,7 @@ public enum ErrorCode {
         this.code = code;
     }
 
-    public static @Nullable ErrorCode getValueForCode(String code) throws ResponseException {
+    public static @Nullable ErrorCode getValueForCode(String code) {
         for (ErrorCode result : ErrorCode.values()) {
             if (result.code.equals(code.toUpperCase())) {
                 return result;
@@ -46,7 +46,7 @@ public enum ErrorCode {
         return null;
     }
 
-    public String getText() throws ResponseException {
+    public String getText() {
         return this.text;
     }
 
