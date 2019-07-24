@@ -13,4 +13,11 @@
 
   <name>openHAB Add-ons :: Bundles :: PJLink Binding</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>commons-net</groupId>
+      <artifactId>commons-net</artifactId>
+      <version>3.6</version>
+    </dependency>
+  </dependencies>
 </project>
