@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.input;
 
-import java.util.Arrays;
-
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+
+import java.util.regex.Pattern;
 
 /**
  * @author Nils Schnabel - Initial contribution
@@ -101,8 +101,7 @@ public class Input {
             throw new ResponseException("Illegal input description: " + value);
         }
         this.getInputType();
-        if (!Arrays.asList(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" })
-                .contains(this.getInputNumber())) {
+        if (!Pattern.compile("[0-9A-Z]").matcher(this.getInputNumber()).matches()) {
             throw new ResponseException("Illegal channel number: " + this.value.substring(1, 2));
         }
     }
