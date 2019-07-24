@@ -10,10 +10,10 @@
 		<description>A PJLink compatible device, e.g. a digital projector</description>
 
 		<channels>
-			<channel id="powerChannel" typeId="powerChannelType" />
-			<channel id="inputChannel" typeId="inputChannelType" />
-			<channel id="audioMuteChannel" typeId="audioMuteChannelType" />
-			<channel id="videoMuteChannel" typeId="videoMuteChannelType" />
+			<channel id="power" typeId="power" />
+			<channel id="input" typeId="input" />
+			<channel id="audioMute" typeId="audioMute" />
+			<channel id="audioMute" typeId="audioMute" />
 		</channels>
 
 		<config-description>
@@ -53,26 +53,26 @@
 
 	</thing-type>
 
-	<channel-type id="powerChannelType">
+	<channel-type id="power">
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Power ON/OFF the projector</description>
 	</channel-type>
 
 
-	<channel-type id="inputChannelType">
+	<channel-type id="input">
 		<item-type>String</item-type>
 		<label>Input</label>
 		<description>Select the input signal to use</description>
 	</channel-type>
 
-	<channel-type id="audioMuteChannelType">
+	<channel-type id="audioMute">
 		<item-type>Switch</item-type>
 		<label>Audio Mute</label>
 		<description>Select the audio mute status</description>
 	</channel-type>
 
-	<channel-type id="videoMuteChannelType">
+	<channel-type id="audioMute">
 		<item-type>Switch</item-type>
 		<label>Video Mute</label>
 		<description>Select the video mute status</description>

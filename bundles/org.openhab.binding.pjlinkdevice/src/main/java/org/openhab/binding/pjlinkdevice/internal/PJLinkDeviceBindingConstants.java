@@ -32,11 +32,11 @@ public class PJLinkDeviceBindingConstants {
     public static final ThingTypeUID THING_TYPE_PJLINK = new ThingTypeUID(BINDING_ID, "pjLinkDevice");
 
     // List of all Channel ids
-    public static final String CHANNEL_POWER = "powerChannel";
-    public static final String CHANNEL_INPUT = "inputChannel";
-    public static final String CHANNEL_INPUT_DYNAMIC = "inputChannelDynamic";
-    public static final String CHANNEL_AUDIO_MUTE = "audioMuteChannel";
-    public static final String CHANNEL_VIDEO_MUTE = "videoMuteChannel";
+    public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_INPUT = "input";
+    public static final String CHANNEL_INPUT_DYNAMIC = "inputDynamic";
+    public static final String CHANNEL_AUDIO_MUTE = "audioMute";
+    public static final String CHANNEL_VIDEO_MUTE = "audioMute";
 
     public static final int DEFAULT_PORT = 4352;
     public static final int DEFAULT_SCAN_TIMEOUT = 60;
