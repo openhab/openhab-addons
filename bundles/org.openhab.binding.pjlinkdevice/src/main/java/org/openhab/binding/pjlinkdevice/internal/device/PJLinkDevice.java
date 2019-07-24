@@ -115,10 +115,10 @@ public class PJLinkDevice {
         Socket socket = this.socket;
         boolean connectionTooOld = false;
         if (this.socketCreatedOn != null) {
-            long milliseondsSinceLastConnect = Duration.between(this.socketCreatedOn, now).toMillis();
+            long millisecondsSinceLastConnect = Duration.between(this.socketCreatedOn, now).toMillis();
             // according to the PJLink specification, the device closes the connection after 30s idle (without notice),
             // so to be on the safe side we do not reuse sockets older than 20s
-            connectionTooOld = milliseondsSinceLastConnect > 20 * 1000;
+            connectionTooOld = millisecondsSinceLastConnect > 20 * 1000;
         }
 
         if (forceReconnect || connectionTooOld) {
