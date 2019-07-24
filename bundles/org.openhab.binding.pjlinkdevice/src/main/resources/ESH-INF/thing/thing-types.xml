@@ -13,7 +13,7 @@
 			<channel id="power" typeId="power" />
 			<channel id="input" typeId="input" />
 			<channel id="audioMute" typeId="audioMute" />
-			<channel id="audioMute" typeId="audioMute" />
+			<channel id="videoMute" typeId="videoMute" />
 		</channels>
 
 		<config-description>
@@ -72,7 +72,7 @@
 		<description>Select the audio mute status</description>
 	</channel-type>
 
-	<channel-type id="audioMute">
+	<channel-type id="videoMute">
 		<item-type>Switch</item-type>
 		<label>Video Mute</label>
 		<description>Select the video mute status</description>
