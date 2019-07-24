@@ -111,7 +111,8 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
         logger.trace("Received command {} on channel {}", command, channelUID.getId());
         try {
             PJLinkDevice device = this.getConfiguration().getDevice();
-            if (channelUID.getId().equals(CHANNEL_POWER)) {
+            switch(channelUID.getId()) {
+            case CHANNEL_POWER:
                 logger.trace("Received power command" + command);
                 if (command == OnOffType.ON) {
                     device.powerOn();
@@ -124,42 +125,42 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                 } else {
                     logger.debug("Received unknown power command" + command);
                 }
-            }
-            if (channelUID.getId().equals(PJLinkDeviceBindingConstants.CHANNEL_INPUT)
-                    || channelUID.getId().equals(PJLinkDeviceBindingConstants.CHANNEL_INPUT_DYNAMIC)) {
+                break;
+            case CHANNEL_INPUT:
+            case CHANNEL_INPUT_DYNAMIC:
                 if (command == RefreshType.REFRESH) {
-
                     StringType input = new StringType(device.getInputStatus().getResult().getValue());
                     updateState(PJLinkDeviceBindingConstants.CHANNEL_INPUT, input);
                     updateState(PJLinkDeviceBindingConstants.CHANNEL_INPUT_DYNAMIC, input);
-
                 } else {
                     logger.trace("Received input command" + command);
                     Input input = new Input(((StringType) command).toString());
                     device.setInput(input);
                 }
-            }
-
-            boolean isAudioMute = channelUID.getId().equals(PJLinkDeviceBindingConstants.CHANNEL_AUDIO_MUTE);
-            boolean isVideoMute = channelUID.getId().equals(PJLinkDeviceBindingConstants.CHANNEL_VIDEO_MUTE);
-            if (isVideoMute || isAudioMute) {
-                if (command == RefreshType.REFRESH) {
-                    // refresh both video and audio mute, as it's one request
-                    MuteQueryResponseValue muteStatus = device.getMuteStatus();
-                    updateState(PJLinkDeviceBindingConstants.CHANNEL_AUDIO_MUTE,
-                            muteStatus.isAudioMuted() ? OnOffType.ON : OnOffType.OFF);
-                    updateState(PJLinkDeviceBindingConstants.CHANNEL_VIDEO_MUTE,
-                            muteStatus.isVideoMuted() ? OnOffType.ON : OnOffType.OFF);
-                } else {
-                    if (isAudioMute) {
-                        logger.trace("Received audio mute command" + command);
-                        boolean muteOn = command == OnOffType.ON;
-                        device.setMute(MuteInstructionChannel.AUDIO, muteOn);
-                    }
-                    if (isVideoMute) {
-                        logger.trace("Received video mute command" + command);
-                        boolean muteOn = command == OnOffType.ON;
-                        device.setMute(MuteInstructionChannel.VIDEO, muteOn);
+                break;
+            case CHANNEL_AUDIO_MUTE:
+            case CHANNEL_VIDEO_MUTE:
+                boolean isAudioMute = channelUID.getId().equals(PJLinkDeviceBindingConstants.CHANNEL_AUDIO_MUTE);
+                boolean isVideoMute = channelUID.getId().equals(PJLinkDeviceBindingConstants.CHANNEL_VIDEO_MUTE);
+                if (isVideoMute || isAudioMute) {
+                    if (command == RefreshType.REFRESH) {
+                        // refresh both video and audio mute, as it's one request
+                        MuteQueryResponseValue muteStatus = device.getMuteStatus();
+                        updateState(PJLinkDeviceBindingConstants.CHANNEL_AUDIO_MUTE,
+                                muteStatus.isAudioMuted() ? OnOffType.ON : OnOffType.OFF);
+                        updateState(PJLinkDeviceBindingConstants.CHANNEL_VIDEO_MUTE,
+                                muteStatus.isVideoMuted() ? OnOffType.ON : OnOffType.OFF);
+                    } else {
+                        if (isAudioMute) {
+                            logger.trace("Received audio mute command" + command);
+                            boolean muteOn = command == OnOffType.ON;
+                            device.setMute(MuteInstructionChannel.AUDIO, muteOn);
+                        }
+                        if (isVideoMute) {
+                            logger.trace("Received video mute command" + command);
+                            boolean muteOn = command == OnOffType.ON;
+                            device.setMute(MuteInstructionChannel.VIDEO, muteOn);
+                        }
                     }
                 }
             }
