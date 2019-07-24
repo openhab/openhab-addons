@@ -14,9 +14,12 @@ package org.openhab.binding.pjlinkdevice.internal.device.command.mute;
 
 import org.openhab.binding.pjlinkdevice.internal.device.command.Request;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
+@NonNullByDefault
 public class MuteInstructionRequest implements Request {
 
     protected MuteInstructionCommand command;

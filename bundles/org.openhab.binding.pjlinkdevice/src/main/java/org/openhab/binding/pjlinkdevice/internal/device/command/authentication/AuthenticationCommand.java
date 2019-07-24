@@ -20,29 +20,32 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.Command;
 import org.openhab.binding.pjlinkdevice.internal.device.command.Response;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
-public class AuthenticationCommand implements Command<Response> {
+@NonNullByDefault
+public class AuthenticationCommand<ResponseType extends Response<?>> implements Command<ResponseType> {
 
     protected String challenge;
-    protected Command<?> testCommand;
+    protected Command<ResponseType> testCommand;
     private PJLinkDevice device;
 
-    public AuthenticationCommand(PJLinkDevice pjLinkDevice, String challenge, Command<?> testCommand) {
+    public AuthenticationCommand(PJLinkDevice pjLinkDevice, String challenge, Command<ResponseType> testCommand) {
         this.device = pjLinkDevice;
         this.challenge = challenge;
         this.testCommand = testCommand;
     }
 
     @Override
-    public Response execute() throws ResponseException, IOException, AuthenticationException {
+    public ResponseType execute() throws ResponseException, IOException, AuthenticationException {
         this.device.addPrefixToNextCommand(this.createRequest().getRequestString());
         return this.testCommand.execute();
     }
 
-    protected AuthenticationRequest createRequest() {
-        return new AuthenticationRequest(this);
+    protected AuthenticationRequest<ResponseType> createRequest() {
+        return new AuthenticationRequest<ResponseType>(this);
     }
 
     public PJLinkDevice getDevice() {

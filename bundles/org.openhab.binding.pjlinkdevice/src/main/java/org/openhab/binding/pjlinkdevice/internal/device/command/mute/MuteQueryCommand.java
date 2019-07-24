@@ -16,9 +16,12 @@ import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AbstractCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
+@NonNullByDefault
 public class MuteQueryCommand extends AbstractCommand<MuteQueryRequest, MuteQueryResponse> {
 
     public MuteQueryCommand(PJLinkDevice pjLinkDevice) {
@@ -32,8 +35,6 @@ public class MuteQueryCommand extends AbstractCommand<MuteQueryRequest, MuteQuer
 
     @Override
     public MuteQueryResponse parseResponse(String response) throws ResponseException {
-        MuteQueryResponse result = new MuteQueryResponse();
-        result.parse(response);
-        return result;
+        return new MuteQueryResponse(response);
     }
 }

@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
-public interface Response {
-    public void parse(String response) throws ResponseException;
+@NonNullByDefault
+public interface Response<ResponseType> {
+    public ResponseType parse(String response) throws ResponseException;
 }

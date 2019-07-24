@@ -14,9 +14,12 @@ package org.openhab.binding.pjlinkdevice.internal.device.command.input;
 
 import org.openhab.binding.pjlinkdevice.internal.device.command.Request;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
+@NonNullByDefault
 public class InputInstructionRequest implements Request {
 
     protected InputInstructionCommand command;

@@ -15,24 +15,20 @@ package org.openhab.binding.pjlinkdevice.internal.device.command.identification;
 import org.openhab.binding.pjlinkdevice.internal.device.command.PrefixedResponse;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
-public class IdentificationResponse extends PrefixedResponse {
-
-    private String result = null;
-
-    public IdentificationResponse(IdentificationCommand command) {
-        super(command.identificationProperty.getPJLinkCommandPrefix() + "=");
-    }
-
-    public String getResult() {
-        return result;
+@NonNullByDefault
+public class IdentificationResponse extends PrefixedResponse<String> {
+    public IdentificationResponse(IdentificationCommand command, String response) throws ResponseException {
+        super(command.identificationProperty.getPJLinkCommandPrefix() + "=", response);
     }
 
     @Override
-    protected void parse0(String responseWithoutPrefix) throws ResponseException {
-        this.result = responseWithoutPrefix;
+    protected String parse0(String responseWithoutPrefix) throws ResponseException {
+        return responseWithoutPrefix;
     }
 
 }

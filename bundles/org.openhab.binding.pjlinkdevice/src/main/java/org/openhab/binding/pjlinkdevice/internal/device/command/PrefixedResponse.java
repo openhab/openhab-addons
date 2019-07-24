@@ -15,24 +15,35 @@ package org.openhab.binding.pjlinkdevice.internal.device.command;
 import java.text.MessageFormat;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
-public abstract class PrefixedResponse implements Response {
+@NonNullByDefault
+public abstract class PrefixedResponse<ResponseType> implements Response<ResponseType> {
     protected String prefix;
+    @Nullable
     protected Set<ErrorCode> specifiedErrors;
+    ResponseType result;
 
-    public PrefixedResponse(String prefix) {
-        this(prefix, null);
+    public PrefixedResponse(String prefix, String response) throws ResponseException {
+      this(prefix, null, response);
     }
 
-    public PrefixedResponse(String prefix, Set<ErrorCode> specifiedErrors) {
+    public PrefixedResponse(String prefix, @Nullable Set<ErrorCode> specifiedErrors, String response) throws ResponseException {
         this.prefix = prefix;
         this.specifiedErrors = specifiedErrors;
+        this.result = this.parse(response);
+    }
+
+    public ResponseType getResult() {
+        return this.result;
     }
 
     @Override
-    public void parse(String response) throws ResponseException {
+    public ResponseType parse(String response) throws ResponseException {
         String fullPrefix = "%1" + this.prefix;
         if (!response.toUpperCase().startsWith(fullPrefix)) {
             throw new ResponseException(
@@ -40,8 +51,8 @@ public abstract class PrefixedResponse implements Response {
         }
         String result = response.substring(fullPrefix.length());
         ErrorCode.checkForErrorStatus(result, this.specifiedErrors);
-        parse0(result);
+        return parse0(result);
     }
 
-    protected abstract void parse0(String responseWithoutPrefix) throws ResponseException;
+    protected abstract ResponseType parse0(String responseWithoutPrefix) throws ResponseException;
 }

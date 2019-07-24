@@ -16,9 +16,12 @@ import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AbstractCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
+@NonNullByDefault
 public class PowerInstructionCommand extends AbstractCommand<PowerInstructionRequest, PowerInstructionResponse> {
 
     public enum PowerInstructionState {
@@ -50,8 +53,6 @@ public class PowerInstructionCommand extends AbstractCommand<PowerInstructionReq
 
     @Override
     public PowerInstructionResponse parseResponse(String response) throws ResponseException {
-        PowerInstructionResponse result = new PowerInstructionResponse();
-        result.parse(response);
-        return result;
+        return new PowerInstructionResponse(response);
     }
 }

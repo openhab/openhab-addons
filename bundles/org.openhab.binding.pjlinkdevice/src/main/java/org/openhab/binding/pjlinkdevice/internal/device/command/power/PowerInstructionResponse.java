@@ -16,24 +16,20 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.AcknowledgeRespo
 import org.openhab.binding.pjlinkdevice.internal.device.command.PrefixedResponse;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
-public class PowerInstructionResponse extends PrefixedResponse {
-
-    private AcknowledgeResponseValue result;
-
-    public PowerInstructionResponse() {
-        super("POWR=");
+@NonNullByDefault
+public class PowerInstructionResponse extends PrefixedResponse<AcknowledgeResponseValue> {
+    public PowerInstructionResponse(String response) throws ResponseException {
+        super("POWR=", response);
     }
 
     @Override
-    protected void parse0(String responseWithoutPrefix) throws ResponseException {
-        result = AcknowledgeResponseValue.getValueForCode(responseWithoutPrefix);
-    }
-
-    public AcknowledgeResponseValue getResult() {
-        return result;
+    protected AcknowledgeResponseValue parse0(String responseWithoutPrefix) throws ResponseException {
+        return AcknowledgeResponseValue.getValueForCode(responseWithoutPrefix);
     }
 
 }

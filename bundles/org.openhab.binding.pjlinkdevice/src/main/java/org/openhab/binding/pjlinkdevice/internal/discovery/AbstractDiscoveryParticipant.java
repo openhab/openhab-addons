@@ -31,17 +31,30 @@ import org.openhab.binding.pjlinkdevice.internal.PJLinkDeviceBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryService {
     protected final Logger logger = LoggerFactory.getLogger(DiscoveryParticipantClass1.class);
-    private Integer scannedIPcount;
-    private ExecutorService executorService;
+    private Integer scannedIPcount = 0;
+    @Nullable
+    private ExecutorService executorService = null;
 
     public AbstractDiscoveryParticipant(Set<@NonNull ThingTypeUID> supportedThingTypes, int timeout,
             boolean backgroundDiscoveryEnabledByDefault) throws IllegalArgumentException {
         super(supportedThingTypes, timeout, backgroundDiscoveryEnabledByDefault);
+    }
+
+    protected ExecutorService getExecutorService() {
+        ExecutorService executorService = this.executorService;
+        if(executorService == null) {
+          this.executorService = executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+        }
+        return executorService;
     }
 
     @Override
@@ -49,9 +62,8 @@ public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryServ
         logger.trace("PJLinkProjectorDiscoveryParticipant startScan");
         Set<InetAddress> addressesToScan = generateAddressesToScan();
         scannedIPcount = 0;
-        executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
         for (InetAddress ip : addressesToScan) {
-            executorService.execute(() -> {
+            getExecutorService().execute(() -> {
                 Thread.currentThread().setName("Discovery thread " + ip);
                 checkAddress(ip, PJLinkDeviceBindingConstants.DEFAULT_PORT,
                         PJLinkDeviceBindingConstants.DEFAULT_SCAN_TIMEOUT);
@@ -71,6 +83,7 @@ public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryServ
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
+        ExecutorService executorService = this.executorService;
         if (executorService == null) {
             return;
         }
@@ -81,7 +94,6 @@ public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryServ
             Thread.currentThread().interrupt(); // Reset interrupt flag
         }
         executorService.shutdown();
-        executorService = null;
     }
 
     public static ThingUID createServiceUID(String ip, int tcpPort) {

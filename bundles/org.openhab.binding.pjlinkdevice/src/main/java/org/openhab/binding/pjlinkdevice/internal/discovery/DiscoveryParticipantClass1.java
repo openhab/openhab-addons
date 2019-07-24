@@ -30,12 +30,15 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.AuthenticationEx
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 import org.osgi.service.component.annotations.Component;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  *
  */
 
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "org.openhab.binding.pjlinkdevice.internal.discovery.DiscoveryParticipantClass1")
+@NonNullByDefault
 public class DiscoveryParticipantClass1 extends AbstractDiscoveryParticipant {
     public DiscoveryParticipantClass1() throws IllegalArgumentException {
         super(Collections.singleton(PJLinkDeviceBindingConstants.THING_TYPE_PJLINK), 60, true);

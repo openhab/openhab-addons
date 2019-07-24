@@ -17,15 +17,19 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.openhab.binding.pjlinkdevice.internal.device.command.Request;
+import org.openhab.binding.pjlinkdevice.internal.device.command.Response;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * @author Nils Schnabel - Initial contribution
  */
-public class AuthenticationRequest implements Request {
+@NonNullByDefault
+public class AuthenticationRequest<ResponseType extends Response<?>> implements Request {
 
-    protected AuthenticationCommand command;
+    protected AuthenticationCommand<ResponseType> command;
 
-    public AuthenticationRequest(AuthenticationCommand command) {
+    public AuthenticationRequest(AuthenticationCommand<ResponseType> command) {
         this.command = command;
     }
 

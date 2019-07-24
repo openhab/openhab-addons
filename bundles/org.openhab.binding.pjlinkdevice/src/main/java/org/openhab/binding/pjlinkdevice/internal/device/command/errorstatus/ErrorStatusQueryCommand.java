@@ -16,9 +16,12 @@ import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AbstractCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
+@NonNullByDefault
 public class ErrorStatusQueryCommand extends AbstractCommand<ErrorStatusQueryRequest, ErrorStatusQueryResponse> {
 
     public ErrorStatusQueryCommand(PJLinkDevice pjLinkDevice) {
@@ -32,8 +35,6 @@ public class ErrorStatusQueryCommand extends AbstractCommand<ErrorStatusQueryReq
 
     @Override
     public ErrorStatusQueryResponse parseResponse(String response) throws ResponseException {
-        ErrorStatusQueryResponse result = new ErrorStatusQueryResponse();
-        result.parse(response);
-        return result;
+        return new ErrorStatusQueryResponse(response);
     }
 }

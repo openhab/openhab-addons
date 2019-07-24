@@ -15,24 +15,21 @@ package org.openhab.binding.pjlinkdevice.internal.device.command.input;
 import org.openhab.binding.pjlinkdevice.internal.device.command.PrefixedResponse;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
-public class InputQueryResponse extends PrefixedResponse {
-
-    private Input result = null;
-
-    public InputQueryResponse() {
-        super("INPT=");
-    }
-
-    public Input getResult() {
-        return result;
+@NonNullByDefault
+public class InputQueryResponse extends PrefixedResponse<Input> {
+    public InputQueryResponse(String response) throws ResponseException {
+        super("INPT=", response);
     }
 
     @Override
-    protected void parse0(String responseWithoutPrefix) throws ResponseException {
-        this.result = new Input(responseWithoutPrefix);
+    protected Input parse0(String responseWithoutPrefix) throws ResponseException {
+        Input result = new Input(responseWithoutPrefix);
+        result.validate();
+        return result;
     }
-
 }

@@ -16,12 +16,15 @@ import java.io.IOException;
 
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
-public abstract class AbstractCommand<RequestType extends Request, ResponseType extends Response>
+@NonNullByDefault
+public abstract class AbstractCommand<RequestType extends Request, ResponseType extends Response<?>>
         implements Command<ResponseType> {
-    private PJLinkDevice pjLinkDevice = null;
+    private PJLinkDevice pjLinkDevice;
 
     public AbstractCommand(PJLinkDevice pjLinkDevice) {
         this.pjLinkDevice = pjLinkDevice;
@@ -39,9 +42,6 @@ public abstract class AbstractCommand<RequestType extends Request, ResponseType 
     public ResponseType execute() throws ResponseException, IOException, AuthenticationException {
         RequestType request = createRequest();
         String responseString = this.pjLinkDevice.execute(request.getRequestString() + "\r");
-        if (responseString == null) {
-            throw new ResponseException("Response is null");
-        }
         if (responseString.toUpperCase().equals("PJLINK ERRA")) {
             throw new AuthenticationException("Authentication error, wrong password provided?");
         }

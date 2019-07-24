@@ -20,30 +20,27 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ErrorCode;
 import org.openhab.binding.pjlinkdevice.internal.device.command.PrefixedResponse;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
-public class InputListQueryResponse extends PrefixedResponse {
-
-    private Set<Input> result = null;
-
-    public InputListQueryResponse() {
+@NonNullByDefault
+public class InputListQueryResponse extends PrefixedResponse<Set<Input>> {
+    public InputListQueryResponse(String response) throws ResponseException {
         super("INST=", new HashSet<ErrorCode>(
-                Arrays.asList(new ErrorCode[] { ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE })));
-    }
-
-    public Set<Input> getResult() {
-        return result;
+                Arrays.asList(new ErrorCode[] { ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE })), response);
     }
 
     @Override
-    protected void parse0(String responseWithoutPrefix) throws ResponseException {
-        this.result = new HashSet<Input>();
+    protected Set<Input> parse0(String responseWithoutPrefix) throws ResponseException {
+        Set<Input> result = new HashSet<Input>();
         int pos = 0;
         while (pos < responseWithoutPrefix.length()) {
-            this.result.add(new Input(responseWithoutPrefix.substring(pos, pos + 2)));
+            result.add(new Input(responseWithoutPrefix.substring(pos, pos + 2)));
             pos += 3;
         }
+        return result;
     }
 
 }

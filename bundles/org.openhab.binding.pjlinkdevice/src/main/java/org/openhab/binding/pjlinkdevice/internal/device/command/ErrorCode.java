@@ -15,9 +15,13 @@ package org.openhab.binding.pjlinkdevice.internal.device.command;
 import java.text.MessageFormat;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
+@NonNullByDefault
 public enum ErrorCode {
     UNDEFINED_COMMAND("Undefined command", "ERR1"),
     OUT_OF_PARAMETER("Out of parameter", "ERR2"),
@@ -32,7 +36,7 @@ public enum ErrorCode {
         this.code = code;
     }
 
-    public static ErrorCode getValueForCode(String code) throws ResponseException {
+    public static @Nullable ErrorCode getValueForCode(String code) throws ResponseException {
         for (ErrorCode result : ErrorCode.values()) {
             if (result.code.equals(code.toUpperCase())) {
                 return result;
@@ -46,7 +50,7 @@ public enum ErrorCode {
         return this.text;
     }
 
-    public static void checkForErrorStatus(String code, Set<ErrorCode> restrictCodesTo) throws ResponseException {
+    public static void checkForErrorStatus(String code, @Nullable Set<ErrorCode> restrictCodesTo) throws ResponseException {
         ErrorCode parsed = getValueForCode(code);
         if (parsed != null && (restrictCodesTo == null || restrictCodesTo.contains(parsed))) {
             throw new ResponseException(MessageFormat.format("Got error status {0} ({1})", parsed.getText(), code));

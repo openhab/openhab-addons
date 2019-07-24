@@ -15,11 +15,13 @@ package org.openhab.binding.pjlinkdevice.internal.device.command.power;
 import org.openhab.binding.pjlinkdevice.internal.device.command.PrefixedResponse;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
-public class PowerQueryResponse extends PrefixedResponse {
-
+@NonNullByDefault
+public class PowerQueryResponse extends PrefixedResponse<PowerQueryResponse.PowerQueryResponseValue> {
     public enum PowerQueryResponseValue {
         STAND_BY("Stand-by", "0"),
         POWER_ON("Power on", "1"),
@@ -50,19 +52,12 @@ public class PowerQueryResponse extends PrefixedResponse {
 
     }
 
-    private PowerQueryResponseValue result = null;
-
-    public PowerQueryResponse() {
-        super("POWR=");
-    }
-
-    public PowerQueryResponseValue getResult() {
-        return result;
+    public PowerQueryResponse(String response) throws ResponseException {
+        super("POWR=", response);
     }
 
     @Override
-    protected void parse0(String responseWithoutPrefix) throws ResponseException {
-        this.result = PowerQueryResponseValue.parseString(responseWithoutPrefix);
+    protected PowerQueryResponseValue parse0(String responseWithoutPrefix) throws ResponseException {
+        return PowerQueryResponseValue.parseString(responseWithoutPrefix);
     }
-
 }

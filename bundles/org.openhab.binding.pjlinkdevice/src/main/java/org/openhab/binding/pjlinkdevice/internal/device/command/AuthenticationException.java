@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
+@NonNullByDefault
 public class AuthenticationException extends Exception {
     public AuthenticationException(String string) {
         super(string);
     }
-
 }

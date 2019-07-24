@@ -16,9 +16,12 @@ import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AbstractCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
+@NonNullByDefault
 public class PowerQueryCommand extends AbstractCommand<PowerQueryRequest, PowerQueryResponse> {
 
     public PowerQueryCommand(PJLinkDevice pjLinkDevice) {
@@ -32,8 +35,6 @@ public class PowerQueryCommand extends AbstractCommand<PowerQueryRequest, PowerQ
 
     @Override
     public PowerQueryResponse parseResponse(String response) throws ResponseException {
-        PowerQueryResponse result = new PowerQueryResponse();
-        result.parse(response);
-        return result;
+        return new PowerQueryResponse(response);
     }
 }

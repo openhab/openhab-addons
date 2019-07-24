@@ -12,15 +12,16 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.mute;
 
-import java.util.HashMap;
-
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AbstractCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
+@NonNullByDefault
 public class MuteInstructionCommand extends AbstractCommand<MuteInstructionRequest, MuteInstructionResponse> {
 
     public enum MuteInstructionState {
@@ -71,8 +72,6 @@ public class MuteInstructionCommand extends AbstractCommand<MuteInstructionReque
 
     @Override
     public MuteInstructionResponse parseResponse(String response) throws ResponseException {
-        MuteInstructionResponse result = new MuteInstructionResponse();
-        result.parse(response);
-        return result;
+        return new MuteInstructionResponse(response);
     }
 }

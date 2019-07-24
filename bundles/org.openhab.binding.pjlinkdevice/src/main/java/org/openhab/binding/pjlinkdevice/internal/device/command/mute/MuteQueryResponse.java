@@ -19,10 +19,13 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ErrorCode;
 import org.openhab.binding.pjlinkdevice.internal.device.command.PrefixedResponse;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
-public class MuteQueryResponse extends PrefixedResponse {
+@NonNullByDefault
+public class MuteQueryResponse extends PrefixedResponse<MuteQueryResponse.MuteQueryResponseValue> {
 
     public enum MuteQueryResponseValue {
         OFF("Mute off", "30", false, false),
@@ -65,20 +68,13 @@ public class MuteQueryResponse extends PrefixedResponse {
         }
     }
 
-    private MuteQueryResponseValue result = null;
-
-    public MuteQueryResponse() {
+    public MuteQueryResponse(String response) throws ResponseException {
         super("AVMT=", new HashSet<ErrorCode>(
-                Arrays.asList(new ErrorCode[] { ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE })));
-    }
-
-    public MuteQueryResponseValue getResult() {
-        return result;
+                Arrays.asList(new ErrorCode[] { ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE })), response);
     }
 
     @Override
-    protected void parse0(String responseWithoutPrefix) throws ResponseException {
-        this.result = MuteQueryResponseValue.parseString(responseWithoutPrefix);
+    protected MuteQueryResponseValue parse0(String responseWithoutPrefix) throws ResponseException {
+        return MuteQueryResponseValue.parseString(responseWithoutPrefix);
     }
-
 }

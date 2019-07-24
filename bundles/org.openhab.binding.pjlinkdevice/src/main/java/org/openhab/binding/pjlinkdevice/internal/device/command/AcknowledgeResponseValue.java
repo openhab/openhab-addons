@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
+@NonNullByDefault
 public enum AcknowledgeResponseValue {
     OK("Success", "OK");
 

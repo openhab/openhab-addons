@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
+@NonNullByDefault
 public class ResponseException extends Exception {
     private static final long serialVersionUID = -3319800607314286998L;
 

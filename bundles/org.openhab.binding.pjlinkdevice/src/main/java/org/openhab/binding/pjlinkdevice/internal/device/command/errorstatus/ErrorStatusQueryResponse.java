@@ -21,10 +21,13 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ErrorCode;
 import org.openhab.binding.pjlinkdevice.internal.device.command.PrefixedResponse;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
-public class ErrorStatusQueryResponse extends PrefixedResponse {
+@NonNullByDefault
+public class ErrorStatusQueryResponse extends PrefixedResponse<Map<ErrorStatusQueryResponse.ErrorStatusDevicePart, ErrorStatusQueryResponse.ErrorStatusQueryResponseState>> {
 
     public enum ErrorStatusQueryResponseState {
         OK_UNKOWN("OK/no failure detection", "0"),
@@ -91,25 +94,19 @@ public class ErrorStatusQueryResponse extends PrefixedResponse {
         }
     }
 
-    private Map<ErrorStatusDevicePart, ErrorStatusQueryResponseState> result = null;
-
-    public ErrorStatusQueryResponse() {
+    public ErrorStatusQueryResponse(String response) throws ResponseException {
         super("ERST=", new HashSet<ErrorCode>(
-                Arrays.asList(new ErrorCode[] { ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE })));
-    }
-
-    public Map<ErrorStatusDevicePart, ErrorStatusQueryResponseState> getResult() {
-        return result;
+                Arrays.asList(new ErrorCode[] { ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE })), response);
     }
 
     @Override
-    protected void parse0(String responseWithoutPrefix) throws ResponseException {
-        this.result = new HashMap<ErrorStatusDevicePart, ErrorStatusQueryResponseState>();
+    protected Map<ErrorStatusDevicePart, ErrorStatusQueryResponseState> parse0(String responseWithoutPrefix) throws ResponseException {
+        Map<ErrorStatusDevicePart, ErrorStatusQueryResponseState> result = new HashMap<ErrorStatusDevicePart, ErrorStatusQueryResponseState>();
         for (int i = 0; i < 6; i++) {
-            this.result.put(ErrorStatusDevicePart.getDevicePartByResponsePosition(i),
+            result.put(ErrorStatusDevicePart.getDevicePartByResponsePosition(i),
                     ErrorStatusQueryResponseState.parseString(responseWithoutPrefix.substring(i, i + 1)));
         }
-
+        return result;
     }
 
 }

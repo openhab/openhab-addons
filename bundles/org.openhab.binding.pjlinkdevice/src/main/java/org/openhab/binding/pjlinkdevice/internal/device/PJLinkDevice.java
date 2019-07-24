@@ -50,23 +50,31 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.power.PowerQuery
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
+@NonNullByDefault
 public class PJLinkDevice {
     private static final int TIMEOUT = 30000;
     protected int tcpPort;
     protected InetAddress ipAddress;
+    @Nullable
     protected String adminPassword;
     protected boolean authenticationRequired;
+    @Nullable
     protected BufferedReader reader;
+    @Nullable
     protected Socket socket;
     protected int timeout = TIMEOUT;
     private final Logger logger = LoggerFactory.getLogger(PJLinkDevice.class);
-    private String prefixForNextCommand;
+    private String prefixForNextCommand = "";
+    @Nullable
     private Instant socketCreatedOn;
 
-    public PJLinkDevice(int tcpPort, InetAddress ipAddress, String adminPassword, int timeout) {
+    public PJLinkDevice(int tcpPort, InetAddress ipAddress, @Nullable String adminPassword, int timeout) {
         super();
 
         this.tcpPort = tcpPort;
@@ -75,7 +83,7 @@ public class PJLinkDevice {
         this.timeout = timeout;
     }
 
-    public PJLinkDevice(int tcpPort, InetAddress ipAddress, String adminPassword) {
+    public PJLinkDevice(int tcpPort, InetAddress ipAddress, @Nullable String adminPassword) {
         this(tcpPort, ipAddress, adminPassword, TIMEOUT);
     }
 
@@ -84,12 +92,27 @@ public class PJLinkDevice {
         return "PJLink " + this.ipAddress + ":" + this.tcpPort;
     }
 
-    protected void connect() throws IOException, ResponseException, AuthenticationException {
-        this.connect(false);
+    protected Socket connect() throws IOException, ResponseException, AuthenticationException {
+        return this.connect(false);
     }
 
-    protected void connect(boolean forceReconnect) throws IOException, ResponseException, AuthenticationException {
+    protected BufferedReader getReader() throws IOException, ResponseException, AuthenticationException {
+      BufferedReader reader = this.reader;
+      if(reader == null) {
+        this.reader = reader = new BufferedReader(new InputStreamReader(this.connect().getInputStream()));
+      }
+      return reader;
+    }
+
+    protected void closeSocket(Socket socket) throws IOException {
+      socket.close();
+      this.socket = null;
+      this.reader = null;
+    }
+
+    protected Socket connect(boolean forceReconnect) throws IOException, ResponseException, AuthenticationException {
         Instant now = Instant.now();
+        Socket socket = this.socket;
         boolean connectionTooOld = false;
         if (this.socketCreatedOn != null) {
             long milliseondsSinceLastConnect = Duration.between(this.socketCreatedOn, now).toMillis();
@@ -100,23 +123,22 @@ public class PJLinkDevice {
 
         if (forceReconnect || connectionTooOld) {
             if (socket != null) {
-                socket.close();
-                socket = null;
+                this.closeSocket(socket);
             }
         }
 
         this.socketCreatedOn = now;
         if (socket != null && socket.isConnected() && !socket.isClosed()) {
-            return;
+            return socket;
         }
 
         SocketAddress socketAddress = new InetSocketAddress(ipAddress, tcpPort);
 
         try {
-            this.socket = new Socket();
+            this.socket = socket = new Socket();
             socket.connect(socketAddress, timeout);
             socket.setSoTimeout(timeout);
-            this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            BufferedReader reader = this.getReader();
             String header = reader.readLine();
             if (header == null) {
                 throw new ResponseException("No PJLink header received from the device");
@@ -131,7 +153,7 @@ public class PJLinkDevice {
                     logger.warn("Authentication needed");
                     this.authenticationRequired = true;
                     if (this.adminPassword == null) {
-                        this.socket.close();
+                        this.closeSocket(socket);
                         throw new AuthenticationException("No password provided, but device requires authentication");
                     } else {
                         try {
@@ -149,6 +171,7 @@ public class PJLinkDevice {
                     logger.warn("Cannot handle introduction response {}", header);
                     throw new ResponseException("Invalid header: " + header);
             }
+            return socket;
         } catch (ConnectException | SocketTimeoutException | NoRouteToHostException e) {
             throw e;
         } catch (IOException | ResponseException e) {
@@ -159,7 +182,7 @@ public class PJLinkDevice {
     }
 
     private void authenticate(String challenge) throws ResponseException, IOException, AuthenticationException {
-        new AuthenticationCommand(this, challenge, new PowerQueryCommand(this)).execute();
+        new AuthenticationCommand<PowerQueryResponse>(this, challenge, new PowerQueryCommand(this)).execute();
     }
 
     public PowerQueryResponse getPowerStatus() throws ResponseException, IOException, AuthenticationException {
@@ -171,12 +194,10 @@ public class PJLinkDevice {
     }
 
     public synchronized String execute(String command) throws IOException, AuthenticationException, ResponseException {
-        this.connect();
-        String fullCommand = command;
-        if (this.prefixForNextCommand != null) {
-            fullCommand = this.prefixForNextCommand + fullCommand;
-            this.prefixForNextCommand = null;
-        }
+        Socket socket = this.connect();
+        String fullCommand = this.prefixForNextCommand + command;
+
+        this.prefixForNextCommand = "";
         int numberOfTries = 0;
         while (true) {
             numberOfTries++;
@@ -194,12 +215,15 @@ public class PJLinkDevice {
             }
         }
         String response = null;
-        while ((response = reader.readLine()) != null && response.isEmpty()) {
+        while ((response = getReader().readLine()) != null && response.isEmpty()) {
             logger.info("Got empty string response for request '{}' from {}, waiting for another line", response,
                     fullCommand.replaceAll("\r", "\\\\r"), ipAddress.toString());
         }
         logger.info("Got response '{}' for request '{}' from {}", response, fullCommand.replaceAll("\r", "\\\\r"),
                 ipAddress.toString());
+        if(response == null) {
+            throw new ResponseException("Response to request '"+fullCommand.replaceAll("\r", "\\\\r")+"' was null");
+        }
         return response;
     }
 
@@ -266,7 +290,7 @@ public class PJLinkDevice {
         new PowerInstructionCommand(this, PowerInstructionCommand.PowerInstructionState.OFF).execute();
     }
 
-    public String getAdminPassword() {
+    public @Nullable String getAdminPassword() {
         return this.adminPassword;
     }
 

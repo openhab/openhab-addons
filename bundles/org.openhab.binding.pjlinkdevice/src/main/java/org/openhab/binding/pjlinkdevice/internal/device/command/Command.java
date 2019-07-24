@@ -17,7 +17,7 @@ import java.io.IOException;
 /**
  * @author Nils Schnabel - Initial contribution
  */
-public interface Command<ResponseType extends Response> {
+public interface Command<ResponseType extends Response<?>> {
     public ResponseType execute() throws ResponseException, IOException, AuthenticationException;
 
 }

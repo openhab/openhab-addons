@@ -20,25 +20,21 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ErrorCode;
 import org.openhab.binding.pjlinkdevice.internal.device.command.PrefixedResponse;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
-public class InputInstructionResponse extends PrefixedResponse {
-
-    private AcknowledgeResponseValue result;
-
-    public InputInstructionResponse() {
+@NonNullByDefault
+public class InputInstructionResponse extends PrefixedResponse<AcknowledgeResponseValue> {
+    public InputInstructionResponse(String response) throws ResponseException {
         super("INPT=", new HashSet<ErrorCode>(Arrays.asList(
-                new ErrorCode[] { ErrorCode.OUT_OF_PARAMETER, ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE })));
+                new ErrorCode[] { ErrorCode.OUT_OF_PARAMETER, ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE })), response);
     }
 
     @Override
-    protected void parse0(String responseWithoutPrefix) throws ResponseException {
-        result = AcknowledgeResponseValue.getValueForCode(responseWithoutPrefix);
-    }
-
-    public AcknowledgeResponseValue getResult() {
-        return result;
+    protected AcknowledgeResponseValue parse0(String responseWithoutPrefix) throws ResponseException {
+        return AcknowledgeResponseValue.getValueForCode(responseWithoutPrefix);
     }
 
 }

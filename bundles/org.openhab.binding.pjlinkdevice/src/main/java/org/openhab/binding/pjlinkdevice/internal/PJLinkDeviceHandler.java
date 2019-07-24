@@ -89,16 +89,16 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                 .getStatusDetail() != ThingStatusDetail.HANDLER_CONFIGURATION_PENDING) {
 
             PJLinkDeviceHandler.this.logger.debug("Polling device status...");
-            if (PJLinkDeviceHandler.this.config.refreshPower) {
+            if (PJLinkDeviceHandler.this.getConfiguration().refreshPower) {
                 PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_POWER),
                         RefreshType.REFRESH);
             }
-            if (PJLinkDeviceHandler.this.config.refreshMute) {
+            if (PJLinkDeviceHandler.this.getConfiguration().refreshMute) {
                 // this updates both CHANNEL_AUDIO_MUTE and CHANNEL_VIDEO_MUTE
                 PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_AUDIO_MUTE),
                         RefreshType.REFRESH);
             }
-            if (PJLinkDeviceHandler.this.config.refreshInputChannel) {
+            if (PJLinkDeviceHandler.this.getConfiguration().refreshInputChannel) {
                 // this updates both CHANNEL_INPUT and CHANNEL_INPUT_DYNAMIC
                 PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_INPUT),
                         RefreshType.REFRESH);
@@ -110,7 +110,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Received command {} on channel {}", command, channelUID.getId());
         try {
-            PJLinkDevice device = config.getDevice();
+            PJLinkDevice device = this.getConfiguration().getDevice();
             if (channelUID.getId().equals(CHANNEL_POWER)) {
                 logger.trace("Received power command" + command);
                 if (command == OnOffType.ON) {
@@ -119,7 +119,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                     device.powerOff();
                 } else if (command == RefreshType.REFRESH) {
                     updateState(PJLinkDeviceBindingConstants.CHANNEL_POWER,
-                            device.getPowerStatus().getResult().equals(PowerQueryResponseValue.POWER_ON) ? OnOffType.ON
+                    PowerQueryResponseValue.POWER_ON.equals(device.getPowerStatus().getResult()) ? OnOffType.ON
                                     : OnOffType.OFF);
                 } else {
                     logger.warn("Received unknown power command" + command);
@@ -178,15 +178,23 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(PJLinkDeviceConfiguration.class);
         setupDevice();
         setupRefreshInterval();
     }
 
+    protected PJLinkDeviceConfiguration getConfiguration() {
+      PJLinkDeviceConfiguration config = this.config;
+      if(config == null) {
+        this.config = config = getConfigAs(PJLinkDeviceConfiguration.class);
+      }
+      return config;
+    }
+
     private void clearRefreshInterval() {
+        ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
-            refreshJob = null;
+            this.refreshJob = null;
         }
     }
 
@@ -197,7 +205,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
 
     private void setupDevice() {
         try {
-            PJLinkDevice device = config.getDevice();
+            PJLinkDevice device = getConfiguration().getDevice();
             device.checkAvailability();
 
             updateDeviceProperties(device);
@@ -213,8 +221,8 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
 
     private void setupRefreshInterval() {
         clearRefreshInterval();
-        boolean atLeastOneChannelToBeRefreshed = PJLinkDeviceHandler.this.config.refreshPower
-                || PJLinkDeviceHandler.this.config.refreshMute || PJLinkDeviceHandler.this.config.refreshInputChannel;
+        PJLinkDeviceConfiguration config = PJLinkDeviceHandler.this.getConfiguration();
+        boolean atLeastOneChannelToBeRefreshed = config.refreshPower || config.refreshMute || config.refreshInputChannel;
         if (config.refresh > 0 && atLeastOneChannelToBeRefreshed) {
             refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refresh, TimeUnit.SECONDS);
         }

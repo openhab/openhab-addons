@@ -16,9 +16,12 @@ import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AbstractCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Nils Schnabel - Initial contribution
  */
+@NonNullByDefault
 public class InputQueryCommand extends AbstractCommand<InputQueryRequest, InputQueryResponse> {
 
     public InputQueryCommand(PJLinkDevice pjLinkDevice) {
@@ -32,8 +35,7 @@ public class InputQueryCommand extends AbstractCommand<InputQueryRequest, InputQ
 
     @Override
     public InputQueryResponse parseResponse(String response) throws ResponseException {
-        InputQueryResponse result = new InputQueryResponse();
-        result.parse(response);
+        InputQueryResponse result = new InputQueryResponse(response);
         return result;
     }
 }

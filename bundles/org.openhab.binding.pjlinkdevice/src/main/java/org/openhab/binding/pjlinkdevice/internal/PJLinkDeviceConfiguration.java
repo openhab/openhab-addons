@@ -17,18 +17,25 @@ import java.net.UnknownHostException;
 
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link PJLinkDeviceConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Nils Schnabel - Initial contribution
  */
+@NonNullByDefault
 public class PJLinkDeviceConfiguration {
+    @Nullable
     public String ipAddress;
 
     public int tcpPort;
 
+    @Nullable
     public String pjLinkClass;
 
+    @Nullable
     public String adminPassword;
 
     public int refresh;
@@ -37,12 +44,14 @@ public class PJLinkDeviceConfiguration {
     public boolean refreshMute;
     public boolean refreshInputChannel;
 
+    @Nullable
     protected PJLinkDevice device;
 
     public PJLinkDevice getDevice() throws UnknownHostException {
-        if (this.device == null) {
-            this.device = new PJLinkDevice(tcpPort, InetAddress.getByName(ipAddress), adminPassword);
+        PJLinkDevice device = this.device;
+        if (device == null) {
+            this.device = device = new PJLinkDevice(tcpPort, InetAddress.getByName(ipAddress), adminPassword);
         }
-        return this.device;
+        return device;
     }
 }
