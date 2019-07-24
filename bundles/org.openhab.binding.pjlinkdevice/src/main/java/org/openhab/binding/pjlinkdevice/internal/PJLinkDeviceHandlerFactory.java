@@ -14,26 +14,19 @@ package org.openhab.binding.pjlinkdevice.internal;
 
 import static org.openhab.binding.pjlinkdevice.internal.PJLinkDeviceBindingConstants.THING_TYPE_PJLINK;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.eclipse.smarthome.core.thing.type.ChannelType;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 
 /**
  * The {@link PJLinkDeviceHandlerFactory} is responsible for creating things and thing
@@ -42,10 +35,11 @@ import org.osgi.service.component.annotations.Component;
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.pjlinkdevice", service = { ThingHandlerFactory.class,
-        ChannelTypeProvider.class }, immediate = true)
-public class PJLinkDeviceHandlerFactory extends BaseThingHandlerFactory implements ChannelTypeProvider {
+@Component(configurationPid = "binding.pjlinkdevice", service = { ThingHandlerFactory.class })
+public class PJLinkDeviceHandlerFactory extends BaseThingHandlerFactory {
 
+    @Nullable
+    private InputChannelStateDescriptionProvider stateDescriptionProvider;
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PJLINK);
 
     @Override
@@ -53,49 +47,26 @@ public class PJLinkDeviceHandlerFactory extends BaseThingHandlerFactory implemen
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    private final List<ChannelType> channelTypes = new CopyOnWriteArrayList<>();
-
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
+        InputChannelStateDescriptionProvider stateDescriptionProvider = this.stateDescriptionProvider;
+        if(stateDescriptionProvider == null) {
+          return null;
+        }
         if (THING_TYPE_PJLINK.equals(thingTypeUID)) {
-            return new PJLinkDeviceHandler(thing, this);
+            return new PJLinkDeviceHandler(thing, stateDescriptionProvider);
         }
 
         return null;
     }
 
-    @Override
-    public @Nullable Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
-        return channelTypes;
+    @Reference
+    protected void setDynamicStateDescriptionProvider(InputChannelStateDescriptionProvider provider) {
+        this.stateDescriptionProvider = provider;
     }
 
-    @Override
-    public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
-        for (ChannelType channelType : channelTypes) {
-            if (channelType.getUID().equals(channelTypeUID)) {
-                return channelType;
-            }
-        }
-        return null;
-    }
-
-    public void addChannelType(ChannelType type) {
-        channelTypes.add(type);
-    }
-
-    public void removeChannelType(ChannelType type) {
-        channelTypes.remove(type);
-    }
-
-    public void removeChannelTypesForThing(ThingUID uid) {
-        List<ChannelType> removes = new ArrayList<>();
-        for (ChannelType c : channelTypes) {
-            if (c.getUID().getAsString().startsWith(uid.getAsString())) {
-                removes.add(c);
-            }
-        }
-        channelTypes.removeAll(removes);
+    protected void unsetDynamicStateDescriptionProvider(InputChannelStateDescriptionProvider provider) {
+        this.stateDescriptionProvider = null;
     }
 }

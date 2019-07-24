@@ -34,7 +34,6 @@ public class PJLinkDeviceBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_INPUT = "input";
-    public static final String CHANNEL_INPUT_DYNAMIC = "inputDynamic";
     public static final String CHANNEL_AUDIO_MUTE = "audioMute";
     public static final String CHANNEL_VIDEO_MUTE = "videoMute";
 

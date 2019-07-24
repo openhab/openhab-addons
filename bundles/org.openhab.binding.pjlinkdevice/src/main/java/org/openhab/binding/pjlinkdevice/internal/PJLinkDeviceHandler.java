@@ -26,20 +26,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
-import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
-import org.eclipse.smarthome.core.thing.type.ChannelType;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AuthenticationException;
@@ -65,22 +58,21 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     @Nullable
     private PJLinkDeviceConfiguration config;
 
-    private PJLinkDeviceHandlerFactory factory;
+    private InputChannelStateDescriptionProvider stateDescriptionProvider;
 
     private final Logger logger = LoggerFactory.getLogger(PJLinkDeviceHandler.class);
 
     @Nullable
     private ScheduledFuture<?> refreshJob;
 
-    public PJLinkDeviceHandler(Thing thing, PJLinkDeviceHandlerFactory factory) {
+    public PJLinkDeviceHandler(Thing thing, InputChannelStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
-        this.factory = factory;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
     public void dispose() {
         clearRefreshInterval();
-        factory.removeChannelTypesForThing(getThing().getUID());
     }
 
     public void refresh() {
@@ -99,7 +91,6 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                         RefreshType.REFRESH);
             }
             if (PJLinkDeviceHandler.this.getConfiguration().refreshInputChannel) {
-                // this updates both CHANNEL_INPUT and CHANNEL_INPUT_DYNAMIC
                 PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_INPUT),
                         RefreshType.REFRESH);
             }
@@ -127,11 +118,9 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_INPUT:
-            case CHANNEL_INPUT_DYNAMIC:
                 if (command == RefreshType.REFRESH) {
                     StringType input = new StringType(device.getInputStatus().getResult().getValue());
                     updateState(PJLinkDeviceBindingConstants.CHANNEL_INPUT, input);
-                    updateState(PJLinkDeviceBindingConstants.CHANNEL_INPUT_DYNAMIC, input);
                 } else {
                     logger.trace("Received input command" + command);
                     Input input = new Input(((StringType) command).toString());
@@ -290,33 +279,13 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
 
     private void updateInputChannelStates(PJLinkDevice device)
             throws ResponseException, IOException, AuthenticationException {
-
         Set<Input> inputs = device.getAvailableInputs();
-        // add our activities as channel state options
         List<StateOption> states = new LinkedList<>();
         for (Input input : inputs) {
             states.add(new StateOption(input.getPJLinkRepresentation(), input.getText()));
         }
 
-        ChannelTypeUID channelTypeUID = new ChannelTypeUID(
-                getThing().getUID() + ":" + PJLinkDeviceBindingConstants.CHANNEL_INPUT_DYNAMIC + "Type");
-        ChannelType channelType = ChannelTypeBuilder.state(channelTypeUID, "Input", "String")
-                .withDescription("Input channel")
-                .withStateDescription(new StateDescription(null, null, null, "%s", false, states)).build();
-        factory.addChannelType(channelType);
-
-        ThingBuilder thingBuilder = editThing();
-
-        // replace input channel with dynamic input channel
-        thingBuilder
-                .withoutChannel(new ChannelUID(this.getThing().getUID(), PJLinkDeviceBindingConstants.CHANNEL_INPUT))
-                .withoutChannel(
-                        new ChannelUID(this.getThing().getUID(), PJLinkDeviceBindingConstants.CHANNEL_INPUT_DYNAMIC));
-        Channel channel = ChannelBuilder
-                .create(new ChannelUID(getThing().getUID(), PJLinkDeviceBindingConstants.CHANNEL_INPUT_DYNAMIC),
-                        "String")
-                .withDescription("Input").withType(channelTypeUID).build();
-        thingBuilder.withChannel(channel);
-        updateThing(thingBuilder.build());
+        ChannelUID channelUid = new ChannelUID(this.getThing().getUID(), PJLinkDeviceBindingConstants.CHANNEL_INPUT);
+        this.stateDescriptionProvider.setStateOptions(channelUid, states);
     }
 }

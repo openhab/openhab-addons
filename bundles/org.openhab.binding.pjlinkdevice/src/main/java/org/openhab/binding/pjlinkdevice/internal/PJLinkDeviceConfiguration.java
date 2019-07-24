@@ -42,7 +42,7 @@ public class PJLinkDeviceConfiguration {
     public boolean refreshInputChannel;
 
     @Nullable
-    protected PJLinkDevice device;
+    private PJLinkDevice device;
 
     public PJLinkDevice getDevice() throws UnknownHostException {
         PJLinkDevice device = this.device;
