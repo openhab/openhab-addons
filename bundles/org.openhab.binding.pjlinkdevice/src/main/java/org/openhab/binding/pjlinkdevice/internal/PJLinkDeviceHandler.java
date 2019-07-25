@@ -46,6 +46,9 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.power.PowerQuery
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 /**
  * The {@link PJLinkDeviceHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -57,6 +60,9 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
 
     @Nullable
     private PJLinkDeviceConfiguration config;
+
+    @Nullable
+    private PJLinkDevice device;
 
     private InputChannelStateDescriptionProvider stateDescriptionProvider;
 
@@ -97,11 +103,20 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
         }
     }
 
+    public PJLinkDevice getDevice() throws UnknownHostException {
+        PJLinkDevice device = this.device;
+        if (device == null) {
+            PJLinkDeviceConfiguration config = getConfiguration();
+            this.device = device = new PJLinkDevice(config.tcpPort, InetAddress.getByName(config.ipAddress), config.adminPassword);
+        }
+        return device;
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Received command {} on channel {}", command, channelUID.getId());
         try {
-            PJLinkDevice device = this.getConfiguration().getDevice();
+            PJLinkDevice device = this.getDevice();
             switch(channelUID.getId()) {
             case CHANNEL_POWER:
                 logger.trace("Received power command" + command);
@@ -195,7 +210,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
 
     private void setupDevice() {
         try {
-            PJLinkDevice device = getConfiguration().getDevice();
+            PJLinkDevice device = this.getDevice();
             device.checkAvailability();
 
             updateDeviceProperties(device);
