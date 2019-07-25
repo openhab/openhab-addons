@@ -50,8 +50,6 @@ public class PJLinkDeviceBindingConstants {
     // information disclosed by device
     public static final String PARAMETER_CLASS = "disclosedPjLinkClass";
     public static final String PARAMETER_NAME = "disclosedName";
-    public static final String PARAMETER_MANUFACTURER = "disclosedManufacturer";
-    public static final String PARAMETER_MODEL = "disclosedModel";
     public static final String PARAMETER_ERROR_STATUS = "disclosedErrorStatus";
     public static final String PARAMETER_LAMP_HOURS = "disclosedLampHours";
     public static final String PARAMETER_OTHER_INFORMATION = "disclosedOtherInformation";

@@ -219,62 +219,66 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     }
 
     private void updateDeviceProperties(PJLinkDevice device) throws IOException, AuthenticationException {
-        updateProperty(PJLinkDeviceBindingConstants.PARAMETER_AUTHENTICATION_REQUIRED,
+        Map<String, String> properties = editProperties();
+
+        properties.put(PJLinkDeviceBindingConstants.PARAMETER_AUTHENTICATION_REQUIRED,
                 device.getAuthenticationRequired().toString());
 
         try {
-            updateProperty(PJLinkDeviceBindingConstants.PARAMETER_NAME, device.getName());
+            properties.put(PJLinkDeviceBindingConstants.PARAMETER_NAME, device.getName());
         } catch (ResponseException e) {
             // okay, cannot retrieve model information
-            updateProperty(PJLinkDeviceBindingConstants.PARAMETER_NAME, e.toString());
+            properties.put(PJLinkDeviceBindingConstants.PARAMETER_NAME, e.toString());
         }
         try {
-            updateProperty(PJLinkDeviceBindingConstants.PARAMETER_MANUFACTURER, device.getManufacturer());
+            properties.put(Thing.PROPERTY_VENDOR, device.getManufacturer());
         } catch (ResponseException e) {
             // okay, cannot retrieve model information
-            updateProperty(PJLinkDeviceBindingConstants.PARAMETER_MANUFACTURER, e.toString());
+            properties.put(Thing.PROPERTY_VENDOR, e.toString());
         }
         try {
-            updateProperty(PJLinkDeviceBindingConstants.PARAMETER_MODEL, device.getModel());
+            properties.put(Thing.PROPERTY_MODEL_ID, device.getModel());
         } catch (ResponseException e) {
             // okay, cannot retrieve model information
-            updateProperty(PJLinkDeviceBindingConstants.PARAMETER_MODEL, e.toString());
+            properties.put(Thing.PROPERTY_MODEL_ID, e.toString());
         }
         try {
-            updateProperty(PJLinkDeviceBindingConstants.PARAMETER_COMBINED_ID, device.getFullDescription());
+            properties.put(PJLinkDeviceBindingConstants.PARAMETER_COMBINED_ID, device.getFullDescription());
         } catch (ResponseException e) {
             // okay, cannot retrieve model information
-            updateProperty(PJLinkDeviceBindingConstants.PARAMETER_COMBINED_ID, e.toString());
+            properties.put(PJLinkDeviceBindingConstants.PARAMETER_COMBINED_ID, e.toString());
         }
         try {
-            updateProperty(PJLinkDeviceBindingConstants.PARAMETER_CLASS, device.getPJLinkClass());
+            properties.put(PJLinkDeviceBindingConstants.PARAMETER_CLASS, device.getPJLinkClass());
         } catch (ResponseException e) {
             // okay, cannot retrieve class information
-            updateProperty(PJLinkDeviceBindingConstants.PARAMETER_CLASS, e.toString());
+            properties.put(PJLinkDeviceBindingConstants.PARAMETER_CLASS, e.toString());
         }
         try {
             Map<ErrorStatusDevicePart, ErrorStatusQueryResponseState> errorStatus = device.getErrorStatus();
             for (Map.Entry<ErrorStatusDevicePart, ErrorStatusQueryResponseState> entry : errorStatus.entrySet()) {
                 String key = entry.getKey().getCamelCaseText();
                 String value = entry.getValue().getText();
-                updateProperty(PJLinkDeviceBindingConstants.PARAMETER_ERROR_STATUS + key, value);
+                properties.put(PJLinkDeviceBindingConstants.PARAMETER_ERROR_STATUS + key, value);
             }
         } catch (ResponseException e) {
-            // okay, cannot retrieve class information
-            updateProperty(PJLinkDeviceBindingConstants.PARAMETER_ERROR_STATUS, e.toString());
+            // okay, cannot retrieve error status information
+            properties.put(PJLinkDeviceBindingConstants.PARAMETER_ERROR_STATUS, e.toString());
         }
         try {
-            updateProperty(PJLinkDeviceBindingConstants.PARAMETER_LAMP_HOURS, device.getLampHours());
+            properties.put(PJLinkDeviceBindingConstants.PARAMETER_LAMP_HOURS, device.getLampHours());
         } catch (ResponseException e) {
-            // okay, cannot retrieve class information
-            updateProperty(PJLinkDeviceBindingConstants.PARAMETER_LAMP_HOURS, e.toString());
+            // okay, cannot retrieve lamp hours information
+            properties.put(PJLinkDeviceBindingConstants.PARAMETER_LAMP_HOURS, e.toString());
         }
         try {
-            updateProperty(PJLinkDeviceBindingConstants.PARAMETER_OTHER_INFORMATION, device.getOtherInformation());
+            properties.put(PJLinkDeviceBindingConstants.PARAMETER_OTHER_INFORMATION, device.getOtherInformation());
         } catch (ResponseException e) {
-            // okay, cannot retrieve class information
-            updateProperty(PJLinkDeviceBindingConstants.PARAMETER_OTHER_INFORMATION, e.toString());
+            // okay, cannot retrieve other information
+            properties.put(PJLinkDeviceBindingConstants.PARAMETER_OTHER_INFORMATION, e.toString());
         }
+
+        updateProperties(properties);
     }
 
     private void updateInputChannelStates(PJLinkDevice device)
