@@ -159,7 +159,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (ResponseException e) {
-            logger.error(e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (AuthenticationException e) {
             this.handleAuthenticationException(e);
         }
