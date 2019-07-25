@@ -6,14 +6,14 @@ Aspects that can be controlled via PJLink are power on/off, input source selecti
 
 ## Supported Things
 
-Supported are devices which support the PJLink protocol (class 1). 
+The binding currently supports devices which support the PJLink protocol (class 1). 
 
 Limitations at this point:
 
 - only IPv4 connections are supported
 - only PJLink class 1 commands are supported
 
-The binding is tested with the PJLink device test tool (PJLinkTEST4CNT) and an Acer VL7680.
+The binding has been tested with the PJLink device test tool (PJLinkTEST4CNT) and an Acer VL7680.
 
 ## Discovery
 
@@ -23,25 +23,25 @@ Autodiscovery is checking all IP addressess of all class C IPv4 subnets connecte
 
 The *pjLinkDevice* thing type has the following parameters:
 
-| Parameter             | Description                                                                                                          |
-|-----------------------|----------------------------------------------------------------------------------------------------------------------|
-| ipAddress             | the IPv4 address of the device                                                                                       |
-| tcpPort               | the listening TCP port of the devices                                                                                |
-| password              | the PJLink password of the device (should be left empty for devices without authentication)                          |
-| refresh               | the polling interval (in seconds) to update the channel values from the device, can be set to 0 to disable polling   |
-| refreshPower          | enables polling of the power status                                                                                  |
-| refreshMute           | enables polling of the mute status                                                                                   |
-| refreshInputChannel   | enables polling of the selected input channel                                                                        |
+| Parameter             | Description                                                                                                                                              |
+|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ipAddress             | the IPv4 address of the device  **Mandatory**                                                                                                            |
+| tcpPort               | the listening TCP port of the devices. *Optional, the default value is 4352*                                                                             |
+| adminPassword         | the PJLink password of the device (should be left empty for devices without authentication). *Optional*                                                  |
+| refresh               | the polling interval (in seconds) to update the channel values from the device, can be set to 0 to disable polling. *Optional, the default value is 5*   |
+| refreshPower          | enables polling of the power status. *Optional, the default value is false*                                                                              |
+| refreshMute           | enables polling of the mute status. *Optional, the default value is false*                                                                               |
+| refreshInputChannel   | enables polling of the selected input channel. *Optional, the default value is false*                                                                    |
 
 
 ## Channels
 
 | Channel           | Description                               |
 |-------------------|-------------------------------------------|
-| powerChannel      | Switches the device on/off                |
-| inputChannel      | Switches the input channel of the device  |
-| audioMuteChannel  | Mutes the device audio                    |
-| videoMuteChannel  | Mutes the device video                    |
+| power             | Switches the device on/off                |
+| input             | Switches the input channel of the device  |
+| audioMute         | Mutes the device audio                    |
+| videoMute         | Mutes the device video                    |
 
 ## Full Example
 
