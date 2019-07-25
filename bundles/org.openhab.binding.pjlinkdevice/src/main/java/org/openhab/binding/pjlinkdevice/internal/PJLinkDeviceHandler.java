@@ -258,12 +258,6 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
             properties.put(Thing.PROPERTY_MODEL_ID, e.toString());
         }
         try {
-            properties.put(PJLinkDeviceBindingConstants.PARAMETER_COMBINED_ID, device.getFullDescription());
-        } catch (ResponseException e) {
-            // okay, cannot retrieve model information
-            properties.put(PJLinkDeviceBindingConstants.PARAMETER_COMBINED_ID, e.toString());
-        }
-        try {
             properties.put(PJLinkDeviceBindingConstants.PARAMETER_CLASS, device.getPJLinkClass());
         } catch (ResponseException e) {
             // okay, cannot retrieve class information

@@ -56,5 +56,4 @@ public class PJLinkDeviceBindingConstants {
 
     // calculated properties
     public static final String PARAMETER_AUTHENTICATION_REQUIRED = "authenticationRequired";
-    public static final String PARAMETER_COMBINED_ID = "disclosedIdentificationCombined";
 }
