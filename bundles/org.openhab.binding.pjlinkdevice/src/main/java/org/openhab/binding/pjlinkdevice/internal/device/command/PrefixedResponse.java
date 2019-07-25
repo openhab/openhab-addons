@@ -26,7 +26,7 @@ public abstract class PrefixedResponse<ResponseType> implements Response<Respons
     private String prefix;
     @Nullable
     private Set<ErrorCode> specifiedErrors;
-    ResponseType result;
+    private ResponseType result;
 
     public PrefixedResponse(String prefix, String response) throws ResponseException {
       this(prefix, null, response);
