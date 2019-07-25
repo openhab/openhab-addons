@@ -14,6 +14,7 @@ package org.openhab.binding.amazonechocontrol.internal.jsons;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeTags.JsonSmartHomeTag;
 
 /**
  * @author Lukas Knoeller
@@ -28,15 +29,16 @@ public class JsonSmartHomeDevices {
         public @Nullable String friendlyName;
         public @Nullable String reachability;
         public @Nullable String entityId;
-        public @Nullable String groupIdentity;
-        public @Nullable JsonSmartHomeDeviceAlias @Nullable [] alias;
+        public @Nullable JsonSmartHomeTag tags;
+        public @Nullable String @Nullable [] applianceTypes;
+        public @Nullable JsonSmartHomeDeviceAlias @Nullable [] aliases;
         public @Nullable SmartHomeDevice @Nullable [] groupDevices;
         public boolean brightness = false;
         public boolean color = false;
         public boolean colorTemperature = false;
 
         public SmartHomeDevice(String applianceId, String manufacturerName, String friendlyDescription,
-                @Nullable String friendlyName, String reachability, String entityId, JsonSmartHomeDeviceAlias[] alias,
+                @Nullable String friendlyName, String reachability, String entityId, JsonSmartHomeDeviceAlias[] aliases,
                 SmartHomeDevice[] groupDevices) {
             this.applianceId = applianceId;
             this.manufacturerName = manufacturerName;
@@ -44,7 +46,7 @@ public class JsonSmartHomeDevices {
             this.friendlyName = friendlyName;
             this.reachability = reachability;
             this.entityId = entityId;
-            this.alias = alias;
+            this.aliases = aliases;
             this.groupDevices = groupDevices;
         }
 

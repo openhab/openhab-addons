@@ -12,12 +12,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_APPLIANCE_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_BRIGHTNESS;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_COLOR;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_COLOR_TEMPERATURE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_LIGHT;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_LIGHT_GROUP;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -926,15 +921,16 @@ public class Connection {
         return new WakeWord[0];
     }
 
-    private List<String> getSmarthomeDeviceListX() throws IOException, URISyntaxException {
+    public List<Object> getSmarthomeDeviceListX() throws IOException, URISyntaxException {
         try {
             String json = makeRequestAndReturnString(alexaServer + "/api/phoenix");
             logger.debug("getSmartHomeDevices result: {}", json);
 
             JsonNetworkDetails networkDetails = parseJson(json, JsonNetworkDetails.class);
             Object jsonObject = gson.fromJson(networkDetails.networkDetail, Object.class);
-            List<String> result = new ArrayList<>();
+            List<Object> result = new ArrayList<>();
             searchSmartHomeDevicesRecursive(jsonObject, result);
+
             return result;
         } catch (Exception e) {
             logger.warn("getSmartHomeDevices fails: {}", e.getMessage());
@@ -942,25 +938,32 @@ public class Connection {
         }
     }
 
-    private void searchSmartHomeDevicesRecursive(@Nullable Object jsonNode, List<String> result) {
+    private void searchSmartHomeDevicesRecursive(@Nullable Object jsonNode, List<Object> devices) {
         if (jsonNode instanceof Map) {
             @SuppressWarnings("rawtypes")
             Map map = (Map) jsonNode;
             if (map.containsKey("entityId") && map.containsKey("friendlyName") && map.containsKey("actions")) {
                 // device node found, create type element and add it to the results
                 JsonElement element = gson.toJsonTree(jsonNode);
-                result.add(element.toString());
+                if (element.getAsJsonObject().get("applianceId").getAsString().contains("AAA")) {
+                    SmartHomeDevice shd = parseJson(element.toString(), SmartHomeDevice.class);
+                    devices.add(shd);
+                }
+            } else if (map.containsKey("applianceGroupName")) {
+                JsonElement element = gson.toJsonTree(jsonNode);
+                SmartHomeGroup shg = parseJson(element.toString(), SmartHomeGroup.class);
+                devices.add(shg);
             } else {
                 for (Object key : map.keySet()) {
                     Object value = map.get(key);
-                    searchSmartHomeDevicesRecursive(value, result);
+                    searchSmartHomeDevicesRecursive(value, devices);
                 }
             }
         }
     }
 
     public List<SmartHomeDevice> getSmarthomeDeviceList() throws IOException, URISyntaxException {
-        List<String> test = getSmarthomeDeviceListX();
+        // List<Object> test = getSmarthomeDeviceListX();
 
         JsonObject json = new JsonParser().parse(getSmarthomeDeviceListJson()).getAsJsonObject();
         JsonObject smartHomeDevices = json.get("networkDetail").getAsJsonObject().get("locationDetails")
@@ -974,16 +977,17 @@ public class Connection {
             JsonObject keyObject = smartHomeDevices.get(key).getAsJsonObject();
             SmartHomeDevice shd = parseJson(keyObject.toString(), SmartHomeDevice.class);
             if (keyObject.get("aliases").getAsJsonArray().size() > 0) {
-                shd.alias = new JsonSmartHomeDeviceAlias[1];
-                shd.alias[0] = new JsonSmartHomeDeviceAlias(
+                shd.aliases = new JsonSmartHomeDeviceAlias[1];
+                shd.aliases[0] = new JsonSmartHomeDeviceAlias(
                         keyObject.get("aliases").getAsJsonArray().get(0).getAsJsonObject().get("friendlyName")
                                 .getAsString(),
                         keyObject.get("aliases").getAsJsonArray().get(0).getAsJsonObject().get("enabled")
                                 .getAsBoolean());
             }
             if (keyObject.get("tags").getAsJsonObject().get("tagNameToValueSetMap").getAsJsonObject().size() > 0) {
-                shd.groupIdentity = keyObject.get("tags").getAsJsonObject().get("tagNameToValueSetMap")
-                        .getAsJsonObject().get("groupIdentity").getAsJsonArray().get(0).getAsString();
+                shd.tags.tagNameToValueSetMap.groupIdentity[0] = keyObject.get("tags").getAsJsonObject()
+                        .get("tagNameToValueSetMap").getAsJsonObject().get("groupIdentity").getAsJsonArray().get(0)
+                        .getAsString();
             }
             if (keyObject.get("capabilities").getAsJsonArray().size() > 0) {
                 for (JsonElement obj : keyObject.get("capabilities").getAsJsonArray()) {
@@ -1011,8 +1015,9 @@ public class Connection {
             ArrayList<SmartHomeDevice> smartDevices = new ArrayList<>();
 
             for (int i = 0; i < smartHomeDeviceArray.size(); ++i) {
-                if (smartHomeDeviceArray.get(i).groupIdentity != null && group.applianceGroupIdentifier != null) {
-                    String groupIdentity = smartHomeDeviceArray.get(i).groupIdentity;
+                if (smartHomeDeviceArray.get(i).tags.tagNameToValueSetMap.groupIdentity != null
+                        && group.applianceGroupIdentifier != null) {
+                    String groupIdentity = smartHomeDeviceArray.get(i).tags.tagNameToValueSetMap.groupIdentity[0];
                     @SuppressWarnings("null")
                     String applianceGroupIdentifier = group.applianceGroupIdentifier.value;
                     if (groupIdentity != null && groupIdentity.equals(applianceGroupIdentifier)) {

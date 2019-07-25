@@ -263,17 +263,18 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         return true;
     }
 
-    public List<SmartHomeDevice> updateSmartHomeDevices() {
+    public List<Object> updateSmartHomeDevices() {
 
         Connection currentConnection = connection;
         if (currentConnection == null) {
-            return new ArrayList<SmartHomeDevice>();
+            return new ArrayList<Object>();
         }
 
-        List<SmartHomeDevice> smartHomeDevices = null;
+        List<Object> smartHomeDevices = null;
         try {
             if (currentConnection.getIsLoggedIn()) {
-                smartHomeDevices = currentConnection.getSmarthomeDeviceList();
+                // smartHomeDevices = currentConnection.getSmarthomeDeviceList();
+                smartHomeDevices = currentConnection.getSmarthomeDeviceListX();
             }
         } catch (IOException | URISyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
@@ -283,7 +284,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             return smartHomeDevices;
         }
 
-        return new ArrayList<SmartHomeDevice>();
+        return new ArrayList<Object>();
     }
 
 }
