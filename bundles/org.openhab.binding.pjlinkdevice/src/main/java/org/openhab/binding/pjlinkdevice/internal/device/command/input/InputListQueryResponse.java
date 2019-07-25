@@ -33,7 +33,7 @@ public class InputListQueryResponse extends PrefixedResponse<Set<Input>> {
     }
 
     @Override
-    protected Set<Input> parse0(String responseWithoutPrefix) throws ResponseException {
+    protected Set<Input> parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
         Set<Input> result = new HashSet<Input>();
         int pos = 0;
         while (pos < responseWithoutPrefix.length()) {

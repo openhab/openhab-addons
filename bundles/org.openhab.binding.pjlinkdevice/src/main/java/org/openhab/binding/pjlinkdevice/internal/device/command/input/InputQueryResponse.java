@@ -27,7 +27,7 @@ public class InputQueryResponse extends PrefixedResponse<Input> {
     }
 
     @Override
-    protected Input parse0(String responseWithoutPrefix) throws ResponseException {
+    protected Input parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
         return new Input(responseWithoutPrefix);
     }
 }

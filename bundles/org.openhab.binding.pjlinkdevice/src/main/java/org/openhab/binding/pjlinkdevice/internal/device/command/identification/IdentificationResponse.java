@@ -27,7 +27,7 @@ public class IdentificationResponse extends PrefixedResponse<String> {
     }
 
     @Override
-    protected String parse0(String responseWithoutPrefix) throws ResponseException {
+    protected String parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
         return responseWithoutPrefix;
     }
 

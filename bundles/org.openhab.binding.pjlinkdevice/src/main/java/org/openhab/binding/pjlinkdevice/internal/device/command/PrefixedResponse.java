@@ -51,8 +51,8 @@ public abstract class PrefixedResponse<ResponseType> implements Response<Respons
         }
         String result = response.substring(fullPrefix.length());
         ErrorCode.checkForErrorStatus(result, this.specifiedErrors);
-        return parse0(result);
+        return parseResponseWithoutPrefix(result);
     }
 
-    protected abstract ResponseType parse0(String responseWithoutPrefix) throws ResponseException;
+    protected abstract ResponseType parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException;
 }

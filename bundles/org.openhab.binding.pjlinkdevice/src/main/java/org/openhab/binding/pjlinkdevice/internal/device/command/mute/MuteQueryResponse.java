@@ -74,7 +74,7 @@ public class MuteQueryResponse extends PrefixedResponse<MuteQueryResponse.MuteQu
     }
 
     @Override
-    protected MuteQueryResponseValue parse0(String responseWithoutPrefix) throws ResponseException {
+    protected MuteQueryResponseValue parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
         return MuteQueryResponseValue.parseString(responseWithoutPrefix);
     }
 }

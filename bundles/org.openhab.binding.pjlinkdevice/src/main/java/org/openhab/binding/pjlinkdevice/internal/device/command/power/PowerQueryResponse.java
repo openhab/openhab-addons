@@ -57,7 +57,7 @@ public class PowerQueryResponse extends PrefixedResponse<PowerQueryResponse.Powe
     }
 
     @Override
-    protected PowerQueryResponseValue parse0(String responseWithoutPrefix) throws ResponseException {
+    protected PowerQueryResponseValue parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
         return PowerQueryResponseValue.parseString(responseWithoutPrefix);
     }
 }

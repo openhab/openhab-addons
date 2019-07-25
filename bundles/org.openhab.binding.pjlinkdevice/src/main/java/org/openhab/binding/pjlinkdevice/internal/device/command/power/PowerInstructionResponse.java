@@ -28,7 +28,7 @@ public class PowerInstructionResponse extends PrefixedResponse<AcknowledgeRespon
     }
 
     @Override
-    protected AcknowledgeResponseValue parse0(String responseWithoutPrefix) throws ResponseException {
+    protected AcknowledgeResponseValue parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
         return AcknowledgeResponseValue.getValueForCode(responseWithoutPrefix);
     }
 
