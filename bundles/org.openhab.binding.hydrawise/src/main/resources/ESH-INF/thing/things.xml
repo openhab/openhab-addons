@@ -29,19 +29,19 @@
 				<description>Sensor 4</description>
 			</channel-group>
 
-			<channel-group id="forecastDay1" typeId="zone">
+			<channel-group id="forecast1" typeId="forecast">
 				<label>Today's Weather</label>
 				<description>Today's weather forecast</description>
 			</channel-group>
-			<channel-group id="forecastDay2" typeId="zone">
+			<channel-group id="forecast2" typeId="forecast">
 				<label>Day 2 Weather</label>
 				<description>Day 2 weather forecast</description>
 			</channel-group>
-			<channel-group id="forecastDay3" typeId="zone">
+			<channel-group id="forecast3" typeId="forecast">
 				<label>Day 3 Weather</label>
 				<description>Day 3 weather forecast</description>
 			</channel-group>
-			<channel-group id="forecastDay4" typeId="zone">
+			<channel-group id="forecast4" typeId="forecast">
 				<label>Day 4 Weather</label>
 				<description>Day 4 weather forecast</description>
 			</channel-group>

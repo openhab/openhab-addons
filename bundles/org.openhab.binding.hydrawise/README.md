@@ -114,7 +114,7 @@ A single all zone group are supported per Cloud or Local Thing
 | channel ID      | type               | Groups         | description                                 | Read Write |
 |-----------------|--------------------|----------------|---------------------------------------------|------------|
 | name            | String             | zone, sensor   | Descriptive name                            | R          |
-| icon            | String             | zone, forecast | Icon URL                                    | R          |
+| icon            | String             | zone           | Icon URL                                    | R          |
 | time            | Number             | zone           | Zone start time in seconds                  | R          |
 | type            | Number             | zone           | Zone type                                   | R          |
 | runcustom       | Number             | zone, allzones | Run zone for custom number of seconds       | W          |

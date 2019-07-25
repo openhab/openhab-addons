@@ -201,7 +201,6 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
             updateGroupState(group, CHANNEL_FORECAST_CONDITIONS, new StringType(forecast.getConditions()));
             updateGroupState(group, CHANNEL_FORECAST_DAY, new StringType(forecast.getDay()));
             updateGroupState(group, CHANNEL_FORECAST_HUMIDITY, new DecimalType(forecast.getHumidity()));
-            updateGroupState(group, CHANNEL_FORECAST_ICON, new StringType(BASE_IMAGE_URL + forecast.getIcon()));
             updateTemperature(forecast.getTempHi(), group, CHANNEL_FORECAST_TEMPERATURE_HIGH);
             updateTemperature(forecast.getTempLo(), group, CHANNEL_FORECAST_TEMPERATURE_LOW);
             updateWindspeed(forecast.getWind(), group, CHANNEL_FORECAST_WIND);
