@@ -16,6 +16,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.openhab.binding.pjlinkdevice.internal.device.command.AuthenticationException;
 import org.openhab.binding.pjlinkdevice.internal.device.command.Request;
 import org.openhab.binding.pjlinkdevice.internal.device.command.Response;
 
@@ -34,7 +35,7 @@ public class AuthenticationRequest<ResponseType extends Response<?>> implements 
     }
 
     @Override
-    public String getRequestString() {
+    public String getRequestString() throws AuthenticationException {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             String toBeDigested = (this.command.getChallenge() + this.command.getDevice().getAdminPassword());
@@ -42,7 +43,7 @@ public class AuthenticationRequest<ResponseType extends Response<?>> implements 
             BigInteger bigInt = new BigInteger(1, digest);
             return bigInt.toString(16);
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new AuthenticationException(e);
         }
     }
 

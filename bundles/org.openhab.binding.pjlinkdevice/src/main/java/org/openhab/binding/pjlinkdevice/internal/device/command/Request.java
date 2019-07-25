@@ -19,5 +19,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface Request {
-    public String getRequestString();
+    public String getRequestString() throws AuthenticationException;
 }
