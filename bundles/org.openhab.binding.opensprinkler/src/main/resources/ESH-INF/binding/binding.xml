@@ -6,6 +6,6 @@
 
 	<name>OpenSprinkler Binding</name>
 	<description>This is the binding for OpenSprinkler.</description>
-	<author>Chris Graham</author>
+	<author>Chris Graham and Florian Schmidt</author>
 
 </binding:binding>
