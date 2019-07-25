@@ -47,12 +47,12 @@ The *pjLinkDevice* thing type has the following parameters:
 
 demo.things:
 
-```java
+```
 pjLinkDevice:pjLinkDevice:MyProjector [ ipAddress="192.168.178.10" ]
 ```
 
 demo.items:
 
-```java
+```
 Switch Projector_Power "Projector Power" { channel="pjLinkDevice:pjLinkDevice:MyProjector:powerChannel" }
 ```
