@@ -59,7 +59,6 @@
 		<description>Power ON/OFF the projector</description>
 	</channel-type>
 
-
 	<channel-type id="input">
 		<item-type>String</item-type>
 		<label>Input</label>
@@ -77,6 +76,5 @@
 		<label>Video Mute</label>
 		<description>Select the video mute status</description>
 	</channel-type>
-
 
 </thing:thing-descriptions>
