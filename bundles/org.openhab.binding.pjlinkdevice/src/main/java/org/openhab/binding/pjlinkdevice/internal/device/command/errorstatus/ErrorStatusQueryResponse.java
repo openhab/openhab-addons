@@ -102,7 +102,7 @@ public class ErrorStatusQueryResponse extends PrefixedResponse<Map<ErrorStatusQu
     @Override
     protected Map<ErrorStatusDevicePart, ErrorStatusQueryResponseState> parse0(String responseWithoutPrefix) throws ResponseException {
         Map<ErrorStatusDevicePart, ErrorStatusQueryResponseState> result = new HashMap<ErrorStatusDevicePart, ErrorStatusQueryResponseState>();
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < ErrorStatusDevicePart.values().length; i++) {
             result.put(ErrorStatusDevicePart.getDevicePartByResponsePosition(i),
                     ErrorStatusQueryResponseState.parseString(responseWithoutPrefix.substring(i, i + 1)));
         }
