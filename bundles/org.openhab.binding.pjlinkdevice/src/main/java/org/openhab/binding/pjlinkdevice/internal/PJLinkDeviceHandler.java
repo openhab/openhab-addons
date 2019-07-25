@@ -190,7 +190,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
 
     private void handleAuthenticationException(AuthenticationException e) {
         updateProperty(PJLinkDeviceBindingConstants.PARAMETER_AUTHENTICATION_REQUIRED, new Boolean(true).toString());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING, e.getMessage());
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
     }
 
     private void setupDevice() {
