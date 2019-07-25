@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class IdentificationRequest implements Request {
 
-    protected IdentificationCommand command;
+    private IdentificationCommand command;
 
     public IdentificationRequest(IdentificationCommand command) {
         this.command = command;
@@ -30,7 +30,7 @@ public class IdentificationRequest implements Request {
 
     @Override
     public String getRequestString() {
-        return "%1" + this.command.identificationProperty.getPJLinkCommandPrefix() + " ?";
+        return "%1" + this.command.getIdentificationProperty().getPJLinkCommandPrefix() + " ?";
     }
 
 }

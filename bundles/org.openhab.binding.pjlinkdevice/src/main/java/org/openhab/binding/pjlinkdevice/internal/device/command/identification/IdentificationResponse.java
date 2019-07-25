@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class IdentificationResponse extends PrefixedResponse<String> {
     public IdentificationResponse(IdentificationCommand command, String response) throws ResponseException {
-        super(command.identificationProperty.getPJLinkCommandPrefix() + "=", response);
+        super(command.getIdentificationProperty().getPJLinkCommandPrefix() + "=", response);
     }
 
     @Override

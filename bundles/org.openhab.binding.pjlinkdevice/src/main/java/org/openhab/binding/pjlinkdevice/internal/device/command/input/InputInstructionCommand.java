@@ -24,13 +24,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class InputInstructionCommand extends AbstractCommand<InputInstructionRequest, InputInstructionResponse> {
 
-    protected Input target;
+    private Input target;
 
     public InputInstructionCommand(PJLinkDevice pjLinkDevice, Input target) {
         super(pjLinkDevice);
         this.target = target;
     }
 
+    public Input getTarget() {
+      return target;
+    }
+    
     @Override
     public InputInstructionRequest createRequest() {
         return new InputInstructionRequest(this);

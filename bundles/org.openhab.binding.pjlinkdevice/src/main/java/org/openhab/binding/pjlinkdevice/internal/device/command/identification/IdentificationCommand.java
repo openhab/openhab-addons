@@ -43,11 +43,15 @@ public class IdentificationCommand extends AbstractCommand<IdentificationRequest
         }
     }
 
-    protected IdentificationProperty identificationProperty;
+    private IdentificationProperty identificationProperty;
 
     public IdentificationCommand(PJLinkDevice pjLinkDevice, IdentificationProperty identificationProperty) {
         super(pjLinkDevice);
         this.identificationProperty = identificationProperty;
+    }
+
+    public IdentificationProperty getIdentificationProperty() {
+      return identificationProperty;
     }
 
     @Override

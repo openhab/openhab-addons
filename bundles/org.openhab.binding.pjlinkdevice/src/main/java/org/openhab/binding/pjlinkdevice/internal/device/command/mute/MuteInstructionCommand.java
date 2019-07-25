@@ -55,14 +55,22 @@ public class MuteInstructionCommand extends AbstractCommand<MuteInstructionReque
         }
     }
 
-    protected MuteInstructionState targetState;
-    protected MuteInstructionChannel targetChannel;
+    private MuteInstructionState targetState;
+    private MuteInstructionChannel targetChannel;
 
     public MuteInstructionCommand(PJLinkDevice pjLinkDevice, MuteInstructionState targetState,
             MuteInstructionChannel targetChannel) {
         super(pjLinkDevice);
         this.targetState = targetState;
         this.targetChannel = targetChannel;
+    }
+
+    public MuteInstructionState getTargetState() {
+        return this.targetState;  
+    }
+
+    public MuteInstructionChannel getTargetChannel() {
+        return this.targetChannel;  
     }
 
     @Override

@@ -28,8 +28,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class AuthenticationCommand<ResponseType extends Response<?>> implements Command<ResponseType> {
 
-    protected String challenge;
-    protected Command<ResponseType> testCommand;
+    private String challenge;
+    private Command<ResponseType> testCommand;
     private PJLinkDevice device;
 
     public AuthenticationCommand(PJLinkDevice pjLinkDevice, String challenge, Command<ResponseType> testCommand) {
@@ -46,6 +46,10 @@ public class AuthenticationCommand<ResponseType extends Response<?>> implements 
 
     protected AuthenticationRequest<ResponseType> createRequest() {
         return new AuthenticationRequest<ResponseType>(this);
+    }
+
+    public String getChallenge() {
+        return this.challenge;
     }
 
     public PJLinkDevice getDevice() {

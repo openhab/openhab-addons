@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class PowerInstructionRequest implements Request {
 
-    protected PowerInstructionCommand command;
+    private PowerInstructionCommand command;
 
     public PowerInstructionRequest(PowerInstructionCommand command) {
         this.command = command;
@@ -30,7 +30,7 @@ public class PowerInstructionRequest implements Request {
 
     @Override
     public String getRequestString() {
-        return "%1POWR " + this.command.target.getPJLinkRepresentation();
+        return "%1POWR " + this.command.getTarget().getPJLinkRepresentation();
     }
 
 }

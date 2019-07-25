@@ -37,7 +37,7 @@ public class AuthenticationRequest<ResponseType extends Response<?>> implements 
     public String getRequestString() {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
-            String toBeDigested = (this.command.challenge + this.command.getDevice().getAdminPassword());
+            String toBeDigested = (this.command.getChallenge() + this.command.getDevice().getAdminPassword());
             byte[] digest = md.digest(toBeDigested.getBytes());
             BigInteger bigInt = new BigInteger(1, digest);
             return bigInt.toString(16);

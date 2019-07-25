@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class InputInstructionRequest implements Request {
 
-    protected InputInstructionCommand command;
+    private InputInstructionCommand command;
 
     public InputInstructionRequest(InputInstructionCommand command) {
         this.command = command;
@@ -30,7 +30,7 @@ public class InputInstructionRequest implements Request {
 
     @Override
     public String getRequestString() {
-        return "%1INPT " + this.command.target.getPJLinkRepresentation();
+        return "%1INPT " + this.command.getTarget().getPJLinkRepresentation();
     }
 
 }

@@ -39,11 +39,15 @@ public class PowerInstructionCommand extends AbstractCommand<PowerInstructionReq
         }
     }
 
-    protected PowerInstructionState target;
+    private PowerInstructionState target;
 
     public PowerInstructionCommand(PJLinkDevice pjLinkDevice, PowerInstructionState target) {
         super(pjLinkDevice);
         this.target = target;
+    }
+
+    public PowerInstructionState getTarget() {
+      return this.target;
     }
 
     @Override

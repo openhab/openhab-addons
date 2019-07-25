@@ -55,6 +55,8 @@ public class Input {
         }
     }
 
+    private String value;
+
     public Input(String value) throws ResponseException {
         this.value = value;
         this.validate();
@@ -86,7 +88,6 @@ public class Input {
         return true;
     }
 
-    String value;
 
     public InputType getInputType() throws ResponseException {
         return InputType.parseString(this.value);

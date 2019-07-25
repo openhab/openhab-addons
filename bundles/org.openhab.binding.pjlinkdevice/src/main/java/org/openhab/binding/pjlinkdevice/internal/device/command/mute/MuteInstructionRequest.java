@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MuteInstructionRequest implements Request {
 
-    protected MuteInstructionCommand command;
+    private MuteInstructionCommand command;
 
     public MuteInstructionRequest(MuteInstructionCommand command) {
         this.command = command;
@@ -30,8 +30,8 @@ public class MuteInstructionRequest implements Request {
 
     @Override
     public String getRequestString() {
-        return "%1AVMT " + this.command.targetChannel.getPJLinkRepresentation()
-                + this.command.targetState.getPJLinkRepresentation();
+        return "%1AVMT " + this.command.getTargetChannel().getPJLinkRepresentation()
+                + this.command.getTargetState().getPJLinkRepresentation();
     }
 
 }
