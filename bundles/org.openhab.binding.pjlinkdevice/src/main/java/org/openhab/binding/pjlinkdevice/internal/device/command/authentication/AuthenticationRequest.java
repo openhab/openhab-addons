@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class AuthenticationRequest<ResponseType extends Response<?>> implements Request {
 
-    protected AuthenticationCommand<ResponseType> command;
+    private AuthenticationCommand<ResponseType> command;
 
     public AuthenticationRequest(AuthenticationCommand<ResponseType> command) {
         this.command = command;
