@@ -73,7 +73,6 @@
     <thing-type id="device">
         <supported-bridge-type-refs>
             <bridge-type-ref id="http" />
-            <bridge-type-ref id="pi" />
         </supported-bridge-type-refs>
         <label>OpenSprinkler Device</label>
         <description>A thing that receives data from the OpenSprinkler device directly.</description>
