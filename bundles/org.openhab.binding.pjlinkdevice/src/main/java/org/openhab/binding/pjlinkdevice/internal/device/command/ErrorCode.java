@@ -50,6 +50,13 @@ public enum ErrorCode {
         return this.text;
     }
 
+    /**
+     * Checks if a the given code is an error code. Optionally, restrictCodesTo can restrict the allowed error codes (based on PJLink specification).
+     *
+     * @param code string to be checked for error codes
+     * @param restrictCodesTo list of expected error codes according to PJLink specification, can be null if all error codes (ERR1-ERR4) can be expected
+     * @throws ResponseException
+     */
     public static void checkForErrorStatus(String code, @Nullable Set<ErrorCode> restrictCodesTo) throws ResponseException {
         ErrorCode parsed = getValueForCode(code);
         if (parsed != null && (restrictCodesTo == null || restrictCodesTo.contains(parsed))) {
