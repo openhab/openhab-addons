@@ -43,6 +43,7 @@ This binding currently supports the following thing types:
 * **blind** - Lutron venetian blind or horizontal sheer blind [**Experimental**]
 * **greenmode** - Green Mode subsystem
 * **timeclock** - Scheduling subsystem
+* **sysvar** - System state variable (HomeWorks QS only) [**Experimental**]
 
 ## Discovery
 
@@ -521,6 +522,22 @@ then
 end
 ```
 
+### System State Variables (HomeWorks QS only) [**Experimental**]
+
+HomeWorks QS systems allow for conditional programming logic based on state variables.
+The **sysvar** thing allows state variable values to be read and set from openHAB.
+This makes sophisticated integration schemes possible.
+Each **sysvar** thing represents one system state variable.
+It has a single channel *varstate* with type Number and category Number.
+Automatic discovery of state variables is not yet supported.
+They must be manually configured.
+
+Thing configuration file example:
+
+```
+Thing sysvar qsstate [ integrationId=80 ]
+```
+
 ## Channels
 
 The following is a summary of channels for all RadioRA 2 binding things:
@@ -544,6 +561,7 @@ The following is a summary of channels for all RadioRA 2 binding things:
 | timeclock           | execevent         | Number        | Execute event or monitor events executed     |
 | timeclock           | enableevent       | Number        | Enable event or monitor events enabled       |
 | timeclock           | disableevent      | Number        | Disable event or monitor events disabled     |
+| sysvar              | varstate          | Number        | Get/set system state variable value          |
 
 The channels available on each keypad device (i.e. keypad, ttkeypad, intlkeypad, grafikeyekeypad, pico, vcrx, and virtualkeypad) will vary with keypad type and model.
 Appropriate channels will be created automatically by the keypad, ttkeypad, intlkeypad, grafikeyekeypad, and pico thing handlers based on the setting of the `model` parameter for those thing types.
@@ -552,7 +570,7 @@ Appropriate channels will be created automatically by the keypad, ttkeypad, intl
 
 | Thing     | Channel       | Native Type  | Accepts                                               |
 |-----------|---------------|--------------|-------------------------------------------------------|
-|dimmer     |lightlevel     |PercentType   |OnOffType, PercentType                                 |
+|dimmer     |lightlevel     |PercentType   |OnOffType, PercentType (rounded/truncated to integer)  |
 |switch     |switchstatus   |OnOffType     |OnOffType                                              |
 |occ. sensor|occupancystatus|OnOffType     |(*readonly*)                                           |
 |cco        |switchstatus   |OnOffType     |OnOffType, RefreshType                                 |
@@ -569,6 +587,7 @@ Appropriate channels will be created automatically by the keypad, ttkeypad, intl
 |           |execevent      |DecimalType   |DecimalType                                            |
 |           |enableevent    |DecimalType   |DecimalType                                            |
 |           |disableevent   |DecimalType   |DecimalType                                            |
+|sysvar     |varstate       |DecimalType   |DecimalType (rounded/truncated to integer)             |
 
 Most channels receive immediate notifications of device state changes from the Lutron control system.
 The only exceptions are **greenmode** *step*, which is periodically polled and accepts REFRESH commands to initiate immediate polling, and **timeclock** *sunrise* and *sunset*, which must be polled daily using REFRESH commands to retrieve current values.
