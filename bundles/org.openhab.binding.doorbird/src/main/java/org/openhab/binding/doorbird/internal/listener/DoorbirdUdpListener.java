@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.doorbird.internal;
+package org.openhab.binding.doorbird.internal.listener;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -21,6 +21,7 @@ import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.doorbird.internal.DoorbirdHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

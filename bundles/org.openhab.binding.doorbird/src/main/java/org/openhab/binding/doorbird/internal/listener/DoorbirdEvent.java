@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.doorbird.internal;
+package org.openhab.binding.doorbird.internal.listener;
 
 import java.net.DatagramPacket;
 import java.nio.BufferUnderflowException;

@@ -36,10 +36,10 @@ The following channels are supported by the binding.
 
 | Channel ID | Item Type | Description |
 |------------|-----------|-------------|
-| doorbell | Switch | Updated to ON whenever doorbell is pressed |
+| doorbell | Trigger | Generated PRESSED event when doorbell is pressed |
 | doorbellTimestamp | DateTime | Timestamp when doorbell was pressed |
 | doorbellImage | Image | Image captured when the doorbell was pressed |
-| motion | Switch | Updated to ON when motion is detected |
+| motion | Trigger | Generated TRIGGERED event when motion is detected |
 | motionTimestamp | DateTime | Timestamp when motion sensor was triggered |
 | motionImage | Image | Image captured when motion was detected |
 | light | Switch | Activates the light relay |
@@ -58,6 +58,12 @@ The following channels are supported by the binding.
 | motionMontage | Image | Concatenation of first n motion history images |
 | sipHangup | Switch | Hangup SIP call |
 | restart | Switch | Restart the doorbird |
+
+## Profiles
+
+A Switch profile is available for the doorbell and motion channels that will cause ON/OFF 
+states to be set for items linked to the `doorbell` and `motion` channels.
+See *Items* example below.
 
 ## Full Example
 
@@ -85,7 +91,7 @@ Switch                      Doorbell_Pressed
                             "Doorbell Pressed [%s]"
                             <switch>
                             ["Switch"]
-                            { channel="doorbird:d101:doorbell:doorbell" }
+                            { channel="doorbird:d101:doorbell:doorbell" [profile="doorbird:switch"] }
 
 DateTime                    Doorbell_PressedTimestamp
                             "Doorbell Pressed Timestamp [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]"
@@ -100,7 +106,7 @@ Switch                      Doorbell_Motion
                             "Doorbell Motion [%s]"
                             <switch>
                             ["Switch"]
-                            { channel="doorbird:d101:doorbell:motion" }
+                            { channel="doorbird:d101:doorbell:motion" [profile="doorbird:switch"] }
 
 DateTime                    Doorbell_MotionTimestamp
                             "Doorbell Motion Timestamp [%1$tA, %1$tm/%1$td/%1$tY %1$tl:%1$tM %1$tp]"

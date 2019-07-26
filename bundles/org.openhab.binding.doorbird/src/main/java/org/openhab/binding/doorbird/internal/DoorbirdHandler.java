@@ -58,6 +58,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpRequestBuilder;
+import org.openhab.binding.doorbird.internal.listener.DoorbirdUdpListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -169,13 +170,13 @@ public class DoorbirdHandler extends BaseThingHandler {
     // Callback used by listener to update doorbell channel
     public synchronized void updateDoorbellChannel(long timestamp) {
         logger.debug("Handler: Update DOORBELL channels for thing {}", getThing().getUID());
-        updateState(CHANNEL_DOORBELL, OnOffType.ON);
         DoorbirdImage dbImage = downloadImage(buildUrl("/bha-api/image.cgi"));
         if (dbImage != null) {
             RawType image = dbImage.getImage();
             updateState(CHANNEL_DOORBELL_IMAGE, image != null ? image : UnDefType.UNDEF);
             updateState(CHANNEL_DOORBELL_TIMESTAMP, getLocalDateTimeType(dbImage.getTimestamp()));
         }
+        triggerChannel(CHANNEL_DOORBELL, EVENT_PRESSED);
         startDoorbellOffJob();
         updateDoorbellMontage();
     }
@@ -183,13 +184,13 @@ public class DoorbirdHandler extends BaseThingHandler {
     // Callback used by listener to update motion channel
     public synchronized void updateMotionChannel(long timestamp) {
         logger.debug("Handler: Update MOTION channels for thing {}", getThing().getUID());
-        updateState(CHANNEL_MOTION, OnOffType.ON);
         DoorbirdImage dbImage = downloadImage(buildUrl("/bha-api/image.cgi"));
         if (dbImage != null) {
             RawType image = dbImage.getImage();
             updateState(CHANNEL_MOTION_IMAGE, image != null ? image : UnDefType.UNDEF);
             updateState(CHANNEL_MOTION_TIMESTAMP, getLocalDateTimeType(dbImage.getTimestamp()));
         }
+        triggerChannel(CHANNEL_MOTION, EVENT_TRIGGERED);
         startMotionOffJob();
         updateMotionMontage();
     }
@@ -226,7 +227,9 @@ public class DoorbirdHandler extends BaseThingHandler {
                 break;
             case CHANNEL_DOORBELL_HISTORY_INDEX:
             case CHANNEL_MOTION_HISTORY_INDEX:
-                handleHistoryImage(channelUID, command);
+                if (!(command instanceof RefreshType)) {
+                    handleHistoryImage(channelUID, command);
+                }
                 break;
             case CHANNEL_GET_DOORBELL_MONTAGE:
                 if (command instanceof RefreshType || (command instanceof OnOffType && command.equals(OnOffType.ON))) {
@@ -402,7 +405,7 @@ public class DoorbirdHandler extends BaseThingHandler {
         }
         doorbellOffJob = scheduler.schedule(() -> {
             logger.debug("Update channel 'doorbell' to OFF for thing {}", getThing().getUID());
-            updateState(CHANNEL_DOORBELL, OnOffType.OFF);
+            triggerChannel(CHANNEL_DOORBELL, EVENT_RELEASED);
         }, offDelay, TimeUnit.SECONDS);
     }
 
@@ -424,7 +427,7 @@ public class DoorbirdHandler extends BaseThingHandler {
         }
         motionOffJob = scheduler.schedule(() -> {
             logger.debug("Update channel 'motion' to OFF for thing {}", getThing().getUID());
-            updateState(CHANNEL_MOTION, OnOffType.OFF);
+            triggerChannel(CHANNEL_MOTION, EVENT_UNTRIGGERED);
         }, offDelay, TimeUnit.SECONDS);
     }
 

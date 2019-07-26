@@ -27,7 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class DoorbirdBindingConstants {
-    private static final String BINDING_ID = "doorbird";
+    public static final String BINDING_ID = "doorbird";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_D101 = new ThingTypeUID(BINDING_ID, "d101");
@@ -61,4 +61,10 @@ public class DoorbirdBindingConstants {
     public static final String CHANNEL_MOTION_IMAGE_MONTAGE = "motionMontage";
     public static final String CHANNEL_SIP_HANGUP = "sipHangup";
     public static final String CHANNEL_RESTART = "restart";
+
+    // List of trigger events
+    public static final String EVENT_PRESSED = "PRESSED";
+    public static final String EVENT_RELEASED = "RELEASED";
+    public static final String EVENT_TRIGGERED = "TRIGGERED";
+    public static final String EVENT_UNTRIGGERED = "UNTRIGGERED";
 }
