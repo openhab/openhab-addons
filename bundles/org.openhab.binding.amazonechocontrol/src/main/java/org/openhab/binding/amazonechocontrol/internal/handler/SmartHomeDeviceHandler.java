@@ -289,8 +289,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         List<Object> smartHomeDevices = null;
         try {
             if (currentConnection.getIsLoggedIn()) {
-                // smartHomeDevices = currentConnection.getSmarthomeDeviceList();
-                smartHomeDevices = currentConnection.getSmarthomeDeviceListX();
+                smartHomeDevices = currentConnection.getSmarthomeDeviceList();
             }
         } catch (IOException | URISyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());

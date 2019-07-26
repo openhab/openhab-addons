@@ -28,7 +28,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,13 +74,13 @@ public class DeviceHandler extends BaseThingHandler {
         }
     }
 
-    public List<SmartHomeDevice> updateSmartHomeDevices() {
+    public List<Object> updateSmartHomeDevices() {
         Connection currentConnection = connection;
         if (currentConnection == null) {
-            return new ArrayList<SmartHomeDevice>();
+            return new ArrayList<Object>();
         }
 
-        List<SmartHomeDevice> smartHomeDevices = null;
+        List<Object> smartHomeDevices = null;
         try {
             if (currentConnection.getIsLoggedIn()) {
                 smartHomeDevices = currentConnection.getSmarthomeDeviceList();
@@ -94,7 +93,7 @@ public class DeviceHandler extends BaseThingHandler {
             return smartHomeDevices;
         }
 
-        return new ArrayList<SmartHomeDevice>();
+        return new ArrayList<Object>();
     }
 
 }

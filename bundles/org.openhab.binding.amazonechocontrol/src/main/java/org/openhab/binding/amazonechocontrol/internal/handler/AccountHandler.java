@@ -580,7 +580,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         List<Object> smartHomeDevices = null;
         try {
             if (currentConnection.getIsLoggedIn()) {
-                smartHomeDevices = currentConnection.getSmarthomeDeviceListX();
+                smartHomeDevices = currentConnection.getSmarthomeDeviceList();
             }
         } catch (IOException | URISyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
