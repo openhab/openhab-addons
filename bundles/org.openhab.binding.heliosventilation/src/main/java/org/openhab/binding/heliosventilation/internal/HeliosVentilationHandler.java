@@ -62,7 +62,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                                                         // BUSMEMBER_REC_MASK
     private static final int BUSMEMBER_ME = 0x2F; // used as sender when communicating with the helios system
 
-    private static final HashMap<Byte, HeliosVentilationVariable> variables = new HashMap<Byte, HeliosVentilationVariable>();
+    private static final HashMap<Byte, HeliosVentilationVariable> datapoints = new HashMap<Byte, HeliosVentilationVariable>();
     private static final int POLL_OFFLINE_THRESHOLD = 3;
 
     private final Logger logger = LoggerFactory.getLogger(HeliosVentilationHandler.class);
@@ -85,54 +85,54 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
         this.serialPortManager = serialPortManager;
 
         // Read-only
-        variables.put((byte) 0x32,
+        datapoints.put((byte) 0x32,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_OUTSIDE_TEMP,
                         (byte) 0x32, false, HeliosVentilationVariable.type.TEMPERATURE));
-        variables.put((byte) 0x33,
+        datapoints.put((byte) 0x33,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_OUTGOING_TEMP,
                         (byte) 0x33, false, HeliosVentilationVariable.type.TEMPERATURE));
-        variables.put((byte) 0x34,
+        datapoints.put((byte) 0x34,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_EXTRACT_TEMP,
                         (byte) 0x34, false, HeliosVentilationVariable.type.TEMPERATURE));
-        variables.put((byte) 0x35,
+        datapoints.put((byte) 0x35,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_SUPPLY_TEMP, (byte) 0x35,
                         false, HeliosVentilationVariable.type.TEMPERATURE));
 
         // writable
-        variables.put((byte) 0xB2,
+        datapoints.put((byte) 0xB2,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_HYSTERESIS, (byte) 0xB2,
                         true, HeliosVentilationVariable.type.HYSTERESIS));
-        variables.put((byte) 0xB1,
+        datapoints.put((byte) 0xB1,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_DC_FAN_EXTRACT,
                         (byte) 0xB1, true, HeliosVentilationVariable.type.PERCENT));
-        variables.put((byte) 0xB0,
+        datapoints.put((byte) 0xB0,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_DC_FAN_SUPPLY,
                         (byte) 0xB0, true, HeliosVentilationVariable.type.PERCENT));
-        variables.put((byte) 0xAF,
+        datapoints.put((byte) 0xAF,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_BYPASS_TEMP, (byte) 0xAF,
                         true, HeliosVentilationVariable.type.TEMPERATURE));
-        variables.put((byte) 0xAE,
+        datapoints.put((byte) 0xAE,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_RH_LIMIT, (byte) 0xAE,
                         true, HeliosVentilationVariable.type.BYTE_PERCENT));
-        variables.put((byte) 0xA9,
+        datapoints.put((byte) 0xA9,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_MIN_FANSPEED,
                         (byte) 0xA9, true, HeliosVentilationVariable.type.FANSPEED));
-        variables.put((byte) 0xA5,
+        datapoints.put((byte) 0xA5,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_MAX_FANSPEED,
                         (byte) 0xA5, true, HeliosVentilationVariable.type.FANSPEED));
-        variables.put((byte) 0xA4,
+        datapoints.put((byte) 0xA4,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_SET_TEMP, (byte) 0xA4,
                         true, HeliosVentilationVariable.type.TEMPERATURE));
 
-        variables.put((byte) 0x29,
+        datapoints.put((byte) 0x29,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_FANSPEED, (byte) 0x29,
                         true, HeliosVentilationVariable.type.FANSPEED));
 
-        variables.put((byte) 0xA8,
+        datapoints.put((byte) 0xA8,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_SUPPLY_STOP_TEMP,
                         (byte) 0xA8, true, HeliosVentilationVariable.type.TEMPERATURE));
 
-        variables.put((byte) 0xA7,
+        datapoints.put((byte) 0xA7,
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_PREHEAT_TEMP,
                         (byte) 0xA7, true, HeliosVentilationVariable.type.TEMPERATURE));
         /*
@@ -168,14 +168,14 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
 
         if (command instanceof RefreshType) {
             logger.debug("Refreshing HeliosVentilation data for {}", channelUID);
-            variables.values().forEach((v) -> {
+            datapoints.values().forEach((v) -> {
                 ChannelUID tmp = v.channelUID();
                 if (tmp.equals(channelUID)) {
                     poll(v);
                 }
             });
         } else if (command instanceof DecimalType || command instanceof QuantityType) {
-            variables.values().forEach((v) -> {
+            datapoints.values().forEach((v) -> {
                 ChannelUID tmp = v.channelUID();
                 if (tmp.equals(channelUID)) {
                     if (v.isWritable()) {
@@ -310,7 +310,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
             connect(); // let's try to reconnect if the connection failed or was never established before
         }
 
-        variables.values().forEach((v) -> {
+        datapoints.values().forEach((v) -> {
             ChannelUID channelUID = v.channelUID();
             if (isLinked(channelUID)) {
                 poll(v);
@@ -458,8 +458,8 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
             // something to read for us
             byte var = frame[3];
             byte val = frame[4];
-            if (variables.containsKey(var)) {
-                HeliosVentilationVariable variable = variables.get(var);
+            if (datapoints.containsKey(var)) {
+                HeliosVentilationVariable variable = datapoints.get(var);
                 String t = variable.asString(val);
                 logger.trace("Received {} = {}", variable, t);
                 updateChannelFor(variable, val);
