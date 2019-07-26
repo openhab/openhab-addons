@@ -16,6 +16,8 @@
             <channel id="supplyTemp" typeId="supply_temperature" />
             <channel id="setTemp" typeId="set_temperature" />
             <channel id="bypassTemp" typeId="bypass_temperature" />
+            <channel id="supplyStopTemp" typeId="supply_stop_temperature" />
+            <channel id="preheatTemp" typeId="preheat_temperature" />
             <channel id="minFanspeed" typeId="min_fanspeed" />
             <channel id="maxFanspeed" typeId="max_fanspeed" />
             <channel id="fanspeed" typeId="fanspeed" />
@@ -109,6 +111,22 @@
         <item-type>Number:Temperature</item-type>
         <label>Cell Bypass Temperature</label>
         <description>Bypass temperature to disable the bypass function if outside temperature is below this threshold even if ventilation system is in summer mode.</description>
+        <category>Temperature</category>
+        <state pattern="%d %unit%" readOnly="false" />
+    </channel-type>
+
+    <channel-type id="supply_stop_temperature" advanced="true">
+        <item-type>Number:Temperature</item-type>
+        <label>Supply Stop Temperature</label>
+        <description>Stop the supply fan if outside temperature is below this threshold.</description>
+        <category>Temperature</category>
+        <state pattern="%d %unit%" readOnly="false" />
+    </channel-type>
+
+    <channel-type id="preheat_temperature" advanced="true">
+        <item-type>Number:Temperature</item-type>
+        <label>Preheat Temperature</label>
+        <description>Set temperature for preheater.</description>
         <category>Temperature</category>
         <state pattern="%d %unit%" readOnly="false" />
     </channel-type>
