@@ -72,6 +72,9 @@ public class DoorbirdHandler extends BaseThingHandler {
     private static final long API_REQUEST_TIMEOUT = 3L;
     private static final long MONTAGE_UPDATE_DELAY = 5L;
 
+    // Maximum number of doorbell and motion history images stored on Doorbird backend
+    private static final int MAX_HISTORY_IMAGES = 50;
+
     private final Logger logger = LoggerFactory.getLogger(DoorbirdHandler.class);
 
     // Get a dedicated threadpool for the listener thread
@@ -201,7 +204,6 @@ public class DoorbirdHandler extends BaseThingHandler {
                     refreshDoorbellImageFromHistory();
                 }
                 break;
-
             case CHANNEL_MOTION_IMAGE:
                 if (command instanceof RefreshType) {
                     refreshMotionImageFromHistory();
@@ -210,38 +212,34 @@ public class DoorbirdHandler extends BaseThingHandler {
             case CHANNEL_LIGHT:
                 handleLight(command);
                 break;
-
             case CHANNEL_OPENDOOR1:
                 handleOpenDoor(command, "1");
                 break;
-
             case CHANNEL_OPENDOOR2:
                 handleOpenDoor(command, "2");
                 break;
-
             case CHANNEL_RESTART:
                 handleRestart(command);
                 break;
-
             case CHANNEL_GETIMAGE:
                 handleGetImage(command);
                 break;
-
             case CHANNEL_DOORBELL_HISTORY_INDEX:
             case CHANNEL_MOTION_HISTORY_INDEX:
                 handleHistoryImage(channelUID, command);
                 break;
-
             case CHANNEL_GET_DOORBELL_MONTAGE:
                 if (command instanceof RefreshType || (command instanceof OnOffType && command.equals(OnOffType.ON))) {
                     updateDoorbellMontage();
                 }
                 break;
-
             case CHANNEL_GET_MOTION_MONTAGE:
                 if (command instanceof RefreshType || (command instanceof OnOffType && command.equals(OnOffType.ON))) {
                     updateMotionMontage();
                 }
+                break;
+            case CHANNEL_SIP_HANGUP:
+                handleSipHangup(command);
                 break;
         }
     }
@@ -327,7 +325,7 @@ public class DoorbirdHandler extends BaseThingHandler {
             return;
         }
         int value = ((DecimalType) command).intValue();
-        if (value < 0 || value > 50) {
+        if (value < 0 || value > MAX_HISTORY_IMAGES) {
             logger.debug("History index must be in range 1 to 50");
             return;
         }
@@ -342,6 +340,19 @@ public class DoorbirdHandler extends BaseThingHandler {
             RawType image = dbImage.getImage();
             updateState(imageChannelId, image != null ? image : UnDefType.UNDEF);
             updateState(timestampChannelId, getLocalDateTimeType(dbImage.getTimestamp()));
+        }
+    }
+
+    private void handleSipHangup(Command command) {
+        if (command instanceof OnOffType && command.equals(OnOffType.ON)) {
+            String url = buildUrl("/bha-api/sip.cgi", "?action=hangup");
+            logger.debug("Hang up SIP call using url={}", url);
+            try {
+                String response = executeGetRequest(url);
+                logger.debug("Response={}", response);
+            } catch (IOException e) {
+                logger.debug("IOException hanging up SIP call: {}", e.getMessage());
+            }
         }
     }
 

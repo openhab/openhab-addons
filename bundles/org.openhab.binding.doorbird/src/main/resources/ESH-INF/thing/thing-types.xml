@@ -28,6 +28,7 @@
 			<channel id="doorbellMontage" typeId="doorbellMontage" />
 			<channel id="getMotionMontage" typeId="getMotionMontage" />
 			<channel id="motionMontage" typeId="motionMontage" />
+			<channel id="sipHangup" typeId="sipHangup" />
 			<channel id="restart" typeId="restart" />
 		</channels>
 		<config-description-ref uri="thing-type:doorbird:config" />
@@ -59,6 +60,7 @@
 			<channel id="doorbellMontage" typeId="doorbellMontage" />
 			<channel id="getMotionMontage" typeId="getMotionMontage" />
 			<channel id="motionMontage" typeId="motionMontage" />
+			<channel id="sipHangup" typeId="sipHangup" />
 			<channel id="restart" typeId="restart" />
 		</channels>
 		<config-description-ref uri="thing-type:doorbird:config" />
@@ -195,6 +197,12 @@
 		<label>Motion Montage Image</label>
 		<description>Montage of multiple motion history images</description>
 		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="sipHangup">
+		<item-type>Switch</item-type>
+		<label>SIP Hangup</label>
+		<description>Hangup a SIP call</description>
+		<state pattern="%s"></state>
 	</channel-type>
 	<channel-type id="restart">
 		<item-type>Switch</item-type>

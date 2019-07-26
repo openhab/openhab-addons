@@ -42,7 +42,7 @@ The following channels are supported by the binding.
 | motion | Switch | Updated to ON when motion is detected |
 | motionTimestamp | DateTime | Timestamp when motion sensor was triggered |
 | motionImage | Image | Image captured when motion was detected |
-| light | Switc | Activates the light relay |
+| light | Switch | Activates the light relay |
 | openDoor1 | Switch | Activates the door 1 relay |
 | openDoor2 | Switch | Activates the door 2 relay (D210x only) |
 | getImage | Switch | Force an update to the Image channel |
@@ -56,6 +56,7 @@ The following channels are supported by the binding.
 | motionHistoryImage | Image | Historical image for motion sensor |
 | doorbellMontage | Image | Concatenation of first n doorbell history images |
 | motionMontage | Image | Concatenation of first n motion history images |
+| sipHangup | Switch | Hangup SIP call |
 | restart | Switch | Restart the doorbird |
 
 ## Full Example
@@ -168,6 +169,12 @@ Image                       Doorbell_MotionMontage
                             "Motion History Montage [%s]"
                             { channel="doorbird:d101:doorbell:motionMontage" }
 
+Switch                      Doorbell_SIP_Hangup
+                            "Doorbell Hangup SIP Call [%s]"
+                            <switch>
+                            ["Switch"]
+                            { channel="doorbird:d101:doorbell:sipHangup" }
+
 Switch                      Doorbell_Restart
                             "Doorbell Restart [%s]"
                             <switch>
@@ -195,6 +202,7 @@ Frame {
         Frame label="Actions" {
             Switch item=Doorbell_OpenDoor1
             Switch item=Doorbell_Light
+            Switch item=Doorbell_SIP_Hangup
         }
         Frame label="History" {
             Setpoint item=Doorbell_DoorbellHistoryIndex minValue=1 maxValue=50 step=1
