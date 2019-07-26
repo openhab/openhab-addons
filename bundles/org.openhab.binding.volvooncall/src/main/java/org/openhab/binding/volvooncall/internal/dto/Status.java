@@ -24,16 +24,18 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
  */
 @NonNullByDefault
 public class Status {
-    public double averageFuelConsumption = -1;
+    public static final int UNDEFINED = -1;
+
+    public double averageFuelConsumption = UNDEFINED;
     public @NonNullByDefault({}) OnOffType carLocked;
-    public int distanceToEmpty = -1;
+    public int distanceToEmpty = UNDEFINED;
     public @NonNullByDefault({}) OnOffType engineRunning;
-    public int fuelAmount = -1;
-    public int fuelAmountLevel = -1;
-    public int odometer = -1;
+    public int fuelAmount = UNDEFINED;
+    public int fuelAmountLevel = UNDEFINED;
+    public int odometer = UNDEFINED;
     public @NonNullByDefault({}) String serviceWarningStatus;
-    public int tripMeter1 = -1;
-    public int tripMeter2 = -1;
+    public int tripMeter1 = UNDEFINED;
+    public int tripMeter2 = UNDEFINED;
     public @NonNullByDefault({}) String washerFluidLevel;
     public @Nullable WindowsStatus windows;
     public @Nullable DoorsStatus doors;

@@ -281,26 +281,32 @@ public class VehicleHandler extends BaseThingHandler {
             case FRONT_LEFT_WND:
                 return status.windows != null ? status.windows.frontLeftWindowOpen : UnDefType.NULL;
             case ODOMETER:
-                return status.odometer != -1 ? new QuantityType<Length>(status.odometer / 1000, KILO(SIUnits.METRE))
+                return status.odometer != Status.UNDEFINED
+                        ? new QuantityType<Length>(status.odometer / 1000, KILO(SIUnits.METRE))
                         : UnDefType.UNDEF;
             case TRIPMETER1:
-                return status.tripMeter1 != -1 ? new QuantityType<Length>(status.tripMeter1 / 1000, KILO(SIUnits.METRE))
+                return status.tripMeter1 != Status.UNDEFINED
+                        ? new QuantityType<Length>(status.tripMeter1 / 1000, KILO(SIUnits.METRE))
                         : UnDefType.UNDEF;
             case TRIPMETER2:
-                return status.tripMeter2 != -1 ? new QuantityType<Length>(status.tripMeter2 / 1000, KILO(SIUnits.METRE))
+                return status.tripMeter2 != Status.UNDEFINED
+                        ? new QuantityType<Length>(status.tripMeter2 / 1000, KILO(SIUnits.METRE))
                         : UnDefType.UNDEF;
             case DISTANCE_TO_EMPTY:
-                return status.distanceToEmpty != -1
+                return status.distanceToEmpty != Status.UNDEFINED
                         ? new QuantityType<Length>(status.distanceToEmpty, KILO(SIUnits.METRE))
                         : UnDefType.UNDEF;
             case FUEL_AMOUNT:
-                return status.fuelAmount != -1 ? new QuantityType<Volume>(status.fuelAmount, SmartHomeUnits.LITRE)
+                return status.fuelAmount != Status.UNDEFINED
+                        ? new QuantityType<Volume>(status.fuelAmount, SmartHomeUnits.LITRE)
                         : UnDefType.UNDEF;
             case FUEL_LEVEL:
-                return status.fuelAmountLevel != -1 ? new QuantityType<>(status.fuelAmountLevel, SmartHomeUnits.PERCENT)
+                return status.fuelAmountLevel != Status.UNDEFINED
+                        ? new QuantityType<>(status.fuelAmountLevel, SmartHomeUnits.PERCENT)
                         : UnDefType.UNDEF;
             case FUEL_CONSUMPTION:
-                return status.averageFuelConsumption != -1 ? new DecimalType(status.averageFuelConsumption / 10)
+                return status.averageFuelConsumption != Status.UNDEFINED
+                        ? new DecimalType(status.averageFuelConsumption / 10)
                         : UnDefType.UNDEF;
             case ACTUAL_LOCATION:
                 return position.getPosition();
