@@ -225,7 +225,7 @@ public class BsbLanParameterThingHandler extends BsbLanBaseThingHandler {
                 break;
 
             default:
-                logger.debug("Channel '{}' is read only. Ignoring command", command, channelId);
+                logger.debug("Channel '{}' is read only. Ignoring command", channelId);
                 return;
         }
 
