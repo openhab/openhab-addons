@@ -22,7 +22,7 @@
             <channel id="rhLimit" typeId="rh_limit" />
             <channel id="hysteresis" typeId="hysteresis" />
             <channel id="DCFanExtract" typeId="dc_fan_extract" />
-            <channel id="DCFanSupply" typeId="dc_fan_Supply" />
+            <channel id="DCFanSupply" typeId="dc_fan_supply" />
             
 		</channels>
 
