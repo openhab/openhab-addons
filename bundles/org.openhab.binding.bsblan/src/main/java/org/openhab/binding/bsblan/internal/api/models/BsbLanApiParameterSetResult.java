@@ -20,22 +20,28 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Peter Schraffl - Initial contribution
  */
-public enum BsbLanApiParameterSetStatus {
-    @SerializedName("0")
-    ERROR(0),
-    @SerializedName("1")
-    SUCCESS(1),
-    @SerializedName("2")
-    READ_ONLY(2);
+public class BsbLanApiParameterSetResult {
 
-    private final int value;
-    BsbLanApiParameterSetStatus(int value)
-    {
-        this.value = value;
+    public enum Status {
+        @SerializedName("0")
+        ERROR(0),
+        @SerializedName("1")
+        SUCCESS(1),
+        @SerializedName("2")
+        READ_ONLY(2);
+    
+        private final int value;
+        Status(int value)
+        {
+            this.value = value;
+        }
+    
+        public int getValue()
+        {
+            return value;
+        }
     }
 
-    public int getValue()
-    {
-        return value;
-    }
+    @SerializedName("status")
+    public Status status;
 }

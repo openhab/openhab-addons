@@ -22,5 +22,4 @@ import java.util.HashMap;
  */
 @SuppressWarnings("serial")
 public class BsbLanApiParameterQueryResponse extends HashMap<Integer, BsbLanApiParameter> {
-
 }

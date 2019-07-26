@@ -26,8 +26,8 @@ import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfigurati
 import org.openhab.binding.bsblan.internal.configuration.BsbLanParameterConfiguration;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterQueryResponse;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetResponse;
+import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetResult;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetRequest;
-import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetStatus;
 import org.openhab.binding.bsblan.internal.BsbLanBindingConstants;
 import org.openhab.binding.bsblan.internal.BsbLanBindingConstants.Channels;
 import org.openhab.binding.bsblan.internal.api.BsbLanApiCaller;
@@ -237,14 +237,17 @@ public class BsbLanParameterThingHandler extends BsbLanBaseThingHandler {
             return;
         }
 
-        BsbLanApiParameterSetStatus status = setResponse.getOrDefault(parameterConfig.setId, null);
-        if (status == null){
-            logger.warn("Failed to set parameter {} to '{}' for channel '{}': Status is null", parameterConfig.setId, value, channelId);
+        BsbLanApiParameterSetResult result = setResponse.getOrDefault(parameterConfig.setId, null);
+        if (result == null){
+            logger.warn("Failed to set parameter {} to '{}' for channel '{}': result is null", parameterConfig.setId, value, channelId);
             return;
         }
-
-        if (status != BsbLanApiParameterSetStatus.SUCCESS ) {
-            logger.warn("Failed to set parameter {} to '{}' for channel '{}': Status={}", parameterConfig.setId, value, channelId, status);
+        if (result.status == null) {
+            logger.warn("Failed to set parameter {} to '{}' for channel '{}': status is null", parameterConfig.setId, value, channelId);
+            return;
+        }
+        if (result.status != BsbLanApiParameterSetResult.Status.SUCCESS) {
+            logger.warn("Failed to set parameter {} to '{}' for channel '{}': Status = {}", parameterConfig.setId, value, channelId, result.status);
             return;
         }
 

@@ -21,5 +21,5 @@ import java.util.HashMap;
  * @author Peter Schraffl - Initial contribution
  */
 @SuppressWarnings("serial")
-public class BsbLanApiParameterSetResponse extends HashMap<Integer, BsbLanApiParameterSetStatus> {
+public class BsbLanApiParameterSetResponse extends HashMap<Integer, BsbLanApiParameterSetResult> {
 }
