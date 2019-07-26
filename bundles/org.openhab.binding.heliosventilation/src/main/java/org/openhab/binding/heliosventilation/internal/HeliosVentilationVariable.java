@@ -120,7 +120,7 @@ public class HeliosVentilationVariable {
             return new QuantityType<>((int) ((val - BYTE_PERCENT_OFFSET) * 100.0 / (255 - BYTE_PERCENT_OFFSET)),
                     SmartHomeUnits.PERCENT);
         } else if (datatype == type.PERCENT) {
-            return new QuantityType<>(val * 100, SmartHomeUnits.PERCENT);
+            return new QuantityType<>(val, SmartHomeUnits.PERCENT);
         } else if (datatype == type.FANSPEED) {
             int i = 1;
             while (i < fanspeedMap.length && fanspeedMap[i] < val) {
@@ -184,7 +184,7 @@ public class HeliosVentilationVariable {
         } else if (datatype == type.BYTE_PERCENT) {
             result = (byte) ((value.doubleValue() / 100.0) * (255 - BYTE_PERCENT_OFFSET) + BYTE_PERCENT_OFFSET);
         } else if (datatype == type.PERCENT) {
-            double d = (Math.round(value.doubleValue() * 100.0));
+            double d = (Math.round(value.doubleValue()));
             if (d < 0.0) {
                 d = 0.0;
             } else if (d > 100.0) {

@@ -182,12 +182,12 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                         byte txFrame[] = { 0x01, BUSMEMBER_ME, BUSMEMBER_CONTROLBOARDS, v.address(), 0x00, 0x00 };
                         txFrame[4] = v.getTransmitDataFor((State) command);
                         txFrame[5] = (byte) checksum(txFrame);
-
                         tx(txFrame);
+
                         txFrame[2] = BUSMEMBER_SLAVEBOARDS;
                         txFrame[5] = (byte) checksum(txFrame);
-
                         tx(txFrame);
+
                         txFrame[2] = BUSMEMBER_MAINBOARD;
                         txFrame[5] = (byte) checksum(txFrame);
                         tx(txFrame);
