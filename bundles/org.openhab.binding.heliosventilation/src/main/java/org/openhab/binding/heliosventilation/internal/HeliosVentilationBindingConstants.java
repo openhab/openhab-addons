@@ -36,6 +36,8 @@ public class HeliosVentilationBindingConstants {
     public static final String CHANNEL_SUPPLY_TEMP = "supplyTemp";
     public static final String CHANNEL_SET_TEMP = "setTemp";
     public static final String CHANNEL_BYPASS_TEMP = "bypassTemp";
+    public static final String CHANNEL_SUPPLY_STOP_TEMP = "supplyStopTemp";
+    public static final String CHANNEL_PREHEAT_TEMP = "preheatTemp";
     public static final String CHANNEL_RH_LIMIT = "rhLimit";
     public static final String CHANNEL_HYSTERESIS = "hysteresis";
     public static final String CHANNEL_FANSPEED = "fanspeed";
