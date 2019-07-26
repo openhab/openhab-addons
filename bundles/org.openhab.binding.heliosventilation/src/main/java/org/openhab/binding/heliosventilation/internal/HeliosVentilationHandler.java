@@ -128,19 +128,19 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                 new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_FANSPEED, (byte) 0x29,
                         true, HeliosVentilationVariable.type.FANSPEED));
 
+        variables.put((byte) 0xA8,
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_SUPPLY_STOP_TEMP,
+                        (byte) 0xA8, true, HeliosVentilationVariable.type.TEMPERATURE));
+
+        variables.put((byte) 0xA7,
+                new HeliosVentilationVariable(thing, HeliosVentilationBindingConstants.CHANNEL_PREHEAT_TEMP,
+                        (byte) 0xA7, true, HeliosVentilationVariable.type.TEMPERATURE));
         /*
          * not yet supported
          * variables.put((byte) 0xAA, new HeliosVentilationVariable(thing, "adjust_interval", true,
          * HeliosVentilationVariable.type.Number); // bit 0-4: adjust interval; bit 4: RH level setting: 1 = auto 0
          * = manual; bit 5: 1 = boost, 0 = fireplace; bit 6: radiator type: 1 = water 0 = electric; bit 7: cascade on
          *
-         * variables.put((byte) 0xA8,
-         * new HeliosVentilationVariable(thing, "supply_stop_temp", (byte) 0xA8, true,
-         * HeliosVentilationVariable.type.Temperature));
-         *
-         * variables.put((byte) 0xA7,
-         * new HeliosVentilationVariable(thing, "preheat_temp", (byte) 0xA7, true,
-         * HeliosVentilationVariable.type.Temperature));
          *
          * variables.put((byte) 0xA6,
          * new HeliosVentilationVariable(thing, "maintenance_interval", true, HeliosVentilationVariable.type.Number));
