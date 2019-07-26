@@ -554,4 +554,19 @@
 		<label>Brightness</label>
 		<description>The brightness of the light</description>
 	</channel-type>
+	<thing-type id="smartPlug">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+		<label>Amazon Echo Smart Plug</label>
+		<description>Smart plug in your amazon account</description>
+		<channels>
+			<channel typeId="plugState" id="plugState"></channel>
+		</channels>
+	</thing-type>
+	<channel-type id="plugState" advanced="false">
+		<item-type>Switch</item-type>
+		<label>State of your plug</label>
+		<description>State (ON/OFF) of a smart plug</description>
+	</channel-type>
 </thing:thing-descriptions>

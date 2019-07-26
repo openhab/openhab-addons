@@ -44,10 +44,11 @@ public class AmazonEchoControlBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "light");
     public static final ThingTypeUID THING_TYPE_LIGHT_GROUP = new ThingTypeUID(BINDING_ID, "lightGroup");
+    public static final ThingTypeUID THING_TYPE_SMART_PLUG = new ThingTypeUID(BINDING_ID, "smartPlug");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
-            Arrays.asList(THING_TYPE_ACCOUNT, THING_TYPE_ECHO, THING_TYPE_ECHO_SPOT, THING_TYPE_ECHO_SHOW,
-                    THING_TYPE_ECHO_WHA, THING_TYPE_FLASH_BRIEFING_PROFILE, THING_TYPE_LIGHT, THING_TYPE_LIGHT_GROUP));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(THING_TYPE_ACCOUNT,
+            THING_TYPE_ECHO, THING_TYPE_ECHO_SPOT, THING_TYPE_ECHO_SHOW, THING_TYPE_ECHO_WHA,
+            THING_TYPE_FLASH_BRIEFING_PROFILE, THING_TYPE_LIGHT, THING_TYPE_LIGHT_GROUP, THING_TYPE_SMART_PLUG));
 
     // List of all Channel ids
     public static final String CHANNEL_PLAYER = "player";
@@ -93,6 +94,7 @@ public class AmazonEchoControlBindingConstants {
     public static final String CHANNEL_NEXT_ALARM = "nextAlarm";
     public static final String CHANNEL_NEXT_MUSIC_ALARM = "nextMusicAlarm";
     public static final String CHANNEL_NEXT_TIMER = "nextTimer";
+    public static final String CHANNEL_PLUG_STATE = "plugState";
 
     public static final String CHANNEL_SAVE = "save";
     public static final String CHANNEL_ACTIVE = "active";

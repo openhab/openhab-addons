@@ -164,27 +164,31 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
                 if (!Arrays.asList(shd.applianceTypes).contains("SMARTPLUG")) {
                     thingTypeId = THING_TYPE_LIGHT;
                     thingUID = new ThingUID(thingTypeId, bridgeThingUID, shd.entityId);
-                    if (shd.aliases != null && shd.aliases.length > 0 && shd.aliases[0].friendlyName != null) {
-                        lightName = shd.aliases[0].friendlyName;
-                    } else {
-                        lightName = shd.friendlyName;
-                    }
+                } else if (Arrays.asList(shd.applianceTypes).contains("SMARTPLUG")) {
+                    thingTypeId = THING_TYPE_SMART_PLUG;
+                    thingUID = new ThingUID(thingTypeId, bridgeThingUID, shd.entityId);
+                }
 
-                    if (shd != null && shd.entityId != null) {
-                        props.put(DEVICE_PROPERTY_LIGHT_ENTITY_ID, shd.entityId);
-                    }
+                if (shd.aliases != null && shd.aliases.length > 0 && shd.aliases[0].friendlyName != null) {
+                    lightName = shd.aliases[0].friendlyName;
+                } else {
+                    lightName = shd.friendlyName;
+                }
 
-                    if (shd != null && shd.applianceId != null) {
-                        props.put(DEVICE_PROPERTY_APPLIANCE_ID, shd.applianceId);
-                    }
+                if (shd != null && shd.entityId != null) {
+                    props.put(DEVICE_PROPERTY_LIGHT_ENTITY_ID, shd.entityId);
+                }
 
-                    if (((SmartHomeDevice) smartHomeDevice).brightness == true) {
-                        props.put(INTERFACE_BRIGHTNESS, "true");
-                    } else if (((SmartHomeDevice) smartHomeDevice).colorTemperature == true) {
-                        props.put(INTERFACE_COLOR_TEMPERATURE, "true");
-                    } else if (((SmartHomeDevice) smartHomeDevice).color == true) {
-                        props.put(INTERFACE_COLOR, "true");
-                    }
+                if (shd != null && shd.applianceId != null) {
+                    props.put(DEVICE_PROPERTY_APPLIANCE_ID, shd.applianceId);
+                }
+
+                if (((SmartHomeDevice) smartHomeDevice).brightness == true) {
+                    props.put(INTERFACE_BRIGHTNESS, "true");
+                } else if (((SmartHomeDevice) smartHomeDevice).colorTemperature == true) {
+                    props.put(INTERFACE_COLOR_TEMPERATURE, "true");
+                } else if (((SmartHomeDevice) smartHomeDevice).color == true) {
+                    props.put(INTERFACE_COLOR, "true");
                 }
             }
 

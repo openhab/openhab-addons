@@ -220,6 +220,22 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                     }
                 }
             }
+            if (channelId.equals(CHANNEL_PLUG_STATE)) {
+                if (command instanceof OnOffType) {
+                    connection = accountHandler.findConnection();
+
+                    for (Map.Entry<String, String> entry : props.entrySet()) {
+                        if (entry.getKey().contains(DEVICE_PROPERTY_LIGHT_ENTITY_ID)
+                                && !entry.getKey().contains(DEVICE_PROPERTY_LIGHT_SUBDEVICE)) {
+                            if (command.equals(OnOffType.ON)) {
+                                connection.smartHomeCommand(entityId, DEVICE_TURN_ON, null, 0.00);
+                            } else {
+                                connection.smartHomeCommand(entityId, DEVICE_TURN_OFF, null, 0.00);
+                            }
+                        }
+                    }
+                }
+            }
 
         } catch (Exception e) {
             logger.warn("Handle command failed {}", e);
