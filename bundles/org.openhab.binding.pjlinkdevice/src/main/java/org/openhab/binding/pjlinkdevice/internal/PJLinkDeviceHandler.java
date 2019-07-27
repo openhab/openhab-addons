@@ -230,7 +230,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     }
 
     private void handleAuthenticationException(AuthenticationException e) {
-        updateProperty(PJLinkDeviceBindingConstants.PARAMETER_AUTHENTICATION_REQUIRED, new Boolean(true).toString());
+        updateProperty(PJLinkDeviceBindingConstants.PROPERTY_AUTHENTICATION_REQUIRED, new Boolean(true).toString());
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
     }
 
@@ -262,55 +262,48 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     private void updateDeviceProperties(PJLinkDevice device) throws IOException, AuthenticationException {
         Map<String, String> properties = editProperties();
 
-        properties.put(PJLinkDeviceBindingConstants.PARAMETER_AUTHENTICATION_REQUIRED,
+        properties.put(PJLinkDeviceBindingConstants.PROPERTY_AUTHENTICATION_REQUIRED,
                 device.getAuthenticationRequired().toString());
 
         try {
-            properties.put(PJLinkDeviceBindingConstants.PARAMETER_NAME, device.getName());
+            properties.put(PJLinkDeviceBindingConstants.PROPERTY_NAME, device.getName());
         } catch (ResponseException e) {
-            // okay, cannot retrieve model information
-            properties.put(PJLinkDeviceBindingConstants.PARAMETER_NAME, e.toString());
+            logger.debug("Error retrieving property {}, cause: {}", PJLinkDeviceBindingConstants.PROPERTY_NAME, e);
         }
         try {
             properties.put(Thing.PROPERTY_VENDOR, device.getManufacturer());
         } catch (ResponseException e) {
-            // okay, cannot retrieve model information
-            properties.put(Thing.PROPERTY_VENDOR, e.toString());
+            logger.debug("Error retrieving property {}, cause: {}", Thing.PROPERTY_VENDOR, e);
         }
         try {
             properties.put(Thing.PROPERTY_MODEL_ID, device.getModel());
         } catch (ResponseException e) {
-            // okay, cannot retrieve model information
-            properties.put(Thing.PROPERTY_MODEL_ID, e.toString());
+            logger.debug("Error retrieving property {}, cause: {}", Thing.PROPERTY_MODEL_ID, e);
         }
         try {
-            properties.put(PJLinkDeviceBindingConstants.PARAMETER_CLASS, device.getPJLinkClass());
+            properties.put(PJLinkDeviceBindingConstants.PROPERTY_CLASS, device.getPJLinkClass());
         } catch (ResponseException e) {
-            // okay, cannot retrieve class information
-            properties.put(PJLinkDeviceBindingConstants.PARAMETER_CLASS, e.toString());
+            logger.debug("Error retrieving property {}, cause: {}", PJLinkDeviceBindingConstants.PROPERTY_CLASS, e);
         }
         try {
             Map<ErrorStatusDevicePart, ErrorStatusQueryResponseState> errorStatus = device.getErrorStatus();
             for (Map.Entry<ErrorStatusDevicePart, ErrorStatusQueryResponseState> entry : errorStatus.entrySet()) {
                 String key = entry.getKey().getCamelCaseText();
                 String value = entry.getValue().getText();
-                properties.put(PJLinkDeviceBindingConstants.PARAMETER_ERROR_STATUS + key, value);
+                properties.put(PJLinkDeviceBindingConstants.PROPERTY_ERROR_STATUS + key, value);
             }
         } catch (ResponseException e) {
-            // okay, cannot retrieve error status information
-            properties.put(PJLinkDeviceBindingConstants.PARAMETER_ERROR_STATUS, e.toString());
+            logger.debug("Error retrieving property {}, cause: {}", PJLinkDeviceBindingConstants.PROPERTY_ERROR_STATUS, e);
         }
         try {
-            properties.put(PJLinkDeviceBindingConstants.PARAMETER_LAMP_HOURS, device.getLampHours());
+            properties.put(PJLinkDeviceBindingConstants.PROPERTY_LAMP_HOURS, device.getLampHours());
         } catch (ResponseException e) {
-            // okay, cannot retrieve lamp hours information
-            properties.put(PJLinkDeviceBindingConstants.PARAMETER_LAMP_HOURS, e.toString());
+            logger.debug("Error retrieving property {}, cause: {}", PJLinkDeviceBindingConstants.PROPERTY_LAMP_HOURS, e);
         }
         try {
-            properties.put(PJLinkDeviceBindingConstants.PARAMETER_OTHER_INFORMATION, device.getOtherInformation());
+            properties.put(PJLinkDeviceBindingConstants.PROPERTY_OTHER_INFORMATION, device.getOtherInformation());
         } catch (ResponseException e) {
-            // okay, cannot retrieve other information
-            properties.put(PJLinkDeviceBindingConstants.PARAMETER_OTHER_INFORMATION, e.toString());
+            logger.debug("Error retrieving property {}, cause: {}", PJLinkDeviceBindingConstants.PROPERTY_OTHER_INFORMATION, e);
         }
 
         updateProperties(properties);

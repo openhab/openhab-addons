@@ -87,7 +87,7 @@ public class DiscoveryParticipantClass1 extends AbstractDiscoveryParticipant {
                     // okay, no name
                 }
             } catch (AuthenticationException e) {
-                properties.put(PJLinkDeviceBindingConstants.PARAMETER_AUTHENTICATION_REQUIRED, true);
+                properties.put(PJLinkDeviceBindingConstants.PROPERTY_AUTHENTICATION_REQUIRED, true);
             }
             logger.debug("Adding thing");
             thingDiscovered(DiscoveryResultBuilder.create(createServiceUID(ip.getHostAddress(), tcpPort))
