@@ -15,6 +15,8 @@ package org.openhab.binding.pjlinkdevice.internal.device.command;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Exception thrown whenever an error code or unexpected response is retrieved from the device.
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

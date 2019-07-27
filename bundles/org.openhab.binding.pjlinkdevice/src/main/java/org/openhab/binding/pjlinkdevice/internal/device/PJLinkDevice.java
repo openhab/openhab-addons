@@ -54,6 +54,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * Represents a PJLink device and takes care of managing the TCP connection, executing commands, and authentication.
+ *
+ * The central interface to get information about and set status on the device.
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

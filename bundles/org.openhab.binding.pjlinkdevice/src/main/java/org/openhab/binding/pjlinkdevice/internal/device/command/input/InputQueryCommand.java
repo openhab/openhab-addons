@@ -19,6 +19,8 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * This command is used for retrieving the currently selected input of the device as described in [PJLinkSpec] chapter 4.4. Input switch query
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

@@ -20,6 +20,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import java.util.regex.Pattern;
 
 /**
+ * Describes an A/V source that can be selected on the PJLink device.
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

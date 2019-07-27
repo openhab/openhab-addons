@@ -19,6 +19,10 @@ import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Common base class for most PJLink commands.
+ *
+ * Takes care of generating the request string, sending it to the device, authentication error checking and response parsing.
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

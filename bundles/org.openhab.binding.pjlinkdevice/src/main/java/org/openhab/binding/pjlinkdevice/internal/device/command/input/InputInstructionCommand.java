@@ -19,6 +19,8 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * This command is used for setting the current input of the device as described in [PJLinkSpec] chapter 4.3. Input switch instruction
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

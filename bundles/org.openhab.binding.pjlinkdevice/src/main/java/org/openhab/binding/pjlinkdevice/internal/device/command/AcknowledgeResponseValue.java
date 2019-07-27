@@ -15,6 +15,8 @@ package org.openhab.binding.pjlinkdevice.internal.device.command;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * The possible outcomes of a command which can only be acknowledged or fail.
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

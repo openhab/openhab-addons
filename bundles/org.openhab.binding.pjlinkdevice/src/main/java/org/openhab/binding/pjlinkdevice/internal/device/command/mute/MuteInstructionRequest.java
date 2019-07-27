@@ -17,6 +17,8 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.Request;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * The request part of {@link MuteInstructionCommand}
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

@@ -15,6 +15,8 @@ package org.openhab.binding.pjlinkdevice.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Exception thrown whenever the thing configuration is invalid
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

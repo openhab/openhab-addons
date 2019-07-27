@@ -19,6 +19,8 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * The response part of {@link PowerInstructionCommand}
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

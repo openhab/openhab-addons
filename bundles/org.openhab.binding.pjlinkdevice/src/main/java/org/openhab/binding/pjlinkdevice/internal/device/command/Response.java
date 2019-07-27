@@ -15,6 +15,8 @@ package org.openhab.binding.pjlinkdevice.internal.device.command;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Basic response interface allowing to parse the response string.
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

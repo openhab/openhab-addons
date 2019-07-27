@@ -15,6 +15,8 @@ package org.openhab.binding.pjlinkdevice.internal.device.command;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Basic request interface allowing to create the request string.
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

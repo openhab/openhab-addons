@@ -19,6 +19,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * Error codes as specified in [PJLinkSpec] chapters
+ *  2.3. Set commands
+ *  2.4. Get commands
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

@@ -19,6 +19,8 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * This command is used for selecting audio/video mute of the device as described in [PJLinkSpec] 4.5. Mute instruction
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

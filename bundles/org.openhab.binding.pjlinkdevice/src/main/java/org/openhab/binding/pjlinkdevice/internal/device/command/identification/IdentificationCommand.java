@@ -19,6 +19,14 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * This command is used for retrieving device information as described in [PJLinkSpec] chapters:
+ *  4.8. Lamp number/ lighting hour query
+ *  4.10. Projector/Display name query
+ *  4.11. Manufacture name information query
+ *  4.12. Product name information query
+ *  4.13. Other information query
+ *  4.14. Class information query
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

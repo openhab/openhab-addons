@@ -23,6 +23,8 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.Response;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Calculates the response matching the callenge received from the PJLink device.
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

@@ -35,6 +35,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * Discovery of PJLink devices. Checks IP addresses in parallel processing.
+ * 
+ * Generating IP addresses and checking them is done by the subclasses implementing 
+ * {@link AbstractDiscoveryParticipant#generateAddressesToScan} and {@link AbstractDiscoveryParticipant#checkAddress}
+ * 
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

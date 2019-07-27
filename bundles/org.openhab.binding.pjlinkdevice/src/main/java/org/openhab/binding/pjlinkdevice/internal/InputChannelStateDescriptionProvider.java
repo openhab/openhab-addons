@@ -28,7 +28,9 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 
 /**
- * Dynamic provider of state options while leaving other state description fields as original.
+ * Dynamic provider of state options for the input selection of the PJLink device.
+ *
+ * @author Nils Schnabel - Initial contribution
  */
 @Component(service = { DynamicStateDescriptionProvider.class, InputChannelStateDescriptionProvider.class })
 @NonNullByDefault

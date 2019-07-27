@@ -33,8 +33,9 @@ import org.osgi.service.component.annotations.Component;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Implementation of {@link AbstractDiscoveryParticipant} for IPv4 address ranges and PJLink Class 1 devices.
+ * 
  * @author Nils Schnabel - Initial contribution
- *
  */
 
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "org.openhab.binding.pjlinkdevice.internal.discovery.DiscoveryParticipantClass1")

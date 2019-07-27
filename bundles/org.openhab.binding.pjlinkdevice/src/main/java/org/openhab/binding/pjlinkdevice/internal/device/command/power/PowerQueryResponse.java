@@ -18,6 +18,8 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * The response part of {@link PowerQueryCommand}
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault

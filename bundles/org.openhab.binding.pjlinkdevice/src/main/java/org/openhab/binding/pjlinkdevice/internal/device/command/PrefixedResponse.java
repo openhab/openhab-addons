@@ -19,6 +19,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * Base class for most responses that can be retrieved from the device.
+ *
+ * A prefix has to be passed in the constructor for which is checked.
+ *
+ * Subclasses have to implement parseResponseWithoutPrefix, which allows parsing without having to remove the prefix first.
+ *
  * @author Nils Schnabel - Initial contribution
  */
 @NonNullByDefault
