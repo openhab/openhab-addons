@@ -171,8 +171,10 @@ public class PJLinkDevice {
             }
             return socket;
         } catch (ConnectException | SocketTimeoutException | NoRouteToHostException e) {
+            // these exceptions indicate that there's no device at this address, just throw without logging
             throw e;
         } catch (IOException | ResponseException e) {
+            // these exceptions seem to be more interesting in the log during a scan
             // This should not happen and might be a user configuration issue, we log a warning message therefore.
             logger.debug("Could not create a socket connection", e);
             throw e;
