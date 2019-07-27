@@ -45,14 +45,30 @@ The *pjLinkDevice* thing type has the following parameters:
 
 ## Full Example
 
-demo.things:
+sample.things:
 
 ```
 pjLinkDevice:pjLinkDevice:MyProjector [ ipAddress="192.168.178.10" ]
 ```
 
-demo.items:
+sample.items:
 
 ```
-Switch Projector_Power "Projector Power" { channel="pjLinkDevice:pjLinkDevice:MyProjector:powerChannel" }
+Switch Projector_Power "Projector Power"          { channel="pjLinkDevice:pjLinkDevice:MyProjector:power" }
+String Projector_Input "Projector Input"          { channel="pjLinkDevice:pjLinkDevice:MyProjector:input" }
+Switch Projector_AudioMute "Projector Audio Mute" { channel="pjLinkDevice:pjLinkDevice:MyProjector:audioMute" }
+Switch Projector_VideoMute "Projector Video Mute" { channel="pjLinkDevice:pjLinkDevice:MyProjector:videoMute" }
+```
+
+sample.sitemap:
+
+```
+sitemap sample label="Main Menu" {
+  Frame  {
+    Switch item=Projector_Power
+    Selection item=Projector_Input
+    Switch item=Projector_AudioMute
+    Switch item=Projector_VideoMute
+  }
+}
 ```
