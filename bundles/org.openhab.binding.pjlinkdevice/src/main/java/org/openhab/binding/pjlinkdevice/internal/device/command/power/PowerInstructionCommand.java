@@ -19,7 +19,7 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * This command is used for switching the device on/off as described in [PJLinkSpec] 4.1. Power control instruction
+ * This command is used for switching the device on/off as described in <a href="https://pjlink.jbmia.or.jp/english/data_cl2/PJLink_5-1.pdf">[PJLinkSpec]</a> 4.1. Power control instruction
  *
  * @author Nils Schnabel - Initial contribution
  */

@@ -19,7 +19,7 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * This command is used for retrieving the current audio/video mute status of the device as described in [PJLinkSpec] 4.6. Mute status query
+ * This command is used for retrieving the current audio/video mute status of the device as described in <a href="https://pjlink.jbmia.or.jp/english/data_cl2/PJLink_5-1.pdf">[PJLinkSpec]</a> 4.6. Mute status query
  *
  * @author Nils Schnabel - Initial contribution
  */

@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * This command is used to authenticate to the device after the connection established.
  * As authentication can only be done in conjunction with a real command, a testCommand must be passed to authenticate.
  *
- * The authentication procedure is described in [PJLinkSpec] chapter 5.1. Authentication procedure
+ * The authentication procedure is described in <a href="https://pjlink.jbmia.or.jp/english/data_cl2/PJLink_5-1.pdf">[PJLinkSpec]</a> chapter 5.1. Authentication procedure
  *
  * @author Nils Schnabel - Initial contribution
  */

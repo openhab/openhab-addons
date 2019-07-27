@@ -19,7 +19,7 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * This command is used for retrieving device information as described in [PJLinkSpec] chapters:
+ * This command is used for retrieving device information as described in <a href="https://pjlink.jbmia.or.jp/english/data_cl2/PJLink_5-1.pdf">[PJLinkSpec]</a> chapters:
  *  4.8. Lamp number/ lighting hour query
  *  4.10. Projector/Display name query
  *  4.11. Manufacture name information query
