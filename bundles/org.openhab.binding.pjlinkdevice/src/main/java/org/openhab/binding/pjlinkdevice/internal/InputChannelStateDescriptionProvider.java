@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -49,7 +50,7 @@ public class InputChannelStateDescriptionProvider implements DynamicStateDescrip
             return null;
         }
 
-        return new StateDescription(null, null, null, null, false, options);
+        return StateDescriptionFragmentBuilder.create().withOptions(options).build().toStateDescription();
     }
 
     @Deactivate
