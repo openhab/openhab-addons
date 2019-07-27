@@ -17,12 +17,12 @@
 		</channels>
 
 		<config-description>
-			<parameter name="ipAddress" type="text" required="true">
+			<parameter name="ipAddress" type="text" required="true" min="1">
 				<context>network-address</context>
 				<label>IP address</label>
 				<description>The address of the PJLink device to control.</description>
 			</parameter>
-			<parameter name="adminPassword" type="text" required="false">
+			<parameter name="adminPassword" type="text">
 				<context>password</context>
 				<label>Password</label>
 				<description>The password of the PJLink device.</description>

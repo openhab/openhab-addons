@@ -21,9 +21,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -81,29 +83,29 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
         clearRefreshInterval();
     }
 
-    public void refresh() {
+    public void refresh(PJLinkDeviceConfiguration config) {
         // Do not poll if configuration is incomplete
         if (PJLinkDeviceHandler.this.getThing().getStatusInfo()
                 .getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR ) {
 
             PJLinkDeviceHandler.this.logger.debug("Polling device status...");
-            if (PJLinkDeviceHandler.this.getConfiguration().refreshPower) {
+            if (config.refreshPower) {
                 PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_POWER),
-                        RefreshType.REFRESH);
+                    RefreshType.REFRESH);
             }
-            if (PJLinkDeviceHandler.this.getConfiguration().refreshMute) {
+            if (config.refreshMute) {
                 // this updates both CHANNEL_AUDIO_MUTE and CHANNEL_VIDEO_MUTE
                 PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_AUDIO_MUTE),
-                        RefreshType.REFRESH);
+                    RefreshType.REFRESH);
             }
-            if (PJLinkDeviceHandler.this.getConfiguration().refreshInputChannel) {
+            if (config.refreshInputChannel) {
                 PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_INPUT),
-                        RefreshType.REFRESH);
+                    RefreshType.REFRESH);
             }
         }
     }
 
-    public PJLinkDevice getDevice() throws UnknownHostException {
+    public PJLinkDevice getDevice() throws UnknownHostException, ConfigurationException {
         PJLinkDevice device = this.device;
         if (device == null) {
             PJLinkDeviceConfiguration config = getConfiguration();
@@ -175,20 +177,36 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (ResponseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (ConfigurationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (AuthenticationException e) {
             this.handleAuthenticationException(e);
         }
-
     }
+
 
     @Override
     public void initialize() {
-        setupDevice();
-        setupRefreshInterval();
+        try {
+            setupDevice();
+            setupRefreshInterval();
+        } catch (ConfigurationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        }
     }
 
-    protected PJLinkDeviceConfiguration getConfiguration() {
+    protected PJLinkDeviceConfiguration getConfiguration() throws ConfigurationException {
       PJLinkDeviceConfiguration config = this.config;
+      try {
+          this.validateConfigurationParameters(this.getThing().getConfiguration().getProperties());
+      } catch(ConfigValidationException e) {
+          String message = e
+            .getValidationMessages().entrySet()
+            .stream()
+            .map((Map.Entry<String, String> a) -> (a.getKey() + ": " + a.getValue()))
+            .collect(Collectors.joining( "; "));
+          throw new ConfigurationException(message);
+      }
       if(config == null) {
         this.config = config = getConfigAs(PJLinkDeviceConfiguration.class);
       }
@@ -208,7 +226,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
     }
 
-    private void setupDevice() {
+    private void setupDevice() throws ConfigurationException {
         try {
             PJLinkDevice device = this.getDevice();
             device.checkAvailability();
@@ -224,12 +242,12 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
         }
     }
 
-    private void setupRefreshInterval() {
+    private void setupRefreshInterval() throws ConfigurationException {
         clearRefreshInterval();
         PJLinkDeviceConfiguration config = PJLinkDeviceHandler.this.getConfiguration();
         boolean atLeastOneChannelToBeRefreshed = config.refreshPower || config.refreshMute || config.refreshInputChannel;
         if (config.refresh > 0 && atLeastOneChannelToBeRefreshed) {
-            refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refresh, TimeUnit.SECONDS);
+            refreshJob = scheduler.scheduleWithFixedDelay(() -> {this.refresh(config);}, 0, config.refresh, TimeUnit.SECONDS);
         }
     }
 
