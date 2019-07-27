@@ -103,7 +103,7 @@ public class Input {
         }
         this.getInputType();
         if (!Pattern.compile("[0-9A-Z]").matcher(this.getInputNumber()).matches()) {
-            throw new ResponseException("Illegal channel number: " + this.value.substring(1, 2));
+            throw new ResponseException("Illegal channel number: " + this.getInputNumber());
         }
     }
 
