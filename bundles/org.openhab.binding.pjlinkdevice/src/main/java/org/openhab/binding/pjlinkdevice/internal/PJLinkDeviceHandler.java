@@ -81,6 +81,14 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         clearRefreshInterval();
+
+        PJLinkDevice device = this.device;
+        if(device != null) {
+            device.dispose();
+        }
+
+        this.config = null;
+        this.device = null;
     }
 
     public void refresh(PJLinkDeviceConfiguration config) {

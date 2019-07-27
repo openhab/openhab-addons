@@ -333,4 +333,15 @@ public class PJLinkDevice {
         return new InputListQueryCommand(this).execute().getResult();
 
     }
+
+    public void dispose() {
+        try {
+            Socket socket = this.socket;
+            if(socket != null) {
+                socket.close();
+            }
+        } catch(IOException e) {
+          // okay then, at least we tried
+        }
+    }
 }
