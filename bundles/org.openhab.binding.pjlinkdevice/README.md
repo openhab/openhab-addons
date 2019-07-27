@@ -6,14 +6,14 @@ Aspects that can be controlled via PJLink are power on/off, input source selecti
 
 ## Supported Things
 
-The binding currently supports devices which support the PJLink protocol (class 1). 
+This binding supports devices which implement the PJLink protocol (Class 1). 
 
 Limitations at this point:
 
 - only IPv4 connections are supported
-- only PJLink class 1 commands are supported
+- only PJLink Class 1 commands are supported. Class 2 devices should work fine nevertheless, it's just the Class 2 features that will not work.
 
-The binding has been tested with the PJLink device test tool (PJLinkTEST4CNT) and an Acer VL7680.
+The binding is tested with the PJLink device test tool (PJLinkTEST4CNT) and an Acer VL7680.
 
 ## Discovery
 
