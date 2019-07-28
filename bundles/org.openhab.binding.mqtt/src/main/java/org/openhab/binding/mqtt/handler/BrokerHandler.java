@@ -111,7 +111,12 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
     @Override
     public void dispose() {
         try {
-            connection.stop().get(1000, TimeUnit.MILLISECONDS);
+            if (connection != null) {
+                connection.stop().get(1000, TimeUnit.MILLISECONDS);
+            } else {
+                logger.warn("Trying to dispose handler {} but connection is already null. Most likely this is a bug.",
+                        thing.getUID());
+            }
         } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
         }
         super.dispose();
