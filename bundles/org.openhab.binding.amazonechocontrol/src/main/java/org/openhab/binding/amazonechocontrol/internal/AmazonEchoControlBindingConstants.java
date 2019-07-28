@@ -131,4 +131,5 @@ public class AmazonEchoControlBindingConstants {
     public static final String INTERFACE_BRIGHTNESS = "Alexa.BrightnessController";
     public static final String INTERFACE_COLOR_TEMPERATURE = "Alexa.ColorTemperatureController";
     public static final String INTERFACE_COLOR = "Alexa.ColorController";
+    public static final String INTERFACE_POWER = "Alexa.PowerController";
 }

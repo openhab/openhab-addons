@@ -14,6 +14,7 @@ package org.openhab.binding.amazonechocontrol.internal.jsons;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeTags.JsonSmartHomeTag;
 
 /**
@@ -29,6 +30,7 @@ public class JsonSmartHomeDevices {
         public @Nullable String friendlyName;
         public @Nullable String reachability;
         public @Nullable String entityId;
+        public @Nullable SmartHomeCapability @Nullable [] capabilities;
         public @Nullable JsonSmartHomeTag tags;
         public @Nullable String @Nullable [] applianceTypes;
         public @Nullable JsonSmartHomeDeviceAlias @Nullable [] aliases;
