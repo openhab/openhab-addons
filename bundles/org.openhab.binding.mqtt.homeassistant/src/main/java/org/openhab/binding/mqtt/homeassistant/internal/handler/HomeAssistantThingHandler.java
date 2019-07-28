@@ -160,8 +160,8 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
     @Override
     public CompletableFuture<Void> unsubscribeAll() {
-        return CompletableFuture
-                .allOf(haComponents.values().stream().map(channel -> channel.stop()).toArray(CompletableFuture[]::new));
+        // already unsubscribed everything by calling stop()
+        return CompletableFuture.allOf();
     }
 
     /**
