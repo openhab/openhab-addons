@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.bsblan.internal.handler;
 
-//import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -41,12 +41,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Peter Schraffl - Initial contribution
  */
-public class BsbLanParameterThingHandler extends BsbLanBaseThingHandler {
+public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(BsbLanParameterThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(BsbLanParameterHandler.class);
     private BsbLanParameterConfiguration parameterConfig;
 
-    public BsbLanParameterThingHandler(Thing thing) {
+    public BsbLanParameterHandler(Thing thing) {
         super(thing);
     }
 
@@ -116,27 +116,27 @@ public class BsbLanParameterThingHandler extends BsbLanBaseThingHandler {
                 updateNameChannel(parameter);
                 break;
 
-            case BsbLanBindingConstants.Channels.Parameter.Description:
+            case BsbLanBindingConstants.Channels.Parameter.DESCRIPTION:
                 updateDescriptionChannel(parameter);
                 break;
 
-            case BsbLanBindingConstants.Channels.Parameter.DataType:
+            case BsbLanBindingConstants.Channels.Parameter.DATATYPE:
                 updateDatatypeChannel(parameter);
                 break;
 
-            case BsbLanBindingConstants.Channels.Parameter.NumberValue:
+            case BsbLanBindingConstants.Channels.Parameter.NUMBER_VALUE:
                 updateNumberValueChannel(parameter);
                 break;
 
-            case BsbLanBindingConstants.Channels.Parameter.StringValue:
+            case BsbLanBindingConstants.Channels.Parameter.STRING_VALUE:
                 updateStringValueChannel(parameter);
                 break;
 
-            case BsbLanBindingConstants.Channels.Parameter.SwitchValue:
+            case BsbLanBindingConstants.Channels.Parameter.SWITCH_VALUE:
                 updateSwitchValueChannel(parameter);
                 break;
 
-            case BsbLanBindingConstants.Channels.Parameter.Unit:
+            case BsbLanBindingConstants.Channels.Parameter.UNIT:
                 updateUnitChannel(parameter);
                 break;
 
@@ -154,27 +154,43 @@ public class BsbLanParameterThingHandler extends BsbLanBaseThingHandler {
     void updateDescriptionChannel(BsbLanApiParameter parameter) {
         String value = parameter.getDescription();
         State state = new StringType(value);
-        updateState(BsbLanBindingConstants.Channels.Parameter.Description, state);
+        updateState(BsbLanBindingConstants.Channels.Parameter.DESCRIPTION, state);
     }
 
     void updateUnitChannel(BsbLanApiParameter parameter) {
-        // String value = StringEscapeUtils.unescapeHtml4(parameter.getUnit());
-        String value = parameter.getUnit();
+        String value = StringEscapeUtils.unescapeHtml(parameter.getUnit());
         State state = new StringType(value);
-        updateState(BsbLanBindingConstants.Channels.Parameter.Unit, state);
+        updateState(BsbLanBindingConstants.Channels.Parameter.UNIT, state);
     }
 
     void updateDatatypeChannel(BsbLanApiParameter parameter) {
         int value = parameter.getDataType().getValue();
         State state = new DecimalType(value);
-        updateState(BsbLanBindingConstants.Channels.Parameter.DataType, state);
+        updateState(BsbLanBindingConstants.Channels.Parameter.DATATYPE, state);
     }
 
     void updateNumberValueChannel(BsbLanApiParameter parameter) {
         try {
-            double value = Double.parseDouble(parameter.getValue());
-            State state = new DecimalType(value);
-            updateState(BsbLanBindingConstants.Channels.Parameter.NumberValue, state);
+            State state = null;
+
+            switch (parameter.getDataType())
+            {
+                // parse enum data type as integer
+                case DT_ENUM:
+                {
+                    int value = Integer.parseInt(parameter.getValue());
+                    state = new DecimalType(value);
+                }
+                break;
+
+                default:
+                {
+                    double value = Double.parseDouble(parameter.getValue());
+                    state = new DecimalType(value);
+                }
+                break;
+            }
+            updateState(BsbLanBindingConstants.Channels.Parameter.NUMBER_VALUE, state);
         }
         catch (NumberFormatException e) {
             // silently ignore - there is not "tryParse"
@@ -184,13 +200,13 @@ public class BsbLanParameterThingHandler extends BsbLanBaseThingHandler {
     void updateStringValueChannel(BsbLanApiParameter parameter) {
         String value = parameter.getValue();
         State state = new StringType(value);
-        updateState(BsbLanBindingConstants.Channels.Parameter.StringValue, state);
+        updateState(BsbLanBindingConstants.Channels.Parameter.STRING_VALUE, state);
     }
 
     void updateSwitchValueChannel(BsbLanApiParameter parameter) {
         // treat "0" as OFF and everything else as ON
         State state = parameter.getValue().equals("0") ?  OnOffType.OFF : OnOffType.ON;
-        updateState(BsbLanBindingConstants.Channels.Parameter.SwitchValue, state);
+        updateState(BsbLanBindingConstants.Channels.Parameter.SWITCH_VALUE, state);
     }
 
     /**
@@ -203,24 +219,24 @@ public class BsbLanParameterThingHandler extends BsbLanBaseThingHandler {
     protected void setChannel(String channelId, Command command) {
         logger.debug("Received command '{}' for channel '{}'", command, channelId);
 
-        if (!channelId.equals(Channels.Parameter.NumberValue)
-         && !channelId.equals(Channels.Parameter.StringValue)
-         && !channelId.equals(Channels.Parameter.SwitchValue)) {
+        if (!channelId.equals(Channels.Parameter.NUMBER_VALUE)
+         && !channelId.equals(Channels.Parameter.STRING_VALUE)
+         && !channelId.equals(Channels.Parameter.SWITCH_VALUE)) {
             logger.debug("Channel '{}' is read only. Ignoring command", command, channelId);
             return;
         }
 
         String value = null;
         switch (channelId) {
-            case Channels.Parameter.NumberValue:
+            case Channels.Parameter.NUMBER_VALUE:
                 value = getValueForNumberValueChannel(command);
                 break;
 
-            case Channels.Parameter.StringValue:
+            case Channels.Parameter.STRING_VALUE:
                 value = getValueForStringValueChannel(command);
                 break;
 
-            case Channels.Parameter.SwitchValue:
+            case Channels.Parameter.SWITCH_VALUE:
                 value = getValueForSwitchValueChannel(command);
                 break;
 

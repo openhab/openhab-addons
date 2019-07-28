@@ -28,12 +28,12 @@
 			</parameter>
 			<parameter name="setId" type="integer" required="false" groupName="Change Requests">
 				<label>Parameter ID</label>
-				<description>Parameter identifier used for change requests</description>
+				<description>Parameter identifier used for set requests</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="setType" type="integer" required="false" groupName="Change Requests">
 				<label>Message Type</label>
-				<description>Message type used to change a value</description>
+				<description>Message type used for set requests</description>
 				<default>0</default>
 				<advanced>true</advanced>
 				<options>

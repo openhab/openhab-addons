@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.bsblan.internal.handler.BsbLanBridgeHandler;
-import org.openhab.binding.bsblan.internal.handler.BsbLanParameterThingHandler;
+import org.openhab.binding.bsblan.internal.handler.BsbLanParameterHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -55,7 +55,7 @@ public class BsbLanHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_PARAMETER)) {
-            return new BsbLanParameterThingHandler(thing);
+            return new BsbLanParameterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
             return new BsbLanBridgeHandler((Bridge) thing);
         }

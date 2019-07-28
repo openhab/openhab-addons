@@ -1,16 +1,14 @@
-# Fronius Binding
+# BSB-LAN Binding
 
-This binding uses the [Fronius Solar API V1](http://www.fronius.com/en/photovoltaics/products/all-products/system-monitoring/open-interfaces/fronius-solar-api-json-) to obtain data from a Fronius devices.
-
+This binding uses the REST API of [BSB-LPB-PPS-LAN](https://github.com/fredlcore/bsb_lan) to obtain data from the device.
 
 ## Supported Things
 
-Support Fronius Galvo, Fronius Symo inverters and other Fronius inverters in combination with the Fronius Datamanager 1.0 / 2.0 or Fronius Datalogger. 
-You can add multiple inverters that depend on the same datalogger with different device ids. ( Default 1 ) 
+Currently only retrieving parameters of a connected BSB-LAN device is supported.
 
 ## Discovery
 
-There is no discovery implemented. You have to create your things manually and specify the IP of the Datalogger and the DeviceId.
+There is no discovery implemented. You have to create your things manually and specify the hostname/IP of the BSB-LAN device.
 
 ## Binding Configuration
 
@@ -18,56 +16,64 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 ## Thing Configuration
 
-The thing has a few configuration parameters:
+### Bridge Thing Configuration
 
-| Parameter | Description                                                              |
-|-----------|------------------------------------------------------------------------- |
-| Ip        | the ip-address of your Fronius Datalogger |
-| DeviceId  | The identifier of your device ( Default: 1) |
-| refresh   | Refresh interval in seconds |
+| Property         | Default | Required | Type    | Description                                                                                |
+|------------------|---------|----------|---------|--------------------------------------------------------------------------------------------|
+| hostname         | -       | Yes      | String  | The hostname or IP address of the BSB-LAN device.                                          |
+| passkey          | -       | No       | String  | The passkey required to access the BSB-LAN device.                                         |
+| username         | -       | No       | String  | The username required to access the BSB-LAN device (when using HTTP Basic Authentication). |
+| password         | -       | No       | String  | The password required to access the BSB-LAN device (when using HTTP Basic Authentication). |
+| refreshInterval  | 60      | No       | Integer | Specifies the refresh (poll) interval in seconds. Minimum value: 5s                        |
+
+### Parameter Thing Configuration
+
+| Property  | Default | Required | Type    | Description                                                                              |
+|-----------|---------|----------|---------|------------------------------------------------------------------------------------------|
+| id        | -       | Yes      | Integer | Specific parameter identifier (numeric value)                                            |
+| setId     | -       | No       | Integer | Parameter identifier used for set requests (numeric value).<br />If not specified it falls back to the value of the `id` property. |
+| setType   | 0       | No       | Integer | Message type used for set requests. Possible values are:<br />`0` for `SET` requests<br />`1` for `INF` requests |
 
 ## Channels
 
-| Channel ID | Item Type    | Description              |
-|------------|--------------|------------------------- |
-| day_energy | Number | Energy generated on current day |
-| pac | Number | AC powery |
-| total_energy | Number | Energy generated overall |
-| year_energy | Number | Energy generated in current year |
-| fac | Number | AC frequency |
-| iac | Number | AC current |
-| idc | Number | DC current |
-| uac | Number | AC voltage |
-| udc | Number | DC voltage |
-| pGrid | Number | Power + from grid, - to grid |
-| pLoad | Number | Power + generator, - consumer |
-| pAkku | Number | Power + charge, - discharge |
+### Parameter Thing Channels
+
+| Channel ID   | Item Type | Description                                                                        |
+|--------------|-----------|------------------------------------------------------------------------------------|
+| name         | String    | Name of the parameter as provided by the BSB-LAN device.                           |
+| number-value | Number    | Value of the parameter converted to a numerical value (if possible).               |
+| string-value | String    | Value of the parameter as provided by the BSB-LAN device.                          |
+| switch-value | Switch    | Value of the parameter.<br />`0` is interpreted as `OFF`, everything else as `ON`. |
+| unit         | String    | Unit as provided by the BSB-LAN device (HTML unescaping applied).                  |
+| description  | String    | Description as provided by the BSB-LAN device.                                     |
+| datatype     | Number    | Datatype as provided by the BSB-LAN device. Possible values are currently<br />`0` for `DT_VALS`: plain value<br />`1` for `DT_ENUM`: value (8/16 Bit) followed by space followed by text<br />`2` for `DT_BITS`: bit value followed by bitmask followed by text<br />`3` for `DT_WDAY`: weekday<br />`4` for `DT_HHMM`: hour:minute<br />`5` for `DT_DTTM`: date and time<br />`6` for `DT_DDMM`: day and month<br />`7` for `DT_STRN`: String<br />`8` for `DT_DWHM`: PPS time (day of week, hour:minute) |
 
 ## Full Example
 
-demo.things:
+bsblan.things:
 
 ```
-Bridge fronius:bridge:mybridge [hostname="192.168.66.148",refreshInterval=5] {
-    Thing powerinverter myinverter [ deviceId=1 ]
+Bridge bsblan:bridge:heating [hostname="192.168.1.100", refreshInterval=30] {
+    Thing parameter p700  [id=700]
+    Thing parameter p710  [id=710]
+    Thing parameter p8730 [id=8730]
 }
 ```
 
-demo.items:
+bsblan.items:
 
 ```
-Number AC_Powery { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelpac" }
-Number Day_Energy { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneldayenergy" }
-Number Total_Energy { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneltotal" }
-Number Year_Energy { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelyear" }
-Number FAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelfac" }
-Number IAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneliac" }
-Number IDC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelidc" }
-Number UAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneluac" }
-Number UDC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneludc" }
-Number Grid_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpgrid" }
-Number Load_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpload" }
-Number Battery_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpakku" }
+Number BsbParameter700NumberValue  { channel="bsblan:parameter:heating:p700:number-value" }
+Number BsbParameter710NumberValue  { channel="bsblan:parameter:heating:p710:number-value" }
+String BsbParameter8730Description { channel="bsblan:parameter:heating:p8730:description" }
 ```
 
-Tested with a Fronius Symo 8.2-3-M
+bsblan.sitemap:
+
+```
+sitemap bsblan label="BSB-LAN" {
+    Selection item=BsbParameter700NumberValue label="Operating Mode" mappings=[0="Protection", 1="Automatic", 2="Reduced", 3="Comfort"]
+    Text item=BsbParameter710NumberValue label="Room Temperature Comfort Setpoint [%.1f °C]" icon="temperature"
+    Text item=BsbParameter8730Description label="Heating Circuit Pump [%s]"
+}
+```

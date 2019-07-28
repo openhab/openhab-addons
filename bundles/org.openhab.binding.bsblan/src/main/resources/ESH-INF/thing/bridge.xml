@@ -18,11 +18,11 @@
 			</parameter>
 			<parameter name="username" type="text" required="false" groupName="network">
 				<label>Username</label>
-				<description>The username required to access the BSB-LAN device.</description>
+				<description>The username required to access the BSB-LAN device (when using HTTP Basic Authentication).</description>
 			</parameter>
 			<parameter name="password" type="text" required="false" groupName="network">
 				<label>Password</label>
-				<description>The password required to access the BSB-LAN device.</description>
+				<description>The password required to access the BSB-LAN device (when using HTTP Basic Authentication).</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="false" min="5">
 				<label>Refresh interval</label>

@@ -13,13 +13,4 @@
 
   <name>openHAB Add-ons :: Bundles :: BSB-LAN Binding</name>
 
-  <dependencies>
- <!--   <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-text</artifactId>
-      <version>1.7</version>
-    </dependency>
-    -->
-  </dependencies>
-
 </project>

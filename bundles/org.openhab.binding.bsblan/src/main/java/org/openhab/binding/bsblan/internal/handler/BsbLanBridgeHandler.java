@@ -125,8 +125,8 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
 
                 // refresh all parameters
                 Set<Integer> parameterIds = things.stream()
-                                            .filter(thing -> thing instanceof BsbLanParameterThingHandler)
-                                            .map(thing -> (BsbLanParameterThingHandler) thing)
+                                            .filter(thing -> thing instanceof BsbLanParameterHandler)
+                                            .map(thing -> (BsbLanParameterHandler) thing)
                                             .map(thing -> thing.getParameterId())
                                             .collect(Collectors.toSet());
 

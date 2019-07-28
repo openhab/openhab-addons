@@ -34,12 +34,12 @@ public class BsbLanBindingConstants {
     public class Channels {
         public class Parameter {
             public static final String Name = "name";
-            public static final String NumberValue = "number-value";
-            public static final String StringValue = "string-value";
-            public static final String SwitchValue = "switch-value";
-            public static final String Unit = "unit";
-            public static final String Description = "description";
-            public static final String DataType = "datatype";
+            public static final String NUMBER_VALUE = "number-value";
+            public static final String STRING_VALUE = "string-value";
+            public static final String SWITCH_VALUE = "switch-value";
+            public static final String UNIT = "unit";
+            public static final String DESCRIPTION = "description";
+            public static final String DATATYPE = "datatype";
         }
     }
 
