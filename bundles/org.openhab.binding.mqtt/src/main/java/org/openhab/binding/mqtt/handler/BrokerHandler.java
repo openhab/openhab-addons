@@ -223,6 +223,7 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
     }
 
     @Override
+    @SuppressWarnings("null")
     public void initialize() {
         config = getConfigAs(BrokerHandlerConfig.class);
         connection = createBrokerConnection();
