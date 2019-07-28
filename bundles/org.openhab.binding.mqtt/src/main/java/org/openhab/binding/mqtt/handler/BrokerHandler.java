@@ -227,7 +227,9 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
     public void initialize() {
         config = getConfigAs(BrokerHandlerConfig.class);
         connection = createBrokerConnection();
-        assignSSLContextProvider(config, connection, this);
-        super.initialize();
+        if (connection != null) {
+            assignSSLContextProvider(config, connection, this);
+            super.initialize();
+        }
     }
 }
