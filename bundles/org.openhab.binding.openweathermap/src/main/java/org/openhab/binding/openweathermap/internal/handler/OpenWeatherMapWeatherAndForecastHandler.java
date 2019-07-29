@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -299,7 +300,7 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                             MILLI(METRE));
                     break;
                 case CHANNEL_VISIBILITY:
-                    state = getQuantityTypeState(weatherData.getVisibility() * 0.001, KILO(METRE));
+                    state = new QuantityType<>(weatherData.getVisibility(), METRE).toUnit(KILO(METRE));
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);

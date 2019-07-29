@@ -313,9 +313,9 @@
 	</channel-type>
 
 	<channel-type id="visibility">
-		<item-type>Number</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Visibility</label>
-		<description>Visibility.</description>
+		<description>Current visibility.</description>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
