@@ -32,7 +32,7 @@ The binding has no configuration options, all configuration is done at Thing lev
 |-----------|---------|----------|---------|------------------------------------------------------------------------------------------|
 | id        | -       | Yes      | Integer | Specific parameter identifier (numeric value)                                            |
 | setId     | -       | No       | Integer | Parameter identifier used for set requests (numeric value).<br />If not specified it falls back to the value of the `id` property. |
-| setType   | 0       | No       | Integer | Message type used for set requests. Possible values are:<br />`0` for `SET` requests<br />`1` for `INF` requests |
+| setType   | 1       | No       | Integer | Message type used for set requests. Possible values are:<br />`0` for `INF` requests<br />`1` for `SET` requests |
 
 ## Channels
 
@@ -53,7 +53,7 @@ The binding has no configuration options, all configuration is done at Thing lev
 bsblan.things:
 
 ```
-Bridge bsblan:bridge:heating [hostname="192.168.1.100", refreshInterval=30] {
+Bridge bsblan:bridge:heating [hostname="192.168.1.100", refreshInterval=30, username="atari", password="800xl"] {
     Thing parameter p700  [id=700]
     Thing parameter p710  [id=710]
     Thing parameter p8730 [id=8730]
@@ -72,8 +72,8 @@ bsblan.sitemap:
 
 ```
 sitemap bsblan label="BSB-LAN" {
-    Selection item=BsbParameter700NumberValue label="Operating Mode" mappings=[0="Protection", 1="Automatic", 2="Reduced", 3="Comfort"]
-    Text item=BsbParameter710NumberValue label="Room Temperature Comfort Setpoint [%.1f °C]" icon="temperature"
+    Selection item=BsbParameter700NumberValue label="Operating Mode" mappings=[0="Protection", 1="Automatic", 2="Reduced", 3="Comfort"] icon="heating"
+    Setpoint item=BsbParameter710NumberValue label="Room Temperature Comfort Setpoint [%.1f °C]" icon="temperature" minValue=22.0 maxValue=25.0 step=0.5
     Text item=BsbParameter8730Description label="Heating Circuit Pump [%s]"
 }
 ```

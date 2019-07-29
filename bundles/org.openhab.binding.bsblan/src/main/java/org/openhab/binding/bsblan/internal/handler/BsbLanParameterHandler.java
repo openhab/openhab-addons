@@ -146,25 +146,23 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
     }
 
     void updateNameChannel(BsbLanApiParameter parameter) {
-        String value = parameter.getName();
-        State state = new StringType(value);
+        State state = new StringType(parameter.name);
         updateState(BsbLanBindingConstants.Channels.Parameter.Name, state);
     }
 
     void updateDescriptionChannel(BsbLanApiParameter parameter) {
-        String value = parameter.getDescription();
-        State state = new StringType(value);
+        State state = new StringType(parameter.description);
         updateState(BsbLanBindingConstants.Channels.Parameter.DESCRIPTION, state);
     }
 
     void updateUnitChannel(BsbLanApiParameter parameter) {
-        String value = StringEscapeUtils.unescapeHtml(parameter.getUnit());
+        String value = StringEscapeUtils.unescapeHtml(parameter.unit);
         State state = new StringType(value);
         updateState(BsbLanBindingConstants.Channels.Parameter.UNIT, state);
     }
 
     void updateDatatypeChannel(BsbLanApiParameter parameter) {
-        int value = parameter.getDataType().getValue();
+        int value = parameter.dataType.getValue();
         State state = new DecimalType(value);
         updateState(BsbLanBindingConstants.Channels.Parameter.DATATYPE, state);
     }
@@ -173,19 +171,19 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
         try {
             State state = null;
 
-            switch (parameter.getDataType())
+            switch (parameter.dataType)
             {
                 // parse enum data type as integer
                 case DT_ENUM:
                 {
-                    int value = Integer.parseInt(parameter.getValue());
+                    int value = Integer.parseInt(parameter.value);
                     state = new DecimalType(value);
                 }
                 break;
 
                 default:
                 {
-                    double value = Double.parseDouble(parameter.getValue());
+                    double value = Double.parseDouble(parameter.value);
                     state = new DecimalType(value);
                 }
                 break;
@@ -198,14 +196,13 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
     }
 
     void updateStringValueChannel(BsbLanApiParameter parameter) {
-        String value = parameter.getValue();
-        State state = new StringType(value);
+        State state = new StringType(parameter.value);
         updateState(BsbLanBindingConstants.Channels.Parameter.STRING_VALUE, state);
     }
 
     void updateSwitchValueChannel(BsbLanApiParameter parameter) {
         // treat "0" as OFF and everything else as ON
-        State state = parameter.getValue().equals("0") ?  OnOffType.OFF : OnOffType.ON;
+        State state = parameter.value.equals("0") ?  OnOffType.OFF : OnOffType.ON;
         updateState(BsbLanBindingConstants.Channels.Parameter.SWITCH_VALUE, state);
     }
 

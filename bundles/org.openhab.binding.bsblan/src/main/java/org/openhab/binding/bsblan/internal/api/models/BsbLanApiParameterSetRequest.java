@@ -24,9 +24,9 @@ public class BsbLanApiParameterSetRequest {
 
     public enum Type {
         @SerializedName("0")
-        SET(0),
+        INF(0),
         @SerializedName("1")
-        INF(1);
+        SET(1);
 
         private final int value;
         Type(int value)
@@ -40,36 +40,14 @@ public class BsbLanApiParameterSetRequest {
         }
     }
 
+    // Although setting specifying the parameter as int also seems to work,
+    // we use a String here as this is the it is noted in the documentation.
     @SerializedName("Parameter")
-    private int parameter;
+    public String parameter;
 
     @SerializedName("Value")
-    private String value;
+    public String value;
 
     @SerializedName("Type")
-    private Type type;
-
-    public int getParameter() {
-        return parameter;
-    }
-
-    public void setParameter(int value) {
-        parameter = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type value) {
-        type = value;
-    }
+    public Type type;
 }

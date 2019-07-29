@@ -67,15 +67,13 @@ public class BsbLanApiCaller {
 
     public BsbLanApiParameterSetResponse setParameter(Integer parameterId, String value, BsbLanApiParameterSetRequest.Type type) {
         BsbLanApiParameterSetRequest request = new BsbLanApiParameterSetRequest();
-        request.setParameter(parameterId);
-        request.setValue(value);
-        request.setType(type);
+        request.parameter = parameterId.toString();
+        request.value = value;
+        request.type = type;
 
-        Gson gson = new GsonBuilder()
-                .setLongSerializationPolicy(LongSerializationPolicy.STRING)
-                .create();
-
+        Gson gson = new Gson();
         String content = gson.toJson(request);
+
         return makeRestCall(BsbLanApiParameterSetResponse.class, "POST", "/JS", content);
     }
 

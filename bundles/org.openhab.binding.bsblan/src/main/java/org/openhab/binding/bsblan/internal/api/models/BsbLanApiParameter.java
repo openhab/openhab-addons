@@ -54,57 +54,17 @@ public class BsbLanApiParameter {
     }
 
     @SerializedName("name")
-    private String name;
+    public String name;
 
     @SerializedName("value")
-    private String value;
+    public String value;
 
     @SerializedName("unit")
-    private String unit;
+    public String unit;
 
     @SerializedName("desc")
-    private String description;
+    public String description;
 
     @SerializedName("dataType")
-    private DataType dataType;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String value) {
-        name = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getUnit() {
-        return unit;
-    }
-
-    public void setUnit(String value) {
-        unit = value;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String value) {
-        description = value;
-    }
-
-    public DataType getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(DataType value) {
-        dataType = value;
-    }
+    public DataType dataType;
 }
