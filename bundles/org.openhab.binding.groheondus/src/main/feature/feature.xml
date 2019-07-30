@@ -7,9 +7,9 @@
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.6</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.6</bundle>
         <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.6</bundle>
-        <bundle dependency="true">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.9</bundle>
-        <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.5</bundle>
-        <bundle dependency="true">mvn:org.grohe/ondus-api/0.0.9</bundle>
+        <bundle dependency="true">mvn:org.apache.commons/commons-text/1.6</bundle>
+        <bundle dependency="true">mvn:org.apache.commons/commons-lang3/3.8.1</bundle>
+        <bundle dependency="true">mvn:org.grohe/ondus-api/0.0.10</bundle>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.groheondus/${project.version}</bundle>
     </feature>
 </features>
