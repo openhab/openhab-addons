@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sonyprojector"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power ON/OFF the projector</description>
+	</channel-type>
+
+	<channel-type id="powerstate">
+		<item-type>String</item-type>
+		<label>Power State</label>
+		<description>Current detailed power state of the projector</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="input">
+		<item-type>String</item-type>
+		<label>Video Input</label>
+		<description>Select the equipment from which to display images</description>
+	</channel-type>
+
+	<channel-type id="calibrationpreset">
+		<item-type>String</item-type>
+		<label>Calibrated Preset</label>
+		<description>Adjust the picture viewing mode by selecting one of the preset modes</description>
+	</channel-type>
+
+	<channel-type id="contrast" advanced="true">
+		<item-type>Number</item-type>
+		<label>Contrast</label>
+		<description>Adjust the contrast of the picture</description>
+		<state min="0" max="100" />
+	</channel-type>
+
+	<channel-type id="brightness" advanced="true">
+		<item-type>Number</item-type>
+		<label>Brightness</label>
+		<description>Adjust the brightness of the picture</description>
+		<state min="0" max="100" />
+	</channel-type>
+
+	<channel-type id="color" advanced="true">
+		<item-type>Number</item-type>
+		<label>Color</label>
+		<description>Adjust the color density</description>
+		<state min="0" max="100" />
+	</channel-type>
+
+	<channel-type id="hue" advanced="true">
+		<item-type>Number</item-type>
+		<label>Hue</label>
+		<description>Adjust the color tone</description>
+		<state min="0" max="100" />
+	</channel-type>
+
+	<channel-type id="sharpness" advanced="true">
+		<item-type>Number</item-type>
+		<label>Sharpness</label>
+		<description>Sharpen the outline of the picture or reduce the noise</description>
+		<state min="0" max="100" />
+	</channel-type>
+
+	<channel-type id="colortemperature" advanced="true">
+		<item-type>String</item-type>
+		<label>Color Temperature</label>
+		<description>Adjust the color temperature</description>
+	</channel-type>
+
+	<channel-type id="irismode" advanced="true">
+		<item-type>String</item-type>
+		<label>Iris Mode</label>
+		<description>Switch the iris aperture function</description>
+	</channel-type>
+
+	<channel-type id="irismanual" advanced="true">
+		<item-type>Number</item-type>
+		<label>Iris Manual</label>
+		<description>Force the iris aperture to a fixed value</description>
+		<state min="0" max="100" />
+	</channel-type>
+
+	<channel-type id="irissensitivity" advanced="true">
+		<item-type>String</item-type>
+		<label>Iris Sensitivity</label>
+		<description>Select the iris sensitivity</description>
+	</channel-type>
+
+	<channel-type id="lampcontrol" advanced="true">
+		<item-type>String</item-type>
+		<label>Lamp Control</label>
+		<description>Switch the lamp output</description>
+	</channel-type>
+
+	<channel-type id="filmprojection" advanced="true">
+		<item-type>String</item-type>
+		<label>Film Projection</label>
+		<description>Reproduce an image similar to that of projected film</description>
+	</channel-type>
+
+	<channel-type id="motionenhancer" advanced="true">
+		<item-type>String</item-type>
+		<label>Motion Enhancer</label>
+		<description>Reproduce fast-moving pictures smoothly without generating afterimages</description>
+	</channel-type>
+
+	<channel-type id="contrastenhancer" advanced="true">
+		<item-type>String</item-type>
+		<label>Contrast Enhancer</label>
+		<description>Correct the level of bright and dark parts automatically</description>
+	</channel-type>
+
+	<channel-type id="filmmode" advanced="true">
+		<item-type>String</item-type>
+		<label>Film Mode</label>
+		<description>Select the playback mode for film sources</description>
+	</channel-type>
+
+	<channel-type id="gammacorrection" advanced="true">
+		<item-type>String</item-type>
+		<label>Gamma Correction</label>
+		<description>Adjust the response characteristics of the tone of the picture</description>
+	</channel-type>
+
+	<channel-type id="colorspace" advanced="true">
+		<item-type>String</item-type>
+		<label>Color Space</label>
+		<description>Convert the color space</description>
+	</channel-type>
+
+	<channel-type id="nr" advanced="true">
+		<item-type>String</item-type>
+		<label>Noise Reduction</label>
+		<description>Reduce the roughness or noise of the picture</description>
+	</channel-type>
+
+	<channel-type id="blocknr" advanced="true">
+		<item-type>String</item-type>
+		<label>Block Noise Reduction</label>
+		<description>Reduce digital noise that appears in mosaic-like pattern</description>
+	</channel-type>
+
+	<channel-type id="mosquitonr" advanced="true">
+		<item-type>String</item-type>
+		<label>Mosquito Noise Reduction</label>
+		<description>Reduce digital noise that appears near the outline of the picture</description>
+	</channel-type>
+
+	<channel-type id="mpegnr" advanced="true">
+		<item-type>String</item-type>
+		<label>MPEG Noise Reduction</label>
+		<description>Reduce block noise and mosquito noise, in particular in digital signals</description>
+	</channel-type>
+
+	<channel-type id="xvcolor" advanced="true">
+		<item-type>Switch</item-type>
+		<label>x.v.Color</label>
+		<description>Set this when playing back an x.v.Color video signal</description>
+	</channel-type>
+
+	<channel-type id="picturemuting" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Picture Muting</label>
+		<description>Mute or unmute the picture</description>
+	</channel-type>
+
+	<channel-type id="aspect" advanced="true">
+		<item-type>String</item-type>
+		<label>Aspect Ratio</label>
+		<description>Set the aspect ratio of the picture to be displayed</description>
+	</channel-type>
+
+	<channel-type id="overscan" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Overscan</label>
+		<description>Hide or not the edges of the picture</description>
+	</channel-type>
+
+	<channel-type id="pictureposition" advanced="true">
+		<item-type>String</item-type>
+		<label>Picture Position</label>
+		<description>Adjust the picture position</description>
+	</channel-type>
+
+	<channel-type id="lampusetime" advanced="true">
+		<item-type>Number</item-type>
+		<label>Lamp Use Time</label>
+		<description>Indicate how long the lamp has been turned on in hours</description>
+		<state readOnly="true" pattern="%d h"></state>
+	</channel-type>
+
+</thing:thing-descriptions>
