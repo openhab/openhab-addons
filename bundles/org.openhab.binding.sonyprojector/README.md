@@ -6,9 +6,15 @@ This binding can be used to conrol Sony Projectors through:
 * or a (direct) serial connection
 * or a serial over IP connection
 
-For serial connection, you have to use a D-Sub 9 Pin cross (reverse) cable also called null modem. For this cable, you will need a female connector on openHAB server side and a male connector on projector side (projector connector is female). For users without serial connector on server side, of course you can add a serial to USB adapter to this serial cable. Has been tested successfully using [this cable](https://www.amazon.fr/UGREEN-PL2303-Windows-Chrome-Connecteur/dp/B00QUZY4UG/ref=sr_1_3?ie=UTF8&qid=1548652565&sr=8-3&keywords=serial+usb) connected to a Windows 10 PC and Raspberry PI 2. In such cases, setup a serial connection thing type in openHAB.
+For serial connection, you have to use a D-Sub 9 Pin cross (reverse) cable also called null modem.
+For this cable, you will need a female connector on openHAB server side and a male connector on projector side (projector connector is female).
+For users without serial connector on server side, of course you can add a serial to USB adapter to this serial cable.
+Has been tested successfully using [this cable](https://www.amazon.fr/UGREEN-PL2303-Windows-Chrome-Connecteur/dp/B00QUZY4UG/ref=sr_1_3?ie=UTF8&qid=1548652565&sr=8-3&keywords=serial+usb) connected to a Windows 10 PC and Raspberry PI 2.
+In such cases, setup a serial connection thing type in openHAB.
 
-You don't need to have your projector directly connected to your openHAB server. You can connect it for example to a Raspberry PI and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP). In such a case, setup a serial over IP connection thing type in openHAB.
+You don't need to have your projector directly connected to your openHAB server.
+You can connect it for example to a Raspberry PI and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
+In such a case, setup a serial over IP connection thing type in openHAB.
 
 Here is the list of supported Sony projectors based on Sony protocol manuals:
 
@@ -66,7 +72,8 @@ Here is the list of supported Sony projectors but not sure due to assumptions do
 * VPL-VW885ES
 * VPL-VW995ES
 
-Control of other (HW or VW) models could work with the binding by selecting one of the supported models but without any guarantee. Here is a list of potential candidates:
+Control of other (HW or VW) models could work with the binding by selecting one of the supported models but without any guarantee.
+Here is a list of potential candidates:
 
 * VPL-VW10HT
 * VPL-VW11HT
@@ -87,11 +94,13 @@ This binding supports the following thing types:
 
 ## Discovery
 
-Discovery is not supported at the moment. You have to add all things manually.
+Discovery is not supported at the moment.
+You have to add all things manually.
 
 ## Binding Configuration
 
-There are no overall binding configuration settings that need to be set. All settings are through thing configuration parameters.
+There are no overall binding configuration settings that need to be set.
+All settings are through thing configuration parameters.
 
 ## Thing Configuration
 

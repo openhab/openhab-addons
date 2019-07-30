@@ -188,8 +188,8 @@
 	<channel-type id="lampusetime" advanced="true">
 		<item-type>Number</item-type>
 		<label>Lamp Use Time</label>
-		<description>Indicate how long the lamp has been turned on</description>
-		<state readOnly="true"></state>
+		<description>Indicate how long the lamp has been turned on in hours</description>
+		<state readOnly="true" pattern="%d h"></state>
 	</channel-type>
 
 </thing:thing-descriptions>
