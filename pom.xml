@@ -118,13 +118,6 @@
     </dependencies>
   </dependencyManagement>
 
-  <repositories>
-    <repository>
-      <id>osgiify</id>
-      <url>https://dl.bintray.com/openhab/mvn/openhab-osgiify</url>
-    </repository>
-  </repositories>
-
   <build>
     <pluginManagement>
       <plugins>
