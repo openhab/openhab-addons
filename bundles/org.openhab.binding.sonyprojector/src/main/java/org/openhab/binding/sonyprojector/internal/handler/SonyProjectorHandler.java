@@ -92,16 +92,13 @@ public class SonyProjectorHandler extends BaseThingHandler {
                     channel);
             return;
         }
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            logger.debug("Thing is not ONLINE; command {} from channel {} is ignored", command, channel);
-            return;
-        }
 
         synchronized (commandLock) {
             try {
                 connector.open();
             } catch (SonyProjectorException e) {
                 logger.debug("Command {} from channel {} failed: {}", command, channel, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 return;
             }
             try {
