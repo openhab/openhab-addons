@@ -65,7 +65,7 @@ Fragment-Host: org.openhab.binding.nest
 	org.apache.servicemix.specs.jaxb-api-2.2;version='[2.9.0,2.9.1)',\
 	org.apache.servicemix.specs.stax-api-1.2;version='[2.9.0,2.9.1)',\
 	org.openhab.core.thing.xml;version='[2.5.0,2.5.1)',\
-	slf4j.simple;version='[1.7.21,1.7.22)',\
 	tec.uom.lib.uom-lib-common;version='[1.0.3,1.0.4)',\
 	tec.uom.se;version='[1.0.10,1.0.11)',\
-	org.apache.servicemix.bundles.jaxb-impl;version='[2.2.11,2.2.12)'
+	org.apache.servicemix.bundles.jaxb-impl;version='[2.2.11,2.2.12)',\
+	ch.qos.logback.classic;version='[1.2.3,1.2.4)'
