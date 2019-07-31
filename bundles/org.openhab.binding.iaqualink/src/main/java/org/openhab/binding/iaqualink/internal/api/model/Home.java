@@ -224,7 +224,7 @@ public class Home {
         this.ph = ph;
     }
 
-    public Map<String, String> getSerilaizedMap() {
+    public Map<String, String> getSerializedMap() {
         return serializedMap;
     }
 }

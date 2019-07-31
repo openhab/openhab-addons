@@ -43,5 +43,5 @@ public class IAqualinkConfiguration {
     /**
      * Rate we poll for new data
      */
-    public Integer refresh;
+    public int refresh;
 }

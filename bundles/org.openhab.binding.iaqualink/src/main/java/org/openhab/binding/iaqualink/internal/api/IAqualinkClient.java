@@ -72,7 +72,16 @@ public class IAqualinkClient {
     private static final String SUPPORT_URL = "https://support.iaqualink.com";
     private static final String SIGNIN_PATH = "%s/users/sign_in.json";
     private static final String DEVICES_PATH = "%s/devices.json?api_key=%s&authentication_token=%s&user_id=%s";
-    private static final String IAQUALINK_URL = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=%s&serial=%s&sessionID=%s";
+    private static final String IAQUALINK_BASE = "https://p-api.iaqualink.net/v1/mobile/session.json?actionID=command";
+    private static final String IAQUALINK_URL_COMMAND = IAQUALINK_BASE + "&command=%s&serial=%s&sessionID=%s";
+    private static final String IAQUALINK_URL_TEMP_POOL = IAQUALINK_BASE
+            + "&command=set_temps&temp2=%s&serial=%s&sessionID=%s";
+    private static final String IAQUALINK_URL_TEMP_SPA = IAQUALINK_BASE
+            + "&command=set_temps&temp1=%s&serial=%s&sessionID=%s";
+    private static final String IAQUALINK_URL_LIGHT = IAQUALINK_BASE
+            + "&aux=%s&command=set_light&light=%s&subtype=%s&serial=%s&sessionID=%s";
+    private static final String IAQUALINK_URL_DIMMER = IAQUALINK_BASE
+            + "&aux=%s&command=set_dimmer&level=%s&serial=%s&sessionID=%s";
 
     private Gson gson = new GsonBuilder().registerTypeAdapter(Home.class, new HomeDeserializer())
             .registerTypeAdapter(OneTouch[].class, new OneTouchDeserializer())
@@ -179,7 +188,7 @@ public class IAqualinkClient {
      */
     public Auxiliary[] getAux(@Nullable String serialNumber, @Nullable String sessionId)
             throws IOException, NotAuthorizedException {
-        return getAqualinkObject(String.format(IAQUALINK_URL, "get_devices", serialNumber, sessionId),
+        return getAqualinkObject(String.format(IAQUALINK_URL_COMMAND, "get_devices", serialNumber, sessionId),
                 Auxiliary[].class);
     }
 
@@ -195,7 +204,7 @@ public class IAqualinkClient {
      */
     public Home homeScreenCommand(@Nullable String serialNumber, @Nullable String sessionId, String command)
             throws IOException, NotAuthorizedException {
-        return getAqualinkObject(String.format(IAQUALINK_URL, command, serialNumber, sessionId), Home.class);
+        return getAqualinkObject(String.format(IAQUALINK_URL_COMMAND, command, serialNumber, sessionId), Home.class);
     }
 
     /**
@@ -210,11 +219,12 @@ public class IAqualinkClient {
      */
     public Auxiliary[] auxCommand(@Nullable String serialNumber, @Nullable String sessionId, String command)
             throws IOException, NotAuthorizedException {
-        return getAqualinkObject(String.format(IAQUALINK_URL, command, serialNumber, sessionId), Auxiliary[].class);
+        return getAqualinkObject(String.format(IAQUALINK_URL_COMMAND, command, serialNumber, sessionId),
+                Auxiliary[].class);
     }
 
     /**
-     * Sends an Auxiliary command
+     * Sends an Auxiliary light command
      *
      * @param serialNumber
      * @param sessionId
@@ -224,10 +234,27 @@ public class IAqualinkClient {
      * @throws IOException
      * @throws NotAuthorizedException
      */
-    public Auxiliary[] auxCommand(@Nullable String serialNumber, @Nullable String sessionId, String command,
-            int lightValue) throws IOException, NotAuthorizedException {
+    public Auxiliary[] lightCommand(@Nullable String serialNumber, @Nullable String sessionId, String auxId,
+            String lightValue, String subType) throws IOException, NotAuthorizedException {
         return getAqualinkObject(
-                String.format(IAQUALINK_URL + "&light=%s&subtype=5", command, serialNumber, sessionId, lightValue),
+                String.format(IAQUALINK_URL_LIGHT, auxId, lightValue, subType, serialNumber, sessionId),
+                Auxiliary[].class);
+    }
+
+    /**
+     * Sends a Auxiliary dimmer command
+     *
+     * @param serialNumber
+     * @param sessionId
+     * @param auxId
+     * @param lightValue
+     * @return
+     * @throws IOException
+     * @throws NotAuthorizedException
+     */
+    public Auxiliary[] dimmerCommand(@Nullable String serialNumber, @Nullable String sessionId, String auxId,
+            String lightValue) throws IOException, NotAuthorizedException {
+        return getAqualinkObject(String.format(IAQUALINK_URL_DIMMER, auxId, lightValue, serialNumber, sessionId),
                 Auxiliary[].class);
     }
 
@@ -241,10 +268,9 @@ public class IAqualinkClient {
      * @throws IOException
      * @throws NotAuthorizedException
      */
-    public Home setSpaTemp(@Nullable String serialNumber, @Nullable String sessionId, int spaSetpoint)
+    public Home setSpaTemp(@Nullable String serialNumber, @Nullable String sessionId, float spaSetpoint)
             throws IOException, NotAuthorizedException {
-        return getAqualinkObject(
-                String.format(IAQUALINK_URL + "&temp1=%s", "set_temps", serialNumber, sessionId, spaSetpoint),
+        return getAqualinkObject(String.format(IAQUALINK_URL_TEMP_SPA, spaSetpoint, serialNumber, sessionId),
                 Home.class);
     }
 
@@ -258,10 +284,9 @@ public class IAqualinkClient {
      * @throws IOException
      * @throws NotAuthorizedException
      */
-    public Home setPoolTemp(@Nullable String serialNumber, @Nullable String sessionId, int poolSetpoint)
+    public Home setPoolTemp(@Nullable String serialNumber, @Nullable String sessionId, float poolSetpoint)
             throws IOException, NotAuthorizedException {
-        return getAqualinkObject(
-                String.format(IAQUALINK_URL + "&temp2=%s", "set_temps", serialNumber, sessionId, poolSetpoint),
+        return getAqualinkObject(String.format(IAQUALINK_URL_TEMP_POOL, poolSetpoint, serialNumber, sessionId),
                 Home.class);
     }
 
@@ -277,7 +302,8 @@ public class IAqualinkClient {
      */
     public OneTouch[] oneTouchCommand(@Nullable String serialNumber, @Nullable String sessionId, String command)
             throws IOException, NotAuthorizedException {
-        return getAqualinkObject(String.format(IAQUALINK_URL, command, serialNumber, sessionId), OneTouch[].class);
+        return getAqualinkObject(String.format(IAQUALINK_URL_COMMAND, command, serialNumber, sessionId),
+                OneTouch[].class);
     }
 
     /**

@@ -51,7 +51,7 @@
 				<label>Spa Heater Status</label>
 				<description>Spa heater status</description>
 			</channel>
-			<channel id="spa_heater" typeId="equipment-heater">
+			<channel id="spa_heater" typeId="equipment-switch">
 				<label>Spa Heater Switch</label>
 				<description>Spa heater switch</description>
 			</channel>
@@ -94,6 +94,7 @@
 				<description>The user name to use when connecting to a iAqualink Account</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
+				<context>password</context>
 				<label>Password</label>
 				<description>The password to use when connecting to a iAqualink Account</description>
 			</parameter>
@@ -110,7 +111,7 @@
 				</description>
 			</parameter>
 			<parameter name="apiKey" type="text" required="false">
-				<label>Serial Number</label>
+				<label>API Key</label>
 				<description>Optionally specify the API key used for access. This is only useful for debugging or if the API key is
 					changed by the vendor
 				</description>
@@ -124,9 +125,7 @@
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>
-		<description>
-			The status of iAqualink connection
-		</description>
+		<description>The status of the iAqualink connection</description>
 		<state readOnly="true" />
 
 	</channel-type>
@@ -134,9 +133,7 @@
 	<channel-type id="system_type" advanced="true">
 		<item-type>String</item-type>
 		<label>System Type</label>
-		<description>
-			System Type
-		</description>
+		<description> System Type</description>
 		<state readOnly="true" />
 
 	</channel-type>
@@ -149,14 +146,66 @@
 		<description>The current state of auxiliary channel</description>
 	</channel-type>
 
-	<!-- See http://www.autelis.com/wiki/index.php?title=Pool_Control_HTTP_Command_Reference&oldid=861 for colors -->
-	<channel-type id="aux-number">
-		<item-type>Number</item-type>
-		<label>Auxiliary Number</label>
+	<channel-type id="aux-dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Auxiliary Dimmer</label>
 		<description>The current state of auxiliary channel</description>
+		<state step="25"></state>
+	</channel-type>
+
+	<channel-type id="aux-jandycolor">
+		<item-type>String</item-type>
+		<label>Jandy Color Lighting</label>
+		<description>Jandy Color Lighting Channel</description>
 		<state>
 			<options>
-				<option value="0">None</option>
+				<option value="off">Off</option>
+				<option value="on">On</option>
+				<option value="1">Alpine White</option>
+				<option value="2">Sky Blue</option>
+				<option value="3">Cobalt Blue</option>
+				<option value="4">Caribbean Blue</option>
+				<option value="5">Spring Green</option>
+				<option value="6">Emerald Green</option>
+				<option value="7">Emerald Rose</option>
+				<option value="8">Magenta</option>
+				<option value="9">Garnet Red</option>
+				<option value="10">Violet</option>
+				<option value="11">Color Splash</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="aux-pentairsam">
+		<item-type>String</item-type>
+		<label>Pentair SAm/SAL Lighting</label>
+		<description>Pentair SAm/SAL Lighting Channel</description>
+		<state>
+			<options>
+				<option value="off">Off</option>
+				<option value="on">On</option>
+				<option value="1">White</option>
+				<option value="2">Light Green</option>
+				<option value="3">Green</option>
+				<option value="4">Cyan</option>
+				<option value="5">Blue</option>
+				<option value="6">Lavender</option>
+				<option value="7">Magenta</option>
+				<option value="8">Light Magenta</option>
+				<option value="9">Color Splash</option>
+
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="aux-jandyled">
+		<item-type>String</item-type>
+		<label>Jandy Led Water Colors Lighting</label>
+		<description>Jandy Led Water Colors Lighting Channel</description>
+		<state>
+			<options>
+				<option value="off">Off</option>
+				<option value="on">On</option>
 				<option value="1">Alpine White</option>
 				<option value="2">Sky Blue</option>
 				<option value="3">Cobalt Blue</option>
@@ -175,17 +224,52 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="aux-dimmer">
-		<item-type>Dimmer</item-type>
-		<label>Auxiliary Dimmer</label>
-		<description>The current state of auxiliary channel</description>
+	<channel-type id="aux-pentairib">
+		<item-type>String</item-type>
+		<label>Pentair intelliBrite Lighting</label>
+		<description>Pentair intelliBrite Lighting Channel</description>
 		<state>
 			<options>
-				<option value="0">Off</option>
-				<option value="25">25%</option>
-				<option value="50">50%</option>
-				<option value="75">75%</option>
-				<option value="100">100%</option>
+				<option value="off">Off</option>
+				<option value="on">On</option>
+				<option value="1">SAM</option>
+				<option value="2">Party</option>
+				<option value="3">Romance</option>
+				<option value="4">Caribbean</option>
+				<option value="5">American</option>
+				<option value="6">Cal Sunset</option>
+				<option value="7">Royal</option>
+				<option value="8">Blue</option>
+				<option value="9">Green</option>
+				<option value="10">Red</option>
+				<option value="11">White</option>
+				<option value="12">Magenta</option>
+				<option value="13">Hold</option>
+				<option value="14">Recall</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="aux-hayward">
+		<item-type>String</item-type>
+		<label>Hayward Universal Lighting</label>
+		<description>Hayward Universal Lighting Channel</description>
+		<state>
+			<options>
+				<option value="off">Off</option>
+				<option value="on">On</option>
+				<option value="1">Voodoo Lounge</option>
+				<option value="2">Deep Blue Sea</option>
+				<option value="3">Afternoon Skies</option>
+				<option value="4">Emerald</option>
+				<option value="5">Sangria</option>
+				<option value="6">Cloud White</option>
+				<option value="7">Twilight</option>
+				<option value="8">Tranquility</option>
+				<option value="9">Gemstone</option>
+				<option value="10">USA!</option>
+				<option value="11">Mardi Gras</option>
+				<option value="12">Cool Caberet</option>
 			</options>
 		</state>
 	</channel-type>
@@ -203,20 +287,20 @@
 	</channel-type>
 
 	<channel-type id="equipment-heater">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Heater</label>
 		<description>The current state of the heater</description>
 		<state readOnly="true">
 			<options>
-				<option value="0">Off</option>
-				<option value="1">Heating</option>
-				<option value="3">Enabled</option>
+				<option value="off">Off</option>
+				<option value="heating">Heating</option>
+				<option value="enabled">Enabled</option>
 			</options>
 		</state>
 	</channel-type>
 
 	<channel-type id="setpoint">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Setpoint</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" />
@@ -224,7 +308,7 @@
 	</channel-type>
 
 	<channel-type id="temperature">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true" />
@@ -234,13 +318,8 @@
 	<channel-type id="temperature_scale" advanced="true">
 		<item-type>String</item-type>
 		<label>Temperature Units</label>
-		<description>The selected units for temperature</description>
-		<state readOnly="true">
-			<options>
-				<option value="F">Fahrenheit</option>
-				<option value="C">Celsius</option>
-			</options>
-		</state>
+		<description>The selected units for temperature (C or F)</description>
+		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="chemical">
@@ -248,6 +327,5 @@
 		<label>Chemical</label>
 		<category>Other</category>
 		<state readOnly="true" />
-
 	</channel-type>
 </thing:thing-descriptions>
