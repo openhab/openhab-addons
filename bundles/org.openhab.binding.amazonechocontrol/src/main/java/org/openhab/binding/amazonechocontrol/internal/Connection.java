@@ -12,12 +12,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_APPLIANCE_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_BRIGHTNESS;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_COLOR;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.INTERFACE_COLOR_TEMPERATURE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_LIGHT;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_LIGHT_GROUP;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,8 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -86,6 +79,7 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonExchangeTokenRes
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMusicProvider;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNetworkDetails;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationRequest;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
@@ -104,7 +98,6 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppRespo
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppResponse.Success;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppResponse.Tokens;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRenewTokenResponse;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDeviceAlias;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeGroups.SmartHomeGroup;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonStartRoutineRequest;
@@ -925,107 +918,45 @@ public class Connection {
         return new WakeWord[0];
     }
 
-    public List<SmartHomeDevice> getSmarthomeDeviceList() throws IOException, URISyntaxException {
-        JsonObject json = new JsonParser().parse(getSmarthomeDeviceListJson()).getAsJsonObject();
-        JsonObject smartHomeDevices = json.get("networkDetail").getAsJsonObject().get("locationDetails")
-                .getAsJsonObject().get("locationDetails").getAsJsonObject().get("Default_Location").getAsJsonObject()
-                .get("amazonBridgeDetails").getAsJsonObject().get("amazonBridgeDetails").getAsJsonObject()
-                .get("LambdaBridge_AAA/SonarCloudService").getAsJsonObject().get("applianceDetails").getAsJsonObject()
-                .get("applianceDetails").getAsJsonObject();
-        ArrayList<SmartHomeDevice> smartHomeDeviceArray = new ArrayList<>();
-        Set<String> keys = smartHomeDevices.keySet();
-        for (String key : keys) {
-            JsonObject keyObject = smartHomeDevices.get(key).getAsJsonObject();
-            SmartHomeDevice shd = parseJson(keyObject.toString(), SmartHomeDevice.class);
-            if (keyObject.get("aliases").getAsJsonArray().size() > 0) {
-                shd.alias = new JsonSmartHomeDeviceAlias[1];
-                shd.alias[0] = new JsonSmartHomeDeviceAlias(
-                        keyObject.get("aliases").getAsJsonArray().get(0).getAsJsonObject().get("friendlyName")
-                                .getAsString(),
-                        keyObject.get("aliases").getAsJsonArray().get(0).getAsJsonObject().get("enabled")
-                                .getAsBoolean());
-            }
-            if (keyObject.get("tags").getAsJsonObject().get("tagNameToValueSetMap").getAsJsonObject().size() > 0) {
-                shd.groupIdentity = keyObject.get("tags").getAsJsonObject().get("tagNameToValueSetMap")
-                        .getAsJsonObject().get("groupIdentity").getAsJsonArray().get(0).getAsString();
-            }
-            if (keyObject.get("capabilities").getAsJsonArray().size() > 0) {
-                for (JsonElement obj : keyObject.get("capabilities").getAsJsonArray()) {
-                    String interfaceName = ((JsonObject) obj).get("interfaceName").getAsString();
-                    if (interfaceName.equals(INTERFACE_BRIGHTNESS)) {
-                        shd.brightness = true;
-                    } else if (interfaceName.equals(INTERFACE_COLOR_TEMPERATURE)) {
-                        shd.colorTemperature = true;
-                    } else if (interfaceName.equals(INTERFACE_COLOR)) {
-                        shd.color = true;
-                    }
-                }
-            }
+    public List<Object> getSmarthomeDeviceList() throws IOException, URISyntaxException {
+        try {
+            String json = makeRequestAndReturnString(alexaServer + "/api/phoenix");
+            logger.debug("getSmartHomeDevices result: {}", json);
 
-            if (!shd.manufacturerName.contains("Amazon") && !shd.friendlyDescription.contains("Amazon")) {
-                smartHomeDeviceArray.add(shd);
-            }
+            JsonNetworkDetails networkDetails = parseJson(json, JsonNetworkDetails.class);
+            Object jsonObject = gson.fromJson(networkDetails.networkDetail, Object.class);
+            List<Object> result = new ArrayList<>();
+            searchSmartHomeDevicesRecursive(jsonObject, result);
+
+            return result;
+        } catch (Exception e) {
+            logger.warn("getSmartHomeDevices fails: {}", e.getMessage());
+            throw e;
         }
-
-        List<SmartHomeGroup> groups = this.getSmarthomeDeviceGroups();
-
-        for (SmartHomeGroup group : groups) {
-            String uuid = UUID.randomUUID().toString();
-            JsonSmartHomeDeviceAlias[] alias = new JsonSmartHomeDeviceAlias[1];
-            ArrayList<SmartHomeDevice> smartDevices = new ArrayList<>();
-
-            for (int i = 0; i < smartHomeDeviceArray.size(); ++i) {
-                if (smartHomeDeviceArray.get(i).groupIdentity != null && group.applianceGroupIdentifier != null) {
-                    String groupIdentity = smartHomeDeviceArray.get(i).groupIdentity;
-                    @SuppressWarnings("null")
-                    String applianceGroupIdentifier = group.applianceGroupIdentifier.value;
-                    if (groupIdentity != null && groupIdentity.equals(applianceGroupIdentifier)) {
-                        smartDevices.add(smartHomeDeviceArray.get(i));
-                        if (group.applianceGroupName != null) {
-                            alias[0] = new JsonSmartHomeDeviceAlias(group.applianceGroupName, true);
-                        }
-                    }
-                }
-            }
-
-            SmartHomeDevice[] smartDevicesArray = new SmartHomeDevice[smartDevices.size()];
-            smartDevices.toArray(smartDevicesArray);
-
-            if (group.applianceGroupName != null) {
-                SmartHomeDevice shdGroup = new SmartHomeDevice(uuid, "Amazon", "Amazon Light Group",
-                        group.applianceGroupName, "reachable", uuid, alias, smartDevicesArray);
-
-                smartHomeDeviceArray.add(shdGroup);
-            }
-
-        }
-
-        if (smartHomeDeviceArray.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        return smartHomeDeviceArray;
     }
 
-    public List<SmartHomeGroup> getSmarthomeDeviceGroups() throws IOException, URISyntaxException {
-        JsonObject json = new JsonParser().parse(getSmarthomeDeviceListJson()).getAsJsonObject();
-        JsonObject smartHomeGroups = json.get("networkDetail").getAsJsonObject().get("locationDetails")
-                .getAsJsonObject().get("locationDetails").getAsJsonObject().get("Default_Location").getAsJsonObject()
-                .get("applianceGroups").getAsJsonObject().get("applianceGroups").getAsJsonObject();
-        ArrayList<SmartHomeGroup> smartHomeGroupArray = new ArrayList<>();
-        Set<String> keys = smartHomeGroups.keySet();
-        for (String key : keys) {
-            JsonObject keyObject = smartHomeGroups.get(key).getAsJsonObject();
-            SmartHomeGroup shg = parseJson(keyObject.toString(), SmartHomeGroup.class);
-
-            smartHomeGroupArray.add(shg);
+    private void searchSmartHomeDevicesRecursive(@Nullable Object jsonNode, List<Object> devices) {
+        if (jsonNode instanceof Map) {
+            @SuppressWarnings("rawtypes")
+            Map map = (Map) jsonNode;
+            if (map.containsKey("entityId") && map.containsKey("friendlyName") && map.containsKey("actions")) {
+                // device node found, create type element and add it to the results
+                JsonElement element = gson.toJsonTree(jsonNode);
+                if (element.getAsJsonObject().get("applianceId").getAsString().contains("AAA")) {
+                    SmartHomeDevice shd = parseJson(element.toString(), SmartHomeDevice.class);
+                    devices.add(shd);
+                }
+            } else if (map.containsKey("applianceGroupName")) {
+                JsonElement element = gson.toJsonTree(jsonNode);
+                SmartHomeGroup shg = parseJson(element.toString(), SmartHomeGroup.class);
+                devices.add(shg);
+            } else {
+                for (Object key : map.keySet()) {
+                    Object value = map.get(key);
+                    searchSmartHomeDevicesRecursive(value, devices);
+                }
+            }
         }
-
-        if (smartHomeGroupArray.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        return smartHomeGroupArray;
     }
 
     // Need to cache the light colors here
@@ -1059,14 +990,6 @@ public class Connection {
             return new ArrayList<>();
         }
         return new ArrayList<>(Arrays.asList(result));
-    }
-
-    public String getSmarthomeDeviceListJson() throws IOException, URISyntaxException {
-        String json = makeRequestAndReturnString(alexaServer + "/api/phoenix?includeRelationships=true");
-        json = json.replace("\\", "");
-        json = json.replace("\"{", "{");
-        json = json.replace("}\"", "}");
-        return json;
     }
 
     public String getDeviceListJson() throws IOException, URISyntaxException {

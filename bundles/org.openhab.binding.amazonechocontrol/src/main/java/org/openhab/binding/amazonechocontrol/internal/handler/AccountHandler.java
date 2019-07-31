@@ -570,14 +570,14 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         return null;
     }
 
-    public List<SmartHomeDevice> updateSmartHomeDeviceList() {
+    public List<Object> updateSmartHomeDeviceList() {
 
         Connection currentConnection = connection;
         if (currentConnection == null) {
-            return new ArrayList<SmartHomeDevice>();
+            return new ArrayList<Object>();
         }
 
-        List<SmartHomeDevice> smartHomeDevices = null;
+        List<Object> smartHomeDevices = null;
         try {
             if (currentConnection.getIsLoggedIn()) {
                 smartHomeDevices = currentConnection.getSmarthomeDeviceList();
@@ -587,10 +587,13 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         }
         if (smartHomeDevices != null) {
             Map<String, SmartHomeDevice> newJsonSerialDeviceMapping = new HashMap<>();
-            for (SmartHomeDevice smartDevice : smartHomeDevices) {
-                String entityId = smartDevice.entityId;
-                if (entityId != null) {
-                    newJsonSerialDeviceMapping.put(entityId, smartDevice);
+            for (Object smartDevice : smartHomeDevices) {
+                if (smartDevice instanceof SmartHomeDevice) {
+                    SmartHomeDevice shd = (SmartHomeDevice) smartDevice;
+                    String entityId = shd.entityId;
+                    if (entityId != null) {
+                        newJsonSerialDeviceMapping.put(entityId, shd);
+                    }
                 }
             }
         }
@@ -598,7 +601,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             return smartHomeDevices;
         }
 
-        return new ArrayList<SmartHomeDevice>();
+        return new ArrayList<Object>();
     }
 
     public List<Device> updateDeviceList() {
