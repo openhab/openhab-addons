@@ -4,11 +4,16 @@ This binding uses the REST API of [BSB-LPB-PPS-LAN](https://github.com/fredlcore
 
 ## Supported Things
 
-Currently only retrieving parameters of a connected BSB-LAN device is supported.
+This binding supports the following thing types:
+
+| Thing Type  | Description                                                    |
+|-------------|----------------------------------------------------------------|
+| bridge      | Represents the BSB-LAN device.                                 |
+| parameter   | Represents a single parameter available at the BSB-LAN device. |
 
 ## Discovery
 
-There is no discovery implemented. You have to create your things manually and specify the hostname/IP of the BSB-LAN device.
+There is no discovery implemented. You have to create your Things manually and specify the hostname/IP of the BSB-LAN device in the Bridge.
 
 ## Binding Configuration
 
@@ -20,7 +25,7 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 | Property         | Default | Required | Type    | Description                                                                                |
 |------------------|---------|----------|---------|--------------------------------------------------------------------------------------------|
-| hostname         | -       | Yes      | String  | The hostname or IP address of the BSB-LAN device.                                          |
+| host             | -       | Yes      | String  | The hostname or IP address of the BSB-LAN device.                                          |
 | passkey          | -       | No       | String  | The passkey required to access the BSB-LAN device.                                         |
 | username         | -       | No       | String  | The username required to access the BSB-LAN device (when using HTTP Basic Authentication). |
 | password         | -       | No       | String  | The password required to access the BSB-LAN device (when using HTTP Basic Authentication). |
@@ -41,7 +46,7 @@ The binding has no configuration options, all configuration is done at Thing lev
 | Channel ID   | Item Type | Description                                                                        |
 |--------------|-----------|------------------------------------------------------------------------------------|
 | name         | String    | Name of the parameter as provided by the BSB-LAN device.                           |
-| number-value | Number    | Value of the parameter converted to a numerical value (if possible).               |
+| number-value | Number    | Value of the parameter converted to a numerical value (if possible).<br />The value is published as `DecimalType(int)` for values of `datatype` `DT_ENUM` and `DecimalType(double)` otherwise. |
 | string-value | String    | Value of the parameter as provided by the BSB-LAN device.                          |
 | switch-value | Switch    | Value of the parameter.<br />`0` is interpreted as `OFF`, everything else as `ON`. |
 | unit         | String    | Unit as provided by the BSB-LAN device (HTML unescaping applied).                  |
@@ -53,7 +58,7 @@ The binding has no configuration options, all configuration is done at Thing lev
 bsblan.things:
 
 ```
-Bridge bsblan:bridge:heating [hostname="192.168.1.100", refreshInterval=30, username="atari", password="800xl"] {
+Bridge bsblan:bridge:heating [host="192.168.1.100", refreshInterval=30, username="atari", password="800xl"] {
     Thing parameter p700  [id=700]
     Thing parameter p710  [id=710]
     Thing parameter p8730 [id=8730]

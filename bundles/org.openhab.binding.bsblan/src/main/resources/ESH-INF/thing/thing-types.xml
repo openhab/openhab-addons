@@ -28,17 +28,17 @@
 			</parameter>
 			<parameter name="setId" type="integer" required="false" groupName="Change Requests">
 				<label>Parameter ID</label>
-				<description>Parameter identifier used for set requests</description>
+				<description>Parameter identifier used for change requests</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="setType" type="integer" required="false" groupName="Change Requests">
 				<label>Message Type</label>
-				<description>Message type used for set requests</description>
-				<default>0</default>
+				<description>Message type used for change requests</description>
+				<default>1</default>
 				<advanced>true</advanced>
 				<options>
-					<option value="0">SET</option>
-					<option value="1">INF</option>
+					<option value="0">INF</option>
+					<option value="1">SET</option>
 				</options>
 			</parameter>
 		</config-description>

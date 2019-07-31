@@ -25,14 +25,13 @@ import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterQueryResponse;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetRequest;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetResponse;
+import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetResult;
 import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.LongSerializationPolicy;
 
 import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
 
@@ -65,7 +64,8 @@ public class BsbLanApiCaller {
         return makeRestCall(BsbLanApiParameterQueryResponse.class, "GET", apiPath, "");
     }
 
-    public BsbLanApiParameterSetResponse setParameter(Integer parameterId, String value, BsbLanApiParameterSetRequest.Type type) {
+    public boolean setParameter(Integer parameterId, String value, BsbLanApiParameterSetRequest.Type type) {
+        // prepare request content
         BsbLanApiParameterSetRequest request = new BsbLanApiParameterSetRequest();
         request.parameter = parameterId.toString();
         request.value = value;
@@ -73,8 +73,29 @@ public class BsbLanApiCaller {
 
         Gson gson = new Gson();
         String content = gson.toJson(request);
+        logger.debug("api request content: '{}'", content);
 
-        return makeRestCall(BsbLanApiParameterSetResponse.class, "POST", "/JS", content);
+        // make REST call and process response
+        BsbLanApiParameterSetResponse setResponse = makeRestCall(BsbLanApiParameterSetResponse.class, "POST", "/JS", content);
+        if (setResponse == null) {
+            logger.warn("Failed to set parameter {} to '{}': no response received", parameterId, value);
+            return false;
+        }
+
+        BsbLanApiParameterSetResult result = setResponse.getOrDefault(parameterId, null);
+        if (result == null) {
+            logger.warn("Failed to set parameter {} to '{}'': result is null", parameterId, value);
+            return false;
+        }
+        if (result.status == null) {
+            logger.warn("Failed to set parameter {} to '{}': status is null", parameterId, value);
+            return false;
+        }
+        if (result.status != BsbLanApiParameterSetResult.Status.SUCCESS) {
+            logger.info("Failed to set parameter {} to '{}': status = {}", parameterId, value, result.status);
+            return false;
+        }
+        return true;
     }
 
     private String createApiBaseUrl() {
@@ -83,7 +104,7 @@ public class BsbLanApiCaller {
         if (StringUtils.trimToNull(bridgeConfig.username) != null && StringUtils.trimToNull(bridgeConfig.password) != null) {
             url.append(bridgeConfig.username + ":" + bridgeConfig.password + "@");
         }
-        url.append(bridgeConfig.hostname);
+        url.append(bridgeConfig.host);
         if (StringUtils.trimToNull(bridgeConfig.passkey) != null) {
             url.append("/" + bridgeConfig.passkey);
         }
@@ -115,7 +136,7 @@ public class BsbLanApiCaller {
                 return null;
             }
 
-            logger.debug("apiResponse = {}", response);
+            logger.debug("api response content: '{}''", response);
 
             Gson gson = new Gson();
             T result = gson.fromJson(response, responseType);
@@ -126,7 +147,7 @@ public class BsbLanApiCaller {
 
             return result;
         } catch (JsonSyntaxException | IOException | IllegalStateException e) {
-            logger.debug("Error running bsb-lan request: {}", e.getMessage());
+            logger.debug("Error executing bsb-lan api request: {}", e.getMessage());
             return null;
         }
     }

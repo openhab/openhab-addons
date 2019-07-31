@@ -19,7 +19,7 @@ package org.openhab.binding.bsblan.internal.configuration;
  * @author Peter Schraffl - Initial contribution
  */
 public class BsbLanBridgeConfiguration {
-    public String hostname;
+    public String host;
     public String passkey;
     public String username;
     public String password;

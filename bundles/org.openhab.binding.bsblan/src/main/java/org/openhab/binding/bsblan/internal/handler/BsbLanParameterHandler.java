@@ -25,8 +25,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
 import org.openhab.binding.bsblan.internal.configuration.BsbLanParameterConfiguration;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterQueryResponse;
-import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetResponse;
-import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetResult;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetRequest;
 import org.openhab.binding.bsblan.internal.BsbLanBindingConstants;
 import org.openhab.binding.bsblan.internal.BsbLanBindingConstants.Channels;
@@ -93,14 +91,14 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
 
     private void updateChannel(String channelId, BsbLanApiParameterQueryResponse data) {
         if (data == null) {
-            // todo: add log entry - no data received
+            logger.warn("no data available while updating channel '{}' of parameter {}", channelId, parameterConfig.id);
             updateStatus(ThingStatus.OFFLINE);
             return;
         }
 
         BsbLanApiParameter parameter = data.getOrDefault(parameterConfig.id, null);
         if (parameter == null){
-            // todo: add log entry - parameter not contained in response
+            logger.warn("parameter {} not part of response data", parameterConfig.id);
             updateStatus(ThingStatus.OFFLINE);
             return;
         }
@@ -244,30 +242,15 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
 
         BsbLanApiCaller api = getApiCaller();
 
-        BsbLanApiParameterSetResponse setResponse = api.setParameter(parameterConfig.setId, value, parameterConfig.setType);
-        if (setResponse == null) {
-            logger.warn("Failed to set parameter {} to '{}' for channel '{}': no response received", parameterConfig.setId, value, channelId);
-            return;
-        }
-
-        BsbLanApiParameterSetResult result = setResponse.getOrDefault(parameterConfig.setId, null);
-        if (result == null){
-            logger.warn("Failed to set parameter {} to '{}' for channel '{}': result is null", parameterConfig.setId, value, channelId);
-            return;
-        }
-        if (result.status == null) {
-            logger.warn("Failed to set parameter {} to '{}' for channel '{}': status is null", parameterConfig.setId, value, channelId);
-            return;
-        }
-        if (result.status != BsbLanApiParameterSetResult.Status.SUCCESS) {
-            logger.warn("Failed to set parameter {} to '{}' for channel '{}': Status = {}", parameterConfig.setId, value, channelId, result.status);
-            return;
+        boolean success = api.setParameter(parameterConfig.setId, value, parameterConfig.setType);
+        if (!success) {
+            logger.warn("Failed to set parameter {} to '{}' for channel '{}'", parameterConfig.setId, value, channelId);
         }
 
         // refresh value
         BsbLanApiParameterQueryResponse queryResponse = api.queryParameter(parameterConfig.id);
         if (queryResponse == null) {
-            logger.warn("Failed to update parameter {} after set request", parameterConfig.id);
+            logger.warn("Failed to refresh parameter {} after set request", parameterConfig.id);
             return;
         }
 

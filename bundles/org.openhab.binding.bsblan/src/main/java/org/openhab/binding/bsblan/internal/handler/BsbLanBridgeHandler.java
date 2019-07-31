@@ -64,10 +64,10 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         bridgeConfig = getConfigAs(BsbLanBridgeConfiguration.class);
 
-        // validate 'hostname' configuration
-        if (StringUtils.trimToNull(bridgeConfig.hostname) == null) {
+        // validate 'host' configuration
+        if (StringUtils.trimToNull(bridgeConfig.host) == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, 
-                "Parameter 'hostname' is mandatory and must be configured");
+                "Parameter 'host' is mandatory and must be configured");
             return;
         }
 
@@ -105,10 +105,10 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
         if (refreshJob == null || refreshJob.isCancelled()) {
             Runnable runnable = () -> {
                 try {
-                    InetAddress inet = InetAddress.getByName(config.hostname);
+                    InetAddress inet = InetAddress.getByName(config.host);
                     if (!inet.isReachable(5000)) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                            String.format("BSB-LAN device is not reachable at '{}''", config.hostname));
+                            String.format("BSB-LAN device is not reachable at '{}''", config.host));
                         return;
                     }
                 } catch (IOException e) {
