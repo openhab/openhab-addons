@@ -29,8 +29,27 @@ No autodiscovery available
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+### demo.things
 
+```
+Thing omnikinverter:omnik:70ecb4f0 "Solar Inverter" [ omnikHostname="igen-wifi.lan",omnikSerial=604455290]
+```
+
+### demo.items
+
+```
+Number OmnikInverterBindingThing_InstantaneousPower "Solar Power" {channel="omnikinverter:omnik:70ecb4f0:power"}
+Number OmnikInverterBindingThing_TotalGeneratedEnergyToday "Solar Energy Today"  {channel="omnikinverter:omnik:70ecb4f0:energyToday"}
+Number OmnikInverterBindingThing_TotalGeneratedEnergy "Solar Energy Total"  {channel="omnikinverter:omnik:70ecb4f0:energyTotal"}
+```
+
+### Sitemap
+
+```
+Text item=OmnikInverterBindingThing_InstantaneousPower
+Text item=OmnikInverterBindingThing_TotalGeneratedEnergyToday label="Today"
+Text item=OmnikInverterBindingThing_TotalGeneratedEnergy label="Total"
+```
 
 ## References
 
