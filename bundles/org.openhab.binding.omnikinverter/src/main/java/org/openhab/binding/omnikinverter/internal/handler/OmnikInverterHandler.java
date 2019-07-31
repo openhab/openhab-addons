@@ -91,6 +91,9 @@ public class OmnikInverterHandler extends BaseThingHandler {
 
                 updateState(OmnikInverterBindingConstants.CHANNEL_ENERGY_TODAY,
                         new QuantityType<Energy>(message.getEnergyToday(), SmartHomeUnits.KILOWATT_HOUR));
+
+                updateState(OmnikInverterBindingConstants.CHANNEL_ENERGY_TOTAL,
+                        new QuantityType<Energy>(message.getTotalEnergy(), SmartHomeUnits.KILOWATT_HOUR));
             }
         } catch (UnknownHostException | NoRouteToHostException | ConnectException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

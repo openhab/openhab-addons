@@ -10,6 +10,7 @@
 		<channels>
 			<channel id="power" typeId="power" />
 			<channel id="energyToday" typeId="energyToday" />
+			<channel id="energyTotal" typeId="energyTotal" />
 		</channels>
 
 		<config-description>
@@ -41,6 +42,12 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Today</label>
 		<description>The amount of energy generated today</description>
+		<state readOnly="true" pattern="%.2f %unit%" />
+	</channel-type>
+	<channel-type id="energyTotal">
+		<item-type>Number:Energy</item-type>
+		<label>Total Generated Energy</label>
+		<description>The amount of generated energy in total</description>
 		<state readOnly="true" pattern="%.2f %unit%" />
 	</channel-type>
 

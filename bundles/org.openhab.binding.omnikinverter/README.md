@@ -25,6 +25,7 @@ No autodiscovery available
 | :---------------- | :----------   | :------------                        |
 | power             | Number:Power  | The instantaneous power generation   |
 | energyToday       | Number:Energy | The amount of energy generated today |
+| energyTotal       | Number:Energy | The total amount of energy generated |
 
 ## Full Example
 
