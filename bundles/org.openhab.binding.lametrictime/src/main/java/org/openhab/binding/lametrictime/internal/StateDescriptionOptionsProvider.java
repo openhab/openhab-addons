@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -49,11 +50,9 @@ public class StateDescriptionOptionsProvider implements DynamicStateDescriptionP
             return null;
         }
 
-        if (original != null) {
-            return new StateDescription(original.getMinimum(), original.getMaximum(), original.getStep(),
-                    original.getPattern(), original.isReadOnly(), options);
-        }
-        return new StateDescription(null, null, null, null, false, options);
+        StateDescriptionFragmentBuilder builder = (original == null) ? StateDescriptionFragmentBuilder.create()
+                : StateDescriptionFragmentBuilder.create(original);
+        return builder.withOptions(options).build().toStateDescription();
     }
 
     @Deactivate
