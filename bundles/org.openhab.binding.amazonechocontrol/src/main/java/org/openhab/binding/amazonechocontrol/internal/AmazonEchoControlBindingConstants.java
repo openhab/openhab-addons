@@ -86,7 +86,6 @@ public class AmazonEchoControlBindingConstants {
     public static final String CHANNEL_MEDIA_PROGRESS_TIME = "mediaProgressTime";
     public static final String CHANNEL_ASCENDING_ALARM = "ascendingAlarm";
     public static final String CHANNEL_NOTIFICATION_VOLUME = "notificationVolume";
-    public static final String CHANNEL_LIGHT_STATE = "lightState";
     public static final String CHANNEL_LIGHT_COLOR = "lightColor";
     public static final String CHANNEL_LIGHT_WHITE_TEMPERATURE = "whiteTemperature";
     public static final String CHANNEL_LIGHT_BRIGHTNESS = "lightBrightness";
@@ -94,7 +93,7 @@ public class AmazonEchoControlBindingConstants {
     public static final String CHANNEL_NEXT_ALARM = "nextAlarm";
     public static final String CHANNEL_NEXT_MUSIC_ALARM = "nextMusicAlarm";
     public static final String CHANNEL_NEXT_TIMER = "nextTimer";
-    public static final String CHANNEL_PLUG_STATE = "plugState";
+    public static final String CHANNEL_STATE = "state";
 
     public static final String CHANNEL_SAVE = "save";
     public static final String CHANNEL_ACTIVE = "active";
@@ -132,4 +131,9 @@ public class AmazonEchoControlBindingConstants {
     public static final String INTERFACE_COLOR_TEMPERATURE = "Alexa.ColorTemperatureController";
     public static final String INTERFACE_COLOR = "Alexa.ColorController";
     public static final String INTERFACE_POWER = "Alexa.PowerController";
+
+    // List of Item types
+    public static final String ITEM_TYPE_SWITCH = "Switch";
+    public static final String ITEM_TYPE_DIMMER = "Dimmer";
+    public static final String ITEM_TYPE_STRING = "String";
 }

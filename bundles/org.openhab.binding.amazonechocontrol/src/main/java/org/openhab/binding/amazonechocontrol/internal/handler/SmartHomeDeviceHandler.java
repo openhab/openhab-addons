@@ -36,6 +36,8 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
@@ -87,6 +89,35 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
 
+            List<Thing> things = account.getThing().getThings();
+            for (Thing thing : things) {
+                for (String key : thing.getProperties().values()) {
+                    try {
+                        if (key.contains(INTERFACE_POWER)) {
+                            addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_STATE), ITEM_TYPE_SWITCH,
+                                    new ChannelTypeUID(BINDING_ID, CHANNEL_STATE));
+                        }
+
+                        if (key.contains(INTERFACE_BRIGHTNESS)) {
+                            addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_BRIGHTNESS),
+                                    ITEM_TYPE_DIMMER, new ChannelTypeUID(BINDING_ID, CHANNEL_LIGHT_BRIGHTNESS));
+                        }
+
+                        if (key.contains(INTERFACE_COLOR_TEMPERATURE)) {
+                            addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_WHITE_TEMPERATURE),
+                                    ITEM_TYPE_STRING, new ChannelTypeUID(BINDING_ID, CHANNEL_LIGHT_WHITE_TEMPERATURE));
+                        }
+
+                        if (key.contains(INTERFACE_COLOR)) {
+                            addChannelToDevice(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_COLOR), ITEM_TYPE_STRING,
+                                    new ChannelTypeUID(BINDING_ID, CHANNEL_LIGHT_COLOR));
+                        }
+                    } catch (IllegalArgumentException e) {
+                        logger.debug("Exception while adding channel {}.", e);
+                    }
+                }
+            }
+
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
@@ -107,7 +138,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                                     color = connection.getBulbColor(thing);
                                 }
                                 if (state != null) {
-                                    updateBulbState(thing.getChannel(CHANNEL_LIGHT_STATE).getUID(), state);
+                                    updateBulbState(thing.getChannel(CHANNEL_STATE).getUID(), state);
                                 }
                                 if (brightness != -1) {
                                     updateBrightness(thing.getChannel(CHANNEL_LIGHT_BRIGHTNESS).getUID(), brightness);
@@ -131,6 +162,11 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         }
     }
 
+    public void addChannelToDevice(ChannelUID channelUID, String itemType, ChannelTypeUID channelTypeUID) {
+        updateThing(editThing()
+                .withChannel(ChannelBuilder.create(channelUID, itemType).withType(channelTypeUID).build()).build());
+    }
+
     @Override
     public void dispose() {
         ScheduledFuture<?> updateStateJob = this.updateStateJob;
@@ -152,7 +188,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             Map<String, String> props = this.thing.getProperties();
             String entityId = props.get(DEVICE_PROPERTY_LIGHT_ENTITY_ID);
             String channelId = channelUID.getId();
-            if (channelId.equals(CHANNEL_LIGHT_STATE)) {
+            if (channelId.equals(CHANNEL_STATE)) {
                 if (command instanceof OnOffType) {
                     connection = accountHandler.findConnection();
                     for (Map.Entry<String, String> entry : props.entrySet()) {
@@ -220,7 +256,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                     }
                 }
             }
-            if (channelId.equals(CHANNEL_PLUG_STATE)) {
+            if (channelId.equals(CHANNEL_STATE)) {
                 if (command instanceof OnOffType) {
                     connection = accountHandler.findConnection();
 
@@ -272,7 +308,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
     }
 
     public boolean initialize(AccountHandler handler) {
-        updateState(CHANNEL_LIGHT_STATE, OnOffType.OFF);
+        updateState(CHANNEL_STATE, OnOffType.OFF);
         if (this.accountHandler != handler) {
             this.accountHandler = handler;
         }

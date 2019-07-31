@@ -239,12 +239,6 @@
 		</supported-bridge-type-refs>
 		<label>Amazon Echo Light</label>
 		<description>Represents a light in your amazon account</description>
-		<channels>
-			<channel typeId="lightState" id="lightState"></channel>
-			<channel typeId="lightBrightness" id="lightBrightness"></channel>
-			<channel typeId="lightColor" id="lightColor"></channel>
-			<channel typeId="whiteTemperature" id="whiteTemperature"></channel>
-		</channels>
 	</thing-type>
 	<thing-type id="lightGroup">
 		<supported-bridge-type-refs>
@@ -252,12 +246,6 @@
 		</supported-bridge-type-refs>
 		<label>Amazon Echo Light Group</label>
 		<description>Group of light bulbs in your amazon account</description>
-		<channels>
-			<channel typeId="lightState" id="lightState"></channel>
-			<channel typeId="lightBrightness" id="lightBrightness"></channel>
-			<channel typeId="lightColor" id="lightColor"></channel>
-			<channel typeId="whiteTemperature" id="whiteTemperature"></channel>
-		</channels>
 	</thing-type>
 	<channel-type id="save">
 		<item-type>Switch</item-type>
@@ -506,11 +494,6 @@
 		<description>Next timer</description>
 		<state readOnly="true" />
 	</channel-type>
-	<channel-type id="lightState" advanced="false">
-		<item-type>Switch</item-type>
-		<label>State of your bulb</label>
-		<description>State (ON/OFF) of a light</description>
-	</channel-type>
 	<channel-type id="lightColor" advanced="false">
 		<item-type>String</item-type>
 		<label>Color of your bulb</label>
@@ -560,13 +543,10 @@
 		</supported-bridge-type-refs>
 		<label>Amazon Echo Smart Plug</label>
 		<description>Smart plug in your amazon account</description>
-		<channels>
-			<channel typeId="plugState" id="plugState"></channel>
-		</channels>
 	</thing-type>
-	<channel-type id="plugState" advanced="false">
+	<channel-type id="state" advanced="false">
 		<item-type>Switch</item-type>
-		<label>State of your plug</label>
-		<description>State (ON/OFF) of a smart plug</description>
+		<label>State</label>
+		<description>State (ON/OFF)</description>
 	</channel-type>
 </thing:thing-descriptions>

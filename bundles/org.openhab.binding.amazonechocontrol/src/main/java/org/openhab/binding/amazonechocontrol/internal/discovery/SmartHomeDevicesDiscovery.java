@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeGroups.SmartHomeGroup;
 import org.osgi.service.component.annotations.Activate;
@@ -190,6 +191,24 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
                 } else if (((SmartHomeDevice) smartHomeDevice).color == true) {
                     props.put(INTERFACE_COLOR, "true");
                 }
+
+                for (SmartHomeCapability capability : shd.capabilities) {
+                    if (capability.interfaceName.equals(INTERFACE_POWER)) {
+                        props.put("power", INTERFACE_POWER);
+                    }
+
+                    if (capability.interfaceName.equals(INTERFACE_BRIGHTNESS)) {
+                        props.put("brightness", INTERFACE_BRIGHTNESS);
+                    }
+
+                    if (capability.interfaceName.equals(INTERFACE_COLOR_TEMPERATURE)) {
+                        props.put("colorTemperature", INTERFACE_COLOR_TEMPERATURE);
+                    }
+
+                    if (capability.interfaceName.equals(INTERFACE_COLOR)) {
+                        props.put("color", INTERFACE_COLOR);
+                    }
+                }
             }
 
             if (smartHomeDevice instanceof SmartHomeGroup) {
@@ -215,6 +234,26 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
                                 props.put(DEVICE_PROPERTY_APPLIANCE_ID + subDeviceCounter, shd.applianceId);
                             }
                             ++subDeviceCounter;
+                        }
+
+                        for (SmartHomeCapability capability : shd.capabilities) {
+                            if (capability.interfaceName.equals(INTERFACE_POWER) && !props.containsKey("power")) {
+                                props.put("power", INTERFACE_POWER);
+                            }
+
+                            if (capability.interfaceName.equals(INTERFACE_BRIGHTNESS)
+                                    && !props.containsKey("brightness")) {
+                                props.put("brightness", INTERFACE_BRIGHTNESS);
+                            }
+
+                            if (capability.interfaceName.equals(INTERFACE_COLOR_TEMPERATURE)
+                                    && !props.containsKey("colorTemperature")) {
+                                props.put("colorTemperature", INTERFACE_COLOR_TEMPERATURE);
+                            }
+
+                            if (capability.interfaceName.equals(INTERFACE_COLOR) && !props.containsKey("color")) {
+                                props.put("color", INTERFACE_COLOR);
+                            }
                         }
                     }
                 }

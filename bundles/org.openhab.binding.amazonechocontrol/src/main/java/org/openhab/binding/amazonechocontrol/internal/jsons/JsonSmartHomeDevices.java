@@ -15,6 +15,7 @@ package org.openhab.binding.amazonechocontrol.internal.jsons;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDeviceNetworkState.SmartHomeDeviceNetworkState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeTags.JsonSmartHomeTag;
 
 /**
@@ -27,14 +28,17 @@ public class JsonSmartHomeDevices {
         public @Nullable String applianceId;
         public @Nullable String manufacturerName;
         public @Nullable String friendlyDescription;
+        public @Nullable String modelName;
         public @Nullable String friendlyName;
         public @Nullable String reachability;
         public @Nullable String entityId;
+        public @Nullable SmartHomeDeviceNetworkState applianceNetworkState;
         public @Nullable SmartHomeCapability @Nullable [] capabilities;
         public @Nullable JsonSmartHomeTag tags;
         public @Nullable String @Nullable [] applianceTypes;
         public @Nullable JsonSmartHomeDeviceAlias @Nullable [] aliases;
         public @Nullable SmartHomeDevice @Nullable [] groupDevices;
+        public @Nullable String connectedVia;
         public boolean brightness = false;
         public boolean color = false;
         public boolean colorTemperature = false;
