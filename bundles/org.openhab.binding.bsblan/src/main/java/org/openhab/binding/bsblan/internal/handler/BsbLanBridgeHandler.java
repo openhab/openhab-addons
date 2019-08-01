@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.bsblan.internal.handler;
 
-import java.io.IOException;
-import java.net.InetAddress;
+//import java.io.IOException;
+//import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.*;
@@ -74,7 +74,7 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
         // validate 'refreshInterval' configuration
         if (bridgeConfig.refreshInterval != null && bridgeConfig.refreshInterval <  MIN_REFRESH_INTERVAL) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                String.format("Parameter 'refreshInterval' must be at least {} seconds", MIN_REFRESH_INTERVAL));
+                String.format("Parameter 'refreshInterval' must be at least %d seconds", MIN_REFRESH_INTERVAL));
             return;
         }
 
@@ -104,11 +104,13 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
     private void startAutomaticRefresh(BsbLanBridgeConfiguration config) {
         if (refreshJob == null || refreshJob.isCancelled()) {
             Runnable runnable = () -> {
-                try {
+                // InetAddress.isReachable(...) returns false although reachable on raspberry (works on windows)
+                // therefore disable the check for now :()
+/*              try {
                     InetAddress inet = InetAddress.getByName(config.host);
                     if (!inet.isReachable(5000)) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                            String.format("BSB-LAN device is not reachable at '{}''", config.host));
+                            String.format("BSB-LAN device is not reachable at '%s'", config.host));
                         return;
                     }
                 } catch (IOException e) {
@@ -117,7 +119,7 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
                         e.getMessage());
                     return;
                 }
-
+*/
                 // device is reachable, refresh state now
                 updateStatus(ThingStatus.ONLINE);
 
