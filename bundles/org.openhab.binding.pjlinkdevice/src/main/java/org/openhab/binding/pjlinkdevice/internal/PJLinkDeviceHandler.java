@@ -73,6 +73,9 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     @Nullable
     private ScheduledFuture<?> refreshJob;
 
+    @Nullable
+    private ScheduledFuture<?> setupJob;
+
     public PJLinkDeviceHandler(Thing thing, InputChannelStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
@@ -80,6 +83,8 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        clearSetupJob();
+
         clearRefreshInterval();
 
         PJLinkDevice device = this.device;
@@ -195,12 +200,18 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        try {
-            setupDevice();
-            setupRefreshInterval();
-        } catch (ConfigurationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        }
+        this.setupJob = scheduler.schedule(() -> {
+            try {
+                setupDevice();
+                setupRefreshInterval();
+            } catch (ResponseException | IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (AuthenticationException e) {
+                this.handleAuthenticationException(e);
+            } catch (ConfigurationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
+        }, 0, TimeUnit.SECONDS);
     }
 
     protected PJLinkDeviceConfiguration getConfiguration() throws ConfigurationException {
@@ -221,6 +232,14 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
       return config;
     }
 
+    private void clearSetupJob() {
+        ScheduledFuture<?> setupJob = this.setupJob;
+        if(setupJob != null) {
+            setupJob.cancel(true);
+            this.setupJob = null;
+        }
+    }
+
     private void clearRefreshInterval() {
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
@@ -234,20 +253,13 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
     }
 
-    private void setupDevice() throws ConfigurationException {
-        try {
-            PJLinkDevice device = this.getDevice();
-            device.checkAvailability();
+    private void setupDevice() throws ConfigurationException, IOException, AuthenticationException, ResponseException {
+        PJLinkDevice device = this.getDevice();
+        device.checkAvailability();
 
-            updateDeviceProperties(device);
-            updateInputChannelStates(device);
-            updateStatus(ThingStatus.ONLINE);
-
-        } catch (ResponseException | IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } catch (AuthenticationException e) {
-            this.handleAuthenticationException(e);
-        }
+        updateDeviceProperties(device);
+        updateInputChannelStates(device);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void setupRefreshInterval() throws ConfigurationException {
