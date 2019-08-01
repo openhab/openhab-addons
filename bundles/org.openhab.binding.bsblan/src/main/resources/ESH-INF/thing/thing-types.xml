@@ -31,14 +31,14 @@
 				<description>Parameter identifier used for change requests</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="setType" type="integer" required="false" groupName="Change Requests">
+			<parameter name="setType" type="text" required="false" groupName="Change Requests">
 				<label>Message Type</label>
 				<description>Message type used for change requests</description>
-				<default>1</default>
+				<default>SET</default>
 				<advanced>true</advanced>
 				<options>
-					<option value="0">INF</option>
-					<option value="1">SET</option>
+					<option value="INF">INF</option>
+					<option value="SET">SET</option>
 				</options>
 			</parameter>
 		</config-description>

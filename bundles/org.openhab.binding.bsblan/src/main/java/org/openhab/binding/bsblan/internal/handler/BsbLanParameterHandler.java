@@ -25,7 +25,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
 import org.openhab.binding.bsblan.internal.configuration.BsbLanParameterConfiguration;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterQueryResponse;
-import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetRequest;
+import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetRequest.Type;
 import org.openhab.binding.bsblan.internal.BsbLanBindingConstants;
 import org.openhab.binding.bsblan.internal.BsbLanBindingConstants.Channels;
 import org.openhab.binding.bsblan.internal.api.BsbLanApiCaller;
@@ -73,9 +73,7 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
         }
 
         // validate 'setType' configuration -> fallback to 'SET' if invalid or not specified
-        if (parameterConfig.setType == null) {
-            parameterConfig.setType = BsbLanApiParameterSetRequest.Type.SET;
-        }
+        parameterConfig.setType = Type.getTypeWithFallback(parameterConfig.setType).toString();
     }
 
     /**
@@ -242,7 +240,7 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
 
         BsbLanApiCaller api = getApiCaller();
 
-        boolean success = api.setParameter(parameterConfig.setId, value, parameterConfig.setType);
+        boolean success = api.setParameter(parameterConfig.setId, value, Type.getTypeWithFallback(parameterConfig.setType));
         if (!success) {
             logger.warn("Failed to set parameter {} to '{}' for channel '{}'", parameterConfig.setId, value, channelId);
         }

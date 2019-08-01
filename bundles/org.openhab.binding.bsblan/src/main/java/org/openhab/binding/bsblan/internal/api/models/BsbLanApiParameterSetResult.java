@@ -31,13 +31,11 @@ public class BsbLanApiParameterSetResult {
         READ_ONLY(2);
     
         private final int value;
-        Status(int value)
-        {
+        Status(int value) {
             this.value = value;
         }
     
-        public int getValue()
-        {
+        public int getValue() {
             return value;
         }
     }

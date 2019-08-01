@@ -24,19 +24,29 @@ public class BsbLanApiParameterSetRequest {
 
     public enum Type {
         @SerializedName("0")
-        INF(0),
+        INF("INF"),
         @SerializedName("1")
-        SET(1);
+        SET("SET");
 
-        private final int value;
-        Type(int value)
-        {
+        private final String value;
+        Type(String value) {
             this.value = value;
         }
-    
-        public int getValue()
-        {
+
+        public String getValue() {
             return value;
+        }
+
+        public static Type getTypeWithFallback(String value) {
+            if (value != null) {
+                for (Type t : Type.values()) {
+                    if (t.value.toLowerCase().equals(value.toLowerCase())) {
+                        return t;
+                    }
+                }
+            }
+            // fallback to SET
+            return Type.SET;
         }
     }
 

@@ -36,8 +36,8 @@ The binding has no configuration options, all configuration is done at Thing lev
 | Property  | Default | Required | Type    | Description                                                                              |
 |-----------|---------|----------|---------|------------------------------------------------------------------------------------------|
 | id        | -       | Yes      | Integer | Specific parameter identifier (numeric value)                                            |
-| setId     | -       | No       | Integer | Parameter identifier used for set requests (numeric value).<br />If not specified it falls back to the value of the `id` property. |
-| setType   | 1       | No       | Integer | Message type used for set requests. Possible values are:<br />`0` for `INF` requests<br />`1` for `SET` requests |
+| setId     | value of `id` | No       | Integer | Parameter identifier used for set requests (numeric value).<br />If not specified it falls back to the value of the `id` property. |
+| setType   | `SET`   | No       | String  | Message type used for set requests. Possible values are: `INF` or `SET`.<br />If not specified or unknown it falls back to `SET`. |
 
 ## Channels
 
