@@ -33,11 +33,11 @@ Heater status can be OFF (0), Enabled/ON (3), or Heating (1).
 | status              | String                     |
 | system_type         | Number                     |
 | temp_scale          | String                     |
-| spa_temp            | Number:Temperature                     |
-| pool_temp           | Number:Temperature                     |
-| air_temp            | Number:Temperature                     |
-| spa_set_point       | Number:Temperature                     |
-| pool_set_point      | Number:Temperature                     |
+| spa_temp            | Number:Temperature         |
+| pool_temp           | Number:Temperature         |
+| air_temp            | Number:Temperature         |
+| spa_set_point       | Number:Temperature         |
+| pool_set_point      | Number:Temperature         |
 | cover_pool          | Switch                     |
 | freeze_protection   | Switch                     |
 | spa_pump            | Switch                     |
