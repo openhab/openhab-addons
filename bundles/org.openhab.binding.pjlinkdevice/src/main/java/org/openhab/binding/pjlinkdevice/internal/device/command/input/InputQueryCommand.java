@@ -37,7 +37,6 @@ public class InputQueryCommand extends AbstractCommand<InputQueryRequest, InputQ
 
     @Override
     public InputQueryResponse parseResponse(String response) throws ResponseException {
-        InputQueryResponse result = new InputQueryResponse(response);
-        return result;
+        return new InputQueryResponse(response);
     }
 }
