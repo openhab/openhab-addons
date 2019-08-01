@@ -118,9 +118,22 @@ Here's a short step-by-step guide on how to obtain a refresh token:
 11. The response of the page should be plain text with a so called `JSON object`. Somewhere in the text should be a `refresh_token` string, select the string after this `refresh_token` text, which is encapsulated with `"`.
 
 E.g.: If the response of the page looks like this:
-```
-{"access_token":"the_access_token","expires_in":3600,"refresh_expires_in":15552000,"refresh_token":"the_refresh_token","token_type":"bearer","id_token":"the_id_token","not-before-policy":0,"session_state":"a-state","scope":"","tandc_accepted":true,"partialLogin":false}
-```
+
+````
+{
+    "access_token": "the_access_token",
+    "expires_in":3600,
+    "refresh_expires_in":15552000,
+    "refresh_token":"the_refresh_token",
+    "token_type":"bearer",
+    "id_token":"the_id_token",
+    "not-before-policy":0,
+    "session_state":"a-state",
+    "scope":"",
+    "tandc_accepted":true,
+    "partialLogin":false
+}
+````
 
 Then the `refresh_token` value you should copy would be: `the_refresh_token`.
 This value is the `refresh token` you should save as described above.

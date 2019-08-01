@@ -21,10 +21,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.HttpStatus;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -33,17 +36,19 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Florian Schmidt - Initial contribution
  */
-@NonNullByDefault
+@NonNullByDefault({})
+@Component(service = AccountsServlet.class, scope = ServiceScope.SINGLETON)
 public class AccountsServlet extends HttpServlet {
+    private static final long serialVersionUID = -9183159739446995608L;
+
     private static final String SERVLET_URL = "/groheondus";
 
     private final Logger logger = LoggerFactory.getLogger(AccountsServlet.class);
+    private final List<Thing> accounts = new ArrayList<>();
+    @Reference
     private HttpService httpService;
-    private List<Thing> accounts = new ArrayList<>();
 
-    public AccountsServlet(HttpService httpService) {
-        this.httpService = httpService;
-
+    public void activate() {
         try {
             httpService.registerServlet(SERVLET_URL, this, null, httpService.createDefaultHttpContext());
         } catch (ServletException | NamespaceException e) {
@@ -59,7 +64,7 @@ public class AccountsServlet extends HttpServlet {
         accounts.remove(accountThing);
     }
 
-    public void dispose() {
+    public void deactivate() {
         httpService.unregister(SERVLET_URL);
     }
 
@@ -100,7 +105,7 @@ public class AccountsServlet extends HttpServlet {
         htmlString.append("</body>");
         htmlString.append("</html>");
 
-        resp.setStatus(HttpStatus.SC_OK);
+        resp.setStatus(HttpStatus.OK_200);
         resp.getWriter().write(htmlString.toString());
     }
 }

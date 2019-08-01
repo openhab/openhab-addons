@@ -23,9 +23,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.HttpStatus;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.groheondus.internal.handler.GroheOndusAccountHandler;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AccountServlet extends HttpServlet {
-
     private static final long serialVersionUID = -6321196284331950479L;
     private final Logger logger = LoggerFactory.getLogger(AccountServlet.class);
 
@@ -112,7 +111,7 @@ public class AccountServlet extends HttpServlet {
         this.accountHandler.setRefreshToken(map.get("refreshToken")[0]);
 
         resp.addHeader("Location", "/groheondus");
-        resp.setStatus(HttpStatus.SC_MOVED_TEMPORARILY);
+        resp.setStatus(HttpStatus.MOVED_TEMPORARILY_302);
     }
 
     @Override
@@ -127,7 +126,7 @@ public class AccountServlet extends HttpServlet {
 
         this.accountHandler.deleteRefreshToken();
 
-        resp.setStatus(HttpStatus.SC_OK);
+        resp.setStatus(HttpStatus.OK_200);
     }
 
     public void dispose() {
