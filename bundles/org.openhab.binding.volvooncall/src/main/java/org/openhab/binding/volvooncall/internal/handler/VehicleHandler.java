@@ -238,7 +238,7 @@ public class VehicleHandler extends BaseThingHandler {
                     return UnDefType.UNDEF;
                 }
             case TRIP_DISTANCE:
-                return new QuantityType<Length>(tripDetails.distance / 1000, KILO(SIUnits.METRE));
+                return new QuantityType<Length>((double) tripDetails.distance / 1000, KILO(SIUnits.METRE));
             case TRIP_START_TIME:
                 return tripDetails.getStartTime();
             case TRIP_END_TIME:
@@ -246,9 +246,9 @@ public class VehicleHandler extends BaseThingHandler {
             case TRIP_DURATION:
                 return new QuantityType<Time>(tripDetails.getDurationInMinutes(), SmartHomeUnits.MINUTE);
             case TRIP_START_ODOMETER:
-                return new QuantityType<Length>(tripDetails.startOdometer / 1000, KILO(SIUnits.METRE));
+                return new QuantityType<Length>((double) tripDetails.startOdometer / 1000, KILO(SIUnits.METRE));
             case TRIP_STOP_ODOMETER:
-                return new QuantityType<Length>(tripDetails.endOdometer / 1000, KILO(SIUnits.METRE));
+                return new QuantityType<Length>((double) tripDetails.endOdometer / 1000, KILO(SIUnits.METRE));
             case TRIP_START_POSITION:
                 return tripDetails.getStartPosition();
             case TRIP_END_POSITION:
@@ -282,15 +282,15 @@ public class VehicleHandler extends BaseThingHandler {
                 return status.windows != null ? status.windows.frontLeftWindowOpen : UnDefType.NULL;
             case ODOMETER:
                 return status.odometer != Status.UNDEFINED
-                        ? new QuantityType<Length>(status.odometer / 1000, KILO(SIUnits.METRE))
+                        ? new QuantityType<Length>((double) status.odometer / 1000, KILO(SIUnits.METRE))
                         : UnDefType.UNDEF;
             case TRIPMETER1:
                 return status.tripMeter1 != Status.UNDEFINED
-                        ? new QuantityType<Length>(status.tripMeter1 / 1000, KILO(SIUnits.METRE))
+                        ? new QuantityType<Length>((double) status.tripMeter1 / 1000, KILO(SIUnits.METRE))
                         : UnDefType.UNDEF;
             case TRIPMETER2:
                 return status.tripMeter2 != Status.UNDEFINED
-                        ? new QuantityType<Length>(status.tripMeter2 / 1000, KILO(SIUnits.METRE))
+                        ? new QuantityType<Length>((double) status.tripMeter2 / 1000, KILO(SIUnits.METRE))
                         : UnDefType.UNDEF;
             case DISTANCE_TO_EMPTY:
                 return status.distanceToEmpty != Status.UNDEFINED
