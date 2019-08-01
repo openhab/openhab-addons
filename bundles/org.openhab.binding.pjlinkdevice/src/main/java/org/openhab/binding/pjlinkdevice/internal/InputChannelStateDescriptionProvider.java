@@ -50,7 +50,9 @@ public class InputChannelStateDescriptionProvider implements DynamicStateDescrip
             return null;
         }
 
-        return StateDescriptionFragmentBuilder.create().withOptions(options).build().toStateDescription();
+        StateDescriptionFragmentBuilder builder = (original == null) ? StateDescriptionFragmentBuilder.create()
+            : StateDescriptionFragmentBuilder.create(original);
+        return builder.withOptions(options).build().toStateDescription();
     }
 
     @Deactivate
