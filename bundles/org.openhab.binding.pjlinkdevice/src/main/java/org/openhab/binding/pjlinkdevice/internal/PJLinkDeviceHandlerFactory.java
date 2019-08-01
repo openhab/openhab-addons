@@ -60,7 +60,4 @@ public class PJLinkDeviceHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
-
-
 }
