@@ -28,14 +28,29 @@ public class PJLinkDeviceBindingConstants {
 
   private static final String BINDING_ID = "pjLinkDevice";
 
-  // List of all Thing Type UIDs
+  // List of all thing type UIDs
   public static final ThingTypeUID THING_TYPE_PJLINK = new ThingTypeUID(BINDING_ID, "pjLinkDevice");
 
-  // List of all Channel ids
+  // List of all channel type IDs
+  public static final String CHANNEL_TYPE_POWER = "power";
+  public static final String CHANNEL_TYPE_INPUT = "input";
+  public static final String CHANNEL_TYPE_AUDIO_MUTE = "audioMute";
+  public static final String CHANNEL_TYPE_VIDEO_MUTE = "videoMute";
+  public static final String CHANNEL_TYPE_LAMP_HOURS = "lampHours";
+  public static final String CHANNEL_TYPE_LAMP_ACTIVE = "lampActive";
+
+  // List of all channel IDs
   public static final String CHANNEL_POWER = "power";
   public static final String CHANNEL_INPUT = "input";
   public static final String CHANNEL_AUDIO_MUTE = "audioMute";
   public static final String CHANNEL_VIDEO_MUTE = "videoMute";
+  public static final String CHANNEL_LAMP_HOURS = "lampHours";
+  public static final String CHANNEL_LAMP_ACTIVE = "lampActive";
+  public static final String CHANNEL_LAMP_1_HOURS = "lamp1Hours";
+  public static final String CHANNEL_LAMP_1_ACTIVE = "lamp1Active";
+
+  // List of all channel parameter names
+  public static final String CHANNEL_PARAMETER_LAMP_NUMBER = "lampNumber";
 
   public static final int DEFAULT_PORT = 4352;
   public static final int DEFAULT_SCAN_TIMEOUT_SECONDS = 60;

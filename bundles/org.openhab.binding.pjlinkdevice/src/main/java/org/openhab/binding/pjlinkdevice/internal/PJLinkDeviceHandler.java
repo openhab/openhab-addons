@@ -15,6 +15,7 @@ package org.openhab.binding.pjlinkdevice.internal;
 import static org.openhab.binding.pjlinkdevice.internal.PJLinkDeviceBindingConstants.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,13 +28,16 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.validation.ConfigValidationException;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.StateOption;
@@ -41,6 +45,7 @@ import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AuthenticationException;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
 import org.openhab.binding.pjlinkdevice.internal.device.command.input.Input;
+import org.openhab.binding.pjlinkdevice.internal.device.command.lampstatus.LampStatesResponse.LampState;
 import org.openhab.binding.pjlinkdevice.internal.device.command.mute.MuteInstructionCommand.MuteInstructionChannel;
 import org.openhab.binding.pjlinkdevice.internal.device.command.mute.MuteQueryResponse.MuteQueryResponseValue;
 import org.openhab.binding.pjlinkdevice.internal.device.command.power.PowerQueryResponse.PowerQueryResponseValue;
@@ -101,16 +106,23 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     }
 
     PJLinkDeviceHandler.this.logger.debug("Polling device status...");
-    if (config.refreshPower) {
+    if (config.refreshPower && PJLinkDeviceHandler.this.getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
       PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_POWER), RefreshType.REFRESH);
     }
-    if (config.refreshMute) {
+    if (config.refreshMute && PJLinkDeviceHandler.this.getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
       // this updates both CHANNEL_AUDIO_MUTE and CHANNEL_VIDEO_MUTE
       PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_AUDIO_MUTE),
           RefreshType.REFRESH);
     }
-    if (config.refreshInputChannel) {
+    if (config.refreshInputChannel
+        && PJLinkDeviceHandler.this.getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
       PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_INPUT), RefreshType.REFRESH);
+    }
+    if (config.refreshLampState
+        && PJLinkDeviceHandler.this.getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
+      // this updates both CHANNEL_LAMP_ACTIVE and CHANNEL_LAMP_HOURS
+      PJLinkDeviceHandler.this.handleCommand(new ChannelUID(getThing().getUID(), CHANNEL_LAMP_1_HOURS),
+          RefreshType.REFRESH);
     }
   }
 
@@ -129,8 +141,14 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     logger.trace("Received command {} on channel {}", command, channelUID.getId());
     try {
       PJLinkDevice device = getDevice();
-      switch (channelUID.getId()) {
-        case CHANNEL_POWER:
+      @Nullable
+      String channelTypeId = getChannelTypeId(channelUID);
+      if (channelTypeId == null) {
+        logger.debug("unknown channel {}", channelUID);
+        return;
+      }
+      switch (channelTypeId) {
+        case CHANNEL_TYPE_POWER:
           logger.trace("Received power command {}", command);
           if (command == OnOffType.ON) {
             device.powerOn();
@@ -144,7 +162,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
             logger.debug("Received unknown power command {}", command);
           }
           break;
-        case CHANNEL_INPUT:
+        case CHANNEL_TYPE_INPUT:
           if (command == RefreshType.REFRESH) {
             StringType input = new StringType(device.getInputStatus().getResult().getValue());
             updateState(PJLinkDeviceBindingConstants.CHANNEL_INPUT, input);
@@ -156,10 +174,10 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
             logger.debug("Received unknown channel command {}", command);
           }
           break;
-        case CHANNEL_AUDIO_MUTE:
-        case CHANNEL_VIDEO_MUTE:
-          boolean isAudioMute = channelUID.getId().equals(PJLinkDeviceBindingConstants.CHANNEL_AUDIO_MUTE);
-          boolean isVideoMute = channelUID.getId().equals(PJLinkDeviceBindingConstants.CHANNEL_VIDEO_MUTE);
+        case CHANNEL_TYPE_AUDIO_MUTE:
+        case CHANNEL_TYPE_VIDEO_MUTE:
+          boolean isAudioMute = channelTypeId.equals(PJLinkDeviceBindingConstants.CHANNEL_TYPE_AUDIO_MUTE);
+          boolean isVideoMute = channelTypeId.equals(PJLinkDeviceBindingConstants.CHANNEL_TYPE_VIDEO_MUTE);
           if (isVideoMute || isAudioMute) {
             if (command == RefreshType.REFRESH) {
               // refresh both video and audio mute, as it's one request
@@ -180,7 +198,46 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                 device.setMute(MuteInstructionChannel.VIDEO, muteOn);
               }
             }
+          } else {
+            logger.debug("Received unknown audio/video mute command {}", command);
           }
+          break;
+        case CHANNEL_TYPE_LAMP_ACTIVE:
+        case CHANNEL_TYPE_LAMP_HOURS:
+          if (command == RefreshType.REFRESH) {
+            List<LampState> lampStates = device.getLampStates();
+            // update all lamp related channels, as the response contains information about all of them
+            for (Channel lampChannel : thing.getChannels()) {
+              String lampChannelTypeId = getChannelTypeId(lampChannel.getUID());
+              if (lampChannelTypeId == null) {
+                continue;
+              }
+              boolean isLampActiveChannel = CHANNEL_TYPE_LAMP_ACTIVE.equals(lampChannelTypeId);
+              boolean isLampHoursChannel = CHANNEL_TYPE_LAMP_HOURS.equals(lampChannelTypeId);
+
+              if (isLampActiveChannel || isLampHoursChannel) {
+                int lampNumber = ((BigDecimal) lampChannel.getConfiguration().get(CHANNEL_PARAMETER_LAMP_NUMBER))
+                    .intValue();
+                try {
+                  LampState lampState = lampStates.get(lampNumber - 1);
+                  if (isLampActiveChannel) {
+                    updateState(lampChannel.getUID(), lampState.isActive() ? OnOffType.ON : OnOffType.OFF);
+                  }
+                  if (isLampHoursChannel) {
+                    updateState(lampChannel.getUID(), new DecimalType(lampState.getLampHours()));
+                  }
+                } catch (IndexOutOfBoundsException e) {
+                  logger.debug("Status information for lamp {} is not available", lampNumber);
+                  throw new ConfigurationException("Status information for lamp " + lampNumber + " is not available");
+                }
+              }
+            }
+          } else {
+            logger.debug("Received unknown lamp state command {}", command);
+          }
+          break;
+        default:
+          logger.debug("unknown channel {}", channelUID.getId());
       }
 
       logger.trace("Successfully handled command {} on channel {}", command, channelUID.getId());
@@ -192,6 +249,27 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
     } catch (AuthenticationException e) {
       handleAuthenticationException(e);
     }
+  }
+
+  private @Nullable String getChannelTypeId(ChannelUID channelUID) throws ConfigurationException {
+    @Nullable
+    Channel channel = thing.getChannel(channelUID);
+    if (channel == null) {
+      logger.debug("channel is null");
+      return null;
+    }
+    ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+    channel.getChannelTypeUID();
+    if (channelTypeUID == null) {
+      logger.debug("channelTypeUID for channel {} is null", channel);
+      return null;
+    }
+    String channelTypeId = channelTypeUID.getId();
+    if (channelTypeId == null) {
+      logger.debug("channelTypeId for channelTypeUID {} is null", channelTypeUID);
+      return null;
+    }
+    return channelTypeId;
   }
 
   private void handleCommunicationEstablished() {
@@ -299,7 +377,8 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
   private void setupRefreshInterval() throws ConfigurationException {
     clearRefreshInterval();
     PJLinkDeviceConfiguration config = PJLinkDeviceHandler.this.getConfiguration();
-    boolean atLeastOneChannelToBeRefreshed = config.refreshPower || config.refreshMute || config.refreshInputChannel;
+    boolean atLeastOneChannelToBeRefreshed = config.refreshPower || config.refreshMute || config.refreshInputChannel
+        || config.refreshLampState;
     if (config.refreshInterval > 0 && atLeastOneChannelToBeRefreshed) {
       refreshJob = scheduler.scheduleWithFixedDelay(() -> refresh(config), 0, config.refreshInterval, TimeUnit.SECONDS);
     }
@@ -336,11 +415,6 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
           .put(PJLinkDeviceBindingConstants.PROPERTY_ERROR_STATUS + k.getCamelCaseText(), v.getText()));
     } catch (ResponseException e) {
       logger.debug("Error retrieving property {}", PJLinkDeviceBindingConstants.PROPERTY_ERROR_STATUS, e);
-    }
-    try {
-      properties.put(PJLinkDeviceBindingConstants.PROPERTY_LAMP_HOURS, device.getLampHours());
-    } catch (ResponseException e) {
-      logger.debug("Error retrieving property {}", PJLinkDeviceBindingConstants.PROPERTY_LAMP_HOURS, e);
     }
     try {
       properties.put(PJLinkDeviceBindingConstants.PROPERTY_OTHER_INFORMATION, device.getOtherInformation());

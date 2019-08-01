@@ -13,6 +13,8 @@
 			<channel id="input" typeId="input" />
 			<channel id="audioMute" typeId="audioMute" />
 			<channel id="videoMute" typeId="videoMute" />
+			<channel id="lamp1Hours" typeId="lampHours" />
+			<channel id="lamp1Active" typeId="lampActive" />
 		</channels>
 
 		<config-description>
@@ -56,6 +58,11 @@
 				<description>Seconds between connection retries when connection to the PJLink device has been lost, 0 means never retry, minimum 30s</description>
 				<default>60</default>
 			</parameter>
+			<parameter name="refreshLampState" type="boolean">
+				<default>false</default>
+				<label>Poll for lamp state</label>
+				<description>Enable polling for the lamp state. Only considered if the refresh interval is greater than zero.</description>
+			</parameter>
 		</config-description>
 
 	</thing-type>
@@ -84,4 +91,31 @@
 		<description>Select the video mute status</description>
 	</channel-type>
 
+	<channel-type id="lampHours">
+		<item-type>Number</item-type>
+		<label>Lamp hours</label>
+		<description>How long the lamp has been in use (in hours)</description>
+		<state readOnly="true" />
+		<config-description>
+			<parameter name="lampNumber" type="integer" min="1" max="8">
+				<label>Lamp number</label>
+				<description>Show used hours for this lamp</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="lampActive">
+		<item-type>Switch</item-type>
+		<label>Lamp active</label>
+		<description>Is the lamp in use?</description>
+		<state readOnly="true" />
+		<config-description>
+			<parameter name="lampNumber" type="integer" min="1" max="8">
+				<label>Lamp number</label>
+				<description>Show activity for this lamp</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</channel-type>
 </thing:thing-descriptions>

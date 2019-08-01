@@ -24,6 +24,7 @@ import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,6 +42,8 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.input.InputInstr
 import org.openhab.binding.pjlinkdevice.internal.device.command.input.InputListQueryCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.input.InputQueryCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.input.InputQueryResponse;
+import org.openhab.binding.pjlinkdevice.internal.device.command.lampstatus.LampStatesCommand;
+import org.openhab.binding.pjlinkdevice.internal.device.command.lampstatus.LampStatesResponse.LampState;
 import org.openhab.binding.pjlinkdevice.internal.device.command.mute.MuteInstructionCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.mute.MuteInstructionCommand.MuteInstructionChannel;
 import org.openhab.binding.pjlinkdevice.internal.device.command.mute.MuteInstructionCommand.MuteInstructionState;
@@ -326,9 +329,8 @@ public class PJLinkDevice {
         return new ErrorStatusQueryCommand(this).execute().getResult();
     }
 
-    public String getLampHours() throws ResponseException, IOException, AuthenticationException {
-        return new IdentificationCommand(this, IdentificationCommand.IdentificationProperty.LAMP_HOURS).execute()
-                .getResult();
+    public List<LampState> getLampStates() throws ResponseException, IOException, AuthenticationException {
+        return new LampStatesCommand(this).execute().getResult();
     }
 
     public String getOtherInformation() throws ResponseException, IOException, AuthenticationException {
