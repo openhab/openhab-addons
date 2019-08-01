@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -37,10 +38,13 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.pjlinkdevice", service = { ThingHandlerFactory.class })
 public class PJLinkDeviceHandlerFactory extends BaseThingHandlerFactory {
-
-    @Nullable
     private InputChannelStateDescriptionProvider stateDescriptionProvider;
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PJLINK);
+
+    @Activate
+    public PJLinkDeviceHandlerFactory(@Reference InputChannelStateDescriptionProvider provider) {
+        this.stateDescriptionProvider = provider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -50,23 +54,13 @@ public class PJLinkDeviceHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        InputChannelStateDescriptionProvider stateDescriptionProvider = this.stateDescriptionProvider;
-        if(stateDescriptionProvider == null) {
-          return null;
-        }
         if (THING_TYPE_PJLINK.equals(thingTypeUID)) {
-            return new PJLinkDeviceHandler(thing, stateDescriptionProvider);
+            return new PJLinkDeviceHandler(thing, this.stateDescriptionProvider);
         }
 
         return null;
     }
 
-    @Reference
-    protected void setDynamicStateDescriptionProvider(InputChannelStateDescriptionProvider provider) {
-        this.stateDescriptionProvider = provider;
-    }
 
-    protected void unsetDynamicStateDescriptionProvider(InputChannelStateDescriptionProvider provider) {
-        this.stateDescriptionProvider = null;
-    }
+
 }
