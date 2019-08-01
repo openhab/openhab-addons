@@ -57,7 +57,7 @@
 			</channel>
 			<channel id="pool_heater_status" typeId="equipment-heater">
 				<label>Pool Heater Status</label>
-				<description>Spa heater status</description>
+				<description>Pool heater status</description>
 			</channel>
 			<channel id="pool_heater" typeId="equipment-switch">
 				<label>Pool Heater Switch</label>
