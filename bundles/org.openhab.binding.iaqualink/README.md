@@ -33,11 +33,11 @@ Heater status can be OFF (0), Enabled/ON (3), or Heating (1).
 | status              | String                     |
 | system_type         | Number                     |
 | temp_scale          | String                     |
-| spa_temp            | Number                     |
-| pool_temp           | Number                     |
-| air_temp            | Number                     |
-| spa_set_point       | Number                     |
-| pool_set_point      | Number                     |
+| spa_temp            | Number:Temperature                     |
+| pool_temp           | Number:Temperature                     |
+| air_temp            | Number:Temperature                     |
+| spa_set_point       | Number:Temperature                     |
+| pool_set_point      | Number:Temperature                     |
 | cover_pool          | Switch                     |
 | freeze_protection   | Switch                     |
 | spa_pump            | Switch                     |
@@ -101,12 +101,12 @@ Switch AquaLinkSpaOneTouch "Spa Mode" (Group_AquaLink) {channel="iaqualink:contr
 Switch AquaLinkCleanOneTouch "Clean Mode" (Group_AquaLink) {channel="iaqualink:controller:pool:onetouch_3"}
 Switch AquaLinkPoolOneTouch "Pool Mode" (Group_AquaLink) {channel="iaqualink:controller:pool:onetouch_4"}
 
-Number AquaLinkSpaTemp "Spa Temperature [%d]" (Group_AquaLink) {channel="iaqualink:controller:pool:spa_temp"}
-Number AquaLinkPoolTemp "Pool Temperature [%d]" (Group_AquaLink) {channel="iaqualink:controller:pool:pool_temp"}
-Number AquaLinkAirTemp "Air Temperature [%d]" (Group_AquaLink) {channel="iaqualink:controller:pool:air_temp"}
+Number:Temperature AquaLinkSpaTemp "Spa Temperature [%d]" (Group_AquaLink) {channel="iaqualink:controller:pool:spa_temp"}
+Number:Temperature AquaLinkPoolTemp "Pool Temperature [%d]" (Group_AquaLink) {channel="iaqualink:controller:pool:pool_temp"}
+Number:Temperature AquaLinkAirTemp "Air Temperature [%d]" (Group_AquaLink) {channel="iaqualink:controller:pool:air_temp"}
 
-Number AquaLinkSpaSetpoint "Spa Setpoint [%d]" (Group_AquaLink) {channel="iaqualink:controller:pool:spa_set_point"}
-Number AquaLinkPoolSetpoint "Pool Setpoint [%d]" (Group_AquaLink) {channel="iaqualink:controller:pool:pool_set_point"}
+Number:Temperature AquaLinkSpaSetpoint "Spa Setpoint [%d]" (Group_AquaLink) {channel="iaqualink:controller:pool:spa_set_point"}
+Number:Temperature AquaLinkPoolSetpoint "Pool Setpoint [%d]" (Group_AquaLink) {channel="iaqualink:controller:pool:pool_set_point"}
 
 Switch AquaLinkSpaPump "Spa Pump" (Group_AquaLink) {channel="iaqualink:controller:pool:spa_pump"}
 Switch AquaLinkPoolPump"Pool Pump" (Group_AquaLink) {channel="iaqualink:controller:pool:pool_pump"}
