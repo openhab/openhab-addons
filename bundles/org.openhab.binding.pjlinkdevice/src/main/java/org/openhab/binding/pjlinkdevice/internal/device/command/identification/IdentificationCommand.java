@@ -65,7 +65,6 @@ public class IdentificationCommand extends AbstractCommand<IdentificationRequest
     @Override
     protected IdentificationRequest createRequest() {
         return new IdentificationRequest(this);
-
     }
 
     @Override
