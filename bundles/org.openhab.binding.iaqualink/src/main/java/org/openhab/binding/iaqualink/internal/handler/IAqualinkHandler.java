@@ -207,7 +207,7 @@ public class IAqualinkHandler extends BaseThingHandler {
                             .findFirst();
                     if (optional.isPresent()) {
                         if (toState(channelName, "Switch", optional.get().getState()) != command) {
-                            client.auxCommand(serialNumber, sessionId, "set_" + channelName);
+                            client.auxSetCommand(serialNumber, sessionId, channelName);
                         }
                     }
                 }
@@ -233,14 +233,14 @@ public class IAqualinkHandler extends BaseThingHandler {
                     if (optional.isPresent()) {
                         if (toState(channelName, "Switch", optional.get().getState()) != command) {
                             logger.debug("Sending command {} to {}", command, channelName);
-                            client.oneTouchCommand(serialNumber, sessionId, "set_" + channelName);
+                            client.oneTouchSetCommand(serialNumber, sessionId, channelName);
                         }
                     }
                 } else if (channelName.endsWith("heater") || channelName.endsWith("pump")) {
                     String value = client.getHome(serialNumber, sessionId).getSerializedMap().get(channelName);
                     if (toState(channelName, "Switch", value) != command) {
                         logger.debug("Sending command {} to {}", command, channelName);
-                        client.homeScreenCommand(serialNumber, sessionId, "set_" + channelName);
+                        client.homeScreenSetCommand(serialNumber, sessionId, channelName);
                     }
                 }
             }
@@ -451,9 +451,6 @@ public class IAqualinkHandler extends BaseThingHandler {
 
     /**
      * Creates channels based on what is supported by the controller.
-     *
-     * @param auxes
-     * @param oneTouches
      */
     private void updateChannels(Auxiliary[] auxes, OneTouch[] oneTouches) {
         List<Channel> channels = new ArrayList<Channel>(getThing().getChannels());
@@ -494,11 +491,6 @@ public class IAqualinkHandler extends BaseThingHandler {
     /**
      * Adds a channel to the list of channels if the channel does not exist or is of a different type
      *
-     * @param list
-     * @param channelUID
-     * @param itemType
-     * @param channelType
-     * @param label
      */
     private void addNewChannelToList(List<Channel> list, ChannelUID channelUID, String itemType,
             ChannelTypeUID channelType, String label) {
