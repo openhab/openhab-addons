@@ -24,7 +24,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
-@Component(service = { DynamicStateDescriptionProvider.class, BaseDynamicStateDescriptionProvider.class })
+@Component(service = { DynamicStateDescriptionProvider.class, AVMFritzDynamicStateDescriptionProvider.class })
 @NonNullByDefault
 public class AVMFritzDynamicStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
 
