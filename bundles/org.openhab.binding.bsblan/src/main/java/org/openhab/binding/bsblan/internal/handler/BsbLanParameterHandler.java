@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -92,14 +93,16 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
     private void updateChannel(String channelId, BsbLanApiParameterQueryResponse data) {
         if (data == null) {
             logger.warn("no data available while updating channel '{}' of parameter {}", channelId, parameterConfig.id);
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE,
+                "No data received from BSB-LAN device");
             return;
         }
 
         BsbLanApiParameter parameter = data.getOrDefault(parameterConfig.id, null);
         if (parameter == null){
             logger.warn("parameter {} not part of response data", parameterConfig.id);
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                String.format("No data received for parameter %s", parameterConfig.id));
             return;
         }
 
