@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.hydrawise.internal.api.model;
 
-/**
-*
-* @author Dan Cunningham - Initial contribution
-*/
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ *
+ * @author Dan Cunningham - Initial contribution
+ */
 public class StatusScheduleResponse extends LocalScheduleResponse {
 
     private Integer controllerId;
