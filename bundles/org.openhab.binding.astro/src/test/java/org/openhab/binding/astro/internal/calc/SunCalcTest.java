@@ -37,14 +37,15 @@ import org.openhab.binding.astro.internal.model.SunPhaseName;
  * each other</li>
  * </ul>
  * 
- * @author Witold Markowski
+ * @author Witold Markowski - Initial contribution
  * @see <a href="https://github.com/openhab/openhab2-addons/issues/5006">[astro]
  *      Sun Phase returns UNDEF</a>
  * @see <a href="https://www.heavens-above.com/sun.aspx">Heavens Above Sun</a>
  */
 public class SunCalcTest {
 
-    private final static Calendar FEB_27_2019 = new GregorianCalendar(2019, Calendar.FEBRUARY, 27);
+    private final static TimeZone TIME_ZONE = TimeZone.getTimeZone("Europe/Amsterdam");
+    private final static Calendar FEB_27_2019 = SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 1, 0, TIME_ZONE);
     private final static double AMSTERDAM_LATITUDE = 52.367607;
     private final static double AMSTERDAM_LONGITUDE = 4.8978293;
     private final static double AMSTERDAM_ALTITUDE = 0.0;
@@ -54,17 +55,12 @@ public class SunCalcTest {
 
     @Before
     public void init() {
-        FEB_27_2019.setTimeZone(TimeZone.getTimeZone("Europe/Amsterdam"));
         sunCalc = new SunCalc();
     }
 
     @Test
     public void testGetSunInfoForOldDate() {
-        Calendar calendar = new GregorianCalendar(2019, Calendar.FEBRUARY, 27);
-        TimeZone.getAvailableIDs();
-        calendar.setTimeZone(TimeZone.getTimeZone("Europe/Amsterdam"));
-
-        Sun sun = sunCalc.getSunInfo(calendar, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE);
+        Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE);
 
         assertNotNull(sun.getNight());
 
@@ -95,9 +91,9 @@ public class SunCalcTest {
         Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE);
 
         // expected result from haevens-above.com is 27 Feb 2019 05:39 till 06:18
-        assertEquals(new GregorianCalendar(2019, Calendar.FEBRUARY, 27, 5, 39).getTimeInMillis(),
+        assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 5, 39, TIME_ZONE).getTimeInMillis(),
                 sun.getAstroDawn().getStart().getTimeInMillis(), ACCURACY_IN_MILLIS);
-        assertEquals(new GregorianCalendar(2019, Calendar.FEBRUARY, 27, 6, 18).getTimeInMillis(),
+        assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 6, 18, TIME_ZONE).getTimeInMillis(),
                 sun.getAstroDawn().getEnd().getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
 
@@ -106,9 +102,9 @@ public class SunCalcTest {
         Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE);
 
         // expected result from haevens-above.com is 27 Feb 2019 06:18 till 06:58
-        assertEquals(new GregorianCalendar(2019, Calendar.FEBRUARY, 27, 6, 18).getTimeInMillis(),
+        assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 6, 18, TIME_ZONE).getTimeInMillis(),
                 sun.getNauticDawn().getStart().getTimeInMillis(), ACCURACY_IN_MILLIS);
-        assertEquals(new GregorianCalendar(2019, Calendar.FEBRUARY, 27, 6, 58).getTimeInMillis(),
+        assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 6, 58, TIME_ZONE).getTimeInMillis(),
                 sun.getNauticDawn().getEnd().getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
 
@@ -117,9 +113,9 @@ public class SunCalcTest {
         Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE);
 
         // expected result from haevens-above.com is 27 Feb 2019 06:58 till 07:32
-        assertEquals(new GregorianCalendar(2019, Calendar.FEBRUARY, 27, 6, 58).getTimeInMillis(),
+        assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 6, 58, TIME_ZONE).getTimeInMillis(),
                 sun.getCivilDawn().getStart().getTimeInMillis(), ACCURACY_IN_MILLIS);
-        assertEquals(new GregorianCalendar(2019, Calendar.FEBRUARY, 27, 7, 32).getTimeInMillis(),
+        assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 7, 32, TIME_ZONE).getTimeInMillis(),
                 sun.getCivilDawn().getEnd().getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
 
@@ -128,7 +124,7 @@ public class SunCalcTest {
         Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE);
 
         // expected result from haevens-above.com is 27 Feb 2019 07:32
-        assertEquals(new GregorianCalendar(2019, Calendar.FEBRUARY, 27, 7, 32).getTimeInMillis(),
+        assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 7, 32, TIME_ZONE).getTimeInMillis(),
                 sun.getRise().getStart().getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
 
@@ -137,7 +133,7 @@ public class SunCalcTest {
         Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE);
 
         // expected result from haevens-above.com is 27 Feb 2019 12:54
-        assertEquals(new GregorianCalendar(2019, Calendar.FEBRUARY, 27, 12, 54).getTimeInMillis(),
+        assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 12, 54, TIME_ZONE).getTimeInMillis(),
                 sun.getNoon().getStart().getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
 
@@ -146,7 +142,7 @@ public class SunCalcTest {
         Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE);
 
         // expected result from haevens-above.com is 27 Feb 2019 18:15
-        assertEquals(new GregorianCalendar(2019, Calendar.FEBRUARY, 27, 18, 15).getTimeInMillis(),
+        assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 18, 15, TIME_ZONE).getTimeInMillis(),
                 sun.getSet().getStart().getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
 
@@ -155,9 +151,9 @@ public class SunCalcTest {
         Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE);
 
         // expected result from haevens-above.com is 27 Feb 2019 18:15 till 18:50
-        assertEquals(new GregorianCalendar(2019, Calendar.FEBRUARY, 27, 18, 15).getTimeInMillis(),
+        assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 18, 15, TIME_ZONE).getTimeInMillis(),
                 sun.getCivilDusk().getStart().getTimeInMillis(), ACCURACY_IN_MILLIS);
-        assertEquals(new GregorianCalendar(2019, Calendar.FEBRUARY, 27, 18, 50).getTimeInMillis(),
+        assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 18, 50, TIME_ZONE).getTimeInMillis(),
                 sun.getCivilDusk().getEnd().getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
 
@@ -166,9 +162,9 @@ public class SunCalcTest {
         Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE);
 
         // expected result from haevens-above.com is 27 Feb 2019 18:50 till 19:29
-        assertEquals(new GregorianCalendar(2019, Calendar.FEBRUARY, 27, 18, 50).getTimeInMillis(),
+        assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 18, 50, TIME_ZONE).getTimeInMillis(),
                 sun.getNauticDusk().getStart().getTimeInMillis(), ACCURACY_IN_MILLIS);
-        assertEquals(new GregorianCalendar(2019, Calendar.FEBRUARY, 27, 19, 29).getTimeInMillis(),
+        assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 19, 29, TIME_ZONE).getTimeInMillis(),
                 sun.getNauticDusk().getEnd().getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
 
@@ -177,9 +173,9 @@ public class SunCalcTest {
         Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE);
 
         // expected result from haevens-above.com is 27 Feb 2019 19:29 till 20:09
-        assertEquals(new GregorianCalendar(2019, Calendar.FEBRUARY, 27, 19, 29).getTimeInMillis(),
+        assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 19, 29, TIME_ZONE).getTimeInMillis(),
                 sun.getAstroDusk().getStart().getTimeInMillis(), ACCURACY_IN_MILLIS);
-        assertEquals(new GregorianCalendar(2019, Calendar.FEBRUARY, 27, 20, 9).getTimeInMillis(),
+        assertEquals(SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 20, 9, TIME_ZONE).getTimeInMillis(),
                 sun.getAstroDusk().getEnd().getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
 
@@ -278,5 +274,35 @@ public class SunCalcTest {
 
         assertEquals(sun.getAllRanges().get(SunPhaseName.ASTRO_DUSK).getEnd(),
                 sun.getAllRanges().get(SunPhaseName.EVENING_NIGHT).getStart());
+    }
+
+    /***
+     * Constructs a <code>GregorianCalendar</code> with the given date and time set
+     * for the provided time zone.
+     * 
+     * @param year
+     *            the value used to set the <code>YEAR</code> calendar field in the
+     *            calendar.
+     * @param month
+     *            the value used to set the <code>MONTH</code> calendar field in the
+     *            calendar. Month value is 0-based. e.g., 0 for January.
+     * @param dayOfMonth
+     *            the value used to set the <code>DAY_OF_MONTH</code> calendar field
+     *            in the calendar.
+     * @param hourOfDay
+     *            the value used to set the <code>HOUR_OF_DAY</code> calendar field
+     *            in the calendar.
+     * @param minute
+     *            the value used to set the <code>MINUTE</code> calendar field in
+     *            the calendar.
+     * @param zone
+     *            the given time zone.
+     * @return
+     */
+    private static Calendar newCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, TimeZone zone) {
+        Calendar result = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute);
+        result.setTimeZone(zone);
+
+        return result;
     }
 }

@@ -31,7 +31,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.miio")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.miio")
 public class MiIoHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

@@ -26,6 +26,6 @@ public class VektivaSmarwiConfiguration {
      * Smarwi configuration parameter.
      */
     public String ip = "";
-    public int refreshInterval;
-    public boolean useWebSockets;
+    public int refreshInterval = 30;
+    public boolean useWebSockets = false;
 }

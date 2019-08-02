@@ -27,6 +27,7 @@ import javax.measure.Unit;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -55,6 +56,8 @@ import org.openhab.binding.kodi.internal.config.KodiChannelConfig;
 import org.openhab.binding.kodi.internal.config.KodiConfig;
 import org.openhab.binding.kodi.internal.model.KodiFavorite;
 import org.openhab.binding.kodi.internal.model.KodiPVRChannel;
+import org.openhab.binding.kodi.internal.model.KodiAudioStream;
+import org.openhab.binding.kodi.internal.model.KodiSubtitle;
 import org.openhab.binding.kodi.internal.model.KodiSystemProperties;
 import org.openhab.binding.kodi.internal.protocol.KodiConnection;
 import org.slf4j.Logger;
@@ -68,6 +71,7 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
  * @author Andreas Reinhardt & Christoph Weitkamp - Added channels for thumbnail and fanart
  * @author Christoph Weitkamp - Improvements for playing audio notifications
+ * @author Meng Yiqi - Added selection of audio and subtitle
  */
 public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
@@ -264,7 +268,29 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             case CHANNEL_THUMBNAIL:
             case CHANNEL_FANART:
             case CHANNEL_AUDIO_CODEC:
+            case CHANNEL_AUDIO_INDEX:
+                if (command instanceof DecimalType) {
+                    connection.setAudioStream(((DecimalType) command).intValue());
+                }
+                break;
             case CHANNEL_VIDEO_CODEC:
+            case CHANNEL_VIDEO_INDEX:
+                if (command instanceof DecimalType) {
+                    connection.setVideoStream(((DecimalType) command).intValue());
+                }
+                break;
+            case CHANNEL_SUBTITLE_ENABLED:
+                if (command.equals(OnOffType.ON)) {
+                    connection.setSubtitleEnabled(true);
+                } else if (command.equals(OnOffType.OFF)) {
+                    connection.setSubtitleEnabled(false);
+                }
+                break;
+            case CHANNEL_SUBTITLE_INDEX:
+                if (command instanceof DecimalType) {
+                    connection.setSubtitle(((DecimalType) command).intValue());
+                }
+                break;
             case CHANNEL_CURRENTTIME:
             case CHANNEL_CURRENTTIMEPERCENTAGE:
             case CHANNEL_DURATION:
@@ -595,6 +621,27 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         }
     }
 
+    public void updateAudioStreamOptions(List<KodiAudioStream> audios) {
+        if (isLinked(CHANNEL_AUDIO_INDEX)) {
+            List<StateOption> options = new ArrayList<>();
+            for (KodiAudioStream audio :  audios) {
+                options.add(new StateOption(Integer.toString(audio.getIndex()),audio.getLanguage()+"  ["+audio.getName()+"] ("+audio.getCodec()+"-"+Integer.toString(audio.getChannels())+" "+ Integer.toString(audio.getBitrate()/1000)+"kb/s)"));
+            }
+            logger.debug(audios.toString());
+            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_AUDIO_INDEX), options);
+        }
+    }   
+
+    public void updateSubtitleOptions(List<KodiSubtitle> subtitles) {
+        if (isLinked(CHANNEL_SUBTITLE_INDEX)) {
+            List<StateOption> options = new ArrayList<>();
+            for (KodiSubtitle subtitle : subtitles) {
+                options.add(new StateOption(Integer.toString(subtitle.getIndex()),subtitle.getLanguage()+"  ["+subtitle.getName()+"]"));
+            }
+            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SUBTITLE_INDEX), options);
+        }
+    }      
+    
     @Override
     public void updateConnectionState(boolean connected) {
         if (connected) {
@@ -667,6 +714,11 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     @Override
+    public void updateOriginalTitle(String title) {
+        updateState(CHANNEL_ORIGINALTITLE, createStringState(title));
+    }
+
+    @Override
     public void updateShowTitle(String title) {
         updateState(CHANNEL_SHOWTITLE, createStringState(title));
     }
@@ -682,8 +734,73 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     @Override
+    public void updateMediaFile(String mediaFile) {
+        updateState(CHANNEL_MEDIAFILE, createStringState(mediaFile));
+    }
+
+    @Override
     public void updateMediaType(String mediaType) {
         updateState(CHANNEL_MEDIATYPE, createStringState(mediaType));
+    }
+
+    @Override
+    public void updateMediaID(int mediaid) {
+        updateState(CHANNEL_MEDIAID, new DecimalType(mediaid));
+    }
+
+    @Override
+    public void updateRating(double rating) {
+        updateState(CHANNEL_RATING, new DecimalType(rating));
+    }
+
+    @Override
+    public void updateUserRating(double rating) {
+        updateState(CHANNEL_RATING, new DecimalType(rating));
+    }
+    
+    @Override
+    public void updateMpaa(String mpaa) {
+        updateState(CHANNEL_MPAA, createStringState(mpaa));
+    }
+
+    @Override
+    public void updateUniqueIDDouban(String uniqueid) {
+        updateState(CHANNEL_UNIQUEID_DOUBAN, createStringState(uniqueid));
+    }
+
+    @Override
+    public void updateUniqueIDImdb(String uniqueid) {
+        updateState(CHANNEL_UNIQUEID_IMDB, createStringState(uniqueid));
+    }
+
+    @Override
+    public void updateUniqueIDTmdb(String uniqueid) {
+        updateState(CHANNEL_UNIQUEID_TMDB, createStringState(uniqueid));
+    }
+
+    @Override
+    public void updateUniqueIDImdbtvshow(String uniqueid) {
+        updateState(CHANNEL_UNIQUEID_IMDBTVSHOW, createStringState(uniqueid));
+    }
+
+    @Override
+    public void updateUniqueIDTmdbtvshow(String uniqueid) {
+        updateState(CHANNEL_UNIQUEID_TMDBTVSHOW, createStringState(uniqueid));
+    }
+
+    @Override
+    public void updateUniqueIDTmdbepisode(String uniqueid) {
+        updateState(CHANNEL_UNIQUEID_TMDBEPISODE, createStringState(uniqueid));
+    }
+
+    @Override
+    public void updateSeason(int season) {
+        updateState(CHANNEL_SEASON, new DecimalType(season));
+    }
+
+    @Override
+    public void updateEpisode(int episode) {
+        updateState(CHANNEL_EPISODE, new DecimalType(episode));
     }
 
     @Override
@@ -712,8 +829,67 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     @Override
+    public void updateAudioIndex(int index) {
+        updateState(CHANNEL_AUDIO_INDEX, new DecimalType(index));
+    }
+
+    @Override
+    public void updateAudioChannels(int channels) {
+        updateState(CHANNEL_AUDIO_CHANNELS, new DecimalType(channels));
+    }
+
+    @Override
+    public void updateAudioLanguage(String language) {
+        updateState(CHANNEL_AUDIO_LANGUAGE, createStringState(language));
+    }
+
+    @Override
+    public void updateAudioName(String name) {
+        updateState(CHANNEL_AUDIO_NAME, createStringState(name));
+    }
+
+    @Override
     public void updateVideoCodec(String codec) {
         updateState(CHANNEL_VIDEO_CODEC, createStringState(codec));
+    }
+
+    @Override
+    public void updateVideoIndex(int index) {
+        updateState(CHANNEL_VIDEO_INDEX, new DecimalType(index));
+    }
+
+    @Override
+    public void updateVideoHeight(int height) {
+        updateState(CHANNEL_VIDEO_HEIGHT, new DecimalType(height));
+    }
+
+    @Override
+    public void updateVideoWidth(int width) {
+        updateState(CHANNEL_VIDEO_WIDTH, new DecimalType(width));
+    }
+
+    @Override
+    public void updateSubtitleEnabled(boolean enabled) {
+        if (enabled) {
+            updateState(CHANNEL_SUBTITLE_ENABLED, OnOffType.ON);
+        } else {
+            updateState(CHANNEL_SUBTITLE_ENABLED, OnOffType.OFF);
+        }
+    }
+
+    @Override
+    public void updateSubtitleIndex(int index) {
+        updateState(CHANNEL_SUBTITLE_INDEX, new DecimalType(index));
+    }
+
+    @Override
+    public void updateSubtitleLanguage(String language) {
+        updateState(CHANNEL_SUBTITLE_LANGUAGE, createStringState(language));
+    }
+
+    @Override
+    public void updateSubtitleName(String name) {
+        updateState(CHANNEL_SUBTITLE_NAME, createStringState(name));
     }
 
     @Override

@@ -3,7 +3,7 @@
 This binding integrates with [Lutron](http://www.lutron.com) lighting control and home automation systems.
 It contains separate binding support for four different types of Lutron systems:
 
-* RadioRA 2 and other systems that can be controlled by Lutron Integration Protocol, such as Caseta and Homeworks QS
+* RadioRA 2 and other systems that can be controlled by Lutron Integration Protocol, such as Homeworks QS, RA2 Select, and Caseta PRO
 * The original RadioRA system, referred to here as RadioRA Classic
 * Legacy HomeWorks RS232 Processors
 * Grafik Eye 3x/4x systems with GRX-PRG or GRX-CI-PRG control interfaces
@@ -14,6 +14,7 @@ Each is described in a separate section below.
 
 **Note:** While the integration protocol used by this binding should largely be compatible with other current Lutron systems, this binding has only been fully tested with RadioRA 2 and Caseta.
 Homeworks QS support is still a work in progress.
+RA2 Select is believed to work, but it is unconfirmed.
 It has not yet been tested with Quantum, QS Standalone, or myRoom plus systems.
 
 **Note:** Caseta support is only possible with the Smart Bridge **Pro** hub.
@@ -74,7 +75,10 @@ It also defaults to 5.
 Example definition (from the thing file):
 
 ```
-Thing lutron:ipbridge:radiora2 [ ipAddress="192.168.1.2", user="lutron", password="integration" ]
+Bridge lutron:ipbridge:radiora2 [ ipAddress="192.168.1.2", user="lutron", password="integration" ] {
+    Thing ...
+    Thing ...
+}
 ```
 
 ### Dimmers
@@ -85,7 +89,7 @@ A **dimmer** thing has a single channel *lightlevel* with type Dimmer and catego
 Example:
 
 ```
-Thing lutron:dimmer:livingroom (lutron:ipbridge:radiora2) [ integrationId=8, fadeInTime=0.5, fadeOutTime=5 ]
+Thing dimmer livingroom [ integrationId=8, fadeInTime=0.5, fadeOutTime=5 ]
 ```
 
 ### Switches
@@ -96,7 +100,7 @@ A **switch** thing has a single channel *switchstatus* with type Switch and cate
 Example:
 
 ```
-Thing lutron:switch:porch (lutron:ipbridge:radiora2) [ integrationId=8 ]
+Thing switch porch [ integrationId=8 ]
 ```
 
 ### Occupancy Sensors
@@ -112,7 +116,7 @@ The sensors cannot be queried for their state, so initial channel state at start
 Example:
 
 ```
-Thing lutron:occupancysensor:shopsensor (lutron:ipbridge:radiora2) [ integrationId=7 ]
+Thing occupancysensor shopsensor [ integrationId=7 ]
 ```
 
 ### seeTouch and Hybrid seeTouch Keypads
@@ -150,7 +154,7 @@ Supported settings for `model` parameter: H1RLD, H2RLD, H3BSRL, H3S, H4S, H5BRL,
 Example:
 
 ```
-Thing lutron:keypad:entrykeypad (lutron:ipbridge:radiora2) [ integrationId=10, model="W7B" autorelease="true" ]
+Thing keypad entrykeypad [ integrationId=10, model="W7B" autorelease=true ]
 ```
 
 ### Tabletop seeTouch Keypads
@@ -167,7 +171,7 @@ Supported settings for `model` parameter: T5RL, T10RL, T15RL, T5CRL, T10CRL, T15
 Example:
 
 ```
-Thing lutron:ttkeypad:bedroomkeypad (lutron:ipbridge:radiora2) [ integrationId=11, model="T10RL" autorelease="true" ]
+Thing ttkeypad bedroomkeypad [ integrationId=11, model="T10RL" autorelease=true ]
 ```
 
 ### International seeTouch Keypads (Homeworks QS)
@@ -188,7 +192,7 @@ Supported settings for `model` parameter: 2B, 3B, 4B, 5BRL, 6BRL, 7BRL, 8BRL, 10
 Example:
 
 ```
-Thing lutron:intlkeypad:kitchenkeypad (lutron:ipbridge:radiora2) [ integrationId=15, model="10BRL" autorelease="true" ]
+Thing intlkeypad kitchenkeypad [ integrationId=15, model="10BRL" autorelease=true ]
 ```
 
 ### Pico Keypads
@@ -206,7 +210,7 @@ Supported settings for `model` parameter: 2B, 2BRL, 3B, 3BRL, 4B, Generic (defau
 Example:
 
 ```
-Thing lutron:pico:hallpico (lutron:ipbridge:radiora2) [ integrationId=12, model="3BRL", autorelease="true" ]
+Thing pico hallpico [ integrationId=12, model="3BRL", autorelease=true ]
 ```
 
 ### Virtual Keypads
@@ -221,7 +225,7 @@ This means, among other things, that they will not be automatically linked to it
 Example:
 
 ```
-Thing lutron:virtualkeypad:repeaterbuttons (lutron:ipbridge:radiora2) [ integrationId=1, autorelease="true" ]
+Thing virtualkeypad repeaterbuttons [ integrationId=1, autorelease=true ]
 ```
 
 ### VCRX Modules
@@ -241,7 +245,7 @@ Note that the `autorelease` option **does not** apply to CCI channels.
 Example:
 
 ```
-Thing lutron:vcrx:vcrx1 (lutron:ipbridge:radiora2) [ integrationId=13, autorelease="true" ]
+Thing vcrx vcrx1 [ integrationId=13, autorelease=true ]
 ```
 
 ### QS IO Interface (HomeWorks QS)
@@ -260,7 +264,7 @@ Some functionality may depend on QSE-IO DIP switch settings. See the Lutron docu
 Example:
 
 ```
-Thing lutron:qsio:sensorinputs (lutron:ipbridge:homeworks) [ integrationId=42 ]
+Thing qsio sensorinputs [ integrationId=42 ]
 ```
 
 ### CCO Modules
@@ -288,9 +292,9 @@ For maintained CCOs, sending ON and OFF commands works as expected, and the chan
 Example:
 
 ```
-Thing lutron:cco:garage (lutron:ipbridge:radiora2) [ integrationId=5, outputType="Pulsed", pulseLength=0.5 ]
-Thing lutron:ccopulsed:gate (lutron:ipbridge:radiora2) [ integrationId=6, pulseLength=0.25 ]
-Thing lutron:ccomaintained:relay1 (lutron:ipbridge:radiora2) [ integrationId=7 ]
+Thing cco garage [ integrationId=5, outputType="Pulsed", pulseLength=0.5 ]
+Thing ccopulsed gate [ integrationId=6, pulseLength=0.25 ]
+Thing ccomaintained relay1 [ integrationId=7 ]
 ```
 
 ### Shades
@@ -310,12 +314,12 @@ The shade handler should be compatible with all Lutron devices which appear to t
 Example:
 
 ```
-Thing lutron:shade:libraryshade (lutron:ipbridge:radiora2) [ integrationId=33]
+Thing shade libraryshade [ integrationId=33]
 ```
 
 ### Green Mode
 
-The Radio RA2 system has a "Green Mode" or "Green Button" feature which allows the system to be placed in to one or more user-defined power saving modes called "steps".
+Radio RA2 and HomeWorks QS systems have a "Green Mode" or "Green Button" feature which allows the system to be placed in to one or more user-defined power saving modes called "steps".
 Each step can take actions such as trimming down the 100% level on selected lighting dimmers by a specified percentage, shutting off certain loads, modifying thermostat settings, etc.
 Typically step 1 is "Off" or "Normal", and step 2 is "Green Mode", however other steps may be defined by the installer as desired.
 
@@ -336,7 +340,7 @@ Note that it should usually be unnecessary for the poll interval to be set to le
 Example:
 
 ```
-Thing lutron:greenmode:greenmode (lutron:ipbridge:radiora2) [ integrationId=22 ]
+Thing greenmode greenmode [ integrationId=22 ]
 ```
 
 ### Timeclock
@@ -363,7 +367,7 @@ All channels except *clockmode* are marked as advanced.
 Example:
 
 ```
-Thing lutron:timeclock:timeclock (lutron:ipbridge:radiora2) [ integrationId=23 ]
+Thing timeclock timeclock [ integrationId=23 ]
 ```
 
 ## Channels
@@ -416,23 +420,44 @@ The only exceptions are **greenmode** *step*, which is periodically polled and a
 Many other channels accept REFRESH commands to initiate a poll, but sending one should not normally be necessary.
 
 
-## Full Radio RA2 Configuration Example
+## Radio RA2 Configuration File Example
 
-demo.Things:
+demo.things:
 
 ```
-lutron:dimmer:theater (lutron:ipbridge:radiora2) [ integrationId=8, fadeOutTime=2 ]
-lutron:occupancysensor:theater (lutron:ipbridge:radiora2) [ integrationId=9 ]
-lutron:keypad:theater (lutron:ipbridge:radiora2) [ integrationId=10 ]
+Bridge lutron:ipbridge:radiora2 [ ipAddress="192.168.1.123", user="lutron", password="integration" ] {
+        Thing dimmer lrtable "Table Lamp" @ "Living Room" [ integrationId=45, fadeInTime=0.5, fadeOutTime=5 ]
+        Thing dimmer lrtorch "Torch Lamp" @ "Living Room" [ integrationId=44, fadeInTime=0.5, fadeOutTime=5 ]
+        Thing dimmer lrspot [ integrationId=38, fadeInTime=0.5, fadeOutTime=5 ]
+        Thing switch path [ integrationId=61 ]
+        Thing keypad entrykeypad [ integrationId=64, model="W7B", autorelease=true ]
+        Thing ttkeypad bedroomkeypad [ integrationId=28, model="T15RL", autorelease=true ]
+        Thing pico librarypico [ integrationId=71, model="3BRL", autorelease=true ]
+        Thing vcrx vcrx1 [ integrationId=34, autorelease=true ]
+        Thing cco garage1 [ integrationId=75, outputType="Pulsed", pulseLength=0.5 ]
+        Thing shade libraryshade1 [ integrationId=66]
+        Thing greenmode greenmode [ integrationId=22 ]
+        Thing timeclock timeclock [ integrationId=23 ]
+        Thing occupancysensor laundryocc [ integrationId=62 ]
+}
 ```
 
 demo.items:
 
 ```
-Dimmer TheaterLights { channel="lutron:dimmer:theater:lightlevel" }
-Switch TheaterMotion { channel="lutron:occupancysensor:theater:occupancystatus" }
-Switch TheaterScene1 { channel="lutron:keypad:theater:button1" }
-Switch TheaterScene2 { channel="lutron:keypad:theater:button2" }
+Dimmer   LivingRm_TableLamp  "Table Lamp"      { channel="lutron:dimmer:radiora2:lrtable:lightlevel" }
+Switch   FrontYard_PathLight "Path Light"      { channel="lutron:switch:radiora2:path:switchstatus" }
+Switch   LaundryRm_Sensor    "Occ Sensor"      { channel="lutron:occupancysensor:radiora2:laundryocc:occupancystatus" }
+Switch   Entryway_Keypad_B1  "Keypad Button 1" { channel="lutron:keypad:radiora2:entrykeypad:button1" }
+Switch   Entryway_Keypad_L1  "Keypad LED 1"    { channel="lutron:keypad:radiora2:entrykeypad:led1" }
+Contact  Vcrx1_CCI1          "Input 1"         { channel="lutron:vcrx:radiora2:vcrx1:cci1" }
+Switch   Garage_CCO1         "Garage Door"     { channel="lutron:cco:radiora2:garage1:switchstatus" }
+DateTime Timeclock_Sunrise   "Sunrise"         { channel="lutron:timeclock:radiora2:timeclock:sunrise" }
+DateTime Timeclock_Sunset    "Sunset"          { channel="lutron:timeclock:radiora2:timeclock:sunset" }
+Number   Timeclock_Clockmode "Clock Mode"      { channel="lutron:timeclock:radiora2:timeclock:clockmode" }
+Number   Greenmode_Step      "Green Step"      { channel="lutron:greenmode:radiora2:greenmode:step" }
+Rollershutter Lib_Shade1     "Shade 1"         { channel="lutron:shade:radiora2:libraryshade1:shadelevel" }
+
 ```
 
 # Lutron RadioRA (Classic) Binding
