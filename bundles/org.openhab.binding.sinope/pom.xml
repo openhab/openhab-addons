@@ -16,6 +16,6 @@
 	<version>2.5.0-SNAPSHOT</version>
 
 	<name>Sinope Binding</name>
-	<packaging>eclipse-plugin</packaging>
+
 
 </project>
