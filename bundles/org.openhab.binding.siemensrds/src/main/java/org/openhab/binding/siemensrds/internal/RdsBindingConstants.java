@@ -66,17 +66,8 @@ public class RdsBindingConstants {
     public static final String URL_SETVAL = API + "DataPoints/%s"; 
     public static final String URL_VALUES = API + "DataPoints/Values" + ARG_POINT; 
     
-    public static final String HTTP_POST = "POST"; 
-    public static final String HTTP_GET  = "GET"; 
-    public static final String HTTP_PUT  = "PUT"; 
-
-    public static final String HDR_USER_AGENT = "User-Agent";
     public static final String VAL_USER_AGENT = "Mozilla/5.0";
-
-    public static final String HDR_ACCEPT = "Accept";
-    public static final String VAL_ACCEPT = "application/json";
-    
-    public static final String HDR_CONT_TYPE  = "Content-Type";
+    public static final String VAL_ACCEPT     = "application/json";
     public static final String VAL_CONT_PLAIN = "text/plain;charset=UTF-8";
     public static final String VAL_CONT_JSON  = "application/json;charset=UTF-8";
     

@@ -13,14 +13,16 @@
 package org.openhab.binding.siemensrds.internal;
 
 /**
- * The {@link RdsConfiguration} class contains the thing configuration
- * parameters for RDS thermostats
+ * The {@link RdsCloudConfiguration} class contains the thing configuration
+ * parameters for the Climatix IC cloud user account
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+public class RdsCloudConfiguration {
 
-public class RdsConfiguration {
-
-        public String plantId;
+    public String userEmail;
+    public String userPassword;
+    public int pollInterval;
+    public String apiKey;
 
 }

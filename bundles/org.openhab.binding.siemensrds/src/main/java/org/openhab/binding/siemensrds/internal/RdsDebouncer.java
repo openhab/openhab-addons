@@ -19,16 +19,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The {@link RdsDebouncer} determines if change events should 
- * be forwarded to a channel
+ * The {@link RdsDebouncer} determines if change events should be forwarded to a
+ * channel
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class RdsDebouncer {
- 
-    private final Map<String, DebounceDelay> channels = 
-            new HashMap<String, DebounceDelay>();
-    
+
+    private final Map<String, DebounceDelay> channels = new HashMap<String, DebounceDelay>();
+
     static class DebounceDelay {
 
         private long expireTime;
@@ -44,16 +43,15 @@ public class RdsDebouncer {
         }
     }
 
-    public RdsDebouncer () { 
+    public RdsDebouncer() {
     }
-    
+
     public void initialize(String channelId) {
         channels.put(channelId, new DebounceDelay(true));
     }
-    
+
     public Boolean timeExpired(String channelId) {
-        return (channels.containsKey(channelId) ? 
-                channels.get(channelId).timeExpired() : true);
+        return (channels.containsKey(channelId) ? channels.get(channelId).timeExpired() : true);
     }
-    
+
 }
