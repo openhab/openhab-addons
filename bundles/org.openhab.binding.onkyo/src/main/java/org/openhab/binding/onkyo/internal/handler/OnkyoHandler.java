@@ -89,7 +89,8 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     private State volumeLevelZone1 = UnDefType.UNDEF;
     private State volumeLevelZone2 = UnDefType.UNDEF;
     private State volumeLevelZone3 = UnDefType.UNDEF;
-
+    private State lastPowerState = OnOffType.OFF;
+    
     private final OnkyoStateDescriptionProvider stateDescriptionProvider;
 
     private final OnkyoAlbumArt onkyoAlbumArt = new OnkyoAlbumArt();
@@ -350,7 +351,6 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
         stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_INPUTZONE3), options);
     }
 
-    private State lastPowerState = OnOffType.OFF;
     private void doPowerOnCheck(State state) {
         if (configuration.refreshInterval == 0 && lastPowerState == OnOffType.OFF && state == OnOffType.ON) {
             sendCommand(EiscpCommand.INFO_QUERY);
