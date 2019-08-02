@@ -10,7 +10,7 @@
 		<label>Somfy Siren</label>
 		<channels>
 			<channel id="battery" typeId="battery"></channel>
-			<channel id="onoff" typeId="onoff"></channel>
+			<channel id="onoff" typeId="system.power"></channel>
 			<channel id="memorized_volume" typeId="memorized_volume"></channel>
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>

@@ -22,12 +22,6 @@
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="switch">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>An ON/OFF switch (zwave/enocean/rts)</description>
-	</channel-type>
-
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Contact</label>
@@ -102,13 +96,6 @@
 		<item-type>String</item-type>
 		<label>Battery Status State</label>
 		<description>Battery Status State</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="battery_level">
-		<item-type>String</item-type>
-		<label>Battery Level State</label>
-		<description>Battery Level State</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -226,12 +213,6 @@
 				<option value="cyclic">CYCLIC</option>
 			</options>
 		</state>
-	</channel-type>
-
-	<channel-type id="onoff">
-		<item-type>Switch</item-type>
-		<label>Siren On/Off State</label>
-		<description>A channel for controlling the siren's state</description>
 	</channel-type>
 
 	<channel-type id="memorized_volume">

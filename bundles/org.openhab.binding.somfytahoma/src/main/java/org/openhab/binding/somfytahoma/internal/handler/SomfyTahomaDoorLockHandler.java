@@ -46,7 +46,7 @@ public class SomfyTahomaDoorLockHandler extends SomfyTahomaBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("DoorLock channel: {} received command: {}", channelUID.getId(),command.toString());
+        logger.debug("DoorLock channel: {} received command: {}", channelUID.getId(), command);
         if (OPEN.equals(channelUID.getId()) && command instanceof OnOffType) {
             sendCommand(command.equals(OnOffType.ON) ? "open" : "close", "[]");
         }
