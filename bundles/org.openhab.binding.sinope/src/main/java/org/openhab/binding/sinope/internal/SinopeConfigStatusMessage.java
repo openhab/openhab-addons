@@ -8,8 +8,6 @@
  */
 package org.openhab.binding.sinope.internal;
 
-import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
-
 /**
  * The {@link SinopeConfigStatusMessage} defines
  * the keys to be used for {@link ConfigStatusMessage}s.
