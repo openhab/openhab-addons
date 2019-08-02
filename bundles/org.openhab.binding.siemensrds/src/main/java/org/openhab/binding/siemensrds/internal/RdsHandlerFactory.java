@@ -31,6 +31,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
@@ -39,13 +40,11 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
-@Component(configurationPid = "binding.siemensrds", 
-    service = ThingHandlerFactory.class)
+@Component(configurationPid = "binding.siemensrds", service = ThingHandlerFactory.class)
 public class RdsHandlerFactory extends BaseThingHandlerFactory {
- 
+
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_CLOUD, 
-                                                         THING_TYPE_RDS)));
+            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_CLOUD, THING_TYPE_RDS)));
 
     private final Map<ThingUID, ServiceRegistration<?>> discos = new HashMap<>();
 
@@ -63,10 +62,10 @@ public class RdsHandlerFactory extends BaseThingHandlerFactory {
             createDiscoveryService(handler);
             return handler;
         }
-        
-        if (thingTypeUID.equals(THING_TYPE_RDS)) 
+
+        if (thingTypeUID.equals(THING_TYPE_RDS))
             return new RdsHandler(thing);
-        
+
         return null;
     }
 
@@ -78,47 +77,44 @@ public class RdsHandlerFactory extends BaseThingHandlerFactory {
     }
 
     /*
-     * create a discovery service so that a newly created cloud account 
-     * will find the things that it supports
+     * create a discovery service so that a newly created cloud account will find
+     * the things that it supports
      */
     private synchronized void createDiscoveryService(RdsCloudHandler handler) {
         // create a new discovery service
         RdsDiscoveryService ds = new RdsDiscoveryService(handler);
-        
-        // register the discovery service with the OpenHAB framework
-        ServiceRegistration<?> serviceReg = 
-            bundleContext.registerService(DiscoveryService.class.getName(), ds, 
-                    new Hashtable<String, Object>());
-        
-        /* 
-         * store service registration in a list 
-         * so we can destroy it when the respective hub is destroyed
+
+        // register the discovery service
+        ServiceRegistration<?> serviceReg = bundleContext.registerService(DiscoveryService.class.getName(), ds,
+                new Hashtable<String, Object>());
+
+        /*
+         * store service registration in a list so we can destroy it when the respective
+         * hub is destroyed
          */
         discos.put(handler.getThing().getUID(), serviceReg);
-        
+
         // finally activate the discovery service
         ds.activate();
     }
-    
+
     /*
      * destroy the discovery service
      */
     private synchronized void destroyDiscoveryService(RdsCloudHandler handler) {
         // fetch the respective thing's service registration from our list
-        ServiceRegistration<?> serviceReg = 
-                discos.remove(handler.getThing().getUID());
-        
+        ServiceRegistration<?> serviceReg = discos.remove(handler.getThing().getUID());
+
         if (serviceReg != null) {
-            // retrieve the respective discovery service from the OpenHAB framework
-            RdsDiscoveryService disco = (RdsDiscoveryService) bundleContext
-                    .getService(serviceReg.getReference());
+            // unregister the service
+            serviceReg.unregister();
+
+            // retrieve the respective discovery service
+            RdsDiscoveryService disco = (RdsDiscoveryService) bundleContext.getService(serviceReg.getReference());
 
             // deactivate the service
-            if (disco != null) 
+            if (disco != null)
                 disco.deactivate();
-
-            // and unregister the service
-            serviceReg.unregister();
         }
     }
 

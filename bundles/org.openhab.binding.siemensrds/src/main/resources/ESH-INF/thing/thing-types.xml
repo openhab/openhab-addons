@@ -111,9 +111,7 @@
 		<properties>
 			<property name="vendor">Siemens</property>
 			<property name="modelId">RDS</property>
-			<property name="climatixIcPlantId"></property>
-        	</properties>
-        <representation-property>climatixIcPlantId</representation-property>
+        </properties>
 
 	</thing-type>
 
@@ -154,14 +152,14 @@
 
 	<channel-type id="greenLeaf">
 		<item-type>String</item-type>
-		<label>Energy savings level </label>
+		<label>Energy Savings Level </label>
 		<description>Energy savings level</description>
    		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="statProgramMode">
 		<item-type>Switch</item-type>
-		<label>Thermostat Program Mode (Manual::Auto)</label>
+		<label>T&apos;stat Program (Manual::Auto)</label>
    		<description>The program mode of the thermostat (user can override)</description>
    		<state readOnly="false"/>
 	</channel-type>
@@ -174,7 +172,7 @@
 	</channel-type>
 	<channel-type id="dhwProgramMode">
 		<item-type>Switch</item-type>
-		<label>DHW Program Mode (Manual::Auto)</label>
+		<label>DHW Program (Manual::Auto)</label>
    		<description>The program mode of the domestic water heating (user can override)</description>
    		<state readOnly="false"/>
 	</channel-type>

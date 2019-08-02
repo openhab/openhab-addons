@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.State;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,16 +39,14 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class RdsDiscoveryService extends AbstractDiscoveryService {
- 
-    private static final Logger LOGGER = 
-            LoggerFactory.getLogger(RdsDiscoveryService.class);
+
+    private final Logger LOGGER = LoggerFactory.getLogger(RdsDiscoveryService.class);
 
     private ScheduledFuture<?> discoveryScheduler;
     private RdsCloudHandler cloud;
 
-    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = 
-        Collections.unmodifiableSet(Stream.of(THING_TYPE_RDS)
-                    .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_RDS).collect(Collectors.toSet()));
 
     public RdsDiscoveryService(RdsCloudHandler cloud) {
         // note: background discovery is enabled in the super method..
@@ -66,7 +65,7 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        if (cloud.getThing().getStatus() == ThingStatus.ONLINE) { 
+        if (cloud.getThing().getStatus() == ThingStatus.ONLINE) {
             discoverPlants();
         }
     }
@@ -76,9 +75,9 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
         String msg = "start background discovery..";
         LOGGER.info(msg);
 
-        if (discoveryScheduler == null || discoveryScheduler.isCancelled()) { 
-            discoveryScheduler = scheduler.scheduleWithFixedDelay(this::startScan, 
-                    10, DISCOVERY_REFRESH_PERIOD, TimeUnit.SECONDS);
+        if (discoveryScheduler == null || discoveryScheduler.isCancelled()) {
+            discoveryScheduler = scheduler.scheduleWithFixedDelay(this::startScan, 10, 
+                    DISCOVERY_REFRESH_PERIOD, TimeUnit.SECONDS);
         }
     }
 
@@ -87,7 +86,7 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
         String msg = "stop background discovery..";
         LOGGER.info(msg);
 
-        if (discoveryScheduler != null && !discoveryScheduler.isCancelled()) { 
+        if (discoveryScheduler != null && !discoveryScheduler.isCancelled()) {
             discoveryScheduler.cancel(true);
         }
     }
@@ -95,8 +94,8 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
     private void discoverPlants() {
         if (cloud != null) {
             RdsPlants plants = RdsPlants.create(cloud.getApiKey(), cloud.getToken());
-            if (plants != null ) {
-                for (RdsPlants.PlantInfo plant : plants.getPlants()) { 
+            if (plants != null) {
+                for (RdsPlants.PlantInfo plant : plants.getPlants()) {
                     publishPlant(plant);
                 }
             }
@@ -106,35 +105,29 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
     private void publishPlant(RdsPlants.PlantInfo plant) {
         if (plant != null) {
             String plantId = plant.getId();
-    
-            if (plantId != null && !plantId.isEmpty()) { 
-                RdsDataPoints points = 
-                    RdsDataPoints.create(cloud.getApiKey(), cloud.getToken(), plantId);
-    
-                if (points != null) { 
+
+            if (plantId != null && !plantId.isEmpty()) {
+                RdsDataPoints points = RdsDataPoints.create(cloud.getApiKey(), cloud.getToken(), plantId);
+
+                if (points != null) {
                     State desc = points.getRaw(HIE_DESCRIPTION);
-    
+
                     if (desc != null) {
                         String label = desc.toString().replaceAll("\\s+", "_");
-                        
+
                         ThingTypeUID typeUID = THING_TYPE_RDS;
                         ThingUID bridgeUID = cloud.getThing().getUID();
-                        ThingUID plantUID = 
-                                new ThingUID(typeUID, bridgeUID, plantId);
-    
-                        DiscoveryResult disco = 
-                                DiscoveryResultBuilder.create(plantUID)
-                                .withBridge(bridgeUID)
-                                .withLabel(label)
-                                .withProperty(PROP_PLANT_ID, plantId)
-                                .withRepresentationProperty(PROP_PLANT_ID)
-                                .build();
-    
-LOGGER.debug("discovered typeUID={}, plantUID={}, brigeUID={}, label={}, plantId={}, ", 
-        typeUID, plantUID, bridgeUID, label, plantId);
+                        ThingUID plantUID = new ThingUID(typeUID, bridgeUID, plantId);
+
+                        DiscoveryResult disco = DiscoveryResultBuilder.create(plantUID).withBridge(bridgeUID)
+                                .withLabel(label).withProperty(PROP_PLANT_ID, plantId)
+                                .withRepresentationProperty(PROP_PLANT_ID).build();
+
+                        LOGGER.debug("discovered typeUID={}, plantUID={}, brigeUID={}, label={}, plantId={}, ", 
+                                typeUID, plantUID, bridgeUID, label, plantId);
 
                         thingDiscovered(disco);
-    
+
                         return;
                     }
                 }
