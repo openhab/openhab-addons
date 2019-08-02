@@ -27,7 +27,7 @@ The Local Thing type uses an undocumented API that allows direct HTTP access to 
 
 Use Cases    
 * The Local thing can be useful when testing zones, as there is no delay when starting/stopping zones as compared to the cloud API which can take anywhere between 5-15 seconds.  
-* This is also useful if you wish to not use the cloud scheduling and control at all and rather use openHAB as the irrigation scheduling system.
+* This is also useful if you wish to not use the cloud scheduling  at all and use openHAB as the irrigation scheduling system.
 
 #### Local Thing Supported Channel Groups
 
@@ -76,7 +76,7 @@ Up to 36 total zones are supported per Local or Cloud thing
 | zone1            | Zone 1 channel group      |
 | zone2            | Zone 1 channel group      |
 | ...              | Zone 3 - 35 channel group |
-| zone36           | Zone 1 channel group      |
+| zone36           | Zone 36 channel group     |
 
 #### Sensor Channel Group
 
