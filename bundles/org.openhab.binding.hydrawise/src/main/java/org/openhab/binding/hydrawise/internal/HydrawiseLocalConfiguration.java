@@ -35,5 +35,5 @@ public class HydrawiseLocalConfiguration {
     /**
      * refresh interval in seconds.
      */
-    public Integer refresh;
+    public int refresh;
 }

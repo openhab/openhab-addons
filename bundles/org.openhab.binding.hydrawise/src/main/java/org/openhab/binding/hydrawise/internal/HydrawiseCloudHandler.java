@@ -74,11 +74,8 @@ public class HydrawiseCloudHandler extends HydrawiseHandler {
     protected void configure()
             throws NotConfiguredException, HydrawiseConnectionException, HydrawiseAuthenticationException {
         HydrawiseCloudConfiguration configuration = getConfig().as(HydrawiseCloudConfiguration.class);
-        if (StringUtils.isBlank(configuration.apiKey)) {
-            throw new NotConfiguredException("API Key connot be empty");
-        }
-        this.refresh = configuration.refresh.intValue() > MIN_REFRESH_SECONDS ? configuration.refresh.intValue()
-                : MIN_REFRESH_SECONDS;
+
+        this.refresh = Math.max(configuration.refresh, MIN_REFRESH_SECONDS);
 
         client.setApiKey(configuration.apiKey);
 

@@ -100,7 +100,6 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
 
         if (command instanceof RefreshType) {
             // we already removed this from the cache
-            initPolling(COMMAND_REFRESH_SECONDS);
             return;
         }
 
@@ -161,8 +160,7 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
-        configureInternal();
+        scheduler.schedule(this::configureInternal, 0, TimeUnit.SECONDS);
     }
 
     @Override

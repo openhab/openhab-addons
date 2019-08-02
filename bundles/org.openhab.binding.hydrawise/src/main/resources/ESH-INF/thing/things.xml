@@ -373,6 +373,7 @@
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>password</label>
+				<context>password</context>
 				<description>Password for local controller, found in the settings menu on the controller itself.</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="true">

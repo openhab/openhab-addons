@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.hydrawise.internal;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -41,25 +40,9 @@ public class HydrawiseLocalHandler extends HydrawiseHandler {
     }
 
     @Override
-    protected void configure()
-            throws NotConfiguredException, HydrawiseConnectionException, HydrawiseAuthenticationException {
+    protected void configure() throws HydrawiseConnectionException, HydrawiseAuthenticationException {
         HydrawiseLocalConfiguration configuration = getConfig().as(HydrawiseLocalConfiguration.class);
-
-        if (StringUtils.isBlank(configuration.host)) {
-            throw new NotConfiguredException("No host specified");
-        }
-
-        if (StringUtils.isBlank(configuration.username)) {
-            throw new NotConfiguredException("No user name specified");
-        }
-
-        if (StringUtils.isBlank(configuration.password)) {
-            throw new NotConfiguredException("No passowrd specified");
-        }
-
-        this.refresh = configuration.refresh.intValue() > MIN_REFRESH_SECONDS ? configuration.refresh.intValue()
-                : MIN_REFRESH_SECONDS;
-
+        this.refresh = Math.max(configuration.refresh, MIN_REFRESH_SECONDS);
         logger.trace("Connecting to host {}", configuration.host);
         client.setCredentials(configuration.host, configuration.username, configuration.password);
         pollController();
