@@ -6,7 +6,7 @@
         <feature>openhab-runtime-base</feature>
         <feature>openhab-runtime-jna</feature>
         <feature>openhab-transport-serial</feature>
-        <feature>openhab.tp-jaxb</feature>
+        <feature dependency="true">openhab.tp-jaxb</feature>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.tellstick/${project.version}</bundle>
     </feature>
 </features>
