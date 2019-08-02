@@ -122,13 +122,9 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
                 // InetAddress.isReachable(...) check returned false on RPi although the device is reachable (worked on Windows).
                 // Therefore we check status depending on the response.
                 if (cachedParameterQueryResponse == null) {
-                    boolean wasOffline = getBridge().getStatus() == ThingStatus.OFFLINE;
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         "Did not receive a response from BSB-LAN device. Check your configuration and if device is online.");
-                    // continue processing only if we were not offline before, so things can go to OFFLINE too
-                    if (wasOffline) {
-                        return;
-                    }
+                    // continue processing, so things can go to OFFLINE too
                 } else {
                     // resonse received, thread device as reachable, refresh state now
                     updateStatus(ThingStatus.ONLINE);
