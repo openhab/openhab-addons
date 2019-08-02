@@ -18,19 +18,12 @@ Other stations can be added relatively easily with changes in just several place
 
 Automatic discovery is currently not supported due to the lack of weather station model information in the Ambient Weather API.
 
-## Binding Configuration
-
-No binding configuration is needed.
-
 ## Thing Configuration
 
 ### Bridge Thing Configuration
 
 The Bridge thing requires a valid application Key and API key.
-Application and API keys can be obtained through your `ambientweather.net` dashboard.
-For the application key, you will need to send an email to the Ambient Weather support email address on your dashboard.
-Please indicate in your request that the application key is for openHAB.
-The application key requests usually are fulfilled within 24 hours.
+Application and API keys can be obtained on the *My Account* page of your `ambientweather.net` dashboard.
 
 ### Weather Station Thing Configuration
 
