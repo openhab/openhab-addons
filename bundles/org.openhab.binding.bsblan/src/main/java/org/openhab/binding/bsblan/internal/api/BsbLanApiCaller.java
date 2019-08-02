@@ -56,9 +56,10 @@ public class BsbLanApiCaller {
     }
 
     public BsbLanApiParameterQueryResponse queryParameters(Set<Integer> parameterIds) {
-        if (parameterIds.size() == 0) {
-            return null;
-        }
+        // make the request event if parameterIds is empty, thing OFFLINE/ONLINE detection relys on a response
+        // if (parameterIds.size() == 0) {
+        //     return null;
+        // }
         String apiPath = String.format("/JQ=%s", StringUtils.join(parameterIds, ","));
 
         return makeRestCall(BsbLanApiParameterQueryResponse.class, "GET", apiPath, "");
@@ -118,6 +119,7 @@ public class BsbLanApiCaller {
      * @param responseType response class type
      * @param httpMethod to execute
      * @param apiPath to request
+     * @param content to add to request
      * @return the object representation of the json response
      */
     @Nullable
@@ -139,7 +141,7 @@ public class BsbLanApiCaller {
                 return null;
             }
 
-            logger.debug("api response content: '{}''", response);
+            logger.debug("api response content: '{}'", response);
 
             Gson gson = new Gson();
             T result = gson.fromJson(response, responseType);

@@ -56,6 +56,11 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
 
     public void registerThing(final BsbLanBaseThingHandler parameter) {
         this.things.add(parameter);
+
+        // todo: Currently it will take up to refreshInterval seconds until values are updated
+        // for the added thing, we could trigger an immediate (debounced) refresh to improve
+        // this scenario. Alternativly the thing itself could make an additional REST call 
+        // on initialization but this would flood the device when lots of parameters are setup.
     }
 
     @Override

@@ -76,6 +76,8 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
         // validate 'setType' configuration -> fallback to 'SET' if invalid or not specified
         parameterConfig.setType = Type.getTypeWithFallback(parameterConfig.setType).toString();
 
+        // it will take up to refreshInterval seconds until we receive a value and thing goes online
+        // see notes in {@link BsbLanBridgeHandler#registerThing(BsbLanBaseThingHandler)}
         updateStatus(ThingStatus.UNKNOWN);
     }
 
