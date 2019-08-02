@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.bsblan.internal.handler;
 
-//import java.io.IOException;
-//import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.*;
@@ -78,6 +76,10 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
+        if (bridgeConfig.port == null) {
+            bridgeConfig.port = DEFAULT_API_PORT;
+        }
+
         // all checks succeeded, start refreshing
         startAutomaticRefresh(bridgeConfig);
     }
@@ -104,24 +106,7 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
     private void startAutomaticRefresh(BsbLanBridgeConfiguration config) {
         if (refreshJob == null || refreshJob.isCancelled()) {
             Runnable runnable = () -> {
-                // InetAddress.isReachable(...) returns false although reachable on raspberry (works on windows)
-                // therefore disable the check for now :()
-/*              try {
-                    InetAddress inet = InetAddress.getByName(config.host);
-                    if (!inet.isReachable(5000)) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                            String.format("BSB-LAN device is not reachable at '%s'", config.host));
-                        return;
-                    }
-                } catch (IOException e) {
-                    logger.debug("Connection Error: {}", e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        e.getMessage());
-                    return;
-                }
-*/
-                // device is reachable, refresh state now
-                updateStatus(ThingStatus.ONLINE);
+                logger.debug("Refreshing parameter values");
 
                 BsbLanApiCaller apiCaller = new BsbLanApiCaller(bridgeConfig);
 
@@ -133,6 +118,21 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
                                             .collect(Collectors.toSet());
 
                 cachedParameterQueryResponse = apiCaller.queryParameters(parameterIds);
+
+                // InetAddress.isReachable(...) check returned false on RPi although the device is reachable (worked on Windows).
+                // Therefore we check status depending on the response.
+                if (cachedParameterQueryResponse == null) {
+                    boolean wasOffline = getBridge().getStatus() == ThingStatus.OFFLINE;
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        "Did not receive a response from BSB-LAN device. Check your configuration and if device is online.");
+                    // continue processing only if we were not offline before, so things can go to OFFLINE too
+                    if (wasOffline) {
+                        return;
+                    }
+                } else {
+                    // resonse received, thread device as reachable, refresh state now
+                    updateStatus(ThingStatus.ONLINE);
+                }
 
                 for (BsbLanBaseThingHandler parameter : things) {
                     parameter.refresh(bridgeConfig);

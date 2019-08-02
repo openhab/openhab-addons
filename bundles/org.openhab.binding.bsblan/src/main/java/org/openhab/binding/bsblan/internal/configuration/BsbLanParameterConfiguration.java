@@ -19,9 +19,18 @@ package org.openhab.binding.bsblan.internal.configuration;
  * @author Peter Schraffl - Initial contribution
  */
 public class BsbLanParameterConfiguration {
+    /**
+     * Parameter Id (ProgNr) to query
+     */
     public Integer id;
 
+    /**
+     * Parameter Id (ProgNr) used for change requests.
+     */
     public Integer setId;
 
+    /**
+     * Command type used for Change Requests (INF or SET)
+     */
     public String setType;
 }

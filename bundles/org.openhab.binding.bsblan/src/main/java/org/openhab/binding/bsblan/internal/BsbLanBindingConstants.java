@@ -46,4 +46,5 @@ public class BsbLanBindingConstants {
     public static final int MIN_REFRESH_INTERVAL = 5;
     public static final int DEFAULT_REFRESH_INTERVAL = 60;
     public static final int API_TIMEOUT = 10000;
+    public static final int DEFAULT_API_PORT = 80;
 }

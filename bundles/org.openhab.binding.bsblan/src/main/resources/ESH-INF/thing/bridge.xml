@@ -12,6 +12,11 @@
 				<label>Host</label>
 				<description>The hostname or IP address of the BSB-LAN device.</description>
 			</parameter>
+			<parameter name="port" type="integer" required="false" groupName="network">
+				<label>Port</label>
+				<description>The port BSB-LAN device.</description>
+				<default>80</default>
+			</parameter>
 			<parameter name="passkey" type="text" required="false" groupName="network">
 				<label>Passkey</label>
 				<description>The passkey required to access the BSB-LAN device.</description>
@@ -21,6 +26,7 @@
 				<description>The username required to access the BSB-LAN device (when using HTTP Basic Authentication).</description>
 			</parameter>
 			<parameter name="password" type="text" required="false" groupName="network">
+				<context>password</context>
 				<label>Password</label>
 				<description>The password required to access the BSB-LAN device (when using HTTP Basic Authentication).</description>
 			</parameter>

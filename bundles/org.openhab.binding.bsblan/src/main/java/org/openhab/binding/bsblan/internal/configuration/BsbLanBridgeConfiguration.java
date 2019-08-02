@@ -19,9 +19,33 @@ package org.openhab.binding.bsblan.internal.configuration;
  * @author Peter Schraffl - Initial contribution
  */
 public class BsbLanBridgeConfiguration {
+    /**
+     * Hostname or IP addres of the device
+     */
     public String host;
+
+    /**
+     * HTTP port where device is listening
+     */
+    public Integer port;
+
+    /**
+     * For "security" feature of BSB-LAN devices
+     */
     public String passkey;
+
+    /**
+     * HTTP Basic Authentication User
+     */
     public String username;
+
+    /**
+     * * HTTP Basic Authentication Password
+     */
     public String password;
+
+    /**
+     * Value refresh interval
+     */
     public Integer refreshInterval;
 }

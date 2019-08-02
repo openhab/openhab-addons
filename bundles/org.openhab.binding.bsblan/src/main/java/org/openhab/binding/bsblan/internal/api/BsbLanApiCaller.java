@@ -105,6 +105,9 @@ public class BsbLanApiCaller {
             url.append(bridgeConfig.username + ":" + bridgeConfig.password + "@");
         }
         url.append(bridgeConfig.host);
+        if (bridgeConfig.port != 80) {
+            url.append(":" + bridgeConfig.host.toString());
+        }
         if (StringUtils.trimToNull(bridgeConfig.passkey) != null) {
             url.append("/" + bridgeConfig.passkey);
         }

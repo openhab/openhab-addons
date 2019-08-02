@@ -26,6 +26,7 @@ The binding has no configuration options, all configuration is done at Thing lev
 | Property         | Default | Required | Type    | Description                                                                                |
 |------------------|---------|----------|---------|--------------------------------------------------------------------------------------------|
 | host             | -       | Yes      | String  | The hostname or IP address of the BSB-LAN device.                                          |
+| port             | 80      | No       | Integer | The port where the BSB-LAN device is listening.                                            |
 | passkey          | -       | No       | String  | The passkey required to access the BSB-LAN device.                                         |
 | username         | -       | No       | String  | The username required to access the BSB-LAN device (when using HTTP Basic Authentication). |
 | password         | -       | No       | String  | The password required to access the BSB-LAN device (when using HTTP Basic Authentication). |
