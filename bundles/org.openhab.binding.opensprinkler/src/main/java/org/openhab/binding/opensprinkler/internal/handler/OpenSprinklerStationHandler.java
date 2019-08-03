@@ -29,8 +29,6 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
     @Override
     public void initialize() {
         config = getConfig().as(OpenSprinklerStationConfig.class);
-
-        super.initialize();
     }
 
     @Override

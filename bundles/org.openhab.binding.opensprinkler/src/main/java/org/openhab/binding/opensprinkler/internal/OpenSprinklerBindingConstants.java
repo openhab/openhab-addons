@@ -27,15 +27,15 @@ public class OpenSprinklerBindingConstants {
 
     // List of all Thing ids
     public static final String HTTP_BRIDGE = "http";
-    public static final String STATION = "station";
-    public static final String DEVICE = "device";
-    public static final String PI = "pi";
+    public static final String PI_BRIDGE = "pi";
+    public static final String STATION_THING = "station";
+    public static final String DEVICE_THING = "device";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID OPENSPRINKLER_HTTP_BRIDGE = new ThingTypeUID(BINDING_ID, HTTP_BRIDGE);
-    public static final ThingTypeUID OPENSPRINKLER_STATION = new ThingTypeUID(BINDING_ID, STATION);
-    public static final ThingTypeUID OPENSPRINKLER_DEVICE = new ThingTypeUID(BINDING_ID, DEVICE);
-    public static final ThingTypeUID OPENSPRINKLER_PI_BRIDGE = new ThingTypeUID(BINDING_ID, PI);
+    public static final ThingTypeUID OPENSPRINKLER_STATION = new ThingTypeUID(BINDING_ID, STATION_THING);
+    public static final ThingTypeUID OPENSPRINKLER_DEVICE = new ThingTypeUID(BINDING_ID, DEVICE_THING);
+    public static final ThingTypeUID OPENSPRINKLER_PI_BRIDGE = new ThingTypeUID(BINDING_ID, PI_BRIDGE);
 
     public static final int DEFAULT_WAIT_BEFORE_INITIAL_REFRESH = 30;
     public static final int DEFAULT_REFRESH_RATE = 60;

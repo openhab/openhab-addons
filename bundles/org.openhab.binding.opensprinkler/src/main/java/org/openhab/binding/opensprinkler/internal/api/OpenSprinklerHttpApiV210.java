@@ -43,7 +43,8 @@ public class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
      * @param password Admin password for the OpenSprinkler device.
      * @throws Exception
      */
-    public OpenSprinklerHttpApiV210(final String hostname, final int port, final String password) throws Exception {
+    public OpenSprinklerHttpApiV210(final String hostname, final int port, final String password)
+            throws GeneralApiException {
         super(hostname, port, password);
     }
 
@@ -123,7 +124,7 @@ public class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
      * @throws Exception
      */
     @Override
-    public void openConnection() throws Exception {
+    public void openConnection() throws CommunicationApiException {
         this.firmwareVersion = getFirmwareVersion();
         this.numberOfStations = getNumberOfStations();
 

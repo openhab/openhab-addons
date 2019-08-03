@@ -5,13 +5,13 @@ Stations can be controlled to be turned on or off and rain sensor state can be r
 
 ## Supported Bridges
 
-*   HTTP - The http bridge allows to communicate with an OpenSprinkler device through the network
-*   Pi - With the pi bridge, openHAB can communicate with an OpenSprinkler device which is installed on the same Pi as the openHAB system.
+*   HTTP (`http`) - The http bridge allows to communicate with an OpenSprinkler device through the network
+*   Pi (`pi`) - With the pi bridge, openHAB can communicate with an OpenSprinkler device which is installed on the same Pi as the openHAB system.
 
 ## Supported Things
 
-*   OpenSprinkler Station - to control a single station of a device, e.g. to turn it on or off
-*   OpenSprinkler Device - for getting device-specific infos, e.g. if rain was detected
+*   OpenSprinkler Station (`station`) - to control a single station of a device, e.g. to turn it on or off
+*   OpenSprinkler Device (`device`) - for getting device-specific infos, e.g. if rain was detected
 
 ## Discovery
 
@@ -47,7 +47,7 @@ Bridge opensprinkler:http:http [stations=8, refresh=60] {
 
 ## Channels
 
-The following channels are supported by the station thing.
+The following channel is supported by the station thing.
 
 | Channel Type ID | Item Type |    | Description                                             |
 |-----------------|-----------|----|---------------------------------------------------------|
@@ -55,7 +55,7 @@ The following channels are supported by the station thing.
 
 
 
-The following are support by the device thing, but only when connected using the http interface.
+The following is supported by the device thing, but only when connected using the http interface.
 
 | Channel Type ID | Item Type |    | Description                                                           |
 |-----------------|-----------|----|-----------------------------------------------------------------------|
@@ -66,7 +66,7 @@ The following are support by the device thing, but only when connected using the
 demo.Things:
 
 ```
-Bridge opensprinkler:http:http [hostname="127.0.0.1", port=81, pasword="opendoor"] {
+Bridge opensprinkler:http:http [hostname="127.0.0.1", port=81, password="opendoor"] {
     Thing station 01 [stationIndex=0]
     Thing station 02 [stationIndex=1]
     Thing station 03 [stationIndex=2]

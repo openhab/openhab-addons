@@ -44,7 +44,8 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
      * @param password Admin password for the OpenSprinkler device.
      * @throws Exception
      */
-    public OpenSprinklerHttpApiV100(final String hostname, final int port, final String password) throws Exception {
+    public OpenSprinklerHttpApiV100(final String hostname, final int port, final String password)
+            throws GeneralApiException {
         if (hostname == null) {
             throw new GeneralApiException("The given url is null.");
         }
@@ -70,7 +71,7 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public void openConnection() throws Exception {
+    public void openConnection() throws CommunicationApiException {
         try {
             Http.sendHttpGet(getBaseUrl(), getRequestRequiredOptions() + "&" + CMD_ENABLE_MANUAL_MODE);
         } catch (Exception exp) {
@@ -85,7 +86,7 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public void closeConnection() throws Exception {
+    public void closeConnection() throws CommunicationApiException {
         connectionOpen = false;
 
         try {
@@ -173,7 +174,7 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public int getNumberOfStations() throws Exception {
+    public int getNumberOfStations() throws CommunicationApiException {
         String returnContent;
 
         try {
@@ -189,7 +190,7 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public int getFirmwareVersion() throws Exception {
+    public int getFirmwareVersion() throws CommunicationApiException {
         String returnContent;
 
         try {

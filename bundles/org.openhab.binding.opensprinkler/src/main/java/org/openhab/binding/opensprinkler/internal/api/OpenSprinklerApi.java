@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.opensprinkler.internal.api;
 
+import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
+
 /**
  * The {@link OpenSprinklerApi} interface defines the functions which are
  * controllable on the OpenSprinkler API interface.
@@ -31,14 +33,14 @@ public interface OpenSprinklerApi {
      *
      * @throws Exception
      */
-    public abstract void openConnection() throws Exception;
+    public abstract void openConnection() throws CommunicationApiException;
 
     /**
      * Closes the connection to the OpenSprinkler device.
      *
      * @throws Exception
      */
-    public abstract void closeConnection() throws Exception;
+    public abstract void closeConnection() throws CommunicationApiException;
 
     /**
      * Starts a station on the OpenSprinkler device.

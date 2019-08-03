@@ -11,6 +11,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
@@ -21,17 +22,14 @@ public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
     }
 
     @Override
-    public void initialize() {
-        OpenSprinklerApi ondusService = getApi();
-        if (ondusService == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "No initialized API available from bridge.");
-            return;
-        }
-        scheduler.scheduleWithFixedDelay(this::updateChannels, 0, DEFAULT_WAIT_BEFORE_INITIAL_REFRESH,
-                TimeUnit.SECONDS);
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
 
-        updateStatus(ThingStatus.UNKNOWN);
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            scheduler.scheduleWithFixedDelay(this::updateChannels, 0, DEFAULT_WAIT_BEFORE_INITIAL_REFRESH,
+                    TimeUnit.SECONDS);
+            updateStatus(ThingStatus.UNKNOWN);
+        }
     }
 
     @Nullable

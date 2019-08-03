@@ -4,6 +4,8 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiFactory;
+import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
+import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +23,6 @@ public class OpenSprinklerHttpBridgeHandler extends OpenSprinklerBaseBridgeHandl
     public void initialize() {
         openSprinklerConfig = getConfig().as(OpenSprinklerHttpInterfaceConfig.class);
 
-        if (openSprinklerConfig == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Could not parse the config for the OpenSprinkler.");
-            return;
-        }
-
         logger.debug("Initializing OpenSprinkler with config (Hostname: {}, Port: {}, Password: {}, Refresh: {}).",
                 openSprinklerConfig.hostname, openSprinklerConfig.port, openSprinklerConfig.password,
                 openSprinklerConfig.refresh);
@@ -34,11 +30,9 @@ public class OpenSprinklerHttpBridgeHandler extends OpenSprinklerBaseBridgeHandl
         try {
             openSprinklerDevice = OpenSprinklerApiFactory.getHttpApi(openSprinklerConfig.hostname,
                     openSprinklerConfig.port, openSprinklerConfig.password);
-        } catch (Exception exp) {
+        } catch (CommunicationApiException | GeneralApiException exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not create a connection to the OpenSprinkler.");
-            logger.debug("Could not create API connection to the OpenSprinkler device. Exception received: {}",
-                    exp.toString());
+                    "Could not create API connection to the OpenSprinkler device. Error received: " + exp);
 
             return;
         }
@@ -47,16 +41,13 @@ public class OpenSprinklerHttpBridgeHandler extends OpenSprinklerBaseBridgeHandl
 
         try {
             openSprinklerDevice.openConnection();
-        } catch (Exception exp) {
+        } catch (CommunicationApiException exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not open the connection to the OpenSprinkler.");
-            logger.debug("Could not open API connection to the OpenSprinkler device. Exception received: {}",
-                    exp.toString());
+                    "Could not open API connection to the OpenSprinkler device. Error received: " + exp);
         }
 
         if (openSprinklerDevice.isConnected()) {
             updateStatus(ThingStatus.ONLINE);
-            logger.debug("OpenSprinkler connected.");
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not initialize the connection to the OpenSprinkler.");

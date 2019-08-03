@@ -12,6 +12,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
+import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,7 @@ public abstract class OpenSprinklerBaseBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        pollingJob = scheduler.scheduleWithFixedDelay(refreshService, DEFAULT_WAIT_BEFORE_INITIAL_REFRESH,
+        pollingJob = scheduler.scheduleWithFixedDelay(this::refresh, DEFAULT_WAIT_BEFORE_INITIAL_REFRESH,
                 getRefreshInterval(), TimeUnit.SECONDS);
     }
 
@@ -40,7 +41,7 @@ public abstract class OpenSprinklerBaseBridgeHandler extends BaseBridgeHandler {
     /**
      * Threaded scheduled job that periodically syncs the state of the OpenSprinkler device.
      */
-    private Runnable refreshService = () -> {
+    private void refresh() {
         if (openSprinklerDevice != null) {
             if (openSprinklerDevice.isConnected()) {
                 logger.debug("Refreshing state with the OpenSprinkler device.");
@@ -64,7 +65,7 @@ public abstract class OpenSprinklerBaseBridgeHandler extends BaseBridgeHandler {
         if (openSprinklerDevice != null) {
             try {
                 openSprinklerDevice.closeConnection();
-            } catch (Exception e) {
+            } catch (CommunicationApiException e) {
                 logger.error("Could not close connection on teardown.", e);
             }
             openSprinklerDevice = null;
