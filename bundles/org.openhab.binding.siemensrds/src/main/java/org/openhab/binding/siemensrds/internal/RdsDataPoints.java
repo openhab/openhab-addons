@@ -14,19 +14,17 @@ package org.openhab.binding.siemensrds.internal;
 
 import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
+import javax.net.ssl.HttpsURLConnection;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -73,30 +71,35 @@ class RdsDataPoints {
      */
     private static String httpGetPointListJson(String apiKey, String token, String plantId) {
         String result = "";
-        SslContextFactory sslCtx = new SslContextFactory();
-        HttpClient https = new HttpClient(sslCtx);
-
         try {
-            https.start();
-            try {
-                Request req = https.newRequest(String.format(URL_POINTS, plantId));
+            URL url = new URL(String.format(URL_POINTS, plantId));
 
-                req.method(HttpMethod.GET);
-                req.agent(VAL_USER_AGENT);
-                req.header(HttpHeader.ACCEPT, VAL_ACCEPT);
-                req.header(HDR_SUB_KEY, apiKey);
-                req.header(HDR_AUTHORIZE, String.format(VAL_AUTHORIZE, token));
+            /*
+             * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
+             * preferred JETTY library; the reason is that JETTY does not allow sending the
+             * square brackets characters "[]" verbatim over HTTP connections
+             */
+            HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
 
-                ContentResponse resp = req.send();
+            https.setRequestMethod(HTTP_GET);
 
-                int responseCode = resp.getStatus();
-                if (responseCode == HttpStatus.OK_200) {
-                    result = resp.getContentAsString();
-                } else {
-                    LOGGER.error("httpGetPointListJson: http error={}", responseCode);
+            https.setRequestProperty(USER_AGENT, MOZILLA);
+            https.setRequestProperty(ACCEPT, APPLICATION_JSON);
+            https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
+            https.setRequestProperty(AUTHORIZATION, String.format(BEARER, token));
+
+            int responseCode = https.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(https.getInputStream(), "UTF8"));
+                String inStr;
+                StringBuffer response = new StringBuffer();
+                while ((inStr = in.readLine()) != null) {
+                    response.append(inStr);
                 }
-            } finally {
-                https.stop();
+                in.close();
+                result = response.toString();
+            } else {
+                LOGGER.error("httpGetPointListJson: http error={}", responseCode);
             }
         } catch (Exception e) {
             LOGGER.error("httpGetPointListJson: exception={}", e.getMessage());
@@ -133,31 +136,32 @@ class RdsDataPoints {
      * private method: execute an HTTP PUT on the server to set a data point value
      */
     private void httpSetPointValueJson(String apiKey, String token, String pointId, String json) {
-        SslContextFactory sslCtx = new SslContextFactory();
-        HttpClient https = new HttpClient(sslCtx);
-
         try {
-            https.start();
-            try {
-                Request req = https.newRequest(String.format(URL_SETVAL, pointId));
+            URL url = new URL(String.format(URL_SETVAL, pointId));
 
-                req.method(HttpMethod.PUT);
-                req.agent(VAL_USER_AGENT);
-                req.header(HttpHeader.ACCEPT, VAL_ACCEPT);
-                req.header(HttpHeader.CONTENT_TYPE, VAL_CONT_JSON);
-                req.header(HDR_AUTHORIZE, String.format(VAL_AUTHORIZE, token));
-                req.header(HDR_SUB_KEY, apiKey);
+            /*
+             * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
+             * preferred JETTY library; the reason is that JETTY does not allow sending the
+             * square brackets characters "[]" verbatim over HTTP connections
+             */
+            HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
 
-                req.content(new StringContentProvider(json), VAL_CONT_JSON);
+            https.setRequestMethod(HTTP_PUT);
 
-                ContentResponse resp = req.send();
+            https.setRequestProperty(USER_AGENT, MOZILLA);
+            https.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
+            https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
+            https.setRequestProperty(AUTHORIZATION, String.format(BEARER, token));
 
-                int responseCode = resp.getStatus();
-                if (responseCode != HttpStatus.OK_200) {
-                    LOGGER.error("httpSetPointValueJson: http error={}", responseCode);
-                }
-            } finally {
-                https.stop();
+            https.setDoOutput(true);
+            DataOutputStream wr = new DataOutputStream(https.getOutputStream());
+            wr.writeBytes(json);
+            wr.flush();
+            wr.close();
+
+            int responseCode = https.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                LOGGER.error("httpSetPointValueJson: http error={}", responseCode);
             }
         } catch (Exception e) {
             LOGGER.error("httpSetPointValueJson: exception={}", e.getMessage());
@@ -171,30 +175,35 @@ class RdsDataPoints {
     private String httpGetPointValuesJson(String apiKey, String token, String filterId) {
         String result = "";
 
-        SslContextFactory sslCtx = new SslContextFactory();
-        HttpClient https = new HttpClient(sslCtx);
-
         try {
-            https.start();
-            try {
-                Request req = https.newRequest(String.format(URL_VALUES, filterId));
+            URL url = new URL(String.format(URL_VALUES, filterId));
 
-                req.method(HttpMethod.GET);
-                req.agent(VAL_USER_AGENT);
-                req.header(HttpHeader.ACCEPT, VAL_ACCEPT);
-                req.header(HDR_AUTHORIZE, String.format(VAL_AUTHORIZE, token));
-                req.header(HDR_SUB_KEY, apiKey);
+            /*
+             * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
+             * preferred JETTY library; the reason is that JETTY does not allow sending the
+             * square brackets characters "[]" verbatim over HTTP connections
+             */
+            HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
 
-                ContentResponse resp = req.send();
+            https.setRequestMethod(HTTP_GET);
 
-                int responseCode = resp.getStatus();
-                if (responseCode == HttpStatus.OK_200) {
-                    result = resp.getContentAsString();
-                } else {
-                    LOGGER.error("httpGetPointValuesJson: http error={}", responseCode);
+            https.setRequestProperty(USER_AGENT, MOZILLA);
+            https.setRequestProperty(ACCEPT, APPLICATION_JSON);
+            https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
+            https.setRequestProperty(AUTHORIZATION, String.format(BEARER, token));
+
+            int responseCode = https.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(https.getInputStream(), "UTF8"));
+                String inStr;
+                StringBuffer response = new StringBuffer();
+                while ((inStr = in.readLine()) != null) {
+                    response.append(inStr);
                 }
-            } finally {
-                https.stop();
+                in.close();
+                result = response.toString();
+            } else {
+                LOGGER.error("httpGetPointValuesJson: http error={}", responseCode);
             }
         } catch (Exception e) {
             LOGGER.error("httpGetPointValuesJson: exception={}", e.getMessage());
@@ -524,11 +533,11 @@ class TextPoint extends BasePoint {
         }
     }
 
-    @Override
     /*
      * if appropriate return the enum string representation, otherwise return the
      * decimal representation
      */
+    @Override
     public State getRaw() {
         return new StringType(value);
     }
@@ -583,11 +592,11 @@ class InnerValuePoint extends BasePoint {
         return (inner != null ? (int) inner.value : -1);
     }
 
-    @Override
     /*
      * if appropriate return the enum string representation, otherwise return the
      * decimal representation
      */
+    @Override
     public State getRaw() {
         if (inner != null) {
             return new DecimalType(inner.value);
@@ -619,11 +628,11 @@ class NumericPoint extends BasePoint {
         return (int) value;
     }
 
-    @Override
     /*
      * if appropriate return the enum string representation, otherwise return the
      * decimal representation
      */
+    @Override
     public State getRaw() {
         return new DecimalType(value);
     }

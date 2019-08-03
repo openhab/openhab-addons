@@ -14,20 +14,20 @@ package org.openhab.binding.siemensrds.internal;
 
 import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,36 +60,48 @@ class RdsAccessToken {
     private static String httpGetTokenJson(String apiKey, String user, String password) {
         String result = "";
 
-        SslContextFactory sslCtx = new SslContextFactory();
-        HttpClient https = new HttpClient(sslCtx);
-
         try {
-            https.start();
-            try {
-                Request req = https.newRequest(URL_TOKEN);
+            URL url = new URL(URL_TOKEN);
 
-                req.method(HttpMethod.POST);
-                req.agent(VAL_USER_AGENT);
-                req.header(HttpHeader.ACCEPT, VAL_ACCEPT);
-                req.header(HDR_SUB_KEY, apiKey);
-                req.header(HttpHeader.CONTENT_TYPE, VAL_CONT_PLAIN);
+            /*
+             * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
+             * preferred JETTY library; the reason is that JETTY does not allow sending the
+             * square brackets characters "[]" verbatim over HTTP connections
+             */
+            HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
 
-                req.content(new StringContentProvider(String.format(TOKEN_REQ, user, password), VAL_CONT_PLAIN));
+            https.setRequestMethod(HTTP_POST);
 
-                ContentResponse resp = req.send();
+            https.setRequestProperty(USER_AGENT, MOZILLA);
+            https.setRequestProperty(ACCEPT, TEXT_PLAIN);
+            https.setRequestProperty(CONTENT_TYPE, TEXT_PLAIN);
+            https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
 
-                int responseCode = resp.getStatus();
-                if (responseCode == HttpStatus.OK_200) {
-                    result = resp.getContentAsString();
-                } else {
-                    LOGGER.error("httpGetPointListJson: http error={}", responseCode);
+            String requestStr = String.format(TOKEN_REQUEST, user, password);
+
+            https.setDoOutput(true);
+            DataOutputStream wr = new DataOutputStream(https.getOutputStream());
+            wr.writeBytes(requestStr);
+            wr.flush();
+            wr.close();
+
+            int responseCode = https.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(https.getInputStream(), "UTF8"));
+                String inStr;
+                StringBuffer response = new StringBuffer();
+                while ((inStr = in.readLine()) != null) {
+                    response.append(inStr);
                 }
-            } finally {
-                https.stop();
+                in.close();
+                result = response.toString();
+            } else {
+                LOGGER.debug("httpGetTokenJson: http error={}", responseCode);
             }
         } catch (Exception e) {
-            LOGGER.error("httpGetPointListJson: exception={}", e.getMessage());
+            LOGGER.debug("httpGetTokenJson: exception={}", e.getMessage());
         }
+
         return result;
     }
 

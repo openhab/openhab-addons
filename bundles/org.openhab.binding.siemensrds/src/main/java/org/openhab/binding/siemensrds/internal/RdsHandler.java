@@ -16,7 +16,6 @@ import org.openhab.binding.siemensrds.internal.RdsDebouncer;
 
 import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
-import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -76,12 +75,8 @@ public class RdsHandler extends BaseThingHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "status => unknown..");
 
-//      config = getConfigAs(RdsConfiguration.class);
+        config = getConfigAs(RdsConfiguration.class);
 
-        config = new RdsConfiguration();
-        Map<String, String> props = getThing().getProperties();
-        config.plantId = props.get(PROP_PLANT_ID);
-        
         if (config == null || config.plantId == null || config.plantId.isEmpty()) {  
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "missing Plant Id, status => offline!");
