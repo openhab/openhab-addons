@@ -14,16 +14,16 @@ package org.openhab.binding.siemensrds.internal;
 
 import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,34 +65,41 @@ class RdsPlants {
      */
     private static String httpGetPlantListJson(String apiKey, String token) {
         String result = "";
-        SslContextFactory sslCtx = new SslContextFactory();
-        HttpClient https = new HttpClient(sslCtx);
-
         try {
-            https.start();
-            try {
-                Request req = https.newRequest(URL_PLANTS);
+            URL url = new URL(URL_PLANTS);
 
-                req.method(HttpMethod.GET);
-                req.agent(VAL_USER_AGENT);
-                req.header(HttpHeader.ACCEPT, VAL_ACCEPT);
-                req.header(HDR_SUB_KEY, apiKey);
-                req.header(HDR_AUTHORIZE, String.format(VAL_AUTHORIZE, token));
+            /*
+             * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
+             * preferred JETTY library; the reason is that JETTY does not allow sending the
+             * square brackets characters "[]" verbatim over HTTP connections
+             */
+            HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
 
-                ContentResponse resp = req.send();
+            https.setRequestMethod(HTTP_GET);
 
-                int responseCode = resp.getStatus();
-                if (responseCode == HttpStatus.OK_200) {
-                    result = resp.getContentAsString();
-                } else {
-                    LOGGER.debug("httpGetPlantListJson: http error={}", responseCode);
+            https.setRequestProperty(USER_AGENT, MOZILLA);
+            https.setRequestProperty(ACCEPT, APPLICATION_JSON);
+            https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
+            https.setRequestProperty(AUTHORIZATION, String.format(BEARER, token));
+
+            int responseCode = https.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(https.getInputStream(), "UTF8"));
+                String inStr;
+                StringBuffer response = new StringBuffer();
+                while ((inStr = in.readLine()) != null) {
+                    response.append(inStr);
                 }
-            } finally {
-                https.stop();
+                in.close();
+                result = response.toString();
+            } else {
+                LOGGER.debug("httpGetPlantListJson: http error={}", responseCode);
             }
         } catch (Exception e) {
-            LOGGER.error("httpGetPlantListJson: exception={}", e.getMessage());
+            LOGGER.debug("httpGetPlantListJson: exception={}", e.getMessage());
         }
+
         return result;
     }
 
