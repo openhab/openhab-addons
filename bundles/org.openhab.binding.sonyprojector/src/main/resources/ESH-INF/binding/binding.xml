@@ -4,6 +4,6 @@
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
 
 	<name>SonyProjector Binding</name>
-	<description>The SonyProjector binding controls a Sony projector through Ethernet ()PJ Talk) or serial.</description>
+	<description>The SonyProjector binding controls a Sony projector through Ethernet (PJ Talk) or serial.</description>
 
 </binding:binding>
