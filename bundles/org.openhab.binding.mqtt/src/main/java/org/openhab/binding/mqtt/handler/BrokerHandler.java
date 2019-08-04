@@ -223,13 +223,12 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
     }
 
     @Override
-    @SuppressWarnings("null")
     public void initialize() {
         config = getConfigAs(BrokerHandlerConfig.class);
-        connection = createBrokerConnection();
-        if (connection != null) {
-            assignSSLContextProvider(config, connection, this);
-            super.initialize();
-        }
+        final MqttBrokerConnection connection = createBrokerConnection();
+        assignSSLContextProvider(config, connection, this);
+        this.connection = connection;
+
+        super.initialize();
     }
 }
