@@ -387,8 +387,8 @@ Thing greenmode greenmode [ integrationId=22 ]
 
 ### Timeclock
 
-RadioRA 2 and Homeworks QS have timeclock subsystems that provide scheduled execution of tasks at set times, randomized times, or at arbitrary offsets from local sunrise/sunset.
-The tasks executed depend on which timeclock mode (e.g. Normal, Away, Suspend) is currently selected, and the modes themselves are user-definable (RadioRA 2 only).
+RadioRA 2 and Homeworks QS have timeclock subsystems that provide scheduled execution of tasks at set times, randomized times or at arbitrary offsets from local sunrise/sunset.
+The tasks executed depend on the currently selected timeclock mode (e.g. Normal, Away, Suspend) and the modes themselves are user-definable (RadioRA 2 only).
 In addition, tasks can be individually executed, and enabled or disabled for scheduled execution.
 
 The **timeclock** thing provides an interface to timeclock functions.
