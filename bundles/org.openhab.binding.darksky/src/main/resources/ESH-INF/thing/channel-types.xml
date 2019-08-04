@@ -263,31 +263,31 @@
 	<channel-type id="rain">
 		<item-type>Number:Speed</item-type>
 		<label>Rain</label>
-		<description>Rain volume for the last 3 hours.</description>
+		<description>Current rain intensity.</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.2f mm/h" />
 	</channel-type>
 
 	<channel-type id="forecasted-rain">
 		<item-type>Number:Speed</item-type>
-		<label>Forecasted Rain</label>
-		<description>Forecasted rain volume for the next 3 hours.</description>
+		<label>Forecasted Rain Intensity</label>
+		<description>Forecasted rain intensity.</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.2f mm/h" />
 	</channel-type>
 
 	<channel-type id="snow">
 		<item-type>Number:Speed</item-type>
-		<label>Snow</label>
-		<description>Snow volume for the last 3 hours.</description>
+		<label>Snow Intensity</label>
+		<description>Current snow intensity.</description>
 		<category>Snow</category>
 		<state readOnly="true" pattern="%.2f mm/h" />
 	</channel-type>
 
 	<channel-type id="forecasted-snow">
 		<item-type>Number:Speed</item-type>
-		<label>Forecasted Snow</label>
-		<description>Forecasted snow volume for the next 3 hours.</description>
+		<label>Forecasted Snow Intensity</label>
+		<description>Forecasted snow intensity.</description>
 		<category>Snow</category>
 		<state readOnly="true" pattern="%.2f mm/h" />
 	</channel-type>
