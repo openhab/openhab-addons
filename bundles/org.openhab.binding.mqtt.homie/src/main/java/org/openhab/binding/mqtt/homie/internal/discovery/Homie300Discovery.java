@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public class Homie300Discovery extends AbstractMQTTDiscovery {
     private final Logger logger = LoggerFactory.getLogger(Homie300Discovery.class);
 
-    protected MQTTTopicDiscoveryService discoveryService;
+    protected final MQTTTopicDiscoveryService discoveryService;
 
     @Activate
     public Homie300Discovery(@Reference MQTTTopicDiscoveryService discoveryService) {
