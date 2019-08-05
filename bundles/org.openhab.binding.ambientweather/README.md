@@ -18,19 +18,12 @@ Other stations can be added relatively easily with changes in just several place
 
 Automatic discovery is currently not supported due to the lack of weather station model information in the Ambient Weather API.
 
-## Binding Configuration
-
-No binding configuration is needed.
-
 ## Thing Configuration
 
 ### Bridge Thing Configuration
 
 The Bridge thing requires a valid application Key and API key.
-Application and API keys can be obtained through your `ambientweather.net` dashboard.
-For the application key, you will need to send an email to the Ambient Weather support email address on your dashboard.
-Please indicate in your request that the application key is for openHAB.
-The application key requests usually are fulfilled within 24 hours.
+Application and API keys can be obtained on the *My Account* page of your `ambientweather.net` dashboard.
 
 ### Weather Station Thing Configuration
 
@@ -67,7 +60,7 @@ The following channels are supported by the binding. Note that specific weather 
 | weatherData\<station-type\>  | windSpeedAvg10Minute            | Number:Speed            | Ten-minute wind speed average                                 |
 | weatherData\<station-type\>  | windDirectionDegreesAvg10Min    | Number:Angle            | Ten-minute wind direction average                             |
 | weatherData\<station-type\>  | windDirectionAvg10Min           | String                  | Ten-minute wind direction average                             |
-| weatherData\<station-type\>  | rainHourlyRate                  | Number                  | Hourly rate of rainfall                                       |
+| weatherData\<station-type\>  | rainHourlyRate                  | Number:Speed            | Hourly rate of rainfall                                       |
 | weatherData\<station-type\>  | rainDay                         | Number:Length           | Rainfall amount for the day                                   |
 | weatherData\<station-type\>  | rainWeek                        | Number:Length           | Rainfall amount for the week                                  |
 | weatherData\<station-type\>  | rainMonth                       | Number:Length           | Rainfall amount for the month                                 |
@@ -125,7 +118,11 @@ String WS1400IP_WindDirection "Wind Direction [%s]" { channel="ambientweather:ws
 Number:Speed WS1400IP_WindGust "Wind Gust [%.0f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#windGust" }
 Number:Speed WS1400IP_WindGustDailyMax "Wind Gust Max Daily [%.0f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#windGustMaxDaily" }
 
-Number WS1400IP_RainHourlyRate "Rain Hourly Rate [%.2f in/hr]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#rainHourlyRate" }
+// Use this if your units are SI
+Number:Speed WS1400IP_RainHourlyRate "Rain Hourly Rate [%.1f mm/h]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#rainHourlyRate" }
+// Use this if your units are Imperial
+Number:Speed WS1400IP_RainHourlyRate "Rain Hourly Rate [%.2f in/h]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#rainHourlyRate" }
+
 Number:Length WS1400IP_RainDaily "Rain Daily [%.2f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#rainDay" }
 Number:Length WS1400IP_RainWeekly "Rain Weekly [%.2f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#rainWeek" }
 Number:Length WS1400IP_RainMonthly "Rain Monthly [%.2f %unit%]" { channel="ambientweather:ws1400ip:ws1400ip:weatherDataWs1400ip#rainMonth" }

@@ -45,7 +45,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Matthew Bowman - Initial contribution
  * @author Hilbrand Bouwkamp - Added registration of discovery service to binding to this class
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.spotify")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.spotify")
 @NonNullByDefault
 public class SpotifyHandlerFactory extends BaseThingHandlerFactory {
 

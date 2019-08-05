@@ -33,6 +33,7 @@
     <module>bom</module>
     <module>bundles</module>
     <module>features</module>
+    <module>itests</module>
   </modules>
 
   <scm>
@@ -117,13 +118,6 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-
-  <repositories>
-    <repository>
-      <id>osgiify</id>
-      <url>https://dl.bintray.com/openhab/mvn/openhab-osgiify</url>
-    </repository>
-  </repositories>
 
   <build>
     <pluginManagement>
@@ -673,17 +667,6 @@ Import-Package: \\
       </properties>
     </profile>
 
-    <profile>
-      <id>skip-itest</id>
-      <activation>
-        <property>
-          <name>!skipTests</name>
-        </property>
-      </activation>
-      <modules>
-        <module>itests</module>
-      </modules>
-    </profile>
     <profile>
       <id>with-bnd-resolver-resolve</id>
       <activation>

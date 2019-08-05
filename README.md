@@ -1,6 +1,6 @@
 # openHAB 2 Add-ons
 
-<img align="right" width="220" src="./openhab-logo-square-small.png" />
+<img align="right" width="220" src="./logo.png" />
 
 [![Build Status](https://travis-ci.org/openhab/openhab2-addons.svg)](https://travis-ci.org/openhab/openhab2-addons)
 [![EPL-2.0](https://img.shields.io/badge/license-EPL%202-green.svg)](https://opensource.org/licenses/EPL-2.0)

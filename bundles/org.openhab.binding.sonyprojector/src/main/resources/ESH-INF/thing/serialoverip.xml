@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sonyprojector"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sony Serial over IP Connection Thing Type -->
+	<thing-type id="serialoveripconnection">
+		<label>Sony Serial over IP Connection</label>
+		<description>Serial over IP connection to the Sony projector</description>
+
+		<channels>
+			<channel id="power" typeId="power" />
+			<channel id="powerstate" typeId="powerstate" />
+			<channel id="input" typeId="input" />
+			<channel id="calibrationpreset" typeId="calibrationpreset" />
+			<channel id="contrast" typeId="contrast" />
+			<channel id="brightness" typeId="brightness" />
+			<channel id="color" typeId="color" />
+			<channel id="hue" typeId="hue" />
+			<channel id="sharpness" typeId="sharpness" />
+			<channel id="colortemperature" typeId="colortemperature" />
+			<channel id="irismode" typeId="irismode" />
+			<channel id="irismanual" typeId="irismanual" />
+			<channel id="irissensitivity" typeId="irissensitivity" />
+			<channel id="lampcontrol" typeId="lampcontrol" />
+			<channel id="filmprojection" typeId="filmprojection" />
+			<channel id="motionenhancer" typeId="motionenhancer" />
+			<channel id="contrastenhancer" typeId="contrastenhancer" />
+			<channel id="filmmode" typeId="filmmode" />
+			<channel id="gammacorrection" typeId="gammacorrection" />
+			<channel id="colorspace" typeId="colorspace" />
+			<channel id="nr" typeId="nr" />
+			<channel id="blocknr" typeId="blocknr" />
+			<channel id="mosquitonr" typeId="mosquitonr" />
+			<channel id="mpegnr" typeId="mpegnr" />
+			<channel id="xvcolor" typeId="xvcolor" />
+			<channel id="picturemuting" typeId="picturemuting" />
+			<channel id="aspect" typeId="aspect" />
+			<channel id="overscan" typeId="overscan" />
+			<channel id="pictureposition" typeId="pictureposition" />
+			<channel id="lampusetime" typeId="lampusetime" />
+		</channels>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
+				<label>Address</label>
+				<description>Host name or IP address of the machine connected to the projector</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>Communication port</description>
+			</parameter>
+			<parameter name="model" type="text" required="true">
+				<label>Model</label>
+				<description>Projector model to be controlled</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="VPL-HW10">VPL-HW10</option>
+					<option value="VPL-HW15">VPL-HW15</option>
+					<option value="VPL-HW20">VPL-HW20</option>
+					<option value="VPL-HW30ES">VPL-HW30ES</option>
+					<option value="VPL-HW35ES">VPL-HW35ES</option>
+					<option value="VPL-HW40ES">VPL-HW40ES</option>
+					<option value="VPL-HW45ES">VPL-HW45ES</option>
+					<option value="VPL-HW50ES">VPL-HW50ES</option>
+					<option value="VPL-HW55ES">VPL-HW55ES</option>
+					<option value="VPL-HW58ES">VPL-HW58ES</option>
+					<option value="VPL-HW60">VPL-HW60</option>
+					<option value="VPL-HW65">VPL-HW65</option>
+					<option value="VPL-HW68">VPL-HW68</option>
+					<option value="VPL-VW40">VPL-VW40</option>
+					<option value="VPL-VW50">VPL-VW50</option>
+					<option value="VPL-VW60">VPL-VW60</option>
+					<option value="VPL-VW70">VPL-VW70</option>
+					<option value="VPL-VW80">VPL-VW80</option>
+					<option value="VPL-VW85">VPL-VW85</option>
+					<option value="VPL-VW90ES">VPL-VW90ES</option>
+					<option value="VPL-VW95ES">VPL-VW95ES</option>
+					<option value="VPL-VW100">VPL-VW100</option>
+					<option value="VPL-VW200">VPL-VW200</option>
+					<option value="VPL-VW260ES">VPL-VW260ES</option>
+					<option value="VPL-VW270ES">VPL-VW270ES</option>
+					<option value="VPL-VW285ES">VPL-VW285ES</option>
+					<option value="VPL-VW295ES">VPL-VW295ES</option>
+					<option value="VPL-VW300ES">VPL-VW300ES</option>
+					<option value="VPL-VW315">VPL-VW315</option>
+					<option value="VPL-VW320">VPL-VW320</option>
+					<option value="VPL-VW328">VPL-VW328</option>
+					<option value="VPL-VW350ES">VPL-VW350ES</option>
+					<option value="VPL-VW365">VPL-VW365</option>
+					<option value="VPL-VW385ES">VPL-VW385ES</option>
+					<option value="VPL-VW500ES">VPL-VW500ES</option>
+					<option value="VPL-VW515">VPL-VW515</option>
+					<option value="VPL-VW520">VPL-VW520</option>
+					<option value="VPL-VW528">VPL-VW528</option>
+					<option value="VPL-VW550ES">VPL-VW550ES</option>
+					<option value="VPL-VW570ES">VPL-VW570ES</option>
+					<option value="VPL-VW600ES">VPL-VW600ES</option>
+					<option value="VPL-VW665">VPL-VW665</option>
+					<option value="VPL-VW675ES">VPL-VW675ES</option>
+					<option value="VPL-VW695ES">VPL-VW695ES</option>
+					<option value="VPL-VW760ES">VPL-VW760ES</option>
+					<option value="VPL-VW870ES">VPL-VW870ES</option>
+					<option value="VPL-VW885ES">VPL-VW885ES</option>
+					<option value="VPL-VW995ES">VPL-VW995ES</option>
+					<option value="VPL-VW1000ES">VPL-VW1000ES</option>
+					<option value="VPL-VW1100ES">VPL-VW1100ES</option>
+				</options>
+				<default>VPL-VW528</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -67,7 +67,7 @@ public class Ws0900ipProcessor extends AbstractProcessor {
         handler.updateQuantity(channelGroupId, CH_WIND_DIRECTION_DEGREES, data.winddir, SmartHomeUnits.DEGREE_ANGLE);
         handler.updateQuantity(channelGroupId, CH_WIND_GUST, data.windgustmph, ImperialUnits.MILES_PER_HOUR);
         handler.updateQuantity(channelGroupId, CH_WIND_GUST_MAX_DAILY, data.maxdailygust, ImperialUnits.MILES_PER_HOUR);
-        handler.updateNumber(channelGroupId, CH_RAIN_HOURLY_RATE, data.hourlyrainin);
+        handler.updateQuantity(channelGroupId, CH_RAIN_HOURLY_RATE, data.hourlyrainin, SmartHomeUnits.INCHES_PER_HOUR);
         handler.updateQuantity(channelGroupId, CH_RAIN_DAY, data.dailyrainin, ImperialUnits.INCH);
         handler.updateQuantity(channelGroupId, CH_RAIN_WEEK, data.weeklyrainin, ImperialUnits.INCH);
         handler.updateQuantity(channelGroupId, CH_RAIN_MONTH, data.monthlyrainin, ImperialUnits.INCH);

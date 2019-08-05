@@ -285,6 +285,10 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
                 case QS_IO_INTERFACE:
                     notifyDiscovery(THING_TYPE_QSIO, device.getIntegrationId(), label);
                     break;
+
+                case GRAFIK_EYE_QS:
+                    notifyDiscovery(THING_TYPE_GRAFIKEYEKEYPAD, device.getIntegrationId(), label);
+                    break;
             }
         } else {
             logger.warn("Unrecognized device type {}", device.getType());
