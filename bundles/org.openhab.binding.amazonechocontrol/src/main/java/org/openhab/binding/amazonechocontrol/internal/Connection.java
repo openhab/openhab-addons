@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.amazonechocontrol.internal;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_APPLIANCE_ID;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_LIGHT;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_LIGHT_GROUP;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -942,10 +944,8 @@ public class Connection {
             if (map.containsKey("entityId") && map.containsKey("friendlyName") && map.containsKey("actions")) {
                 // device node found, create type element and add it to the results
                 JsonElement element = gson.toJsonTree(jsonNode);
-                if (element.getAsJsonObject().get("applianceId").getAsString().contains("AAA")) {
-                    SmartHomeDevice shd = parseJson(element.toString(), SmartHomeDevice.class);
-                    devices.add(shd);
-                }
+                SmartHomeDevice shd = parseJson(element.toString(), SmartHomeDevice.class);
+                devices.add(shd);
             } else if (map.containsKey("applianceGroupName")) {
                 JsonElement element = gson.toJsonTree(jsonNode);
                 SmartHomeGroup shg = parseJson(element.toString(), SmartHomeGroup.class);
