@@ -17,9 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
@@ -42,9 +39,9 @@ import org.openhab.binding.mqtt.homeassistant.internal.CChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.CFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
+import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -158,16 +155,13 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
         haComponents.values().forEach(c -> c.removeChannelTypes(channelTypeProvider));
 
-        // Unsubscribe from all components and component channel MQTT topics and more importantly
-        // remove the reference to this handler.
-        try {
-            haComponents.values().stream().map(e -> e.stop())
-                    .reduce(CompletableFuture.completedFuture(null), (a, v) -> a.thenCompose(b -> v))
-                    .get(500, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
-            // Ignore any interrupts and timeouts on finish
-        }
         super.dispose();
+    }
+
+    @Override
+    public CompletableFuture<Void> unsubscribeAll() {
+        // already unsubscribed everything by calling stop()
+        return CompletableFuture.allOf();
     }
 
     /**

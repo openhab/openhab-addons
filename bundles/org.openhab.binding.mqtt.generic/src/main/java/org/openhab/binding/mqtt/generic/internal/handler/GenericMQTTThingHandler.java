@@ -17,9 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -100,18 +97,16 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
 
     @Override
     public void dispose() {
-        // Stop all MQTT subscriptions
-        try {
-            channelStateByChannelUID.values().stream().map(e -> e.stop())
-                    .reduce(CompletableFuture.completedFuture(null), (a, v) -> a.thenCompose(b -> v))
-                    .get(500, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
-        }
         // Remove all state descriptions of this handler
         channelStateByChannelUID.forEach((uid, state) -> stateDescProvider.remove(uid));
-        connection = null;
         channelStateByChannelUID.clear();
         super.dispose();
+    }
+
+    @Override
+    public CompletableFuture<Void> unsubscribeAll() {
+        return CompletableFuture.allOf(channelStateByChannelUID.values().stream().map(channel -> channel.stop())
+                .toArray(CompletableFuture[]::new));
     }
 
     /**
