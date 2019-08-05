@@ -83,6 +83,7 @@ The binding is tested with amazon.de, amazon.fr, amazon.it, amazon.com and amazo
 | flashbriefingprofile | Flash briefing profile                |
 | light                | Smart bulbs connected to the Echo     |
 | lightGroup           | Groups of lights                      |
+| smartPlug            | Smart Plug (e. g. Osram)              |
 
 ## First Steps
 
@@ -169,6 +170,7 @@ It will be configured at runtime by using the save channel to store the current 
 | lightBrightness       | Dimmer      | R/W       | light, lightGroup             | Shows and changes the brightness of your light or lightgroup
 | lightColor            | String      | R/W       | light, lightGroup             | Shows and changes the color of your light (groups are not able to show their color!)
 | whiteTemperature      | String      | R/W       | light, lightGroup             | White temperatures of your lights
+| plugState             | Switch      | R/W       | smartPlug                     | State of your smart plug
 
 ## Advanced Feature Technically Experienced Users
 
@@ -276,6 +278,9 @@ Switch Light_State "On/Off" { channel="amazonechocontrol:lightGroup:account1:app
 Dimmer Light_Brightness "Brightness" { channel="amazonechocontrol:lightGroup:account1:applianceId:lightBrightness" }
 String Light_Color "Color" { channel="amazonechocontrol:lightGroup:account1:applianceId:lightColor" }
 String Light_White "White temperature" { channel="amazonechocontrol:lightGroup:account1:applianceId:whiteTemperature" }
+
+// Smart plugs
+Switch Plug_State "On/Off" { channel="amazonechocontrol:lightGroup:account1:applianceId:plugState" }
 ```
 
 ### amazonechocontrol.sitemap:

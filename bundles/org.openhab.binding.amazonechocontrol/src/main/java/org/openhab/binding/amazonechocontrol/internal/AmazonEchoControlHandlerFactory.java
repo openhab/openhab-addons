@@ -66,7 +66,7 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
     BindingServlet bindingServlet;
     @Nullable
     Gson gson;
-    
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -104,8 +104,7 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
             return null;
         }
         Gson gson = this.gson;
-        if (gson == null)
-        {
+        if (gson == null) {
             gson = new Gson();
             this.gson = gson;
         }
@@ -126,7 +125,8 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
                     String.class.getClassLoader());
             return new FlashBriefingProfileHandler(thing, storage);
         }
-        if (thingTypeUID.equals(THING_TYPE_LIGHT) || thingTypeUID.equals(THING_TYPE_LIGHT_GROUP)) {
+        if (thingTypeUID.equals(THING_TYPE_LIGHT) || thingTypeUID.equals(THING_TYPE_LIGHT_GROUP)
+                || thingTypeUID.equals(THING_TYPE_SMART_PLUG)) {
             Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
                     String.class.getClassLoader());
             return new SmartHomeDeviceHandler(thing, storage);
@@ -145,8 +145,8 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
 
         AmazonEchoDiscovery discoveryService = new AmazonEchoDiscovery(bridgeHandler);
         discoveryService.activate();
-        this.discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
+        this.discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     @Override
