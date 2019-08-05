@@ -22,7 +22,7 @@ public class RdsCloudConfiguration {
 
     public String userEmail;
     public String userPassword;
-    public int pollInterval;
+    public int pollingInterval;
     public String apiKey;
 
 }

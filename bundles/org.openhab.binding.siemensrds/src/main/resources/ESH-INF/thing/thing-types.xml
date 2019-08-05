@@ -27,7 +27,7 @@
 				<description>The password that was used to register the smart thermostats</description>
 			</parameter>
 
-			<parameter name="pollInterval" type="integer" min="10" required="true">
+			<parameter name="pollingInterval" type="integer" min="10" required="true">
 				<label>Polling Interval</label>
 				<description>Time (seconds) between polling requests to the cloud server</description>
 				<default>60</default>
@@ -57,22 +57,22 @@
 				<description>Actual room temperature</description>
 			</channel>
 
-			<channel id="setTemperature" typeId="setTemperature">
+			<channel id="targetTemperature" typeId="targetTemperature">
 				<label>Target Temperature</label>
 				<description>Target temperature setting for the room</description>
 			</channel>
 
-			<channel id="heatingOffCooling" typeId="heatingOffCooling">
-				<label>Heating / Cooling</label>
-				<description>Heating / Cooling state </description>
+			<channel id="thermostatOutputState" typeId="thermostatOutputState">
+				<label>Heating or Cooling</label>
+				<description>The thermostat is calling for Heating, Cooling, or Neither</description>
 			</channel>
 
-			<channel id="roomHumidity" typeId="humidity">
+			<channel id="roomHumidity" typeId="roomHumidity">
 				<label>Room Humidity</label>
 				<description>Actual room humidity</description>
 			</channel>
 
-			<channel id="roomAirQuality" typeId="airQuality">
+			<channel id="roomAirQuality" typeId="roomAirQuality">
 				<label>Room Air Quality</label>
 				<description>Actual room air quality</description>
 			</channel>
@@ -82,28 +82,28 @@
 				<description>Actual outside temperature</description>
 			</channel>
 
-			<channel id="greenLeaf" typeId="greenLeaf">
-				<label>Green Leaf Mode</label>
+			<channel id="greenLeafScore" typeId="greenLeafScore">
+				<label>Green Leaf Score</label>
 				<description>Energy saving level</description>
 			</channel>
 
-			<channel id="statProgramMode" typeId="statProgramMode">
+			<channel id="thermostatAutoMode" typeId="thermostatAutoMode">
 				<label>T&apos;stat Program Auto Mode</label>
 				<description>The thermostat is in Automatic Mode (Off = Manual Mode)</description>
 			</channel>
 
-			<channel id="statOccupancyState" typeId="statOccupancyState">
+			<channel id="occupancyModePresent" typeId="occupancyModePresent">
 				<label>Occupancy Mode Present</label>
 				<description>The thermostat is in Present Occupancy Mode (Off = Away Mode)</description>
 			</channel>
 
-			<channel id="dhwProgramMode" typeId="dhwProgramMode">
-				<label>DHW Program Auto Mode</label>
+			<channel id="hotWaterAutoMode" typeId="hotWaterAutoMode">
+				<label>Hotwater Auto Mode</label>
 				<description>The domestic water heating is in Automatic Mode (Off = Manual Mode)</description>
 			</channel>
 
-			<channel id="dhwOffOnState" typeId="dhwOffOnState">
-				<label>DHW Switch State</label>
+			<channel id="hotWaterSwitchState" typeId="hotWaterSwitchState">
+				<label>Hotwater Switch State</label>
 				<description>The On/Off state of the domestic water heating</description>
 			</channel>
 
@@ -130,64 +130,64 @@
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
-	<channel-type id="setTemperature">
+	<channel-type id="targetTemperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Set Temperature</label>
+		<label>Target Temperature</label>
 		<description>Target temperature setting</description>
 		<state readOnly="false" pattern="%.1f %unit%" min="5" max="30"
 			step="0.5" />
 	</channel-type>
 
-	<channel-type id="heatingOffCooling">
+	<channel-type id="thermostatOutputState">
 		<item-type>String</item-type>
-		<label>Heating / Cooling</label>
-		<description>Heating / Cooling state</description>
+		<label>Heating or Cooling</label>
+		<description>The thermostat is calling for Heating, Cooling, or Neither</description>
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="humidity">
+	<channel-type id="roomHumidity">
 		<item-type>Number</item-type>
 		<label>Humidity</label>
 		<description>Measured humidity value</description>
 		<state readOnly="true" pattern="%.0f %%r.H." />
 	</channel-type>
 
-	<channel-type id="airQuality">
+	<channel-type id="roomAirQuality">
 		<item-type>String</item-type>
 		<label>Air Quality</label>
 		<description>Room Air Quality</description>
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="greenLeaf">
+	<channel-type id="greenLeafScore">
 		<item-type>String</item-type>
 		<label>Energy Savings Level </label>
 		<description>Energy savings level</description>
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="statProgramMode">
+	<channel-type id="thermostatAutoMode">
 		<item-type>Switch</item-type>
 		<label>T&apos;stat Program Auto Mode</label>
 		<description>The thermostat is in Automatic Mode (Off = Manual Mode)</description>
 		<state readOnly="false" />
 	</channel-type>
 
-	<channel-type id="statOccupancyState">
+	<channel-type id="occupancyModePresent">
 		<item-type>Switch</item-type>
 		<label>Occupancy Mode Present</label>
 		<description>The thermostat is in Present Occupancy Mode (Off = Away Mode)</description>
 		<state readOnly="false" />
 	</channel-type>
 	
-	<channel-type id="dhwProgramMode">
+	<channel-type id="hotWaterAutoMode">
 		<item-type>Switch</item-type>
 		<label>DHW Program Auto Mode</label>
 		<description>The domestic water heating is in Automatic Mode (Off = Manual Mode)</description>
 		<state readOnly="false" />
 	</channel-type>
 
-	<channel-type id="dhwOffOnState">
+	<channel-type id="hotWaterSwitchState">
 		<item-type>Switch</item-type>
 		<label>DHW Switch State</label>
 		<description>The On/Off state of the domestic water heating</description>

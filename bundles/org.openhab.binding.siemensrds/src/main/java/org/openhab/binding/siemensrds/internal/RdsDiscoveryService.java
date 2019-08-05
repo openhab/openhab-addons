@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RdsDiscoveryService extends AbstractDiscoveryService {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(RdsDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(RdsDiscoveryService.class);
 
     private ScheduledFuture<?> discoveryScheduler;
     private RdsCloudHandler cloud;
@@ -73,7 +73,7 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startBackgroundDiscovery() {
         String msg = "start background discovery..";
-        LOGGER.info(msg);
+        logger.info(msg);
 
         if (discoveryScheduler == null || discoveryScheduler.isCancelled()) {
             discoveryScheduler = scheduler.scheduleWithFixedDelay(this::startScan, 10, 
@@ -84,7 +84,7 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void stopBackgroundDiscovery() {
         String msg = "stop background discovery..";
-        LOGGER.info(msg);
+        logger.info(msg);
 
         if (discoveryScheduler != null && !discoveryScheduler.isCancelled()) {
             discoveryScheduler.cancel(true);
@@ -123,7 +123,7 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
                                 .withLabel(label).withProperty(PROP_PLANT_ID, plantId)
                                 .withRepresentationProperty(PROP_PLANT_ID).build();
 
-                        LOGGER.debug("discovered typeUID={}, plantUID={}, brigeUID={}, label={}, plantId={}, ", 
+                        logger.debug("discovered typeUID={}, plantUID={}, brigeUID={}, label={}, plantId={}, ", 
                                 typeUID, plantUID, bridgeUID, label, plantId);
 
                         thingDiscovered(disco);
@@ -133,7 +133,7 @@ public class RdsDiscoveryService extends AbstractDiscoveryService {
                 }
             }
         }
-        LOGGER.debug("discovery error!");
+        logger.debug("discovery error!");
     }
 
 }
