@@ -12,9 +12,10 @@
 		<properties>
 			<property name="vendor">Heatmiser</property>
 			<property name="modelId">NeoHub</property>
-	        </properties>
+		</properties>
 
-	 	<config-description>
+		<config-description>
+
 			<parameter name="hostName" type="text" required="true">
 				<label>Host Name</label>
 				<description>Host name (IP address) of the NeoHub</description>
@@ -26,7 +27,8 @@
 				<default>4242</default>
 			</parameter>
 
-			<parameter name="pollInterval" type="integer" min="10" required="true">
+			<parameter name="pollingInterval" type="integer" min="10"
+				required="true">
 				<label>Polling Interval</label>
 				<description>Time (seconds) between polling requests to the NeoHub</description>
 				<default>60</default>
@@ -39,7 +41,7 @@
 	<thing-type id="neostat">
 
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="neohub"/>
+			<bridge-type-ref id="neohub" />
 		</supported-bridge-type-refs>
 
 		<label>NeoStat</label>
@@ -47,28 +49,29 @@
 
 		<channels>
 			<channel id="roomTemperature" typeId="temperature">
-		        <label>Room Temperature</label>
-        		<description>Actual room temperature</description>
+				<label>Room Temperature</label>
+				<description>Actual room temperature</description>
 			</channel>
 
-			<channel id="setTemperature" typeId="setTemperature">
-		   		<label>Target Temperature</label>
-   				<description>Target temperature setting for the room</description>
+			<channel id="targetTemperature" typeId="targetTemperature">
+				<label>Target Temperature</label>
+				<description>Target temperature setting for the room</description>
 			</channel>
 
 			<channel id="floorTemperature" typeId="temperature">
-		        <label>Floor Temperature</label>
-        		<description>Actual floor temperature</description>
+				<label>Floor Temperature</label>
+				<description>Actual floor temperature</description>
 			</channel>
 
-			<channel id="heatingMode" typeId="heatingMode">
-		   		<label>Heating (Off::Heating)</label>
-   				<description>Indicates is the thermostat is calling for heat</description>
+			<channel id="outputState" typeId="thermostatOutputState">
+				<label>Thermostat Output State</label>
+				<description>Status of whether the thermostat is calling for Heat, or Off</description>
 			</channel>
 
-			<channel id="absentPresent" typeId="absentPresent">
-		   		<label>Occupancy State (Absent::Present)</label>
-   				<description>The occupancy state of the thermostat (user can override)</description>
+			<channel id="occupancyModePresent"
+				typeId="occupancyModePresent">
+				<label>Occupancy Mode Present</label>
+				<description>The Thermostat is in the Present Occupancy Mode (Off=Absent, On=Present)</description>
 			</channel>
 
 		</channels>
@@ -76,9 +79,16 @@
 		<properties>
 			<property name="vendor">Heatmiser</property>
 			<property name="modelId">NeoStat</property>
-			<property name="deviceNameInHub"></property>
 		</properties>
-	    <representation-property>deviceNameInHub</representation-property>
+		<representation-property>deviceNameInHub</representation-property>
+
+		<config-description>
+			<parameter name="deviceNameInHub" type="text"
+				required="true">
+				<label>Device Name</label>
+				<description>Device Name that identifies the NeoStat device in the NeoHub and Heatmiser App</description>
+			</parameter>
+		</config-description>
 
 	</thing-type>
 
@@ -92,23 +102,30 @@
 		<description>Heatmiser NeoPlug Smart Plug</description>
 
 		<channels>
-			<channel id="offOn" typeId="offOn">
-		   		<label>Switch State (Off::On)</label>
-   				<description>The state of the plug (user can override)</description>
+			<channel id="outputState" typeId="plugOutputState">
+				<label>Switch State</label>
+				<description>The state of the Plug switch, Off or On</description>
 			</channel>
 
-			<channel id="manualAuto" typeId="manualAuto">
-		   		<label>Program Mode (Manual::Auto)</label>
-   				<description>The program mode of the plug (user can override)</description>
+			<channel id="autoMode" typeId="autoMode">
+				<label>Auto Program Mode</label>
+				<description>The Plug is in Automatic Mode (Off=Manual, On=Automatic)</description>
 			</channel>
 		</channels>
 
 		<properties>
 			<property name="vendor">Heatmiser</property>
 			<property name="modelId">NeoPlug</property>
-			<property name="deviceNameInHub"></property>
-	    </properties>
-       	<representation-property>deviceNameInHub</representation-property>
+		</properties>
+		<representation-property>deviceNameInHub</representation-property>
+
+		<config-description>
+			<parameter name="deviceNameInHub" type="text"
+				required="true">
+				<label>Device Name</label>
+				<description>Device Name that identifies the NeoPlugt device in the NeoHub and Heatmiser App</description>
+			</parameter>
+		</config-description>
 
 	</thing-type>
 
@@ -116,42 +133,43 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Measured temperature value (Read-Only)</description>
-   		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
-	<channel-type id="setTemperature">
-   		<item-type>Number:Temperature</item-type>
-   		<label>Set Temperature</label>
+	<channel-type id="targetTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Temperature</label>
 		<description>Target temperature setting</description>
-   		<state readOnly="false" pattern="%.1f %unit%" min="5" max="30" step="1"/>
+		<state readOnly="false" pattern="%.1f %unit%" min="5" max="30"
+			step="1" />
 	</channel-type>
-	
-	<channel-type id="heatingMode">
+
+	<channel-type id="thermostatOutputState">
 		<item-type>String</item-type>
-		<label>Heating (Off::Heating)</label>
- 		<description>Indicates is the thermostat is calling for heat</description>
-   		<state readOnly="true"/>
+		<label>Thermostat Output State</label>
+		<description>Status of whether the thermostat is calling for Heat, or Off</description>
+		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="absentPresent">
+	<channel-type id="occupancyModePresent">
 		<item-type>Switch</item-type>
-		<label>Occupancy Sate (Absent::Present)</label>
-   		<description>The occupancy mode of the thermostat (user can override)</description>
-   		<state readOnly="false"/>
+		<label>Occupancy Mode</label>
+		<description>The Thermostat is in the Present Occupancy Mode (Off=Absent, On=Present)</description>
+		<state readOnly="false" />
 	</channel-type>
 
-	<channel-type id="manualAuto">
+	<channel-type id="autoMode">
 		<item-type>Switch</item-type>
-		<label>Program Mode (Manual::Auto)</label>
-   		<description>The program mode of the device (user can override)</description>
-   		<state readOnly="false"/>
+		<label>Auto Program Mode</label>
+		<description>The Plug is in Automatic Mode (Off=Manual, On=Automatic)</description>
+		<state readOnly="false" />
 	</channel-type>
 
-	<channel-type id="offOn">
+	<channel-type id="plugOutputState">
 		<item-type>Switch</item-type>
-		<label>Switch State (Off::On)</label>
-   		<description>The state of the plug (user can override)</description>
-   		<state readOnly="false"/>
+		<label>Switch State</label>
+		<description>The state of the Plug switch, Off or On</description>
+		<state readOnly="false" />
 	</channel-type>
 
 </thing:thing-descriptions>

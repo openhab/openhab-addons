@@ -13,14 +13,13 @@
 package org.openhab.binding.neohub.internal;
 
 /**
- * The {@link NeoHubConfiguration} class contains the thing configuration parameters
+ * The {@link NeoBaseConfiguration} class contains the thing configuration
+ * parameters for NeoStat and NeoPlug devices
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
-public class NeoHubConfiguration {
+public class NeoBaseConfiguration {
 
-    public String hostName; 
-    public int portNumber;
-    public int pollingInterval;
+    public String deviceNameInHub;
 
 }

@@ -43,9 +43,7 @@ import org.osgi.service.component.annotations.Component;
 public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_NEOHUB, 
-                                                         THING_TYPE_NEOSTAT, 
-                                                         THING_TYPE_NEOPLUG)));
+            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_NEOHUB, THING_TYPE_NEOSTAT, THING_TYPE_NEOPLUG)));
 
     private final Map<ThingUID, ServiceRegistration<?>> discoServices = new HashMap<>();
 
@@ -63,11 +61,11 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
             createDiscoveryService(handler);
             return handler;
         }
-        
-        if (thingTypeUID.equals(THING_TYPE_NEOSTAT)) 
+
+        if (thingTypeUID.equals(THING_TYPE_NEOSTAT))
             return new NeoStatHandler(thing);
-        
-        if (thingTypeUID.equals(THING_TYPE_NEOPLUG)) 
+
+        if (thingTypeUID.equals(THING_TYPE_NEOPLUG))
             return new NeoPlugHandler(thing);
 
         return null;
@@ -81,41 +79,40 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
     }
 
     /*
-     * create a discovery service so that a newly created hub will find the respective
-     * things tht are inside it
+     * create a discovery service so that a newly created hub will find the
+     * respective things tht are inside it
      */
     private synchronized void createDiscoveryService(NeoHubHandler handler) {
         // create a new discovery service
         NeoHubDiscoveryService ds = new NeoHubDiscoveryService(handler);
-        
+
         // register the discovery service with the OpenHAB framework
-        ServiceRegistration<?> serviceReg = 
-            bundleContext.registerService(DiscoveryService.class.getName(), ds, new Hashtable<String, Object>());
-        
-        /* 
-         * store service registration in a list 
-         * so we can destroy it when the respective hub is destroyed
+        ServiceRegistration<?> serviceReg = bundleContext.registerService(DiscoveryService.class.getName(), ds,
+                new Hashtable<String, Object>());
+
+        /*
+         * store service registration in a list so we can destroy it when the respective
+         * hub is destroyed
          */
         discoServices.put(handler.getThing().getUID(), serviceReg);
-        
+
         // finally activate the discovery service
         ds.activate();
     }
-    
+
     /*
      * destroy the discovery service
      */
     private synchronized void destroyDiscoveryService(NeoHubHandler handler) {
         // fetch the respective thing's service registration from our list
         ServiceRegistration<?> serviceReg = discoServices.remove(handler.getThing().getUID());
-        
+
         if (serviceReg != null) {
             // retrieve the respective discovery service from the OpenHAB framework
-            NeoHubDiscoveryService disco = (NeoHubDiscoveryService) bundleContext
-                    .getService(serviceReg.getReference());
+            NeoHubDiscoveryService disco = (NeoHubDiscoveryService) bundleContext.getService(serviceReg.getReference());
 
             // deactivate the service
-            if (disco != null) 
+            if (disco != null)
                 disco.deactivate();
 
             // and unregister the service

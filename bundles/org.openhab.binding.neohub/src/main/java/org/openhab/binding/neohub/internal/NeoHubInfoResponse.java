@@ -31,22 +31,22 @@ class NeoHubInfoResponse {
 
     @SerializedName("devices")
     private List<DeviceInfo> deviceInfos;
-    
+
     static class StatMode {
         @SerializedName("MANUAL_OFF")
         private Boolean manualOff;
         @SerializedName("MANUAL_ON")
         private Boolean manualOn;
-        
+
         private Boolean stateManualOn() {
-           return (manualOn != null && manualOn);
+            return (manualOn != null && manualOn);
         }
 
         private Boolean stateManualOff() {
             return (manualOff != null && manualOff);
-         }
+        }
     }
- 
+
     static class DeviceInfo {
 
         @SerializedName("device")
@@ -139,11 +139,11 @@ class NeoHubInfoResponse {
         }
 
         public Boolean stateManual() {
-            return (statMode != null && statMode.stateManualOn()); 
+            return (statMode != null && statMode.stateManualOn());
         }
 
         public Boolean stateAuto() {
-            return (statMode != null && statMode.stateManualOff()); 
+            return (statMode != null && statMode.stateManualOff());
         }
 
         public Boolean hasStatMode() {
@@ -171,7 +171,8 @@ class NeoHubInfoResponse {
      * returns the DeviceInfo corresponding to a given device name
      * 
      * @param deviceName the device name
-     * @return its respective DeviceInfo  
+     * 
+     * @return its respective DeviceInfo
      */
     public DeviceInfo getDeviceInfo(String deviceName) {
         for (DeviceInfo d : deviceInfos) {
@@ -182,7 +183,6 @@ class NeoHubInfoResponse {
         return null;
     }
 
-    
     /*
      * @return the full list of DeviceInfo objects
      */

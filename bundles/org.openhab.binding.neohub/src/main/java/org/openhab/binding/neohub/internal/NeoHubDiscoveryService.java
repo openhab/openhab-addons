@@ -41,8 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NeoHubDiscoveryService extends AbstractDiscoveryService {
 
-    private static final Logger LOGGER = 
-            LoggerFactory.getLogger(NeoHubDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(NeoHubDiscoveryService.class);
 
     private ScheduledFuture<?> discoveryScheduler;
     private NeoHubHandler hub;
@@ -67,28 +66,26 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        if (hub.getThing().getStatus() == ThingStatus.ONLINE) { 
+        if (hub.getThing().getStatus() == ThingStatus.ONLINE) {
             discoverDevices();
         }
     }
 
     @Override
     protected void startBackgroundDiscovery() {
-        String msg = "start background discovery..";
-        LOGGER.info(msg);
+        logger.info("start background discovery..");
 
-        if (discoveryScheduler == null || discoveryScheduler.isCancelled()) { 
-            discoveryScheduler = scheduler.scheduleWithFixedDelay(this::startScan, 
-                    10, DISCOVERY_REFRESH_PERIOD, TimeUnit.SECONDS);
+        if (discoveryScheduler == null || discoveryScheduler.isCancelled()) {
+            discoveryScheduler = scheduler.scheduleWithFixedDelay(this::startScan, 10, DISCOVERY_REFRESH_PERIOD,
+                    TimeUnit.SECONDS);
         }
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        String msg = "stop background discovery..";
-        LOGGER.info(msg);
+        logger.info("stop background discovery..");
 
-        if (discoveryScheduler != null && !discoveryScheduler.isCancelled()) { 
+        if (discoveryScheduler != null && !discoveryScheduler.isCancelled()) {
             discoveryScheduler.cancel(true);
         }
     }
@@ -96,7 +93,7 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
     private void discoverDevices() {
         NeoHubInfoResponse infoResponse;
         if ((infoResponse = hub.fromNeoHubFetchPollingResponse()) != null) {
-            List<DeviceInfo>  devices;
+            List<DeviceInfo> devices;
             if ((devices = infoResponse.getDevices()) != null) {
                 for (DeviceInfo device : devices) {
                     publishDevice(device);
@@ -113,32 +110,28 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
         ThingUID deviceUID;
         ThingTypeUID deviceTypeUID;
         DiscoveryResult device;
-        
+
         bridgeUID = hub.getThing().getUID();
 
         if (deviceInfo.getDeviceType().intValue() == 6) {
             deviceType = DEVICE_ID_NEOPLUG;
             deviceTypeUID = THING_TYPE_NEOPLUG;
-        } else { 
+        } else {
             deviceType = DEVICE_ID_NEOSTAT;
             deviceTypeUID = THING_TYPE_NEOSTAT;
         }
-        
+
         deviceNeohubName = deviceInfo.getDeviceName();
         deviceOpenHabId = deviceNeohubName.replaceAll("\\s+", "_");
         deviceUID = new ThingUID(deviceTypeUID, bridgeUID, deviceOpenHabId);
 
-        device = DiscoveryResultBuilder.create(deviceUID)
-                            .withBridge(bridgeUID)
-                            .withLabel(deviceOpenHabId)
-                            .withProperty(PROPERTY_NEOHUB_NAME, deviceNeohubName)
-                            .withRepresentationProperty(PROPERTY_NEOHUB_NAME)
-                            .build();
+        device = DiscoveryResultBuilder.create(deviceUID).withBridge(bridgeUID).withLabel(deviceOpenHabId)
+                .withProperty(DEVICE_NAME, deviceNeohubName).withRepresentationProperty(DEVICE_NAME)
+                .build();
 
         thingDiscovered(device);
 
-        String msg = String.format("discovered device=%s, name=%s ..", deviceType, deviceOpenHabId);
-        LOGGER.debug(msg);
+        logger.debug(String.format("discovered device=%s, name=%s ..", deviceType, deviceOpenHabId));
     }
 
 }

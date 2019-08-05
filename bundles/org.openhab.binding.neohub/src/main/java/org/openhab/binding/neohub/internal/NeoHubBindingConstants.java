@@ -18,103 +18,98 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * The {@link NeoHubBindingConstants} class defines common constants
  *
  * @author Sebastian Prehn - Initial contribution (NeoHub command codes)
- * @author Andrew Fiddian-Green - Initial contribution (OpenHAB v2.x binding code)
+ * @author Andrew Fiddian-Green - Initial contribution (OpenHAB v2.x binding
+ *         code)
  * 
  */
 public class NeoHubBindingConstants {
 
     /*
-     * binding id 
+     * binding id
      */
     public static final String BINDING_ID = "neohub";
 
     /*
-     * device id's 
+     * device id's
      */
-    public static final String DEVICE_ID_NEOHUB  = "neohub";
+    public static final String DEVICE_ID_NEOHUB = "neohub";
     public static final String DEVICE_ID_NEOSTAT = "neostat";
     public static final String DEVICE_ID_NEOPLUG = "neoplug";
 
     /*
-     *  Thing Type UIDs
+     * Thing Type UIDs
      */
-    public static final ThingTypeUID THING_TYPE_NEOHUB  = 
-            new ThingTypeUID(BINDING_ID, DEVICE_ID_NEOHUB);
-    public static final ThingTypeUID THING_TYPE_NEOSTAT = 
-            new ThingTypeUID(BINDING_ID, DEVICE_ID_NEOSTAT);
-    public static final ThingTypeUID THING_TYPE_NEOPLUG = 
-            new ThingTypeUID(BINDING_ID, DEVICE_ID_NEOPLUG);
+    public static final ThingTypeUID THING_TYPE_NEOHUB = new ThingTypeUID(BINDING_ID, DEVICE_ID_NEOHUB);
+    public static final ThingTypeUID THING_TYPE_NEOSTAT = new ThingTypeUID(BINDING_ID, DEVICE_ID_NEOSTAT);
+    public static final ThingTypeUID THING_TYPE_NEOPLUG = new ThingTypeUID(BINDING_ID, DEVICE_ID_NEOPLUG);
 
-    /* 
-     * Channel IDs
+    /*
+     * Channel IDs for NeoStats
      */
-    public static final String CHAN_ROOM_TEMP    = "roomTemperature";
-    public static final String CHAN_SET_TEMP     = "setTemperature";
-    public static final String CHAN_FLOOR_TEMP   = "floorTemperature";
-    public static final String CHAN_ABS_PRES     = "absentPresent";
-    public static final String CHAN_HEATING_MODE = "heatingMode";
-    public static final String CHAN_OFF_ON       = "offOn";
-    public static final String CHAN_MAN_AUTO     = "manualAuto";
-    
+    public static final String CHAN_ROOM_TEMP = "roomTemperature";
+    public static final String CHAN_SET_TEMP = "targetTemperature";
+    public static final String CHAN_FLOOR_TEMP = "floorTemperature";
+    public static final String CHAN_OCC_PRESENT = "occupancyModePresent";
+    public static final String CHAN_OUTPUT_STATE = "outputState";
+    public static final String CHAN_AUTO_MODE = "autoMode";
+
     /*
      * enumerator for results of method calls
      */
     public static enum NeoHubReturnResult {
-        SUCCEEDED, 
-        ERR_COMMUNICATION, 
-        ERR_INITIALIZATION};
+        SUCCEEDED, ERR_COMMUNICATION, ERR_INITIALIZATION
+    };
 
     /*
-     * the property IdD for the name of a thing in the NeoHub
-     * note: names may differ between the NeoHub and the OpenHAB framework  
+     * the property IdD for the name of a thing in the NeoHub note: names may differ
+     * between the NeoHub and the OpenHAB framework
      */
-    public static final String PROPERTY_NEOHUB_NAME = "deviceNameInHub";
+    public static final String DEVICE_NAME = "deviceNameInHub";
 
     /*
      * socket timeout in seconds for the TCP connection to the hub
      */
     public static final int TCP_SOCKET_IMEOUT = 5;
 
-    /* 
-     * setup parameters for de-bouncing of state changes (time in seconds) 
-     * so state changes that occur within this time window are ignored
+    /*
+     * setup parameters for de-bouncing of state changes (time in seconds) so state
+     * changes that occur within this time window are ignored
      */
     public static final long DEBOUNCE_DELAY = 15;
 
     /*
-     * setup parameters for lazy polling  
+     * setup parameters for lazy polling
      */
     public static final int LAZY_POLL_INTERVAL = 60;
 
-    /* 
-     * setup parameters for fast polling bursts 
-     * a burst comprises FAST_POLL_CYCLES polling calls spaced at FAST_POLL_INTERVAL
-     * for example 5 polling calls made at 4 second intervals 
-     * (e.g. 5 x 4 => 20 seconds)   
+    /*
+     * setup parameters for fast polling bursts a burst comprises FAST_POLL_CYCLES
+     * polling calls spaced at FAST_POLL_INTERVAL for example 5 polling calls made
+     * at 4 second intervals (e.g. 5 x 4 => 20 seconds)
      */
     public static final int FAST_POLL_CYCLES = 5;
     public static final int FAST_POLL_INTERVAL = 4;
-    
+
     /*
-     * setup parameters for device discovery 
+     * setup parameters for device discovery
      */
     public static final int DISCOVERY_TIMEOUT = 5;
     public static final int DISCOVERY_START_DELAY = 30;
     public static final int DISCOVERY_REFRESH_PERIOD = 600;
 
     /*
-     *  NeoHub JSON command codes strings: Thanks to Sebastian Prehn !!
+     * NeoHub JSON command codes strings: Thanks to Sebastian Prehn !!
      */
-    public static final String CMD_CODE_INFO    = "{\"INFO\":0}"; 
-    public static final String CMD_CODE_TEMP    = "{\"SET_TEMP\":[%s, \"%s\"]}";
-    public static final String CMD_CODE_AWAY    = "{\"FROST_%s\":\"%s\"}";
-    public static final String CMD_CODE_TIMER   = "{\"TIMER_%s\":\"%s\"}";
-    public static final String CMD_CODE_MANUAL  = "{\"MANUAL_%s\":\"%s\"}";
-    
+    public static final String CMD_CODE_INFO = "{\"INFO\":0}";
+    public static final String CMD_CODE_TEMP = "{\"SET_TEMP\":[%s, \"%s\"]}";
+    public static final String CMD_CODE_AWAY = "{\"FROST_%s\":\"%s\"}";
+    public static final String CMD_CODE_TIMER = "{\"TIMER_%s\":\"%s\"}";
+    public static final String CMD_CODE_MANUAL = "{\"MANUAL_%s\":\"%s\"}";
+
     /*
-     *  openHAB status strings
+     * openHAB status strings
      */
-    public static final String VAL_OFF      = "Off";
-    public static final String VAL_HEATING  = "Heating";
+    public static final String VAL_OFF = "Off";
+    public static final String VAL_HEATING = "Heating";
 
 }

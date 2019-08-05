@@ -29,8 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * NeoHubConnector handles the ASCII based communication 
- * via TCP between OpenHAB and NeoHub
+ * NeoHubConnector handles the ASCII based communication via TCP between OpenHAB
+ * and NeoHub
  * 
  * @author Sebastian Prehn - Initial contribution
  * @author Andrew Fiddian-Green - Refactoring for openHAB v2.x
@@ -38,8 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NeoHubSocket {
 
-    private static final Logger LOGGER = 
-            LoggerFactory.getLogger(NeoHubSocket.class);
+    private final Logger logger = LoggerFactory.getLogger(NeoHubSocket.class);
 
     /**
      * Name of host or IP to connect to.
@@ -51,18 +50,17 @@ public class NeoHubSocket {
      */
     private final int port;
 
-
     public NeoHubSocket(final String hostname, final int portNumber) {
         this.hostname = hostname;
         this.port = portNumber;
     }
 
-
     /**
      * sends the message over the network to the NeoHub and returns its response
      * 
      * @param request the message to be sent to the NeoHub
-     * @return response received from neohub or <code>null</code> if network problem occurred
+     * @return response received from neohub or <code>null</code> if network problem
+     *         occurred
      * 
      */
     public synchronized String sendMessage(final String request) {
@@ -74,9 +72,9 @@ public class NeoHubSocket {
             final InputStreamReader in = new InputStreamReader(socket.getInputStream(), US_ASCII);
             final OutputStreamWriter out = new OutputStreamWriter(socket.getOutputStream(), US_ASCII);
 
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("sending {} characters..", request.length());
-                LOGGER.debug(">> {}", request);
+            if (logger.isDebugEnabled()) {
+                logger.debug("sending {} characters..", request.length());
+                logger.debug(">> {}", request);
             }
 
             out.write(request);
@@ -89,10 +87,10 @@ public class NeoHubSocket {
             }
 
         } catch (final IOException e) {
-            LOGGER.error(String.format("communication error with hub " +
-                    "[host=%s, port=%d, timeout=%d] !']", hostname, port, TCP_SOCKET_IMEOUT));
+            logger.error(String.format("communication error with hub " + "[host=%s, port=%d, timeout=%d] !']", hostname,
+                    port, TCP_SOCKET_IMEOUT));
 
-            LOGGER.debug(String.format("error cause = %s!'", e.toString()));
+            logger.debug(String.format("error cause = %s!'", e.toString()));
 
             return null;
 
@@ -102,14 +100,14 @@ public class NeoHubSocket {
 
         final String responseStr = response.toString();
 
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("received {} characters..", responseStr.length());
-            LOGGER.trace("<< {}", responseStr);
+        if (logger.isTraceEnabled()) {
+            logger.trace("received {} characters..", responseStr.length());
+            logger.trace("<< {}", responseStr);
         } else
 
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("received {} characters (set log level to TRACE to see full string)..", responseStr.length());
-            LOGGER.debug("<< {} ...", responseStr.substring(1, Math.min(responseStr.length(), 30)));
+        if (logger.isDebugEnabled()) {
+            logger.debug("received {} characters (set log level to TRACE to see full string)..", responseStr.length());
+            logger.debug("<< {} ...", responseStr.substring(1, Math.min(responseStr.length(), 30)));
         }
 
         return responseStr;
