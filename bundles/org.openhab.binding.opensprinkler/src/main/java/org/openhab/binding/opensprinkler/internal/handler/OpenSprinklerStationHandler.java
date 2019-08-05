@@ -1,10 +1,11 @@
 package org.openhab.binding.opensprinkler.internal.handler;
 
-import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.STATION_STATE;
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -116,6 +117,33 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
         }
     }
 
+    /**
+     * Handles determining a channel's current state from the OpenSprinkler device.
+     *
+     * @param stationId Int of the station to control. Starts at 0.
+     * @return State representation for the channel.
+     */
+    @Nullable
+    protected State getRemainingWaterTime(int stationId) {
+        long remainingWaterTime = 0;
+        OpenSprinklerApi api = getApi();
+        if (api == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    "OpenSprinkler bridge has no initialized API.");
+            return null;
+        }
+
+        try {
+            remainingWaterTime = api.retrieveProgram(stationId).remainingWaterTime;
+        } catch (Exception exp) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Could not get current state of station channel " + stationId
+                            + " for the OpenSprinkler device. Exception received: " + exp);
+        }
+
+        return new DecimalType(remainingWaterTime);
+    }
+
     @Override
     protected void updateChannel(@NonNull ChannelUID channel) {
         switch (channel.getIdWithoutGroup()) {
@@ -123,6 +151,11 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
                 State currentDeviceState = getStationState(this.getStationIndex());
                 if (currentDeviceState != null) {
                     updateState(channel, currentDeviceState);
+                }
+            case REMAINING_WATER_TIME:
+                State remainingWaterTime = getRemainingWaterTime(config.stationIndex);
+                if (remainingWaterTime != null) {
+                    updateState(channel, remainingWaterTime);
                 }
             default:
                 logger.debug("Not updating unknown channel {}", channel);
