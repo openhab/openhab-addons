@@ -27,7 +27,8 @@
 				<description>The password that was used to register the smart thermostats</description>
 			</parameter>
 
-			<parameter name="pollingInterval" type="integer" min="10" required="true">
+			<parameter name="pollingInterval" type="integer" min="10"
+				required="true">
 				<label>Polling Interval</label>
 				<description>Time (seconds) between polling requests to the cloud server</description>
 				<default>60</default>
@@ -62,7 +63,8 @@
 				<description>Target temperature setting for the room</description>
 			</channel>
 
-			<channel id="thermostatOutputState" typeId="thermostatOutputState">
+			<channel id="thermostatOutputState"
+				typeId="thermostatOutputState">
 				<label>Heating or Cooling</label>
 				<description>The thermostat is calling for Heating, Cooling, or Neither</description>
 			</channel>
@@ -92,7 +94,8 @@
 				<description>The thermostat is in Automatic Mode (Off = Manual Mode)</description>
 			</channel>
 
-			<channel id="occupancyModePresent" typeId="occupancyModePresent">
+			<channel id="occupancyModePresent"
+				typeId="occupancyModePresent">
 				<label>Occupancy Mode Present</label>
 				<description>The thermostat is in Present Occupancy Mode (Off = Away Mode)</description>
 			</channel>
@@ -102,7 +105,8 @@
 				<description>The domestic water heating is in Automatic Mode (Off = Manual Mode)</description>
 			</channel>
 
-			<channel id="hotWaterSwitchState" typeId="hotWaterSwitchState">
+			<channel id="hotWaterSwitchState"
+				typeId="hotWaterSwitchState">
 				<label>Hotwater Switch State</label>
 				<description>The On/Off state of the domestic water heating</description>
 			</channel>
@@ -179,7 +183,7 @@
 		<description>The thermostat is in Present Occupancy Mode (Off = Away Mode)</description>
 		<state readOnly="false" />
 	</channel-type>
-	
+
 	<channel-type id="hotWaterAutoMode">
 		<item-type>Switch</item-type>
 		<label>DHW Program Auto Mode</label>
