@@ -34,6 +34,8 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionObserver;
 import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionState;
 import org.eclipse.smarthome.io.transport.mqtt.MqttService;
 import org.openhab.binding.mqtt.action.MQTTActions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This base implementation handles connection changes of the {@link MqttBrokerConnection}
@@ -44,12 +46,12 @@ import org.openhab.binding.mqtt.action.MQTTActions;
  */
 @NonNullByDefault
 public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements MqttConnectionObserver {
-
     public static int TIMEOUT_DEFAULT = 1200; /* timeout in milliseconds */
+    private final Logger logger = LoggerFactory.getLogger(AbstractBrokerHandler.class);
+
     final Map<ChannelUID, PublishTriggerChannel> channelStateByChannelUID = new HashMap<>();
 
-    @NonNullByDefault({})
-    protected MqttBrokerConnection connection;
+    protected @Nullable MqttBrokerConnection connection;
     protected CompletableFuture<MqttBrokerConnection> connectionFuture = new CompletableFuture<>();
 
     public AbstractBrokerHandler(Bridge thing) {
@@ -89,6 +91,11 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
      */
     @Override
     public void initialize() {
+        final MqttBrokerConnection connection = this.connection;
+        if (connection == null) {
+            logger.warn("Trying to initialize {} but connection is null. This is most likely a bug.", thing.getUID());
+            return;
+        }
         for (Channel channel : thing.getChannels()) {
             final PublishTriggerChannelConfig channelConfig = channel.getConfiguration()
                     .as(PublishTriggerChannelConfig.class);
@@ -138,7 +145,12 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
     public void dispose() {
         channelStateByChannelUID.values().forEach(c -> c.stop());
         channelStateByChannelUID.clear();
-        connection.removeConnectionObserver(this);
+        if (connection != null) {
+            connection.removeConnectionObserver(this);
+        } else {
+            logger.warn("Trying to dispose handler {} but connection is already null. Most likely this is a bug.",
+                    thing.getUID());
+        }
         this.connection = null;
         connectionFuture = new CompletableFuture<>();
         super.dispose();
