@@ -183,6 +183,7 @@ public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService 
             String productFamily = bridgeProperties.get("PRODFAM");
             String productType = bridgeProperties.get("PRODTYPE");
             String codeVersion = bridgeProperties.get("CODEVER");
+            String macAddress = bridgeProperties.get("MACADDR");
 
             if (StringUtils.isNotBlank(ipAddress) && StringUtils.isNotBlank(serialNumber)) {
                 Map<String, Object> properties = new HashMap<>();
@@ -191,15 +192,22 @@ public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService 
                 properties.put(SERIAL_NUMBER, serialNumber);
 
                 if (PRODFAM_RA2.equals(productFamily)) {
-                    properties.put("productFamily", "RadioRA 2");
+                    properties.put(PROPERTY_PRODFAM, "RadioRA 2");
                 } else if (PRODFAM_HWQS.equals(productFamily)) {
-                    properties.put("productFamily", "HomeWorks QS");
+                    properties.put(PROPERTY_PRODFAM, "HomeWorks QS");
                 } else {
-                    properties.put("productFamily", productFamily);
+                    properties.put(PROPERTY_PRODFAM, productFamily);
                 }
 
-                properties.put("productType", productType);
-                properties.put("version", codeVersion);
+                if (StringUtils.isNotBlank(productType)) {
+                    properties.put(PROPERTY_PRODTYP, productType);
+                }
+                if (StringUtils.isNotBlank(codeVersion)) {
+                    properties.put(PROPERTY_CODEVER, codeVersion);
+                }
+                if (StringUtils.isNotBlank(macAddress)) {
+                    properties.put(PROPERTY_MACADDR, macAddress);
+                }
 
                 ThingUID uid = new ThingUID(THING_TYPE_IPBRIDGE, serialNumber);
                 String label = generateLabel(productFamily, productType);
