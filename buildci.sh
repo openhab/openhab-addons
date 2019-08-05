@@ -10,7 +10,7 @@ function prevent_timeout() {
 }
 
 function print_reactor_summary() {
-    sed -ne '/\[INFO\] Reactor Summary:/,$ p' "$1" | sed 's/\[INFO\] //'
+    sed -ne '/\[INFO\] Reactor Summary.*:/,$ p' "$1" | sed 's/\[INFO\] //'
 }
 
 function mvnp() {
@@ -19,7 +19,7 @@ function mvnp() {
     exec "${command[@]}" 2>&1 | # execute, redirect stderr to stdout
 	stdbuf -o0 grep -vE "Download(ed|ing) from [a-z.]+: https:" | # filter out downloads
         tee .build.log | # write output to log
-        stdbuf -oL grep -E '^\[INFO\] Building .+ \[.+\]$' | # filter progress
+        stdbuf -oL grep -aE '^\[INFO\] Building .+ \[.+\]$' | # filter progress
         stdbuf -o0 sed -uE 's/^\[INFO\] Building (.*[^ ])[ ]+\[([0-9]+\/[0-9]+)\]$/\2| \1/' | # prefix project name with progress
         stdbuf -o0 sed -e :a -e 's/^.\{1,6\}|/ &/;ta' & # right align progress with padding
     local pid=$!
