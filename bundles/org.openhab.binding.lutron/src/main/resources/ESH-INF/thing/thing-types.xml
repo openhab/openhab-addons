@@ -369,6 +369,38 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="grafikeyekeypad">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>GRAFIK Eye QS</label>
+		<description>Lutron GRAFIK Eye QS for RadioRA 2/HomeWorks QS</description>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Address of GRAFIK Eye in the Lutron lighting system</description>
+			</parameter>
+			<parameter name="model" type="text">
+				<label>GRAFIK Eye Keypad Layout</label>
+				<description>Number of shade button columns</description>
+				<options>
+					<option value="0COL">No shade button columns</option>
+					<option value="1COL">1 shade button column</option>
+					<option value="2COL">2 shade button columns</option>
+					<option value="3COL">3 shade button columns</option>
+				</options>
+				<default>3COL</default>
+			</parameter>
+			<parameter name="autorelease" type="boolean">
+				<label>Auto-release</label>
+				<description>Automatically release pressed buttons</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<thing-type id="vcrx">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
