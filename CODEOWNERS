@@ -80,7 +80,7 @@
 /bundles/org.openhab.binding.lirc/ @kabili207
 /bundles/org.openhab.binding.logreader/ @paulianttila
 /bundles/org.openhab.binding.loxone/ @ppieczul
-/bundles/org.openhab.binding.lutron/ @actong
+/bundles/org.openhab.binding.lutron/ @actong @bobadair
 /bundles/org.openhab.binding.mail/ @J-N-K
 /bundles/org.openhab.binding.max/ @marcelrv
 /bundles/org.openhab.binding.mcp23017/ @aogorek
