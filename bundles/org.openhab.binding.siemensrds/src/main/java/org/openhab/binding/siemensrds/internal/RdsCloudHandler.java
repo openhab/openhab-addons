@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RdsCloudHandler extends BaseBridgeHandler {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(RdsCloudHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(RdsCloudHandler.class);
 
     private RdsCloudConfiguration config;
     private RdsAccessToken accessToken;
@@ -69,10 +69,10 @@ public class RdsCloudHandler extends BaseBridgeHandler {
             return;
         }
 
-        if (LOGGER.isDebugEnabled())
-            LOGGER.debug("polling interval={}", config.pollInterval);
+        if (logger.isDebugEnabled())
+            logger.debug("polling interval={}", config.pollingInterval);
 
-        if (config.pollInterval < FAST_POLL_INTERVAL || config.pollInterval > LAZY_POLL_INTERVAL) {
+        if (config.pollingInterval < FAST_POLL_INTERVAL || config.pollingInterval > LAZY_POLL_INTERVAL) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     String.format("polling interval out of range [%d..%d], status => offline!", FAST_POLL_INTERVAL,
                             LAZY_POLL_INTERVAL));
@@ -92,7 +92,7 @@ public class RdsCloudHandler extends BaseBridgeHandler {
      * interval (seconds)
      */
     public int getPollInterval() {
-        return (config != null ? config.pollInterval : -1);
+        return (config != null ? config.pollingInterval : -1);
     }
 
     /*

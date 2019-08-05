@@ -123,7 +123,7 @@ public class RdsBindingConstants {
 
     // green leaf state (poor..excellent) (read-write)
     // note: writing the value "5" forces the device to green mode
-    private static final String CHA_GREEN_LEAF = "greenLeaf";
+    private static final String CHA_GREEN_LEAF = "greenLeafScore";
     protected static final String HIE_GREEN_LEAF = "REei";
 
     // outside air temperature (read-only)
@@ -131,11 +131,11 @@ public class RdsBindingConstants {
     private static final String HIE_OUTSIDE_TEMP = "TOa";
 
     // set-point override (read-write)
-    private static final String CHA_SETPOINT = "setTemperature";
+    private static final String CHA_SETPOINT = "targetTemperature";
     private static final String HIE_SETPOINT = "SpTR";
 
     // heating/cooling state (read-only)
-    private static final String CHA_HEAT_OFF_COOL = "heatingOffCooling";
+    private static final String CHA_HEAT_OFF_COOL = "thermostatOutputState";
     private static final String HIE_HEAT_COOL_STATE = "HCSta";
 
     /*
@@ -143,7 +143,7 @@ public class RdsBindingConstants {
      * different parameters as follows.. OccMod = 2, 3 to read, and command to, the
      * absent, present states
      */
-    protected static final String CHA_STAT_OCC_STATE = "statOccupancyState";
+    protected static final String CHA_STAT_OCC_STATE = "occupancyModePresent";
     protected static final String HIE_STAT_OCC_MODE = "OccMod";
 
     /*
@@ -152,7 +152,7 @@ public class RdsBindingConstants {
      * read the manual, auto mode CmfBtn = 1 to command to the manual mode REei = 5
      * to command to the auto mode
      */
-    protected static final String CHA_STAT_PROG_MODE = "statProgramMode";
+    protected static final String CHA_STAT_PROG_MODE = "thermostatAutoMode";
     private static final String HIE_PR_OP_MOD_RSN = "PrOpModRsn";
     protected static final String HIE_STAT_CMF_BTN = "CmfBtn";
 
@@ -161,7 +161,7 @@ public class RdsBindingConstants {
      * parameters as follows.. DhwMod = 1, 2 to read, and command to, the off, on
      * states
      */
-    protected static final String CHA_DHW_OFFON_STATE = "dhwOffOnState";
+    protected static final String CHA_DHW_OFFON_STATE = "hotWaterSwitchState";
     private static final String HIE_DHW_MODE = "DhwMod";
 
     /*
@@ -170,7 +170,7 @@ public class RdsBindingConstants {
      * manual, auto mode DhwMod = 0 to command to the auto mode DhwMod = its current
      * value to command it's resp. manual states
      */
-    protected static final String CHA_DHW_PROG_MODE = "dhwProgramMode";
+    protected static final String CHA_DHW_PROG_MODE = "hotWaterAutoMode";
 
     public static final ChannelMap[] CHAN_MAP = { new ChannelMap(CHA_ROOM_TEMP, HIE_ROOM_TEMP, Ptype.RAW),
             new ChannelMap(CHA_ROOM_HUMIDITY, HIE_ROOM_HUMIDITY, Ptype.RAW),

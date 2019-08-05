@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RdsHandler extends BaseThingHandler {
 
-    protected final Logger LOGGER = LoggerFactory.getLogger(RdsHandler.class);
+    protected final Logger logger = LoggerFactory.getLogger(RdsHandler.class);
 
     private ScheduledFuture<?> lazyPollingScheduler;
     private ScheduledFuture<?> fastPollingScheduler;
@@ -107,7 +107,7 @@ public class RdsHandler extends BaseThingHandler {
             int pollInterval = cloud.getPollInterval();
 
             if (pollInterval > 0) {
-                LOGGER.info("creating polling timers..");
+                logger.info("creating polling timers..");
 
                 // create a "lazy" polling scheduler
                 if (lazyPollingScheduler == null || lazyPollingScheduler.isCancelled()) {
@@ -138,7 +138,7 @@ public class RdsHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        LOGGER.info("disposing polling timers..");
+        logger.info("disposing polling timers..");
 
         // clean up the lazy polling scheduler
         if (lazyPollingScheduler != null && !lazyPollingScheduler.isCancelled()) {
