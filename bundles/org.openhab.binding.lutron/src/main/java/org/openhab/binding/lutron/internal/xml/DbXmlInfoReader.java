@@ -39,13 +39,13 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
  */
 public class DbXmlInfoReader {
 
-    private XStream xstream;
-    
+    private final XStream xstream;
+
     public DbXmlInfoReader() {
         StaxDriver driver = new StaxDriver();
 
         xstream = new XStream(driver);
-        
+
         setClassLoader(Project.class.getClassLoader());
         registerAliases(this.xstream);
     }
@@ -53,7 +53,7 @@ public class DbXmlInfoReader {
     public void setClassLoader(ClassLoader classLoader) {
         xstream.setClassLoader(classLoader);
     }
-    
+
     public void registerAliases(XStream xstream) {
         xstream.alias("Project", Project.class);
         xstream.aliasField("AppVer", Project.class, "appVersion");
@@ -114,7 +114,7 @@ public class DbXmlInfoReader {
         // binding more tolerant of potential future changes to the XML schema.
         xstream.ignoreUnknownElements();
     }
-    
+
     public Project readFromXML(URL xmlURL) throws ConversionException {
         if (xmlURL != null) {
             return (Project) xstream.fromXML(xmlURL);
@@ -122,7 +122,7 @@ public class DbXmlInfoReader {
 
         return null;
     }
-    
+
     public Project readFromXML(File xmlFile) throws ConversionException {
         if (xmlFile != null) {
             return (Project) xstream.fromXML(xmlFile);
@@ -130,7 +130,7 @@ public class DbXmlInfoReader {
 
         return null;
     }
-    
+
     public Project readFromXML(Reader xmlReader) throws ConversionException {
         if (xmlReader != null) {
             return (Project) xstream.fromXML(xmlReader);
@@ -138,7 +138,7 @@ public class DbXmlInfoReader {
 
         return null;
     }
-    
+
     public Project readFromXML(String xmlString) throws ConversionException {
         if (xmlString != null) {
             return (Project) xstream.fromXML(xmlString);

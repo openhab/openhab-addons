@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -69,19 +69,22 @@ import org.slf4j.LoggerFactory;
  */
 public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
-    private static final String XML_DECLARATION_START = "<?xml";
     private static final int DECLARATION_MAX_LEN = 80;
     private static final long HTTP_REQUEST_TIMEOUT = 60; // seconds
     private static final int DISCOVERY_SERVICE_TIMEOUT = 90; // seconds
+
+    private static final String XML_DECLARATION_START = "<?xml";
+    private static final Pattern XML_DECLARATION_PATTERN = Pattern.compile(XML_DECLARATION_START,
+            Pattern.LITERAL | Pattern.CASE_INSENSITIVE);
 
     private final Logger logger = LoggerFactory.getLogger(LutronDeviceDiscoveryService.class);
 
     private IPBridgeHandler bridgeHandler;
     private DbXmlInfoReader dbXmlInfoReader = new DbXmlInfoReader();
 
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
-    private ScheduledFuture<?> scanTask;
+    private Future<?> scanTask;
 
     public LutronDeviceDiscoveryService(IPBridgeHandler bridgeHandler, HttpClient httpClient)
             throws IllegalArgumentException {
@@ -94,7 +97,7 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected synchronized void startScan() {
         if (scanTask == null || scanTask.isDone()) {
-            scanTask = scheduler.schedule(this::asyncDiscoveryTask, 0, TimeUnit.SECONDS);
+            scanTask = scheduler.submit(this::asyncDiscoveryTask);
         }
     }
 
@@ -112,8 +115,8 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
     private void readDeviceDatabase() {
         Project project = null;
-        String discFileName = bridgeHandler.getIPBridgeConfig().getDiscoveryFile();
-        String address = "http://" + bridgeHandler.getIPBridgeConfig().getIpAddress() + "/DbXmlInfo.xml";
+        String discFileName = bridgeHandler.getIPBridgeConfig().discoveryFile;
+        String address = "http://" + bridgeHandler.getIPBridgeConfig().ipAddress + "/DbXmlInfo.xml";
 
         if (discFileName == null || discFileName.isEmpty()) {
             // Read XML from bridge via HTTP
@@ -194,12 +197,10 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
     private void flushPrePrologLines(BufferedReader xmlReader) throws IOException {
         String inLine = null;
         xmlReader.mark(DECLARATION_MAX_LEN);
-        Boolean foundXmlDec = false;
-
-        Pattern pattern = Pattern.compile(XML_DECLARATION_START, Pattern.LITERAL | Pattern.CASE_INSENSITIVE);
+        boolean foundXmlDec = false;
 
         while (!foundXmlDec && (inLine = xmlReader.readLine()) != null) {
-            Matcher matcher = pattern.matcher(inLine);
+            Matcher matcher = XML_DECLARATION_PATTERN.matcher(inLine);
             if (matcher.find()) {
                 foundXmlDec = true;
                 xmlReader.reset();

@@ -101,20 +101,20 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(LutronHandlerFactory.class);
 
-    private @Nullable HttpClient httpClient;
+    private @NonNullByDefault({}) HttpClient httpClient;
     // shared instance obtained from HttpClientFactory service and passed to device discovery service
-    
-  @Reference
-  protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-      this.httpClient = httpClientFactory.getCommonHttpClient();
-      logger.trace("HTTP client configured.");
-  }
 
-  protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-      this.httpClient = null;
-      logger.trace("HTTP client unconfigured.");
-  }
-  
+    @Reference
+    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+        logger.trace("HTTP client configured.");
+    }
+
+    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClient = null;
+        logger.trace("HTTP client unconfigured.");
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)
@@ -123,7 +123,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegMap = new HashMap<>();
-    
+
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
@@ -198,7 +198,7 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             }
         }
     }
-    
+
     /**
      * Register a discovery service for an IP bridge handler.
      *
@@ -212,4 +212,3 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
         return discoveryService;
     }
 }
-

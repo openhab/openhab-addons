@@ -79,7 +79,7 @@ It also defaults to 5.
 
 The optional advanced parameter `discoveryFile` can be set to force the device discovery service to read the Lutron configuration XML from a local file rather than retrieving it via HTTP from the RadioRA 2 or HomeWorks QS bridge device.
 This is useful in the case of some older Lutron software versions, where the discovery service may have problems retrieving the file from the bridge device.
-Note that the user which OpenHAB runs under must have permission to read the file.
+Note that the user which openHAB runs under must have permission to read the file.
 
 Thing configuration file example:
 

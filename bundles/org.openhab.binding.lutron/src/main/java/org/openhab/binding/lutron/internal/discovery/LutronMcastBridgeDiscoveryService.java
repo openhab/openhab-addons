@@ -99,8 +99,8 @@ public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService 
     @Override
     protected void startBackgroundDiscovery() {
         if (this.backgroundScan == null) {
-            this.backgroundScan = scheduler.scheduleWithFixedDelay(new RepeaterScanner(), 1, SCAN_INTERVAL_MINUTES * 60,
-                    TimeUnit.SECONDS);
+            this.backgroundScan = scheduler.scheduleWithFixedDelay(new RepeaterScanner(), 1, SCAN_INTERVAL_MINUTES,
+                    TimeUnit.MINUTES);
         }
     }
 
@@ -187,9 +187,9 @@ public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService 
                 properties.put(HOST, ipAddress);
                 properties.put(SERIAL_NUMBER, serialNumber);
 
-                if (productFamily.equals(PRODFAM_RA2)) {
+                if (PRODFAM_RA2.equals(productFamily)) {
                     properties.put("productFamily", "RadioRA 2");
-                } else if (productFamily.equals(PRODFAM_HWQS)) {
+                } else if (PRODFAM_HWQS.equals(productFamily)) {
                     properties.put("productFamily", "HomeWorks QS");
                 } else {
                     properties.put("productFamily", productFamily);

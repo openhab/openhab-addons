@@ -135,11 +135,11 @@ public class IPBridgeHandler extends BaseBridgeHandler {
         this.config = getThing().getConfiguration().as(IPBridgeConfig.class);
 
         if (validConfiguration(this.config)) {
-            reconnectInterval = (config.getReconnect() > 0) ? config.getReconnect() : DEFAULT_RECONNECT_MINUTES;
-            heartbeatInterval = (config.getHeartbeat() > 0) ? config.getHeartbeat() : DEFAULT_HEARTBEAT_MINUTES;
+            reconnectInterval = (config.reconnect > 0) ? config.reconnect : DEFAULT_RECONNECT_MINUTES;
+            heartbeatInterval = (config.heartbeat > 0) ? config.heartbeat : DEFAULT_HEARTBEAT_MINUTES;
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");
-            scheduler.schedule(this::connect, 0, TimeUnit.SECONDS); // start the async connect task
+            scheduler.submit(this::connect); // start the async connect task
         }
     }
 
@@ -150,7 +150,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
             return false;
         }
 
-        if (StringUtils.isEmpty(config.getIpAddress())) {
+        if (StringUtils.isEmpty(config.ipAddress)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridge address not specified");
 
             return false;
@@ -169,7 +169,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        logger.debug("Connecting to bridge at {}", config.getIpAddress());
+        logger.debug("Connecting to bridge at {}", config.ipAddress);
 
         try {
             if (!login(config)) {
@@ -208,7 +208,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
         // a scan for paired devices.
         sendCommand(new LutronCommand(LutronOperation.QUERY, LutronCommandType.SYSTEM, -1, SYSTEM_DBEXPORTDATETIME));
 
-        Thread messageSender = new Thread(new SendCommandsThread(), "Lutron ipbridge sender");
+        messageSender = new Thread(this::sendCommandsThread, "Lutron sender");
         messageSender.start();
 
         logger.debug("Starting keepAlive job with interval {}", heartbeatInterval);
@@ -216,32 +216,29 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                 TimeUnit.MINUTES);
     }
 
-    private class SendCommandsThread implements Runnable {
-        @Override
-        public void run() {
-            try {
-                while (!Thread.currentThread().isInterrupted()) {
-                    LutronCommand command = sendQueue.take();
+    private void sendCommandsThread() {
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                LutronCommand command = sendQueue.take();
 
-                    logger.debug("Sending command {}", command);
+                logger.debug("Sending command {}", command);
 
-                    try {
-                        session.writeLine(command.toString());
-                    } catch (IOException e) {
-                        logger.warn("Communication error, will try to reconnect. Error: {}", e.getMessage());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                try {
+                    session.writeLine(command.toString());
+                } catch (IOException e) {
+                    logger.warn("Communication error, will try to reconnect. Error: {}", e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
 
-                        sendQueue.add(command); // Requeue command
+                    sendQueue.add(command); // Requeue command
 
-                        reconnect();
+                    reconnect();
 
-                        // reconnect() will start a new thread; terminate this one
-                        break;
-                    }
+                    // reconnect() will start a new thread; terminate this one
+                    break;
                 }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -282,14 +279,14 @@ public class IPBridgeHandler extends BaseBridgeHandler {
     }
 
     private boolean login(IPBridgeConfig config) throws IOException, InterruptedException, LutronSafemodeException {
-        this.session.open(config.getIpAddress());
+        this.session.open(config.ipAddress);
         this.session.waitFor("login:");
 
         // Sometimes the Lutron Smart Bridge Pro will request login more than once.
         for (int attempt = 0; attempt < MAX_LOGIN_ATTEMPTS; attempt++) {
-            this.session.writeLine(config.getUser() != null ? config.getUser() : DEFAULT_USER);
+            this.session.writeLine(config.user != null ? config.user : DEFAULT_USER);
             this.session.waitFor("password:");
-            this.session.writeLine(config.getPassword() != null ? config.getPassword() : DEFAULT_PASSWORD);
+            this.session.writeLine(config.password != null ? config.password : DEFAULT_PASSWORD);
 
             MatchResult matchResult = this.session.waitFor(LOGIN_MATCH_REGEX);
 
