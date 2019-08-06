@@ -46,11 +46,13 @@ public class DarkSkyBindingConstants {
             "hourlyForecast");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_DAILY_FORECAST = new ChannelGroupTypeUID(BINDING_ID,
             "dailyForecast");
+    public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ALERTS = new ChannelGroupTypeUID(BINDING_ID, "alerts");
 
     // List of all channel groups
     public static final String CHANNEL_GROUP_CURRENT_WEATHER = "current";
     public static final String CHANNEL_GROUP_FORECAST_TODAY = "forecastToday";
     public static final String CHANNEL_GROUP_FORECAST_TOMORROW = "forecastTomorrow";
+    public static final String CHANNEL_GROUP_ALERTS = "alerts";
 
     // List of all channels
     public static final String CHANNEL_TIME_STAMP = "time-stamp";
@@ -76,12 +78,15 @@ public class DarkSkyBindingConstants {
     public static final String CHANNEL_OZONE = "ozone";
     public static final String CHANNEL_SUNRISE = "sunrise";
     public static final String CHANNEL_SUNSET = "sunset";
+    public static final String CHANNEL_ALERT_TITLE = "title";
+    public static final String CHANNEL_ALERT_ISSUED = "issued";
+    public static final String CHANNEL_ALERT_EXPIRES = "expires";
+    public static final String CHANNEL_ALERT_DESCRIPTION = "description";
+    public static final String CHANNEL_ALERT_SEVERITY = "severity";
+    public static final String CHANNEL_ALERT_URI = "uri";
 
     public static final String TRIGGER_SUNRISE = CHANNEL_GROUP_CURRENT_WEATHER + "#sunrise-event";
     public static final String TRIGGER_SUNSET = CHANNEL_GROUP_CURRENT_WEATHER + "#sunset-event";
 
     public static final String EVENT_START = "START";
-
-    // List of all configuration
-    public static final String CONFIG_FORECAST_DAYS = "forecastDays";
 }
