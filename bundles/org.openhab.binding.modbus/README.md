@@ -1237,4 +1237,5 @@ Consult [openHAB2 logging documentation](http://docs.openhab.org/administration/
 
 ## For Developers
 
-This binding can be extended in many ways. If you have a Modbus enabled device that you want to support in openHAB please read the [developer section](DEVELOPERS.md) 
+This binding can be extended in many ways.
+If you have a Modbus enabled device that you want to support in openHAB please read the [developer section](DEVELOPERS.md).
