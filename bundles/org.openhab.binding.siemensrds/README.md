@@ -19,8 +19,6 @@ You have to manually create a single (Bridge) Thing for the Climatix IC Account,
 If the Configuration Parameters are all valid, then the Climatix IC Account Thing will automatically attempt to connect and sign on to the Siemens Climatix IC cloud server.
 If the sign on succeeds, the Thing will indicate its status as Online, otherwise it will show an error status. 
 
-Note: You must create ONLY ONE Thing of the type Climatix IC Account; duplicate Climatix IC Account things risk causing communication errors with the cloud server.   
-
 Once the Thing of the type Climatix IC Account has been created and successfully signed on to the cloud server, it will automatically interrogate the server to discover all the respective RDS Smart Thermostat Things associated with that account.
 After a short while, all discovered RDS Smart Thermostat Things will be displayed in the PaperUI Inbox.
 If in future you add new RDS Smart Thermostat devices to your Siemens account (e.g. via the Siemens App) then these new devices will also appear in the Inbox.    
@@ -37,6 +35,8 @@ Before it can connect to the server, the following Configuration Parameters must
 | userPassword            | The password of the user account on the cloud server; as entered in the Siemens App.                                                                                |
 | pollingInterval         | Time interval in seconds between polling requests to the cloud server; the value must be between 8..60 seconds; the Default value (recommended) is 60 seconds.      |
 | apiKey                  | The key code needed to access the application program interface on the Siemens Climatix IC cloud server; you can request a key code from Siemens on their web-site. |
+
+Note: You must create ONLY ONE Thing of the type Climatix IC Account; duplicate Climatix IC Account things risk causing communication errors with the cloud server.   
 
 ## Thing Configuration for "RDS Smart Thermostat"
 
