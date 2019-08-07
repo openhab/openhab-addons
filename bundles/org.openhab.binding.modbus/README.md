@@ -156,6 +156,7 @@ With low baud rates and/or long read requests (that is, many items polled), ther
 ### `poller` Thing
 
 `poller` thing takes care of polling the Modbus serial slave or Modbus TCP server data regularly.
+You must give each of your bridge Things a reference (thing ID) that is unique for this binding.
 
 | Parameter     | Type    | Required | Default if omitted | Description                                                                                                                                                                                    |
 | ------------- | ------- | -------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -176,6 +177,7 @@ See [Refresh command](#refresh-command) section for more details.
 `data` is responsible of extracting relevant piece of data (e.g. a number `3.14`) from binary received from the slave.
 Similarly, `data` thing is responsible of converting openHAB commands to write requests to the Modbus slave.
 n.b. note that some numerics like 'readStart' need to be entered as 'text'.
+You must give each of your data Things a reference (thing ID) that is unique for this binding.
 
 | Parameter                                   | Type    | Required | Default if omitted | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------- | ------- | -------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1235,4 +1237,5 @@ Consult [openHAB2 logging documentation](http://docs.openhab.org/administration/
 
 ## For Developers
 
-This binding can be extended in many ways. If you have a Modbus enabled device that you want to support in openHAB please read the [developer section](DEVELOPERS.md) 
+This binding can be extended in many ways.
+If you have a Modbus enabled device that you want to support in openHAB please read the [developer section](DEVELOPERS.md).
