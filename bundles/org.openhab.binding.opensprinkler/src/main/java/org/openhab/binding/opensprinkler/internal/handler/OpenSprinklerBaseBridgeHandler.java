@@ -5,6 +5,8 @@ import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingCon
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -16,32 +18,39 @@ import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApi
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Florian Schmidt - Refactoring
+ */
+@NonNullByDefault
 public abstract class OpenSprinklerBaseBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(OpenSprinklerBaseBridgeHandler.class);
 
+    @Nullable
     private ScheduledFuture<?> pollingJob;
-    protected OpenSprinklerApi openSprinklerDevice = null;
+    @Nullable
+    protected OpenSprinklerApi openSprinklerDevice;
 
     public OpenSprinklerBaseBridgeHandler(Bridge bridge) {
         super(bridge);
     }
 
     public OpenSprinklerApi getApi() {
-        return this.openSprinklerDevice;
+        OpenSprinklerApi api = openSprinklerDevice;
+        if (api == null) {
+            throw new IllegalStateException();
+        }
+        return api;
     }
 
     @Override
     public void initialize() {
-        pollingJob = scheduler.scheduleWithFixedDelay(this::refresh, DEFAULT_WAIT_BEFORE_INITIAL_REFRESH,
+        pollingJob = scheduler.scheduleWithFixedDelay(this::refreshStations, DEFAULT_WAIT_BEFORE_INITIAL_REFRESH,
                 getRefreshInterval(), TimeUnit.SECONDS);
     }
 
     protected abstract long getRefreshInterval();
 
-    /**
-     * Threaded scheduled job that periodically syncs the state of the OpenSprinkler device.
-     */
-    private void refresh() {
+    private void refreshStations() {
         if (openSprinklerDevice != null) {
             if (openSprinklerDevice.isConnected()) {
                 logger.debug("Refreshing state with the OpenSprinkler device.");

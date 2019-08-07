@@ -3,6 +3,7 @@ package org.openhab.binding.opensprinkler.internal.handler;
 import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.STATION_STATE;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -17,9 +18,14 @@ import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerStationCon
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Florian Schmidt - Refactoring
+ */
+@NonNullByDefault
 public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(OpenSprinklerStationHandler.class);
 
+    @Nullable
     private OpenSprinklerStationConfig config;
 
     public OpenSprinklerStationHandler(Thing thing) {
@@ -37,7 +43,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
             if (command == RefreshType.REFRESH) {
                 updateChannels();
             } else {
-                handleStationCommand(config.stationIndex, command);
+                handleStationCommand(this.getStationIndex(), command);
             }
         } catch (Exception exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -56,8 +62,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
     protected void handleStationCommand(int stationId, Command command) {
         OpenSprinklerApi api = getApi();
         if (api == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "OpenSprinkler bridge has no initialized API.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "OpenSprinkler bridge has no initialized API.");
             return;
         }
         try {
@@ -115,13 +120,21 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
     protected void updateChannel(@NonNull ChannelUID channel) {
         switch (channel.getIdWithoutGroup()) {
             case STATION_STATE:
-                State currentDeviceState = getStationState(config.stationIndex);
+                State currentDeviceState = getStationState(this.getStationIndex());
                 if (currentDeviceState != null) {
                     updateState(channel, currentDeviceState);
                 }
             default:
-                logger.debug("Not updating unknown channel " + channel.getAsString());
+                logger.debug("Not updating unknown channel {}", channel);
         }
+    }
+
+    private int getStationIndex() {
+        OpenSprinklerStationConfig config = this.config;
+        if (config == null) {
+            throw new IllegalStateException();
+        }
+        return config.stationIndex;
     }
 
 }

@@ -1,10 +1,6 @@
 package org.openhab.binding.opensprinkler.internal.handler;
 
-import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.DEFAULT_WAIT_BEFORE_INITIAL_REFRESH;
-
-import java.util.concurrent.TimeUnit;
-
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -16,6 +12,10 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
 
+/**
+ * @author Florian Schmidt - Refactoring
+ */
+@NonNullByDefault
 public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
     public OpenSprinklerBaseHandler(Thing thing) {
         super(thing);
@@ -26,8 +26,6 @@ public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
         super.bridgeStatusChanged(bridgeStatusInfo);
 
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            scheduler.scheduleWithFixedDelay(this::updateChannels, 0, DEFAULT_WAIT_BEFORE_INITIAL_REFRESH,
-                    TimeUnit.SECONDS);
             updateStatus(ThingStatus.UNKNOWN);
         }
     }
@@ -59,6 +57,6 @@ public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
         }
     }
 
-    protected abstract void updateChannel(@NonNull ChannelUID uid);
+    protected abstract void updateChannel(ChannelUID uid);
 
 }

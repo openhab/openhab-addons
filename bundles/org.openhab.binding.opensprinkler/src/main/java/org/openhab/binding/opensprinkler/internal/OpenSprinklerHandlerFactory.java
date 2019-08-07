@@ -35,6 +35,7 @@ import org.osgi.service.component.annotations.Component;
  * handlers.
  *
  * @author Chris Graham - Initial contribution
+ * @author Florian Schmidt - Split channels to their own things
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.opensprinkler")
 public class OpenSprinklerHandlerFactory extends BaseThingHandlerFactory {

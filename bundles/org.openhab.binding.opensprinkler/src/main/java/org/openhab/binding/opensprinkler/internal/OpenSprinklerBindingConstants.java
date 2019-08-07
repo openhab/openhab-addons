@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Chris Graham - Initial contribution
+ * @author Florian Schmidt - Split channels to their own things
  */
 @NonNullByDefault
 public class OpenSprinklerBindingConstants {
