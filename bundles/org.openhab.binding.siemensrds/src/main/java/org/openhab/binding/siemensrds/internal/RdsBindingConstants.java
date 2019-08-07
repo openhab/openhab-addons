@@ -47,9 +47,9 @@ public class RdsBindingConstants {
             + "{\"asn\":\"RDS110.R\"}," + "{\"asn\":\"RDS120.B\"}" + "]";
 
     private static final String ARG_PARENT = "?parentId=[\"%s\"]&take=100";
-    private static final String ARG_POINT  = "?filterId=[%s]";
+    private static final String ARG_POINT = "?filterId=[%s]";
 
-    public static final String URL_TOKEN  = API + "Token";
+    public static final String URL_TOKEN = API + "Token";
     public static final String URL_PLANTS = API + "Plants" + ARG_RDS;
     public static final String URL_POINTS = API + "DataPoints" + ARG_PARENT;
     public static final String URL_SETVAL = API + "DataPoints/%s";
@@ -88,7 +88,7 @@ public class RdsBindingConstants {
      * polling calls spaced at FAST_POLL_INTERVAL for example 5 polling calls made
      * at 4 second intervals (e.g. 6 x 4 => 24 seconds)
      */
-    public static final int FAST_POLL_CYCLES = 4;
+    public static final int FAST_POLL_CYCLES = 6;
     public static final int FAST_POLL_INTERVAL = 8;
 
     /*
@@ -107,44 +107,44 @@ public class RdsBindingConstants {
      */
 
     // device name
-    public static final String HIE_DESCRIPTION = "R(1)'Description";
+    protected static final String HIE_DESCRIPTION = "R(1)'Description";
 
     // room (actual) temperature (read-only)
-    private static final String CHA_ROOM_TEMP = "roomTemperature";
+    protected static final String CHA_ROOM_TEMP = "roomTemperature";
     private static final String HIE_ROOM_TEMP = "RTemp";
 
     // room relative humidity (read-only)
-    private static final String CHA_ROOM_HUMIDITY = "roomHumidity";
+    protected static final String CHA_ROOM_HUMIDITY = "roomHumidity";
     private static final String HIE_ROOM_HUMIDITY = "RHuRel";
 
     // room air quality (low/med/high) (read-only)
-    private static final String CHA_ROOM_AIR_QUALITY = "roomAirQuality";
+    protected static final String CHA_ROOM_AIR_QUALITY = "roomAirQuality";
     private static final String HIE_ROOM_AIR_QUALITY = "RAQualInd";
 
-    // green leaf state (poor..excellent) (read-write)
-    // note: writing the value "5" forces the device to green mode
-    private static final String CHA_GREEN_LEAF = "greenLeafScore";
-    protected static final String HIE_GREEN_LEAF = "REei";
+    // energy savings level (green leaf) (poor..excellent) (read-write)
+    // note: writing the value "5" forces the device to green leaf mode
+    protected static final String CHA_ENERGY_SAVINGS_LEVEL = "energySavingsLevel";
+    protected static final String HIE_ENERGY_SAVINGS_LEVEL = "REei";
 
     // outside air temperature (read-only)
-    private static final String CHA_OUTSIDE_TEMP = "outsideTemperature";
+    protected static final String CHA_OUTSIDE_TEMP = "outsideTemperature";
     private static final String HIE_OUTSIDE_TEMP = "TOa";
 
     // set-point override (read-write)
-    private static final String CHA_SETPOINT = "targetTemperature";
-    private static final String HIE_SETPOINT = "SpTR";
+    protected static final String CHA_TARGET_TEMP = "targetTemperature";
+    private static final String HIE_TARGET_TEMP = "SpTR";
 
     // heating/cooling state (read-only)
-    private static final String CHA_HEAT_OFF_COOL = "thermostatOutputState";
-    private static final String HIE_HEAT_COOL_STATE = "HCSta";
+    protected static final String CHA_OUTPUT_STATE = "thermostatOutputState";
+    private static final String HIE_OUTPUT_STATE = "HCSta";
 
     /*
      * thermostat occupancy state (absent, present) (read-write) NOTE: uses
      * different parameters as follows.. OccMod = 2, 3 to read, and command to, the
      * absent, present states
      */
-    protected static final String CHA_STAT_OCC_STATE = "occupancyModePresent";
-    protected static final String HIE_STAT_OCC_MODE = "OccMod";
+    protected static final String CHA_STAT_OCC_MODE_PRESENT = "occupancyModePresent";
+    protected static final String HIE_STAT_OCC_MODE_PRESENT = "OccMod";
 
     /*
      * thermostat program mode (read-write) NOTE: uses different parameters as
@@ -152,7 +152,7 @@ public class RdsBindingConstants {
      * read the manual, auto mode CmfBtn = 1 to command to the manual mode REei = 5
      * to command to the auto mode
      */
-    protected static final String CHA_STAT_PROG_MODE = "thermostatAutoMode";
+    protected static final String CHA_STAT_AUTO_MODE = "thermostatAutoMode";
     private static final String HIE_PR_OP_MOD_RSN = "PrOpModRsn";
     protected static final String HIE_STAT_CMF_BTN = "CmfBtn";
 
@@ -161,8 +161,8 @@ public class RdsBindingConstants {
      * parameters as follows.. DhwMod = 1, 2 to read, and command to, the off, on
      * states
      */
-    protected static final String CHA_DHW_OFFON_STATE = "hotWaterSwitchState";
-    private static final String HIE_DHW_MODE = "DhwMod";
+    protected static final String CHA_DHW_OUTPUT_STATE = "hotWaterOutputState";
+    private static final String HIE_DHW_OUTPUT_STATE = "DhwMod";
 
     /*
      * domestic hot water program mode (manual, auto) (read-write) NOTE: uses
@@ -170,45 +170,54 @@ public class RdsBindingConstants {
      * manual, auto mode DhwMod = 0 to command to the auto mode DhwMod = its current
      * value to command it's resp. manual states
      */
-    protected static final String CHA_DHW_PROG_MODE = "hotWaterAutoMode";
-
-    public static final ChannelMap[] CHAN_MAP = { new ChannelMap(CHA_ROOM_TEMP, HIE_ROOM_TEMP, Ptype.RAW),
-            new ChannelMap(CHA_ROOM_HUMIDITY, HIE_ROOM_HUMIDITY, Ptype.RAW),
-            new ChannelMap(CHA_OUTSIDE_TEMP, HIE_OUTSIDE_TEMP, Ptype.RAW),
-            new ChannelMap(CHA_SETPOINT, HIE_SETPOINT, Ptype.RAW),
-            new ChannelMap(CHA_ROOM_AIR_QUALITY, HIE_ROOM_AIR_QUALITY, Ptype.ENUM),
-            new ChannelMap(CHA_GREEN_LEAF, HIE_GREEN_LEAF, Ptype.ENUM),
-            new ChannelMap(CHA_HEAT_OFF_COOL, HIE_HEAT_COOL_STATE, Ptype.ENUM),
-            new ChannelMap(CHA_STAT_OCC_STATE, HIE_STAT_OCC_MODE, Ptype.CUSTOM),
-            new ChannelMap(CHA_STAT_PROG_MODE, HIE_PR_OP_MOD_RSN, Ptype.CUSTOM),
-            new ChannelMap(CHA_DHW_OFFON_STATE, HIE_DHW_MODE, Ptype.CUSTOM),
-            new ChannelMap(CHA_DHW_PROG_MODE, HIE_DHW_MODE, Ptype.CUSTOM) };
+    protected static final String CHA_DHW_AUTO_MODE = "hotWaterAutoMode";
 
     /*
-     * // ==================== UNUSED DATA POINTS ==========================
+     * openHAB status strings
+     */
+    protected static final String STATE_NEITHER = "Neither";
+    protected static final String STATE_OFF = "Off";
+
+    public static final ChannelMap[] CHAN_MAP = { 
+            new ChannelMap(CHA_ROOM_TEMP, HIE_ROOM_TEMP),
+            new ChannelMap(CHA_ROOM_HUMIDITY, HIE_ROOM_HUMIDITY), 
+            new ChannelMap(CHA_OUTSIDE_TEMP, HIE_OUTSIDE_TEMP),
+            new ChannelMap(CHA_TARGET_TEMP, HIE_TARGET_TEMP),
+            new ChannelMap(CHA_ROOM_AIR_QUALITY, HIE_ROOM_AIR_QUALITY),
+            new ChannelMap(CHA_ENERGY_SAVINGS_LEVEL, HIE_ENERGY_SAVINGS_LEVEL),
+            new ChannelMap(CHA_OUTPUT_STATE, HIE_OUTPUT_STATE),
+            new ChannelMap(CHA_STAT_OCC_MODE_PRESENT, HIE_STAT_OCC_MODE_PRESENT),
+            new ChannelMap(CHA_STAT_AUTO_MODE, HIE_PR_OP_MOD_RSN),
+            new ChannelMap(CHA_DHW_OUTPUT_STATE, HIE_DHW_OUTPUT_STATE),
+            new ChannelMap(CHA_DHW_AUTO_MODE, HIE_DHW_OUTPUT_STATE) };
+
+    /*
+     * ==================== UNUSED DATA POINTS ======================
      * 
-     * // room air quality (numeric value) private static final String
-     * OBJ_ROOM_AIR_QUALITY_VAL = "RAQual";
+     * room air quality (numeric value)
      * 
-     * // other set-points for phases of the time program mode private static final
-     * String HIE_CMF_SETPOINT = "SpHCmf"; private static final String
-     * HIE_PCF_SETPOINT = "SpHPcf"; private static final String HIE_ECO_SETPOINT =
-     * "SpHEco"; private static final String HIE_PRT_SETPOINT = "SpHPrt";
+     * private static final String HIE_ROOM_AIR_QUALITY_VAL = "RAQual";
      * 
-     * // enable heating control private static final String HIE_ENABLE_HEATING =
-     * "EnHCtl";
+     * other set-points for phases of the time program mode
      * 
-     * // comfort button private static final String HIE_COMFORT_BUTTON = "CmfBtn";
+     * private static final String HIE_CMF_SETPOINT = "SpHCmf";
+     * 
+     * private static final String HIE_PCF_SETPOINT = "SpHPcf";
+     * 
+     * private static final String HIE_ECO_SETPOINT = "SpHEco";
+     * 
+     * private static final String HIE_PRT_SETPOINT = "SpHPrt";
+     * 
+     * enable heating control
+     * 
+     * private static final String HIE_ENABLE_HEATING = "EnHCtl";
+     * 
+     * comfort button
+     * 
+     * private static final String HIE_COMFORT_BUTTON = "CmfBtn";
      * 
      */
 
-}
-
-/**
- * @author Andrew Fiddian-Green - Initial contribution
- */
-enum Ptype {
-    ENUM, RAW, CUSTOM
 }
 
 /**
@@ -217,11 +226,9 @@ enum Ptype {
 class ChannelMap {
     public String channelId;
     public String hierarchyName;
-    public Ptype pointType;
 
-    public ChannelMap(String channelId, String hierarchyName, Ptype pType) {
+    public ChannelMap(String channelId, String hierarchyName) {
         this.channelId = channelId;
         this.hierarchyName = hierarchyName;
-        this.pointType = pType;
     }
 }

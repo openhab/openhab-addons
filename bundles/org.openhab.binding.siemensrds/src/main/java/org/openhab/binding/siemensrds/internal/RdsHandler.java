@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -77,7 +78,7 @@ public class RdsHandler extends BaseThingHandler {
 
         config = getConfigAs(RdsConfiguration.class);
 
-        if (config == null || config.plantId == null || config.plantId.isEmpty()) {  
+        if (config == null || config.plantId == null || config.plantId.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "missing Plant Id, status => offline!");
             return;
@@ -233,35 +234,44 @@ public class RdsHandler extends BaseThingHandler {
             if (debouncer.timeExpired(chan.channelId)) {
                 State state = null;
 
-                switch (chan.pointType) {
-                case ENUM: {
-                    state = points.getEnum(chan.hierarchyName);
-                    break;
-                }
-                case RAW: {
+                switch (chan.channelId) {
+                case CHA_ROOM_TEMP:
+                case CHA_ROOM_HUMIDITY:
+                case CHA_OUTSIDE_TEMP:
+                case CHA_TARGET_TEMP: {
                     state = points.getRaw(chan.hierarchyName);
                     break;
                 }
-                case CUSTOM: {
-                    switch (chan.channelId) {
-                    case CHA_STAT_PROG_MODE: {
-                        state = OnOffType.from(
-                                points.getPresPrio(chan.hierarchyName) > 13 || points.asInt(HIE_STAT_OCC_MODE) == 2);
-                        break;
+                case CHA_ROOM_AIR_QUALITY:
+                case CHA_ENERGY_SAVINGS_LEVEL: {
+                    state = points.getEnum(chan.hierarchyName);
+                    break;
+                }
+                case CHA_OUTPUT_STATE: {
+                    state = points.getEnum(chan.hierarchyName);
+                    /*
+                     * convert the state text "Neither" to the more easy to understand word "Off"
+                     */
+                    if (state.toString().equals(STATE_NEITHER)) {
+                        state = new StringType(STATE_OFF);
                     }
-                    case CHA_STAT_OCC_STATE: {
-                        state = OnOffType.from(points.asInt(chan.hierarchyName) == 3);
-                        break;
-                    }
-                    case CHA_DHW_PROG_MODE: {
-                        state = OnOffType.from(points.getPresPrio(chan.hierarchyName) > 13);
-                        break;
-                    }
-                    case CHA_DHW_OFFON_STATE: {
-                        state = OnOffType.from(points.asInt(chan.hierarchyName) == 2);
-                        break;
-                    }
-                    }
+                    break;
+                }
+                case CHA_STAT_AUTO_MODE: {
+                    state = OnOffType.from(points.getPresPrio(chan.hierarchyName) > 13
+                            || points.asInt(HIE_STAT_OCC_MODE_PRESENT) == 2);
+                    break;
+                }
+                case CHA_STAT_OCC_MODE_PRESENT: {
+                    state = OnOffType.from(points.asInt(chan.hierarchyName) == 3);
+                    break;
+                }
+                case CHA_DHW_AUTO_MODE: {
+                    state = OnOffType.from(points.getPresPrio(chan.hierarchyName) > 13);
+                    break;
+                }
+                case CHA_DHW_OUTPUT_STATE: {
+                    state = OnOffType.from(points.asInt(chan.hierarchyName) == 2);
                     break;
                 }
                 }
@@ -285,51 +295,56 @@ public class RdsHandler extends BaseThingHandler {
         if (points != null && cloud != null) {
             for (ChannelMap chan : CHAN_MAP) {
                 if (channelId.equals(chan.channelId)) {
-                    switch (chan.pointType) {
-                    case ENUM:
-                    case RAW: {
-                        // command.format("%s") *should* work on both types
+                    switch (chan.channelId) {
+                    case CHA_TARGET_TEMP: {
                         points.setValue(cloud.getApiKey(), cloud.getToken(), chan.hierarchyName, command.format("%s"));
+                        debouncer.initialize(channelId);
                         break;
                     }
-                    case CUSTOM: {
-                        switch (chan.channelId) {
+                    case CHA_STAT_AUTO_MODE: {
                         /*
-                         * this command is particularly funky.. use Green Leaf = 5 to set to Auto use
-                         * Comfort Button = 1 to set to Manual
+                         * this command is particularly funky.. use Green Leaf = 5 to set to Auto, and
+                         * use Comfort Button = 1 to set to Manual
                          */
-                        case CHA_STAT_PROG_MODE: {
-                            if (command == OnOffType.ON) {
-                                points.setValue(cloud.getApiKey(), cloud.getToken(), HIE_GREEN_LEAF, "5");
-                            } else {
-                                points.setValue(cloud.getApiKey(), cloud.getToken(), HIE_STAT_CMF_BTN, "1");
-                            }
-                            break;
+                        if (command == OnOffType.ON) {
+                            points.setValue(cloud.getApiKey(), cloud.getToken(), HIE_ENERGY_SAVINGS_LEVEL, "5");
+                        } else {
+                            points.setValue(cloud.getApiKey(), cloud.getToken(), HIE_STAT_CMF_BTN, "1");
                         }
-                        case CHA_STAT_OCC_STATE: {
+                        debouncer.initialize(channelId);
+                        break;
+                    }
+                    case CHA_STAT_OCC_MODE_PRESENT: {
+                        points.setValue(cloud.getApiKey(), cloud.getToken(), chan.hierarchyName,
+                                command == OnOffType.OFF ? "2" : "3");
+                        debouncer.initialize(channelId);
+                        break;
+                    }
+                    case CHA_DHW_AUTO_MODE: {
+                        if (command == OnOffType.ON) {
+                            points.setValue(cloud.getApiKey(), cloud.getToken(), chan.hierarchyName, "0");
+                        } else {
                             points.setValue(cloud.getApiKey(), cloud.getToken(), chan.hierarchyName,
-                                    command == OnOffType.OFF ? "2" : "3");
-                            break;
+                                    String.valueOf(points.asInt(chan.hierarchyName)));
                         }
-                        case CHA_DHW_PROG_MODE: {
-                            if (command == OnOffType.ON) {
-                                points.setValue(cloud.getApiKey(), cloud.getToken(), chan.hierarchyName, "0");
-                            } else {
-                                points.setValue(cloud.getApiKey(), cloud.getToken(), chan.hierarchyName,
-                                        String.valueOf(points.asInt(chan.hierarchyName)));
-                            }
-                            break;
-                        }
-                        case CHA_DHW_OFFON_STATE: {
-                            points.setValue(cloud.getApiKey(), cloud.getToken(), chan.hierarchyName,
-                                    command == OnOffType.OFF ? "1" : "2");
-                            break;
-                        }
-                        }
+                        debouncer.initialize(channelId);
+                        break;
+                    }
+                    case CHA_DHW_OUTPUT_STATE: {
+                        points.setValue(cloud.getApiKey(), cloud.getToken(), chan.hierarchyName,
+                                command == OnOffType.OFF ? "1" : "2");
+                        debouncer.initialize(channelId);
+                        break;
+                    }
+                    case CHA_ROOM_TEMP:
+                    case CHA_ROOM_HUMIDITY:
+                    case CHA_OUTSIDE_TEMP:
+                    case CHA_ROOM_AIR_QUALITY:
+                    case CHA_OUTPUT_STATE: {
+                        logger.debug("error: unexpected command to channel {}", chan.channelId);
                         break;
                     }
                     }
-                    debouncer.initialize(channelId);
                     break;
                 }
             }
