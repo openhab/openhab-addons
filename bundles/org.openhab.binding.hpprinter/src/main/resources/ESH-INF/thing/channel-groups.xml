@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hpprinter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Channel Groups -->
+
+	<channel-group-type id="multiColorInkLevels">
+		<label>Ink/Toner Levels</label>
+		<channels>
+			<channel typeId="cyanLevel" id="cyanLevel"></channel>
+			<channel typeId="magentaLevel" id="magentaLevel"></channel>
+			<channel typeId="yellowLevel" id="yellowLevel"></channel>
+			<channel typeId="blackLevel" id="blackLevel"></channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="singleColorInkLevels">
+		<label>Ink/Toner Levels</label>
+		<channels>
+			<channel typeId="colorLevel" id="colorLevel"></channel>
+			<channel typeId="blackLevel" id="blackLevel"></channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="genericInkLevels">
+		<label>Ink/Toner Levels</label>
+		<channels>
+			<channel typeId="cyanLevel" id="cyanLevel"></channel>
+			<channel typeId="magentaLevel" id="magentaLevel"></channel>
+			<channel typeId="yellowLevel" id="yellowLevel"></channel>
+			<channel typeId="colorLevel" id="colorLevel"></channel>
+			<channel typeId="blackLevel" id="blackLevel"></channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="blackColorInkLevels">
+		<label>Ink/Toner Levels</label>
+		<channels>
+			<channel typeId="blackLevel" id="blackLevel"></channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="usageInfo">
+		<label>Usage Information</label>
+		<channels>
+			<channel typeId="jamEvents" id="jamEvents"></channel>
+			<channel typeId="totalCount" id="totalCount"></channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="usageInfo-ColorCount">
+		<label>Usage Information</label>
+		<channels>
+			<channel typeId="jamEvents" id="jamEvents"></channel>
+			<channel typeId="totalCount" id="totalCount"></channel>
+			<channel typeId="totalMonochromeCount" id="totalMonochromeCount"></channel>
+			<channel typeId="totalColorCount" id="totalColorCount"></channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="printerStatus">
+		<label>Status</label>
+		<channels>
+			<channel id="status" typeId="status" />
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="printerControls">
+		<label>Printer Controls</label>
+		<channels>
+			<channel typeId="reboot" id="reboot"></channel>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
