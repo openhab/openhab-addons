@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="persistence:influxdb">
+
+		<parameter-group name="connection">
+			<label>Connection</label>
+			<description>This group defines connection parameters.</description>
+			<advanced>false</advanced>
+		</parameter-group>
+
+		<parameter-group name="tags">
+			<label>Additional Tags</label>
+			<description>This group defines additional tags which can be added.</description>
+			<advanced>false</advanced>
+		</parameter-group>
+
+		<parameter-group name="misc">
+			<label>Miscellaneous</label>
+			<description>This group defines miscellaneous parameters.</description>
+			<advanced>false</advanced>
+		</parameter-group>
+
+		<parameter name="url" type="text" required="true" groupName="connection">
+			<context>url</context>
+			<label>Database URL</label>
+			<description>The database URL, e.g. http://127.0.0.1:8086 or https://127.0.0.1:8084</description>
+			<default>http://127.0.0.1:8086</default>
+		</parameter>
+
+		<parameter name="user" type="text" required="true" groupName="connection">
+			<label>User name</label>
+			<description>The name of the database user, e.g. openhab.</description>
+			<default>openhab</default>
+		</parameter>
+
+		<parameter name="password" type="text" required="true" groupName="connection">
+			<context>password</context>
+			<label>User name</label>
+			<description>The password of the database user, e.g. habopen.</description>
+			<default>habopen</default>
+		</parameter>
+
+		<parameter name="db" type="text" required="true" groupName="connection">
+			<label>Database name</label>
+			<description>The name of the database, e.g. openhab.</description>
+			<default>openhab</default>
+		</parameter>
+
+		<parameter name="retentionPolicy" type="text" required="true" groupName="connection">
+			<label>Retention policy</label>
+			<description>The retention policy to use.</description>
+			<default>autogen</default>
+		</parameter>
+
+		<parameter name="replaceUnderscore" type="boolean" required="true" groupName="misc">
+			<label>Replace underscore</label>
+			<description>Whether underscores "_" in item names should be replaced by a dot "." ("test_item" -> "test.item"). Only for measurement name, not for tags. Also applies to alias names.</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="addCategoryTag" type="boolean" required="true" groupName="tags">
+			<label>Add category tag</label>
+			<description>Should the category of the item be included as tag "category"? If no category is set, "n/a" is used.</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="addTypeTag" type="boolean" required="true" groupName="tags">
+			<label>Add type tag</label>
+			<description>Should the item type be included as tag "type"?</description>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="addLabelTag" type="boolean" required="true" groupName="tags">
+			<label>Add label tag</label>
+			<description>Should the item label be included as tag "label"? If no label is set, "n/a" is used.</description>
+			<default>false</default>
+		</parameter>
+
+	</config-description>
+</config-description:config-descriptions>

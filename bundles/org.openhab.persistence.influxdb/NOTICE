@@ -1,0 +1,45 @@
+This content is produced and maintained by the openHAB project.
+
+* Project home: https://www.openhab.org
+
+== Declared Project Licenses
+
+This program and the accompanying materials are made available under the terms
+of the Eclipse Public License 2.0 which is available at
+https://www.eclipse.org/legal/epl-2.0/.
+
+== Source Code
+
+https://github.com/openhab/openhab2-addons
+
+== Third-party Content
+
+influxdb-java
+* License: MIT License
+* Project: https://github.com/influxdata/influxdb-java
+* Source:  https://github.com/influxdata/influxdb-java
+
+okhttp / logging-interceptor
+* License: Apache License 2.0
+* Project: https://square.github.io/okhttp
+* Source:  https://github.com/square/okhttp
+
+okio
+* License: Apache License 2.0
+* Project: https://github.com/square/okio
+* Source:  https://github.com/square/okio
+
+retrofit / converter-moshi
+* License: Apache License 2.0
+* Project: https://square.github.io/retrofit
+* Source:  https://github.com/square/retrofit
+
+moshi
+* License: Apache License 2.0
+* Project: http://square.github.io/moshi/1.x/moshi/
+* Source:  https://github.com/square/moshi
+
+msgpack-core
+* License: Apache License 2.0
+* Project: https://msgpack.org/
+* Source:  https://github.com/msgpack/msgpack-java

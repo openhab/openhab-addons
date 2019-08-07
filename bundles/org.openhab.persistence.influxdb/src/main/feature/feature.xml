@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.persistence.influxdb-${project.version}"
+	xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${project.version}/xml/features</repository>
+
+	<feature name="openhab-persistence-influxdb" description="InfluxDB Binding" version="${project.version}">
+		<feature>openhab-runtime-base</feature>
+		<!-- <feature prerequisite="true">wrap</feature> -->
+		<!-- <bundle dependency="true">wrap:mvn:org.influxdb/influxdb-java/2.15$Bundle-Name=InfluxDB%20Java%20Library&amp;Bundle-SymbolicName=org.influxdb.influxdbjava&amp;Bundle-Version=2.15</bundle> -->
+		<!-- <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.persistence.influxdb/${project.version}</bundle> -->
+	</feature>
+</features>
