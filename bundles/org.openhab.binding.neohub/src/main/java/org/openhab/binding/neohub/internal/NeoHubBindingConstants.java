@@ -47,11 +47,16 @@ public class NeoHubBindingConstants {
      * Channel IDs for NeoStats
      */
     public static final String CHAN_ROOM_TEMP = "roomTemperature";
-    public static final String CHAN_SET_TEMP = "targetTemperature";
+    public static final String CHAN_TARGET_TEMP = "targetTemperature";
     public static final String CHAN_FLOOR_TEMP = "floorTemperature";
-    public static final String CHAN_OCC_PRESENT = "occupancyModePresent";
-    public static final String CHAN_OUTPUT_STATE = "outputState";
-    public static final String CHAN_AUTO_MODE = "autoMode";
+    public static final String CHAN_OCC_MODE_PRESENT = "occupancyModePresent";
+    public static final String CHAN_STAT_OUTPUT_STATE = "thermostatOutputState";
+
+    /*
+     * Channel IDs for NeoPlugs
+     */
+    public static final String CHAN_PLUG_OUTPUT_STATE = "plugOutputState";
+    public static final String CHAN_PLUG_AUTO_MODE = "plugAutoMode";
 
     /*
      * enumerator for results of method calls

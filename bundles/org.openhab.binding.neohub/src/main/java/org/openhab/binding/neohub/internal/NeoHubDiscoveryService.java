@@ -126,8 +126,7 @@ public class NeoHubDiscoveryService extends AbstractDiscoveryService {
         deviceUID = new ThingUID(deviceTypeUID, bridgeUID, deviceOpenHabId);
 
         device = DiscoveryResultBuilder.create(deviceUID).withBridge(bridgeUID).withLabel(deviceOpenHabId)
-                .withProperty(DEVICE_NAME, deviceNeohubName).withRepresentationProperty(DEVICE_NAME)
-                .build();
+                .withProperty(DEVICE_NAME, deviceNeohubName).withRepresentationProperty(DEVICE_NAME).build();
 
         thingDiscovered(device);
 

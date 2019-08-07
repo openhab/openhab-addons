@@ -13,13 +13,14 @@
 package org.openhab.binding.neohub.internal;
 
 /**
- * The {@link NeoHubConfiguration} class contains the thing configuration parameters
+ * The {@link NeoHubConfiguration} class contains the thing configuration
+ * parameters
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 public class NeoHubConfiguration {
 
-    public String hostName; 
+    public String hostName;
     public int portNumber;
     public int pollingInterval;
 

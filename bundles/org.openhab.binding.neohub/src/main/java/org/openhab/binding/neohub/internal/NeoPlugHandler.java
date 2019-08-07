@@ -38,11 +38,11 @@ public class NeoPlugHandler extends NeoBaseHandler {
      */
     @Override
     protected String toNeoHubBuildCommandString(String channelId, Command command) {
-        if (command instanceof OnOffType && channelId.equals(CHAN_OUTPUT_STATE)) {
+        if (command instanceof OnOffType && channelId.equals(CHAN_PLUG_OUTPUT_STATE)) {
             return String.format(CMD_CODE_TIMER, ((OnOffType) command).toString(), config.deviceNameInHub);
         } else
 
-        if (command instanceof OnOffType && channelId.equals(CHAN_AUTO_MODE)) {
+        if (command instanceof OnOffType && channelId.equals(CHAN_PLUG_AUTO_MODE)) {
             return String.format(CMD_CODE_MANUAL, invert((OnOffType) command).toString(), config.deviceNameInHub);
         }
         return "";
@@ -55,8 +55,8 @@ public class NeoPlugHandler extends NeoBaseHandler {
     @Override
     protected void toNeoHubSendCommandSet(String channelId, Command command) {
         // if this is a manual command, switch to manual mode first..
-        if (channelId.equals(CHAN_OUTPUT_STATE) && command instanceof OnOffType) {
-            toNeoHubSendCommand(CHAN_AUTO_MODE, OnOffType.from(false));
+        if (channelId.equals(CHAN_PLUG_OUTPUT_STATE) && command instanceof OnOffType) {
+            toNeoHubSendCommand(CHAN_PLUG_AUTO_MODE, OnOffType.from(false));
         }
         // send the actual command to the hub
         toNeoHubSendCommand(channelId, command);
@@ -67,8 +67,8 @@ public class NeoPlugHandler extends NeoBaseHandler {
      */
     @Override
     protected void toOpenHabSendChannelValues(NeoHubInfoResponse.DeviceInfo device) {
-        toOpenHabSendValueDebounced(CHAN_AUTO_MODE, OnOffType.from(!device.stateManual()));
+        toOpenHabSendValueDebounced(CHAN_PLUG_AUTO_MODE, OnOffType.from(!device.stateManual()));
 
-        toOpenHabSendValueDebounced(CHAN_OUTPUT_STATE, OnOffType.from(device.isTimerOn()));
+        toOpenHabSendValueDebounced(CHAN_PLUG_OUTPUT_STATE, OnOffType.from(device.isTimerOn()));
     }
 }

@@ -42,12 +42,12 @@ public class NeoStatHandler extends NeoBaseHandler {
      */
     @Override
     protected String toNeoHubBuildCommandString(String channelId, Command command) {
-        if (command instanceof QuantityType<?> && channelId.equals(CHAN_SET_TEMP)) {
+        if (command instanceof QuantityType<?> && channelId.equals(CHAN_TARGET_TEMP)) {
             return String.format(CMD_CODE_TEMP, ((QuantityType<?>) command).toBigDecimal().toString(),
                     config.deviceNameInHub);
         } else
 
-        if (command instanceof OnOffType && channelId.equals(CHAN_OCC_PRESENT)) {
+        if (command instanceof OnOffType && channelId.equals(CHAN_OCC_MODE_PRESENT)) {
             return String.format(CMD_CODE_AWAY, invert((OnOffType) command).toString(), config.deviceNameInHub);
         }
         return "";
@@ -58,7 +58,7 @@ public class NeoStatHandler extends NeoBaseHandler {
      */
     @Override
     protected void toOpenHabSendChannelValues(NeoHubInfoResponse.DeviceInfo device) {
-        toOpenHabSendValueDebounced(CHAN_SET_TEMP,
+        toOpenHabSendValueDebounced(CHAN_TARGET_TEMP,
                 new QuantityType<Temperature>(device.getTargetTemperature(), SIUnits.CELSIUS));
 
         toOpenHabSendValueDebounced(CHAN_ROOM_TEMP,
@@ -67,9 +67,9 @@ public class NeoStatHandler extends NeoBaseHandler {
         toOpenHabSendValueDebounced(CHAN_FLOOR_TEMP,
                 new QuantityType<Temperature>(device.getFloorTemperature(), SIUnits.CELSIUS));
 
-        toOpenHabSendValueDebounced(CHAN_OCC_PRESENT, OnOffType.from(!device.isStandby()));
+        toOpenHabSendValueDebounced(CHAN_OCC_MODE_PRESENT, OnOffType.from(!device.isStandby()));
 
-        toOpenHabSendValueDebounced(CHAN_OUTPUT_STATE,
+        toOpenHabSendValueDebounced(CHAN_STAT_OUTPUT_STATE,
                 (device.isHeating() || device.isPreHeating() ? new StringType(VAL_HEATING) : new StringType(VAL_OFF)));
     }
 

@@ -7,7 +7,7 @@
 	<bridge-type id="neohub">
 
 		<label>NeoHub</label>
-		<description>The NeoHub bridge to NeoStat and NeoPlug devices</description>
+		<description>Heatmiser NeoHub bridge to NeoStat and NeoPlug devices</description>
 
 		<properties>
 			<property name="vendor">Heatmiser</property>
@@ -30,7 +30,7 @@
 			<parameter name="pollingInterval" type="integer" min="10"
 				required="true">
 				<label>Polling Interval</label>
-				<description>Time (seconds) between polling requests to the NeoHub</description>
+				<description>Time (seconds) between polling the NeoHub (min=4, max/default=60)</description>
 				<default>60</default>
 			</parameter>
 
@@ -63,9 +63,9 @@
 				<description>Actual floor temperature</description>
 			</channel>
 
-			<channel id="outputState" typeId="thermostatOutputState">
+			<channel id="thermostatOutputState" typeId="thermostatOutputState">
 				<label>Thermostat Output State</label>
-				<description>Status of whether the thermostat is calling for Heat, or Off</description>
+				<description>Status of whether the thermostat is Off, or calling for Heat</description>
 			</channel>
 
 			<channel id="occupancyModePresent"
@@ -102,13 +102,13 @@
 		<description>Heatmiser NeoPlug Smart Plug</description>
 
 		<channels>
-			<channel id="outputState" typeId="plugOutputState">
-				<label>Switch State</label>
-				<description>The state of the Plug switch, Off or On</description>
+			<channel id="plugOutputState" typeId="plugOutputState">
+				<label>Plug Output State</label>
+				<description>The output state of the Plug switch (Off, On)</description>
 			</channel>
 
-			<channel id="autoMode" typeId="autoMode">
-				<label>Auto Program Mode</label>
+			<channel id="plugAutoMode" typeId="plugAutoMode">
+				<label>Plug Auto Mode</label>
 				<description>The Plug is in Automatic Mode (Off=Manual, On=Automatic)</description>
 			</channel>
 		</channels>
@@ -133,13 +133,15 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Measured temperature value (Read-Only)</description>
+		<category>temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 	<channel-type id="targetTemperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Set Temperature</label>
+		<label>Target Temperature</label>
 		<description>Target temperature setting</description>
+		<category>temperature</category>
 		<state readOnly="false" pattern="%.1f %unit%" min="5" max="30"
 			step="1" />
 	</channel-type>
@@ -147,27 +149,29 @@
 	<channel-type id="thermostatOutputState">
 		<item-type>String</item-type>
 		<label>Thermostat Output State</label>
-		<description>Status of whether the thermostat is calling for Heat, or Off</description>
+		<description>Status of whether the thermostat is Off, or calling for Heat</description>
+		<category>fire</category>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="occupancyModePresent">
 		<item-type>Switch</item-type>
-		<label>Occupancy Mode</label>
+		<label>Occupancy Mode Present</label>
 		<description>The Thermostat is in the Present Occupancy Mode (Off=Absent, On=Present)</description>
+		<category>presence</category>
 		<state readOnly="false" />
 	</channel-type>
 
-	<channel-type id="autoMode">
+	<channel-type id="plugAutoMode">
 		<item-type>Switch</item-type>
-		<label>Auto Program Mode</label>
+		<label>Plug Auto Mode</label>
 		<description>The Plug is in Automatic Mode (Off=Manual, On=Automatic)</description>
 		<state readOnly="false" />
 	</channel-type>
 
 	<channel-type id="plugOutputState">
 		<item-type>Switch</item-type>
-		<label>Switch State</label>
+		<label>Plug Output State</label>
 		<description>The state of the Plug switch, Off or On</description>
 		<state readOnly="false" />
 	</channel-type>
