@@ -340,6 +340,11 @@ public class ChannelState implements MqttMessageSubscriber {
             return CompletableFuture.completedFuture(false);
         }
 
+        // Outgoing transformations
+        for (ChannelStateTransformation t : transformationsOut) {
+            mqttCommandValue = t.processValue(mqttCommandValue);
+        }
+
         // Formatter: Applied before the channel state value is published to the MQTT broker.
         if (config.formatBeforePublish.length() > 0) {
             try (Formatter formatter = new Formatter()) {
@@ -349,10 +354,7 @@ public class ChannelState implements MqttMessageSubscriber {
                 logger.debug("Format pattern incorrect for {}", channelUID, e);
             }
         }
-        // Outgoing transformations
-        for (ChannelStateTransformation t : transformationsOut) {
-            mqttCommandValue = t.processValue(mqttCommandValue);
-        }
+
         // Send retained messages if this is a stateful channel
         return connection.publish(config.commandTopic, mqttCommandValue.getBytes(), 1, config.retained);
     }
