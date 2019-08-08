@@ -24,9 +24,14 @@ import org.eclipse.smarthome.io.net.http.TrustAllTrustMananger;
  */
 public class HPEWSTrustManager implements TlsTrustManagerProvider {
 
+    private String hostName;
+    public HPEWSTrustManager(String hostName) {
+        this.hostName = hostName;
+    }
+
     @Override
     public String getHostName() {
-        return null;
+        return this.hostName;
     }
 
     @Override

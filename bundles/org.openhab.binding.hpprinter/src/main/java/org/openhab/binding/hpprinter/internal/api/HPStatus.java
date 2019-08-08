@@ -20,6 +20,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -31,6 +32,7 @@ import org.xml.sax.SAXException;
  *
  * @author Stewart Cossey - Initial contribution
  */
+@NonNullByDefault
 public class HPStatus {
     public final static String endpoint = "/DevMgmt/ProductStatusDyn.xml";
 
@@ -63,7 +65,7 @@ public class HPStatus {
         return smap.getOrDefault(statusMsg, statusMsg);
     }
 
-    private String printerStatus;
+    private String printerStatus = "";
     public String getPrinterStatus() {
         return getPrinterStatusMessage(printerStatus);
     }

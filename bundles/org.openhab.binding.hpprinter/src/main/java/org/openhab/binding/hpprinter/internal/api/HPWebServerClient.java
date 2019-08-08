@@ -19,9 +19,13 @@ import java.util.concurrent.TimeoutException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.hpprinter.internal.api.HPServerResult.requestStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -30,17 +34,21 @@ import org.xml.sax.SAXException;
  *
  * @author Stewart Cossey - Initial contribution
  */
+@NonNullByDefault
 public class HPWebServerClient {
     
+    private final Logger logger = LoggerFactory.getLogger(HPWebServerClient.class);
+
+    private @Nullable HttpClient httpClient;
+    private String serverAddress;
+
     enum testWebInterface {
         INVALID,
         STANDARD,
         SECURESOCKETS
     }
 
-    private HttpClient httpClient;
-    private String serverAddress;
-    public void HPEmbeddedWebServerClient(HttpClient httpClient, String address, Boolean ssl) {
+    public HPWebServerClient(@Nullable HttpClient httpClient, String address, Boolean ssl) {
         this.httpClient = httpClient;
 
         if (ssl) {
@@ -48,6 +56,8 @@ public class HPWebServerClient {
         } else {
             serverAddress = "http://" + address;
         }
+
+        logger.debug("Create printer connection {}", serverAddress);
     }
 
     public testWebInterface testWebInterface() {        
@@ -57,7 +67,9 @@ public class HPWebServerClient {
 
     public HPServerResult<HPStatus> getStatus() {
         try {
-            ContentResponse cr = this.httpClient.GET(serverAddress + HPStatus.endpoint);
+            String endpoint = serverAddress + HPStatus.endpoint;
+            logger.trace("HTTP Client GET {}", endpoint);
+            ContentResponse cr = this.httpClient.GET(endpoint);
 
             return new HPServerResult<HPStatus>(new HPStatus(new InputSource(new ByteArrayInputStream(cr.getContent()))));
         } catch (TimeoutException ex) {
@@ -69,7 +81,9 @@ public class HPWebServerClient {
 
     public HPServerResult<HPUsage> getUsage() {
         try {
-            ContentResponse cr = this.httpClient.GET(serverAddress + HPUsage.endpoint);
+            String endpoint = serverAddress + HPUsage.endpoint;
+            logger.trace("HTTP Client GET {}", endpoint);
+            ContentResponse cr = this.httpClient.GET(endpoint);
 
             return new HPServerResult<HPUsage>(new HPUsage(new InputSource(new ByteArrayInputStream(cr.getContent()))));
         } catch (TimeoutException ex) {

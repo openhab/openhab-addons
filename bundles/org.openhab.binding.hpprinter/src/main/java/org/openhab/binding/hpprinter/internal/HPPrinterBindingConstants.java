@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.hpprinter.internal;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -31,8 +35,10 @@ public class HPPrinterBindingConstants {
     public static final ThingTypeUID THING_SINGLECOLOR = new ThingTypeUID(BINDING_ID, "singlecolor");
     public static final ThingTypeUID THING_MULTICOLOR = new ThingTypeUID(BINDING_ID, "multicolor");
 
-    // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+    .of(THING_MONOCHROME, THING_SINGLECOLOR, THING_MULTICOLOR)
+    .collect(Collectors.toSet());
+
 
     // ********** List of all Channel ids **********
     public static final String CHANNEL_STATUS = "status";

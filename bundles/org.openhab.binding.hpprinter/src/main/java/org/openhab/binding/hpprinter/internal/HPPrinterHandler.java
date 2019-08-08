@@ -12,16 +12,18 @@
  */
 package org.openhab.binding.hpprinter.internal;
 
-import static org.openhab.binding.hpprinter.internal.HPPrinterBindingConstants.*;
+import org.eclipse.jetty.client.HttpClient;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,29 +34,31 @@ import org.slf4j.LoggerFactory;
  * @author Stewart Cossey - Initial contribution
  */
 @NonNullByDefault
-public class HPPrinterHandler extends BaseThingHandler {
+public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinderEvent {
 
     private final Logger logger = LoggerFactory.getLogger(HPPrinterHandler.class);
 
-    private @Nullable HPPrinterConfiguration config;
+    private @Nullable HPPrinterConfiguration config = null;
+    private @Nullable HttpClient httpClient = null;
+    private @Nullable HPPrinterBinder binder = null;
 
-    public HPPrinterHandler(Thing thing) {
+    public HPPrinterHandler(Thing thing, @Nullable HttpClient httpClient) {
         super(thing);
+
+        this.httpClient = httpClient;
+    }
+
+    @Override
+    public void handleRemoval() {
+        binder.close();
+
+        super.handleRemoval();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-            }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+        if (command instanceof RefreshType) {
+            // TODO: handle data refresh
         }
     }
 
@@ -63,36 +67,27 @@ public class HPPrinterHandler extends BaseThingHandler {
         // logger.debug("Start initializing!");
         config = getConfigAs(HPPrinterConfiguration.class);
 
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly. Also, before leaving this method a thing
-        // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in
-        // case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
-
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
-        });
+        if (config != null && config.ipAddress != "") {
+            binder = new HPPrinterBinder(this, httpClient, scheduler, config);
+            binder.start();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "You must set an IP Address");
+        }
 
-        // logger.debug("Finished initializing!");
+    }
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+    @Override
+    public void binderStatus(boolean isOnline) {
+        if (isOnline)
+            updateStatus(ThingStatus.ONLINE);
+        else
+            updateStatus(ThingStatus.OFFLINE);
+    }
+
+    @Override
+    public void binderState(String group, String channel, State state) {
+        updateState(new ChannelUID(thing.getUID(), group, channel), state);
     }
 }

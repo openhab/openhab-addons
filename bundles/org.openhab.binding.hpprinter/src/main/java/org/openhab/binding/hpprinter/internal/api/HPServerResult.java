@@ -12,11 +12,16 @@
  */
 package org.openhab.binding.hpprinter.internal.api;
 
- /**
- * The {@link HPEmbeddedWebServerResult} is responsible for returning the reading of data from the HP Embedded Web Server
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+/**
+ * The {@link HPEmbeddedWebServerResult} is responsible for returning the
+ * reading of data from the HP Embedded Web Server
  *
  * @author Stewart Cossey - Initial contribution
  */
+@NonNullByDefault
 public class HPServerResult<result> {
 
     public HPServerResult(requestStatus status) {
@@ -35,6 +40,7 @@ public class HPServerResult<result> {
         ERROR
     }
 
+    @Nullable
     private result data;
     public result getData() {
         return data;
