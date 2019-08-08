@@ -7,7 +7,7 @@ See the manufacturers web site for more details: https://www.heatmiser.com
 
 ## Supported Things
 
-The binding supports two types of Thing as follows..
+The binding supports three types of Thing as follows..
 
 | Thing Type | Description                                                                               |
 |------------|-------------------------------------------------------------------------------------------|
