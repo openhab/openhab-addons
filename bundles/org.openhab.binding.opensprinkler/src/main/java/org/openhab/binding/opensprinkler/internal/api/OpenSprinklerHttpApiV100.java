@@ -146,7 +146,7 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public boolean isRainDetected() throws Exception {
+    public boolean isRainDetected() throws GeneralApiException, CommunicationApiException {
         String returnContent;
         int rainBit = -1;
 

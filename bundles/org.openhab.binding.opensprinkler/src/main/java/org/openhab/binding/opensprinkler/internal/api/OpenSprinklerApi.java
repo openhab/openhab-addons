@@ -13,6 +13,7 @@
 package org.openhab.binding.opensprinkler.internal.api;
 
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
+import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 
 /**
  * The {@link OpenSprinklerApi} interface defines the functions which are
@@ -73,7 +74,7 @@ public interface OpenSprinklerApi {
      * @return True if rain is detected, false if not or cannot determine.
      * @throws Exception
      */
-    public abstract boolean isRainDetected() throws Exception;
+    public abstract boolean isRainDetected() throws GeneralApiException, CommunicationApiException;
 
     /**
      * Returns the number of total stations that are controllable from the OpenSprinkler
