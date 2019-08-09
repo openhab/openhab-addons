@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dwdunwetter.internal;
+package org.openhab.binding.dwdunwetter.internal.handler;
 
 import static org.openhab.binding.dwdunwetter.internal.DwdUnwetterBindingConstants.*;
 
@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -32,25 +34,24 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.dwdunwetter.internal.config.DwdUnwetterConfiguration;
 import org.openhab.binding.dwdunwetter.internal.data.DwdWarningsData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DwdUnwetterHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link DwdUnwetterHandler} is responsible for handling commands, which are sent to one of the channels.
  *
  * @author Martin Koehler - Initial contribution
  */
+@NonNullByDefault
 public class DwdUnwetterHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DwdUnwetterHandler.class);
 
-    private DwdUnwetterConfiguration config;
-
-    private ScheduledFuture<?> refreshJob;
-
-    private DwdWarningsData data;
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private int warningCount;
+    private @Nullable DwdWarningsData data;
 
     public DwdUnwetterHandler(Thing thing) {
         super(thing);
@@ -73,40 +74,40 @@ public class DwdUnwetterHandler extends BaseThingHandler {
         if (getThing().getStatus() != ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.UNKNOWN) {
             return;
         }
-        if (!data.refresh()) {
+        final DwdWarningsData warningsData = this.data;
+        if (warningsData == null || !warningsData.refresh()) {
             return;
         }
         if (getThing().getStatus() == ThingStatus.UNKNOWN) {
             updateStatus(ThingStatus.ONLINE);
         }
-        int warningCount = config.getWarningCount();
 
         updateState(getChannelUuid(CHANNEL_LAST_UPDATED), new DateTimeType());
 
         for (int i = 0; i < warningCount; i++) {
-            State warning = data.getWarning(i);
+            State warning = warningsData.getWarning(i);
             if (warning == OnOffType.OFF) {
                 updateState(getChannelUuid(CHANNEL_WARNING, i), warning);
             }
-            updateState(getChannelUuid(CHANNEL_SEVERITY, i), data.getSeverity(i));
-            updateState(getChannelUuid(CHANNEL_DESCRIPTION, i), data.getDescription(i));
-            updateState(getChannelUuid(CHANNEL_EFFECTIVE, i), data.getEffective(i));
-            updateState(getChannelUuid(CHANNEL_EXPIRES, i), data.getExpires(i));
-            updateState(getChannelUuid(CHANNEL_ONSET, i), data.getOnset(i));
-            updateState(getChannelUuid(CHANNEL_EVENT, i), data.getEvent(i));
-            updateState(getChannelUuid(CHANNEL_HEADLINE, i), data.getHeadline(i));
-            updateState(getChannelUuid(CHANNEL_ALTITUDE, i), data.getAltitude(i));
-            updateState(getChannelUuid(CHANNEL_CEILING, i), data.getCeiling(i));
-            updateState(getChannelUuid(CHANNEL_INSTRUCTION, i), data.getInstruction(i));
-            updateState(getChannelUuid(CHANNEL_URGENCY, i), data.getUrgency(i));
+            updateState(getChannelUuid(CHANNEL_SEVERITY, i), warningsData.getSeverity(i));
+            updateState(getChannelUuid(CHANNEL_DESCRIPTION, i), warningsData.getDescription(i));
+            updateState(getChannelUuid(CHANNEL_EFFECTIVE, i), warningsData.getEffective(i));
+            updateState(getChannelUuid(CHANNEL_EXPIRES, i), warningsData.getExpires(i));
+            updateState(getChannelUuid(CHANNEL_ONSET, i), warningsData.getOnset(i));
+            updateState(getChannelUuid(CHANNEL_EVENT, i), warningsData.getEvent(i));
+            updateState(getChannelUuid(CHANNEL_HEADLINE, i), warningsData.getHeadline(i));
+            updateState(getChannelUuid(CHANNEL_ALTITUDE, i), warningsData.getAltitude(i));
+            updateState(getChannelUuid(CHANNEL_CEILING, i), warningsData.getCeiling(i));
+            updateState(getChannelUuid(CHANNEL_INSTRUCTION, i), warningsData.getInstruction(i));
+            updateState(getChannelUuid(CHANNEL_URGENCY, i), warningsData.getUrgency(i));
             if (warning == OnOffType.ON) {
                 updateState(getChannelUuid(CHANNEL_WARNING, i), warning);
             }
-            if (data.isNew(i)) {
+            if (warningsData.isNew(i)) {
                 triggerChannel(getChannelUuid(CHANNEL_UPDATED, i), "NEW");
             }
         }
-        data.updateCache();
+        warningsData.updateCache();
     }
 
     @Override
@@ -114,15 +115,16 @@ public class DwdUnwetterHandler extends BaseThingHandler {
         logger.debug("Start initializing!");
         updateStatus(ThingStatus.UNKNOWN);
 
-        config = getConfigAs(DwdUnwetterConfiguration.class);
+        DwdUnwetterConfiguration config = getConfigAs(DwdUnwetterConfiguration.class);
+        warningCount = config.warningCount;
 
-        data = new DwdWarningsData(config.getCellId());
+        data = new DwdWarningsData(config.cellId);
 
-        List<Channel> channels = createChannels();
-        updateThing(editThing().withChannels(channels).build());
+        updateThing(editThing().withChannels(createChannels()).build());
 
-        startAutomaticRefresh();
-
+        refreshJob = scheduler.scheduleWithFixedDelay(() -> {
+            refresh();
+        }, 0, config.refresh, TimeUnit.MINUTES);
         logger.debug("Finished initializing!");
     }
 
@@ -174,7 +176,6 @@ public class DwdUnwetterHandler extends BaseThingHandler {
      * @return The List of Channels
      */
     private List<Channel> createChannels() {
-        int warningCount = config.getWarningCount();
         List<Channel> channels = new ArrayList<>(warningCount * 11 + 1);
         channels.add(createChannel(CHANNEL_LAST_UPDATED, "DateTime", "Last Updated"));
         for (int i = 0; i < warningCount; i++) {
@@ -193,15 +194,6 @@ public class DwdUnwetterHandler extends BaseThingHandler {
             channels.add(createChannel(CHANNEL_URGENCY, "String", "Urgency", i));
         }
         return channels;
-    }
-
-    /**
-     * Starts the automatic refresh.
-     */
-    private void startAutomaticRefresh() {
-        refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-            refresh();
-        }, 0, config.getRefresh(), TimeUnit.MINUTES);
     }
 
     @Override
