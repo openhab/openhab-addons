@@ -53,6 +53,8 @@ public class DwdUnwetterHandler extends BaseThingHandler {
     private int warningCount;
     private @Nullable DwdWarningsData data;
 
+    private boolean inRefresh;
+
     public DwdUnwetterHandler(Thing thing) {
         super(thing);
     }
@@ -71,10 +73,12 @@ public class DwdUnwetterHandler extends BaseThingHandler {
      * The Switch Channel is switched to OFF before all other Channels are updated.
      */
     private void refresh() {
-        if (getThing().getStatus() != ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.UNKNOWN) {
+        if (inRefresh
+                || (getThing().getStatus() != ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.UNKNOWN)) {
             return;
         }
         final DwdWarningsData warningsData = this.data;
+        inRefresh = true;
         if (warningsData == null || !warningsData.refresh()) {
             return;
         }
@@ -108,6 +112,7 @@ public class DwdUnwetterHandler extends BaseThingHandler {
             }
         }
         warningsData.updateCache();
+        inRefresh = false;
     }
 
     @Override
