@@ -60,7 +60,7 @@ public class DwdUnwetterHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            refresh();
+            scheduler.submit(this::refresh);
         }
     }
 
@@ -122,9 +122,7 @@ public class DwdUnwetterHandler extends BaseThingHandler {
 
         updateThing(editThing().withChannels(createChannels()).build());
 
-        refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-            refresh();
-        }, 0, config.refresh, TimeUnit.MINUTES);
+        refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refresh, TimeUnit.MINUTES);
         logger.debug("Finished initializing!");
     }
 
