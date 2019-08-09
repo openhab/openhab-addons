@@ -41,7 +41,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.openhab.binding.dwdunwetter.internal.DwdUnwetterBindingConstants;
-import org.openhab.binding.dwdunwetter.internal.DwdUnwetterHandler;
+import org.openhab.binding.dwdunwetter.internal.handler.DwdUnwetterHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
