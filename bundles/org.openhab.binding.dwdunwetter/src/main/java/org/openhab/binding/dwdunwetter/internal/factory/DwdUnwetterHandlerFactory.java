@@ -10,26 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dwdunwetter.internal;
+package org.openhab.binding.dwdunwetter.internal.factory;
 
-import static org.openhab.binding.dwdunwetter.internal.DwdUnwetterBindingConstants.*;
+import static org.openhab.binding.dwdunwetter.internal.DwdUnwetterBindingConstants.THING_TYPE_WARNINGS;
 
 import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.dwdunwetter.internal.DwdUnwetterHandler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.dwdunwetter.internal.handler.DwdUnwetterHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link DwdUnwetterHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link DwdUnwetterHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author Martin Koehler - Initial contribution
  */
