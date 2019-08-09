@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dwdunwetter.internal;
+package org.openhab.binding.dwdunwetter.internal.config;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -22,37 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class DwdUnwetterConfiguration {
-
-    private int refresh;
-
-    private int warningCount;
-
-    private String cellId = StringUtils.EMPTY;
-
-    /**
-     * Returns the Refresh in minutes.
-     *
-     * @return The refresh in Minutes
-     */
-    public int getRefresh() {
-        return refresh;
-    }
-
-    /**
-     * Returns the number of warnings to provide.
-     *
-     * @return The number of warnings to provide
-     */
-    public int getWarningCount() {
-        return warningCount;
-    }
-
-    /**
-     * Returns the cellId.
-     *
-     * @return The cellId
-     */
-    public String getCellId() {
-        return cellId;
-    }
+    public int refresh;
+    public int warningCount;
+    public String cellId = StringUtils.EMPTY;
 }
