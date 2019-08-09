@@ -16,10 +16,16 @@
 			<description>Configures whether to use HTTPS for the connection</description>
 			<default>false</default>
 		</parameter>
-		<parameter name="refreshInterval" type="integer" min="2" required="true">
-			<label>Refresh Interval</label>
-			<description>The refresh interval in seconds for polling the printer</description>
+		<parameter name="usageInterval" type="integer" min="4" required="true">
+			<label>Usage Interval</label>
+			<description>The refresh interval in seconds for polling the printer usage information</description>
 			<default>30</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="statusInterval" type="integer" min="4" required="true">
+			<label>Status Interval</label>
+			<description>The refresh interval in seconds for polling the printer status</description>
+			<default>4</default>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

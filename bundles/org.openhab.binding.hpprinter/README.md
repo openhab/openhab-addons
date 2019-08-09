@@ -20,7 +20,8 @@ The available settings are:
 | --------------------------- | --------------- | ------- | -------- |
 | IP Address                  | ipAddress       | string  | yes      |
 | Secure Sockets              | useSSL          | boolean |          |
-| Refresh (polling) Interval  | refreshInterval | number  |          |
+| Usage Refresh Interval      | usageInterval   | number  |          |
+| Status Refresh Interval     | statusInterval  | number  |          |
 
 An example configuration is below:
 

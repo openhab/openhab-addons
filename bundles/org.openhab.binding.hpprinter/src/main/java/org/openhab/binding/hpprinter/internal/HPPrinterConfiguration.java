@@ -20,11 +20,14 @@ package org.openhab.binding.hpprinter.internal;
 public class HPPrinterConfiguration {
 
     public static final String IP_ADDRESS = "ipAddress";
-    public static final String REFRESH_INTERVAL = "refreshInterval";
+    public static final String USAGE_INTERVAL = "usageInterval";
+    public static final String STATUS_INTERVAL = "statusInterval";
     public static final String USE_SSL = "useSSL";
 
+
     public String ipAddress;
-    public int refreshInterval;
+    public int usageInterval;
+    public int statusInterval;
     public boolean useSSL;
 
 }
