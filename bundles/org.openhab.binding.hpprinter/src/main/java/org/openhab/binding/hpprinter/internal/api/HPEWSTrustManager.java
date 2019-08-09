@@ -18,7 +18,7 @@ import org.eclipse.smarthome.io.net.http.TlsTrustManagerProvider;
 import org.eclipse.smarthome.io.net.http.TrustAllTrustMananger;
 
 /**
- * The {@link HPEWSTrustManager} is responsible for ignoring invalid HTTPS certificates of the Embedded Web Interface
+ * The {@link HPEWSTrustManager} is responsible for ignoring invalid HTTPS certificates of the Embedded Web Interface.
  *
  * @author Stewart Cossey - Initial contribution
  */

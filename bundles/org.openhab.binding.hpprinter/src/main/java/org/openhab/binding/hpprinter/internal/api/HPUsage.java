@@ -26,7 +26,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * The {@link HPUsage} is responsible for handling reading of usage data
+ * The {@link HPUsage} is responsible for handling reading of usage data.
  *
  * @author Stewart Cossey - Initial contribution
  */

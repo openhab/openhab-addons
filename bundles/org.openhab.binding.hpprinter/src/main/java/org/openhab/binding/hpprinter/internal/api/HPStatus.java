@@ -28,7 +28,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * The {@link HPStatus} is responsible for handling reading of status data
+ * The {@link HPStatus} is responsible for handling reading of status data.
  *
  * @author Stewart Cossey - Initial contribution
  */

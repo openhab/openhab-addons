@@ -30,7 +30,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * The {@link HPEmbeddedWebServerClient} is responsible for handling reading of data from the HP Embedded Web Server
+ * The {@link HPEmbeddedWebServerClient} is responsible for handling reading of data from the HP Embedded Web Server.
  *
  * @author Stewart Cossey - Initial contribution
  */
@@ -48,6 +48,12 @@ public class HPWebServerClient {
         SECURESOCKETS
     }
 
+    /**
+     * Creates a new HP Web Server Client object.
+     * @param httpClient {HttpClient} The HttpClient to use for HTTP requests.
+     * @param address The address for the Embedded Web Server.
+     * @param ssl {Boolean} Use SSL (HTTPS) connections.
+     */
     public HPWebServerClient(@Nullable HttpClient httpClient, String address, Boolean ssl) {
         this.httpClient = httpClient;
 
@@ -60,38 +66,51 @@ public class HPWebServerClient {
         logger.debug("Create printer connection {}", serverAddress);
     }
 
-    public testWebInterface testWebInterface() {        
+    public testWebInterface testWebInterface() {   
+        //TODO: Implement Interface Test tool     
+        logger.info("Test Web Interface Not Implemented!");
         return testWebInterface.INVALID;
     }
 
-
+    /**
+     * Gets the Status information from the Embedded Web Server.
+     * @return The status information.
+     */
     public HPServerResult<HPStatus> getStatus() {
         try {
             String endpoint = serverAddress + HPStatus.endpoint;
-            logger.trace("HTTP Client GET {}", endpoint);
+            logger.trace("HTTP Client Status GET {}", endpoint);
             ContentResponse cr = this.httpClient.GET(endpoint);
+            logger.trace("HTTP Client Status Result {} Size {}", cr.getStatus(), cr.getContentAsString().length());
 
             return new HPServerResult<HPStatus>(new HPStatus(new InputSource(new ByteArrayInputStream(cr.getContent()))));
         } catch (TimeoutException ex) {
+            logger.trace("HTTP Client Status Timeout Exception {}", ex.getMessage());
             return new HPServerResult<HPStatus>(requestStatus.TIMEOUT);
         } catch (InterruptedException | ExecutionException | ParserConfigurationException | SAXException | IOException ex) {
+            logger.trace("HTTP Client Status Exception {}", ex.getMessage());
             return new HPServerResult<HPStatus>(requestStatus.ERROR);
         }
     }
 
+    /**
+     * Gets the Usage information from the Embedded Web Server.
+     * @return The usage information.
+     */
     public HPServerResult<HPUsage> getUsage() {
         try {
             String endpoint = serverAddress + HPUsage.endpoint;
-            logger.trace("HTTP Client GET {}", endpoint);
+            logger.trace("HTTP Client Usage GET {}", endpoint);
             ContentResponse cr = this.httpClient.GET(endpoint);
+            logger.trace("HTTP Client Usage Result {} Size {}", cr.getStatus(), cr.getContentAsString().length());
 
             return new HPServerResult<HPUsage>(new HPUsage(new InputSource(new ByteArrayInputStream(cr.getContent()))));
         } catch (TimeoutException ex) {
+            logger.trace("HTTP Client Usage Timeout Exception {}", ex.getMessage());
             return new HPServerResult<HPUsage>(requestStatus.TIMEOUT);
         } catch (InterruptedException | ExecutionException | ParserConfigurationException | SAXException | IOException ex) {
+            logger.trace("HTTP Client Usage Exception {}", ex.getMessage());
             return new HPServerResult<HPUsage>(requestStatus.ERROR);
         }
     }
-
-    
 }

@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link HPEmbeddedWebServerResult} is responsible for returning the
- * reading of data from the HP Embedded Web Server
+ * reading of data from the HP Embedded Web Server.
  *
  * @author Stewart Cossey - Initial contribution
  */
