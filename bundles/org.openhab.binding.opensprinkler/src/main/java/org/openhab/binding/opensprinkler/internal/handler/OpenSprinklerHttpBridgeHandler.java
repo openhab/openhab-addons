@@ -34,9 +34,8 @@ public class OpenSprinklerHttpBridgeHandler extends OpenSprinklerBaseBridgeHandl
         OpenSprinklerHttpInterfaceConfig openSprinklerConfig = getConfig().as(OpenSprinklerHttpInterfaceConfig.class);
         this.openSprinklerConfig = openSprinklerConfig;
 
-        logger.debug("Initializing OpenSprinkler with config (Hostname: {}, Port: {}, Password: {}, Refresh: {}).",
-                openSprinklerConfig.hostname, openSprinklerConfig.port, openSprinklerConfig.password,
-                openSprinklerConfig.refresh);
+        logger.debug("Initializing OpenSprinkler with config (Hostname: {}, Port: {}, Refresh: {}).",
+                openSprinklerConfig.hostname, openSprinklerConfig.port, openSprinklerConfig.refresh);
 
         OpenSprinklerApi openSprinklerDevice;
         try {
