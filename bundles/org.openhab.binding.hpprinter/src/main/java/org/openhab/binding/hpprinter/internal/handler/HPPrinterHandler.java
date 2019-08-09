@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hpprinter.internal;
+package org.openhab.binding.hpprinter.internal.handler;
 
 import org.eclipse.jetty.client.HttpClient;
 
@@ -24,8 +24,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.binding.hpprinter.internal.HPPrinterConfiguration;
+import org.openhab.binding.hpprinter.internal.binder.HPPrinterBinder;
+import org.openhab.binding.hpprinter.internal.binder.HPPrinterBinderEvent;
 
 /**
  * The {@link HPPrinterHandler} is responsible for handling commands, which are
@@ -35,8 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinderEvent {
-
-    private final Logger logger = LoggerFactory.getLogger(HPPrinterHandler.class);
 
     private @Nullable HPPrinterConfiguration config = null;
     private @Nullable HttpClient httpClient = null;
@@ -58,7 +57,7 @@ public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinde
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            // TODO: handle data refresh
+            binder.update();
         }
     }
 
@@ -71,7 +70,7 @@ public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinde
 
         if (config != null && config.ipAddress != "") {
             binder = new HPPrinterBinder(this, httpClient, scheduler, config);
-            binder.start();
+            binder.open();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "You must set an IP Address");
         }
@@ -79,15 +78,12 @@ public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinde
     }
 
     @Override
-    public void binderStatus(boolean isOnline) {
-        if (isOnline)
-            updateStatus(ThingStatus.ONLINE);
-        else
-            updateStatus(ThingStatus.OFFLINE);
+    public void binderStatus(ThingStatus status) {
+        updateStatus(status);
     }
 
     @Override
-    public void binderState(String group, String channel, State state) {
+    public void binderChannel(String group, String channel, State state) {
         updateState(new ChannelUID(thing.getUID(), group, channel), state);
     }
 }
