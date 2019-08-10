@@ -41,12 +41,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link RadioRA2MainRepeaterDiscoveryService} finds RadioRA2 Main Repeaters on the network.
+ * The {@link LutronMcastBridgeDiscoveryService} finds RadioRA 2 Main Repeaters and HomeWorks QS
+ * Processors on the network using multicast.
  *
  * @author Allan Tong - Initial contribution
+ * @author Bob Adair - Renamed and added bridge properties
  */
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.lutron")
-public class RadioRA2MainRepeaterDiscoveryService extends AbstractDiscoveryService {
+public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService {
+
+    private static final int SCAN_INTERVAL_MINUTES = 30;
+    private static final int SCAN_TIMEOUT_MS = 2000;
 
     private static final Set<ThingTypeUID> BRIDGE_TYPE_UID = Collections.singleton(THING_TYPE_IPBRIDGE);
 
@@ -54,15 +59,17 @@ public class RadioRA2MainRepeaterDiscoveryService extends AbstractDiscoveryServi
     private static final byte[] QUERY_DATA = "<LUTRON=1>".getBytes(StandardCharsets.US_ASCII);
     private static final int QUERY_DEST_PORT = 2647;
     private static final Pattern BRIDGE_PROP_PATTERN = Pattern.compile("<([^=>]+)=([^>]*)>");
+    private static final String PRODFAM_RA2 = "RadioRA2";
+    private static final String PRODFAM_HWQS = "Gulliver";
 
     private static final String DEFAULT_LABEL = "RadioRA2 MainRepeater";
 
-    private final Logger logger = LoggerFactory.getLogger(RadioRA2MainRepeaterDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(LutronMcastBridgeDiscoveryService.class);
 
     private ScheduledFuture<?> scanTask;
     private ScheduledFuture<?> backgroundScan;
 
-    public RadioRA2MainRepeaterDiscoveryService() {
+    public LutronMcastBridgeDiscoveryService() {
         super(BRIDGE_TYPE_UID, 5);
     }
 
@@ -92,7 +99,8 @@ public class RadioRA2MainRepeaterDiscoveryService extends AbstractDiscoveryServi
     @Override
     protected void startBackgroundDiscovery() {
         if (this.backgroundScan == null) {
-            this.backgroundScan = scheduler.scheduleWithFixedDelay(new RepeaterScanner(), 1, 30 * 60, TimeUnit.SECONDS);
+            this.backgroundScan = scheduler.scheduleWithFixedDelay(new RepeaterScanner(), 1, SCAN_INTERVAL_MINUTES,
+                    TimeUnit.MINUTES);
         }
     }
 
@@ -110,19 +118,19 @@ public class RadioRA2MainRepeaterDiscoveryService extends AbstractDiscoveryServi
             try {
                 queryForRepeaters();
             } catch (InterruptedException e) {
-                logger.info("Main repeater scan interrupted");
+                logger.info("Bridge device scan interrupted");
             } catch (IOException e) {
-                logger.error("Communication error during bridge scan", e);
+                logger.warn("Communication error during bridge scan: {}", e.getMessage());
             }
         }
 
         private void queryForRepeaters() throws IOException, InterruptedException {
-            logger.debug("Scanning for RadioRA2 main repeaters");
+            logger.debug("Scanning for Lutron bridge devices using multicast");
 
             InetAddress group = InetAddress.getByName(GROUP_ADDRESS);
 
             try (MulticastSocket socket = new MulticastSocket()) {
-                socket.setSoTimeout(2000);
+                socket.setSoTimeout(SCAN_TIMEOUT_MS);
                 socket.joinGroup(group);
 
                 try {
@@ -141,9 +149,10 @@ public class RadioRA2MainRepeaterDiscoveryService extends AbstractDiscoveryServi
                             createBridge(packet);
                         }
 
-                        logger.info("Main repeater scan interrupted");
+                        logger.info("Bridge device scan interrupted");
                     } catch (SocketTimeoutException e) {
-                        logger.debug("Timed out waiting for response; presumably all repeaters have already responded");
+                        logger.trace(
+                                "Timed out waiting for multicast response. Presumably all bridge devices have already responded.");
                     }
                 } finally {
                     socket.leaveGroup(group);
@@ -163,18 +172,31 @@ public class RadioRA2MainRepeaterDiscoveryService extends AbstractDiscoveryServi
 
             while (matcher.find()) {
                 bridgeProperties.put(matcher.group(1), matcher.group(2));
+                logger.trace("Bridge property: {} : {}", matcher.group(1), matcher.group(2));
             }
 
             String ipAddress = bridgeProperties.get("IPADDR");
             String serialNumber = bridgeProperties.get("SERNUM");
             String productFamily = bridgeProperties.get("PRODFAM");
             String productType = bridgeProperties.get("PRODTYPE");
+            String codeVersion = bridgeProperties.get("CODEVER");
 
             if (StringUtils.isNotBlank(ipAddress) && StringUtils.isNotBlank(serialNumber)) {
                 Map<String, Object> properties = new HashMap<>();
 
                 properties.put(HOST, ipAddress);
                 properties.put(SERIAL_NUMBER, serialNumber);
+
+                if (PRODFAM_RA2.equals(productFamily)) {
+                    properties.put("productFamily", "RadioRA 2");
+                } else if (PRODFAM_HWQS.equals(productFamily)) {
+                    properties.put("productFamily", "HomeWorks QS");
+                } else {
+                    properties.put("productFamily", productFamily);
+                }
+
+                properties.put("productType", productType);
+                properties.put("version", codeVersion);
 
                 ThingUID uid = new ThingUID(THING_TYPE_IPBRIDGE, serialNumber);
                 String label = generateLabel(productFamily, productType);
@@ -183,7 +205,7 @@ public class RadioRA2MainRepeaterDiscoveryService extends AbstractDiscoveryServi
 
                 thingDiscovered(result);
 
-                logger.debug("Discovered main repeater {}", uid);
+                logger.debug("Discovered Lutron bridge device {}", uid);
             }
         }
 
