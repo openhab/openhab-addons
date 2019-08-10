@@ -7,7 +7,7 @@ MQTT is a server/client architecture.
 
 A server, also called broker is not provided within this binding.
 You can use any of the freely available MQTT Brokers like [Mosquitto](https://mosquitto.org/)
-or [Moquette](https://moquette-io.github.io/moquette/) or install the included Moquette broker as addon.
+or [Moquette](https://moquette-io.github.io/moquette/) or install the [included Moquette broker](https://www.openhab.org/addons/integrations/mqttembeddedbroker/) as addon.
 
 This particular binding allows to configure connections to brokers via openHAB Things.
 This binding does NOT allow you to link Channels to MQTT topics or perform auto-discovery of available
