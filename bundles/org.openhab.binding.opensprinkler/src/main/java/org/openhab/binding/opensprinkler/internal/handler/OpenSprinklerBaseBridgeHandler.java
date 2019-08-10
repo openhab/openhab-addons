@@ -53,7 +53,7 @@ public abstract class OpenSprinklerBaseBridgeHandler extends BaseBridgeHandler {
     private void refreshStations() {
         if (openSprinklerDevice != null) {
             if (openSprinklerDevice.isConnected()) {
-                logger.debug("Refreshing state with the OpenSprinkler device.");
+                updateStatus(ThingStatus.ONLINE);
 
                 this.getThing().getThings().forEach(thing -> {
                     OpenSprinklerBaseHandler handler = (OpenSprinklerBaseHandler) thing.getHandler();
