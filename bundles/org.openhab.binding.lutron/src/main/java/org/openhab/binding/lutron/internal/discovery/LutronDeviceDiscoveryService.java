@@ -14,14 +14,29 @@ package org.openhab.binding.lutron.internal.discovery;
 
 import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.util.InputStreamResponseListener;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -44,52 +59,119 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link LutronDeviceDiscoveryService} finds all devices paired with a Lutron bridge.
+ * The {@link LutronDeviceDiscoveryService} finds all devices paired with Lutron bridges by retrieving the
+ * configuration XML from them via HTTP.
  *
  * @author Allan Tong - Initial contribution
- * @author Bob Adair - Added support for phase-selectable dimmers, Pico, tabletop keypads, switch modules, VCRX,
- *         repeater virtual buttons, QS IO Intergace, Timeclock, and Green Mode
+ * @author Bob Adair - Added support for more output devices and keypads, VCRX, repeater virtual buttons,
+ *         Timeclock, and Green Mode. Added option to read XML from file. Switched to jetty HTTP client for better
+ *         exception handling.
  */
 public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
+
+    private static final int DECLARATION_MAX_LEN = 80;
+    private static final long HTTP_REQUEST_TIMEOUT = 60; // seconds
+    private static final int DISCOVERY_SERVICE_TIMEOUT = 90; // seconds
+
+    private static final String XML_DECLARATION_START = "<?xml";
+    private static final Pattern XML_DECLARATION_PATTERN = Pattern.compile(XML_DECLARATION_START,
+            Pattern.LITERAL | Pattern.CASE_INSENSITIVE);
 
     private final Logger logger = LoggerFactory.getLogger(LutronDeviceDiscoveryService.class);
 
     private IPBridgeHandler bridgeHandler;
     private DbXmlInfoReader dbXmlInfoReader = new DbXmlInfoReader();
 
-    private ScheduledFuture<?> scanTask;
+    private final HttpClient httpClient;
 
-    public LutronDeviceDiscoveryService(IPBridgeHandler bridgeHandler) throws IllegalArgumentException {
-        super(LutronHandlerFactory.DISCOVERABLE_DEVICE_TYPES_UIDS, 10);
+    private Future<?> scanTask;
+
+    public LutronDeviceDiscoveryService(IPBridgeHandler bridgeHandler, HttpClient httpClient)
+            throws IllegalArgumentException {
+        super(LutronHandlerFactory.DISCOVERABLE_DEVICE_TYPES_UIDS, DISCOVERY_SERVICE_TIMEOUT);
 
         this.bridgeHandler = bridgeHandler;
+        this.httpClient = httpClient;
     }
 
     @Override
     protected synchronized void startScan() {
-        if (this.scanTask == null || this.scanTask.isDone()) {
-            this.scanTask = scheduler.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        readDeviceDatabase();
-                    } catch (Exception e) {
-                        logger.error("Error scanning for devices", e);
-
-                        if (scanListener != null) {
-                            scanListener.onErrorOccurred(e);
-                        }
-                    }
-                }
-            }, 0, TimeUnit.SECONDS);
+        if (scanTask == null || scanTask.isDone()) {
+            scanTask = scheduler.submit(this::asyncDiscoveryTask);
         }
     }
 
-    private void readDeviceDatabase() throws IOException {
-        String address = "http://" + this.bridgeHandler.getIPBridgeConfig().getIpAddress() + "/DbXmlInfo.xml";
-        URL dbXmlInfoUrl = new URL(address);
+    private synchronized void asyncDiscoveryTask() {
+        try {
+            readDeviceDatabase();
+        } catch (RuntimeException e) {
+            logger.warn("Runtime exception scanning for devices: {}", e.getMessage());
 
-        Project project = this.dbXmlInfoReader.readFromXML(dbXmlInfoUrl);
+            if (scanListener != null) {
+                scanListener.onErrorOccurred(null); // null so it won't log a stack trace
+            }
+        }
+    }
+
+    private void readDeviceDatabase() {
+        Project project = null;
+        String discFileName = bridgeHandler.getIPBridgeConfig().discoveryFile;
+        String address = "http://" + bridgeHandler.getIPBridgeConfig().ipAddress + "/DbXmlInfo.xml";
+
+        if (discFileName == null || discFileName.isEmpty()) {
+            // Read XML from bridge via HTTP
+            logger.trace("Sending http request for {}", address);
+            InputStreamResponseListener listener = new InputStreamResponseListener();
+            Response response = null;
+
+            // Use response stream instead of doing it the simple synchronous way because the response can be very large
+            httpClient.newRequest(address).method(HttpMethod.GET).timeout(HTTP_REQUEST_TIMEOUT, TimeUnit.SECONDS)
+                    .header(HttpHeader.ACCEPT, "text/html").header(HttpHeader.ACCEPT_CHARSET, "utf-8").send(listener);
+
+            try {
+                response = listener.get(HTTP_REQUEST_TIMEOUT, TimeUnit.SECONDS);
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                logger.info("Exception getting HTTP response: {}", e.getMessage());
+            }
+
+            if (response != null && response.getStatus() == HttpStatus.OK_200) {
+                logger.trace("Received good http response.");
+
+                try (InputStream responseStream = listener.getInputStream();
+                        InputStreamReader xmlStreamReader = new InputStreamReader(responseStream,
+                                StandardCharsets.UTF_8);
+                        BufferedReader xmlBufReader = new BufferedReader(xmlStreamReader);) {
+                    flushPrePrologLines(xmlBufReader);
+
+                    project = dbXmlInfoReader.readFromXML(xmlBufReader);
+                    if (project == null) {
+                        logger.info("Failed to parse XML project file from {}", address);
+                    }
+                } catch (IOException e) {
+                    logger.info("IOException while processing XML project file: {}", e.getMessage());
+                }
+            } else {
+                if (response != null) {
+                    logger.info("Received HTTP error response: {} {}", response.getStatus(), response.getReason());
+                } else {
+                    logger.info("No response for HTTP request.");
+                }
+            }
+        } else {
+            // Read XML from file
+            File xmlFile = new File(discFileName);
+
+            try (BufferedReader xmlReader = Files.newBufferedReader(xmlFile.toPath(), StandardCharsets.UTF_8)) {
+                flushPrePrologLines(xmlReader);
+
+                project = dbXmlInfoReader.readFromXML(xmlReader);
+                if (project == null) {
+                    logger.info("Could not process XML project file {}", discFileName);
+                }
+            } catch (IOException | SecurityException e) {
+                logger.info("Exception reading XML project file {} : {}", discFileName, e.getMessage());
+            }
+        }
 
         if (project != null) {
             Stack<String> locationContext = new Stack<>();
@@ -103,8 +185,33 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
             for (GreenMode greenMode : project.getGreenModes()) {
                 processGreenModes(greenMode, locationContext);
             }
-        } else {
-            logger.info("Could not read project file at {}", address);
+        }
+    }
+
+    /**
+     * Flushes any lines or characters before the start of the XML declaration in the supplied BufferedReader.
+     *
+     * @param xmlReader BufferedReader source of the XML document
+     * @throws IOException
+     */
+    private void flushPrePrologLines(BufferedReader xmlReader) throws IOException {
+        String inLine = null;
+        xmlReader.mark(DECLARATION_MAX_LEN);
+        boolean foundXmlDec = false;
+
+        while (!foundXmlDec && (inLine = xmlReader.readLine()) != null) {
+            Matcher matcher = XML_DECLARATION_PATTERN.matcher(inLine);
+            if (matcher.find()) {
+                foundXmlDec = true;
+                xmlReader.reset();
+                if (matcher.start() > 0) {
+                    logger.trace("Discarding {} characters.", matcher.start());
+                    xmlReader.skip(matcher.start());
+                }
+            } else {
+                logger.trace("Discarding line: {}", inLine);
+                xmlReader.mark(DECLARATION_MAX_LEN);
+            }
         }
     }
 
@@ -198,6 +305,8 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
             switch (type) {
                 case INC:
                 case MLV:
+                case ELV:
+                case DALI:
                 case ECO_SYSTEM_FLUORESCENT:
                 case FLUORESCENT_DB:
                 case ZERO_TO_TEN:
