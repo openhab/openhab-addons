@@ -7,6 +7,9 @@
 	<bridge-type id="ipbridge">
 		<label>Lutron IP Access Point</label>
 		<description>Ethernet access point to Lutron lighting control system</description>
+		<properties>
+			<property name="vendor">Lutron</property>
+		</properties>
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
@@ -35,6 +38,11 @@
 				<description>The period in minutes between connection heartbeat checks</description>
 				<unitLabel>minutes</unitLabel>
 				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="discoveryFile" type="text">
+				<label>Discovery Data File</label>
+				<description>File to read device discovery information from (for debugging)</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

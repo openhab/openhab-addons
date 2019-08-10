@@ -43,13 +43,12 @@ This binding currently supports the following thing types:
 
 ## Discovery
 
-Full discovery is supported for RadioRA 2 systems.
-Both the main repeaters themselves and the devices connected to them can be automatically discovered.
-Discovered RadioRA 2 main repeaters will be accessed using the default integration credentials.
-These can be changed in the main repeater thing configuration.
+Full discovery is supported for RadioRA 2 and HomeWorks QS systems.
+Both the main repeaters/processors themselves and the devices connected to them can be automatically discovered.
+Discovered repeaters/processors will be accessed using the default integration credentials.
+These can be changed in the bridge thing configuration.
 
-**Note:** Discovery of devices paired with a bridge may work on systems other than RadioRA 2 (e.g. HomeWorks QS).
-However, the bridge itself will need to be manually added as bridge discovery is only supported for RadioRA 2.
+Hubs and their connected devices in Caseta and RA2 Select systems need to be configured manually.
 
 **Remember:** Discovered keypads will not have their model parameter automatically set.
 You must manually set the model parameter for each keypad so that the correct channels for your particular keypad model will be created.
@@ -66,15 +65,21 @@ If a thing will not come online, but instead has the status "UNKNOWN: Awaiting i
 
 ### Bridge
 
-The bridge may currently be a RadioRA 2 main repeater or a Caseta Smart Bridge Pro.
-A Homeworks QS Processor should also work, but support is still experimental.
+A bridge may currently be a RadioRA 2 main repeater, a HomeWorks QS Processor, a Caseta Smart Bridge Pro, or a RA2 Select main repeater.
 The bridge configuration requires the IP address of the bridge as well as the telnet username and password to log in to the bridge.
+
+It is recommended that main repeaters/processors be configured with static IP addresses.
+However if automatic discovery is used, the bridge thing will work with DHCP-configured addresses.
 
 The optional advanced parameter `heartbeat` can be used to set the interval between connection keepalive heartbeat messages, in minutes.
 It defaults to 5.
 Note that the handler will wait up to 30 seconds for a heartbeat response before attempting to reconnect.
 The optional advanced parameter `reconnect` can be used to set the connection retry interval, in minutes.
 It also defaults to 5.
+
+The optional advanced parameter `discoveryFile` can be set to force the device discovery service to read the Lutron configuration XML from a local file rather than retrieving it via HTTP from the RadioRA 2 or HomeWorks QS bridge device.
+This is useful in the case of some older Lutron software versions, where the discovery service may have problems retrieving the file from the bridge device.
+Note that the user which openHAB runs under must have permission to read the file.
 
 Thing configuration file example:
 
