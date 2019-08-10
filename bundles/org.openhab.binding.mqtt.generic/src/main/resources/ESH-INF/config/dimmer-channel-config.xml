@@ -75,7 +75,7 @@
 		</parameter>
 		<parameter name="step" type="decimal">
 			<label>Delta value</label>
-			<description>A number/dimmer channel can receive Increase/Decrease commands and computes the target number by adding or subtracting this delta value.</description>
+			<description>A number/dimmer channel can receive INCREASE/DECREASE commands and computes the target number by adding or subtracting this delta value.</description>
 			<default>1.0</default>
 			<advanced>true</advanced>
 		</parameter>
