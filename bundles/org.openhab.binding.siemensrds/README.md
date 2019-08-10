@@ -107,8 +107,8 @@ sitemap siemensrds label="Siemens RDS"
 {
 	Frame label="Heating" {
 		Text      item=Upstairs_RoomTemperature
-		Setpoint  item=Upstairs_TargetTemperature minValue=15 maxValue=30 step=1
-		Switch	  item=Upstairs_ThermostatAutoMode
+		Setpoint  item=Upstairs_TargetTemperature minValue=5 maxValue=30 step=0.5
+		Switch	    item=Upstairs_ThermostatAutoMode
 		Switch    item=Upstairs_OccupancyModePresent
 		Text      item=Upstairs_ThermostatOutputState
 	}
