@@ -104,8 +104,8 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
     private synchronized void asyncDiscoveryTask() {
         try {
             readDeviceDatabase();
-        } catch (Exception e) {
-            logger.warn("Error scanning for devices: {}", e.getMessage());
+        } catch (RuntimeException e) {
+            logger.warn("Runtime exception scanning for devices: {}", e.getMessage());
 
             if (scanListener != null) {
                 scanListener.onErrorOccurred(null); // null so it won't log a stack trace
