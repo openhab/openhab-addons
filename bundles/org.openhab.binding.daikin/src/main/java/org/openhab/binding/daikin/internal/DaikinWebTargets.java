@@ -20,13 +20,19 @@ import java.util.stream.Collectors;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
+import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
+import org.openhab.binding.daikin.internal.api.airbase.AirbaseBasicInfo;
+import org.openhab.binding.daikin.internal.api.airbase.AirbaseModelInfo;
+import org.openhab.binding.daikin.internal.api.airbase.AirbaseZoneInfo;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles performing the actual HTTP requests for communicating with Daiking air conditioning units.
+ * Handles performing the actual HTTP requests for communicating with Daikin air conditioning units.
  *
  * @author Tim Waterhouse - Initial Contribution
+ * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
  *
  */
 public class DaikinWebTargets {
@@ -35,6 +41,14 @@ public class DaikinWebTargets {
     private String setControlInfoUri;
     private String getControlInfoUri;
     private String getSensorInfoUri;
+    private String AirbaseSetControlInfoUri;
+    private String AirbaseGetControlInfoUri;
+    private String AirbaseGetSensorInfoUri;
+    private String AirbaseBasicInfoUri;
+    private String AirbaseGetModelInfoUri;
+    private String AirbaseGetZoneInfoUri;
+    private String AirbaseSetZoneInfoUri;
+
     private Logger logger = LoggerFactory.getLogger(DaikinWebTargets.class);
 
     public DaikinWebTargets(String ipAddress) {
@@ -42,8 +56,19 @@ public class DaikinWebTargets {
         setControlInfoUri = baseUri + "aircon/set_control_info";
         getControlInfoUri = baseUri + "aircon/get_control_info";
         getSensorInfoUri = baseUri + "aircon/get_sensor_info";
+
+        //Daikin Airbase API
+        AirbaseBasicInfoUri = baseUri + "skyfi/common/basic_info";
+        AirbaseSetControlInfoUri = baseUri + "skyfi/aircon/set_control_info";
+        AirbaseGetControlInfoUri = baseUri + "skyfi/aircon/get_control_info";
+        AirbaseGetSensorInfoUri = baseUri + "skyfi/aircon/get_sensor_info";
+        AirbaseGetModelInfoUri = baseUri + "skyfi/aircon/get_model_info";
+        AirbaseGetZoneInfoUri = baseUri + "skyfi/aircon/get_zone_setting";
+        AirbaseSetZoneInfoUri = baseUri + "skyfi/aircon/set_zone_setting";
+
     }
 
+    // Standard Daikin API
     public ControlInfo getControlInfo() throws DaikinCommunicationException {
         String response = invoke(getControlInfoUri);
         return ControlInfo.parse(response);
@@ -58,6 +83,47 @@ public class DaikinWebTargets {
         String response = invoke(getSensorInfoUri);
         return SensorInfo.parse(response);
     }
+
+    //Daikin Airbase API
+    public AirbaseControlInfo AirbaseGetControlInfo() throws DaikinCommunicationException {
+        String response = invoke(AirbaseGetControlInfoUri);
+        return AirbaseControlInfo.parse(response);
+    }
+
+    public void AirbaseSetControlInfo(AirbaseControlInfo info) throws DaikinCommunicationException {
+        Map<String, String> queryParams = info.getParamString();
+        invoke(AirbaseSetControlInfoUri, queryParams);
+    }
+
+    public SensorInfo AirbaseGetSensorInfo() throws DaikinCommunicationException {
+        String response = invoke(AirbaseGetSensorInfoUri);
+        return SensorInfo.parse(response);
+    }
+
+    public AirbaseBasicInfo AirbaseBasicInfo() throws DaikinCommunicationException {
+        String response = invoke(AirbaseBasicInfoUri);
+        return AirbaseBasicInfo.parse(response);
+    }
+
+    public AirbaseModelInfo AirbaseGetModelInfo() throws DaikinCommunicationException {
+        String response = invoke(AirbaseGetModelInfoUri);
+        return AirbaseModelInfo.parse(response);
+    }
+
+    public AirbaseZoneInfo AirbaseGetZoneInfo() throws DaikinCommunicationException {
+        String response = invoke(AirbaseGetZoneInfoUri);
+        return AirbaseZoneInfo.parse(response);
+    }
+
+    public void AirbaseSetZoneInfo(AirbaseZoneInfo zoneinfo, AirbaseModelInfo modelinfo) throws DaikinCommunicationException {
+        int count=0;
+        count = (zoneinfo.zone1 ? 1 : 0) + (zoneinfo.zone2 ? 1 : 0) + (zoneinfo.zone3 ? 1 : 0) + (zoneinfo.zone4 ? 1 : 0) + (zoneinfo.zone5 ? 1 : 0) + (zoneinfo.zone6 ? 1 : 0) + (zoneinfo.zone7 ? 1 : 0) + (zoneinfo.zone8 ? 1 : 0) + modelinfo.commonzone;
+        logger.debug("Number of open zones: \"{}\"", count);
+
+        Map<String, String> queryParams = zoneinfo.getParamString();
+        if (count >= 1) invoke(AirbaseSetZoneInfoUri, queryParams);
+    }
+
 
     private String invoke(String uri) throws DaikinCommunicationException {
         return invoke(uri, new HashMap<>());
