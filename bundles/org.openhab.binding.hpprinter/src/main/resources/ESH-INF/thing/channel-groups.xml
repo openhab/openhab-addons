@@ -9,15 +9,15 @@
 	<channel-group-type id="ink">
 		<label>Ink/Toner Levels</label>
 		<channels>
-			<channel typeId="inkLevel" id="blackLevel"></channel>
+			<channel typeId="inkLevel" id="blackLevel"><label>Black Level</label></channel>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="usageInfo">
 		<label>Usage Information</label>
 		<channels>
-			<channel typeId="totals" id="jamEvents"></channel>
-			<channel typeId="totals" id="totalCount"></channel>
+			<channel typeId="totals" id="jamEvents"><label>Jam Events</label></channel>
+			<channel typeId="totals" id="totalCount"><label>Total Pages</label></channel>
 		</channels>
 	</channel-group-type>
 
