@@ -45,7 +45,6 @@ public class HPPrinterBinder {
 
     private HPWebServerClient printerClient;
     private ScheduledExecutorService scheduler;
-    //private HttpClient httpClient;
 
     private int statusCheckInterval = 4;
     private int usageCheckInterval = 30;
@@ -203,9 +202,9 @@ public class HPPrinterBinder {
     private void checkOnline() {
         HPServerResult<HPStatus> result = printerClient.getStatus();
 
-        if (result.getStatus() == requestStatus.SUCCESS) {
+        if (result.getStatus() == RequestStatus.SUCCESS) {
             goneOnline();
         }
     }
 
-}
+}}

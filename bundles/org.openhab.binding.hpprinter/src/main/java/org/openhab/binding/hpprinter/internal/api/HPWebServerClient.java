@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.openhab.binding.hpprinter.internal.api.HPServerResult.requestStatus;
+import org.openhab.binding.hpprinter.internal.api.HPServerResult.RequestStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -74,7 +74,7 @@ public class HPWebServerClient {
      */
     public HPServerResult<HPStatus> getStatus() {
         try {
-            String endpoint = serverAddress + HPStatus.endpoint;
+            String endpoint = serverAddress + HPStatus.ENDPOINT;
             logger.trace("HTTP Client Status GET {}", endpoint);
             ContentResponse cr = this.httpClient.GET(endpoint);
             logger.trace("HTTP Client Status Result {} Size {}", cr.getStatus(), cr.getContentAsString().length());
@@ -82,10 +82,10 @@ public class HPWebServerClient {
             return new HPServerResult<HPStatus>(new HPStatus(new InputSource(new ByteArrayInputStream(cr.getContent()))));
         } catch (TimeoutException ex) {
             logger.trace("HTTP Client Status Timeout Exception {}", ex.getMessage());
-            return new HPServerResult<HPStatus>(requestStatus.TIMEOUT);
+            return new HPServerResult<HPStatus>(RequestStatus.TIMEOUT);
         } catch (InterruptedException | ExecutionException | ParserConfigurationException | SAXException | IOException ex) {
             logger.trace("HTTP Client Status Exception {}", ex.getMessage());
-            return new HPServerResult<HPStatus>(requestStatus.ERROR);
+            return new HPServerResult<HPStatus>(RequestStatus.ERROR);
         }
     }
 
@@ -95,7 +95,7 @@ public class HPWebServerClient {
      */
     public HPServerResult<HPUsage> getUsage() {
         try {
-            String endpoint = serverAddress + HPUsage.endpoint;
+            String endpoint = serverAddress + HPUsage.ENDPOINT;
             logger.trace("HTTP Client Usage GET {}", endpoint);
             ContentResponse cr = this.httpClient.GET(endpoint);
             logger.trace("HTTP Client Usage Result {} Size {}", cr.getStatus(), cr.getContentAsString().length());
@@ -103,10 +103,10 @@ public class HPWebServerClient {
             return new HPServerResult<HPUsage>(new HPUsage(new InputSource(new ByteArrayInputStream(cr.getContent()))));
         } catch (TimeoutException ex) {
             logger.trace("HTTP Client Usage Timeout Exception {}", ex.getMessage());
-            return new HPServerResult<HPUsage>(requestStatus.TIMEOUT);
+            return new HPServerResult<HPUsage>(RequestStatus.TIMEOUT);
         } catch (InterruptedException | ExecutionException | ParserConfigurationException | SAXException | IOException ex) {
             logger.trace("HTTP Client Usage Exception {}", ex.getMessage());
-            return new HPServerResult<HPUsage>(requestStatus.ERROR);
+            return new HPServerResult<HPUsage>(RequestStatus.ERROR);
         }
     }
 }

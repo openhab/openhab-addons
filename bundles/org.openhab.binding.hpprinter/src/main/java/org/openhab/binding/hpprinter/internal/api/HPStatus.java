@@ -34,7 +34,7 @@ import org.xml.sax.SAXException;
  */
 @NonNullByDefault
 public class HPStatus {
-    public final static String endpoint = "/DevMgmt/ProductStatusDyn.xml";
+    public static final String ENDPOINT = "/DevMgmt/ProductStatusDyn.xml";
 
     public HPStatus(InputSource source) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -48,7 +48,7 @@ public class HPStatus {
             Element element = (Element) nodes.item(i);
             if (element.getElementsByTagName("pscat:StatusCategory").item(0).getTextContent() != "genuineHP") {
                 printerStatus = getPrinterStatusMessage(
-                    element.getElementsByTagName("pscat:StatusCategory").item(0).getTextContent());
+                        element.getElementsByTagName("pscat:StatusCategory").item(0).getTextContent());
             }
         }
     }
@@ -57,6 +57,7 @@ public class HPStatus {
         Map<String, String> smap = new HashMap<>();
 
         smap.put("processing", "Printing");
+        smap.put("scanProcessing", "Scanning");
         smap.put("inPowerSave", "Power Save");
         smap.put("ready", "Idle");
         smap.put("closeDoorOrCover", "Door/Cover Open");
@@ -66,6 +67,7 @@ public class HPStatus {
     }
 
     private String printerStatus = "";
+
     public String getPrinterStatus() {
         return getPrinterStatusMessage(printerStatus);
     }

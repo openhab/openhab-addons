@@ -32,7 +32,7 @@ import org.xml.sax.SAXException;
  */
 @NonNullByDefault
 public class HPUsage {
-    public final static String endpoint = "/DevMgmt/ProductUsageDyn.xml";
+    public static final String ENDPOINT = "/DevMgmt/ProductUsageDyn.xml";
 
     public HPUsage(InputSource source) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -77,7 +77,6 @@ public class HPUsage {
             case "cyanmagentayellow":
                 inkColor = Integer.valueOf(inkRemaining);
                 break;
-
             }
         }
 
@@ -100,7 +99,6 @@ public class HPUsage {
         NodeList totalSubscriptionImpressions = document.getDocumentElement()
                 .getElementsByTagName("pudyn:SubscriptionImpressions");
         this.totalSubscriptionImpressions = Integer.valueOf(totalSubscriptionImpressions.item(0).getTextContent());
-
     }
 
     private int totalSubscriptionImpressions;

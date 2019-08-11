@@ -24,17 +24,17 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class HPServerResult<result> {
 
-    public HPServerResult(requestStatus status) {
+    public HPServerResult(RequestStatus status) {
         this.status = status;
         this.data = null;
     }
 
     public HPServerResult(result data) {
-        this.status = requestStatus.SUCCESS;
+        this.status = RequestStatus.SUCCESS;
         this.data = data;
     }
     
-    public enum requestStatus {
+    public enum RequestStatus {
         SUCCESS,
         TIMEOUT,
         ERROR
@@ -42,12 +42,12 @@ public class HPServerResult<result> {
 
     @Nullable
     private result data;
-    public result getData() {
+    public @Nullable result getData() {
         return data;
     }
 
-    private requestStatus status;
-    public requestStatus getStatus() {
+    private RequestStatus status;
+    public RequestStatus getStatus() {
         return status;
     }
 

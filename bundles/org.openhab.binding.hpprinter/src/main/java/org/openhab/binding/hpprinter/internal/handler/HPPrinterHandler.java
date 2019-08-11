@@ -22,7 +22,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.hpprinter.internal.HPPrinterConfiguration;
 import org.openhab.binding.hpprinter.internal.binder.HPPrinterBinder;
@@ -69,14 +68,10 @@ public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinde
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            binder.update();
-        }
     }
 
     @Override
     public void initialize() {
-        // logger.debug("Start initializing!");
         config = getConfigAs(HPPrinterConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
