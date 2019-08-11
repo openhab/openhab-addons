@@ -49,9 +49,22 @@ public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinde
 
     @Override
     public void handleRemoval() {
-        binder.close();
+        if (binder != null) {
+            binder.close();
+            binder = null;
+        }
 
         super.handleRemoval();
+    }
+
+    @Override
+    public void dispose() {
+        if (binder != null) {
+            binder.close();
+            binder = null;
+        }
+        
+        super.dispose();
     }
 
     @Override
