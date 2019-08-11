@@ -69,9 +69,11 @@ public class HPPrinterBinder {
     public HPPrinterBinder(HPPrinterBinderEvent handler, @Nullable HttpClient httpClient, ScheduledExecutorService scheduler, @Nullable HPPrinterConfiguration config) {
         this.handler = handler;
         this.scheduler = scheduler;
-        usageCheckInterval = config.usageInterval;
-        statusCheckInterval = config.statusInterval;
-        printerClient = new HPWebServerClient(httpClient, config.ipAddress, config.useSSL);
+        if (config != null) {
+            usageCheckInterval = config.usageInterval;
+            statusCheckInterval = config.statusInterval;
+        }
+        printerClient = new HPWebServerClient(httpClient, config.ipAddress);
     }
 
     /**

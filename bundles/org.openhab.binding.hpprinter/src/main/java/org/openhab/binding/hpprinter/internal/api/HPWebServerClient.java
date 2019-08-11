@@ -54,14 +54,10 @@ public class HPWebServerClient {
      * @param address The address for the Embedded Web Server.
      * @param ssl {Boolean} Use SSL (HTTPS) connections.
      */
-    public HPWebServerClient(@Nullable HttpClient httpClient, String address, Boolean ssl) {
+    public HPWebServerClient(@Nullable HttpClient httpClient, String address) {
         this.httpClient = httpClient;
 
-        if (ssl) {
-            serverAddress = "https://" + address;
-        } else {
-            serverAddress = "http://" + address;
-        }
+        serverAddress = "http://" + address;
 
         logger.debug("Create printer connection {}", serverAddress);
     }
