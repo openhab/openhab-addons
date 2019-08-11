@@ -25,6 +25,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -122,7 +123,7 @@ class RdsAccessToken {
         }
 
         try (InputStream inputStream = https.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF8");) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);) {
 
             String inputString;
             StringBuffer response = new StringBuffer();
