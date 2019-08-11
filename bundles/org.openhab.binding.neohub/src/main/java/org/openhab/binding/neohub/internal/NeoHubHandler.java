@@ -32,6 +32,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * The {@link NeoHubHandler} is the OpenHab Handler for NeoHub devices
  *
@@ -176,33 +178,32 @@ public class NeoHubHandler extends BaseBridgeHandler {
      * the full status of all devices
      */
     protected @Nullable NeoHubInfoResponse fromNeoHubFetchPollingResponse() {
-        @Nullable
-        String response;
-        @Nullable
-        NeoHubInfoResponse result;
-
         if (socket == null || config == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "hub not initialized, status => offline!");
             return null;
         }
 
-        if ((response = socket.sendMessage(CMD_CODE_INFO)) == null) {
+        @Nullable
+        String response = socket.sendMessage(CMD_CODE_INFO);
+        if ((response == null) || response.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "communication error, status => offline!");
             return null;
         }
 
         try {
-            result = NeoHubInfoResponse.createInfoResponse(response);
+            @Nullable
+            NeoHubInfoResponse result = NeoHubInfoResponse.createInfoResponse(response);
             if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "info received, status => online..");
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                        "JSON info packet received, status => online..");
             }
             return result;
 
-        } catch (Exception e) {
+        } catch (JsonSyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("parsing error, cause = %s, status => offline..", e.getMessage()));
+                    "JSON syntax error, status => offline..");
             return null;
         }
     }

@@ -23,8 +23,6 @@ import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import org.apache.commons.io.IOUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,52 +62,52 @@ public class NeoHubSocket {
      * 
      */
     public synchronized String sendMessage(final String request) {
-        final StringBuilder response = new StringBuilder();
-        final Socket socket = new Socket();
-
-        try {
+        try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(hostname, port), TCP_SOCKET_IMEOUT * 1000);
-            final InputStreamReader in = new InputStreamReader(socket.getInputStream(), US_ASCII);
-            final OutputStreamWriter out = new OutputStreamWriter(socket.getOutputStream(), US_ASCII);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("sending {} characters..", request.length());
-                logger.debug(">> {}", request);
+            try (InputStreamReader reader = new InputStreamReader(socket.getInputStream(), US_ASCII);
+                    OutputStreamWriter writer = new OutputStreamWriter(socket.getOutputStream(), US_ASCII);) {
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("sending {} characters..", request.length());
+                    logger.debug(">> {}", request);
+                }
+
+                writer.write(request);
+                writer.write(0); // NUL terminate the command string
+                writer.flush();
+
+                StringBuilder response = new StringBuilder();
+                int in;
+                while ((in = reader.read()) > 0) {// NUL termination & end of stream (-1)
+                    response.append((char) in);
+                }
+
+                String responseStr = response.toString();
+
+                if (logger.isTraceEnabled()) {
+                    logger.trace("received {} characters..", responseStr.length());
+                    logger.trace("<< {}", responseStr);
+                } else
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("received {} characters (set log level to TRACE to see full string)..",
+                            responseStr.length());
+                    logger.debug("<< {} ...", responseStr.substring(1, Math.min(responseStr.length(), 30)));
+                }
+                return responseStr;
+
+            } catch (IOException e) {
+                logger.error("communication error with hub");
+                logger.debug(String.format("error cause = %s!'", e.toString()));
+                return null;
             }
 
-            out.write(request);
-            out.write(0); // NUL terminate the command string
-            out.flush();
-
-            int l;
-            while ((l = in.read()) > 0) {// NUL termination & end of stream (-1)
-                response.append((char) l);
-            }
-
-        } catch (final IOException e) {
-            logger.error(String.format("communication error with hub " + "[host=%s, port=%d, timeout=%d] !']", hostname,
-                    port, TCP_SOCKET_IMEOUT));
-
+        } catch (IOException e) {
+            logger.error("unable to connect to hub");
             logger.debug(String.format("error cause = %s!'", e.toString()));
-
             return null;
-
-        } finally {
-            IOUtils.closeQuietly(socket);
         }
-
-        final String responseStr = response.toString();
-
-        if (logger.isTraceEnabled()) {
-            logger.trace("received {} characters..", responseStr.length());
-            logger.trace("<< {}", responseStr);
-        } else
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("received {} characters (set log level to TRACE to see full string)..", responseStr.length());
-            logger.debug("<< {} ...", responseStr.substring(1, Math.min(responseStr.length(), 30)));
-        }
-
-        return responseStr;
     }
+
 }

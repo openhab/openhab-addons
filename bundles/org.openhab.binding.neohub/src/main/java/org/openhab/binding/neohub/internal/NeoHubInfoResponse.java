@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -158,12 +159,12 @@ class NeoHubInfoResponse {
      * @param response the JSON INFO request
      * @return a NeoHubInfoResponse wrapper around the JSON response
      */
-    static @Nullable NeoHubInfoResponse createInfoResponse(String response) {
+    static @Nullable NeoHubInfoResponse createInfoResponse(String response) throws JsonSyntaxException {
+        Gson gson = new Gson();
         try {
-            Gson gson = new Gson();
             return gson.fromJson(response, NeoHubInfoResponse.class);
-        } catch (Exception e) {
-            throw new IllegalStateException(e.getMessage(), e);
+        } catch (JsonSyntaxException e) {
+            throw e;
         }
     }
 
