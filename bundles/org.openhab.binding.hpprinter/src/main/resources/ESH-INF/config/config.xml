@@ -11,11 +11,6 @@
 			<description>The IP or host name of the HP Printer</description>
 			<context>network-address</context>
 		</parameter>
-		<parameter name="useSSL" type="boolean">
-			<label>Use SSL</label>
-			<description>Configures whether to use HTTPS for the connection</description>
-			<default>false</default>
-		</parameter>
 		<parameter name="usageInterval" type="integer" min="4" required="true">
 			<label>Usage Interval</label>
 			<description>The refresh interval in seconds for polling the printer usage information</description>
