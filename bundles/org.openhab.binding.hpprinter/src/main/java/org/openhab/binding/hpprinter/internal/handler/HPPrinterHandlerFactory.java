@@ -20,6 +20,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
+import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -37,6 +38,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.hpprinter", service = ThingHandlerFactory.class)
 public class HPPrinterHandlerFactory extends BaseThingHandlerFactory {
     private @Nullable HttpClient httpClient = null;
+    private @Nullable DiscoveryServiceRegistry discoveryServiceRegistry;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -61,5 +63,14 @@ public class HPPrinterHandlerFactory extends BaseThingHandlerFactory {
 
     protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
         this.httpClient = null;
+    }
+
+    @Reference
+    protected void setDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
+        this.discoveryServiceRegistry = discoveryServiceRegistry;
+    }
+
+    protected void unsetDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
+        this.discoveryServiceRegistry = null;
     }
 }
