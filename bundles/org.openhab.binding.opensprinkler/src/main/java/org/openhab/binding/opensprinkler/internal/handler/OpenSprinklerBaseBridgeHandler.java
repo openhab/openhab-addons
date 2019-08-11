@@ -52,7 +52,7 @@ public abstract class OpenSprinklerBaseBridgeHandler extends BaseBridgeHandler {
 
     private void refreshStations() {
         if (openSprinklerDevice != null) {
-            if (openSprinklerDevice.isConnected()) {
+            if (openSprinklerDevice.isManualModeEnabled()) {
                 updateStatus(ThingStatus.ONLINE);
 
                 this.getThing().getThings().forEach(thing -> {
@@ -73,7 +73,7 @@ public abstract class OpenSprinklerBaseBridgeHandler extends BaseBridgeHandler {
         super.dispose();
         if (openSprinklerDevice != null) {
             try {
-                openSprinklerDevice.closeConnection();
+                openSprinklerDevice.leaveManualMode();
             } catch (CommunicationApiException e) {
                 logger.error("Could not close connection on teardown.", e);
             }

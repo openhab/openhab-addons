@@ -23,25 +23,25 @@ import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiExcept
  */
 public interface OpenSprinklerApi {
     /**
-     * Returns the state of this API connection to the OpenSprinkler device.
+     * Whether the devie entered manual mode and accepts API requests to control the stations.
      *
      * @return True if this API interface is connected to the Open Sprinkler API. False otherwise.
      */
-    public abstract boolean isConnected();
+    public abstract boolean isManualModeEnabled();
 
     /**
-     * Opens a connection to the OpenSprinkler device.
+     * Enters the "manual" mode of the device so that API requests are accepted.
      *
      * @throws Exception
      */
-    public abstract void openConnection() throws CommunicationApiException;
+    public abstract void enterManualMode() throws CommunicationApiException;
 
     /**
-     * Closes the connection to the OpenSprinkler device.
+     * Disables the manual mode, if it is enabled.
      *
      * @throws Exception
      */
-    public abstract void closeConnection() throws CommunicationApiException;
+    public abstract void leaveManualMode() throws CommunicationApiException;
 
     /**
      * Starts a station on the OpenSprinkler device.

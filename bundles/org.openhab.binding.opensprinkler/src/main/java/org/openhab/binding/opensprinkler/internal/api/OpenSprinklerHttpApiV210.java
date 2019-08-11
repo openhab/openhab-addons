@@ -124,16 +124,16 @@ public class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
      * @throws Exception
      */
     @Override
-    public void openConnection() throws CommunicationApiException {
+    public void enterManualMode() throws CommunicationApiException {
         this.firmwareVersion = getFirmwareVersion();
         this.numberOfStations = getNumberOfStations();
 
-        connectionOpen = true;
+        isInManualMode = true;
     }
 
     @Override
-    public void closeConnection() {
-        connectionOpen = false;
+    public void leaveManualMode() {
+        isInManualMode = false;
     }
 
     /**

@@ -33,7 +33,7 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     protected int firmwareVersion = -1;
     protected int numberOfStations = DEFAULT_STATION_COUNT;
 
-    protected boolean connectionOpen = false;
+    protected boolean isInManualMode = false;
 
     /**
      * Constructor for the OpenSprinkler API class to create a connection to the OpenSprinkler
@@ -66,12 +66,12 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public boolean isConnected() {
-        return connectionOpen;
+    public boolean isManualModeEnabled() {
+        return isInManualMode;
     }
 
     @Override
-    public void openConnection() throws CommunicationApiException {
+    public void enterManualMode() throws CommunicationApiException {
         try {
             Http.sendHttpGet(getBaseUrl(), getRequestRequiredOptions() + "&" + CMD_ENABLE_MANUAL_MODE);
         } catch (Exception exp) {
@@ -82,12 +82,12 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
         this.firmwareVersion = getFirmwareVersion();
         this.numberOfStations = getNumberOfStations();
 
-        connectionOpen = true;
+        isInManualMode = true;
     }
 
     @Override
-    public void closeConnection() throws CommunicationApiException {
-        connectionOpen = false;
+    public void leaveManualMode() throws CommunicationApiException {
+        isInManualMode = false;
 
         try {
             Http.sendHttpGet(getBaseUrl(), getRequestRequiredOptions() + "&" + CMD_DISABLE_MANUAL_MODE);

@@ -48,13 +48,13 @@ public class OpenSprinklerPiBridgeHandler extends OpenSprinklerBaseBridgeHandler
         logger.debug("Successfully created API connection to the OpenSprinkler device.");
 
         try {
-            openSprinklerDevice.openConnection();
+            openSprinklerDevice.enterManualMode();
         } catch (Exception exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not open API connection to the OpenSprinkler device. Error received: " + exp);
         }
 
-        if (openSprinklerDevice.isConnected()) {
+        if (openSprinklerDevice.isManualModeEnabled()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
