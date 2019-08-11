@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(configurationPid = "binding.hpprinter", service = ThingHandlerFactory.class)
 public class HPPrinterHandlerFactory extends BaseThingHandlerFactory {
-    private @Nullable HttpClient httpClient = null;
+    private @Nullable HttpClient httpClient;
     private @Nullable DiscoveryServiceRegistry discoveryServiceRegistry;
 
     @Override

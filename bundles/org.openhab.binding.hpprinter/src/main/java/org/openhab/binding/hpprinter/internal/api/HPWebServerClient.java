@@ -40,9 +40,9 @@ public class HPWebServerClient {
     private final Logger logger = LoggerFactory.getLogger(HPWebServerClient.class);
 
     private @Nullable HttpClient httpClient;
-    private String serverAddress;
+    private String serverAddress = "";
 
-    enum testWebInterface {
+    enum WebInterfaceType {
         INVALID,
         STANDARD,
         SECURESOCKETS
@@ -60,12 +60,6 @@ public class HPWebServerClient {
         serverAddress = "http://" + address;
 
         logger.debug("Create printer connection {}", serverAddress);
-    }
-
-    public testWebInterface testWebInterface() {   
-        //TODO: Implement Interface Test tool     
-        logger.info("Test Web Interface Not Implemented!");
-        return testWebInterface.INVALID;
     }
 
     /**
@@ -86,6 +80,23 @@ public class HPWebServerClient {
         } catch (InterruptedException | ExecutionException | ParserConfigurationException | SAXException | IOException ex) {
             logger.trace("HTTP Client Status Exception {}", ex.getMessage());
             return new HPServerResult<HPStatus>(RequestStatus.ERROR);
+        }
+    }
+
+    public HPServerResult<HPType> getType() {
+        try {
+            String endpoint = serverAddress + HPType.ENDPOINT;
+            logger.trace("HTTP Client Type GET {}", endpoint);
+            ContentResponse cr = this.httpClient.GET(endpoint);
+            logger.trace("HTTP Client Type Result {} Size {}", cr.getStatus(), cr.getContentAsString().length());
+
+            return new HPServerResult<HPType>(new HPType(new InputSource(new ByteArrayInputStream(cr.getContent()))));
+        } catch (TimeoutException ex) {
+            logger.trace("HTTP Client Type Timeout Exception {}", ex.getMessage());
+            return new HPServerResult<HPType>(RequestStatus.TIMEOUT);
+        } catch (InterruptedException | ExecutionException | ParserConfigurationException | SAXException | IOException ex) {
+            logger.trace("HTTP Client Type Exception {}", ex.getMessage());
+            return new HPServerResult<HPType>(RequestStatus.ERROR);
         }
     }
 

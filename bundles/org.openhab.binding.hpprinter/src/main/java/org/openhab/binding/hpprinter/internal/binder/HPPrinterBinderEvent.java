@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.hpprinter.internal.binder;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.State;
 
@@ -23,4 +26,5 @@ import org.eclipse.smarthome.core.types.State;
 public interface HPPrinterBinderEvent {
     void binderStatus(ThingStatus status);
     void binderChannel(String group, String channel, State state);
+    void binderAddChannels(List<Channel> channels);
 }

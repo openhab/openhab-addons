@@ -14,8 +14,13 @@ package org.openhab.binding.hpprinter.internal.handler;
 
 import org.eclipse.jetty.client.HttpClient;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -36,14 +41,22 @@ import org.openhab.binding.hpprinter.internal.binder.HPPrinterBinderEvent;
 @NonNullByDefault
 public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinderEvent {
 
-    private @Nullable HPPrinterConfiguration config = null;
+    private @NonNullByDefault({}) HPPrinterConfiguration config;
     private @Nullable HttpClient httpClient = null;
-    private @Nullable HPPrinterBinder binder = null;
+    private @Nullable HPPrinterBinder binder;
 
     public HPPrinterHandler(Thing thing, @Nullable HttpClient httpClient) {
         super(thing);
 
-        this.httpClient = httpClient;
+        if (httpClient != null)
+            this.httpClient = httpClient;
+    }
+
+    @Override
+    public void thingUpdated(Thing thing) {
+        super.thingUpdated(thing);
+
+        binder.dynamicallyAddChannels(thing.getUID());
     }
 
     @Override
@@ -78,6 +91,9 @@ public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinde
 
         if (config != null && config.ipAddress != "") {
             binder = new HPPrinterBinder(this, httpClient, scheduler, config);
+
+            binder.dynamicallyAddChannels(thing.getUID());
+
             binder.open();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "You must set an IP Address");
@@ -93,5 +109,27 @@ public class HPPrinterHandler extends BaseThingHandler implements HPPrinterBinde
     @Override
     public void binderChannel(String group, String channel, State state) {
         updateState(new ChannelUID(thing.getUID(), group, channel), state);
+    }
+
+    @Override
+    public void binderAddChannels(List<Channel> channels) {
+        List<Channel> thingChannels = new ArrayList<>();
+            thingChannels.addAll(getThing().getChannels());
+
+        for (Channel channel : channels) {
+            addOrUpdateChannel(channel, thingChannels);
+        }
+
+        updateThing(editThing().withChannels(thingChannels).build());
+    }
+
+    private static void addOrUpdateChannel(Channel newChannel, List<Channel> thingChannels) {
+        removeChannelByUID(thingChannels, newChannel.getUID());
+        thingChannels.add(newChannel);
+    }
+
+    private static void removeChannelByUID(List<Channel> thingChannels, ChannelUID channelUIDtoRemove) {
+        Predicate<Channel> channelPredicate = c -> c.getUID().getId().equals(channelUIDtoRemove.getId());
+        thingChannels.removeIf(channelPredicate);
     }
 }
