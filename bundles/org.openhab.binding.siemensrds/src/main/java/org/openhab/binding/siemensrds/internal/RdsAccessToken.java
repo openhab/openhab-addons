@@ -124,7 +124,6 @@ class RdsAccessToken {
 
         try (InputStream inputStream = https.getInputStream();
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);) {
-
             String inputString;
             StringBuffer response = new StringBuffer();
             BufferedReader reader = new BufferedReader(inputStreamReader);
@@ -133,7 +132,6 @@ class RdsAccessToken {
             }
 
             return response.toString();
-
         } catch (UnsupportedEncodingException e) {
             // we shouldn't ever reach here because UTF8 is a valid encoding
             return "";
