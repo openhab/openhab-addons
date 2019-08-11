@@ -111,12 +111,12 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
             // retrieve the respective discovery service from the OpenHAB framework
             NeoHubDiscoveryService disco = (NeoHubDiscoveryService) bundleContext.getService(serviceReg.getReference());
 
+            // and unregister the service
+            serviceReg.unregister();
+
             // deactivate the service
             if (disco != null)
                 disco.deactivate();
-
-            // and unregister the service
-            serviceReg.unregister();
         }
     }
 
