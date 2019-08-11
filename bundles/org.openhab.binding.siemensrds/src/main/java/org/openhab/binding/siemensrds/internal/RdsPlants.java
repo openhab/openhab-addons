@@ -14,13 +14,7 @@ package org.openhab.binding.siemensrds.internal;
 
 import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -61,46 +55,11 @@ class RdsPlants {
     }
 
     /*
-     * execute the HTTP GET on the server
+     * use the static RdsDataPoints.httpGenericGetJson method to retrieve the list
+     * of plants from the cloud server
      */
     private static String httpGetPlantListJson(String apiKey, String token) {
-        String result = "";
-        try {
-            URL url = new URL(URL_PLANTS);
-
-            /*
-             * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
-             * preferred JETTY library; the reason is that JETTY does not allow sending the
-             * square brackets characters "[]" verbatim over HTTP connections
-             */
-            HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
-
-            https.setRequestMethod(HTTP_GET);
-
-            https.setRequestProperty(USER_AGENT, MOZILLA);
-            https.setRequestProperty(ACCEPT, APPLICATION_JSON);
-            https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
-            https.setRequestProperty(AUTHORIZATION, String.format(BEARER, token));
-
-            int responseCode = https.getResponseCode();
-
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(https.getInputStream(), "UTF8"));
-                String inStr;
-                StringBuffer response = new StringBuffer();
-                while ((inStr = in.readLine()) != null) {
-                    response.append(inStr);
-                }
-                in.close();
-                result = response.toString();
-            } else {
-                LOGGER.debug("httpGetPlantListJson: http error={}", responseCode);
-            }
-        } catch (Exception e) {
-            LOGGER.debug("httpGetPlantListJson: exception={}", e.getMessage());
-        }
-
-        return result;
+        return RdsDataPoints.httpGenericGetJson(apiKey, token, URL_PLANTS);
     }
 
     /*

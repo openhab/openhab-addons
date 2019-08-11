@@ -16,9 +16,15 @@ import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Map;
@@ -66,45 +72,84 @@ class RdsDataPoints {
     private String valueFilter = "";
 
     /*
+     * protected static method: can be used by this class and by other classes to
+     * execute an HTTP GET command on the remote cloud server to retrieve the JSON
+     * response from the given urlString
+     */
+    protected static String httpGenericGetJson(String apiKey, String token, String urlString) {
+        URL url;
+        try {
+            url = new URL(urlString);
+        } catch (MalformedURLException e) {
+            LOGGER.error("httpGenericGetJson: invalid url {}", urlString);
+            return "";
+        }
+
+        /*
+         * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
+         * preferred JETTY library; the reason is that JETTY does not allow sending the
+         * square brackets characters "[]" verbatim over HTTP connections
+         */
+        HttpsURLConnection https;
+        try {
+            https = (HttpsURLConnection) url.openConnection();
+        } catch (java.io.IOException e) {
+            LOGGER.error("httpGenericGetJson: unable to connect to Cloud Server");
+            return "";
+        }
+
+        try {
+            https.setRequestMethod(HTTP_GET);
+        } catch (ProtocolException e) {
+            // we shouldn't ever reach here because HTTP GET is a valid method
+            return "";
+        }
+
+        https.setRequestProperty(USER_AGENT, MOZILLA);
+        https.setRequestProperty(ACCEPT, APPLICATION_JSON);
+        https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
+        https.setRequestProperty(AUTHORIZATION, String.format(BEARER, token));
+
+        int responseCode;
+        try {
+            responseCode = https.getResponseCode();
+        } catch (IOException e) {
+            LOGGER.error("httpGenericGetJson: missing HTTP response from Cloud Server");
+            return "";
+        }
+
+        if (responseCode != HttpURLConnection.HTTP_OK) {
+            LOGGER.error("httpGenericGetJson: invalid HTTP response {} from Cloud Server", responseCode);
+            return "";
+        }
+
+        try (InputStream inputStream = https.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF8");) {
+
+            String inputString;
+            StringBuffer response = new StringBuffer();
+            BufferedReader reader = new BufferedReader(inputStreamReader);
+            while ((inputString = reader.readLine()) != null) {
+                response.append(inputString);
+            }
+
+            return response.toString();
+
+        } catch (UnsupportedEncodingException e) {
+            // we shouldn't ever reach here because UTF8 is a valid encoding
+            return "";
+        } catch (IOException e) {
+            LOGGER.error("httpGenericGetJson: unable to read response from Cloud Server");
+            return "";
+        }
+    }
+
+    /*
      * private method: execute an HTTP GET command on the remote cloud server to
      * retrieve the full data point list for the given plantId
      */
     private static String httpGetPointListJson(String apiKey, String token, String plantId) {
-        String result = "";
-        try {
-            URL url = new URL(String.format(URL_POINTS, plantId));
-
-            /*
-             * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
-             * preferred JETTY library; the reason is that JETTY does not allow sending the
-             * square brackets characters "[]" verbatim over HTTP connections
-             */
-            HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
-
-            https.setRequestMethod(HTTP_GET);
-
-            https.setRequestProperty(USER_AGENT, MOZILLA);
-            https.setRequestProperty(ACCEPT, APPLICATION_JSON);
-            https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
-            https.setRequestProperty(AUTHORIZATION, String.format(BEARER, token));
-
-            int responseCode = https.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(https.getInputStream(), "UTF8"));
-                String inStr;
-                StringBuffer response = new StringBuffer();
-                while ((inStr = in.readLine()) != null) {
-                    response.append(inStr);
-                }
-                in.close();
-                result = response.toString();
-            } else {
-                LOGGER.error("httpGetPointListJson: http error={}", responseCode);
-            }
-        } catch (Exception e) {
-            LOGGER.error("httpGetPointListJson: exception={}", e.getMessage());
-        }
-        return result;
+        return httpGenericGetJson(apiKey, token, String.format(URL_POINTS, plantId));
     }
 
     /*
@@ -136,36 +181,63 @@ class RdsDataPoints {
      * private method: execute an HTTP PUT on the server to set a data point value
      */
     private void httpSetPointValueJson(String apiKey, String token, String pointId, String json) {
+        URL url;
+        String urlString = String.format(URL_SETVAL, pointId);
         try {
-            URL url = new URL(String.format(URL_SETVAL, pointId));
-
-            /*
-             * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
-             * preferred JETTY library; the reason is that JETTY does not allow sending the
-             * square brackets characters "[]" verbatim over HTTP connections
-             */
-            HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
-
-            https.setRequestMethod(HTTP_PUT);
-
-            https.setRequestProperty(USER_AGENT, MOZILLA);
-            https.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
-            https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
-            https.setRequestProperty(AUTHORIZATION, String.format(BEARER, token));
-
-            https.setDoOutput(true);
-            DataOutputStream wr = new DataOutputStream(https.getOutputStream());
-            wr.writeBytes(json);
-            wr.flush();
-            wr.close();
-
-            int responseCode = https.getResponseCode();
-            if (responseCode != HttpURLConnection.HTTP_OK) {
-                LOGGER.error("httpSetPointValueJson: http error={}", responseCode);
-            }
-        } catch (Exception e) {
-            LOGGER.error("httpSetPointValueJson: exception={}", e.getMessage());
+            url = new URL(urlString);
+        } catch (MalformedURLException e) {
+            LOGGER.error("httpSetPointValueJson: invalid url {}", urlString);
+            return;
         }
+
+        /*
+         * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
+         * preferred JETTY library; the reason is that JETTY does not allow sending the
+         * square brackets characters "[]" verbatim over HTTP connections
+         */
+        HttpsURLConnection https;
+        try {
+            https = (HttpsURLConnection) url.openConnection();
+        } catch (java.io.IOException e) {
+            LOGGER.error("httpSetPointValueJson: unable to connect to Cloud Server");
+            return;
+        }
+
+        try {
+            https.setRequestMethod(HTTP_PUT);
+        } catch (ProtocolException e) {
+            // we shouldn't ever reach here because HTTP PUT is a valid method
+            return;
+        }
+
+        https.setRequestProperty(USER_AGENT, MOZILLA);
+        https.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
+        https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
+        https.setRequestProperty(AUTHORIZATION, String.format(BEARER, token));
+
+        https.setDoOutput(true);
+
+        try (OutputStream outputStream = https.getOutputStream();
+                DataOutputStream writer = new DataOutputStream(outputStream);) {
+            writer.writeBytes(json);
+        } catch (IOException e) {
+            LOGGER.error("httpSetPointValueJson: error sending request to Cloud Server");
+            return;
+        }
+
+        int responseCode;
+        try {
+            responseCode = https.getResponseCode();
+        } catch (IOException e) {
+            LOGGER.error("httpGetPlantListJson: missing HTTP response from Cloud Server");
+            return;
+        }
+
+        if (responseCode != HttpURLConnection.HTTP_OK) {
+            LOGGER.error("httpGetPlantListJson: invalid HTTP response {} from Cloud Server", responseCode);
+            return;
+        }
+        return;
     }
 
     /*
@@ -173,42 +245,7 @@ class RdsDataPoints {
      * retrieve the data points given in filterId
      */
     private String httpGetPointValuesJson(String apiKey, String token, String filterId) {
-        String result = "";
-
-        try {
-            URL url = new URL(String.format(URL_VALUES, filterId));
-
-            /*
-             * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
-             * preferred JETTY library; the reason is that JETTY does not allow sending the
-             * square brackets characters "[]" verbatim over HTTP connections
-             */
-            HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
-
-            https.setRequestMethod(HTTP_GET);
-
-            https.setRequestProperty(USER_AGENT, MOZILLA);
-            https.setRequestProperty(ACCEPT, APPLICATION_JSON);
-            https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
-            https.setRequestProperty(AUTHORIZATION, String.format(BEARER, token));
-
-            int responseCode = https.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(https.getInputStream(), "UTF8"));
-                String inStr;
-                StringBuffer response = new StringBuffer();
-                while ((inStr = in.readLine()) != null) {
-                    response.append(inStr);
-                }
-                in.close();
-                result = response.toString();
-            } else {
-                LOGGER.error("httpGetPointValuesJson: http error={}", responseCode);
-            }
-        } catch (Exception e) {
-            LOGGER.error("httpGetPointValuesJson: exception={}", e.getMessage());
-        }
-        return result;
+        return httpGenericGetJson(apiKey, token, String.format(URL_VALUES, filterId));
     }
 
     /*

@@ -16,8 +16,14 @@ import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -58,51 +64,81 @@ class RdsAccessToken {
      * private method: execute the HTTP POST on the server
      */
     private static String httpGetTokenJson(String apiKey, String user, String password) {
-        String result = "";
-
+        URL url;
         try {
-            URL url = new URL(URL_TOKEN);
-
-            /*
-             * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
-             * preferred JETTY library; the reason is that JETTY does not allow sending the
-             * square brackets characters "[]" verbatim over HTTP connections
-             */
-            HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
-
-            https.setRequestMethod(HTTP_POST);
-
-            https.setRequestProperty(USER_AGENT, MOZILLA);
-            https.setRequestProperty(ACCEPT, TEXT_PLAIN);
-            https.setRequestProperty(CONTENT_TYPE, TEXT_PLAIN);
-            https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
-
-            String requestStr = String.format(TOKEN_REQUEST, user, password);
-
-            https.setDoOutput(true);
-            DataOutputStream wr = new DataOutputStream(https.getOutputStream());
-            wr.writeBytes(requestStr);
-            wr.flush();
-            wr.close();
-
-            int responseCode = https.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(https.getInputStream(), "UTF8"));
-                String inStr;
-                StringBuffer response = new StringBuffer();
-                while ((inStr = in.readLine()) != null) {
-                    response.append(inStr);
-                }
-                in.close();
-                result = response.toString();
-            } else {
-                LOGGER.debug("httpGetTokenJson: http error={}", responseCode);
-            }
-        } catch (Exception e) {
-            LOGGER.debug("httpGetTokenJson: exception={}", e.getMessage());
+            url = new URL(URL_TOKEN);
+        } catch (MalformedURLException e) {
+            // we shouldn't ever reach here because URL_TOKEN is hard coded as a valid url
+            return "";
         }
 
-        return result;
+        /*
+         * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
+         * preferred JETTY library; the reason is that JETTY does not allow sending the
+         * square brackets characters "[]" verbatim over HTTP connections
+         */
+        HttpsURLConnection https;
+        try {
+            https = (HttpsURLConnection) url.openConnection();
+        } catch (java.io.IOException e) {
+            LOGGER.error("httpGetTokenJson: unable to connect to Cloud Server");
+            return "";
+        }
+
+        try {
+            https.setRequestMethod(HTTP_POST);
+        } catch (ProtocolException e) {
+            // we shouldn't ever reach here because HTTP POST is a valid method
+            return "";
+        }
+
+        https.setRequestProperty(USER_AGENT, MOZILLA);
+        https.setRequestProperty(ACCEPT, TEXT_PLAIN);
+        https.setRequestProperty(CONTENT_TYPE, TEXT_PLAIN);
+        https.setRequestProperty(SUBSCRIPTION_KEY, apiKey);
+
+        https.setDoOutput(true);
+
+        try (OutputStream outputStream = https.getOutputStream();
+                DataOutputStream dataOutputStream = new DataOutputStream(outputStream);) {
+            dataOutputStream.writeBytes(String.format(TOKEN_REQUEST, user, password));
+        } catch (IOException e) {
+            LOGGER.error("httpGetTokenJson: error sending request to Cloud Server");
+            return "";
+        }
+
+        int responseCode;
+        try {
+            responseCode = https.getResponseCode();
+        } catch (IOException e) {
+            LOGGER.error("httpGetTokenJson: missing HTTP response from Cloud Server");
+            return "";
+        }
+
+        if (responseCode != HttpURLConnection.HTTP_OK) {
+            LOGGER.error("httpGetTokenJson: invalid HTTP response {} from Cloud Server", responseCode);
+            return "";
+        }
+
+        try (InputStream inputStream = https.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF8");) {
+
+            String inputString;
+            StringBuffer response = new StringBuffer();
+            BufferedReader reader = new BufferedReader(inputStreamReader);
+            while ((inputString = reader.readLine()) != null) {
+                response.append(inputString);
+            }
+
+            return response.toString();
+
+        } catch (UnsupportedEncodingException e) {
+            // we shouldn't ever reach here because UTF8 is a valid encoding
+            return "";
+        } catch (IOException e) {
+            LOGGER.error("httpGetTokenJson: unable to read response from Cloud Server");
+            return "";
+        }
     }
 
     /*
