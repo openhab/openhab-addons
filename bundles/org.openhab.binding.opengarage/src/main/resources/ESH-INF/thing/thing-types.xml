@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="opengarage"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="opengarage">
+		<label>OpenGarage</label>
+		<description>OpenGarage Binding</description>
+
+		<channels>
+			<channel id="distance" typeId="opengarage-distance" />
+			<channel id="status" typeId="opengarage-status" />
+			<channel id="vehicle" typeId="opengarage-vehicle" />
+		</channels>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host Name</label>
+				<description>The host name or IP address of the OpenGarage Web API interface.</description>
+				<default>localhost</default>
+			</parameter>
+			<parameter name="port" type="integer" required="true" min="1" max="65335">
+				<label>Port</label>
+				<description>Port of the OpenGarage Web API interface.</description>
+				<default>80</default>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>The admin password used to access the Web API interface.</description>
+				<default>opendoor</default>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="opengarage-distance">
+		<item-type>Number:Length</item-type>
+		<label>Distance</label>
+		<description>Distance Reading from the OG unit</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="opengarage-status">
+		<item-type>Switch</item-type>
+		<label>Status</label>
+		<description>Status of the OG unit</description>
+	</channel-type>
+	<channel-type id="opengarage-vehicle">
+		<item-type>String</item-type>
+		<label>Vehicle Presence</label>
+		<description>Is a vehicle present or not</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
