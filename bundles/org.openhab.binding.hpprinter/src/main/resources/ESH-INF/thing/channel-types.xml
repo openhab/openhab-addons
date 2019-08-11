@@ -1,136 +1,36 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="hpprinter"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<thing:thing-descriptions bindingId="hpprinter" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0" xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="inkLevel">
+		<item-type>Number</item-type>
+		<label>Ink Level</label>
+		<description>Shows the amount of Ink/Toner remaining</description>
+		<state readOnly="true" pattern="%s %%"></state>
+	</channel-type>
 
-	<!-- Cyan -->
-	<channel-type id="cyanLevel">
+	<channel-type id="totals">
 		<item-type>Number</item-type>
-		<label>Cyan Level</label>
-		<description>Shows the amount of Cyan Ink/Toner remaining</description>
-		<state readOnly="true" pattern="%s %%"></state>
+		<label>Totals</label>
+		<description>Amount of pages.</description>
+		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="cyanPagesRemain">
+
+	<channel-type id="pagesRemain">
 		<item-type>String</item-type>
-		<label>Cyan Pages Remaining</label>
-		<description>Shows the estimated amount of Cyan pages remaining</description>
+		<label>Pages Remaining</label>
+		<description>Shows the estimated amount of pages remaining</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
-	<channel-type id="cyanCumlMarkingUsed">
+	<channel-type id="cumlMarkingUsed">
 		<item-type>String</item-type>
-		<label>Cumulative Cyan Used</label>
-		<description>Shows the amount of Cyan Ink/Toner used</description>
-		<state readOnly="true" pattern="%s"></state>
-	</channel-type>
-	<!-- Magenta -->
-	<channel-type id="magentaLevel">
-		<item-type>Number</item-type>
-		<label>Magenta Level</label>
-		<description>Shows the amount of Magenta Ink/Toner remaining</description>
-		<state readOnly="true" pattern="%s %%"></state>
-	</channel-type>
-	<channel-type id="magentaPagesRemain">
-		<item-type>String</item-type>
-		<label>Magenta Pages Remaining</label>
-		<description>Shows the estimated amount of Magenta pages remaining</description>
-		<state readOnly="true" pattern="%s"></state>
-	</channel-type>
-	<channel-type id="magentaCumlMarkingUsed">
-		<item-type>String</item-type>
-		<label>Cumulative Magenta Used</label>
-		<description>Shows the amount of Magenta Ink/Toner used</description>
-		<state readOnly="true" pattern="%s"></state>
-	</channel-type>
-	<!-- Yellow -->
-	<channel-type id="yellowLevel">
-		<item-type>Number</item-type>
-		<label>Yellow Level</label>
-		<description>Shows the amount of Yellow Ink/Toner remaining</description>
-		<state readOnly="true" pattern="%s %%"></state>
-	</channel-type>
-	<channel-type id="yellowPagesRemain">
-		<item-type>String</item-type>
-		<label>Yellow Pages Remaining</label>
-		<description>Shows the estimated amount of Yellow pages remaining</description>
-		<state readOnly="true" pattern="%s"></state>
-	</channel-type>
-	<channel-type id="yellowCumlMarkingUsed">
-		<item-type>String</item-type>
-		<label>Cumulative Yellow Used</label>
-		<description>Shows the amount of Yellow Ink/Toner used</description>
-		<state readOnly="true" pattern="%s"></state>
-	</channel-type>
-	<!-- Colour Level -->
-	<channel-type id="colourLevel">
-		<item-type>Number</item-type>
-		<label>Colour Level</label>
-		<description>Shows the amount of Colour Ink/Toner remaining</description>
-		<state readOnly="true" pattern="%s %%"></state>
-	</channel-type>
-	<channel-type id="colourPagesRemain">
-		<item-type>String</item-type>
-		<label>Colour Pages Remaining</label>
-		<description>Shows the estimated amount of Colour pages remaining</description>
-		<state readOnly="true" pattern="%s"></state>
-	</channel-type>
-	<channel-type id="colourCumlMarkingUsed">
-		<item-type>String</item-type>
-		<label>Cumulative Colour Used</label>
-		<description>Shows the amount of Colour Ink/Toner used</description>
+		<label>Cumulative Marking Used</label>
+		<description>Shows the amount of Ink/Toner used</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
-	<!-- Black -->
-	<channel-type id="blackLevel">
-		<item-type>Number</item-type>
-		<label>Black Level</label>
-		<description>Shows the amount of Black Ink/Toner remaining</description>
-		<state readOnly="true" pattern="%s %%"></state>
-	</channel-type>
-	<channel-type id="blackPagesRemain">
-		<item-type>String</item-type>
-		<label>Black Pages Remaining</label>
-		<description>Shows the estimated amount of Black pages remaining</description>
-		<state readOnly="true" pattern="%s"></state>
-	</channel-type>
-	<channel-type id="blackCumlMarkingUsed">
-		<item-type>String</item-type>
-		<label>Cumulative Black Used</label>
-		<description>Shows the amount of Black Ink/Toner used</description>
-		<state readOnly="true" pattern="%s"></state>
-	</channel-type>
-	<!-- Printer Status and Control -->
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>Printer Status</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<!-- Usage Details -->
-	<channel-type id="jamEvents">
-		<item-type>Number</item-type>
-		<label>Jam Events</label>
-		<description>The amount of Paper Jams.</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="totalCount">
-		<item-type>Number</item-type>
-		<label>Total Pages</label>
-		<description>The amount of pages printed.</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="totalColorCount">
-		<item-type>Number</item-type>
-		<label>Total Colour Pages</label>
-		<description>The amount of colour pages printed.</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="totalMonochromeCount">
-		<item-type>Number</item-type>
-		<label>Total Monochrome Pages</label>
-		<description>The amount of monochrome pages printed.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

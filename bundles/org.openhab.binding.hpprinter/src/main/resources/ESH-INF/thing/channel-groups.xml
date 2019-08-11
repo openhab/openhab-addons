@@ -6,57 +6,18 @@
 
 	<!-- Channel Groups -->
 
-	<channel-group-type id="multiColorInkLevels">
+	<channel-group-type id="ink">
 		<label>Ink/Toner Levels</label>
 		<channels>
-			<channel typeId="cyanLevel" id="cyanLevel"></channel>
-			<channel typeId="magentaLevel" id="magentaLevel"></channel>
-			<channel typeId="yellowLevel" id="yellowLevel"></channel>
-			<channel typeId="blackLevel" id="blackLevel"></channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="singleColorInkLevels">
-		<label>Ink/Toner Levels</label>
-		<channels>
-			<channel typeId="colorLevel" id="colorLevel"></channel>
-			<channel typeId="blackLevel" id="blackLevel"></channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="genericInkLevels">
-		<label>Ink/Toner Levels</label>
-		<channels>
-			<channel typeId="cyanLevel" id="cyanLevel"></channel>
-			<channel typeId="magentaLevel" id="magentaLevel"></channel>
-			<channel typeId="yellowLevel" id="yellowLevel"></channel>
-			<channel typeId="colorLevel" id="colorLevel"></channel>
-			<channel typeId="blackLevel" id="blackLevel"></channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="blackColorInkLevels">
-		<label>Ink/Toner Levels</label>
-		<channels>
-			<channel typeId="blackLevel" id="blackLevel"></channel>
+			<channel typeId="inkLevel" id="blackLevel"></channel>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="usageInfo">
 		<label>Usage Information</label>
 		<channels>
-			<channel typeId="jamEvents" id="jamEvents"></channel>
-			<channel typeId="totalCount" id="totalCount"></channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="usageInfo-ColorCount">
-		<label>Usage Information</label>
-		<channels>
-			<channel typeId="jamEvents" id="jamEvents"></channel>
-			<channel typeId="totalCount" id="totalCount"></channel>
-			<channel typeId="totalMonochromeCount" id="totalMonochromeCount"></channel>
-			<channel typeId="totalColorCount" id="totalColorCount"></channel>
+			<channel typeId="totals" id="jamEvents"></channel>
+			<channel typeId="totals" id="totalCount"></channel>
 		</channels>
 	</channel-group-type>
 
@@ -64,12 +25,6 @@
 		<label>Status</label>
 		<channels>
 			<channel id="status" typeId="status" />
-		</channels>
-	</channel-group-type>
-	<channel-group-type id="printerControls">
-		<label>Printer Controls</label>
-		<channels>
-			<channel typeId="reboot" id="reboot"></channel>
 		</channels>
 	</channel-group-type>
 
