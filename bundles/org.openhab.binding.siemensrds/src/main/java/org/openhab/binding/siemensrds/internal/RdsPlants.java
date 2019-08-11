@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -55,29 +56,28 @@ class RdsPlants {
     }
 
     /*
-     * use the static RdsDataPoints.httpGenericGetJson method to retrieve the list
-     * of plants from the cloud server
-     */
-    private static String httpGetPlantListJson(String apiKey, String token) {
-        return RdsDataPoints.httpGenericGetJson(apiKey, token, URL_PLANTS);
-    }
-
-    /*
      * public method: execute a GET on the cloud server, parse JSON, and create a
      * class that encapsulates the data
      */
     @Nullable
     public static RdsPlants create(String apiKey, String token) {
-        try {
-            String json = httpGetPlantListJson(apiKey, token);
-            if (!json.equals("")) {
-                Gson gson = new Gson();
-                return gson.fromJson(json, RdsPlants.class);
-            }
-        } catch (Exception e) {
-            LOGGER.debug("create: exception={}", e.getMessage());
+        /*
+         * use the RdsDataPoints.httpGenericGetJson static method to fetch the JSON
+         */
+        String json = RdsDataPoints.httpGenericGetJson(apiKey, token, URL_PLANTS);
+
+        if (json.equals("")) {
+            LOGGER.debug("create: empty JSON element");
+            return null;
         }
-        return null;
+
+        Gson gson = new Gson();
+        try {
+            return gson.fromJson(json, RdsPlants.class);
+        } catch (JsonSyntaxException e) {
+            LOGGER.debug("create: JSON syntax error");
+            return null;
+        }
     }
 
     /*

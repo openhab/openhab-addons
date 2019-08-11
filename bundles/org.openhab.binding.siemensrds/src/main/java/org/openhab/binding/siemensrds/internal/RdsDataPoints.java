@@ -48,6 +48,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -145,36 +146,31 @@ class RdsDataPoints {
     }
 
     /*
-     * private method: execute an HTTP GET command on the remote cloud server to
-     * retrieve the full data point list for the given plantId
-     */
-    private static String httpGetPointListJson(String apiKey, String token, String plantId) {
-        return httpGenericGetJson(apiKey, token, String.format(URL_POINTS, plantId));
-    }
-
-    /*
      * public static method: execute a GET on the cloud server, parse the JSON, and
      * create a real instance of this class that encapsulates all the retrieved data
      * point values
      */
     @Nullable
     public static RdsDataPoints create(String apiKey, String token, String plantId) {
-        String json = httpGetPointListJson(apiKey, token, plantId);
+        String json = httpGenericGetJson(apiKey, token, String.format(URL_POINTS, plantId));
 
         LOGGER.debug("create: received {} characters (log:set TRACE to see all)", json.length());
 
         if (LOGGER.isTraceEnabled())
             LOGGER.trace("create: response={}", json);
 
-        try {
-            if (!json.equals("")) {
-                Gson gson = new GsonBuilder().registerTypeAdapter(BasePoint.class, new PointDeserializer()).create();
-                return gson.fromJson(json, RdsDataPoints.class);
-            }
-        } catch (Exception e) {
-            LOGGER.error("create: exception={}", e.getMessage());
+        if (json.equals("")) {
+            LOGGER.debug("create: empty JSON element");
+            return null;
         }
-        return null;
+
+        Gson gson = new GsonBuilder().registerTypeAdapter(BasePoint.class, new PointDeserializer()).create();
+        try {
+            return gson.fromJson(json, RdsDataPoints.class);
+        } catch (JsonSyntaxException e) {
+            LOGGER.debug("create: JSON syntax error");
+            return null;
+        }
     }
 
     /*
@@ -238,14 +234,6 @@ class RdsDataPoints {
             return;
         }
         return;
-    }
-
-    /*
-     * private method: execute an HTTP GET command on the remote cloud server to
-     * retrieve the data points given in filterId
-     */
-    private String httpGetPointValuesJson(String apiKey, String token, String filterId) {
-        return httpGenericGetJson(apiKey, token, String.format(URL_VALUES, filterId));
     }
 
     /*
@@ -403,7 +391,7 @@ class RdsDataPoints {
         if (LOGGER.isTraceEnabled())
             LOGGER.trace("refresh: request={}", valueFilter);
 
-        String json = httpGetPointValuesJson(apiKey, token, valueFilter);
+        String json = httpGenericGetJson(apiKey, token, String.format(URL_VALUES, valueFilter));
 
         LOGGER.debug("refresh: received {} characters (log:set TRACE to see all)", json.length());
 
@@ -411,14 +399,15 @@ class RdsDataPoints {
             LOGGER.trace("refresh: response={}", json);
 
         if (json.equals("")) {
+            LOGGER.debug("refreshUsedValues: empty JSON element");
             return false;
         }
 
+        Gson gson = new GsonBuilder().registerTypeAdapter(BasePoint.class, new PointDeserializer()).create();
         try {
-            Gson gson = new GsonBuilder().registerTypeAdapter(BasePoint.class, new PointDeserializer()).create();
             nuPoints = gson.fromJson(json, RdsDataPoints.class);
-        } catch (Exception e) {
-            LOGGER.error("refreshUsedValues: exception={}", e.getMessage());
+        } catch (JsonSyntaxException e) {
+            LOGGER.error("refreshUsedValues: JSON syntax error");
             return false;
         }
 

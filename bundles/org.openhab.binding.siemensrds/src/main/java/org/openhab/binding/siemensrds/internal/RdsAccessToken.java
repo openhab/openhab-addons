@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -149,16 +150,18 @@ class RdsAccessToken {
     public static RdsAccessToken create(String apiKey, String user, String password) {
         String json = httpGetTokenJson(apiKey, user, password);
 
-        try {
-            if (!json.equals("")) {
-                Gson gson = new Gson();
-
-                return gson.fromJson(json, RdsAccessToken.class);
-            }
-        } catch (Exception e) {
-            LOGGER.debug("create: exception={}", e.getMessage());
+        if (json.equals("")) {
+            LOGGER.debug("create: empty JSON element");
+            return null;
         }
-        return null;
+
+        Gson gson = new Gson();
+        try {
+            return gson.fromJson(json, RdsAccessToken.class);
+        } catch (JsonSyntaxException e) {
+            LOGGER.debug("create: JSON syntax error");
+            return null;
+        }
     }
 
     /*
