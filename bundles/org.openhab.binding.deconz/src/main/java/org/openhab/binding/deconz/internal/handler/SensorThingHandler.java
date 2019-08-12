@@ -81,6 +81,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class SensorThingHandler extends BaseThingHandler implements ValueUpdateListener {
+
     private final Logger logger = LoggerFactory.getLogger(SensorThingHandler.class);
     private SensorThingConfig config = new SensorThingConfig();
     private DeconzBridgeConfig bridgeConfig = new DeconzBridgeConfig();
@@ -185,17 +186,22 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                         return;
                     }
 
+                    Map<String, String> editProperties = editProperties();
+                    editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, newState.swversion);
+                    editProperties.put(Thing.PROPERTY_MODEL_ID, newState.modelid);
+                    editProperties.put(UNIQUE_ID, newState.uniqueid);
+                    ignoreConfigurationUpdate = true;
+                    updateProperties(editProperties);
+
                     // Some sensors support optional channels
                     // (see https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices#sensors)
                     // any battery-powered sensor
                     Integer batteryLevel = newState.config.battery;
                     if (batteryLevel != null) {
-                        ignoreConfigurationUpdate = true;
                         createAndUpdateChannelIfExists(CHANNEL_BATTERY_LEVEL,
                                 new DecimalType(batteryLevel.longValue()));
                         createAndUpdateChannelIfExists(CHANNEL_BATTERY_LOW,
                                 batteryLevel <= 10 ? OnOffType.ON : OnOffType.OFF);
-                        ignoreConfigurationUpdate = false;
                     }
 
                     // some Xiaomi sensors
@@ -227,6 +233,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                     if (newState.state.tampered != null) {
                         createChannel(CHANNEL_TAMPERED);
                     }
+                    ignoreConfigurationUpdate = false;
 
                     // Initial data
                     for (Channel channel : thing.getChannels()) {
@@ -237,6 +244,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                     webSocketConnection.registerValueListener(config.id, this);
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 });
+
     }
 
     private void createAndUpdateChannelIfExists(String channelId, State state) {
@@ -314,16 +322,16 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                 if (state.dark != null) {
                     boolean dark = state.dark;
                     if (dark) { // if it's dark, it's dark ;)
-                        updateState(CHANNEL_LIGHT, new StringType("Dark"));
+                        updateState(channelUID, new StringType("Dark"));
                     } else if (state.daylight != null) { // if its not dark, it might be between darkness and daylight
                         boolean daylight = state.daylight;
                         if (daylight) {
-                            updateState(CHANNEL_LIGHT, new StringType("Daylight"));
+                            updateState(channelUID, new StringType("Daylight"));
                         } else if (!daylight) {
-                            updateState(CHANNEL_LIGHT, new StringType("Sunset"));
+                            updateState(channelUID, new StringType("Sunset"));
                         }
                     } else { // if no daylight value is known, we assume !dark means daylight
-                        updateState(CHANNEL_LIGHT, new StringType("Daylight"));
+                        updateState(channelUID, new StringType("Daylight"));
                     }
                 }
                 break;
@@ -412,7 +420,7 @@ public class SensorThingHandler extends BaseThingHandler implements ValueUpdateL
                 break;
             case CHANNEL_BUTTONEVENT:
                 if (buttonevent != null && !initializing) {
-                    triggerChannel(CHANNEL_BUTTONEVENT, String.valueOf(buttonevent));
+                    triggerChannel(channelUID, String.valueOf(buttonevent));
                 }
                 break;
             case CHANNEL_LAST_UPDATED:
