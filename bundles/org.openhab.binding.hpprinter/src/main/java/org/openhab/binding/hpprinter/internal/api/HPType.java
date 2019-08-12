@@ -35,6 +35,13 @@ import org.xml.sax.SAXException;
 public class HPType {
     public static final String ENDPOINT = "/DevMgmt/ProductUsageDyn.xml";
 
+    private PrinterType printerType = PrinterType.UNKNOWN;
+    private boolean jamEvents = false;
+    private boolean mispickEvents = false;
+    private boolean subscriptionImpressions = false;
+    private boolean frontPanelCancel = false;
+    private boolean cumuMarking = false;
+
     public enum PrinterType {
         UNKNOWN, MONOCHROME, SINGLECOLOR, MULTICOLOR
     }
@@ -48,10 +55,9 @@ public class HPType {
 
         Document document = builder.parse(source);
 
-        // Get Ink Levels
+        // Check what Ink/Toner colours are present
         NodeList consumableInk = document.getDocumentElement().getElementsByTagName("pudyn:Consumable");
 
-        printerType = PrinterType.MONOCHROME; //Set Monochrome by default.
         for (int i = 0; i < consumableInk.getLength(); i++) {
             Element currInk = (Element) consumableInk.item(i);
 
@@ -62,20 +68,101 @@ public class HPType {
                 continue;
             }
 
-            switch (inkName.toLowerCase()) {
-                case "cyan":
-                    printerType = PrinterType.MULTICOLOR; //Is multicolor if it has this ink
-                    break;
+            if (currInk.getElementsByTagName("dd2:CumulativeMarkingAgentUsed").getLength() > 0) 
+            cumuMarking = true;
 
-                case "cyanmagentayellow":
-                    printerType = PrinterType.SINGLECOLOR; //Is singlecolor if it has this ink
-                    break;
+            switch (inkName.toLowerCase()) {
+            case "cyan":
+            case "magenta":
+            case "yellow":
+                printerType = PrinterType.MULTICOLOR; // Is multicolor if it has this ink
+                break;
+
+            case "cyanmagentayellow":
+                printerType = PrinterType.SINGLECOLOR; // Is singlecolor if it has this ink
+                break;
+
+            case "black":
+                if (printerType == PrinterType.UNKNOWN)
+                    printerType = PrinterType.MONOCHROME; // Is Monochrome
+                break;
             }
         }
+
+        NodeList subUnit = document.getDocumentElement().getElementsByTagName("pudyn:PrinterSubunit");
+        Element currSubUnit = (Element) subUnit.item(0);
+
+        if (currSubUnit.getElementsByTagName("dd:JamEvents").getLength() > 0)
+            jamEvents = true;
+
+        if (currSubUnit.getElementsByTagName("dd:MispickEvents").getLength() > 0)
+            mispickEvents = true;
+
+        if (currSubUnit.getElementsByTagName("pudyn:SubscriptionImpressions").getLength() > 0)
+            subscriptionImpressions = true;
+
+        if (currSubUnit.getElementsByTagName("dd:TotalFrontPanelCancelPresses").getLength() > 0)
+            frontPanelCancel = true;
     }
 
-    private PrinterType printerType;
     public PrinterType getType() {
         return printerType;
+    }
+
+    /**
+     * Printer data contains Cumulative Marking Agent Used.
+     * 
+     * pudyn:ProductUsageDyn -> pudyn:ConsumableSubunit -> pudyn:Consumable -> dd2:CumulativeMarkingAgentUsed
+     * 
+     * @return {boolean} True if supported.
+     */
+    public boolean hasCumulativeMarking() {
+        return cumuMarking;
+    }
+
+    /**
+     * Printer data contains Jam Events.
+     * 
+     * pudyn:ProductUsageDyn -> pudyn:PrinterSubunit -> dd:JamEvents
+     * 
+     * @return {boolean} True if supported.
+     */
+    public boolean hasJamEvents() {
+        return jamEvents;
+    }
+
+    /**
+     * Printer data contains Mispick Events.
+     * 
+     * pudyn:ProductUsageDyn -> pudyn:PrinterSubunit -> dd:MispickEvents
+     * 
+     * @return {boolean} True if supported.
+     */
+    public boolean hasMispickEvents() {
+        return mispickEvents;
+    }
+
+    /**
+     * Printer data contains Subscription Impressions count.
+     * 
+     * pudyn:ProductUsageDyn -> pudyn:PrinterSubunit ->
+     * pudyn:SubscriptionImpressions
+     * 
+     * @return {boolean} True if supported.
+     */
+    public boolean hasSubscriptionCount() {
+        return subscriptionImpressions;
+    }
+
+    /**
+     * Printer data contains Front panel cancel presses count.
+     * 
+     * pudyn:ProductUsageDyn -> pudyn:PrinterSubunit ->
+     * dd:TotalFrontPanelCancelPresses
+     * 
+     * @return {boolean} True if supported.
+     */
+    public boolean hasTotalFrontPanelCancelPresses() {
+        return frontPanelCancel;
     }
 }

@@ -43,18 +43,20 @@ public class HPPrinterBindingConstants {
     public static final String CHANNEL_STATUS = "status";
 
     // Colours
-    public static final String CHANNEL_COLOR_LEVEL = "colorLevel";
-    public static final String CHANNEL_CYAN_LEVEL = "cyanLevel";
-    public static final String CHANNEL_MAGENTA_LEVEL = "magentaLevel";
-    public static final String CHANNEL_YELLOW_LEVEL = "yellowLevel";
+    public static final String CHANNEL_COLOR_LEVEL = "colorLevel"; //Dynamic
+    public static final String CHANNEL_CYAN_LEVEL = "cyanLevel"; //Dynamic
+    public static final String CHANNEL_MAGENTA_LEVEL = "magentaLevel"; //Dynamic
+    public static final String CHANNEL_YELLOW_LEVEL = "yellowLevel"; //Dynamic
     public static final String CHANNEL_BLACK_LEVEL = "blackLevel";
 
     // Page Counts
-    public static final String CHANNEL_SUBSCRIPTION = "subsciptionCount";
     public static final String CHANNEL_TOTAL_PAGES = "totalCount";
-    public static final String CHANNEL_TOTAL_COLORPAGES = "totalColorCount";
-    public static final String CHANNEL_TOTAL_MONOPAGES = "totalMonochromeCount";
-    public static final String CHANNEL_JAM_EVENTS = "jamEvents";
+    public static final String CHANNEL_SUBSCRIPTION = "subsciptionCount"; //Dynamic
+    public static final String CHANNEL_TOTAL_COLORPAGES = "totalColorCount"; //Dynamic
+    public static final String CHANNEL_TOTAL_MONOPAGES = "totalMonochromeCount"; //Dynamic
+    public static final String CHANNEL_JAM_EVENTS = "jamEvents"; //Dynamic
+    public static final String CHANNEL_MISPICK_EVENTS = "mispickEvents"; //Dynamic
+    public static final String CHANNEL_FRONT_PANEL_CANCEL = "fpCancelCount"; //Dynamic
 
     public static final String CGROUP_INK = "ink";
     public static final String CGROUP_STATUS = "status";

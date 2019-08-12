@@ -16,7 +16,6 @@
 	<channel-group-type id="usageInfo">
 		<label>Usage Information</label>
 		<channels>
-			<channel typeId="totals" id="jamEvents"><label>Jam Events</label></channel>
 			<channel typeId="totals" id="totalCount"><label>Total Pages</label></channel>
 		</channels>
 	</channel-group-type>

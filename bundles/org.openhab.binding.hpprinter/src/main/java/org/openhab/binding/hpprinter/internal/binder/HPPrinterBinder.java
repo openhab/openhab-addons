@@ -60,12 +60,10 @@ public class HPPrinterBinder {
     private int offlineCheckInterval = 15;
 
     private HPPrinterBinderEvent handler;
-    @Nullable
-    private ScheduledFuture<?> statusScheduler = null;
-    @Nullable
-    private ScheduledFuture<?> usageScheduler = null;
-    @Nullable
-    private ScheduledFuture<?> offlineScheduler = null;
+    
+    private @Nullable ScheduledFuture<?> statusScheduler = null;
+    private @Nullable ScheduledFuture<?> usageScheduler = null;
+    private @Nullable ScheduledFuture<?> offlineScheduler = null;
 
     /**
      * Creates a new HP Printer Binder object
@@ -88,7 +86,8 @@ public class HPPrinterBinder {
     }
 
     /**
-     * Dynamically add channels to the Thing based on the Embedded Web Server Usage Feed
+     * Dynamically add channels to the Thing based on the Embedded Web Server Usage
+     * Feed
      */
     public void dynamicallyAddChannels(ThingUID thingUid) {
         HPServerResult<HPType> result = printerClient.getType();
@@ -96,9 +95,11 @@ public class HPPrinterBinder {
         logger.debug("Building dynamic channels based on printer");
 
         if (result.getStatus() == RequestStatus.SUCCESS) {
+            HPType data = result.getData();
+
             final List<Channel> channels = new ArrayList<>();
 
-            switch (result.getData().getType()) {
+            switch (data.getType()) {
             case SINGLECOLOR:
                 channels.add(ChannelBuilder.create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_COLOR_LEVEL), "Number")
                         .withLabel("Color Level").withDescription("Shows the amount of Colour Ink/Toner remaining")
@@ -143,6 +144,36 @@ public class HPPrinterBinder {
                 break;
 
             default:
+            }
+
+            if (data.hasJamEvents()) {
+                channels.add(ChannelBuilder.create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_JAM_EVENTS), "Number")
+                        .withLabel("Jam Events").withDescription("The amount of times the paper has jammed")
+                        .withType(new ChannelTypeUID("hpprinter:totals")).build());
+            }
+
+            if (data.hasMispickEvents()) {
+                channels.add(
+                        ChannelBuilder.create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_MISPICK_EVENTS), "Number")
+                                .withLabel("Mispick Events")
+                                .withDescription("The amount of times the mispick event has occurred")
+                                .withType(new ChannelTypeUID("hpprinter:totals")).build());
+            }
+
+            if (data.hasSubscriptionCount()) {
+                channels.add(
+                        ChannelBuilder.create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_SUBSCRIPTION), "Number")
+                                .withLabel("Subscription Count")
+                                .withDescription("The amount of times an item has been printed in subscription")
+                                .withType(new ChannelTypeUID("hpprinter:totals")).build());
+            }
+
+            if (data.hasTotalFrontPanelCancelPresses()) {
+                channels.add(ChannelBuilder
+                        .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_FRONT_PANEL_CANCEL), "Number")
+                        .withLabel("Front Panel Cancel Count")
+                        .withDescription("The amount of times a print has been cancelled from the Front Panel")
+                        .withType(new ChannelTypeUID("hpprinter:totals")).build());
             }
 
             handler.binderAddChannels(channels);
@@ -252,6 +283,10 @@ public class HPPrinterBinder {
                     new DecimalType(result.getData().getTotalMonochromeImpressions()));
             handler.binderChannel(CGROUP_USAGE, CHANNEL_TOTAL_PAGES,
                     new DecimalType(result.getData().getTotalImpressions()));
+            handler.binderChannel(CGROUP_USAGE, CHANNEL_MISPICK_EVENTS,
+                    new DecimalType(result.getData().getMispickEvents()));
+            handler.binderChannel(CGROUP_USAGE, CHANNEL_FRONT_PANEL_CANCEL,
+                    new DecimalType(result.getData().getFrontPanelCancelCount()));
         } else {
             goneOffline();
         }
