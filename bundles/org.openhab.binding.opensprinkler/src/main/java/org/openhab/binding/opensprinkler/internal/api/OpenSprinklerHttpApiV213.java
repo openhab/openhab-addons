@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.opensprinkler.internal.api;
 
+import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.util.Hash;
 
 /**
@@ -30,7 +31,8 @@ public class OpenSprinklerHttpApiV213 extends OpenSprinklerHttpApiV210 {
      * @param password Admin password for the OpenSprinkler device.
      * @throws Exception
      */
-    public OpenSprinklerHttpApiV213(final String hostname, final int port, final String password) throws Exception {
+    public OpenSprinklerHttpApiV213(final String hostname, final int port, final String password)
+            throws GeneralApiException {
         super(hostname, port, Hash.getMD5Hash(password));
     }
 }
