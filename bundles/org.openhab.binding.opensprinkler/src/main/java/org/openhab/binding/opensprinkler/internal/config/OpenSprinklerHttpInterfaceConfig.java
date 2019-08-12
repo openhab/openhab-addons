@@ -16,12 +16,12 @@ import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingCon
 import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
 
 /**
- * The {@link OpenSprinklerConfig} class defines the configuration options
+ * The {@link OpenSprinklerHttpInterfaceConfig} class defines the configuration options
  * for the OpenSprinkler Thing.
  *
  * @author Chris Graham - Initial contribution
  */
-public class OpenSprinklerConfig {
+public class OpenSprinklerHttpInterfaceConfig {
     /**
      * Hostname of the OpenSprinkler API.
      */
