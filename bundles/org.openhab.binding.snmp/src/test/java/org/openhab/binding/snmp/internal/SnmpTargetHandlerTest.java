@@ -118,9 +118,16 @@ public class SnmpTargetHandlerTest extends JavaTest {
         assertTrue(variable.getVariable() instanceof Counter64);
         assertEquals(10000, ((Counter64) variable.getVariable()).toInt());
 
+        variable = handleCommandNumberStringChannel(SnmpBindingConstants.CHANNEL_TYPE_UID_NUMBER, SnmpDatatype.FLOAT,
+                new DecimalType("12.4"), true);
+        assertEquals(new OID(TEST_OID), variable.getOid());
+        assertTrue(variable.getVariable() instanceof OctetString);
+        assertEquals("12.4", variable.getVariable().toString());
+
         variable = handleCommandNumberStringChannel(SnmpBindingConstants.CHANNEL_TYPE_UID_NUMBER, SnmpDatatype.INT32,
                 new StringType(TEST_STRING), false);
         assertNull(variable);
+
     }
 
     @Test
@@ -194,6 +201,16 @@ public class SnmpTargetHandlerTest extends JavaTest {
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
         verify(thingHandlerCallback, never()).stateUpdated(eq(CHANNEL_UID), any());
+    }
+
+    @Test
+    public void testNumberChannelsProperlyUpdatingFloatValue() throws IOException {
+        setup(SnmpBindingConstants.CHANNEL_TYPE_UID_NUMBER, SnmpChannelMode.READ, SnmpDatatype.FLOAT);
+        PDU responsePDU = new PDU(PDU.RESPONSE,
+                Collections.singletonList(new VariableBinding(new OID(TEST_OID), new OctetString("12.4"))));
+        ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
+        thingHandler.onResponse(event);
+        verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), eq(new DecimalType("12.4")));
     }
 
     private VariableBinding handleCommandSwitchChannel(SnmpDatatype datatype, Command command, String onValue,

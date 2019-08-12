@@ -289,7 +289,11 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                 }
                 if (CHANNEL_TYPE_UID_NUMBER.equals(channel.getChannelTypeUID())) {
                     try {
-                        state = new DecimalType(value.toLong());
+                        if (channelConfig.datatype == SnmpDatatype.FLOAT) {
+                            state = new DecimalType(value.toString());
+                        } else {
+                            state = new DecimalType(value.toLong());
+                        }
                     } catch (UnsupportedOperationException e) {
                         logger.warn("could not convert {} to number for channel {}", value, channelUID);
                         return;
@@ -339,6 +343,7 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                     return new Counter64((new DecimalType(((StringType) command).toString())).longValue());
                 }
                 break;
+            case FLOAT:
             case STRING:
                 if (command instanceof DecimalType) {
                     return new OctetString(((DecimalType) command).toString());

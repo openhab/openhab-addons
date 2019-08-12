@@ -83,6 +83,7 @@
 					<option value="UINT32">Unsigned Integer (32 bit)</option>
 					<option value="INT32">Integer (32 bit)</option>
 					<option value="COUNTER64">Counter (64 bit)</option>
+					<option value="FLOAT">Float</option>
 				</options>
 				<default>UINT32</default>
 				<limitToOptions>true</limitToOptions>
