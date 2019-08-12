@@ -112,7 +112,7 @@
 /bundles/org.openhab.binding.onewiregpio/ @aogorek
 /bundles/org.openhab.binding.onewire/ @J-N-K
 /bundles/org.openhab.binding.onkyo/ @pail23 @paulianttila
-/bundles/org.openhab.binding.opensprinkler/ @CrackerStealth
+/bundles/org.openhab.binding.opensprinkler/ @CrackerStealth @FlorianSW
 /bundles/org.openhab.binding.openuv/ @clinique
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /bundles/org.openhab.binding.orvibo/ @tavalin
