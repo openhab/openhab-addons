@@ -36,6 +36,11 @@ import org.xml.sax.SAXException;
 public class HPStatus {
     public static final String ENDPOINT = "/DevMgmt/ProductStatusDyn.xml";
 
+    private String printerStatus = "";
+    
+    public HPStatus() {
+    }
+
     public HPStatus(InputSource source) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -65,8 +70,6 @@ public class HPStatus {
 
         return smap.getOrDefault(statusMsg, statusMsg);
     }
-
-    private String printerStatus = "";
 
     public String getPrinterStatus() {
         return getPrinterStatusMessage(printerStatus);

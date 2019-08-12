@@ -76,10 +76,10 @@ public class HPWebServerClient {
             return new HPServerResult<HPStatus>(new HPStatus(new InputSource(new ByteArrayInputStream(cr.getContent()))));
         } catch (TimeoutException ex) {
             logger.trace("HTTP Client Status Timeout Exception {}", ex.getMessage());
-            return new HPServerResult<HPStatus>(RequestStatus.TIMEOUT);
+            return new HPServerResult<HPStatus>(RequestStatus.TIMEOUT, new HPStatus());
         } catch (InterruptedException | ExecutionException | ParserConfigurationException | SAXException | IOException ex) {
             logger.trace("HTTP Client Status Exception {}", ex.getMessage());
-            return new HPServerResult<HPStatus>(RequestStatus.ERROR);
+            return new HPServerResult<HPStatus>(RequestStatus.ERROR, new HPStatus());
         }
     }
 
@@ -93,10 +93,10 @@ public class HPWebServerClient {
             return new HPServerResult<HPType>(new HPType(new InputSource(new ByteArrayInputStream(cr.getContent()))));
         } catch (TimeoutException ex) {
             logger.trace("HTTP Client Type Timeout Exception {}", ex.getMessage());
-            return new HPServerResult<HPType>(RequestStatus.TIMEOUT);
+            return new HPServerResult<HPType>(RequestStatus.TIMEOUT, new HPType());
         } catch (InterruptedException | ExecutionException | ParserConfigurationException | SAXException | IOException ex) {
             logger.trace("HTTP Client Type Exception {}", ex.getMessage());
-            return new HPServerResult<HPType>(RequestStatus.ERROR);
+            return new HPServerResult<HPType>(RequestStatus.ERROR, new HPType());
         }
     }
 
@@ -114,10 +114,10 @@ public class HPWebServerClient {
             return new HPServerResult<HPUsage>(new HPUsage(new InputSource(new ByteArrayInputStream(cr.getContent()))));
         } catch (TimeoutException ex) {
             logger.trace("HTTP Client Usage Timeout Exception {}", ex.getMessage());
-            return new HPServerResult<HPUsage>(RequestStatus.TIMEOUT);
+            return new HPServerResult<HPUsage>(RequestStatus.TIMEOUT, new HPUsage());
         } catch (InterruptedException | ExecutionException | ParserConfigurationException | SAXException | IOException ex) {
             logger.trace("HTTP Client Usage Exception {}", ex.getMessage());
-            return new HPServerResult<HPUsage>(RequestStatus.ERROR);
+            return new HPServerResult<HPUsage>(RequestStatus.ERROR, new HPUsage());
         }
     }
 }

@@ -27,7 +27,7 @@ import org.xml.sax.SAXException;
 
 /**
  * The {@link HPType} is responsible for determining what type of printer the
- * Web Interface supports.
+ * Web Interface supports including any features.
  *
  * @author Stewart Cossey - Initial contribution
  */
@@ -36,10 +36,10 @@ public class HPType {
     public static final String ENDPOINT = "/DevMgmt/ProductUsageDyn.xml";
 
     public enum PrinterType {
-        NOT_SUPPORTED,
-        MONOCHROME,
-        SINGLECOLOR,
-        MULTICOLOR
+        UNKNOWN, MONOCHROME, SINGLECOLOR, MULTICOLOR
+    }
+
+    public HPType() { 
     }
 
     public HPType(InputSource source) throws ParserConfigurationException, SAXException, IOException {

@@ -13,7 +13,6 @@
 package org.openhab.binding.hpprinter.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link HPEmbeddedWebServerResult} is responsible for returning the
@@ -24,9 +23,9 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class HPServerResult<result> {
 
-    public HPServerResult(RequestStatus status) {
+    public HPServerResult(RequestStatus status, result data) {
         this.status = status;
-        this.data = null;
+        this.data = data;
     }
 
     public HPServerResult(result data) {
@@ -40,9 +39,8 @@ public class HPServerResult<result> {
         ERROR
     }
 
-    @Nullable
     private result data;
-    public @Nullable result getData() {
+    public result getData() {
         return data;
     }
 

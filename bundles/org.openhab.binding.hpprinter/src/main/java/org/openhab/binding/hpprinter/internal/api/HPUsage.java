@@ -34,6 +34,22 @@ import org.xml.sax.SAXException;
 public class HPUsage {
     public static final String ENDPOINT = "/DevMgmt/ProductUsageDyn.xml";
 
+    private int totalSubscriptionImpressions;
+    private int mispickEvents;
+    private int totalMonochromeImpressions;
+    private int totalColorImpressions;
+    private int frontpanelCancelCount;
+    private int totalImpressions;
+    private int jamEvents;
+    private int inkBlack;
+    private int inkCyan;
+    private int inkMagenta;
+    private int inkYellow;
+    private int inkColor;
+
+    public HPUsage() {
+    }
+
     public HPUsage(InputSource source) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -80,73 +96,83 @@ public class HPUsage {
             }
         }
 
-        //Get other usage info
+        // Get other usage info
         NodeList jamEvents = document.getDocumentElement().getElementsByTagName("dd:JamEvents");
-        this.jamEvents = Integer.valueOf(jamEvents.item(0).getTextContent());
+        if (jamEvents.getLength() > 0)
+            this.jamEvents = Integer.valueOf(jamEvents.item(0).getTextContent());
 
-        NodeList totalImpressions = document.getDocumentElement()
-                .getElementsByTagName("dd:TotalImpressions");
-        this.totalImpressions = Integer.valueOf(totalImpressions.item(0).getTextContent());
+        NodeList totalImpressions = document.getDocumentElement().getElementsByTagName("dd:TotalImpressions");
+        if (totalImpressions.getLength() > 0)
+            this.totalImpressions = Integer.valueOf(totalImpressions.item(0).getTextContent());
 
-        NodeList totalColorImpressions = document.getDocumentElement()
-                .getElementsByTagName("dd:ColorImpressions");
-        this.totalColorImpressions = Integer.valueOf(totalColorImpressions.item(0).getTextContent());
+        NodeList totalColorImpressions = document.getDocumentElement().getElementsByTagName("dd:ColorImpressions");
+        if (totalColorImpressions.getLength() > 0)
+            this.totalColorImpressions = Integer.valueOf(totalColorImpressions.item(0).getTextContent());
 
         NodeList totalMonochromeImpressions = document.getDocumentElement()
                 .getElementsByTagName("dd:MonochromeImpressions");
-        this.totalMonochromeImpressions = Integer.valueOf(totalMonochromeImpressions.item(0).getTextContent());
+        if (totalMonochromeImpressions.getLength() > 0)
+            this.totalMonochromeImpressions = Integer.valueOf(totalMonochromeImpressions.item(0).getTextContent());
 
         NodeList totalSubscriptionImpressions = document.getDocumentElement()
                 .getElementsByTagName("pudyn:SubscriptionImpressions");
-        this.totalSubscriptionImpressions = Integer.valueOf(totalSubscriptionImpressions.item(0).getTextContent());
+        if (totalSubscriptionImpressions.getLength() > 0)
+            this.totalSubscriptionImpressions = Integer.valueOf(totalSubscriptionImpressions.item(0).getTextContent());
+
+        NodeList mispickEvents = document.getDocumentElement().getElementsByTagName("dd:MispickEvents");
+        if (mispickEvents.getLength() > 0)
+            this.mispickEvents = Integer.valueOf(mispickEvents.item(0).getTextContent());
+
+        NodeList frontpanelCancelCount = document.getDocumentElement()
+                .getElementsByTagName("dd:TotalFrontPanelCancelPresses");
+        if (frontpanelCancelCount.getLength() > 0)
+            this.frontpanelCancelCount = Integer.valueOf(frontpanelCancelCount.item(0).getTextContent());
     }
 
-    private int totalSubscriptionImpressions;
+    public int getFrontPanelCancelCount() {
+        return frontpanelCancelCount;
+    }
+
     public int getTotalSubscriptionImpressions() {
         return totalSubscriptionImpressions;
     }
 
-    private int totalMonochromeImpressions;
+    public int getMispickEvents() {
+        return mispickEvents;
+    }
+
     public int getTotalMonochromeImpressions() {
         return totalMonochromeImpressions;
     }
 
-    private int totalColorImpressions;
     public int getTotalColorImpressions() {
         return totalColorImpressions;
     }
 
-    private int totalImpressions;
     public int getTotalImpressions() {
         return totalImpressions;
     }
 
-    private int jamEvents;
     public int getJamEvents() {
         return jamEvents;
     }
 
-    private int inkBlack;
     public int getInkBlack() {
         return inkBlack;
     }
 
-    private int inkCyan;
     public int getInkCyan() {
         return inkCyan;
     }
 
-    private int inkMagenta;
     public int getInkMagenta() {
         return inkMagenta;
     }
 
-    private int inkYellow;
     public int getInkYellow() {
         return inkYellow;
     }
 
-    private int inkColor;
     public int getInkColor() {
         return inkColor;
     }

@@ -101,7 +101,7 @@ public class HPPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
-        if (service != null && service.getType() != null) {
+        if (service.getType() != null) {
             logger.trace("ServiceInfo: {}", service);
             if (service.getType().equals(getServiceType())) {
                 String uidName = getUIDName(service);
@@ -129,7 +129,6 @@ public class HPPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     private @Nullable ThingTypeUID findThingType(ServiceInfo service) {
-        // Lookup Binding type by Binding ID
         return THING_PRINTER;
     }
 }
