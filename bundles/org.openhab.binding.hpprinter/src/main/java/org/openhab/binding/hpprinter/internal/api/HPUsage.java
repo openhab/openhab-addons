@@ -46,6 +46,11 @@ public class HPUsage {
     private int inkMagenta;
     private int inkYellow;
     private int inkColor;
+    private float inkBlackMarking;
+    private float inkCyanMarking;
+    private float inkMagentaMarking;
+    private float inkYellowMarking;
+    private float inkColorMarking;
 
     public HPUsage() {
     }
@@ -73,25 +78,53 @@ public class HPUsage {
             String inkRemaining = currInk.getElementsByTagName("dd:ConsumableRawPercentageLevelRemaining").item(0)
                     .getTextContent();
 
+            int markAgentLength = currInk.getElementsByTagName("dd2:CumulativeMarkingAgentUsed").getLength();
+            
+            float totalMarking = 0;
+            if (markAgentLength > 0) { // Check to make sure Cumulative Marking Agent exists
+                for (int ai = 0; ai < markAgentLength; ai++) {
+                    Element currMarking = (Element) currInk.getElementsByTagName("dd2:CumulativeMarkingAgentUsed")
+                            .item(ai);
+
+                    float marking = Integer
+                            .valueOf(currMarking.getElementsByTagName("dd:ValueFloat").item(0).getTextContent());
+
+                    switch (currMarking.getElementsByTagName("dd:Unit").item(0).getTextContent().toLowerCase()) {
+                    case "microliters":
+                        marking = marking / 1000; // Convert to litres
+                        break;
+                    case "liters":
+                        marking = marking * 1000; // Convert to millilitres
+                    }
+
+                    totalMarking = totalMarking + marking; // Sum the marking counts together
+                }
+            }
+
             switch (inkName.toLowerCase()) {
             case "black":
                 inkBlack = Integer.valueOf(inkRemaining);
+                inkBlackMarking = totalMarking;
                 break;
 
             case "yellow":
                 inkYellow = Integer.valueOf(inkRemaining);
+                inkYellowMarking = totalMarking;
                 break;
 
             case "magenta":
                 inkMagenta = Integer.valueOf(inkRemaining);
+                inkMagentaMarking = totalMarking;
                 break;
 
             case "cyan":
                 inkCyan = Integer.valueOf(inkRemaining);
+                inkCyanMarking = totalMarking;
                 break;
 
             case "cyanmagentayellow":
                 inkColor = Integer.valueOf(inkRemaining);
+                inkColorMarking = totalMarking;
                 break;
             }
         }
@@ -161,20 +194,40 @@ public class HPUsage {
         return inkBlack;
     }
 
+    public float getInkBlackMarking() {
+        return inkBlackMarking;
+    }
+
     public int getInkCyan() {
         return inkCyan;
+    }
+
+    public float getInkCyanMarking() {
+        return inkCyanMarking;
     }
 
     public int getInkMagenta() {
         return inkMagenta;
     }
 
+    public float getInkMagentaMarking() {
+        return inkMagentaMarking;
+    }
+
     public int getInkYellow() {
         return inkYellow;
     }
 
+    public float getInkYellowMarking() {
+        return inkYellowMarking;
+    }
+
     public int getInkColor() {
         return inkColor;
+    }
+
+    public float getInkColorMarking() {
+        return inkColorMarking;
     }
 
 }

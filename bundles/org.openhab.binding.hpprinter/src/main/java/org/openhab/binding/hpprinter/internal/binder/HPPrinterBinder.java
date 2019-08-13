@@ -22,7 +22,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.MetricPrefix;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -60,7 +63,7 @@ public class HPPrinterBinder {
     private int offlineCheckInterval = 15;
 
     private HPPrinterBinderEvent handler;
-    
+
     private @Nullable ScheduledFuture<?> statusScheduler = null;
     private @Nullable ScheduledFuture<?> usageScheduler = null;
     private @Nullable ScheduledFuture<?> offlineScheduler = null;
@@ -99,8 +102,22 @@ public class HPPrinterBinder {
 
             final List<Channel> channels = new ArrayList<>();
 
+            if (data.hasCumulativeMarking()) {
+                channels.add(
+                        ChannelBuilder.create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_BLACK_MARKING), "Number")
+                                .withLabel("Black Marking Used").withDescription("The amount of Black Marking used")
+                                .withType(new ChannelTypeUID("hpprinter:cumlMarkingUsed")).build());
+            }
+
             switch (data.getType()) {
             case SINGLECOLOR:
+                if (data.hasCumulativeMarking()) {
+                    channels.add(ChannelBuilder
+                            .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_COLOR_MARKING), "Number")
+                            .withLabel("Colour Marking Used").withDescription("The amount of Colour Marking used")
+                            .withType(new ChannelTypeUID("hpprinter:cumlMarkingUsed")).build());
+                }
+
                 channels.add(ChannelBuilder.create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_COLOR_LEVEL), "Number")
                         .withLabel("Color Level").withDescription("Shows the amount of Colour Ink/Toner remaining")
                         .withType(new ChannelTypeUID("hpprinter:inkLevel")).build());
@@ -118,6 +135,23 @@ public class HPPrinterBinder {
                 break;
 
             case MULTICOLOR:
+                if (data.hasCumulativeMarking()) {
+                    channels.add(ChannelBuilder
+                            .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_CYAN_MARKING), "Number")
+                            .withLabel("Cyan Marking Used").withDescription("The amount of Cyan Marking used")
+                            .withType(new ChannelTypeUID("hpprinter:cumlMarkingUsed")).build());
+
+                    channels.add(ChannelBuilder
+                            .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_MAGENTA_MARKING), "Number")
+                            .withLabel("Magenta Marking Used").withDescription("The amount of Magenta Marking used")
+                            .withType(new ChannelTypeUID("hpprinter:cumlMarkingUsed")).build());
+
+                    channels.add(ChannelBuilder
+                            .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_YELLOW_MARKING), "Number")
+                            .withLabel("Yellow Marking Used").withDescription("The amount of Yellow Marking used")
+                            .withType(new ChannelTypeUID("hpprinter:cumlMarkingUsed")).build());
+                }
+
                 channels.add(ChannelBuilder.create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_CYAN_LEVEL), "Number")
                         .withLabel("Cyan Level").withDescription("Shows the amount of Cyan Ink/Toner remaining")
                         .withType(new ChannelTypeUID("hpprinter:inkLevel")).build());
@@ -268,11 +302,16 @@ public class HPPrinterBinder {
 
         if (result.getStatus() == RequestStatus.SUCCESS) {
             // Inks
-            handler.binderChannel(CGROUP_INK, CHANNEL_BLACK_LEVEL, new DecimalType(result.getData().getInkBlack()));
-            handler.binderChannel(CGROUP_INK, CHANNEL_COLOR_LEVEL, new DecimalType(result.getData().getInkColor()));
-            handler.binderChannel(CGROUP_INK, CHANNEL_CYAN_LEVEL, new DecimalType(result.getData().getInkCyan()));
-            handler.binderChannel(CGROUP_INK, CHANNEL_MAGENTA_LEVEL, new DecimalType(result.getData().getInkMagenta()));
-            handler.binderChannel(CGROUP_INK, CHANNEL_YELLOW_LEVEL, new DecimalType(result.getData().getInkYellow()));
+            handler.binderChannel(CGROUP_INK, CHANNEL_BLACK_LEVEL,
+                    new QuantityType<>(result.getData().getInkBlack(), SmartHomeUnits.PERCENT));
+            handler.binderChannel(CGROUP_INK, CHANNEL_COLOR_LEVEL,
+                    new QuantityType<>(result.getData().getInkColor(), SmartHomeUnits.PERCENT));
+            handler.binderChannel(CGROUP_INK, CHANNEL_CYAN_LEVEL,
+                    new QuantityType<>(result.getData().getInkCyan(), SmartHomeUnits.PERCENT));
+            handler.binderChannel(CGROUP_INK, CHANNEL_MAGENTA_LEVEL,
+                    new QuantityType<>(result.getData().getInkMagenta(), SmartHomeUnits.PERCENT));
+            handler.binderChannel(CGROUP_INK, CHANNEL_YELLOW_LEVEL,
+                    new QuantityType<>(result.getData().getInkYellow(), SmartHomeUnits.PERCENT));
 
             handler.binderChannel(CGROUP_USAGE, CHANNEL_JAM_EVENTS, new DecimalType(result.getData().getJamEvents()));
             handler.binderChannel(CGROUP_USAGE, CHANNEL_SUBSCRIPTION,
@@ -287,6 +326,17 @@ public class HPPrinterBinder {
                     new DecimalType(result.getData().getMispickEvents()));
             handler.binderChannel(CGROUP_USAGE, CHANNEL_FRONT_PANEL_CANCEL,
                     new DecimalType(result.getData().getFrontPanelCancelCount()));
+
+            handler.binderChannel(CGROUP_USAGE, CHANNEL_BLACK_MARKING, new QuantityType<>(
+                    result.getData().getInkBlackMarking(), MetricPrefix.MILLI(SmartHomeUnits.LITRE)));
+            handler.binderChannel(CGROUP_USAGE, CHANNEL_COLOR_MARKING, new QuantityType<>(
+                    result.getData().getInkColorMarking(), MetricPrefix.MILLI(SmartHomeUnits.LITRE)));
+            handler.binderChannel(CGROUP_USAGE, CHANNEL_CYAN_MARKING,
+                    new QuantityType<>(result.getData().getInkCyanMarking(), MetricPrefix.MILLI(SmartHomeUnits.LITRE)));
+            handler.binderChannel(CGROUP_USAGE, CHANNEL_MAGENTA_MARKING, new QuantityType<>(
+                    result.getData().getInkMagentaMarking(), MetricPrefix.MILLI(SmartHomeUnits.LITRE)));
+            handler.binderChannel(CGROUP_USAGE, CHANNEL_YELLOW_MARKING, new QuantityType<>(
+                    result.getData().getInkYellowMarking(), MetricPrefix.MILLI(SmartHomeUnits.LITRE)));
         } else {
             goneOffline();
         }

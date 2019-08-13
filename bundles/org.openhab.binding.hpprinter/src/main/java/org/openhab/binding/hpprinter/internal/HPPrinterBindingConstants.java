@@ -49,6 +49,12 @@ public class HPPrinterBindingConstants {
     public static final String CHANNEL_YELLOW_LEVEL = "yellowLevel"; //Dynamic
     public static final String CHANNEL_BLACK_LEVEL = "blackLevel";
 
+    public static final String CHANNEL_COLOR_MARKING = "colorMarker"; //Dynamic
+    public static final String CHANNEL_CYAN_MARKING = "cyanMarker"; //Dynamic
+    public static final String CHANNEL_MAGENTA_MARKING = "magentaMarker"; //Dynamic
+    public static final String CHANNEL_YELLOW_MARKING = "yellowMarker"; //Dynamic
+    public static final String CHANNEL_BLACK_MARKING = "blackMarker"; //Dynamic
+
     // Page Counts
     public static final String CHANNEL_TOTAL_PAGES = "totalCount";
     public static final String CHANNEL_SUBSCRIPTION = "subsciptionCount"; //Dynamic
