@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.systeminfo.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 
@@ -19,7 +21,9 @@ import org.eclipse.smarthome.core.library.types.StringType;
  * {@link SysteminfoInterface} defines the methods needed to provide this binding with the required system information.
  *
  * @author Svilen Valkanov - Initial contribution
+ * @author Wouter Born - Add null annotations
  */
+@NonNullByDefault
 public interface SysteminfoInterface {
 
     /**
@@ -68,32 +72,25 @@ public interface SysteminfoInterface {
     public DecimalType getCpuPhysicalCores();
 
     /**
-     * Get the recent average CPU load for all logical processors
-     *
-     * @return the load as percentage value /0-100/
-     */
-    public DecimalType getCpuLoad();
-
-    /**
      * Returns the system load average for the last minute.
      *
      * @return the load as a number of processes or null, if no information is available
      */
-    public DecimalType getCpuLoad1();
+    public @Nullable DecimalType getCpuLoad1();
 
     /**
      * Returns the system load average for the last 5 minutes.
      *
      * @return the load as number of processes or null, if no information is available
      */
-    public DecimalType getCpuLoad5();
+    public @Nullable DecimalType getCpuLoad5();
 
     /**
      * Returns the system load average for the last 15 minutes.
      *
      * @return the load as number of processes or null, if no information is available
      */
-    public DecimalType getCpuLoad15();
+    public @Nullable DecimalType getCpuLoad15();
 
     /**
      * Get the System uptime (time since boot).
@@ -136,14 +133,14 @@ public interface SysteminfoInterface {
      *
      * @return percent of available memory or null, if no information is available
      */
-    public DecimalType getMemoryAvailablePercent();
+    public @Nullable DecimalType getMemoryAvailablePercent();
 
     /**
      * Percents of used memory on the machine
      *
      * @return percent of used memory or null, if no information is available
      */
-    public DecimalType getMemoryUsedPercent();
+    public @Nullable DecimalType getMemoryUsedPercent();
 
     // Swap memory info
     /**
@@ -151,35 +148,35 @@ public interface SysteminfoInterface {
      *
      * @return memory size in MB or 0, if no there is no swap memory
      */
-    public DecimalType getSwapTotal();
+    public @Nullable DecimalType getSwapTotal();
 
     /**
      * Returns available size swap of memory
      *
      * @return memory size in MB or 0, if no there is no swap memory
      */
-    public DecimalType getSwapAvailable();
+    public @Nullable DecimalType getSwapAvailable();
 
     /**
      * Returns used size of swap memory
      *
      * @return memory size in MB or 0, if no there is no swap memory
      */
-    public DecimalType getSwapUsed();
+    public @Nullable DecimalType getSwapUsed();
 
     /**
      * Percents of available swap memory on the machine
      *
      * @return percent of available memory or null, if no there is no swap memory
      */
-    public DecimalType getSwapAvailablePercent();
+    public @Nullable DecimalType getSwapAvailablePercent();
 
     /**
      * Percents of used swap memory on the machine
      *
      * @return percent of used memory or null, if no there is no swap memory
      */
-    public DecimalType getSwapUsedPercent();
+    public @Nullable DecimalType getSwapUsedPercent();
 
     // Storage info
     /**
@@ -216,7 +213,7 @@ public interface SysteminfoInterface {
      * @return percent of available storage or null
      * @throws DeviceNotFoundException
      */
-    public DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException;
+    public @Nullable DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the percent of used storage on the logical volume
@@ -225,7 +222,7 @@ public interface SysteminfoInterface {
      * @return percent of used storage or null
      * @throws DeviceNotFoundException
      */
-    public DecimalType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException;
+    public @Nullable DecimalType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Gets the name of the logical storage volume
@@ -354,14 +351,14 @@ public interface SysteminfoInterface {
      *
      * @return Temperature in degrees Celsius if available, null otherwise.
      */
-    public DecimalType getSensorsCpuTemperature();
+    public @Nullable DecimalType getSensorsCpuTemperature();
 
     /**
      * Get the information for the CPU voltage.
      *
      * @return Voltage in Volts if available, null otherwise.
      */
-    public DecimalType getSensorsCpuVoltage();
+    public @Nullable DecimalType getSensorsCpuVoltage();
 
     /**
      * Get fan speed
@@ -370,7 +367,7 @@ public interface SysteminfoInterface {
      * @return Speed in rpm or null if unable to measure fan speed
      * @throws DeviceNotFoundException
      */
-    public DecimalType getSensorsFanSpeed(int deviceIndex) throws DeviceNotFoundException;
+    public @Nullable DecimalType getSensorsFanSpeed(int deviceIndex) throws DeviceNotFoundException;
 
     // Battery info
     /**
@@ -380,7 +377,7 @@ public interface SysteminfoInterface {
      * @return minutes remaining charge or null, if the time is estimated as unlimited
      * @throws DeviceNotFoundException
      */
-    public DecimalType getBatteryRemainingTime(int deviceIndex) throws DeviceNotFoundException;
+    public @Nullable DecimalType getBatteryRemainingTime(int deviceIndex) throws DeviceNotFoundException;
 
     /**
      * Battery remaining capacity.
@@ -405,7 +402,7 @@ public interface SysteminfoInterface {
      * @param pid - the PID of the process
      * @throws DeviceNotFoundException - thrown if process with this PID can not be found
      */
-    public StringType getProcessName(int pid) throws DeviceNotFoundException;
+    public @Nullable StringType getProcessName(int pid) throws DeviceNotFoundException;
 
     /**
      * Returns the CPU usage of the process
@@ -414,7 +411,7 @@ public interface SysteminfoInterface {
      * @return - percentage value /0-100/
      * @throws DeviceNotFoundException - thrown if process with this PID can not be found
      */
-    public DecimalType getProcessCpuUsage(int pid) throws DeviceNotFoundException;
+    public @Nullable DecimalType getProcessCpuUsage(int pid) throws DeviceNotFoundException;
 
     /**
      * Returns the size of RAM memory only usage of the process
@@ -423,7 +420,7 @@ public interface SysteminfoInterface {
      * @return memory size in MB
      * @throws DeviceNotFoundException- thrown if process with this PID can not be found
      */
-    public DecimalType getProcessMemoryUsage(int pid) throws DeviceNotFoundException;
+    public @Nullable DecimalType getProcessMemoryUsage(int pid) throws DeviceNotFoundException;
 
     /**
      * Returns the full path of the executing process.
@@ -431,7 +428,7 @@ public interface SysteminfoInterface {
      * @param pid - the PID of the process
      * @throws DeviceNotFoundException - thrown if process with this PID can not be found
      */
-    public StringType getProcessPath(int pid) throws DeviceNotFoundException;
+    public @Nullable StringType getProcessPath(int pid) throws DeviceNotFoundException;
 
     /**
      * Returns the number of threads in this process.
@@ -439,6 +436,6 @@ public interface SysteminfoInterface {
      * @param pid - the PID of the process
      * @throws DeviceNotFoundException - thrown if process with this PID can not be found
      */
-    public DecimalType getProcessThreads(int pid) throws DeviceNotFoundException;
+    public @Nullable DecimalType getProcessThreads(int pid) throws DeviceNotFoundException;
 
 }
