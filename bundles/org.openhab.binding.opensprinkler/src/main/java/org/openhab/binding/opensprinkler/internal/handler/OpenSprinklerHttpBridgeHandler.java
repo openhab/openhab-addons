@@ -52,7 +52,8 @@ public class OpenSprinklerHttpBridgeHandler extends OpenSprinklerBaseBridgeHandl
         OpenSprinklerApi openSprinklerDevice;
         try {
             openSprinklerDevice = OpenSprinklerApiFactory.getHttpApi(openSprinklerConfig.hostname,
-                    openSprinklerConfig.port, openSprinklerConfig.password);
+                    openSprinklerConfig.port, openSprinklerConfig.password, openSprinklerConfig.basicUsername,
+                    openSprinklerConfig.basicPassword);
             this.openSprinklerDevice = openSprinklerDevice;
         } catch (CommunicationApiException | GeneralApiException exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,

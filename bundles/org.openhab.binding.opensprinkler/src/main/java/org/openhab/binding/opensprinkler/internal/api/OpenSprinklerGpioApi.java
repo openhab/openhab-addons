@@ -16,6 +16,7 @@ import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiCon
 
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
+import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
@@ -110,10 +111,10 @@ public class OpenSprinklerGpioApi implements OpenSprinklerApi {
     }
 
     @Override
-    public boolean isStationOpen(int station) throws Exception {
+    public boolean isStationOpen(int station) throws GeneralApiException, CommunicationApiException {
         if (station < 0 || station >= numberOfStations) {
-            throw new Exception("This OpenSprinkler device only has " + this.numberOfStations + " but station "
-                    + station + " was requested for a status update.");
+            throw new GeneralApiException("This OpenSprinkler device only has " + this.numberOfStations
+                    + " but station " + station + " was requested for a status update.");
         }
 
         pullStationState();

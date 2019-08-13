@@ -12,12 +12,8 @@
  */
 package org.openhab.binding.opensprinkler.internal.api;
 
-import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
-
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
-import org.openhab.binding.opensprinkler.internal.util.Http;
-import org.openhab.binding.opensprinkler.internal.util.Parse;
 
 /**
  * The {@link OpenSprinklerApiFactory} class is used for creating instances of
@@ -35,49 +31,39 @@ public class OpenSprinklerApiFactory {
      * @param hostname Hostname or IP address as a String of the OpenSprinkler device.
      * @param port The port number the OpenSprinkler API is listening on.
      * @param password Admin password for the OpenSprinkler device.
+     * @param basicUsername Used when basic auth is required
+     * @param basicPassword Used when basic auth is required
      * @return OpenSprinkler HTTP API class for control of the device.
      * @throws Exception
      */
-    public static OpenSprinklerApi getHttpApi(String hostname, int port, String password)
-            throws CommunicationApiException, GeneralApiException {
-        String returnContent;
+    public static OpenSprinklerApi getHttpApi(String hostname, int port, String password, String basicUsername,
+            String basicPassword) throws CommunicationApiException, GeneralApiException {
         int version = -1;
 
+        OpenSprinklerApi lowestSupportedApi = new OpenSprinklerHttpApiV100(hostname, port, password, basicUsername,
+                basicPassword);
         try {
-            returnContent = Http.sendHttpGet(HTTP_REQUEST_URL_PREFIX + hostname + ":" + port + "/" + CMD_OPTIONS_INFO,
-                    null);
+            version = lowestSupportedApi.getFirmwareVersion();
         } catch (Exception exp) {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }
 
-        try {
-            version = Parse.jsonInt(returnContent, JSON_OPTION_FIRMWARE_VERSION);
-        } catch (Exception exp) {
-            version = -1;
-        }
-
         if (version >= 210 && version < 213) {
-            return new OpenSprinklerHttpApiV210(hostname, port, password);
+            return new OpenSprinklerHttpApiV210(hostname, port, password, basicUsername, basicPassword);
         } else if (version >= 213) {
-            return new OpenSprinklerHttpApiV213(hostname, port, password);
+            return new OpenSprinklerHttpApiV213(hostname, port, password, basicUsername, basicPassword);
         } else {
             /* Need to make sure we have an older OpenSprinkler device by checking the first station. */
             try {
-                returnContent = Http.sendHttpGet(HTTP_REQUEST_URL_PREFIX + hostname + ":" + port + "/sn0", null);
+                lowestSupportedApi.isStationOpen(0);
             } catch (Exception exp) {
                 throw new CommunicationApiException(
                         "There was a problem in the HTTP communication with the OpenSprinkler API: "
                                 + exp.getMessage());
             }
 
-            if (returnContent == null || (!returnContent.equals("0") && !returnContent.equals("1"))) {
-                throw new CommunicationApiException(
-                        "There was a problem in the HTTP communication with the OpenSprinkler API, Unexpected API response: "
-                                + returnContent);
-            }
-
-            return new OpenSprinklerHttpApiV100(hostname, port, password);
+            return lowestSupportedApi;
         }
     }
 

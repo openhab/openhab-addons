@@ -63,7 +63,7 @@ public class OpenSprinklerDiscoveryJob implements Runnable {
 
             if (canEstablishConnection(address, DEFAULT_API_PORT)) {
                 OpenSprinklerApi openSprinkler = OpenSprinklerApiFactory.getHttpApi(ip, DEFAULT_API_PORT,
-                        DEFAULT_ADMIN_PASSWORD);
+                        DEFAULT_ADMIN_PASSWORD, null, null);
 
                 return (openSprinkler != null);
             } else {

@@ -29,10 +29,12 @@ public class OpenSprinklerHttpApiV213 extends OpenSprinklerHttpApiV210 {
      * @param hostname Hostname or IP address as a String of the OpenSprinkler device.
      * @param port The port number the OpenSprinkler API is listening on.
      * @param password Admin password for the OpenSprinkler device.
+     * @param basicUsername only needed if basic auth is required
+     * @param basicPassword only needed if basic auth is required
      * @throws Exception
      */
-    public OpenSprinklerHttpApiV213(final String hostname, final int port, final String password)
-            throws GeneralApiException {
-        super(hostname, port, Hash.getMD5Hash(password));
+    public OpenSprinklerHttpApiV213(final String hostname, final int port, final String password,
+            final String basicUsername, final String basicPassword) throws GeneralApiException {
+        super(hostname, port, Hash.getMD5Hash(password), basicUsername, basicPassword);
     }
 }
