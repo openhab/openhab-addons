@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.binding.hpprinter</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: HPPrinter Binding</name>
+  <name>openHAB Add-ons :: Bundles :: HP Printer Binding</name>
 
 </project>
