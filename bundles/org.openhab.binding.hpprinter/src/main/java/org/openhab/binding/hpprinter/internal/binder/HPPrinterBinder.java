@@ -266,7 +266,7 @@ public class HPPrinterBinder {
 
     private void startBackgroundSchedules() {
         handler.binderStatus(ThingStatus.ONLINE);
-
+        stopBackgroundSchedules();
         logger.debug("Starting Interval Refreshes");
 
         if (usageScheduler != null) {
