@@ -224,7 +224,7 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     @Override
     public StationProgram retrieveProgram(int station) throws CommunicationApiException {
         JcResponse resp = statusInfo();
-        return resp.ps.stream().map(values -> new StationProgram(values.get(2))).collect(Collectors.toList())
+        return resp.ps.stream().map(values -> new StationProgram(values.get(1))).collect(Collectors.toList())
                 .get(station);
     }
 

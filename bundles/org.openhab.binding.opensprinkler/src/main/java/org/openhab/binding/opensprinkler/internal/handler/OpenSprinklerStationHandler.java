@@ -2,11 +2,13 @@ package org.openhab.binding.opensprinkler.internal.handler;
 
 import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.*;
 
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -15,9 +17,12 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
+import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerStationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import tec.uom.se.unit.Units;
 
 /**
  * @author Florian Schmidt - Refactoring
@@ -135,13 +140,13 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
 
         try {
             remainingWaterTime = api.retrieveProgram(stationId).remainingWaterTime;
-        } catch (Exception exp) {
+        } catch (CommunicationApiException exp) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not get current state of station channel " + stationId
                             + " for the OpenSprinkler device. Exception received: " + exp);
         }
 
-        return new DecimalType(remainingWaterTime);
+        return new QuantityType<Time>(remainingWaterTime, Units.SECOND);
     }
 
     @Override

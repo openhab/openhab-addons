@@ -102,6 +102,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Remaining Water Time</label>
 		<description>Read-only property of the remaining water time of the station.</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.0f min"/>
 	</channel-type>
 </thing:thing-descriptions>
