@@ -42,17 +42,19 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Paul Frank - Initial contribution
+ * @author Stewart Cossey - added dynamic state descriptor provider functions
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.onkyo")
 public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(OnkyoHandlerFactory.class);
 
-    private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
+    private final Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
     private UpnpIOService upnpIOService;
     private AudioHTTPServer audioHTTPServer;
     private NetworkAddressService networkAddressService;
+    private OnkyoStateDescriptionProvider stateDescriptionProvider;
 
     // url (scheme+server+port) to use for playing notification sounds
     private String callbackUrl;
@@ -75,7 +77,8 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             String callbackUrl = createCallbackUrl();
-            OnkyoHandler handler = new OnkyoHandler(thing, upnpIOService, audioHTTPServer, callbackUrl);
+            OnkyoHandler handler = new OnkyoHandler(thing, upnpIOService, audioHTTPServer, callbackUrl,
+                    stateDescriptionProvider);
             if (callbackUrl != null) {
                 @SuppressWarnings("unchecked")
                 ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
@@ -143,5 +146,14 @@ public class OnkyoHandlerFactory extends BaseThingHandlerFactory {
 
     protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
         this.networkAddressService = null;
+    }
+
+    @Reference
+    protected void setDynamicStateDescriptionProvider(OnkyoStateDescriptionProvider provider) {
+        this.stateDescriptionProvider = provider;
+    }
+
+    protected void unsetDynamicStateDescriptionProvider(OnkyoStateDescriptionProvider provider) {
+        this.stateDescriptionProvider = null;
     }
 }
