@@ -87,9 +87,10 @@ public class LGSerialCommunicator {
         while ((data = input.read()) > -1) {
             if (data == 'x') {
                 String result = new String(buffer, offset, len);
-
-                logger.debug("Buffer : {} offset={} len={}", Arrays.toString(buffer), offset, len);
-                logger.debug("Received response : {}", result);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Buffer : {} offset={} len={}", Arrays.toString(buffer), offset, len);
+                    logger.debug("Received response : {}", result);
+                }
                 LGSerialResponse response = command.parseResponse(result);
                 updateHandler(response, channel);
 

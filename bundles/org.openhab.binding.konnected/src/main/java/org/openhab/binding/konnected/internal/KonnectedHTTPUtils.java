@@ -50,7 +50,10 @@ public class KonnectedHTTPUtils {
         logger.debug("The String url we want to put is : {}", urlAddress);
         logger.debug("The payload we want to put is: {}", payload);
         ByteArrayInputStream input = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
-        return HttpUtil.executeUrl("PUT", urlAddress, getHttpHeaders(), input, "application/json", requestTimeout);
+        String retVal = HttpUtil.executeUrl("PUT", urlAddress, getHttpHeaders(), input, "application/json",
+                requestTimeout);
+        logger.trace("return value: {}", retVal);
+        return retVal;
     }
 
     protected Properties getHttpHeaders() {
@@ -67,7 +70,9 @@ public class KonnectedHTTPUtils {
 
     private synchronized String doGet(String urlAddress) throws IOException {
         logger.debug("The String url we want to get is : {}", urlAddress);
-        return HttpUtil.executeUrl("GET", urlAddress, requestTimeout);
+        String retVal = HttpUtil.executeUrl("GET", urlAddress, requestTimeout);
+        logger.trace("return value: {}", retVal);
+        return retVal;
     }
 
     /**
@@ -80,8 +85,10 @@ public class KonnectedHTTPUtils {
     private synchronized String doGet(String urlAddress, String payload) throws IOException {
         logger.debug("The String url we want to get is : {}", urlAddress);
         ByteArrayInputStream input = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
-
-        return HttpUtil.executeUrl("GET", urlAddress, getHttpHeaders(), input, "application/json", requestTimeout);
+        String retVal = HttpUtil.executeUrl("GET", urlAddress, getHttpHeaders(), input, "application/json",
+                requestTimeout);
+        logger.trace("return value: {}", retVal);
+        return retVal;
     }
 
     /**

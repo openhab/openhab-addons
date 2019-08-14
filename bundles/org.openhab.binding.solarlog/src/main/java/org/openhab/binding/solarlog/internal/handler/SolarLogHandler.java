@@ -86,7 +86,7 @@ public class SolarLogHandler extends BaseThingHandler {
             } catch (JsonSyntaxException je) {
                 logger.warn("Invalid JSON when refreshing source {}: {}", getThing().getUID(), je.getMessage());
             } catch (Exception e) {
-                logger.warn("Error refreshing source {}: {}", getThing().getUID(), e.getMessage());
+                logger.warn("Error refreshing source {}: {}", getThing().getUID(), e.getMessage(), e);
             }
         }, 0, config.refreshInterval < 15 ? 15 : config.refreshInterval, TimeUnit.SECONDS); // Minimum interval is 15 s
     }

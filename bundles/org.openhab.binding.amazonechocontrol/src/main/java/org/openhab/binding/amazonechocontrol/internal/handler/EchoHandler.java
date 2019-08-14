@@ -1145,7 +1145,7 @@ public class EchoHandler extends BaseThingHandler implements IAmazonThingHandler
             }
 
         } catch (Exception e) {
-            this.logger.debug("Handle updateState {} failed: {}", this.getThing().getUID(), e.getMessage());
+            this.logger.debug("Handle updateState {} failed: {}", this.getThing().getUID(), e.getMessage(), e);
 
             disableUpdate = false;
             throw e; // Rethrow same exception

@@ -282,8 +282,8 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (ApiException e) {
-                logger.error("Could not apply HVAC change on home {} and zone {}: {}", getHomeId(), getZoneId(),
-                        e.getMessage());
+                logger.warn("Could not apply HVAC change on home {} and zone {}: {}", getHomeId(), getZoneId(),
+                        e.getMessage(), e);
             } finally {
                 updateZoneState(true);
             }

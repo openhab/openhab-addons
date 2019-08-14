@@ -439,7 +439,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                                 logger.warn("Channel {} update to resource '{}' failed.", channelUID, valOff);
                             }
                         } catch (IhcExecption e) {
-                            logger.error("Can't update channel '{}' value, cause {}", channelUID, e.getMessage());
+                            logger.warn("Can't update channel '{}' value, cause {}", channelUID, e.getMessage());
                         }
                     }
                 }, pulseWidth, TimeUnit.MILLISECONDS);
