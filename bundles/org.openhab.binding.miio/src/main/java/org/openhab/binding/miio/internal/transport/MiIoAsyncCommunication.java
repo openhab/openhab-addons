@@ -379,7 +379,7 @@ public class MiIoAsyncCommunication {
             }
             senderThread.interrupt();
         } catch (Exception e) {
-            logger.debug("Error while closing ", e.getMessage());
+            logger.debug("Error while closing: {} ", e.getMessage());
         }
     }
 

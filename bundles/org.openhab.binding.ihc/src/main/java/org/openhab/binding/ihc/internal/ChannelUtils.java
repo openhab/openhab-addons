@@ -27,7 +27,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.ihc.internal.config.ChannelParams;
-import org.openhab.binding.ihc.internal.handler.IhcHandler;
 import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,7 @@ import org.w3c.dom.NodeList;
  * @author Pauli Anttila - Initial contribution
  */
 public class ChannelUtils {
-    private static final Logger LOGGER = LoggerFactory.getLogger(IhcHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChannelUtils.class);
 
     public static Set<Integer> getAllChannelsResourceIds(Thing thing) {
         Set<Integer> resourceIds = new HashSet<>();

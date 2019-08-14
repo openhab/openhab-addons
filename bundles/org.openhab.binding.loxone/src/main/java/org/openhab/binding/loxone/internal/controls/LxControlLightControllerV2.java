@@ -234,7 +234,7 @@ class LxControlLightControllerV2 extends LxControl {
         for (LxControlMood mood : array) {
             Integer id = mood.getId();
             if (id != null && mood.getName() != null) {
-                logger.debug("Adding mood {} (id={}, name={})", id, mood.getName());
+                logger.debug("Adding mood (id={}, name={})", id, mood.getName());
                 // mood-UUID = <controller-UUID>-M<mood-ID>
                 LxUuid moodUuid = new LxUuid(getUuid().toString() + "-M" + id);
                 mood.initialize(getConfig(), this, moodUuid);

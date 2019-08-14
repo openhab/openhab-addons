@@ -44,15 +44,13 @@ public class KonnectedHTTPUtils {
      * Sends a {@link doPut} request with a timeout of 30 seconds
      *
      * @param urlAddress the address to send the request
-     * @param payload    the json payload to include with the request
+     * @param payload the json payload to include with the request
      */
     private String doPut(String urlAddress, String payload) throws IOException {
         logger.debug("The String url we want to put is : {}", urlAddress);
         logger.debug("The payload we want to put is: {}", payload);
         ByteArrayInputStream input = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
-        logTest = HttpUtil.executeUrl("PUT", urlAddress, getHttpHeaders(), input, "application/json", requestTimeout);
-        logger.debug(logTest);
-        return logTest;
+        return HttpUtil.executeUrl("PUT", urlAddress, getHttpHeaders(), input, "application/json", requestTimeout);
     }
 
     protected Properties getHttpHeaders() {
@@ -69,32 +67,29 @@ public class KonnectedHTTPUtils {
 
     private synchronized String doGet(String urlAddress) throws IOException {
         logger.debug("The String url we want to get is : {}", urlAddress);
-        logTest = HttpUtil.executeUrl("GET", urlAddress, requestTimeout);
-        logger.debug(logTest);
-        return logTest;
+        return HttpUtil.executeUrl("GET", urlAddress, requestTimeout);
     }
 
     /**
      * Sends a {@link doGet} request with a timeout of 30 seconds
      *
      * @param urlAddress the address to send the request
-     * @param payload    the json payload you want to send as part of the request
+     * @param payload the json payload you want to send as part of the request
      */
 
     private synchronized String doGet(String urlAddress, String payload) throws IOException {
         logger.debug("The String url we want to get is : {}", urlAddress);
         ByteArrayInputStream input = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
-        logTest = HttpUtil.executeUrl("GET", urlAddress, getHttpHeaders(), input, "application/json", requestTimeout);
-        logger.debug(logTest);
-        return logTest;
+
+        return HttpUtil.executeUrl("GET", urlAddress, getHttpHeaders(), input, "application/json", requestTimeout);
     }
 
     /**
      * Sends a {@link doGet} request with a timeout of 30 seconds
      *
      * @param urlAddress the address to send the request
-     * @param payload    the json payload you want to send as part of the request, may be null.
-     * @param retry      the number of retries before throwing the IOexpcetion back to the handler
+     * @param payload the json payload you want to send as part of the request, may be null.
+     * @param retry the number of retries before throwing the IOexpcetion back to the handler
      */
     public synchronized String doGet(String urlAddress, String payload, int retryCount)
             throws KonnectedHttpRetryExceeded {
@@ -123,8 +118,8 @@ public class KonnectedHTTPUtils {
      * Sends a {@link doPut} request with a timeout of 30 seconds
      *
      * @param urlAddress the address to send the request
-     * @param payload    the json payload you want to send as part of the request
-     * @param retry      the number of retries before throwing the IOexpcetion back to the handler
+     * @param payload the json payload you want to send as part of the request
+     * @param retry the number of retries before throwing the IOexpcetion back to the handler
      */
     public synchronized String doPut(String urlAddress, String payload, int retryCount)
             throws KonnectedHttpRetryExceeded {

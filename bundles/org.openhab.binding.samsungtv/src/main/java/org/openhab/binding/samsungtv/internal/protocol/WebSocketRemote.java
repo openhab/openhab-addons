@@ -30,7 +30,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 class WebSocketRemote extends WebSocketBase {
-    private final Logger logger = LoggerFactory.getLogger(WebSocketBase.class);
+    private final Logger logger = LoggerFactory.getLogger(WebSocketRemote.class);
 
     @SuppressWarnings("unused")
     @NonNullByDefault({})
@@ -140,7 +140,7 @@ class WebSocketRemote extends WebSocketBase {
             remoteControllerWebSocket.apps.put(app.name, app);
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("Installed Apps: " + remoteControllerWebSocket.apps.entrySet().stream()
+            logger.debug("Installed Apps: {}", remoteControllerWebSocket.apps.entrySet().stream()
                     .map(entry -> entry.getValue().appId + " = " + entry.getKey()).collect(Collectors.joining(", ")));
         }
 

@@ -68,7 +68,7 @@ public class OpenAPIUtils {
         try {
             requestURI = new URI(HttpScheme.HTTP.asString(), null, address, port, path, null, null);
         } catch (URISyntaxException use) {
-            logger.warn(String.format("URI could not be parsed with path %s", path));
+            logger.warn("URI could not be parsed with path '{}'", path);
             throw new NanoleafException("Wrong URI format for API request");
         }
         return httpClient.newRequest(requestURI).method(method);

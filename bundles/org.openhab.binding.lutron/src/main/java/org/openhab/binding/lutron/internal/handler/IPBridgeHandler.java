@@ -413,7 +413,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Unable to initiate discovery because discoveryService is null");
             }
         } catch (Exception e) {
-            logger.warn("Error scanning for paired devices: ", e.getMessage());
+            logger.warn("Error scanning for paired devices: {}", e.getMessage());
         }
     }
 

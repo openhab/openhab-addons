@@ -110,13 +110,13 @@ public class LgTvSerialHandler extends BaseThingHandler {
             @Override
             public void onSuccess(ChannelUID channel, LGSerialResponse response) {
                 State state = response.getState();
-                logger.debug("Updating channel " + channel + " with value " + state);
+                logger.debug("Updating channel {} with value {}", channel, state);
                 updateState(channel, state);
             }
 
             @Override
             public void onFailure(ChannelUID channel, LGSerialResponse response) {
-                logger.debug("Received error response for channel " + channel + " : " + response.getState());
+                logger.debug("Received error response for channel {}: {}", channel, response.getState());
             }
 
         };
@@ -128,7 +128,7 @@ public class LgTvSerialHandler extends BaseThingHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Failed to connect to serial port " + portName);
-                logger.debug("Failed to connect to serial port " + portName);
+                logger.debug("Failed to connect to serial port {}", portName);
                 return;
             }
         } else {
@@ -159,8 +159,9 @@ public class LgTvSerialHandler extends BaseThingHandler {
     public void channelLinked(ChannelUID channelUID) {
         LGSerialCommand command = CommandFactory.createCommandFor(channelUID, responseListener);
         if (command == null) {
-            logger.error("A command could not be found for channel name '" + channelUID.getId()
-                    + "'. Please create an issue on the openhab project for the lgtvserial binding. ");
+            logger.warn(
+                    "A command could not be found for channel name '{}'. Please create an issue on the openhab project for the lgtvserial binding. ",
+                    channelUID.getId());
             return;
         }
         this.channelCommands.put(channelUID, command);
@@ -195,7 +196,8 @@ public class LgTvSerialHandler extends BaseThingHandler {
                 try {
                     entry.getValue().execute(entry.getKey(), communicator, null);
                 } catch (IOException e) {
-                    logger.error("An error occured while sending an update command for " + entry.getKey(), e);
+                    logger.warn("An error occured while sending an update command for {}: {}", entry.getKey(),
+                            e.getMessage());
                 }
             }
         }
