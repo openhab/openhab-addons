@@ -498,14 +498,14 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
     private void processInfo(String infoXML) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder;
-            builder = factory.newDocumentBuilder();
-            InputSource is = new InputSource(new StringReader(infoXML));
-            Document doc = builder.parse(is);
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            try (StringReader sr = new StringReader(infoXML)) {
+                InputSource is = new InputSource(sr);
+                Document doc = builder.parse(is);
 
-            NodeList selectableInputs = doc.getDocumentElement().getElementsByTagName("selector");
-            populateInputs(selectableInputs);
-
+                NodeList selectableInputs = doc.getDocumentElement().getElementsByTagName("selector");
+                populateInputs(selectableInputs);
+            }
         } catch (ParserConfigurationException | SAXException | IOException e) {
             logger.debug("Error occured during Info XML parsing.", e);
         }
