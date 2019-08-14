@@ -5,7 +5,7 @@
   <feature name="openhab-binding-doorbird" description="Doorbird Binding" version="${project.version}">
     <feature>openhab-runtime-base</feature>
     <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.doorbird/${project.version}</bundle>
-    <bundle dependency="true">wrap:mvn:com.goterl.lazycode/lazysodium-java/4.0.0$Bundle-Name=LazySodium-Java&amp;Bundle-SymbolicName=com.goterl.lazycode.lazysodium-java&amp;Bundle-Version=4.0.0</bundle>
-    <bundle dependency="true">mvn:net.java.dev.jna/jna/5.3.0</bundle>
+    <bundle dependency="true">wrap:mvn:com.goterl.lazycode/lazysodium-java/4.0.1$Bundle-Name=LazySodium-Java&amp;Bundle-SymbolicName=com.goterl.lazycode.lazysodium-java&amp;Bundle-Version=4.0.0</bundle>
+    <bundle dependency="true">mvn:net.java.dev.jna/jna/5.4.0</bundle>
   </feature>
 </features>

@@ -65,6 +65,14 @@ A Switch profile is available for the doorbell and motion channels that will cau
 states to be set for items linked to the `doorbell` and `motion` channels.
 See *Items* example below.
 
+
+## Known Issues
+
+The Doorbird uses the UDP protocol on port 6524 to broadcast events for Doorbird actions, such as doorbell pressed, motion detected, etc.
+If the Doorbord is on a separate subnet or VLAN from openHAB, those UDP packets won't route by default.
+In that case, the Doorbird binding will not receive those events.
+Either put the Doorbird and openHAB on the same subnet/VLAN, or set up your network to explicitly route those UDP packets.
+
 ## Full Example
 
 ### Things
