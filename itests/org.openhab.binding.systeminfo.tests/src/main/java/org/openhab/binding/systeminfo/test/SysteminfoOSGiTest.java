@@ -129,9 +129,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         }
         systeminfoHandlerFactory.bindSystemInfo(mockedSystemInfo);
 
-        managedThingProvider =
-
-                getService(ThingProvider.class, ManagedThingProvider.class);
+        managedThingProvider = getService(ThingProvider.class, ManagedThingProvider.class);
         assertThat(managedThingProvider, is(notNullValue()));
 
         thingRegistry = getService(ThingRegistry.class);
