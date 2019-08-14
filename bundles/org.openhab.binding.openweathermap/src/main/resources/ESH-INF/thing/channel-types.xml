@@ -35,6 +35,7 @@
 			<channel id="cloudiness" typeId="cloudiness" />
 			<channel id="rain" typeId="rain" />
 			<channel id="snow" typeId="snow" />
+			<channel id="visibility" typeId="visibility" />
 		</channels>
 	</channel-group-type>
 
@@ -309,6 +310,13 @@
 		<label>Forecasted UV Index</label>
 		<description>Forecasted UV Index.</description>
 		<state readOnly="true" pattern="%.1f" />
+	</channel-type>
+
+	<channel-type id="visibility">
+		<item-type>Number:Length</item-type>
+		<label>Visibility</label>
+		<description>Current visibility.</description>
+		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
 
 </thing:thing-descriptions>
