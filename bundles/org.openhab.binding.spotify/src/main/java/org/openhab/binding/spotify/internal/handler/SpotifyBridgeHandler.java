@@ -137,6 +137,8 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
         if (command instanceof RefreshType) {
             if (CHANNEL_PLAYED_ALBUMIMAGE.equals(channelUID.getId())) {
                 albumUpdater.refreshAlbumImage(channelUID);
+            } else if (CHANNEL_ACCESSTOKEN.equals(channelUID.getId())) {
+                onAccessTokenResponse(getAccessTokenResponse());
             } else {
                 lastTrackId = StringType.EMPTY;
             }
@@ -175,16 +177,18 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
 
     @Override
     public boolean isAuthorized() {
+        final AccessTokenResponse accessTokenResponse = getAccessTokenResponse();
+
+        return accessTokenResponse != null && accessTokenResponse.getAccessToken() != null
+                && accessTokenResponse.getRefreshToken() != null;
+    }
+
+    private @Nullable AccessTokenResponse getAccessTokenResponse() {
         try {
-            if (oAuthService == null) {
-                return false;
-            }
-            final AccessTokenResponse accessTokenResponse = oAuthService.getAccessTokenResponse();
-            return accessTokenResponse != null && accessTokenResponse.getAccessToken() != null
-                    && accessTokenResponse.getRefreshToken() != null;
+            return oAuthService == null ? null : oAuthService.getAccessTokenResponse();
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
             logger.debug("Exception checking authorization: ", e);
-            return false;
+            return null;
         }
     }
 
@@ -323,6 +327,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     private boolean pollStatus() {
         synchronized (pollSynchronization) {
             try {
+                onAccessTokenResponse(getAccessTokenResponse());
                 // Collect devices and populate selection with available devices.
                 final List<Device> ld = devicesCache.getValue();
                 final List<Device> devices = ld == null ? Collections.emptyList() : ld;
@@ -371,8 +376,9 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
-        updateChannelState(CHANNEL_ACCESSTOKEN, new StringType(tokenResponse.getAccessToken()));
+    public void onAccessTokenResponse(@Nullable AccessTokenResponse tokenResponse) {
+        updateChannelState(CHANNEL_ACCESSTOKEN,
+                new StringType(tokenResponse == null ? null : tokenResponse.getAccessToken()));
     }
 
     /**
