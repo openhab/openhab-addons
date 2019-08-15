@@ -161,6 +161,13 @@ Channel label is defined in the following way:
 *   For controls that belong to a room: `<Room name> / <Control name>`
 *   For controls without a room: `<Control name>`
 
+Channels have the default tags as follows:
+
+*   **Dimmer**: when it belongs to a category of _Lights_ type, the channel will be tagged with _Lighting_ tag. 
+*   **InfoOnlyAnalog**: when it belongs to a category of _Indoor Temperature_ type, it will be tagger with _CurrentTemperature_ tag.
+*   **Jalousie**: main rollershutter channel will be tagged with _Blinds_ tag. Shade and automatic shade switch channels will be tagged with _Switchable_ tag.
+*   **LightController (V1 and V2)**: main channel with selected scene will be tagged with _Scene_ tag.
+*   **Switch**, **TimedSwitch** and **Pushbutton** controls: when it belongs to a category that is of a _Lights_ type, the channel will be tagged with _Lighting_ tag. Otherwise it will be tagged with _Switchable_ tag.
 
 ## Advanced Parameters
 

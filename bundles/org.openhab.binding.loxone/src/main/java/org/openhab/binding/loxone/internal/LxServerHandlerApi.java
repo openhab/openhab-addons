@@ -13,7 +13,6 @@
 package org.openhab.binding.loxone.internal;
 
 import java.io.IOException;
-import java.nio.channels.Channels;
 import java.util.Map;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -29,7 +28,7 @@ import com.google.gson.Gson;
 
 /**
  * Representation of a Loxone Miniserver. It is an openHAB {@link Thing}, which is used to communicate with
- * objects (controls) configured in the Miniserver over {@link Channels}.
+ * objects (controls) configured in the Miniserver over channels.
  *
  * @author Pawel Pieczul - Initial contribution
  */

@@ -97,13 +97,14 @@ public class HueEmulationService implements EventHandler {
                 return;
             }
 
-            InputStream stream = requestContext.getEntityStream();
-            String body = stream != null
-                    ? new BufferedReader(new InputStreamReader(stream)).lines().collect(Collectors.joining("\n"))
-                    : "";
+            // InputStream stream = requestContext.getEntityStream();
+            // String body = stream != null
+            //         ? new BufferedReader(new InputStreamReader(stream)).lines().collect(Collectors.joining("\n"))
+            //         : "";
 
-            logger.debug("REST request {} {}: {}", requestContext.getMethod(), requestContext.getUriInfo().getPath(),
-                    body);
+            // logger.debug("REST request {} {}: {}", requestContext.getMethod(), requestContext.getUriInfo().getPath(),
+            //         body);
+            logger.debug("REST request {} {}", requestContext.getMethod(), requestContext.getUriInfo().getPath());
             logger.debug("REST response: {}", responseContext.getEntity());
         }
 

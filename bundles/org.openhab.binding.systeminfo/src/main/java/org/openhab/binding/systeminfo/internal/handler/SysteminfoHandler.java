@@ -124,7 +124,7 @@ public class SysteminfoHandler extends BaseThingHandler {
             logger.debug("Systeminfo implementation is instantiated!");
             return true;
         } catch (Exception e) {
-            logger.error("Cannot instantate Systeminfo object!", e);
+            logger.warn("Cannot instantiate Systeminfo object!", e);
             return false;
         }
     }

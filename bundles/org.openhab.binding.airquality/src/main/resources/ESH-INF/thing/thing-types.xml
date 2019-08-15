@@ -19,6 +19,7 @@
 			<channel id="o3" typeId="o3" />
 			<channel id="no2" typeId="no2" />
 			<channel id="co" typeId="co" />
+			<channel id="so2" typeId="so2" />
 			<channel id="locationName" typeId="locationName" />
 			<channel id="stationLocation" typeId="stationLocation" />
 			<channel id="stationId" typeId="stationId" />
@@ -105,6 +106,14 @@
 		<label>CO</label>
 		<description>Carbon monoxide level</description>
 		<category>CO</category>
+		<state readOnly="true" pattern="%.1f"/>
+	</channel-type>
+
+	<channel-type id="so2">
+		<item-type>Number</item-type>
+		<label>SO2</label>
+		<description>Sulfur dioxide level</description>
+		<category>SO2</category>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 

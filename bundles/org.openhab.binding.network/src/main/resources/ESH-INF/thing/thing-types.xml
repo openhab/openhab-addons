@@ -124,6 +124,12 @@
 				<description>Refresh time interval in minutes.</description>
 				<default>20</default>
 			</parameter>
+			<parameter name="initialDelay" type="integer" min="2">
+				<label>Initial Delay</label>
+				<description>Delay before starting the first speed test (minutes) after initialization of the binding.</description>
+				<default>5</default>
+                <advanced>true</advanced>
+			</parameter>
 			<parameter name="uploadSize" type="integer" min="5000">
 				<label>Upload size</label>
 				<description>Size of the file to be uploaded (bytes).</description>
@@ -144,7 +150,7 @@
 		<item-type>Switch</item-type>
 		<label>Test Running</label>
 		<description>Indicates if a test is currently ongoing</description>
-		<state readOnly="true"></state>
+		<state readOnly="false"></state>
 	</channel-type>
 	
 	<channel-type id="progress">
@@ -155,17 +161,17 @@
 	</channel-type>
 	
 	<channel-type id="rateUp">
-		<item-type>Number</item-type>
+		<item-type>Number:DataTransferRate</item-type>
 		<label>Upload Rate</label>
-		<description>Current upload rate in bit/s</description>
-		<state readOnly="true" pattern="%d b/s" />
+		<description>Current upload rate</description>
+		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 
 	<channel-type id="rateDown">
-		<item-type>Number</item-type>
+		<item-type>Number:DataTransferRate</item-type>
 		<label>Download Rate</label>
-		<description>Current download rate in bit/s</description>
-		<state readOnly="true" pattern="%d b/s" />
+		<description>Current download rate</description>
+		<state readOnly="true" pattern="%d %unit%" />
 	</channel-type>
 	
 	<channel-type id="Timestamp">

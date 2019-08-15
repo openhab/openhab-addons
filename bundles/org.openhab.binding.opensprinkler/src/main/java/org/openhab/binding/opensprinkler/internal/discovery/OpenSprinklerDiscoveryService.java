@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(OpenSprinklerDiscoveryService.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
-            Arrays.asList(OPENSPRINKLER_THING));
+            Arrays.asList(OPENSPRINKLER_HTTP_BRIDGE));
 
     private ExecutorService discoverySearchPool;
 
@@ -92,7 +92,7 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
      * @param ip IP address of the OpenSprinkler device as a string.
      */
     public void submitDiscoveryResults(String ip) {
-        ThingUID uid = new ThingUID(OPENSPRINKLER_THING, ip.replace('.', '_'));
+        ThingUID uid = new ThingUID(OPENSPRINKLER_HTTP_BRIDGE, ip.replace('.', '_'));
 
         HashMap<String, Object> properties = new HashMap<>();
 

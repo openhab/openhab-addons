@@ -19,6 +19,8 @@ import static org.mockito.Mockito.verify;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -28,12 +30,14 @@ import java.util.concurrent.TimeUnit;
 import javax.naming.ConfigurationException;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection.Protocol;
 import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionObserver;
 import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionState;
 import org.eclipse.smarthome.io.transport.mqtt.MqttException;
 import org.eclipse.smarthome.io.transport.mqtt.MqttService;
+import org.eclipse.smarthome.test.java.JavaTest;
 import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
 import org.junit.After;
@@ -53,7 +57,7 @@ import io.moquette.broker.subscriptions.Topic;
  *
  * @author David Graeff - Initial contribution
  */
-public class MqttEmbeddedBrokerServiceTest {
+public class MqttEmbeddedBrokerServiceTest extends JavaTest {
     private final Logger logger = LoggerFactory.getLogger(MqttEmbeddedBrokerServiceTest.class);
 
     private EmbeddedBrokerService subject;
@@ -164,6 +168,13 @@ public class MqttEmbeddedBrokerServiceTest {
     @Test
     public void testPersistence() throws InterruptedException, IOException, ExecutionException {
         config.persistenceFile = "persist.mqtt";
+        Path path = Paths.get(ConfigConstants.getUserDataFolder()).toAbsolutePath();
+        File jksFile = path.resolve(config.persistenceFile).toFile();
+
+        if (jksFile.exists()) {
+            jksFile.delete();
+        }
+
         subject.initialize(config);
 
         MqttBrokerConnection c = subject.getConnection();
@@ -175,9 +186,9 @@ public class MqttEmbeddedBrokerServiceTest {
 
         // Stop server -> close persistence storage and sync it to disk
         subject.deactivate();
-
-        File jksFile = new File(subject.getPersistenceFilename());
         assertTrue(jksFile.exists());
+        // this is needed to ensure the file is correctly written
+        waitForAssert(() -> assertEquals(12288, jksFile.length()));
 
         // The original file is still open, create a temp file for examination
         File temp = File.createTempFile("abc", ".tmp");

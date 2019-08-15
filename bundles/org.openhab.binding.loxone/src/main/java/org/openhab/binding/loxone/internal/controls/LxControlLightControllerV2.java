@@ -118,6 +118,7 @@ class LxControlLightControllerV2 extends LxControl {
     @Override
     public void initialize(LxControlConfig config) {
         super.initialize(config);
+        tags.add("Scene");
         // add only channel, state description will be added later when a control state update message is received
         channelId = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_LIGHT_CTRL),
                 defaultChannelLabel, "Light controller V2", tags, this::handleCommands, this::getChannelState);

@@ -44,6 +44,7 @@
     <module>org.openhab.binding.allplay</module>
     <module>org.openhab.binding.amazondashbutton</module>
     <module>org.openhab.binding.amazonechocontrol</module>
+    <module>org.openhab.binding.ambientweather</module>
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.autelis</module>
@@ -149,6 +150,7 @@
     <module>org.openhab.binding.openuv</module>
     <module>org.openhab.binding.openweathermap</module>
     <module>org.openhab.binding.orvibo</module>
+    <module>org.openhab.binding.paradoxalarm</module>
     <module>org.openhab.binding.pentair</module>
     <module>org.openhab.binding.phc</module>
     <module>org.openhab.binding.pioneeravr</module>
@@ -169,14 +171,17 @@
     <module>org.openhab.binding.sensebox</module>
     <module>org.openhab.binding.serialbutton</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>
+    <module>org.openhab.binding.siemensrds</module>
     <module>org.openhab.binding.sleepiq</module>
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.smartmeter</module>
+    <module>org.openhab.binding.snmp</module>
     <module>org.openhab.binding.solaredge</module>
     <module>org.openhab.binding.solarlog</module>
     <module>org.openhab.binding.somfytahoma</module>
     <module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.sonyaudio</module>
+    <module>org.openhab.binding.sonyprojector</module>
     <module>org.openhab.binding.spotify</module>
     <module>org.openhab.binding.squeezebox</module>
     <module>org.openhab.binding.synopanalyzer</module>
@@ -191,6 +196,7 @@
     <module>org.openhab.binding.unifi</module>
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.valloxmv</module>
+    <module>org.openhab.binding.vektiva</module>
     <module>org.openhab.binding.velbus</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.volvooncall</module>
@@ -247,8 +253,8 @@
       <optional>true</optional>
       <exclusions>
         <exclusion>
-            <groupId>*</groupId>
-            <artifactId>*</artifactId>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

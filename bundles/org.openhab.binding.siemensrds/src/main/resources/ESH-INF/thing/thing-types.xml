@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions
+	bindingId="siemensrds"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="climatixic">
+
+		<label>Siemens Climatix IC Account</label>
+		<description>The Siemens Climatix IC cloud server account for accessing RDS Smart Thermostats</description>
+
+		<properties>
+			<property name="vendor">Siemens</property>
+			<property name="modelId">ClimatixIC</property>
+		</properties>
+
+		<config-description>
+			<parameter name="userEmail" type="text" required="true">
+				<label>User E-mail Address</label>
+				<description>The e-mail address that was used to register the smart thermostats</description>
+			</parameter>
+
+			<parameter name="userPassword" type="text" required="true">
+				<context>password</context>
+				<label>User Password</label>
+				<description>The password that was used to register the smart thermostats</description>
+			</parameter>
+
+			<parameter name="pollingInterval" type="integer" min="10"
+				required="true">
+				<label>Polling Interval</label>
+				<description>Time (seconds) between polling requests (min=8, max/default=60)</description>
+				<default>60</default>
+			</parameter>
+
+			<parameter name="apiKey" type="text" required="true">
+				<label>Climatix IC API Key</label>
+				<description>The key needed to access the Siemens Climatix IC cloud server</description>
+			</parameter>
+
+		</config-description>
+
+	</bridge-type>
+
+	<thing-type id="rds">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="climatixic" />
+		</supported-bridge-type-refs>
+
+		<label>RDS Thermostat</label>
+		<description>Siemens RDS Smart Thermostat</description>
+
+		<channels>
+			<channel id="roomTemperature" typeId="temperature">
+				<label>Room Temperature</label>
+				<description>Actual room temperature</description>
+			</channel>
+
+			<channel id="targetTemperature" typeId="targetTemperature">
+				<label>Target Temperature</label>
+				<description>Target temperature setting for the room</description>
+			</channel>
+
+			<channel id="thermostatOutputState" typeId="thermostatOutputState">
+				<label>Thermostat Output State</label>
+				<description>The output state of the the thermostat (Heating, Cooling)</description>
+			</channel>
+
+			<channel id="roomHumidity" typeId="roomHumidity">
+				<label>Room Humidity</label>
+				<description>Actual room humidity</description>
+			</channel>
+
+			<channel id="roomAirQuality" typeId="roomAirQuality">
+				<label>Room Air Quality</label>
+				<description>Actual room air quality</description>
+			</channel>
+
+			<channel id="outsideTemperature" typeId="temperature">
+				<label>Outside Temperature</label>
+				<description>Actual outside temperature</description>
+			</channel>
+
+			<channel id="energySavingsLevel" typeId="energySavingsLevel">
+				<label>Energy Savings Level</label>
+				<description>Energy savings level (Green Leaf)</description>
+			</channel>
+
+			<channel id="thermostatAutoMode" typeId="thermostatAutoMode">
+				<label>Thermostat Auto Mode</label>
+				<description>The thermostat is in Automatic Mode (Off = Manual Mode)</description>
+			</channel>
+
+			<channel id="occupancyModePresent"
+				typeId="occupancyModePresent">
+				<label>Occupancy Mode Present</label>
+				<description>The thermostat is in Present Occupancy Mode (Off = Away Mode)</description>
+			</channel>
+
+			<channel id="hotWaterAutoMode" typeId="hotWaterAutoMode">
+				<label>Hotwater Auto Mode</label>
+				<description>The domestic water heating is in Automatic Mode (Off = Manual Mode)</description>
+			</channel>
+
+			<channel id="hotWaterOutputState"
+				typeId="hotWaterOutputState">
+				<label>Hotwater Output State</label>
+				<description>The On/Off state of the domestic water heating</description>
+			</channel>
+
+		</channels>
+
+		<properties>
+			<property name="vendor">Siemens</property>
+			<property name="modelId">RDS</property>
+		</properties>
+
+		<config-description>
+			<parameter name="plantId" type="text" required="true">
+				<label>Plant Id</label>
+				<description>The Plant Id of the thermostat in the Siemens Climatix IC cloud account</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Measured temperature value</description>
+		<category>temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="targetTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>Target temperature setting</description>
+		<category>temperature</category>
+		<state readOnly="false" pattern="%.1f %unit%" min="5" max="30"
+			step="0.5" />
+	</channel-type>
+
+	<channel-type id="thermostatOutputState">
+		<item-type>String</item-type>
+		<label>Thermostat Output State</label>
+		<description>The output state of the the thermostat (Heating, Cooling)</description>
+		<category>fire</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="roomHumidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>Measured humidity value</description>
+		<category>humidity</category>
+		<state readOnly="true" pattern="%.0f %%r.H." />
+	</channel-type>
+
+	<channel-type id="roomAirQuality">
+		<item-type>String</item-type>
+		<label>Air Quality</label>
+		<description>Room Air Quality</description>
+		<category>qualityofservice</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="energySavingsLevel">
+		<item-type>String</item-type>
+		<label>Energy Savings Level</label>
+		<description>Energy savings level (Green Leaf)</description>
+		<category>qualityofservice</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="thermostatAutoMode">
+		<item-type>Switch</item-type>
+		<label>Thermostat Auto Mode</label>
+		<description>The thermostat is in Automatic Mode (Off = Manual Mode)</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="occupancyModePresent">
+		<item-type>Switch</item-type>
+		<label>Occupancy Mode Present</label>
+		<description>The thermostat is in Present Occupancy Mode (Off = Away Mode)</description>
+		<category>presence</category>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="hotWaterAutoMode">
+		<item-type>Switch</item-type>
+		<label>Hotwater Auto Mode</label>
+		<description>The domestic water heating is in Automatic Mode (Off = Manual Mode)</description>
+		<state readOnly="false" />
+	</channel-type>
+
+	<channel-type id="hotWaterOutputState">
+		<item-type>Switch</item-type>
+		<label>Hotwater Output State</label>
+		<description>The On/Off state of the domestic water heating</description>
+		<state readOnly="false" />
+	</channel-type>
+
+</thing:thing-descriptions>

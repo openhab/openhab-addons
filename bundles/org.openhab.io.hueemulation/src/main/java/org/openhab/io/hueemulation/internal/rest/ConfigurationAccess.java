@@ -53,7 +53,6 @@ import io.swagger.annotations.ApiResponses;
 @NonNullByDefault
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class ConfigurationAccess {
     @Reference
     protected @NonNullByDefault({}) ConfigStore cs;

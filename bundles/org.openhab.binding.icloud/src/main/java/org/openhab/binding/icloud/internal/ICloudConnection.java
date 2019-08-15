@@ -25,7 +25,7 @@ import org.openhab.binding.icloud.internal.json.request.ICloudAccountDataRequest
 import org.openhab.binding.icloud.internal.json.request.ICloudFindMyDeviceRequest;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;;
+import com.google.gson.GsonBuilder;
 
 /**
  * Handles communication with the Apple server. Provides methods to

@@ -10,6 +10,7 @@
 /bundles/org.openhab.binding.allplay/ @dominicdesun
 /bundles/org.openhab.binding.amazondashbutton/ @OLibutzki
 /bundles/org.openhab.binding.amazonechocontrol/ @mgeramb
+/bundles/org.openhab.binding.ambientweather/ @mhilbush
 /bundles/org.openhab.binding.astro/ @gerrieg
 /bundles/org.openhab.binding.atlona/ @tmrobert8
 /bundles/org.openhab.binding.autelis/ @digitaldan
@@ -79,7 +80,7 @@
 /bundles/org.openhab.binding.lirc/ @kabili207
 /bundles/org.openhab.binding.logreader/ @paulianttila
 /bundles/org.openhab.binding.loxone/ @ppieczul
-/bundles/org.openhab.binding.lutron/ @actong
+/bundles/org.openhab.binding.lutron/ @actong @bobadair
 /bundles/org.openhab.binding.mail/ @J-N-K
 /bundles/org.openhab.binding.max/ @marcelrv
 /bundles/org.openhab.binding.mcp23017/ @aogorek
@@ -111,10 +112,11 @@
 /bundles/org.openhab.binding.onewiregpio/ @aogorek
 /bundles/org.openhab.binding.onewire/ @J-N-K
 /bundles/org.openhab.binding.onkyo/ @pail23 @paulianttila
-/bundles/org.openhab.binding.opensprinkler/ @CrackerStealth
+/bundles/org.openhab.binding.opensprinkler/ @CrackerStealth @FlorianSW
 /bundles/org.openhab.binding.openuv/ @clinique
 /bundles/org.openhab.binding.openweathermap/ @cweitkamp
 /bundles/org.openhab.binding.orvibo/ @tavalin
+/bundles/org.openhab.binding.paradoxalarm/ @theater
 /bundles/org.openhab.binding.pentair/ @jsjames
 /bundles/org.openhab.binding.phc/ @gnlpfjh
 /bundles/org.openhab.binding.pioneeravr/ @Stratehm
@@ -134,15 +136,18 @@
 /bundles/org.openhab.binding.seneye/ @nikotanghe
 /bundles/org.openhab.binding.sensebox/ @hakan42
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
+/bundles/org.openhab.binding.siemensrds/ @andrewfg
 /bundles/org.openhab.binding.silvercrestwifisocket/ @jmvaz
 /bundles/org.openhab.binding.sleepiq/ @syphr42
 /bundles/org.openhab.binding.smaenergymeter/ @monnimeter
 /bundles/org.openhab.binding.smartmeter/ @msteigenberger
+/bundles/org.openhab.binding.snmp/ @J-N-K
 /bundles/org.openhab.binding.solaredge/ @alexf2015
 /bundles/org.openhab.binding.solarlog/ @johannrichard
 /bundles/org.openhab.binding.somfytahoma/ @octa22
 /bundles/org.openhab.binding.sonos/ @kgoderis @lolodomo
 /bundles/org.openhab.binding.sonyaudio/ @freke
+/bundles/org.openhab.binding.sonyprojector/ @lolodomo
 /bundles/org.openhab.binding.spotify/ @Hilbrand
 /bundles/org.openhab.binding.squeezebox/ @digitaldan @mhilbush
 /bundles/org.openhab.binding.synopanalyzer/ @clinique
@@ -157,6 +162,7 @@
 /bundles/org.openhab.binding.unifi/ @mgbowman
 /bundles/org.openhab.binding.urtsi/ @OLibutzki
 /bundles/org.openhab.binding.valloxmv/ @bjoernbrings
+/bundles/org.openhab.binding.vektiva/ @octa22
 /bundles/org.openhab.binding.velbus/ @cedricboon
 /bundles/org.openhab.binding.vitotronic/ @steand
 /bundles/org.openhab.binding.volvooncall/ @clinique

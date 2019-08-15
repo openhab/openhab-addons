@@ -18,10 +18,13 @@ package org.openhab.binding.lutron.internal.discovery.project;
  * @author Allan Tong - Initial contribution
  */
 public enum DeviceType {
+    GRAFIK_EYE_QS,
     HYBRID_SEETOUCH_KEYPAD,
+    INTERNATIONAL_SEETOUCH_KEYPAD,
     MAIN_REPEATER,
     MOTION_SENSOR,
     PICO_KEYPAD,
+    QS_IO_INTERFACE,
     SEETOUCH_KEYPAD,
     SEETOUCH_TABLETOP_KEYPAD,
     VISOR_CONTROL_RECEIVER
