@@ -22,6 +22,7 @@ public enum SnmpDatatype {
     INT32,
     UINT32,
     COUNTER64,
+    FLOAT,
     STRING,
     IPADDRESS
 }
