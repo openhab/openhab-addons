@@ -1,5 +1,8 @@
 # Azure IoT Hub Connector
 
+Information: At the moment there is a change by Azures IoT library that caused an permanent ERROR with this connector.
+[Read more here](https://github.com/openhab/openhab2-addons/issues/3647).
+
 The Azure IoT Hub connector replicates your local things to a [Microsoft Azure IoT Hub](https://azure.microsoft.com/en-us/services/iot-hub/).
 This IoT building block resides in the Azure cloud and allows 2 way communication with your devices and your IoT infrastructure in the cloud.
 The IoT hub can be connected to other Azure services like a [database](https://azure.microsoft.com/en-us/services/hdinsight/), [stream analytics](https://azure.microsoft.com/en-us/services/stream-analytics/), [machine learning](https://azure.microsoft.com/en-us/services/machine-learning/) and [time series insights](https://azure.microsoft.com/en-us/services/time-series-insights/).
@@ -19,7 +22,7 @@ If you want to log more than this, you can switch to a paying price tier, see [p
 
 From the [Azure portal](http://portal.azure.com/), you need to create an IoT Hub.
 Click on the '+' sign on the upper left, search for 'IoT Hub', click create and follow the wizard.
-Once the hub is available, go to settings - Shared access policies, click `iothubowner` and copy the connection string - primary key.
+Once the hub is available, go to settings - `Shared access policies`, click `iothubowner` and copy the `connection string - primary key`. The first `Primary key` does not contain the adress of your Azure IoT device.
 When configuring your connector in openHAB, you need to provide this string as the parameter `connectionstring`.
 
 ### Mode
