@@ -183,7 +183,7 @@ The devices support some of the following channels:
 | status            | Number             | This channel save status state for a CLIP sensor.                                                                                       | 0840                                |
 | last_updated      | DateTime           | This channel the date and time when the sensor was last updated.                                                                        | 0820, 0830, 0840, 0850, 0106, 0107, 0302|
 | battery_level     | Number             | This channel shows the battery level.                                                                                                   | 0820, 0106, 0107, 0302             |
-| battery_low       | Switch             | This channel indicates whether the battery is low or not.                                                                               | 0820, 0106, 0107, 0302             |
+| battery_low       | Switch             | This channel indicates whether the battery is low or not.                                                                               | 0820, 0106, 0107, 0302  |
 
 ### Trigger Channels
 
@@ -224,6 +224,17 @@ The `tap_switch_event` can trigger one of the following events:
 | Button 3 | Button 3 | 17    |
 | Button 4 | Button 4 | 18    |
 
+### Scene Channel
+
+The bridge itself supports a channel to activate scenes:
+
+| Channel Type ID | Item Type | Description |
+| --------------- | --------- | ----------- |
+| scene             | String             | This channel activates the scene with the given ID String. | 
+
+The scenes are identified by an ID String that is assigned by the Hue bridge. These must be aquired directly from [Hue REST API](https://developers.meethue.com/develop/hue-api/).
+
+This channel can then be used in the sitemap, for example as a switch or selection.
 
 ## Rule Actions
 
@@ -301,6 +312,9 @@ Switch   MotionSensorLowBattery   { channel="hue:0107:1:motion-sensor:battery_lo
 
 // Temperature Sensor
 Number:Temperature TemperatureSensorTemperature { channel="hue:0302:temperature-sensor:temperature" }
+
+// Scenes
+String LightScene { channel="hue:bridge:1:scene"}
 ```
 
 Note: The bridge ID is in this example **1** but can be different in each system.
@@ -336,6 +350,9 @@ sitemap demo label="Main Menu"
         Text item=MotionSensorLastUpdate
         Text item=MotionSensorBatteryLevel
         Switch item=MotionSensorLowBattery
+
+        // Light Scenes
+        Switch item=LightScene label="Scene []" mappings=[abcdefgh1234567="Relax", ABCDEFGH1234567="Concentrate"]
     }
 }
 ```

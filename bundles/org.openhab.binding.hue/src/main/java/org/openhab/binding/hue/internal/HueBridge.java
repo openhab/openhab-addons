@@ -605,13 +605,12 @@ public class HueBridge {
      * @throws UnauthorizedException thrown if the user no longer exists
      * @throws EntityNotAvailableException thrown if the specified group no longer exists
      */
-    public void setGroupState(Group group, StateUpdate update) throws IOException, ApiException {
+    public CompletableFuture<Result> setGroupState(Group group, StateUpdate update) {
         requireAuthentication();
 
         String body = update.toJson();
-        Result result = http.put(getRelativeURL("groups/" + enc(group.getId()) + "/action"), body);
-
-        handleErrors(result);
+        return http.putAsync(getRelativeURL("groups/" + enc(group.getId()) + "/action"), body, update.getMessageDelay(),
+                scheduler);
     }
 
     /**
@@ -850,6 +849,17 @@ public class HueBridge {
         Result result = http.delete(getRelativeURL("schedules/" + enc(schedule.getId())));
 
         handleErrors(result);
+    }
+
+    /**
+     * Activate scene to all lights that belong to the scene.
+     *
+     * @param id the scene to be activated
+     * @throws IOException if the bridge cannot be reached
+     */
+    public CompletableFuture<Result> activateScene(String id) {
+        Group allLightsGroup = new Group();
+        return setGroupState(allLightsGroup, new StateUpdate().setScene(id));
     }
 
     /**

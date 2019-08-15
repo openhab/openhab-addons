@@ -36,6 +36,7 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -144,29 +145,29 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         }
 
         protected abstract void doConnectedRun() throws IOException, ApiException;
+    }
 
-        private boolean isReachable(String ipAddress) {
-            try {
-                // note that InetAddress.isReachable is unreliable, see
-                // http://stackoverflow.com/questions/9922543/why-does-inetaddress-isreachable-return-false-when-i-can-ping-the-ip-address
-                // That's why we do an HTTP access instead
+    private boolean isReachable(String ipAddress) {
+        try {
+            // note that InetAddress.isReachable is unreliable, see
+            // http://stackoverflow.com/questions/9922543/why-does-inetaddress-isreachable-return-false-when-i-can-ping-the-ip-address
+            // That's why we do an HTTP access instead
 
-                // If there is no connection, this line will fail
-                hueBridge.authenticate("invalid");
-            } catch (IOException e) {
+            // If there is no connection, this line will fail
+            hueBridge.authenticate("invalid");
+        } catch (IOException e) {
+            return false;
+        } catch (ApiException e) {
+            if (e.getMessage().contains("SocketTimeout") || e.getMessage().contains("ConnectException")
+                    || e.getMessage().contains("SocketException")
+                    || e.getMessage().contains("NoRouteToHostException")) {
                 return false;
-            } catch (ApiException e) {
-                if (e.getMessage().contains("SocketTimeout") || e.getMessage().contains("ConnectException")
-                        || e.getMessage().contains("SocketException")
-                        || e.getMessage().contains("NoRouteToHostException")) {
-                    return false;
-                } else {
-                    // this seems to be only an authentication issue
-                    return true;
-                }
+            } else {
+                // this seems to be only an authentication issue
+                return true;
             }
-            return true;
         }
+        return true;
     }
 
     private final Runnable sensorPollingRunnable = new PollingRunnable() {
@@ -326,7 +327,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // not needed
+        if (CHANNEL_SCENE.equals(channelUID.getId()) && command instanceof StringType) {
+            activateScene(command.toString());
+        }
     }
 
     @Override
@@ -386,11 +389,11 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     @Override
     public void updateGroupState(FullGroup group, StateUpdate stateUpdate) {
         if (hueBridge != null) {
-            try {
-                hueBridge.setGroupState(group, stateUpdate);
-            } catch (IOException | ApiException e) {
+            hueBridge.setGroupState(group, stateUpdate).exceptionally(e -> {
                 handleStateUpdateException(group, stateUpdate, e);
-            }
+                return null;
+            });
+
         } else {
             logger.debug("No bridge connected or selected. Cannot set group state.");
         }
@@ -723,6 +726,29 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         return groupStatusListeners.remove(groupStatusListener);
     }
 
+    /**
+     * Activate scene to all lights that belong to the scene.
+     *
+     * @param id the ID of the scene to activate
+     */
+    @Override
+    public void activateScene(String id) {
+        if (hueBridge != null) {
+            hueBridge.activateScene(id).thenAccept(result -> {
+                try {
+                    hueBridge.handleErrors(result);
+                } catch (Exception e) {
+                    logger.warn("Error while activating scene: {}", e.getMessage(), e);
+                }
+            }).exceptionally(e -> {
+                logger.warn("Error while activating scene: {}", e.getMessage(), e);
+                return null;
+            });
+        } else {
+            logger.warn("No bridge connected or selected. Cannot activate scene.");
+        }
+    }
+
     @Override
     public @Nullable FullLight getLightById(String lightId) {
         return lastLightStates.get(lightId);
@@ -773,6 +799,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         });
     }
 
+    @Nullable
     private <T> T withReAuthentication(String taskDescription, Callable<T> runnable) {
         if (hueBridge != null) {
             try {
@@ -893,7 +920,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         Collection<ConfigStatusMessage> configStatusMessages;
 
         // Check whether an IP address is provided
-        if (hueBridgeConfig.getIpAddress() == null || hueBridgeConfig.getIpAddress().isEmpty()) {
+        if (hueBridgeConfig.getIpAddress().isEmpty()) {
             configStatusMessages = Collections.singletonList(ConfigStatusMessage.Builder.error(HOST)
                     .withMessageKeySuffix(HueConfigStatusMessage.IP_ADDRESS_MISSING).withArguments(HOST).build());
         } else {
