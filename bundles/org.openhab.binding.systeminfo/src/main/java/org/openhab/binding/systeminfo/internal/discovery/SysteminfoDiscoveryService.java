@@ -19,6 +19,7 @@ import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -35,7 +36,9 @@ import org.slf4j.LoggerFactory;
  * {@link #DEFAULT_THING_LABEL}. The discovered Thing will have id - the hostname or {@link #DEFAULT_THING_ID}'
  *
  * @author Svilen Valkanov - Initial contribution
+ * @author Wouter Born - Add null annotations
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.systeminfo")
 public class SysteminfoDiscoveryService extends AbstractDiscoveryService {
     public static final String DEFAULT_THING_ID = "unknown";
