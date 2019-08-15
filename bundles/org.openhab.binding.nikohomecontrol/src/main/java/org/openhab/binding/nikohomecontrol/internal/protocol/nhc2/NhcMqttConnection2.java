@@ -368,6 +368,6 @@ public class NhcMqttConnection2 implements MqttActionCallback {
 
     @Override
     public void onFailure(String topic, Throwable error) {
-        logger.debug("Niko Home Control: publish failed {}, {}", topic, error.getMessage());
+        logger.debug("Niko Home Control: publish failed {}, {}", topic, error.getMessage(), error);
     }
 }
