@@ -88,7 +88,8 @@ Using`TRAP` channels requires configuring the receiving port (see "Binding confi
 
 The `datatype` parameter is needed in some special cases where data is written to the target.
 The default `datatype` for `number` channels is `UINT32`, representing an unsigned integer with 32 bit length.
-Alternatively `INT32` (signed integer with 32 bit length) or `COUNTER64` (unsigned integer with 64 bit length) can be set.
+Alternatively `INT32` (signed integer with 32 bit length), `COUNTER64` (unsigned integer with 64 bit length) or `FLOAT` (floating point number) can be set.
+Floating point numbers have to be supplied (and will be send) as strings.
 For `string` channels the default `datatype` is `STRING` (i.e. the item's will be sent as a string).
 If it is set to `IPADDRESS`, an SNMP IP address object is constructed from the item's value.
 
