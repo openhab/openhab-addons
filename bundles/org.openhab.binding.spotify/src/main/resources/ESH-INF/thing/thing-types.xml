@@ -76,7 +76,7 @@ Account. Go to https://developer.spotify.com/</description>
 			</parameter>
 			<parameter name="refreshPeriod" type="integer" min="1" max="60">
 				<required>true</required>
-				<default>5</default>
+				<default>10</default>
 				<label>Connect refresh period (seconds)</label>
 				<description>This is the frequency of the polling requests to the Spotify Connect Web API. There are limits to the number of requests
 that can be sent to the Web API. The more often you poll, the better status updates - at the risk of running out of your request quota.</description>
@@ -124,6 +124,7 @@ bridge you have configured.</description>
 		<item-type>String</item-type>
 		<label>Access Token</label>
 		<description>The access token used to authorize calls to the Spotify Web API. It can be used from rules or client-side scripting make call to Web API.</description>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="activeDeviceId" advanced="true">
 		<item-type>String</item-type>
