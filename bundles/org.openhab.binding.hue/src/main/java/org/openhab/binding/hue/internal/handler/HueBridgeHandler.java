@@ -29,6 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,6 +37,7 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -326,7 +328,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // not needed
+        if (CHANNEL_SCENE.equals(channelUID.getId()) && command instanceof StringType) {
+            recallScene(command.toString());
+        }
     }
 
     @Override
@@ -354,10 +358,10 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 try {
                     hueBridge.handleErrors(result);
                 } catch (Exception e) {
-                    handleStateUpdateException(sensor, stateUpdate, e);
+                    handleSensorUpdateException(sensor, e);
                 }
             }).exceptionally(e -> {
-                handleStateUpdateException(sensor, stateUpdate, e);
+                handleSensorUpdateException(sensor, e);
                 return null;
             });
         } else {
@@ -372,10 +376,10 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 try {
                     hueBridge.handleErrors(result);
                 } catch (Exception e) {
-                    handleConfigUpdateException(sensor, configUpdate, e);
+                    handleSensorUpdateException(sensor, e);
                 }
             }).exceptionally(e -> {
-                handleConfigUpdateException(sensor, configUpdate, e);
+                handleSensorUpdateException(sensor, e);
                 return null;
             });
         } else {
@@ -390,10 +394,10 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 try {
                     hueBridge.handleErrors(result);
                 } catch (Exception e) {
-                    handleStateUpdateException(group, stateUpdate, e);
+                    handleGroupUpdateException(group, e);
                 }
             }).exceptionally(e -> {
-                handleStateUpdateException(group, stateUpdate, e);
+                handleGroupUpdateException(group, e);
                 return null;
             });
         } else {
@@ -411,58 +415,30 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 updateLightState(light, LightStateConverter.toOnOffLightState(OnOffType.ON));
                 updateLightState(light, stateUpdate);
             }
-        } else if (e instanceof IOException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } else if (e instanceof EntityNotAvailableException) {
-            logger.debug("Error while accessing light: {}", e.getMessage(), e);
-            notifyLightStatusListeners(light, StatusType.GONE);
-        } else if (e instanceof ApiException) {
-            // This should not happen - if it does, it is most likely some bug that should be reported.
-            logger.warn("Error while accessing light: {}", e.getMessage(), e);
-        } else if (e instanceof IllegalStateException) {
-            logger.trace("Error while accessing light: {}", e.getMessage());
+        } else {
+            handleThingUpdateException("light", e, gone -> notifyLightStatusListeners(light, gone));
         }
     }
 
-    private void handleStateUpdateException(FullSensor sensor, StateUpdate stateUpdate, Throwable e) {
-        if (e instanceof IOException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } else if (e instanceof EntityNotAvailableException) {
-            logger.debug("Error while accessing sensor: {}", e.getMessage(), e);
-            notifySensorStatusListeners(sensor, StatusType.GONE);
-        } else if (e instanceof ApiException) {
-            // This should not happen - if it does, it is most likely some bug that should be reported.
-            logger.warn("Error while accessing sensor: {}", e.getMessage(), e);
-        } else if (e instanceof IllegalStateException) {
-            logger.trace("Error while accessing sensor: {}", e.getMessage());
-        }
+    private void handleGroupUpdateException(FullGroup group, Throwable e) {
+        handleThingUpdateException("group", e, gone -> notifyGroupStatusListeners(group, gone));
     }
 
-    private void handleStateUpdateException(FullGroup group, StateUpdate stateUpdate, Throwable e) {
-        if (e instanceof IOException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } else if (e instanceof EntityNotAvailableException) {
-            logger.debug("Error while accessing group: {}", e.getMessage(), e);
-            notifyGroupStatusListeners(group, StatusType.GONE);
-        } else if (e instanceof ApiException) {
-            // This should not happen - if it does, it is most likely some bug that should be reported.
-            logger.warn("Error while accessing group: {}", e.getMessage(), e);
-        } else if (e instanceof IllegalStateException) {
-            logger.trace("Error while accessing group: {}", e.getMessage());
-        }
+    private void handleSensorUpdateException(FullSensor sensor, Throwable e) {
+        handleThingUpdateException("sensor", e, gone -> notifySensorStatusListeners(sensor, gone));
     }
 
-    private void handleConfigUpdateException(FullSensor sensor, ConfigUpdate configUpdate, Throwable e) {
+    private void handleThingUpdateException(String thingType, Throwable e, Consumer<StatusType> notifyStatusGone) {
         if (e instanceof IOException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof EntityNotAvailableException) {
-            logger.debug("Error while accessing sensor: {}", e.getMessage(), e);
-            notifySensorStatusListeners(sensor, StatusType.GONE);
+            logger.debug("Error while accessing {}: {}", thingType, e.getMessage());
+            notifyStatusGone.accept(StatusType.GONE);
         } else if (e instanceof ApiException) {
             // This should not happen - if it does, it is most likely some bug that should be reported.
-            logger.warn("Error while accessing sensor: {}", e.getMessage(), e);
+            logger.warn("Error while accessing {}: {}", thingType, e.getMessage());
         } else if (e instanceof IllegalStateException) {
-            logger.trace("Error while accessing sensor: {}", e.getMessage());
+            logger.trace("Error while accessing {}: {}", thingType, e.getMessage());
         }
     }
 
@@ -728,6 +704,29 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         return groupStatusListeners.remove(groupStatusListener);
     }
 
+    /**
+     * Recall scene to all lights that belong to the scene.
+     *
+     * @param id the ID of the scene to activate
+     */
+    @Override
+    public void recallScene(String id) {
+        if (hueBridge != null) {
+            hueBridge.recallScene(id).thenAccept(result -> {
+                try {
+                    hueBridge.handleErrors(result);
+                } catch (Exception e) {
+                    logger.debug("Error while recalling scene: {}", e.getMessage());
+                }
+            }).exceptionally(e -> {
+                logger.debug("Error while recalling scene: {}", e.getMessage());
+                return null;
+            });
+        } else {
+            logger.debug("No bridge connected or selected. Cannot activate scene.");
+        }
+    }
+
     @Override
     public @Nullable FullLight getLightById(String lightId) {
         return lastLightStates.get(lightId);
@@ -778,6 +777,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         });
     }
 
+    @Nullable
     private <T> T withReAuthentication(String taskDescription, Callable<T> runnable) {
         if (hueBridge != null) {
             try {
@@ -898,7 +898,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         Collection<ConfigStatusMessage> configStatusMessages;
 
         // Check whether an IP address is provided
-        if (hueBridgeConfig.getIpAddress() == null || hueBridgeConfig.getIpAddress().isEmpty()) {
+        if (hueBridgeConfig.getIpAddress().isEmpty()) {
             configStatusMessages = Collections.singletonList(ConfigStatusMessage.Builder.error(HOST)
                     .withMessageKeySuffix(HueConfigStatusMessage.IP_ADDRESS_MISSING).withArguments(HOST).build());
         } else {

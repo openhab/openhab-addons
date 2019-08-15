@@ -852,6 +852,17 @@ public class HueBridge {
     }
 
     /**
+     * Activate scene to all lights that belong to the scene.
+     *
+     * @param id the scene to be activated
+     * @throws IOException if the bridge cannot be reached
+     */
+    public CompletableFuture<Result> recallScene(String id) {
+        Group allLightsGroup = new Group();
+        return setGroupState(allLightsGroup, new StateUpdate().setScene(id));
+    }
+
+    /**
      * Authenticate on the bridge as the specified user.
      * This function verifies that the specified username is valid and will use
      * it for subsequent requests if it is, otherwise an UnauthorizedException

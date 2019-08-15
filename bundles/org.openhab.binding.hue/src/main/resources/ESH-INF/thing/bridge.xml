@@ -8,6 +8,10 @@
 		<label>Hue Bridge</label>
 		<description>The Hue bridge represents the Philips Hue bridge.</description>
 
+		<channels>
+			<channel id="scene" typeId="scene" />
+		</channels>
+
 		<properties>
 			<property name="vendor">Philips</property>
 		</properties>

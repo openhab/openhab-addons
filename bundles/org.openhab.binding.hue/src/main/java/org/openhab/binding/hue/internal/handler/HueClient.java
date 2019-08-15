@@ -83,7 +83,7 @@ public interface HueClient {
      * Get the light by its ID.
      *
      * @param lightId the light ID
-     * @return the full light representation of {@code null} if it could not be found
+     * @return the full light representation or {@code null} if it could not be found
      */
     @Nullable
     FullLight getLightById(String lightId);
@@ -92,7 +92,7 @@ public interface HueClient {
      * Get the sensor by its ID.
      *
      * @param sensorId the sensor ID
-     * @return the full sensor representation of {@code null} if it could not be found
+     * @return the full sensor representation or {@code null} if it could not be found
      */
     @Nullable
     FullSensor getSensorById(String sensorId);
@@ -137,4 +137,11 @@ public interface HueClient {
      * @param stateUpdate the state update
      */
     void updateGroupState(FullGroup group, StateUpdate stateUpdate);
+
+    /**
+     * Recall scene to all lights that belong to the scene.
+     *
+     * @param id the ID of the scene to be recalled
+     */
+    void recallScene(String id);
 }
