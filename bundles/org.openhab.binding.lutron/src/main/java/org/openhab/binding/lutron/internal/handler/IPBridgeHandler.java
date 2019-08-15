@@ -50,7 +50,8 @@ import org.slf4j.LoggerFactory;
  *         LutronHandlerFactory
  */
 public class IPBridgeHandler extends BaseBridgeHandler {
-    private static final Pattern STATUS_REGEX = Pattern.compile("~(OUTPUT|DEVICE|SYSTEM|TIMECLOCK|MODE),([^,]+),(.*)");
+    private static final Pattern RESPONSE_REGEX = Pattern
+            .compile("~(OUTPUT|DEVICE|SYSTEM|TIMECLOCK|MODE),([0-9\\.:/]+),([0-9,\\.:/]*)\\Z");
 
     private static final String DB_UPDATE_DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
 
@@ -325,6 +326,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
     private void parseUpdates() {
         String paramString;
+        String scrubbedLine;
 
         for (String line : this.session.readLines()) {
             if (line.trim().equals("")) {
@@ -339,9 +341,28 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                 this.keepAliveReconnect.cancel(true);
             }
 
-            Matcher matcher = STATUS_REGEX.matcher(line);
+            Matcher matcher = RESPONSE_REGEX.matcher(line);
+            boolean responseMatched = matcher.find();
 
-            if (matcher.find()) {
+            if (!responseMatched) {
+                // In some cases with Caseta a CLI prompt may be embedded within a received response line.
+                if (line.contains("NET>")) {
+                    // Try to remove it and re-attempt the regex match.
+                    scrubbedLine = line.replaceAll("[GQ]NET> ", "");
+                    matcher = RESPONSE_REGEX.matcher(scrubbedLine);
+                    responseMatched = matcher.find();
+                    if (responseMatched) {
+                        line = scrubbedLine;
+                        logger.debug("Cleaned response line: {}", scrubbedLine);
+                    }
+                }
+            }
+
+            if (!responseMatched) {
+                logger.debug("Ignoring message {}", line);
+                continue;
+            } else {
+                // We have a good response message
                 LutronCommandType type = LutronCommandType.valueOf(matcher.group(1));
 
                 if (type == LutronCommandType.SYSTEM) {
@@ -376,8 +397,6 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                 } else {
                     logger.debug("No thing configured for integration ID {}", integrationId);
                 }
-            } else {
-                logger.debug("Ignoring message {}", line);
             }
         }
     }
