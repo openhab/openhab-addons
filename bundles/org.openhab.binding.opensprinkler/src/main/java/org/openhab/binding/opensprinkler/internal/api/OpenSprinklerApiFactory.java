@@ -15,6 +15,7 @@ package org.openhab.binding.opensprinkler.internal.api;
 import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
 
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
+import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.util.Http;
 import org.openhab.binding.opensprinkler.internal.util.Parse;
 
@@ -37,7 +38,8 @@ public class OpenSprinklerApiFactory {
      * @return OpenSprinkler HTTP API class for control of the device.
      * @throws Exception
      */
-    public static OpenSprinklerApi getHttpApi(String hostname, int port, String password) throws Exception {
+    public static OpenSprinklerApi getHttpApi(String hostname, int port, String password)
+            throws CommunicationApiException, GeneralApiException {
         String returnContent;
         int version = -1;
 

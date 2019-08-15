@@ -14,6 +14,8 @@ Fragment-Host: org.openhab.binding.nest
     bnd.identity;id='org.openhab.core.storage.json',\
     bnd.identity;id='org.openhab.core.storage.mapdb'
 
+-runproperties: logback.configurationFile=file:${.}/logback.xml
+
 #
 # done
 #
