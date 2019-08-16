@@ -14,6 +14,9 @@ package org.openhab.binding.opensprinkler.internal.api;
 
 import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
 
+import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
+import org.openhab.binding.opensprinkler.internal.model.StationProgram;
+
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
@@ -156,5 +159,10 @@ public class OpenSprinklerGpioApi implements OpenSprinklerApi {
         }
 
         srLatOutputPin.high();
+    }
+
+    @Override
+    public StationProgram retrieveProgram(int station) throws CommunicationApiException {
+        throw new UnsupportedOperationException();
     }
 }

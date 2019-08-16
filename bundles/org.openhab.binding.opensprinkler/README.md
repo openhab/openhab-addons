@@ -49,9 +49,10 @@ Bridge opensprinkler:http:http [stations=8, refresh=60] {
 
 The following channel is supported by the station thing.
 
-| Channel Type ID | Item Type |    | Description                                             |
-|-----------------|-----------|----|---------------------------------------------------------|
-| stationState    | Switch    | RW | This channel indicates whether station 01 is on or off. |
+| Channel Type ID    | Item Type   |    | Description                                             |
+|--------------------|-------------|----|---------------------------------------------------------|
+| stationState       | Switch      | RW | This channel indicates whether station 01 is on or off. |
+| remainingWaterTime | Number:Time | R  | The time the station remains to be open.    |
 
 
 
@@ -82,6 +83,7 @@ demo.items:
 ```
 Group stations
 Switch Station01 (stations) { channel="opensprinkler:station:http:01:stationState" }
+Number:Time Station01RaminingTime { channel="opensprinkler:station:http:01:remainingWaterTime" }
 Switch Station02 (stations) { channel="opensprinkler:station:http:02:stationState" }
 Switch Station03 (stations) { channel="opensprinkler:station:http:03:stationState" }
 Switch Station04 (stations) { channel="opensprinkler:station:http:04:stationState" }
