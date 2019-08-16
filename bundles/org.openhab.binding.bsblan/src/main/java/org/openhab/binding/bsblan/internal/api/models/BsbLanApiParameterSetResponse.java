@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bsblan.internal.api.models;
 
+import org.openhab.binding.bsblan.internal.api.BsbLanApiContent;
+
 import java.util.HashMap;
 
 /**
@@ -21,5 +23,5 @@ import java.util.HashMap;
  * @author Peter Schraffl - Initial contribution
  */
 @SuppressWarnings("serial")
-public class BsbLanApiParameterSetResponse extends HashMap<Integer, BsbLanApiParameterSetResult> {
+public class BsbLanApiParameterSetResponse extends HashMap<Integer, BsbLanApiParameterSetResult> implements BsbLanApiContent {
 }

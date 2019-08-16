@@ -26,12 +26,10 @@ import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterQueryRes
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetRequest;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetResponse;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameterSetResult;
+import org.openhab.binding.bsblan.internal.api.BsbLanApiContentConverter;
 import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
 
@@ -62,7 +60,7 @@ public class BsbLanApiCaller {
         // }
         String apiPath = String.format("/JQ=%s", StringUtils.join(parameterIds, ","));
 
-        return makeRestCall(BsbLanApiParameterQueryResponse.class, "GET", apiPath, "");
+        return makeRestCall(BsbLanApiParameterQueryResponse.class, "GET", apiPath, null);
     }
 
     public boolean setParameter(Integer parameterId, String value, BsbLanApiParameterSetRequest.Type type) {
@@ -72,12 +70,8 @@ public class BsbLanApiCaller {
         request.value = value;
         request.type = type;
 
-        Gson gson = new Gson();
-        String content = gson.toJson(request);
-        logger.debug("api request content: '{}'", content);
-
         // make REST call and process response
-        BsbLanApiParameterSetResponse setResponse = makeRestCall(BsbLanApiParameterSetResponse.class, "POST", "/JS", content);
+        BsbLanApiParameterSetResponse setResponse = makeRestCall(BsbLanApiParameterSetResponse.class, "POST", "/JS", request);
         if (setResponse == null) {
             logger.warn("Failed to set parameter {} to '{}': no response received", parameterId, value);
             return false;
@@ -123,16 +117,20 @@ public class BsbLanApiCaller {
      * @return the object representation of the json response
      */
     @Nullable
-    private <T> T makeRestCall(Class<T> responseType, String httpMethod, String apiPath, String content) {
+    private <T> T makeRestCall(Class<T> responseType, String httpMethod, String apiPath, BsbLanApiContent request) {
         try {
             String url = createApiBaseUrl() + apiPath;
             logger.debug("api request url = '{}'", url);
 
             InputStream contentStream = null;
             String contentType = null;
-            if (StringUtils.trimToNull(content) != null) {
-                contentStream = new ByteArrayInputStream(content.getBytes(Charset.forName("UTF-8")));
-                contentType = "application/json";
+            if (request != null) {
+                String content = BsbLanApiContentConverter.toJson(request);
+                logger.debug("api request content: '{}'", content);
+                if (StringUtils.trimToNull(content) != null) {
+                    contentStream = new ByteArrayInputStream(content.getBytes(Charset.forName("UTF-8")));
+                    contentType = "application/json";
+                }
             }
 
             String response = HttpUtil.executeUrl(httpMethod, url, contentStream, contentType, API_TIMEOUT);
@@ -142,16 +140,8 @@ public class BsbLanApiCaller {
             }
 
             logger.debug("api response content: '{}'", response);
-
-            Gson gson = new Gson();
-            T result = gson.fromJson(response, responseType);
-            if (result == null) {
-                logger.debug("result null after json parsing (response = {})", response);
-                return null;
-            }
-
-            return result;
-        } catch (JsonSyntaxException | IOException | IllegalStateException e) {
+            return BsbLanApiContentConverter.fromJson(response, responseType);
+        } catch (IOException | IllegalStateException e) {
             logger.debug("Error executing bsb-lan api request: {}", e.getMessage());
             return null;
         }

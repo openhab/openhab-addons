@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bsblan.internal.api.models;
 
+import org.openhab.binding.bsblan.internal.api.BsbLanApiContent;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Peter Schraffl - Initial contribution
  */
-public class BsbLanApiParameterSetRequest {
+public class BsbLanApiParameterSetRequest implements BsbLanApiContent {
 
     public enum Type {
         @SerializedName("0")

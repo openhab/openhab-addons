@@ -44,6 +44,7 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
     private final Set<BsbLanBaseThingHandler> things = new HashSet<>();
     private BsbLanBridgeConfiguration bridgeConfig;
     private ScheduledFuture<?> refreshJob;
+    private ScheduledFuture<?> debouncedInit;
     private BsbLanApiParameterQueryResponse cachedParameterQueryResponse;
 
     public BsbLanBridgeHandler(Bridge bridge) {
@@ -57,10 +58,16 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
     public void registerThing(final BsbLanBaseThingHandler parameter) {
         this.things.add(parameter);
 
-        // todo: Currently it will take up to refreshInterval seconds until values are updated
-        // for the added thing, we could trigger an immediate (debounced) refresh to improve
-        // this scenario. Alternativly the thing itself could make an additional REST call 
+        // To avoid having to wait up to refreshInterval seconds until values are updated
+        // for the added thing, we trigger a debounced refresh to shorten the delay.
+        // Alternativly the thing itself could make an additional REST call 
         // on initialization but this would flood the device when lots of parameters are setup.
+        if (debouncedInit == null || debouncedInit.isCancelled() || debouncedInit.isDone()) {
+            Runnable runnable = () -> {
+                doRefresh();
+            };
+            debouncedInit = scheduler.schedule(runnable, 2, TimeUnit.SECONDS);
+        }
     }
 
     @Override
@@ -94,6 +101,9 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
+        if (debouncedInit != null) {
+            debouncedInit.cancel(true);
+        }
         things.clear();
     }
 
@@ -105,39 +115,43 @@ public class BsbLanBridgeHandler extends BaseBridgeHandler {
         return bridgeConfig;
     }
 
+    private void doRefresh() {
+        logger.debug("Refreshing parameter values");
+
+        BsbLanApiCaller apiCaller = new BsbLanApiCaller(bridgeConfig);
+
+        // refresh all parameters
+        Set<Integer> parameterIds = things.stream()
+                                    .filter(thing -> thing instanceof BsbLanParameterHandler)
+                                    .map(thing -> (BsbLanParameterHandler) thing)
+                                    .map(thing -> thing.getParameterId())
+                                    .collect(Collectors.toSet());
+
+        cachedParameterQueryResponse = apiCaller.queryParameters(parameterIds);
+
+        // InetAddress.isReachable(...) check returned false on RPi although the device is reachable (worked on Windows).
+        // Therefore we check status depending on the response.
+        if (cachedParameterQueryResponse == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                "Did not receive a response from BSB-LAN device. Check your configuration and if device is online.");
+            // continue processing, so things can go to OFFLINE too
+        } else {
+            // resonse received, thread device as reachable, refresh state now
+            updateStatus(ThingStatus.ONLINE);
+        }
+
+        for (BsbLanBaseThingHandler parameter : things) {
+            parameter.refresh(bridgeConfig);
+        }
+    }
+
     /**
      * Start the job refreshing the data
      */
     private void startAutomaticRefresh(BsbLanBridgeConfiguration config) {
         if (refreshJob == null || refreshJob.isCancelled()) {
             Runnable runnable = () -> {
-                logger.debug("Refreshing parameter values");
-
-                BsbLanApiCaller apiCaller = new BsbLanApiCaller(bridgeConfig);
-
-                // refresh all parameters
-                Set<Integer> parameterIds = things.stream()
-                                            .filter(thing -> thing instanceof BsbLanParameterHandler)
-                                            .map(thing -> (BsbLanParameterHandler) thing)
-                                            .map(thing -> thing.getParameterId())
-                                            .collect(Collectors.toSet());
-
-                cachedParameterQueryResponse = apiCaller.queryParameters(parameterIds);
-
-                // InetAddress.isReachable(...) check returned false on RPi although the device is reachable (worked on Windows).
-                // Therefore we check status depending on the response.
-                if (cachedParameterQueryResponse == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        "Did not receive a response from BSB-LAN device. Check your configuration and if device is online.");
-                    // continue processing, so things can go to OFFLINE too
-                } else {
-                    // resonse received, thread device as reachable, refresh state now
-                    updateStatus(ThingStatus.ONLINE);
-                }
-
-                for (BsbLanBaseThingHandler parameter : things) {
-                    parameter.refresh(bridgeConfig);
-                }
+                doRefresh();
             };
 
             int interval = (config.refreshInterval != null) ? config.refreshInterval.intValue() : DEFAULT_REFRESH_INTERVAL;
