@@ -369,7 +369,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                     try {
                         handler.handleUpdate(type, paramString.split(","));
                     } catch (Exception e) {
-                        logger.warn("Error processing update: {}", e.getMessage());
+                        logger.warn("Error processing update: {}", e.getMessage(), e);
                     }
                 } else {
                     logger.debug("No thing configured for integration ID {}", integrationId);
@@ -413,7 +413,7 @@ public class IPBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Unable to initiate discovery because discoveryService is null");
             }
         } catch (Exception e) {
-            logger.warn("Error scanning for paired devices: ", e.getMessage());
+            logger.warn("Error scanning for paired devices: {}", e.getMessage(), e);
         }
     }
 
