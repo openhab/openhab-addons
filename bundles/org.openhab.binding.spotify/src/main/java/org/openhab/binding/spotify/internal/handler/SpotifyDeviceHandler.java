@@ -98,7 +98,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Spotify Bridge Offline");
-            logger.debug("SpotifyDevice {}: SpotifyBridge is not online.", getThing().getThingTypeUID(),
+            logger.debug("SpotifyDevice {}: SpotifyBridge is not online: {}", getThing().getThingTypeUID(),
                     bridgeStatusInfo.getStatus());
         }
     }
