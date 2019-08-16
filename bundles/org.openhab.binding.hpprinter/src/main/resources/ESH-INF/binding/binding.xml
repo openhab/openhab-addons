@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>HP Printer Binding</name>
-	<description>Bindings for HP Printers with Embedded Web Servers</description>
+	<description>Binding for HP Printers with Embedded Web Servers</description>
 	<author>Stewart Cossey</author>
 
 </binding:binding>
