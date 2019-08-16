@@ -30,6 +30,8 @@ import com.google.gson.annotations.SerializedName;
  */
 class NeoHubInfoResponse {
 
+    private static final Gson GSON = new Gson();
+
     @SerializedName("devices")
     private List<DeviceInfo> deviceInfos;
 
@@ -160,9 +162,8 @@ class NeoHubInfoResponse {
      * @return a NeoHubInfoResponse wrapper around the JSON response
      */
     static @Nullable NeoHubInfoResponse createInfoResponse(String response) throws JsonSyntaxException {
-        Gson gson = new Gson();
         try {
-            return gson.fromJson(response, NeoHubInfoResponse.class);
+            return GSON.fromJson(response, NeoHubInfoResponse.class);
         } catch (JsonSyntaxException e) {
             throw e;
         }

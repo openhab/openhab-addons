@@ -97,13 +97,13 @@ public class NeoHubSocket {
                 return responseStr;
 
             } catch (IOException e) {
-                logger.error("communication error with hub");
+                logger.warn("communication error with hub");
                 logger.debug(String.format("error cause = %s!'", e.toString()));
                 return null;
             }
 
         } catch (IOException e) {
-            logger.error("unable to connect to hub");
+            logger.warn("unable to connect to hub");
             logger.debug(String.format("error cause = %s!'", e.toString()));
             return null;
         }

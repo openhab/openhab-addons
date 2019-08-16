@@ -161,7 +161,7 @@ public class NeoBaseHandler extends BaseThingHandler {
 
             case ERR_COMMUNICATION:
                 msg = String.format("hub communication error for %s, status => offline!", getThing().getLabel());
-                logger.error(msg);
+                logger.warn(msg);
 
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, msg);
@@ -170,7 +170,7 @@ public class NeoBaseHandler extends BaseThingHandler {
 
             case ERR_INITIALIZATION:
                 msg = String.format("hub initialization error for %s, status => offline!", getThing().getLabel());
-                logger.error(msg);
+                logger.warn(msg);
 
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, msg);
@@ -179,7 +179,7 @@ public class NeoBaseHandler extends BaseThingHandler {
             }
         } else {
             msg = String.format("unknown command error for %s, => command ignored!", getThing().getLabel());
-            logger.error(msg);
+            logger.warn(msg);
         }
     }
 
