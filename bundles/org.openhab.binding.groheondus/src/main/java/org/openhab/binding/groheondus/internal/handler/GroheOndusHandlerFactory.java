@@ -36,6 +36,7 @@ import org.openhab.binding.groheondus.internal.discovery.GroheOndusDiscoveryServ
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.wiring.BundleWiring;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
@@ -43,18 +44,23 @@ import org.osgi.service.http.HttpService;
 /**
  * @author Florian Schmidt and Arne Wohlert - Initial contribution
  */
-@NonNullByDefault({})
+@NonNullByDefault
 @Component(configurationPid = "binding.groheondus", service = ThingHandlerFactory.class)
 public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    @Reference
     private HttpService httpService;
-    @Reference
     private StorageService storageService;
-    @Reference
     private AccountsServlet accountsServlet;
+
+    @Activate
+    public GroheOndusHandlerFactory(@Reference HttpService httpService, @Reference StorageService storageService,
+            @Reference AccountsServlet accountsServlet) {
+        this.httpService = httpService;
+        this.storageService = storageService;
+        this.accountsServlet = accountsServlet;
+    }
 
     private static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_SENSEGUARD,
             THING_TYPE_SENSE, THING_TYPE_BRIDGE_ACCOUNT);

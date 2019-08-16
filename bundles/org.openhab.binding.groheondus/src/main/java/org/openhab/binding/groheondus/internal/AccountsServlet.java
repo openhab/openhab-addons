@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
@@ -36,7 +37,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Florian Schmidt - Initial contribution
  */
-@NonNullByDefault({})
+@NonNullByDefault
 @Component(service = AccountsServlet.class, scope = ServiceScope.SINGLETON)
 public class AccountsServlet extends HttpServlet {
     private static final long serialVersionUID = -9183159739446995608L;
@@ -45,10 +46,12 @@ public class AccountsServlet extends HttpServlet {
 
     private final Logger logger = LoggerFactory.getLogger(AccountsServlet.class);
     private final List<Thing> accounts = new ArrayList<>();
-    @Reference
     private HttpService httpService;
 
-    public void activate() {
+    @Activate
+    public AccountsServlet(@Reference HttpService httpService) {
+        this.httpService = httpService;
+
         try {
             httpService.registerServlet(SERVLET_URL, this, null, httpService.createDefaultHttpContext());
         } catch (ServletException | NamespaceException e) {
