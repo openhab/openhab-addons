@@ -33,7 +33,7 @@ public class BsbLanBindingConstants {
     // List of all Channel ids
     public class Channels {
         public class Parameter {
-            public static final String Name = "name";
+            public static final String NAME = "name";
             public static final String NUMBER_VALUE = "number-value";
             public static final String STRING_VALUE = "string-value";
             public static final String SWITCH_VALUE = "switch-value";

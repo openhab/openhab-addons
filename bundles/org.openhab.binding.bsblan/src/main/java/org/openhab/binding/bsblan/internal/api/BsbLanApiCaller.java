@@ -126,7 +126,7 @@ public class BsbLanApiCaller {
     private <T> T makeRestCall(Class<T> responseType, String httpMethod, String apiPath, String content) {
         try {
             String url = createApiBaseUrl() + apiPath;
-            logger.debug("api request url = '{}''", url);
+            logger.debug("api request url = '{}'", url);
 
             InputStream contentStream = null;
             String contentType = null;
