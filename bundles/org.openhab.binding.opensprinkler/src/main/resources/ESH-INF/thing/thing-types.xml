@@ -60,6 +60,7 @@
 
 		<channels>
 			<channel id="stationState" typeId="stationState"></channel>
+			<channel id="remainingWaterTime" typeId="remainingWaterTime"></channel>
 		</channels>
 
 		<config-description>
@@ -95,5 +96,12 @@
 		<label>Station</label>
 		<description>Controls a station on the OpenSprinkler device.</description>
 		<category>Switch</category>
+	</channel-type>
+	
+	<channel-type id="remainingWaterTime">
+		<item-type>Number:Time</item-type>
+		<label>Remaining Water Time</label>
+		<description>Read-only property of the remaining water time of the station.</description>
+		<state readOnly="true" pattern="%.0f min"/>
 	</channel-type>
 </thing:thing-descriptions>
