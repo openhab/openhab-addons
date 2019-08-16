@@ -20,7 +20,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
-import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +44,7 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                     } else {
                         updateState(channel, OnOffType.OFF);
                     }
-                } catch (GeneralApiException | CommunicationApiException e) {
+                } catch (CommunicationApiException e) {
                     logger.debug("Could not update rainsensor", e);
                 }
             default:

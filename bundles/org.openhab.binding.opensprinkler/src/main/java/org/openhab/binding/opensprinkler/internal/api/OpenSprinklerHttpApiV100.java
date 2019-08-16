@@ -14,10 +14,17 @@ package org.openhab.binding.opensprinkler.internal.api;
 
 import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
+import org.openhab.binding.opensprinkler.internal.model.StationProgram;
 import org.openhab.binding.opensprinkler.internal.util.Http;
 import org.openhab.binding.opensprinkler.internal.util.Parse;
+
+import com.google.gson.Gson;
 
 /**
  * The {@link OpenSprinklerHttpApiV100} class is used for communicating with
@@ -34,6 +41,8 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     protected int numberOfStations = DEFAULT_STATION_COUNT;
 
     protected boolean isInManualMode = false;
+
+    private final Gson gson = new Gson();
 
     /**
      * Constructor for the OpenSprinkler API class to create a connection to the OpenSprinkler
@@ -146,31 +155,12 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public boolean isRainDetected() throws GeneralApiException, CommunicationApiException {
-        String returnContent;
-        int rainBit = -1;
-
-        try {
-            returnContent = Http.sendHttpGet(getBaseUrl() + CMD_STATUS_INFO, getRequestRequiredOptions());
-        } catch (Exception exp) {
-            throw new CommunicationApiException(
-                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
-        }
-
-        try {
-            rainBit = Parse.jsonInt(returnContent, JSON_OPTION_RAINSENSOR);
-        } catch (Exception exp) {
-            rainBit = -1;
-        }
-
-        if (rainBit == 1) {
+    public boolean isRainDetected() throws CommunicationApiException {
+        if (statusInfo().rs == 1) {
             return true;
-        } else if (rainBit == 0) {
-            return false;
         } else {
-            throw new GeneralApiException("Could not get the current state of the rain sensor.");
+            return false;
         }
-
     }
 
     @Override
@@ -225,5 +215,31 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
      */
     protected String getRequestRequiredOptions() {
         return CMD_PASSWORD + this.password;
+    }
+
+    @Override
+    public StationProgram retrieveProgram(int station) throws CommunicationApiException {
+        JcResponse resp = statusInfo();
+        return resp.ps.stream().map(values -> new StationProgram(values.get(1))).collect(Collectors.toList())
+                .get(station);
+    }
+
+    private JcResponse statusInfo() throws CommunicationApiException {
+        String returnContent;
+
+        try {
+            returnContent = Http.sendHttpGet(getBaseUrl() + CMD_STATUS_INFO, getRequestRequiredOptions());
+        } catch (IOException | CommunicationApiException exp) {
+            throw new CommunicationApiException(
+                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
+        }
+
+        JcResponse resp = gson.fromJson(returnContent, JcResponse.class);
+        return resp;
+    }
+
+    private static class JcResponse {
+        public List<List<Integer>> ps;
+        public int rs;
     }
 }
