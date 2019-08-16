@@ -31,7 +31,7 @@ public class AirbaseZoneInfo {
     private static Logger LOGGER = LoggerFactory.getLogger(AirbaseZoneInfo.class);
 
     public String zonenames;
-    public boolean zone[] = new boolean[8];
+    public boolean zone[] = new boolean[9];
 
     private AirbaseZoneInfo() {
     }
