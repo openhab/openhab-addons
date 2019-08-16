@@ -282,6 +282,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.hpprinter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.hue</artifactId>
       <version>${project.version}</version>
     </dependency>
