@@ -114,7 +114,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
             return new NhcSSLContextProvider2(trustManagers);
 
         } catch (CertificateException | KeyStoreException | NoSuchAlgorithmException | IOException e) {
-            logger.warn("Niko Home Control: error with SSL context creation", e.getMessage());
+            logger.warn("Niko Home Control: error with SSL context creation: {} ", e.getMessage());
             throw new CertificateException("SSL context creation exception", e);
         } finally {
             ResourceBundle.clearCache();
@@ -125,9 +125,9 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      * Start a secure MQTT connection and subscribe to all topics. This is the general connection, not touch profile
      * specific.
      *
-     * @param subscriber  MqttMessageSubscriber that will handle received messages
+     * @param subscriber MqttMessageSubscriber that will handle received messages
      * @param cocoAddress IP Address of the Niko Connected Controller
-     * @param port        Port for MQTT communication with the Niko Connected Controller
+     * @param port Port for MQTT communication with the Niko Connected Controller
      * @throws MqttException
      */
     synchronized void startPublicConnection(String cocoAddress, int port) throws MqttException {
@@ -176,9 +176,9 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      * port as parameters. The class fields will already have been set by {@link startConnection}.
      *
      * @param subscriber MqttMessageSubscriber that will handle received messages
-     * @param username   MQTT username that identifies the specific touch profile. It should be the uuid retrieved from
-     *                       the profile list in the general communication that matches the touch profile name.
-     * @param password   Password for the touch profile
+     * @param username MQTT username that identifies the specific touch profile. It should be the uuid retrieved from
+     *            the profile list in the general communication that matches the touch profile name.
+     * @param password Password for the touch profile
      * @throws MqttException
      */
     synchronized void startProfileConnection(String username, String password) throws MqttException {
@@ -368,6 +368,6 @@ public class NhcMqttConnection2 implements MqttActionCallback {
 
     @Override
     public void onFailure(String topic, Throwable error) {
-        logger.debug("Niko Home Control: publish failed {}, {}", topic, error);
+        logger.debug("Niko Home Control: publish failed {}, {}", topic, error.getMessage(), error);
     }
 }

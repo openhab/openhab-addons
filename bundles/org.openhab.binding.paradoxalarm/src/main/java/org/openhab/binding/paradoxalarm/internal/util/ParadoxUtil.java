@@ -56,7 +56,7 @@ public class ParadoxUtil {
 
     private static void printByteArray(String description, byte[] array, int length) {
         if (description != null && !description.isEmpty()) {
-            logger.trace(description);
+            logger.trace("{}", description);
         }
         int countBytes = 0;
         String result = "";
