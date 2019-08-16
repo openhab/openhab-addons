@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ChannelHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(XmlTVHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ChannelHandler.class);
 
     private @NonNullByDefault({}) ScheduledFuture<?> globalJob;
     private @Nullable MediaChannel mediaChannel;

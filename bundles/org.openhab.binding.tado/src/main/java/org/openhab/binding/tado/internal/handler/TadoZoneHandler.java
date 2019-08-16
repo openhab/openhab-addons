@@ -36,10 +36,10 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
-import org.openhab.binding.tado.internal.TadoHvacChange;
 import org.openhab.binding.tado.internal.TadoBindingConstants.OperationMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.TadoBindingConstants.ZoneType;
+import org.openhab.binding.tado.internal.TadoHvacChange;
 import org.openhab.binding.tado.internal.adapter.TadoZoneStateAdapter;
 import org.openhab.binding.tado.internal.api.ApiException;
 import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
@@ -282,8 +282,8 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (ApiException e) {
-                logger.error("Could not apply HVAC change on home {} and zone {}: " + e.getMessage(), e, getHomeId(),
-                        getZoneId());
+                logger.warn("Could not apply HVAC change on home {} and zone {}: {}", getHomeId(), getZoneId(),
+                        e.getMessage(), e);
             } finally {
                 updateZoneState(true);
             }

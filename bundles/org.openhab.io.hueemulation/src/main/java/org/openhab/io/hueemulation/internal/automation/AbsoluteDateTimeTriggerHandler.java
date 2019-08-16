@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * It allows to set a date and a time as separate configuration values (easier to manipulate from
  * other actions / rules etc) and also allows the user to setup a random factor
  * (presence simulation).
- * 
+ *
  * @author David Graeff - Initial contribution
  */
 public class AbsoluteDateTimeTriggerHandler extends BaseTriggerModuleHandler implements SchedulerRunnable {
@@ -91,7 +91,7 @@ public class AbsoluteDateTimeTriggerHandler extends BaseTriggerModuleHandler imp
 
     private void scheduleJob() {
         schedule = scheduler.at(this, dateTime);
-        logger.debug("Scheduled absolute date/time '{} {}' for trigger '{}'.", dateTimeformatter.format(dateTime),
+        logger.debug("Scheduled absolute date/time '{}' for trigger '{}'.", dateTimeformatter.format(dateTime),
                 module.getId());
     }
 

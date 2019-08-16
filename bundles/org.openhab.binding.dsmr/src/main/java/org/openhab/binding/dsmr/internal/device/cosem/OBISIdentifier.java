@@ -178,7 +178,11 @@ public class OBISIdentifier {
         }
         result &= groupC == o.groupC;
         result &= groupD == o.groupD;
-        result &= groupE == o.groupE;
+        if (groupE != null && o.groupE != null) {
+            result &= groupE.equals(o.groupE);
+        } else if (!(groupE == null && o.groupE == null)) {
+            result = false;
+        }
         if (groupF != null && o.groupF != null) {
             result &= (groupF.equals(o.groupF));
         } else if (!(groupF == null && o.groupF == null)) {
