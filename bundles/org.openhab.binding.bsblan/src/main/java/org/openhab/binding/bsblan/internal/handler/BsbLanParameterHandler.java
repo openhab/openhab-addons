@@ -16,7 +16,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.Command;
 
 import org.openhab.binding.bsblan.internal.configuration.BsbLanBridgeConfiguration;
@@ -135,23 +134,10 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
             return;
         }
 
-        String value = null;
-        switch (channelId) {
-            case Channels.Parameter.NUMBER_VALUE:
-                value = getValueForNumberValueChannel(command);
-                break;
-
-            case Channels.Parameter.STRING_VALUE:
-                value = getValueForStringValueChannel(command);
-                break;
-
-            case Channels.Parameter.SWITCH_VALUE:
-                value = getValueForSwitchValueChannel(command);
-                break;
-
-            default:
-                logger.debug("Channel '{}' is read only. Ignoring command", channelId);
-                return;
+        String value = BsbLanParameterConverter.getValue(channelId, command);
+        if (value == null) {
+            logger.debug("Channel '{}' is read only or convertion failed. Ignoring command", channelId);
+            return;
         }
 
         BsbLanApiCaller api = getApiCaller();
@@ -169,18 +155,5 @@ public class BsbLanParameterHandler extends BsbLanBaseThingHandler {
         }
 
         updateChannel(channelId, queryResponse);
-    }
-
-    private String getValueForNumberValueChannel(Command command) {
-        // more logic required?
-        return command.toString();
-    }
-
-    private String getValueForStringValueChannel(Command command) {
-        return command.toString();
-    }
-
-    private String getValueForSwitchValueChannel(Command command) {
-        return command.equals(OnOffType.ON) ? "1" : "0";
     }
 }

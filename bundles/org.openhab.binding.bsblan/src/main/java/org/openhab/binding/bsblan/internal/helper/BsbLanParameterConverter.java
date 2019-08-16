@@ -14,10 +14,11 @@ package org.openhab.binding.bsblan.internal.helper;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
-import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
 
 import org.openhab.binding.bsblan.internal.BsbLanBindingConstants.Channels;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameter;
@@ -111,6 +112,62 @@ public class BsbLanParameterConverter {
 
     private static State getStateForSwitchValueChannel(BsbLanApiParameter parameter) {
         // treat "0" as OFF and everything else as ON
-        return parameter.value.equals("0") ?  OnOffType.OFF : OnOffType.ON;
+        return parameter.value.equals("0") ? OnOffType.OFF : OnOffType.ON;
+    }
+
+    /**
+     * Converts a Command back to a value which is sent to the BSB-LAN device afterwards.
+     * @param channelId
+     * @param command
+     * @return null if convertion fails or channel is readonly.
+     */
+    public static String getValue(String channelId, Command command) {
+        if (command == null) {
+            return null;
+        }
+
+        switch (channelId) {
+            case Channels.Parameter.NUMBER_VALUE:
+                return getValueForNumberValueChannel(command);
+
+            case Channels.Parameter.STRING_VALUE:
+                return getValueForStringValueChannel(command);
+
+            case Channels.Parameter.SWITCH_VALUE:
+                return getValueForSwitchValueChannel(command);
+
+            default:
+                logger.debug("Channel '{}' is read only. Ignoring command", channelId);
+                return null;
+        }
+    }
+
+    private static String getValueForNumberValueChannel(Command command) {
+        // check if numeric
+        if (command.toString().matches("-?\\d+(\\.\\d+)?")) {
+            return command.toString();
+        }
+        logger.debug("Command '{}' is not a valid number value", command);
+        return null;
+    }
+
+    private static String getValueForStringValueChannel(Command command) {
+        // special OnOffType handling
+        if (command.equals(OnOffType.ON)) {
+            return "1";
+        } else if (command.equals(OnOffType.OFF)) {
+            return "0";
+        }
+        return command.toString();
+    }
+
+    private static String getValueForSwitchValueChannel(Command command) {
+        if (command.equals(OnOffType.ON)) {
+            return "1";
+        } else if (command.equals(OnOffType.OFF)) {
+            return "0";
+        }
+        logger.debug("Command '{}' is not a valid switch value", command);
+        return null;
     }
 }

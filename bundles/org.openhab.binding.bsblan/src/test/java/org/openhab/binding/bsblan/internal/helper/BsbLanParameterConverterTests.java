@@ -20,7 +20,6 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-
 import org.openhab.binding.bsblan.internal.BsbLanBindingConstants.Channels;
 import org.openhab.binding.bsblan.internal.api.models.BsbLanApiParameter;
 
@@ -207,5 +206,48 @@ public class BsbLanParameterConverterTests {
         state = BsbLanParameterConverter.getState(Channels.Parameter.UNIT, parameter);
         assertNotNull(state);
         assertEquals(new StringType("°C"), state.as(StringType.class));
+    }
+
+    @Test
+    public void testGetValueForReadonlyChannels() {
+        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.DATATYPE, OnOffType.ON));
+        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.DESCRIPTION, OnOffType.ON));
+        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.NAME, OnOffType.ON));
+        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.UNIT, OnOffType.ON));
+    }
+
+    @Test
+    public void testGetValueForNumberValueChannel() {
+        assertNull("1", BsbLanParameterConverter.getValue(Channels.Parameter.NUMBER_VALUE, OnOffType.ON));
+        assertNull("0", BsbLanParameterConverter.getValue(Channels.Parameter.NUMBER_VALUE, OnOffType.OFF));
+        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.NUMBER_VALUE, null));
+        assertEquals("42", BsbLanParameterConverter.getValue(Channels.Parameter.NUMBER_VALUE, new DecimalType(42)));
+        assertEquals("22.5", BsbLanParameterConverter.getValue(Channels.Parameter.NUMBER_VALUE, new DecimalType(22.5)));
+        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.NUMBER_VALUE, new StringType("Not a number value")));
+        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.NUMBER_VALUE, new StringType("")));
+    }
+
+    @Test
+    public void testGetValueForSwitchValueChannel() {
+        assertEquals("1", BsbLanParameterConverter.getValue(Channels.Parameter.SWITCH_VALUE, OnOffType.ON));
+        assertEquals("0", BsbLanParameterConverter.getValue(Channels.Parameter.SWITCH_VALUE, OnOffType.OFF));
+        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.SWITCH_VALUE, null));
+        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.SWITCH_VALUE, new DecimalType(1)));
+        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.SWITCH_VALUE, new DecimalType(0)));
+        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.SWITCH_VALUE, new DecimalType(42)));
+        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.SWITCH_VALUE, new DecimalType(22.5)));
+        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.SWITCH_VALUE, new StringType("Not a number value")));
+        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.SWITCH_VALUE, new StringType("")));
+    }
+
+    @Test
+    public void testGetValueForStringValueChannel() {
+        assertEquals("1", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE, OnOffType.ON));
+        assertEquals("0", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE, OnOffType.OFF));
+        assertNull(BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE, null));
+        assertEquals("42", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE, new DecimalType(42)));
+        assertEquals("22.5", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE,  new DecimalType(22.5)));
+        assertEquals("A string value", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE, new StringType("A string value")));
+        assertEquals("", BsbLanParameterConverter.getValue(Channels.Parameter.STRING_VALUE, new StringType("")));
     }
 }
