@@ -270,6 +270,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         return typeHelper.toDPTValue(type, dpt);
     }
 
+    @SuppressWarnings("null")
     private void readNextQueuedDatapoint() {
         if (!connectIfNotAutomatic()) {
             return;
@@ -279,23 +280,24 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             return;
         }
         ReadDatapoint datapoint = readDatapoints.poll();
-
-        datapoint.incrementRetries();
-        try {
-            logger.trace("Sending a Group Read Request telegram for {}", datapoint.getDatapoint().getMainAddress());
-            processCommunicator.read(datapoint.getDatapoint());
-        } catch (KNXException e) {
-            if (datapoint.getRetries() < datapoint.getLimit()) {
-                readDatapoints.add(datapoint);
-                logger.debug("Could not read value for datapoint {}: {}. Going to retry.",
-                        datapoint.getDatapoint().getMainAddress(), e.getMessage());
-            } else {
-                logger.warn("Giving up reading datapoint {}, the number of maximum retries ({}) is reached.",
-                        datapoint.getDatapoint().getMainAddress(), datapoint.getLimit());
+        if (datapoint != null) {
+            datapoint.incrementRetries();
+            try {
+                logger.trace("Sending a Group Read Request telegram for {}", datapoint.getDatapoint().getMainAddress());
+                processCommunicator.read(datapoint.getDatapoint());
+            } catch (KNXException e) {
+                if (datapoint.getRetries() < datapoint.getLimit()) {
+                    readDatapoints.add(datapoint);
+                    logger.debug("Could not read value for datapoint {}: {}. Going to retry.",
+                            datapoint.getDatapoint().getMainAddress(), e.getMessage());
+                } else {
+                    logger.warn("Giving up reading datapoint {}, the number of maximum retries ({}) is reached.",
+                            datapoint.getDatapoint().getMainAddress(), datapoint.getLimit());
+                }
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted sending KNX read request");
+                return;
             }
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted sending KNX read request");
-            return;
         }
     }
 
