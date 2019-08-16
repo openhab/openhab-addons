@@ -79,7 +79,7 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
             throw new GeneralApiException("The given password is null.");
         }
 
-        if (!hostname.startsWith(HTTP_REQUEST_URL_PREFIX) || !hostname.startsWith(HTTPS_REQUEST_URL_PREFIX)) {
+        if (hostname.startsWith(HTTP_REQUEST_URL_PREFIX) || hostname.startsWith(HTTPS_REQUEST_URL_PREFIX)) {
             this.hostname = hostname;
         } else {
             this.hostname = HTTP_REQUEST_URL_PREFIX + hostname;
