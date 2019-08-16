@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
 
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.daikin")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.daikin")
 @NonNullByDefault
 public class DaikinHandlerFactory extends BaseThingHandlerFactory {
 

@@ -138,10 +138,10 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
                 return true;
             }
             // look for Daikin Airbase controller
-            AirbaseControlInfo airbaseControlInfo = new DaikinWebTargets(host).AirbaseGetControlInfo();
+            AirbaseControlInfo airbaseControlInfo = new DaikinWebTargets(host).getAirbaseControlInfo();
             if (airbaseControlInfo.ret.equals("OK")) {
-                AirbaseBasicInfo basicInfo = new DaikinWebTargets(host).AirbaseBasicInfo();
-                ThingUID thingUID = new ThingUID(DaikinBindingConstants.THING_TYPE_AIRBASE_AC_UNIT, basicInfo.SSID);
+                AirbaseBasicInfo basicInfo = new DaikinWebTargets(host).getAirbaseBasicInfo();
+                ThingUID thingUID = new ThingUID(DaikinBindingConstants.THING_TYPE_AIRBASE_AC_UNIT, basicInfo.ssid);
                 DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(DaikinConfiguration.HOST, host).withLabel("Daikin Airbase AC Unit (" + host + ")")
                         .build();

@@ -269,7 +269,7 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
     }
 
     private void pollAirbaseStatus() throws IOException {
-        AirbaseControlInfo controlInfo = webTargets.AirbaseGetControlInfo();
+        AirbaseControlInfo controlInfo = webTargets.getAirbaseControlInfo();
         updateStatus(ThingStatus.ONLINE);
         if (controlInfo != null) {
             updateState(DaikinBindingConstants.CHANNEL_AC_POWER, controlInfo.power ? OnOffType.ON : OnOffType.OFF);
@@ -278,14 +278,14 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
             updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_FAN_SPEED, new StringType(controlInfo.fanSpeed.name()));
         }
 
-        SensorInfo sensorInfo = webTargets.AirbaseGetSensorInfo();
+        SensorInfo sensorInfo = webTargets.getAirbaseSensorInfo();
         if (sensorInfo != null) {
             updateTemperatureChannel(DaikinBindingConstants.CHANNEL_INDOOR_TEMP, sensorInfo.indoortemp);
 
             updateTemperatureChannel(DaikinBindingConstants.CHANNEL_OUTDOOR_TEMP, sensorInfo.outdoortemp);
         }
-        AirbaseModelInfo modelInfo = webTargets.AirbaseGetModelInfo();
-        AirbaseZoneInfo zoneInfo = webTargets.AirbaseGetZoneInfo();
+        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
+        AirbaseZoneInfo zoneInfo = webTargets.getAirbaseZoneInfo();
         if (zoneInfo != null) {
             updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE1, zoneInfo.zone1 ? OnOffType.ON : OnOffType.OFF);
             updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE2, zoneInfo.zone2 ? OnOffType.ON : OnOffType.OFF);
@@ -314,9 +314,9 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
            webTargets.setControlInfo(info);
         } else {
             // handle Airbase
-           AirbaseControlInfo info = webTargets.AirbaseGetControlInfo();
+           AirbaseControlInfo info = webTargets.getAirbaseControlInfo();
            info.power = power;
-           webTargets.AirbaseSetControlInfo(info);
+           webTargets.setAirbaseControlInfo(info);
 
         }
     }
@@ -346,9 +346,9 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
             webTargets.setControlInfo(info);
         } else {
             // handle Airbase
-            AirbaseControlInfo info = webTargets.AirbaseGetControlInfo();
+            AirbaseControlInfo info = webTargets.getAirbaseControlInfo();
             info.temp = Optional.of(newTemperature);
-            webTargets.AirbaseSetControlInfo(info);
+            webTargets.setAirbaseControlInfo(info);
         }
 
         return true;
@@ -361,9 +361,9 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
     }
 
     private void changeAirbaseMode(AirbaseMode mode) throws DaikinCommunicationException {
-        AirbaseControlInfo info = webTargets.AirbaseGetControlInfo();
+        AirbaseControlInfo info = webTargets.getAirbaseControlInfo();
         info.mode = mode;
-        webTargets.AirbaseSetControlInfo(info);
+        webTargets.setAirbaseControlInfo(info);
     }
 
     private void changeFanSpeed(FanSpeed fanSpeed) throws DaikinCommunicationException {
@@ -373,12 +373,12 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
     }
 
     private void changeAirbaseFanSpeed(AirbaseFanSpeed fanSpeed) throws DaikinCommunicationException {
-        AirbaseControlInfo info = webTargets.AirbaseGetControlInfo();
+        AirbaseControlInfo info = webTargets.getAirbaseControlInfo();
         info.fanSpeed = fanSpeed;
-        webTargets.AirbaseSetControlInfo(info);
+        webTargets.setAirbaseControlInfo(info);
     }
 
-    // Zones only supported on standard Daikin controllers, so don't need to detect what kind of thing we have
+    // FanDir only supported on standard Daikin controllers, so don't need to detect what kind of thing we have
     private void changeFanDir(FanMovement fanDir) throws DaikinCommunicationException {
         ControlInfo info = webTargets.getControlInfo();
         info.fanMovement = fanDir;
@@ -387,59 +387,59 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
 
     // Zones only supported on Airbase, so don't need to detect what kind of thing we have
     private void changeZone1(boolean zone1) throws DaikinCommunicationException {
-        AirbaseZoneInfo info = webTargets.AirbaseGetZoneInfo();
-        AirbaseModelInfo modelInfo = webTargets.AirbaseGetModelInfo();
+        AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
+        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
         info.zone1 = zone1;
-        if (modelInfo.zonespresent >=1) webTargets.AirbaseSetZoneInfo(info, modelInfo);
+        if (modelInfo.zonespresent >=1) webTargets.setAirbaseZoneInfo(info, modelInfo);
     }
 
     private void changeZone2(boolean zone2) throws DaikinCommunicationException {
-        AirbaseZoneInfo info = webTargets.AirbaseGetZoneInfo();
-        AirbaseModelInfo modelInfo = webTargets.AirbaseGetModelInfo();
+        AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
+        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
         info.zone2 = zone2;
-        if (modelInfo.zonespresent >=2) webTargets.AirbaseSetZoneInfo(info, modelInfo);
+        if (modelInfo.zonespresent >=2) webTargets.setAirbaseZoneInfo(info, modelInfo);
     }
 
     private void changeZone3(boolean zone3) throws DaikinCommunicationException {
-        AirbaseZoneInfo info = webTargets.AirbaseGetZoneInfo();
-        AirbaseModelInfo modelInfo = webTargets.AirbaseGetModelInfo();
+        AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
+        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
         info.zone3 = zone3;
-        if (modelInfo.zonespresent >=3) webTargets.AirbaseSetZoneInfo(info, modelInfo);
+        if (modelInfo.zonespresent >=3) webTargets.setAirbaseZoneInfo(info, modelInfo);
     }
 
     private void changeZone4(boolean zone4) throws DaikinCommunicationException {
-        AirbaseZoneInfo info = webTargets.AirbaseGetZoneInfo();
-        AirbaseModelInfo modelInfo = webTargets.AirbaseGetModelInfo();
+        AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
+        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
         info.zone4 = zone4;
-        if (modelInfo.zonespresent >=4) webTargets.AirbaseSetZoneInfo(info, modelInfo);
+        if (modelInfo.zonespresent >=4) webTargets.setAirbaseZoneInfo(info, modelInfo);
     }
 
     private void changeZone5(boolean zone5) throws DaikinCommunicationException {
-        AirbaseZoneInfo info = webTargets.AirbaseGetZoneInfo();
-        AirbaseModelInfo modelInfo = webTargets.AirbaseGetModelInfo();
+        AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
+        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
         info.zone5 = zone5;
-        if (modelInfo.zonespresent >=5) webTargets.AirbaseSetZoneInfo(info, modelInfo);
+        if (modelInfo.zonespresent >=5) webTargets.setAirbaseZoneInfo(info, modelInfo);
     }
 
     private void changeZone6(boolean zone6) throws DaikinCommunicationException {
-        AirbaseZoneInfo info = webTargets.AirbaseGetZoneInfo();
-        AirbaseModelInfo modelInfo = webTargets.AirbaseGetModelInfo();
+        AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
+        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
         info.zone6 = zone6;
-        if (modelInfo.zonespresent >=6) webTargets.AirbaseSetZoneInfo(info, modelInfo);
+        if (modelInfo.zonespresent >=6) webTargets.setAirbaseZoneInfo(info, modelInfo);
     }
 
     private void changeZone7(boolean zone7) throws DaikinCommunicationException {
-        AirbaseZoneInfo info = webTargets.AirbaseGetZoneInfo();
-        AirbaseModelInfo modelInfo = webTargets.AirbaseGetModelInfo();
+        AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
+        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
         info.zone7 = zone7;
-        if (modelInfo.zonespresent >=7) webTargets.AirbaseSetZoneInfo(info, modelInfo);
+        if (modelInfo.zonespresent >=7) webTargets.setAirbaseZoneInfo(info, modelInfo);
     }
 
     private void changeZone8(boolean zone8) throws DaikinCommunicationException {
-        AirbaseZoneInfo info = webTargets.AirbaseGetZoneInfo();
-        AirbaseModelInfo modelInfo = webTargets.AirbaseGetModelInfo();
+        AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
+        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
         info.zone8 = zone8;
-        if (modelInfo.zonespresent ==8) webTargets.AirbaseSetZoneInfo(info, modelInfo);
+        if (modelInfo.zonespresent ==8) webTargets.setAirbaseZoneInfo(info, modelInfo);
     }
 
 }

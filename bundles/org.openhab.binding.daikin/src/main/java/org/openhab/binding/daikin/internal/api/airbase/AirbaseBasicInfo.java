@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class AirbaseBasicInfo {
     private static Logger LOGGER = LoggerFactory.getLogger(AirbaseBasicInfo.class);
 
-    public String SSID;
+    public String ssid;
 
     private AirbaseBasicInfo() {
     }
@@ -46,13 +46,13 @@ public class AirbaseBasicInfo {
                 }).collect(Collectors.toMap(x -> x[0], x -> x[1]));
 
         AirbaseBasicInfo info = new AirbaseBasicInfo();
-        info.SSID = responseMap.get("ssid");
+        info.ssid = responseMap.get("ssid");
         return info;
     }
 
     public Map<String, String> getParamString() {
         Map<String, String> params = new HashMap<>();
-        params.put("ssid", SSID.toString());
+        params.put("ssid", ssid);
         return params;
     }
 
