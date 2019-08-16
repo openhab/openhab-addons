@@ -39,6 +39,8 @@ class RdsPlants {
     @SerializedName("items")
     private List<PlantInfo> plants;
 
+    private static final Gson GSON = new Gson();
+
     static class PlantInfo {
 
         @SerializedName("id")
@@ -59,21 +61,19 @@ class RdsPlants {
      * public method: execute a GET on the cloud server, parse JSON, and create a
      * class that encapsulates the data
      */
-    @Nullable
-    public static RdsPlants create(String apiKey, String token) {
+    public static @Nullable RdsPlants create(String apiKey, String token) {
         /*
          * use the RdsDataPoints.httpGenericGetJson static method to fetch the JSON
          */
         String json = RdsDataPoints.httpGenericGetJson(apiKey, token, URL_PLANTS);
 
-        if (json.equals("")) {
+        if (json.isEmpty()) {
             LOGGER.debug("create: empty JSON element");
             return null;
         }
 
-        Gson gson = new Gson();
         try {
-            return gson.fromJson(json, RdsPlants.class);
+            return GSON.fromJson(json, RdsPlants.class);
         } catch (JsonSyntaxException e) {
             LOGGER.debug("create: JSON syntax error");
             return null;

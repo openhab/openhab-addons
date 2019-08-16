@@ -55,6 +55,8 @@ class RdsAccessToken {
      */
     protected static final Logger LOGGER = LoggerFactory.getLogger(RdsAccessToken.class);
 
+    private static final Gson GSON = new Gson();
+
     @SerializedName("access_token")
     private String accessToken;
     @SerializedName(".expires")
@@ -104,6 +106,7 @@ class RdsAccessToken {
         try (OutputStream outputStream = https.getOutputStream();
                 DataOutputStream dataOutputStream = new DataOutputStream(outputStream);) {
             dataOutputStream.writeBytes(String.format(TOKEN_REQUEST, user, password));
+            dataOutputStream.flush();
         } catch (IOException e) {
             LOGGER.error("httpGetTokenJson: error sending request to Cloud Server");
             return "";
@@ -145,18 +148,16 @@ class RdsAccessToken {
      * public method: execute a POST on the cloud server, parse the JSON, and create
      * a class that encapsulates the data
      */
-    @Nullable
-    public static RdsAccessToken create(String apiKey, String user, String password) {
+    public static @Nullable RdsAccessToken create(String apiKey, String user, String password) {
         String json = httpGetTokenJson(apiKey, user, password);
 
-        if (json.equals("")) {
+        if (json.isEmpty()) {
             LOGGER.debug("create: empty JSON element");
             return null;
         }
 
-        Gson gson = new Gson();
         try {
-            return gson.fromJson(json, RdsAccessToken.class);
+            return GSON.fromJson(json, RdsAccessToken.class);
         } catch (JsonSyntaxException e) {
             LOGGER.debug("create: JSON syntax error");
             return null;
@@ -178,7 +179,7 @@ class RdsAccessToken {
             try {
                 expDate = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z").parse(expires);
             } catch (ParseException e) {
-                LOGGER.debug("isExpired: exception={}", e.getMessage());
+                LOGGER.debug("isExpired: expiry date parsing exception");
 
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(new Date());

@@ -66,6 +66,9 @@ class RdsDataPoints {
      */
     protected static final Logger LOGGER = LoggerFactory.getLogger(RdsDataPoints.class);
 
+    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(BasePoint.class, 
+            new PointDeserializer()).create();
+
     @SerializedName("totalCount")
     private String totalCount;
     @SerializedName("values")
@@ -149,8 +152,7 @@ class RdsDataPoints {
      * create a real instance of this class that encapsulates all the retrieved data
      * point values
      */
-    @Nullable
-    public static RdsDataPoints create(String apiKey, String token, String plantId) {
+    public static @Nullable RdsDataPoints create(String apiKey, String token, String plantId) {
         String json = httpGenericGetJson(apiKey, token, String.format(URL_POINTS, plantId));
 
         LOGGER.debug("create: received {} characters (log:set TRACE to see all)", json.length());
@@ -158,14 +160,13 @@ class RdsDataPoints {
         if (LOGGER.isTraceEnabled())
             LOGGER.trace("create: response={}", json);
 
-        if (json.equals("")) {
+        if (json.isEmpty()) {
             LOGGER.debug("create: empty JSON element");
             return null;
         }
 
-        Gson gson = new GsonBuilder().registerTypeAdapter(BasePoint.class, new PointDeserializer()).create();
         try {
-            return gson.fromJson(json, RdsDataPoints.class);
+            return GSON.fromJson(json, RdsDataPoints.class);
         } catch (JsonSyntaxException e) {
             LOGGER.debug("create: JSON syntax error");
             return null;
@@ -372,9 +373,9 @@ class RdsDataPoints {
      */
     public boolean refresh(String apiKey, String token) {
         @Nullable
-        RdsDataPoints nuPoints = null;
+        RdsDataPoints newPoints = null;
 
-        if (valueFilter.equals("")) {
+        if (valueFilter.isEmpty()) {
             Set<String> set = new HashSet<>();
             String pointId;
 
@@ -397,21 +398,20 @@ class RdsDataPoints {
         if (LOGGER.isTraceEnabled())
             LOGGER.trace("refresh: response={}", json);
 
-        if (json.equals("")) {
+        if (json.isEmpty()) {
             LOGGER.debug("refreshUsedValues: empty JSON element");
             return false;
         }
 
-        Gson gson = new GsonBuilder().registerTypeAdapter(BasePoint.class, new PointDeserializer()).create();
         try {
-            nuPoints = gson.fromJson(json, RdsDataPoints.class);
+            newPoints = GSON.fromJson(json, RdsDataPoints.class);
         } catch (JsonSyntaxException e) {
             LOGGER.error("refreshUsedValues: JSON syntax error");
             return false;
         }
 
         synchronized (this) {
-            for (Map.Entry<String, BasePoint> entry : nuPoints.points.entrySet()) {
+            for (Map.Entry<String, BasePoint> entry : newPoints.points.entrySet()) {
                 BasePoint nuPoint = entry.getValue();
                 BasePoint exPoint = points.get(entry.getKey());
 
@@ -444,7 +444,7 @@ class RdsDataPoints {
  * @author Andrew Fiddian-Green - Initial contribution
  * 
  */
-class BasePoint {
+abstract class BasePoint {
     @SerializedName("rep")
     protected int rep;
     @SerializedName("type")
@@ -491,9 +491,7 @@ class BasePoint {
     /*
      * => MUST be overridden
      */
-    protected int asInt() {
-        return -1;
-    }
+    abstract protected int asInt();
 
     protected boolean isEnum() {
         return (enumParsed ? isEnum : initEnum());
