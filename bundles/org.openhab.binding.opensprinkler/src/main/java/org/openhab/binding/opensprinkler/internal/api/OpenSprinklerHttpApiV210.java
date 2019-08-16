@@ -14,6 +14,7 @@ package org.openhab.binding.opensprinkler.internal.api;
 
 import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.DataFormatErrorApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.DataMissingApiException;
@@ -24,6 +25,7 @@ import org.openhab.binding.opensprinkler.internal.api.exception.OutOfRangeApiExc
 import org.openhab.binding.opensprinkler.internal.api.exception.PageNotFoundApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.UnknownApiException;
+import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 import org.openhab.binding.opensprinkler.internal.util.Parse;
 
 /**
@@ -31,8 +33,9 @@ import org.openhab.binding.opensprinkler.internal.util.Parse;
  * the OpenSprinkler API for firmware versions 2.1.0, 2.1.1 and 2.1.1
  *
  * @author Chris Graham - Initial contribution
+ * @author Florian Schmidt - Refactor class visibility
  */
-public class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
+class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
     /**
      * Constructor for the OpenSprinkler API class to create a connection to the OpenSprinkler
      * device for control and obtaining status info.
@@ -44,9 +47,9 @@ public class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
      * @param basicPassword only needed if basic auth is required
      * @throws Exception
      */
-    public OpenSprinklerHttpApiV210(final String hostname, final int port, final String password,
-            final String basicUsername, final String basicPassword) throws GeneralApiException {
-        super(hostname, port, password, basicUsername, basicPassword);
+    OpenSprinklerHttpApiV210(final HttpClient httpClient, final OpenSprinklerHttpInterfaceConfig config)
+            throws GeneralApiException {
+        super(httpClient, config);
     }
 
     @Override

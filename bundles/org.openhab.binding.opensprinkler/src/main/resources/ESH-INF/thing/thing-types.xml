@@ -32,10 +32,12 @@
 			<parameter name="basicUsername" type="text">
 				<label>Basic Auth Username</label>
 				<description>Used if the OpenSprinkler device is behind a basic auth protected reverse proxy.</description>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="basicPassword" type="text">
 				<label>Basic Auth Password</label>
 				<description>Used if the OpenSprinkler device is behind a basic auth protected reverse proxy.</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>

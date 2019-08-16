@@ -101,5 +101,5 @@ public interface OpenSprinklerApi {
      * @return The firmware version of the OpenSprinkler device as an int.
      * @throws Exception
      */
-    public abstract int getFirmwareVersion() throws Exception;
+    public abstract int getFirmwareVersion() throws CommunicationApiException;
 }

@@ -14,21 +14,22 @@ package org.openhab.binding.opensprinkler.internal.api;
 
 import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import javax.net.ssl.HttpsURLConnection;
-
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
+import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
 import org.openhab.binding.opensprinkler.internal.util.Parse;
 
@@ -41,7 +42,7 @@ import com.google.gson.Gson;
  * @author Chris Graham - Initial contribution
  * @author Florian Schmidt - Allow https URLs and basic auth
  */
-public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
+class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     protected final String hostname;
     protected final int port;
     protected final String password;
@@ -54,7 +55,7 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     protected boolean isInManualMode = false;
 
     private final Gson gson = new Gson();
-    protected Http http = new Http();
+    protected Http http;
 
     /**
      * Constructor for the OpenSprinkler API class to create a connection to the OpenSprinkler
@@ -67,27 +68,29 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
      * @param basicPassword only needed if basic auth is required
      * @throws Exception
      */
-    public OpenSprinklerHttpApiV100(final String hostname, final int port, final String password,
-            final String basicUsername, final String basicPassword) throws GeneralApiException {
-        if (hostname == null) {
+    OpenSprinklerHttpApiV100(final HttpClient httpClient, final OpenSprinklerHttpInterfaceConfig config)
+            throws GeneralApiException {
+        if (config.hostname == null) {
             throw new GeneralApiException("The given url is null.");
         }
-        if (port < 1 || port > 65535) {
+        if (config.port < 1 || config.port > 65535) {
             throw new GeneralApiException("The given port is invalid.");
         }
-        if (password == null) {
+        if (config.password == null) {
             throw new GeneralApiException("The given password is null.");
         }
 
-        if (hostname.startsWith(HTTP_REQUEST_URL_PREFIX) || hostname.startsWith(HTTPS_REQUEST_URL_PREFIX)) {
-            this.hostname = hostname;
+        if (config.hostname.startsWith(HTTP_REQUEST_URL_PREFIX)
+                || config.hostname.startsWith(HTTPS_REQUEST_URL_PREFIX)) {
+            this.hostname = config.hostname;
         } else {
-            this.hostname = HTTP_REQUEST_URL_PREFIX + hostname;
+            this.hostname = HTTP_REQUEST_URL_PREFIX + config.hostname;
         }
-        this.port = port;
-        this.password = password;
-        this.basicUsername = basicUsername;
-        this.basicPassword = basicPassword;
+        this.port = config.port;
+        this.password = config.password;
+        this.basicUsername = config.basicUsername;
+        this.basicPassword = config.basicPassword;
+        this.http = new Http(httpClient);
     }
 
     @Override
@@ -245,7 +248,7 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
         try {
             returnContent = http.sendHttpGet(getBaseUrl() + CMD_STATUS_INFO, getRequestRequiredOptions());
-        } catch (IOException | CommunicationApiException exp) {
+        } catch (CommunicationApiException exp) {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }
@@ -267,10 +270,14 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
      * @author Florian Schmidt - Reduce visibility of Http communication to Api
      */
     protected class Http {
-        private static final String HTTP_GET = "GET";
-        private static final String HTTP_POST = "POST";
         private static final int HTTP_OK_CODE = 200;
         private static final String USER_AGENT = "Mozilla/5.0";
+
+        private final HttpClient httpClient;
+
+        public Http(HttpClient httpClient) {
+            this.httpClient = httpClient;
+        }
 
         /**
          * Given a URL and a set parameters, send a HTTP GET request to the URL location created by the URL and
@@ -281,49 +288,38 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
          * @return String contents of the response for the GET request.
          * @throws Exception
          */
-        public String sendHttpGet(String url, String urlParameters) throws IOException, CommunicationApiException {
-            URL location = null;
+        public String sendHttpGet(String url, String urlParameters) throws CommunicationApiException {
+            String location = null;
 
             if (urlParameters != null) {
-                location = new URL(url + "?" + urlParameters);
+                location = url + "?" + urlParameters;
             } else {
-                location = new URL(url);
+                location = url;
             }
 
-            HttpURLConnection connection = (HttpURLConnection) location.openConnection();
+            ContentResponse response;
+            try {
+                response = withGeneralProperties(httpClient.newRequest(location)).method(HttpMethod.GET).send();
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                throw new CommunicationApiException("Request to OpenSprinkler device failed: " + e.getMessage());
+            }
 
-            connection.setRequestMethod(HTTP_GET);
-            generalRequestProperties(connection);
-
-            int responseCode = connection.getResponseCode();
-
-            if (responseCode != HTTP_OK_CODE) {
+            if (response.getStatus() != HTTP_OK_CODE) {
                 throw new CommunicationApiException(
-                        "Error sending HTTP GET request to " + url + ". Got response code: " + responseCode);
+                        "Error sending HTTP GET request to " + url + ". Got response code: " + response.getStatus());
             }
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuilder response = new StringBuilder();
+            return response.getContentAsString();
+        }
 
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
+        private Request withGeneralProperties(Request request) {
+            request.header(HttpHeader.USER_AGENT, USER_AGENT);
+            if (basicUsername != null && basicPassword != null) {
+                String encoded = Base64.getEncoder()
+                        .encodeToString((basicUsername + ":" + basicPassword).getBytes(StandardCharsets.UTF_8));
+                request.header(HttpHeader.AUTHORIZATION, "Basic " + encoded);
             }
-
-            in.close();
-
-            return response.toString();
-        }
-
-        private void generalRequestProperties(HttpURLConnection connection) {
-            connection.setRequestProperty("User-Agent", USER_AGENT);
-            basicAuthIfNeeded(connection);
-        }
-
-        private void basicAuthIfNeeded(HttpURLConnection connection) {
-            String encoded = Base64.getEncoder()
-                    .encodeToString((basicUsername + ":" + basicPassword).getBytes(StandardCharsets.UTF_8));
-            connection.setRequestProperty("Authorization", "Basic " + encoded);
+            return request;
         }
 
         /**
@@ -335,38 +331,21 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
          * @return String contents of the response for the POST request.
          * @throws Exception
          */
-        public String sendHttpPost(String url, String urlParameters) throws Exception {
-            URL location = new URL(url);
-            HttpURLConnection connection = (HttpsURLConnection) location.openConnection();
-
-            connection.setRequestMethod(HTTP_POST);
-            generalRequestProperties(connection);
-
-            // Send post request
-            connection.setDoOutput(true);
-            DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-            wr.writeBytes(urlParameters);
-            wr.flush();
-            wr.close();
-
-            int responseCode = connection.getResponseCode();
-
-            if (responseCode != HTTP_OK_CODE) {
-                throw new Exception(
-                        "Error sending HTTP POST request to " + url + ". Got responce code: " + responseCode);
+        public String sendHttpPost(String url, String urlParameters) throws CommunicationApiException {
+            ContentResponse response;
+            try {
+                response = withGeneralProperties(httpClient.newRequest(url)).method(HttpMethod.POST)
+                        .content(new StringContentProvider(urlParameters)).send();
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                throw new CommunicationApiException("Request to OpenSprinkler device failed: " + e.getMessage());
             }
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuilder response = new StringBuilder();
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
+            if (response.getStatus() != HTTP_OK_CODE) {
+                throw new CommunicationApiException(
+                        "Error sending HTTP POST request to " + url + ". Got responce code: " + response.getStatus());
             }
 
-            in.close();
-
-            return response.toString();
+            return response.getContentAsString();
         }
     }
 }

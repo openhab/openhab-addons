@@ -12,8 +12,15 @@
  */
 package org.openhab.binding.opensprinkler.internal.api;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
+import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link OpenSprinklerApiFactory} class is used for creating instances of
@@ -21,8 +28,17 @@ import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiExcept
  * GPIO API's.
  *
  * @author Chris Graham - Initial contribution
+ * @author Florian Schmidt - Refactoring
  */
+@Component(service = OpenSprinklerApiFactory.class)
 public class OpenSprinklerApiFactory {
+
+    private @NonNull HttpClient httpClient;
+
+    @Activate
+    public OpenSprinklerApiFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     /**
      * Factory method used to determine what version of the API is in use at the
@@ -36,28 +52,27 @@ public class OpenSprinklerApiFactory {
      * @return OpenSprinkler HTTP API class for control of the device.
      * @throws Exception
      */
-    public static OpenSprinklerApi getHttpApi(String hostname, int port, String password, String basicUsername,
-            String basicPassword) throws CommunicationApiException, GeneralApiException {
+    public OpenSprinklerApi getHttpApi(OpenSprinklerHttpInterfaceConfig config)
+            throws CommunicationApiException, GeneralApiException {
         int version = -1;
 
-        OpenSprinklerApi lowestSupportedApi = new OpenSprinklerHttpApiV100(hostname, port, password, basicUsername,
-                basicPassword);
+        OpenSprinklerApi lowestSupportedApi = new OpenSprinklerHttpApiV100(this.httpClient, config);
         try {
             version = lowestSupportedApi.getFirmwareVersion();
-        } catch (Exception exp) {
+        } catch (CommunicationApiException exp) {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }
 
         if (version >= 210 && version < 213) {
-            return new OpenSprinklerHttpApiV210(hostname, port, password, basicUsername, basicPassword);
+            return new OpenSprinklerHttpApiV210(this.httpClient, config);
         } else if (version >= 213) {
-            return new OpenSprinklerHttpApiV213(hostname, port, password, basicUsername, basicPassword);
+            return new OpenSprinklerHttpApiV213(this.httpClient, config);
         } else {
             /* Need to make sure we have an older OpenSprinkler device by checking the first station. */
             try {
                 lowestSupportedApi.isStationOpen(0);
-            } catch (Exception exp) {
+            } catch (GeneralApiException | CommunicationApiException exp) {
                 throw new CommunicationApiException(
                         "There was a problem in the HTTP communication with the OpenSprinkler API: "
                                 + exp.getMessage());
@@ -73,7 +88,7 @@ public class OpenSprinklerApiFactory {
      * @param numberOfStations The number of stations to control on the OpenSprinkler PI device.
      * @return OpenSprinkler GPIO class for control of the device.
      */
-    public static OpenSprinklerApi getGpioApi(int numberOfStations) {
+    public OpenSprinklerApi getGpioApi(int numberOfStations) {
         return new OpenSprinklerGpioApi(numberOfStations);
     }
 }
