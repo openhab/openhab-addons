@@ -68,7 +68,7 @@ public class LGSerialCommunicator {
     }
 
     public synchronized void write(LGSerialCommand command, String rawCommand, ChannelUID channel) throws IOException {
-        logger.debug("Sending command : " + rawCommand);
+        logger.debug("Sending command : {}", rawCommand);
         output.write(rawCommand.getBytes());
         output.write('\r');
         output.flush();
@@ -87,9 +87,10 @@ public class LGSerialCommunicator {
         while ((data = input.read()) > -1) {
             if (data == 'x') {
                 String result = new String(buffer, offset, len);
-
-                logger.debug("Buffer : " + Arrays.toString(buffer) + " offset=" + offset + " len=" + len);
-                logger.debug("Received response : " + result);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Buffer : {} offset={} len={}", Arrays.toString(buffer), offset, len);
+                    logger.debug("Received response : {}", result);
+                }
                 LGSerialResponse response = command.parseResponse(result);
                 updateHandler(response, channel);
 

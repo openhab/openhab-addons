@@ -43,7 +43,7 @@ public class Version {
         this.revision = revision;
         this.build = build;
         this.buildTime = buildTime;
-        logger.debug(this.toString());
+        logger.debug("version={}", this);
     }
 
     public Byte getVersion() {

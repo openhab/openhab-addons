@@ -318,7 +318,7 @@ public class MilightBridgeDiscovery extends AbstractDiscoveryService implements 
             if (state == SessionState.SESSION_VALID) {
                 s.release();
             }
-            logger.debug("STATE CHANGE", state);
+            logger.debug("STATE CHANGE: {}", state);
         };
 
         try (MilightV6SessionManager session = new MilightV6SessionManager(bridgeID, sessionState, addressOfBridge,

@@ -164,7 +164,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
             pendingActions
                     .add(scheduler.schedule(new ActionResultControler(postResponse), 1000, TimeUnit.MILLISECONDS));
         } else {
-            logger.warn(postResponse.errorDescription);
+            logger.warn("URL {} returned {}", URL, postResponse.errorDescription);
         }
         pendingActions.removeIf(ScheduledFuture<?>::isDone);
     }

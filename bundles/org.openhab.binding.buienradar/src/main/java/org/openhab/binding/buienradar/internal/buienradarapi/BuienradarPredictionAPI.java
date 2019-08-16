@@ -148,7 +148,7 @@ public class BuienradarPredictionAPI implements PredictionAPI {
         }
 
         if (result.trim().isEmpty()) {
-            logger.warn(String.format("Buienradar API at URI %s return empty result", address));
+            logger.warn("Buienradar API at URI {} return empty result", address);
             return Optional.empty();
         }
         final List<Prediction> predictions = new ArrayList<Prediction>(24);
@@ -166,7 +166,7 @@ public class BuienradarPredictionAPI implements PredictionAPI {
             }
         }
         if (!errors.isEmpty()) {
-            logger.warn("Could not parse all results: " + errors.stream().collect(Collectors.joining(", ")));
+            logger.warn("Could not parse all results: {}", errors.stream().collect(Collectors.joining(", ")));
         }
         return Optional.of(predictions);
     }

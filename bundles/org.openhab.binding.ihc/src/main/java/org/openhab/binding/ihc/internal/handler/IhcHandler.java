@@ -357,9 +357,9 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 }
                 updateChannel(channelUID, params, command);
             } catch (IhcExecption e) {
-                logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage(), e);
+                logger.warn("Can't update channel '{}' value, cause {}", channelUID, e.getMessage());
             } catch (ConversionException e) {
-                logger.debug("Conversion error for channel {}, reason: {}.", channelUID, e.getMessage(), e);
+                logger.debug("Conversion error for channel {}, reason: {}", channelUID, e.getMessage());
             }
         }
     }
@@ -439,7 +439,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                                 logger.warn("Channel {} update to resource '{}' failed.", channelUID, valOff);
                             }
                         } catch (IhcExecption e) {
-                            logger.error("Can't update channel '{}' value, cause ", channelUID, e.getMessage(), e);
+                            logger.warn("Can't update channel '{}' value, cause {}", channelUID, e.getMessage());
                         }
                     }
                 }, pulseWidth, TimeUnit.MILLISECONDS);
@@ -665,7 +665,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     private void clearLastUpdateTimeCache() {
         lastUpdate.clear();
     }
-    
+
     @Override
     public void errorOccured(IhcExecption e) {
         logger.warn("Error occurred on communication to IHC controller: {}", e.getMessage(), e);
@@ -887,7 +887,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 connect();
                 setReconnectRequest(false);
             } catch (IhcExecption e) {
-                logger.debug("Can't open connection to controller", e.getMessage(), e);
+                logger.debug("Can't open connection to controller {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 setReconnectRequest(true);
                 return;

@@ -68,11 +68,11 @@ public class KonnectedHandler extends BaseThingHandler {
     /**
      * This is the constructor of the Konnected Handler.
      *
-     * @param thing          the instance of the Konnected thing
+     * @param thing the instance of the Konnected thing
      * @param webHookServlet the instance of the callback servlet that is running for communication with the Konnected
-     *                           Module
-     * @param hostAddress    the webaddress of the openHAB server instance obtained by the runtime
-     * @param port           the port on which the openHAB instance is running that was obtained by the runtime.
+     *            Module
+     * @param hostAddress the webaddress of the openHAB server instance obtained by the runtime
+     * @param port the port on which the openHAB instance is running that was obtained by the runtime.
      */
     public KonnectedHandler(Thing thing, String path, String hostAddress, String port) {
         super(thing);
@@ -90,7 +90,7 @@ public class KonnectedHandler extends BaseThingHandler {
         String channelType = channel.getChannelTypeUID().getAsString();
         String zoneNumber = (String) channel.getConfiguration().get(CHANNEL_ZONE);
         Integer zone = Integer.parseInt(zoneNumber);
-        logger.debug("The channelUID is: {} and the zone is :", channelUID.getAsString(), zone);
+        logger.debug("The channelUID is: {} and the zone is : {}", channelUID.getAsString(), zone);
         // convert the zone to the pin based on value at index of zone
         Integer pin = Arrays.asList(PIN_TO_ZONE).get(zone);
         // if the command is OnOfftype
@@ -281,7 +281,8 @@ public class KonnectedHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (KonnectedHttpRetryExceeded e) {
-            logger.trace("The number of retries was exceeeded during the HandleConfigurationUpdate():", e.getMessage());
+            logger.trace("The number of retries was exceeeded during the HandleConfigurationUpdate(): {}",
+                    e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -420,7 +421,7 @@ public class KonnectedHandler extends BaseThingHandler {
      * Sends a command to the module via {@link KonnectedHTTPUtils}
      *
      * @param scommand the string command, either 0 or 1 to send to the actutor pin on the Konnected module
-     * @param pin      the pin to send the command to on the Konnected Module
+     * @param pin the pin to send the command to on the Konnected Module
      */
     private void sendActuatorCommand(String scommand, Integer pin, ChannelUID channelId) {
         try {
@@ -472,7 +473,7 @@ public class KonnectedHandler extends BaseThingHandler {
             }
         } catch (KonnectedHttpRetryExceeded e) {
             logger.debug("Attempting to set the state of the actuator on thing {} failed: {}",
-                    this.thing.getUID().getId(), e);
+                    this.thing.getUID().getId(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Unable to communicate with Konnected Alarm Panel confirm settings, and that module is online.");
         }
@@ -499,7 +500,7 @@ public class KonnectedHandler extends BaseThingHandler {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Unable to communicate with Konnected Alarm Panel confirm settings, and that module is online.");
                         logger.debug("Attempting to get the state of the zone on thing {} failed for channel: {} : {}",
-                                this.thing.getUID().getId(), channelId.getAsString(), ex);
+                                this.thing.getUID().getId(), channelId.getAsString(), ex.getMessage());
                     }
                 }, 2, TimeUnit.MINUTES);
             }

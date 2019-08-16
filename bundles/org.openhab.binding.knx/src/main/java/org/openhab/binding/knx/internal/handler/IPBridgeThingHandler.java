@@ -59,7 +59,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         IPBridgeConfiguration config = getConfigAs(IPBridgeConfiguration.class);
         int autoReconnectPeriod = config.getAutoReconnectPeriod();
         if (autoReconnectPeriod != 0 && autoReconnectPeriod < 30) {
-            logger.info("autoReconnectPeriod set to {}s, allowed range is 0 (never) or >30", thing.getUID(),
+            logger.info("autoReconnectPeriod for {} set to {}s, allowed range is 0 (never) or >30", thing.getUID(),
                     autoReconnectPeriod);
             autoReconnectPeriod = 30;
             config.setAutoReconnectPeriod(autoReconnectPeriod);
