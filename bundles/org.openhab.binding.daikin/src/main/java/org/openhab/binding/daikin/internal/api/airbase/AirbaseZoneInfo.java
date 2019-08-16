@@ -31,14 +31,7 @@ public class AirbaseZoneInfo {
     private static Logger LOGGER = LoggerFactory.getLogger(AirbaseZoneInfo.class);
 
     public String zonenames;
-    public boolean zone1 = false;
-    public boolean zone2 = false;
-    public boolean zone3 = false;
-    public boolean zone4 = false;
-    public boolean zone5 = false;
-    public boolean zone6 = false;
-    public boolean zone7 = false;
-    public boolean zone8 = false;
+    public boolean zone[] = new boolean[8];
 
     private AirbaseZoneInfo() {
     }
@@ -57,37 +50,32 @@ public class AirbaseZoneInfo {
         AirbaseZoneInfo info = new AirbaseZoneInfo();
         info.zonenames = responseMap.get("zone_name");
         String zoneinfo = responseMap.get("zone_onoff");
-        StringTokenizer zones = new StringTokenizer(zoneinfo, "%3b");
-        info.zone1="1".equals(zones.nextToken());
-        info.zone2="1".equals(zones.nextToken());
-        info.zone3="1".equals(zones.nextToken());
-        info.zone4="1".equals(zones.nextToken());
-        info.zone5="1".equals(zones.nextToken());
-        info.zone6="1".equals(zones.nextToken());
-        info.zone7="1".equals(zones.nextToken());
-        info.zone8="1".equals(zones.nextToken());
-        LOGGER.debug("Zone 1 = \"{}\"", info.zone1);
+
+        String[] Zones = zoneinfo.split("%3b");
+
+        for (int i = 0; i < 8; i++)
+            info.zone[i] = "1".equals(Zones[i]);
         return info;
     }
 
     public Map<String, String> getParamString() {
         Map<String, String> params = new LinkedHashMap<>();
         StringBuilder onoffstring = new StringBuilder()
-            .append(zone1 ? "1" : "0")
+            .append(zone[0] ? "1" : "0")
             .append("%3b")
-            .append(zone2 ? "1" : "0")
+            .append(zone[1] ? "1" : "0")
             .append("%3b")
-            .append(zone3 ? "1" : "0")
+            .append(zone[2] ? "1" : "0")
             .append("%3b")
-            .append(zone4 ? "1" : "0")
+            .append(zone[3] ? "1" : "0")
             .append("%3b")
-            .append(zone5 ? "1" : "0")
+            .append(zone[4] ? "1" : "0")
             .append("%3b")
-            .append(zone6 ? "1" : "0")
+            .append(zone[5] ? "1" : "0")
             .append("%3b")
-            .append(zone7 ? "1" : "0")
+            .append(zone[6] ? "1" : "0")
             .append("%3b")
-            .append(zone8 ? "1" : "0");
+            .append(zone[6] ? "1" : "0");
         params.put("zone_name", zonenames);
         params.put("zone_onoff", onoffstring.toString());
 
