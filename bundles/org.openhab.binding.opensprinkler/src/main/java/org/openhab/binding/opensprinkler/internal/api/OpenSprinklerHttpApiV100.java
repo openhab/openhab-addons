@@ -14,6 +14,7 @@ package org.openhab.binding.opensprinkler.internal.api;
 
 import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -154,17 +155,12 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
-    public boolean isRainDetected() throws GeneralApiException, CommunicationApiException {
-        try {
-            if (statusInfo().rs == 1) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception exp) {
-            throw new GeneralApiException("Could not get the current state of the rain sensor.");
+    public boolean isRainDetected() throws CommunicationApiException {
+        if (statusInfo().rs == 1) {
+            return true;
+        } else {
+            return false;
         }
-
     }
 
     @Override
@@ -233,7 +229,7 @@ public class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
         try {
             returnContent = Http.sendHttpGet(getBaseUrl() + CMD_STATUS_INFO, getRequestRequiredOptions());
-        } catch (Exception exp) {
+        } catch (IOException | CommunicationApiException exp) {
             throw new CommunicationApiException(
                     "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
         }

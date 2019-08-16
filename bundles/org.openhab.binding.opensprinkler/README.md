@@ -52,7 +52,7 @@ The following channel is supported by the station thing.
 | Channel Type ID    | Item Type   |    | Description                                             |
 |--------------------|-------------|----|---------------------------------------------------------|
 | stationState       | Switch      | RW | This channel indicates whether station 01 is on or off. |
-| remainingWaterTime | Number:Time | R  | The time the station remains to be open, in seconds.    |
+| remainingWaterTime | Number:Time | R  | The time the station remains to be open.    |
 
 
 
