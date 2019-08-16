@@ -117,7 +117,7 @@ public class DaikinWebTargets {
 
     public void setAirbaseZoneInfo(AirbaseZoneInfo zoneinfo, AirbaseModelInfo modelinfo) throws DaikinCommunicationException {
         int count=0;
-        count = (zoneinfo.zone[0] ? 1 : 0) + (zoneinfo.zone[1] ? 1 : 0) + (zoneinfo.zone[2] ? 1 : 0) + (zoneinfo.zone[3] ? 1 : 0) + (zoneinfo.zone[4] ? 1 : 0) + (zoneinfo.zone[5] ? 1 : 0) + (zoneinfo.zone[6] ? 1 : 0) + (zoneinfo.zone[7] ? 1 : 0) + modelinfo.commonzone;
+        count = (zoneinfo.zone[1] ? 1 : 0) + (zoneinfo.zone[2] ? 1 : 0) + (zoneinfo.zone[3] ? 1 : 0) + (zoneinfo.zone[4] ? 1 : 0) + (zoneinfo.zone[5] ? 1 : 0) + (zoneinfo.zone[6] ? 1 : 0) + (zoneinfo.zone[7] ? 1 : 0) + (zoneinfo.zone[8] ? 1 : 0) + modelinfo.commonzone;
         logger.debug("Number of open zones: \"{}\"", count);
 
         Map<String, String> queryParams = zoneinfo.getParamString();

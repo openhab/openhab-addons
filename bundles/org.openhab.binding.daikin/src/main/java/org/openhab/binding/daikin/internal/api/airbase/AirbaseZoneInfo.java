@@ -53,16 +53,14 @@ public class AirbaseZoneInfo {
 
         String[] Zones = zoneinfo.split("%3b");
 
-        for (int i = 0; i < 8; i++)
-            info.zone[i] = "1".equals(Zones[i]);
+        for (int i = 1; i < 9; i++)
+            info.zone[i] = "1".equals(Zones[i-1]);
         return info;
     }
 
     public Map<String, String> getParamString() {
         Map<String, String> params = new LinkedHashMap<>();
         StringBuilder onoffstring = new StringBuilder()
-            .append(zone[0] ? "1" : "0")
-            .append("%3b")
             .append(zone[1] ? "1" : "0")
             .append("%3b")
             .append(zone[2] ? "1" : "0")
@@ -75,7 +73,9 @@ public class AirbaseZoneInfo {
             .append("%3b")
             .append(zone[6] ? "1" : "0")
             .append("%3b")
-            .append(zone[6] ? "1" : "0");
+            .append(zone[7] ? "1" : "0")
+            .append("%3b")
+            .append(zone[8] ? "1" : "0");
         params.put("zone_name", zonenames);
         params.put("zone_onoff", onoffstring.toString());
 

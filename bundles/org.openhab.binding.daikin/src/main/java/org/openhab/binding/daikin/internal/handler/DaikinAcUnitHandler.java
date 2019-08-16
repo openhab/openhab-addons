@@ -129,49 +129,49 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
             /* additional controls for Daikin Airbase */
             case DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE1:
                 if (command instanceof OnOffType) {
-                    changeZone1(((OnOffType) command).equals(OnOffType.ON));
+                    changeZone(1, ((OnOffType) command).equals(OnOffType.ON));
                     return;
                 }
                 break;
             case DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE2:
                 if (command instanceof OnOffType) {
-                    changeZone2(((OnOffType) command).equals(OnOffType.ON));
+                    changeZone(2, ((OnOffType) command).equals(OnOffType.ON));
                     return;
                 }
                 break;
             case DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE3:
                 if (command instanceof OnOffType) {
-                    changeZone3(((OnOffType) command).equals(OnOffType.ON));
+                    changeZone(3, ((OnOffType) command).equals(OnOffType.ON));
                     return;
                 }
                 break;
             case DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE4:
                 if (command instanceof OnOffType) {
-                    changeZone4(((OnOffType) command).equals(OnOffType.ON));
+                    changeZone(4, ((OnOffType) command).equals(OnOffType.ON));
                     return;
                 }
                 break;
             case DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE5:
                 if (command instanceof OnOffType) {
-                    changeZone5(((OnOffType) command).equals(OnOffType.ON));
+                    changeZone(5, ((OnOffType) command).equals(OnOffType.ON));
                     return;
                 }
                 break;
             case DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE6:
                 if (command instanceof OnOffType) {
-                    changeZone6(((OnOffType) command).equals(OnOffType.ON));
+                    changeZone(6, ((OnOffType) command).equals(OnOffType.ON));
                     return;
                 }
                 break;
             case DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE7:
                 if (command instanceof OnOffType) {
-                    changeZone7(((OnOffType) command).equals(OnOffType.ON));
+                    changeZone(7, ((OnOffType) command).equals(OnOffType.ON));
                     return;
                 }
                 break;
             case DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE8:
                 if (command instanceof OnOffType) {
-                    changeZone8(((OnOffType) command).equals(OnOffType.ON));
+                    changeZone(8, ((OnOffType) command).equals(OnOffType.ON));
                     return;
                 }
                 break;
@@ -287,14 +287,14 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
         AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
         AirbaseZoneInfo zoneInfo = webTargets.getAirbaseZoneInfo();
         if (zoneInfo != null) {
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE1, zoneInfo.zone[0] ? OnOffType.ON : OnOffType.OFF);
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE2, zoneInfo.zone[1] ? OnOffType.ON : OnOffType.OFF);
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE3, zoneInfo.zone[2] ? OnOffType.ON : OnOffType.OFF);
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE4, zoneInfo.zone[3] ? OnOffType.ON : OnOffType.OFF);
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE5, zoneInfo.zone[4] ? OnOffType.ON : OnOffType.OFF);
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE6, zoneInfo.zone[5] ? OnOffType.ON : OnOffType.OFF);
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE7, zoneInfo.zone[6] ? OnOffType.ON : OnOffType.OFF);
-            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE8, zoneInfo.zone[7] ? OnOffType.ON : OnOffType.OFF);
+            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE1, zoneInfo.zone[1] ? OnOffType.ON : OnOffType.OFF);
+            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE2, zoneInfo.zone[2] ? OnOffType.ON : OnOffType.OFF);
+            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE3, zoneInfo.zone[3] ? OnOffType.ON : OnOffType.OFF);
+            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE4, zoneInfo.zone[4] ? OnOffType.ON : OnOffType.OFF);
+            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE5, zoneInfo.zone[5] ? OnOffType.ON : OnOffType.OFF);
+            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE6, zoneInfo.zone[6] ? OnOffType.ON : OnOffType.OFF);
+            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE7, zoneInfo.zone[7] ? OnOffType.ON : OnOffType.OFF);
+            updateState(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE8, zoneInfo.zone[8] ? OnOffType.ON : OnOffType.OFF);
         }
     }
 
@@ -386,60 +386,11 @@ public class DaikinAcUnitHandler extends BaseThingHandler {
     }
 
     // Zones only supported on Airbase, so don't need to detect what kind of thing we have
-    private void changeZone1(boolean zone1) throws DaikinCommunicationException {
+    private void changeZone(int zone, boolean command) throws DaikinCommunicationException {
         AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
         AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
-        info.zone[0] = zone1;
-        if (modelInfo.zonespresent >=1) webTargets.setAirbaseZoneInfo(info, modelInfo);
-    }
-
-    private void changeZone2(boolean zone2) throws DaikinCommunicationException {
-        AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
-        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
-        info.zone[1] = zone2;
-        if (modelInfo.zonespresent >=2) webTargets.setAirbaseZoneInfo(info, modelInfo);
-    }
-
-    private void changeZone3(boolean zone3) throws DaikinCommunicationException {
-        AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
-        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
-        info.zone[2] = zone3;
-        if (modelInfo.zonespresent >=3) webTargets.setAirbaseZoneInfo(info, modelInfo);
-    }
-
-    private void changeZone4(boolean zone4) throws DaikinCommunicationException {
-        AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
-        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
-        info.zone[3] = zone4;
-        if (modelInfo.zonespresent >=4) webTargets.setAirbaseZoneInfo(info, modelInfo);
-    }
-
-    private void changeZone5(boolean zone5) throws DaikinCommunicationException {
-        AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
-        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
-        info.zone[4] = zone5;
-        if (modelInfo.zonespresent >=5) webTargets.setAirbaseZoneInfo(info, modelInfo);
-    }
-
-    private void changeZone6(boolean zone6) throws DaikinCommunicationException {
-        AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
-        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
-        info.zone[5] = zone6;
-        if (modelInfo.zonespresent >=6) webTargets.setAirbaseZoneInfo(info, modelInfo);
-    }
-
-    private void changeZone7(boolean zone7) throws DaikinCommunicationException {
-        AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
-        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
-        info.zone[6] = zone7;
-        if (modelInfo.zonespresent >=7) webTargets.setAirbaseZoneInfo(info, modelInfo);
-    }
-
-    private void changeZone8(boolean zone8) throws DaikinCommunicationException {
-        AirbaseZoneInfo info = webTargets.getAirbaseZoneInfo();
-        AirbaseModelInfo modelInfo = webTargets.getAirbaseModelInfo();
-        info.zone[7] = zone8;
-        if (modelInfo.zonespresent ==8) webTargets.setAirbaseZoneInfo(info, modelInfo);
+        info.zone[zone] = command;
+        if (modelInfo.zonespresent >=zone) webTargets.setAirbaseZoneInfo(info, modelInfo);
     }
 
 }
