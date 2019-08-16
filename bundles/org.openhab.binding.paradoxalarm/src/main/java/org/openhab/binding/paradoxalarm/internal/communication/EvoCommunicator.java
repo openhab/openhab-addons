@@ -105,12 +105,12 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
         try {
             IPPacketPayload payload = new EpromRequestPayload(address, labelLength);
             ParadoxIPPacket readEpromIPPacket = new ParadoxIPPacket(payload)
-                .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
+                    .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
 
             IRequest epromRequest = new EpromRequest(partitionNo, EntityType.PARTITION, readEpromIPPacket);
             submitRequest(epromRequest);
         } catch (ParadoxException e) {
-            logger.debug("Error creating request for with number={}, Exception={} ", partitionNo, e);
+            logger.debug("Error creating request for with number={}, Exception={} ", partitionNo, e.getMessage());
         }
     }
 
@@ -132,7 +132,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
             IRequest epromRequest = new EpromRequest(zoneNumber, EntityType.ZONE, readEpromIPPacket);
             submitRequest(epromRequest);
         } catch (ParadoxException e) {
-            logger.debug("Error creating request with number={}, Exception={} ", zoneNumber, e);
+            logger.debug("Error creating request with number={}, Exception={} ", zoneNumber, e.getMessage());
         }
     }
 
@@ -228,8 +228,8 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
             submitRequest(ramRequest);
         } catch (ParadoxException e) {
             logger.debug(
-                "Unable to create request payload from provided bytes to read. blockNo={}, bytes to read={}. Exception={}",
-                blockNo, RAM_BLOCK_SIZE, e);
+                    "Unable to create request payload from provided bytes to read. blockNo={}, bytes to read={}. Exception={}",
+                    blockNo, RAM_BLOCK_SIZE, e.getMessage());
         }
     }
 

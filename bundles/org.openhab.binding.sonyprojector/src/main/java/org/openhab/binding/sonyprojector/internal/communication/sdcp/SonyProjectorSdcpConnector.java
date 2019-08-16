@@ -221,7 +221,7 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
         }
         logger.debug("readResponse: {}", HexUtils.bytesToHex(message));
         if (count < MSG_MIN_SIZE) {
-            logger.debug("readResponse: unexpected response data length: {]", count);
+            logger.debug("readResponse: unexpected response data length: {}", count);
             throw new SonyProjectorException("Unexpected response data length");
         }
         return message;

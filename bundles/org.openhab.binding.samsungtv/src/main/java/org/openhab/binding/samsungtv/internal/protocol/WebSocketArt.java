@@ -27,7 +27,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 class WebSocketArt extends WebSocketBase {
-    private final Logger logger = LoggerFactory.getLogger(WebSocketBase.class);
+    private final Logger logger = LoggerFactory.getLogger(WebSocketArt.class);
 
     /**
      * @param remoteControllerWebSocket

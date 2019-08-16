@@ -233,7 +233,7 @@ public class HueRuleConditionHandler extends BaseModuleHandler<Condition> implem
                 return (state.toFullString().equals(oldState.toFullString()));
             case unknown:
             default:
-                logger.warn("Operator not handled! " + config.operator.name());
+                logger.warn("Operator {} not handled! ", config.operator.name());
                 return false;
         }
     }

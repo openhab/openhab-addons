@@ -62,17 +62,12 @@ public class KM200Comm<KM200BindingProvider> {
         logger.debug("Starting receive connection...");
 
         try {
-
             // Create an instance of HttpClient.
             for (int i = 0; i < maxNbrRepeats.intValue() && statusCode != HttpStatus.OK_200; i++) {
 
-                contentresponse = httpClient.newRequest(remoteDevice.getIP4Address() + service, 80)
-                        .scheme("http")
-                        .agent("TeleHeater/2.2.3")
-                        .accept("application/json")
-                        .method(HttpMethod.GET)
-                        .timeout(5, TimeUnit.SECONDS)
-                        .send();
+                contentresponse = httpClient.newRequest(remoteDevice.getIP4Address() + service, 80).scheme("http")
+                        .agent("TeleHeater/2.2.3").accept("application/json").method(HttpMethod.GET)
+                        .timeout(5, TimeUnit.SECONDS).send();
 
                 // Execute the method.
                 statusCode = contentresponse.getStatus();
@@ -106,7 +101,7 @@ public class KM200Comm<KM200BindingProvider> {
         } catch (InterruptedException e) {
             logger.debug("Sleep was interrupted: {}", e.getMessage());
         } catch (TimeoutException e) {
-            logger.debug("Call to " + remoteDevice.getIP4Address() + service + " timed out. ", e);
+            logger.debug("Call to {} {} timed out", remoteDevice.getIP4Address(), service);
         } catch (ExecutionException e) {
             logger.debug("Fatal transport error: {}", e.getMessage());
         }
@@ -126,12 +121,8 @@ public class KM200Comm<KM200BindingProvider> {
 
                 // Create a method instance.
                 contentResponse = httpClient.newRequest("http://" + remoteDevice.getIP4Address() + service)
-                        .method(HttpMethod.POST)
-                        .agent("TeleHeater/2.2.3")
-                        .accept("application/json")
-                        .content(new BytesContentProvider(data))
-                        .timeout(5, TimeUnit.SECONDS)
-                        .send();
+                        .method(HttpMethod.POST).agent("TeleHeater/2.2.3").accept("application/json")
+                        .content(new BytesContentProvider(data)).timeout(5, TimeUnit.SECONDS).send();
 
                 rCode = contentResponse.getStatus();
                 switch (rCode) {
@@ -153,7 +144,7 @@ public class KM200Comm<KM200BindingProvider> {
         } catch (ExecutionException e) {
             logger.debug("Fatal transport error: {}", e.getMessage());
         } catch (TimeoutException e) {
-            logger.debug("Call to "+remoteDevice.getIP4Address() + service+ " timed out.");
+            logger.debug("Call to {} {} timed out.", remoteDevice.getIP4Address(), service);
         }
         logger.debug("Returncode: {}", rCode);
         return rCode;
