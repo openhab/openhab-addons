@@ -85,7 +85,7 @@ class RdsAccessToken {
         try {
             https = (HttpsURLConnection) url.openConnection();
         } catch (java.io.IOException e) {
-            LOGGER.error("httpGetTokenJson: unable to connect to Cloud Server");
+            LOGGER.warn("httpGetTokenJson: unable to connect to Cloud Server");
             return "";
         }
 
@@ -108,7 +108,7 @@ class RdsAccessToken {
             dataOutputStream.writeBytes(String.format(TOKEN_REQUEST, user, password));
             dataOutputStream.flush();
         } catch (IOException e) {
-            LOGGER.error("httpGetTokenJson: error sending request to Cloud Server");
+            LOGGER.warn("httpGetTokenJson: error sending request to Cloud Server");
             return "";
         }
 
@@ -116,12 +116,12 @@ class RdsAccessToken {
         try {
             responseCode = https.getResponseCode();
         } catch (IOException e) {
-            LOGGER.error("httpGetTokenJson: missing HTTP response from Cloud Server");
+            LOGGER.warn("httpGetTokenJson: missing HTTP response from Cloud Server");
             return "";
         }
 
         if (responseCode != HttpURLConnection.HTTP_OK) {
-            LOGGER.error("httpGetTokenJson: invalid HTTP response {} from Cloud Server", responseCode);
+            LOGGER.warn("httpGetTokenJson: invalid HTTP response {} from Cloud Server", responseCode);
             return "";
         }
 
@@ -139,7 +139,7 @@ class RdsAccessToken {
             // we shouldn't ever reach here because UTF8 is a valid encoding
             return "";
         } catch (IOException e) {
-            LOGGER.error("httpGetTokenJson: unable to read response from Cloud Server");
+            LOGGER.warn("httpGetTokenJson: unable to read response from Cloud Server");
             return "";
         }
     }

@@ -86,7 +86,7 @@ class RdsDataPoints {
         try {
             url = new URL(urlString);
         } catch (MalformedURLException e) {
-            LOGGER.error("httpGenericGetJson: invalid url {}", urlString);
+            LOGGER.warn("httpGenericGetJson: invalid url {}", urlString);
             return "";
         }
 
@@ -99,7 +99,7 @@ class RdsDataPoints {
         try {
             https = (HttpsURLConnection) url.openConnection();
         } catch (java.io.IOException e) {
-            LOGGER.error("httpGenericGetJson: unable to connect to Cloud Server");
+            LOGGER.warn("httpGenericGetJson: unable to connect to Cloud Server");
             return "";
         }
 
@@ -119,12 +119,12 @@ class RdsDataPoints {
         try {
             responseCode = https.getResponseCode();
         } catch (IOException e) {
-            LOGGER.error("httpGenericGetJson: missing HTTP response from Cloud Server");
+            LOGGER.warn("httpGenericGetJson: missing HTTP response from Cloud Server");
             return "";
         }
 
         if (responseCode != HttpURLConnection.HTTP_OK) {
-            LOGGER.error("httpGenericGetJson: invalid HTTP response {} from Cloud Server", responseCode);
+            LOGGER.warn("httpGenericGetJson: invalid HTTP response {} from Cloud Server", responseCode);
             return "";
         }
 
@@ -142,7 +142,7 @@ class RdsDataPoints {
             // we shouldn't ever reach here because UTF8 is a valid encoding
             return "";
         } catch (IOException e) {
-            LOGGER.error("httpGenericGetJson: unable to read response from Cloud Server");
+            LOGGER.warn("httpGenericGetJson: unable to read response from Cloud Server");
             return "";
         }
     }
@@ -182,7 +182,7 @@ class RdsDataPoints {
         try {
             url = new URL(urlString);
         } catch (MalformedURLException e) {
-            LOGGER.error("httpSetPointValueJson: invalid url {}", urlString);
+            LOGGER.warn("httpSetPointValueJson: invalid url {}", urlString);
             return;
         }
 
@@ -195,7 +195,7 @@ class RdsDataPoints {
         try {
             https = (HttpsURLConnection) url.openConnection();
         } catch (java.io.IOException e) {
-            LOGGER.error("httpSetPointValueJson: unable to connect to Cloud Server");
+            LOGGER.warn("httpSetPointValueJson: unable to connect to Cloud Server");
             return;
         }
 
@@ -217,7 +217,7 @@ class RdsDataPoints {
                 DataOutputStream writer = new DataOutputStream(outputStream);) {
             writer.writeBytes(json);
         } catch (IOException e) {
-            LOGGER.error("httpSetPointValueJson: error sending request to Cloud Server");
+            LOGGER.warn("httpSetPointValueJson: error sending request to Cloud Server");
             return;
         }
 
@@ -225,12 +225,12 @@ class RdsDataPoints {
         try {
             responseCode = https.getResponseCode();
         } catch (IOException e) {
-            LOGGER.error("httpGetPlantListJson: missing HTTP response from Cloud Server");
+            LOGGER.warn("httpGetPlantListJson: missing HTTP response from Cloud Server");
             return;
         }
 
         if (responseCode != HttpURLConnection.HTTP_OK) {
-            LOGGER.error("httpGetPlantListJson: invalid HTTP response {} from Cloud Server", responseCode);
+            LOGGER.warn("httpGetPlantListJson: invalid HTTP response {} from Cloud Server", responseCode);
             return;
         }
         return;
@@ -280,7 +280,7 @@ class RdsDataPoints {
             }
             return state;
         }
-        LOGGER.error("getRaw: {}=No Value!", hierarchyName);
+        LOGGER.warn("getRaw: {}=No Value!", hierarchyName);
         return null;
     }
 
@@ -298,7 +298,7 @@ class RdsDataPoints {
             }
             return presentPriority;
         }
-        LOGGER.error("getPresentPriority: {}=No Value!", hierarchyName);
+        LOGGER.warn("getPresentPriority: {}=No Value!", hierarchyName);
         return 0;
     }
 
@@ -316,7 +316,7 @@ class RdsDataPoints {
             }
             return value;
         }
-        LOGGER.error("getAsInt: {}=No Value!", hierarchyName);
+        LOGGER.warn("getAsInt: {}=No Value!", hierarchyName);
         return 0;
     }
 
@@ -334,7 +334,7 @@ class RdsDataPoints {
             }
             return state;
         }
-        LOGGER.error("getEnum: {}=No Value!", hierarchyName);
+        LOGGER.warn("getEnum: {}=No Value!", hierarchyName);
         return null;
     }
 
@@ -406,7 +406,7 @@ class RdsDataPoints {
         try {
             newPoints = GSON.fromJson(json, RdsDataPoints.class);
         } catch (JsonSyntaxException e) {
-            LOGGER.error("refreshUsedValues: JSON syntax error");
+            LOGGER.debug("refreshUsedValues: JSON syntax error");
             return false;
         }
 
