@@ -137,6 +137,7 @@ then
       // the Run indicator state will go ON shortly, and return OFF when script finished
 end
 
+
 rule "process your results"
 when
    Item yourcommand_Run changed from ON to OFF
